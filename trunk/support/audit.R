@@ -3,7 +3,7 @@
 if (!file.exists('survey.csv'))
 {
 UCI <- "ftp://ftp.ics.uci.edu/pub"
-REPOS <- "ml-repos/machine-learning-databases"
+REPOS <- "machine-learning-databases"
 survey.url <- sprintf("%s/%s/adult/adult.data", UCI, REPOS)
 download.file(survey.url, "survey.data")
 survey <- read.csv("survey.data", header=F, strip.white=TRUE,
