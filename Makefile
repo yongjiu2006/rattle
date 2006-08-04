@@ -8,6 +8,7 @@
 
 PACKAGE=package/rattle
 DESCRIPTION=$(PACKAGE)/DESCRIPTION
+DESCRIPTIN=support/DESCRIPTION.in
 NAMESPACE=$(PACKAGE)/NAMESPACE
 
 REPOSITORY=repository
@@ -44,8 +45,8 @@ build: data rattle_$(VERSION).tar.gz
 rattle_$(VERSION).tar.gz: 
 	cp src/rattle.R package/rattle/R/
 	cp src/rattle.glade package/rattle/inst/etc/
-	perl -pi -e "s|^Version: .*$$|Version: $(VERSION)|" $(DESCRIPTION)
-	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(DESCRIPTION)
+	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
+	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	(cd /home/gjw/projects/togaware/www/;\
 	 perl -pi -e "s|rattle_......zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\
@@ -94,10 +95,13 @@ python:
 
 test:
 	echo $(VERSION)
+	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
+	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 
 clean:
 	rm -f rattle_*.tar.gz rattle_*.zip
 	rm -f package/rattle/R/rattle.R package/rattle/inst/etc/rattle.glade
+	rm -f package/rattle/DESCRIPTION
 
 realclean:
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
