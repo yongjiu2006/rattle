@@ -1,13 +1,13 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-04 07:49:06 Graham Williams>
+## Time-stamp: <2006-08-04 19:57:12 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleTM is the text mining tool
 
 ## FIX THIS FOR SVN
 
-REVISION <- "$Revision: 1.182 $"
+REVISION <- "$Rev$"
 VERSION <- "2.1"
 
 ## Copyright (c) Graham Williams, Togaware.com
