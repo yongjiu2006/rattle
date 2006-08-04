@@ -1,13 +1,15 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-04 20:34:38 Graham Williams>
+## Time-stamp: <2006-08-05 07:15:51 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
 ## rattleTM is the text mining tool
 
-REVISION <- "$Revision$"
-VERSION <- "2.1"
+MAJOR <- "2"
+MINOR <- "1"
+REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
+VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 
 ## Copyright (c) Graham Williams, Togaware.com
 
@@ -6560,7 +6562,7 @@ pmml.rpart <- function(rp)
                       "All Rights Reserved."))))
   header[[1]] <- xmlNode("Application",
                          attrs=c(name="Rattle",
-                           version=unlist(strsplit(REVISION, split=" "))[2]))
+                           version=REVISION))
 
   pmml$children[[1]] <- header
   
@@ -6685,10 +6687,8 @@ on_about_menu_activate <-  function(action, window)
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
-  revision <- unlist(strsplit(REVISION, split=" "))[2]
   about$getWidget("aboutdialog")$
-    setCopyright(paste("Copyright (C) 2006 Graham.Williams@togaware.com",
-                       "\nRevision", revision))
+    setCopyright("Copyright (C) 2006 Graham.Williams@togaware.com")
 }
 
 on_open_activate <- function(action, window) {loadProject()}
