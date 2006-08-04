@@ -1,0 +1,9 @@
+export(rattle,evaluateRisk,plotRisk,genPlotTitleCmd,plotNetwork)
+export(plotOptimalLine,plotBenfordsLaw,drawTreeNodes)
+export(randomForest2Rules,printRandomForests)
+exportPattern("_") # Needed for the Glade interface
+
+##exportPattern("^[^\\.]")
+
+## Current problem is that the <<- assignments don't work, viz:
+## Error in reset.crs() : cannot change value of a locked binding
