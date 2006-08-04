@@ -7,22 +7,24 @@
 # access:	Have a look at who might be downloading rattle
 
 PACKAGE=package/rattle
-DESCRIPTION=$(package)/DESCRIPTION
-NAMESPACE=$(package)/NAMESPACE
+DESCRIPTION=$(PACKAGE)/DESCRIPTION
+NAMESPACE=$(PACKAGE)/NAMESPACE
 
 REPOSITORY=repository
 
 # Canonical version information from rattle.R
-RELEASE=8
-VERSION:=$(shell egrep '^VERSION' src/rattle.R | cut -d\" -f 2)-$(RELEASE)
+MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
+MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
+REVISION:=$(shell egrep '^REVISION' src/rattle.R | cut -d" "  -f 4)
+VERSION=$(MAJOR).$(MINOR).$(REVISION)
 DATE:=$(shell date +%F)
 
 install: build zip check
 	cp src/rattle.R src/rattle.glade /var/www/access/
 	chmod go+r /var/www/access/rattle*
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
-	chmod go+r $(REPOSITORY)/*
 	R --no-save < support/repository.R
+	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
 
 check: build
@@ -90,9 +92,13 @@ access:
 python:
 	python rattle.py
 
+test:
+	echo $(VERSION)
+
 clean:
 	rm -f rattle_*.tar.gz rattle_*.zip
 	rm -f package/rattle/R/rattle.R package/rattle/inst/etc/rattle.glade
 
 realclean:
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
+	rm -rf rattle.Rcheck
