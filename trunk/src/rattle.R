@@ -1,8 +1,9 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-04 20:00:23 Graham Williams>
+## Time-stamp: <2006-08-04 20:34:38 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
+## rattleUN is the unsupervised learning tool
 ## rattleTM is the text mining tool
 
 REVISION <- "$Revision$"
@@ -6684,8 +6685,7 @@ on_about_menu_activate <-  function(action, window)
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
-  revision <- unlist(strsplit(unlist(strsplit(REVISION, split=" "))[2],
-                              "\\."))[2]
+  revision <- unlist(strsplit(REVISION, split=" "))[2]
   about$getWidget("aboutdialog")$
     setCopyright(paste("Copyright (C) 2006 Graham.Williams@togaware.com",
                        "\nRevision", revision))
