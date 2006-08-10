@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-05 07:15:51 Graham Williams>
+## Time-stamp: <2006-08-10 20:48:49 Graham>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -516,7 +516,7 @@ sampleNeedsExecute <- function()
   if (rattleWidget("sample_checkbutton")$getActive()
       && is.null(crs$sample))
   {
-    errorDialog("Sampling is active but has not be Executed.",
+    errorDialog("Sampling is active but has not been Executed.",
                     "Either ensure you Execute the sampling by clicking",
                     "the Execute button on the Sample tab,",
                     "or else de-activate Sampling on the Sample tab.")
@@ -2206,6 +2206,7 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_percentage_label")$setSensitive(TRUE)
     rattleWidget("sample_count_spinbutton")$setSensitive(TRUE)
     rattleWidget("sample_count_label")$setSensitive(TRUE)
+    rattleWidget("explore_sample_checkbutton")$setSensitive(TRUE)
     crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
   }
   else
@@ -2214,6 +2215,8 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_percentage_label")$setSensitive(FALSE)
     rattleWidget("sample_count_spinbutton")$setSensitive(FALSE)
     rattleWidget("sample_count_label")$setSensitive(FALSE)
+    rattleWidget("explore_sample_checkbutton")$setActive(FALSE)
+    rattleWidget("explore_sample_checkbutton")$setSensitive(FALSE)
   }
     setStatusBar()
 }
@@ -2444,18 +2447,19 @@ execute.explore.tab <- function()
   if (noDatasetLoaded()) return()
 
   ## Ensure Sample does not require executing.
-  
-  if (sampleNeedsExecute()) return()
+
+  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  sampling <- rattleWidget("sample_checkbutton")$getActive()
+  if (useSample && sampleNeedsExecute()) return()
 
   ## We generate a string representing the subset of the dataset on
   ## which the exploration is to be performed. This is then passed to
   ## the individually dispatched functions.
 
 
-  sampling <- rattleWidget("sample_checkbutton")$getActive()
   vars <- getIncludedVariables(risk=TRUE)
   dataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                     ifelse(sampling,"crs$sample", ""),
+                     ifelse(useSample & sampling,"crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
   
   vars <- getIncludedVariables(numonly=TRUE)
@@ -2466,13 +2470,13 @@ execute.explore.tab <- function()
   #  ndataset <- NULL
   #else
     ndataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                        ifelse(sampling,"crs$sample", ""),
+                        ifelse(useSample & sampling,"crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
   ## Numeric input variables
   vars <- input.variables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                       ifelse(sampling,"crs$sample", ""),
+                       ifelse(useSample & sampling,"crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
   ## Dispatch
@@ -2528,9 +2532,10 @@ execute.explore.summary <- function(dataset)
   clear.textview(TV)
 
   addToLog("Generate a summary of the dataset.", summary.cmd)
+  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
   sampling  <- ! is.null(crs$sample)
   append.textview(TV, paste("Summary of the",
-                            ifelse(sampling, "** sample **", "full"),
+                            ifelse(useSample & sampling, "** sample **", "full"),
                             "dataset.\n\n",
                             "(Hint: 25% of values are below 1st Quartile.)",
                             "\n\n"),
@@ -2658,7 +2663,8 @@ executeExplorePlot <- function(dataset)
 
   ## Check for sampling.
   
-  sampling  <- ! is.null(crs$sample)
+  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  sampling  <- useSample & ! is.null(crs$sample)
 
   ## Split the data, first for all values.
 
