@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-10 20:48:49 Graham>
+## Time-stamp: <2006-08-11 21:31:22 Graham>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -946,6 +946,7 @@ load_rdata_set_combo <- function(button)
   ## Collect relevant data
 
   filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
+  setwd(dirname(filename))
   
   ## Fix filename for MS - otherwise eval/parse strip the \\.
 
@@ -1116,7 +1117,8 @@ execute.data.csv <- function()
   ## Collect relevant data
 
   filename <- rattleWidget("csv_filechooserbutton")$getFilename()
-
+  setwd(dirname(filename))
+  
   ## Error exit if no filename is given
 
   if (is.null(filename))
@@ -1266,6 +1268,7 @@ execute.data.rdata <- function()
   ## Collect relevant data
 
   filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
+  setwd(dirname(filename))
   dataset <- rattleWidget("rdata_combobox")$getActiveText()
 
   ## Error exit if no filename is given
@@ -5515,6 +5518,7 @@ executeEvaluateTab <- function()
   else if (rattleWidget("evaluate_csv_radiobutton")$getActive())
   {
     filename <- rattleWidget("evaluate_filechooserbutton")$getFilename()
+    setwd(dirname(filename))
 
     if (is.null(filename))
     {
