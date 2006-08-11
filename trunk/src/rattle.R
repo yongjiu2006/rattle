@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-11 21:31:22 Graham>
+## Time-stamp: <2006-08-12 09:07:00 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -35,7 +35,8 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 ## STYLE GUIDE
 ##
 ##    Use the "_" convention only for Glade variables and functions.
-##    Use capitalised verbs for own variables and functions
+##    Use capitalised verbs for own functions: displayPlotAgain
+##    Use dot spearate words for variables: current.rattle.list.of.frames
 ##    RGtk2 uses the capitalised word convention.
 ##    Use same names in R code as for the Glade objects.
 
@@ -694,6 +695,11 @@ listBuiltModels <- function()
   return(models)
 }
 
+setDefaultPath <- function(filename)
+{
+  if (! is.null(filename)) setwd(dirname(filename))
+}
+
 new.plot <- function()
 {
   if (.Platform$GUI == "X11")
@@ -926,7 +932,7 @@ on_rdata_filechooserbutton_update_preview<- function(button)
   {
     ff <- gtkFileFilterNew()
     ff$setName("Rdata Files")
-    ff$addPattern("*.Rdata")
+    ff$addPattern("*.R[Dd]ata")
     button$addFilter(ff)
 
     ff <- gtkFileFilterNew()
@@ -946,7 +952,7 @@ load_rdata_set_combo <- function(button)
   ## Collect relevant data
 
   filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
-  setwd(dirname(filename))
+  setDefaultPath(filename)
   
   ## Fix filename for MS - otherwise eval/parse strip the \\.
 
@@ -962,7 +968,7 @@ load_rdata_set_combo <- function(button)
 
   addToLog("Load an Rdata file containing R objects.", load.cmd)
   set.cursor("watch")
-  eval(parse(text=paste("new.objects <<- ", load.cmd)))
+  eval(parse(text=paste("new.objects <- ", load.cmd)), baseenv())
   set.cursor()
 
   ## Add new dataframes to the combo box.
@@ -1069,16 +1075,16 @@ open_odbc_set_combo <- function(a, b)
 ##
 ## Execution
 ##
-execute.data.tab <- function()
+executeDataTab <- function()
 {
   if (rattleWidget("csv_radiobutton")$getActive())
     execute.data.csv()
   else if (rattleWidget("odbc_radiobutton")$getActive())
     executeDataODBC()
   else if (rattleWidget("rdata_radiobutton")$getActive())
-    execute.data.rdata()
+    executeDataRdata()
   else if (rattleWidget("rdataset_radiobutton")$getActive())
-    execute.data.rdataset()
+    executeDataRdataset()
 }
 
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
@@ -1117,7 +1123,7 @@ execute.data.csv <- function()
   ## Collect relevant data
 
   filename <- rattleWidget("csv_filechooserbutton")$getFilename()
-  setwd(dirname(filename))
+  setDeafultPath(filename)
   
   ## Error exit if no filename is given
 
@@ -1261,14 +1267,14 @@ executeDataODBC <- function()
 
 }
 
-execute.data.rdata <- function()
+executeDataRdata <- function()
 {
   TV <- "data_textview"
   
   ## Collect relevant data
 
   filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
-  setwd(dirname(filename))
+  setDefaultPath(filename)
   dataset <- rattleWidget("rdata_combobox")$getActiveText()
 
   ## Error exit if no filename is given
@@ -1340,7 +1346,7 @@ execute.data.rdata <- function()
   setStatusBar("The data has been loaded:", crs$dataname)
 }
 
-execute.data.rdataset <- function()
+executeDataRdataset <- function()
 {
   TV <- "data_textview"
   
@@ -5518,7 +5524,7 @@ executeEvaluateTab <- function()
   else if (rattleWidget("evaluate_csv_radiobutton")$getActive())
   {
     filename <- rattleWidget("evaluate_filechooserbutton")$getFilename()
-    setwd(dirname(filename))
+    setDefaultPath(filename)
 
     if (is.null(filename))
     {
@@ -7042,11 +7048,11 @@ on_execute_button_clicked <- function(action, window)
   
   setStatusBar()
   set.cursor("watch")
-  try(dispatch.execute.button())
+  try(dispatchExecuteButton())
   set.cursor()
 }
 
-dispatch.execute.button <- function()
+dispatchExecuteButton <- function()
 {
   
   ## Check which tab of notebook and dispatch to appropriate execute action
@@ -7055,7 +7061,7 @@ dispatch.execute.button <- function()
   
   if (ct == NOTEBOOK.DATA.TAB) 
   {
-    execute.data.tab()
+    executeDataTab()
   }
   else if (ct == NOTEBOOK.EXPLORE.TAB)
   {
