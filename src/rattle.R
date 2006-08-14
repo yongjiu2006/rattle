@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-13 11:41:30 Graham Williams>
+## Time-stamp: <2006-08-15 06:48:56 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -3551,7 +3551,10 @@ execute.cluster.hclust <- function(include)
                               include, "ave"),
                       sep="")
 
-  plot.cmd <- "plot(as.dendrogram(crs$hclust))"
+  plot.cmd <- paste("plot(as.dendrogram(crs$hclust))\n",
+                    genPlotTitleCmd("Discriminant Coordinates",
+                                     crs$dataname),
+                      sep="")
 
   seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
                          sprintf("[%s,%s]",
