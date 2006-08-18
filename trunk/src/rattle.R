@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-15 06:48:56 Graham Williams>
+## Time-stamp: <2006-08-18 20:45:05 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2339,7 +2339,16 @@ on_explot_radiobutton_toggled <- function(button)
 
 on_correlation_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.CORRELATION.TAB)
+  nabutton <- rattleWidget("correlation_na_checkbutton")
+  if (button$getActive()) 
+  {
+    EXPLORE$setCurrentPage(EXPLORE.CORRELATION.TAB)
+    nabutton$show()
+  }
+  else
+  {
+    nabutton$hide()
+  }
   setStatusBar()
 }
 
@@ -2495,7 +2504,12 @@ execute.explore.tab <- function()
   else if (rattleWidget("explot_radiobutton")$getActive())
     executeExplorePlot(dataset)
   else if (rattleWidget("correlation_radiobutton")$getActive())
-    execute.explore.correlation(ndataset)
+  {
+    if (rattleWidget("correlation_na_checkbutton")$getActive())
+      executeExploreCorrelation(dataset)
+    else
+      executeExploreCorrelation(ndataset)
+  }
   else if (rattleWidget("hiercor_radiobutton")$getActive())
     execute.explore.hiercor(ndataset)
   else if (rattleWidget("prcomp_radiobutton")$getActive())
@@ -3216,7 +3230,7 @@ executeExplorePlot <- function(dataset)
     setStatusBar("No plots selected.")
 }
   
-execute.explore.correlation <- function(dataset)
+executeExploreCorrelation <- function(dataset)
 {
   TV <- "correlation_textview"
 
@@ -3229,14 +3243,35 @@ execute.explore.correlation <- function(dataset)
   
   ## Construct the commands.
 
+  ## Deal with showing the missing values plot.
+  
+  nas <- rattleWidget("correlation_na_checkbutton")$getActive()
+  if (nas)
+  {
+    naids.cmd <- sprintf('naids <- attr(na.omit(t(%s)), "na.action")\n',
+                         dataset)
+    if (is.null(eval(parse(text=naids.cmd))))
+    {
+      errorDialog("The data contains no missing values, and so no",
+                  "missing value correlation plot can be generated.")
+      return()
+    }
+  }
+
   library.cmd <-"library(ellipse)"
-  crscor.cmd  <- sprintf("crscor <- cor(%s, use='pairwise')", dataset)
+  crscor.cmd  <- sprintf("%scrscor <- cor(%s, use='pairwise')",
+                         ifelse(nas, naids.cmd, ""),
+                         ifelse(nas,
+                                sprintf("is.na(%s[naids])", dataset),
+                                dataset))
   crsord.cmd  <- paste("crsord <- order(crscor[1,])",
                        "crsxc  <- crscor[crsord, crsord]",
                        sep="\n")
   print.cmd   <- "print(crsxc)"
   plot.cmd    <- paste("plotcorr(crsxc, col=cm.colors(11)[5*crsxc + 6])\n",
-                       genPlotTitleCmd("Correlation", crs$dataname),
+                       genPlotTitleCmd("Correlation",
+                                       ifelse(nas, "of Missing Values", ""),
+                                       crs$dataname),
                        sep="")
   
   ## Start logging and executing the R code.

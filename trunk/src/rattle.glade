@@ -2072,7 +2072,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		  <property name="border_width">5</property>
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
-		  <property name="spacing">0</property>
+		  <property name="spacing">5</property>
 
 		  <child>
 		    <widget class="GtkCheckButton" id="explore_sample_checkbutton">
@@ -2095,7 +2095,22 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		  </child>
 
 		  <child>
-		    <placeholder/>
+		    <widget class="GtkCheckButton" id="correlation_na_checkbutton">
+		      <property name="tooltip" translatable="yes">Whether we should display the correlation between missing values.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Explore Missing</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
 		  </child>
 
 		  <child>
