@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-19 10:10:36 Graham Williams>
+## Time-stamp: <2006-08-19 14:27:43 Graham>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2961,6 +2961,8 @@ executeExplorePlot <- function(dataset)
   {
     ## Plot Benford's Law for numeric data.
 
+    barbutton <- rattleWidget("benford_bars_checkbutton")$getActive()
+    
     ## Using barplot2 from gplots
     
     libraryCmd <- "require(gplots)"
@@ -2970,17 +2972,41 @@ executeExplorePlot <- function(dataset)
     expectCmd <- paste('unlist(lapply(1:9, function(x) log10(1 + 1/x)))')
 
     ## Construct the command to plot the distribution.
-    
-    plotCmd <- paste('barplot2(ds, beside=TRUE,',
-                     'xlab="Initial Digit", ylab="Probability")')
 
+    if (barbutton)
+    {
+      plotCmd <- paste('barplot2(ds, beside=TRUE,',
+                       'xlab="Initial Digit", ylab="Probability")')
+    }
+    else
+    {
+      plotCmd <- paste('plot(1:9, ds[1,], type="b", pch=19, col=rainbow(1), ',
+                       'ylim=c(0,max(ds)), axes=FALSE, ',
+                       'xlab="Initial Digit", ylab="Probability")\n',
+                       'axis(1, at=1:9)\n', 'axis(2)\n',
+                       sprintf('points(1:9, ds[2,], col=%s, pch=19, type="b")\n',
+                               ifelse(is.null(target), "rainbow(2)[2]",
+                                      sprintf("rainbow(%d)[2]",
+                                              length(targets)+2))),
+                       sep="")
+      if (! is.null(targets))
+        for (i in 1:length(targets))
+        {
+          plotCmd <- sprintf('%s\npoints(1:9, ds[%d,], col=%s, pch=%d, type="b")',
+                             plotCmd, i+2,
+                             sprintf("rainbow(%d)[%d]", length(targets)+2, i+2),
+                             19)
+        }
+    }
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
     {
+      addLogSeparator()
+
       addToLog("Use barplot2 from gplots to plot Benford's Law.", libraryCmd)
       eval(parse(text=libraryCmd))
       
       addToLog("Generate the expected distribution for Benford's Law",
-               paste("expected <-", expectCmd))
+               paste("expect <-", expectCmd))
       expect <- eval(parse(text=expectCmd))
       
       for (s in 1:nbenplots)
@@ -3000,15 +3026,27 @@ executeExplorePlot <- function(dataset)
         dataCmd <- paste(dataCmd, ")))", sep="")
 
         if (! is.null(targets))
-          legendCmd <- sprintf(paste('legend("topright", c(%s), ',
-                                   'fill=heat.colors(%d), title="%s")'),
-                               paste(sprintf('"%s"',
-                                             c("Benford", "All", targets)),
-                                     collapse=","),
-                               length(targets)+2, target)
+          if (barbutton)
+            legendCmd <- sprintf(paste('legend("topright", c(%s), ',
+                                       'fill=heat.colors(%d), title="%s")'),
+                                 paste(sprintf('"%s"',
+                                               c("Benford", "All", targets)),
+                                       collapse=","),
+                                 length(targets)+2, target)
+          else
+            legendCmd <- sprintf(paste('legend("topright", c(%s), ',
+                                       'fill=rainbow(%d), title="%s")'),
+                                 paste(sprintf('"%s"',
+                                               c("Benford", "All", targets)),
+                                       collapse=","),
+                                 length(targets)+2, target)
         else
-          legendCmd <- paste('legend("topright", c("Benford", "All"),',
-                             'fill=heat.colors(2))')
+          if (barbutton)
+            legendCmd <- paste('legend("topright", c("Benford", "All"),',
+                               'fill=heat.colors(2))')
+          else
+            legendCmd <- paste('legend("topright", c("Benford", "All"), ',
+                               'fill=rainbow(2))')
         
         
         cmd <- paste("sprintf(bindCmd,",
