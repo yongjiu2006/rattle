@@ -1,0 +1,167 @@
+Move these to issue tracking in Google Code
+
+Version 2.1
+
+  Explore Tab Distribution:
+    Continuous  -> Histograms with target classes shown
+
+Version 2.2
+
+  General: 
+    Export functionality
+
+  Data Tab:
+    Access SQLite database
+
+  Evaluate Tab: 
+    Implement distribution comparison
+    Generate plots to compare distributions
+    Model Type = "All" for all built models or use check boxes?
+
+  Model tab
+    Use tune to build the best model: rpart, randomForest, svm
+
+TODO
+
+  General:
+    Export each model to PMML, SQL, and standalone R script.
+    Add a parameter to rattle to load the csv file.
+    Add a button to run an R script? (Tony Nolan)
+    Add R commands to status line as they are run (Tony Nolan)
+    Use rgl for sophisticated graphics?
+
+  Data:
+    Drop down data type for each variable perform transform (Robert Williams)
+
+  Cluster:
+    Multiple kmeans and plot to find best k (Enrico)
+
+  Models:
+    Neural Networks using netalg
+    Bayesian using bayesm
+
+========================================================================
+
+MAJOR
+
+Export button
+	For Explore tab's Distribution option, export bunch of plots.
+	Export of Model should generate PMML of the model.
+	Export of Explore->Plot should generate PDF or PNGs of the plots.
+
+
+
+
+Can hier cluster rescale images (Linda)
+
+========================================================================
+
+POSSIBLE
+
+Data tab's ODBC option
+	Allow username and password to be specified
+	Allow a filename (abc.mdb or efg.xls) and use appropriate calls
+		crs$odbc <- odbcConnectExcel("h:/sample.xls")
+		crs$odbc <- odbcConnectAccess("h:/sample.mdb")
+
+Memory
+	Have a look at biglm for lm on blocks of data - can do 23 million rows
+
+========================================================================
+
+NO LONGER UNDER CONSIDERATION
+
+RODBC
+	How best to use RODBC (to MySQL) to properly manage data?
+	How would all this be different if all data was stored in MySQL or DWH?
+	Or do we handle memory better ourselves by splitting files somewhow?
+
+========================================================================
+
+UNSORTED
+
+
+##   On load in library, startup the GUI unless some option is set.
+##   Rewrite based on example code from Rcmdr as in QCUGUI
+##   Identify where Warnings occur and use suppressWarnings(code...)
+##   Replace Distributions Button with Radio - make it first/default
+##     When execute, for each categorical, if num levels differ, report in TV
+##   "New" button to set CRS to zero and clear all textviews and options.
+##   Automatically identify bad boxplots (outliers) and do log)
+##   For boxplot add a selection box to choose variables to plot.
+##   Boxplot fails if not numeric data.
+##   Graphs to compare distributions of the same variables between datasets 
+##   Release on CTAN and write article for Newsletter
+##
+##   prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
+##   Choice of Kernel for SVMs. 
+##   For each textview, add initial text to explain the point (c.f. prcomp)
+##
+##   Variables: Impute NA as 0, Mean, or KNN (Michael)
+##   Mosaic plots (Rohan)
+##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
+##   Add t/z test and chi2 test in explore tab (Tony)
+##   Some solution to the blotches in the hierarchical clusters (Linda)
+##   Graphs compare distr between datasets (Rohan and Ray) 
+##   Automatically add in an optimal line to risk plot?
+##   Add a Cancel/Stop button (Michael)
+##   Kernel optimisation ala KXEN.
+##   Model visualisation for SVMs 
+##   Better report generation for direct inclusion in reports! 
+##   3D visualisation of SVM in R (Tony)
+##   Outputs - generate a report in Word (Tony)
+##   For each library command, check it is available, as with rpart.
+##   Need some checks to ensure the weight ends up numeric.
+##   Add a threshold value (e.g. 0.2) for use in the Evaluation charts (Ed Cox)
+##   For HierCor (and others) convert factors to integers (Tony)
+##   Allow Variable types to be changed e.g., factor to integer? (Tony)
+##   Save file with ID, Decision (use threshold), Probability (Ed Cox, Fuchun)
+##   Evaluate: Add OOB evaluations (Eugene)
+##   MODEL RF: Should sampsize be a proportion
+##   Seriation plot: add a mouse hover to provide extra info (Tony)
+##   Seriation plot: Click to plot all below the click (Tony)
+##   Seriation plot: cf Tony's terrain plot and explain
+##   Hierachical clustering to highlight targets (hot spots).
+##   Get AUC as a measure for ROC curves.
+##   Add seriation/colour denrogram www.lirmm.fr/~caraux/PermutMatrix/ (Stuart)
+##   Variables: For ratios SAS/EM quantile transform is good - Rohan
+##   Add a new Score tab to score a new dataset and save the results. (Fuchun)
+##   Explain lift better in the lift tooltip.
+##   For multiple targets, choose a different logistic regression method.
+##   Print any text view via a Print button.
+##   Add MARS (mda package).
+##   CLUSTER KMEANS: If a target exists, generate a hot spots display.
+##   CLUSTER HIERCOR: Set text size based on # of branches?
+##   MISC: set.statusbar clearing is not immediate?
+##   EVALUATE: Give error if Variables changed but model not regenerated.
+##   MISC: When changing tabs, warn if modified but not executed.
+##   BUG: Sample 10% not noticed until ENTER????
+##   MISC: Run quit.rattle() when root window destroyed.
+##   DATA: Get header, rows, sep, and na.strings working
+##   VARIABLES: Bin and Log Transform
+##   MODEL RPART: Use print.rules.cmd string for log and eval
+##   MODEL: GBM: Implement and document new options
+##   EVALUATE RISK: If VARIABLE empty, then just do no Risk curve.
+##   EVALUATE: Error when test set has factor levels different to train
+##   EVALUATE: Use the text areas to describe the charts.
+##   EVALUATE: When Sampling, be sure to apply to only the sample.
+##   EVALUATE: Add grids to all plots
+##   SAVE: save project (the crs variable) to a Rdata file name.rattle.
+##   INIT: Make filename the first active widget. TAB then to Execute.
+##   MODEL: Multiple models then optimise with best?
+##   VARIABLES: Implement binning to bin wine$Type
+##   Help -> Search ... brings up a text entry box
+##   Help -> Function ... brings up a text entry box
+##   DATA: In the file chooser replace Open with Select?
+##   Seriation plot: set point size to tiny (at least can save as PDF to zoom).
+##   VARIABLES: Could colour the text in Variable column according to role.
+##   VARIABLES: Standardise (convert to -1 to 1) a variable (Ed Cox)
+##   VARIABLES: Normalise (subtract mean and divide by the stddev) (Ed Cox)
+##   MODEL note when sample has changed, model not updated and we eveluate
+##	SAMPLE: Use sample.split of caTools to partition test/train on
+##	target to maintain outcome ratio (and thus more likely to
+##	ensure there are samples from each class, unlike any old
+##	sample).  This does not get around the problem with sampling
+##	not including all possible levels for the input variables so it
+##	won't help where the testset does not have all possible
+##	levels. RandomForest will still complain on the predict.
