@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-18 20:45:05 Graham Williams>
+## Time-stamp: <2006-08-19 10:10:36 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2333,7 +2333,16 @@ on_summary_radiobutton_toggled <- function(button)
 
 on_explot_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.PLOT.TAB)
+  barbutton <- rattleWidget("benford_bars_checkbutton")
+  if (button$getActive()) 
+  {
+    EXPLORE$setCurrentPage(EXPLORE.PLOT.TAB)
+    barbutton$show()
+  }
+  else
+  {
+    barbutton$hide()
+  }
   setStatusBar()
 }
 
@@ -7245,7 +7254,7 @@ to catch them first) will appear in the R console
 from where you started Rattle. The corresponding R Code will
 appear in the Log tab.
 This allows you to review the R commands
-that perform the corrsponding data mining tasks. Even better though,
+that perform the corresponding data mining tasks. Even better though,
 you can copy the text from here and paste it into the same R Console
 from which Rattle is running, and execute the commands directly.
 This allows you to use Rattle to do the basics, and then where you
@@ -7330,7 +7339,7 @@ be listed for selection.")
 
 on_help_rdataset_activate <- function(action, window)
 {
-  if(further.help("Rattle can use a dataset that is already loaded
+  no.further.help("Rattle can use a dataset that is already loaded
 into R (although it will take a copy of it, with memory implications).
 Only data frames are currently supported, and Rattle will list
 for you the names of all of the available data frames.
@@ -7339,32 +7348,15 @@ The data frames need to be constructed in the same R session
 that is running Rattle (i.e., the same R Console in which you
 sourced the Rattle package). This provides much more flexibility in
 loading data into Rattle, than is provided directly through the actual Rattle
-interface. For example, you may want to use the RODBC package to load
-data from a database or Excel spreadsheet directly."))
-  {
-    library(RODBC)
-    popup.textview.help.window("RODBC")
-  }
+interface. For example, you may want to use the SQLLite package to load
+data from a database directly.")
 }
 
 on_help_odbc_activate <- function(action, window)
 {
-  if(further.help("Rattle can use a dataset that is already loaded
-into R, no matter how that data was obtained.
-You can load data from a database or data warehouse connection using ODBC.
-This also allows loading data from Excel spreadsheets.
-<<>>
-To establish a connection to a database, go to the R Console and
-load the RODBC package into R: 'library(RODBC)'. Then use the command
-\'channel<-odbc(\"DWH\")\', replacing DWH with the name of your
-database connection, to establish a connection to the database.
-<<>>
-To load a table from the database, use the command
-\'ds<-sqlFetch(channel,\"MyTable\")\', where you replace MyTable
-with the name of the table you want to access.
-<<>>
-Then load this data into
-Rattle using the R Dataset option of the Data tab."))
+  if(further.help("Rattle can establish a connection to a database
+through the RODBC package. Tables avilable in the database will then be
+listed for selection."))
   {
     library(RODBC)
     popup.textview.help.window("RODBC")
@@ -7385,11 +7377,13 @@ categorical by default).
 <<>>
     Modify the roles as appropriate for each variable.
 <<>>
-    Input: Used for modelling
+    Input: Used for modelling.
 <<>>
-    Target: Output for modelling
+    Target: Output for modelling.
 <<>>
     Risk: A variable used in the Risk Chart
+<<>>
+    Ident: An identify for unique entities in the data set.
 <<>>
     Ignore: Do not use this variable
 <<>>
