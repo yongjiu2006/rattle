@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-19 14:27:43 Graham>
+## Time-stamp: <2006-08-19 14:31:34 Graham>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -861,9 +861,6 @@ quit_rattle <- function(action, window)
 {
   for (i in dev.list()) dev.off(i)
   rattleWidget("rattle_window")$destroy()
-  try(write(paste("Stop ", Sys.time(), Sys.info()["user"]),
-            file="rattle.log", append=TRUE))
-
 }
 
 ########################################################################
