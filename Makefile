@@ -48,15 +48,15 @@ rattle_$(VERSION).tar.gz:
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
 	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	(cd /home/gjw/projects/togaware/www/;\
-	 perl -pi -e "s|rattle_......zip|rattle_$(VERSION).zip|g" \
+	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\
-	 perl -pi -e "s|rattle_......tar.gz|rattle_$(VERSION).tar.gz|g" \
+	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			rattle.html.in;\
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
-	 perl -pi -e "s|rattle_......zip|rattle_$(VERSION).zip|g" \
+	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
 			dmsurvivor.tex;\
-	 perl -pi -e "s|rattle_......tar.gz|rattle_$(VERSION).tar.gz|g" \
+	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			dmsurvivor.tex)
 	R CMD build $(PACKAGE)
 	chmod -R go+rX $(PACKAGE)

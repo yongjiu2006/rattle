@@ -1,5 +1,9 @@
 Rattle is a collection of graphical interfaces for data mining in R.
 
+rattleBM()	Ideal for binary classification tasks.
+
 HISTORY
 
+19 The default working directory follows latest openned file.
+18 A Sample checkbutton has been added to the Explore tab.
 14 Moved to hosting at google code.
