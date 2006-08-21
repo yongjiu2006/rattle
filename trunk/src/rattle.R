@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-19 14:31:34 Graham>
+## Time-stamp: <2006-08-21 20:02:37 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2680,8 +2680,9 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
   
-  ## Iterate over all target values if a target is defined. The plots
-  ## will then also display the distributions per target value.
+  ## Iterate over all target values if a target is defined and has
+  ## less than 10 values. The plots will then also display the
+  ## distributions per target value.
 
   target <- getSelectedVariables("target")
 
@@ -2690,6 +2691,12 @@ executeExplorePlot <- function(dataset)
   else
     targets <- levels(as.factor(crs$dataset[[crs$target]]))
 
+  if (length(targets) > 10)
+  {
+    target <- NULL
+    targets <- NULL
+  }
+  
   ## Check for sampling.
   
   useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
@@ -2700,16 +2707,19 @@ executeExplorePlot <- function(dataset)
   bindCmd <- sprintf('rbind(data.frame(dat=%s[,"%%s"], grp="All")', dataset)
 
   if (! is.null(targets))
+  {
     for (i in 1:length(targets))
     {
       bindCmd <- sprintf("%s,\n            data.frame(dat=%s",
                          bindCmd, dataset)
+
       bindCmd <- sprintf('%s[crs$dataset%s$%s=="%s","%%s"], grp="%s")',
                          bindCmd,
                          ifelse(sampling, "[crs$sample,]", ""),
                          target, targets[i], targets[i])
     }
-
+  }
+  
   ## Finish off the command to create the dataset for plotting.
   
   bindCmd <- sprintf("%s)", bindCmd)
@@ -3183,7 +3193,7 @@ executeExplorePlot <- function(dataset)
   }
 
   ##---------------------------------------------------------------------
-                       
+
   if (ndotplots > 0)
   {
     
