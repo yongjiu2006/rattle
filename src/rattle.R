@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-21 20:02:37 Graham Williams>
+## Time-stamp: <2006-08-23 06:44:27 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -1138,12 +1138,12 @@ execute.data.csv <- function()
   if ( ! is.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
-                                "This will clear the old project (dataset and",
-                                "models) which has not been saved.",
-                                "Do you wish to continue, and lose the old",
-                                "project? If you choose not to continue",
-                                "you can save the project, and then load",
-                                "the new dataset.")))
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "Do you wish to continue, and lose the old",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.")))
         
       return()
   }
@@ -1213,12 +1213,12 @@ executeDataODBC <- function()
   if ( ! is.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
-                                "This will clear the old project (dataset and",
-                                "models) which has not been saved.",
-                                "Do you wish to continue, and lose the old",
-                                "project? If you choose not to continue",
-                                "you can save the project, and then load",
-                                "the new dataset.")))
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "Do you wish to continue, and lose the old",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.")))
         
       return()
   }
@@ -1303,12 +1303,12 @@ executeDataRdata <- function()
   if ( ! is.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
-                                "This will clear the old project (dataset and",
-                                "models) which has not been saved.",
-                                "Do you wish to continue, and lose the old",
-                                "project? If you choose not to continue",
-                                "you can save the project, and then load",
-                                "the new dataset.")))
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "Do you wish to continue, and lose the old",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.")))
         
       return()
   }
@@ -1365,13 +1365,13 @@ executeDataRdataset <- function()
   if ( ! is.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a new dataset",
-                                "into Rattle.",
-                                "This will clear the old project (dataset and",
-                                "models) which has not been saved.",
-                                "Do you wish to continue, and lose the old",
-                                "project? If you choose not to continue",
-                                "you can save the project, and then load",
-                                "the new dataset.")))
+                               "into Rattle.",
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "Do you wish to continue, and lose the old",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.")))
         
       return()
   }
@@ -2850,10 +2850,12 @@ executeExplorePlot <- function(dataset)
   {
     ## Plot a histogram for numeric data.
 
-    plot.cmd <- paste('hist(ds[ds$grp=="All",1], main="", xlab="",',
-#                      sprintf('xlab="%s",',
-#                              ifelse(is.null(targets), "", targets[s])),
-                      'col=rainbow(10))')
+    plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
+                      'col=rainbow(10))\n',
+                      'dens <- density(ds[ds$grp=="All",1])\n',
+                      'rs <- max(hs$counts)/max(dens$y)\n',
+                      'lines(dens$x, dens$y*rs, type="l")',
+                      sep="")
     rugCmd <- 'rug(ds[ds$grp=="All",1])'
 
     for (s in 1:nhisplots)
