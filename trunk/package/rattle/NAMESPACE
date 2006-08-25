@@ -1,5 +1,5 @@
 export(rattle,evaluateRisk,plotRisk,genPlotTitleCmd,plotNetwork)
-export(plotOptimalLine,plotBenfordsLaw,drawTreeNodes)
+export(plotOptimalLine,plotBenfordsLaw,drawTreeNodes,genPathColors)
 export(randomForest2Rules,printRandomForests)
 exportPattern("_") # Needed for the Glade interface
 

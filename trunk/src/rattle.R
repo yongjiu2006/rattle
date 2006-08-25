@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-23 06:44:27 Graham Williams>
+## Time-stamp: <2006-08-25 19:17:18 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -829,6 +829,33 @@ plotNetwork <- function(flow)
 
   eval(parse(text=genPlotTitleCmd("Network Map of Flows")))
 
+}
+
+
+genPathColors <- function(n, path=c('cyan', 'white', 'magenta'),
+                          interp=c('rgb','hsv')) 
+{
+  interp <- match.arg(interp)
+  path <- col2rgb(path)
+  nin <- ncol(path)
+  if (interp == 'hsv') 
+  {
+    path <- rgb2hsv(path)
+    ## Modify the interpolation so that the circular nature of hue
+    for (i in 2:nin)
+      path[1,i] <- path[1,i] + round(path[1,i-1]-path[1,i])
+    result <- apply(path, 1, function(x) approx(seq(0, 1,
+                                                    len=nin),
+                                                x, seq(0, 1, len=n))$y)
+    return(hsv(result[,1] %% 1, result[,2], result[,3]))
+  } 
+  else 
+  {
+    result <- apply(path, 1, function(x) approx(seq(0, 1,
+                                                    len=nin),
+                                                x, seq(0, 1, len=n))$y)
+    return(rgb(result[,1]/255, result[,2]/255, result[,3]/255))
+  }
 }
 
 ########################################################################
@@ -3324,7 +3351,9 @@ executeExploreCorrelation <- function(dataset)
                        "crsxc  <- crscor[crsord, crsord]",
                        sep="\n")
   print.cmd   <- "print(crsxc)"
-  plot.cmd    <- paste("plotcorr(crsxc, col=cm.colors(11)[5*crsxc + 6])\n",
+  plot.cmd    <- paste("plotcorr(crsxc, ",
+                       'col=genPathColors(11, ',
+                       'c("red", "white", "blue"))[5*crsxc + 6])\n',
                        genPlotTitleCmd("Correlation",
                                        ifelse(nas, "of Missing Values", ""),
                                        crs$dataname),
