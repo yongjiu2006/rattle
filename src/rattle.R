@@ -1,10 +1,12 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-25 19:17:18 Graham Williams>
+## Time-stamp: <2006-08-26 20:33:22 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
 ## rattleTM is the text mining tool
+## rattleMC is for multiple classification
+## rattleRG is for regression
 
 MAJOR <- "2"
 MINOR <- "1"
@@ -58,7 +60,7 @@ rattle <- function()
   ## Pop up a chooser to choose which rattle to run:
   ##
   ## rattleBM binary classification
-  ## rattleRE continuous target
+  ## rattleRG continuous target
   ## rattleTM text mining
   ##
   ## Only one should be running in any particular instance of R, at
@@ -70,7 +72,7 @@ rattle <- function()
 
 rattleBM <- function()
 {
-  if (! packageIsAvailable("RGtk2", "run the graphical interface of rattleBM"))
+  if (! packageIsAvailable("RGtk2", "run Rattle's graphical interface"))
       return()
       
   library(RGtk2) # From http://www.ggobi.org/rgtk2/
@@ -97,9 +99,9 @@ rattleBM <- function()
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
-    rattleGUI <<- gladeXMLNew("rattle.glade",root="rattle_window")
+    rattleGUI<<-gladeXMLNew("rattle.glade",root="rattle_window")
   else
-    rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),root="rattle_window")
+    rattleGUI<<-gladeXMLNew(file.path(etc,"rattle.glade"),root="rattle_window")
   
 ########################################################################
 
@@ -3028,9 +3030,11 @@ executeExplorePlot <- function(dataset)
       if (! is.null(targets))
         for (i in 1:length(targets))
         {
-          plotCmd <- sprintf('%s\npoints(1:9, ds[%d,], col=%s, pch=%d, type="b")',
+          plotCmd <- sprintf(paste('%s\npoints(1:9, ds[%d,],',
+                                   'col=%s, pch=%d, type="b")'),
                              plotCmd, i+2,
-                             sprintf("rainbow(%d)[%d]", length(targets)+2, i+2),
+                             sprintf("rainbow(%d)[%d]",
+                                     length(targets)+2, i+2),
                              19)
         }
     }
@@ -3044,58 +3048,55 @@ executeExplorePlot <- function(dataset)
       addToLog("Generate the expected distribution for Benford's Law",
                paste("expect <-", expectCmd))
       expect <- eval(parse(text=expectCmd))
-      
-      for (s in 1:nbenplots)
+
+      if (is.null(targets) && ! barbutton)
       {
+        # Plot all Benford's plots on the one line graph
+
         addLogSeparator()
 
-        dataCmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
-                         'All=calcInitialDigitDistr(ds[ds$grp=="All", 1])')
-        
-        if (! is.null(targets))
-          for (t in 1:length(targets))
-            dataCmd <- paste(dataCmd, ",\n     ",
-                             sprintf('"%s"=', targets[t]),
-                             'calcInitialDigitDistr(ds[ds$grp==',
-                             sprintf('"%s", ', targets[t]), '1])',
-                             sep="")
+        bc <- sub("All", "%s", substr(bindCmd, 7, nchar(bindCmd)-1))
+        newBindCmd <- substr(bindCmd, 1, 6)
+        dataCmd <- 't(as.matrix(data.frame(expect=expect'
+        plotCmd <- paste('plot(1:9, ds[1,], type="b", ',
+                         'pch=19, col=rainbow(1), ',
+                         'ylim=c(0,max(ds)), axes=FALSE, ',
+                         'xlab="Initial Digit", ylab="Probability")\n',
+                         'axis(1, at=1:9)\n', 'axis(2)\n',
+                         sep="")
+        for (s in 1:nbenplots)
+        {
+          newBindCmd <- paste(newBindCmd, 
+                           sprintf(bc, benplots[s], benplots[s]),
+                           ",\n     ",
+                           sep="")
+          dataCmd <- paste(dataCmd, ",\n     ",
+                           sprintf(paste('"%s"=calcInitialDigitDistr',
+                                         '(ds[ds$grp=="%s", 1])', sep=""),
+                                   benplots[s], benplots[s]),
+                           sep="")
+          plotCmd <- paste(plotCmd,
+                           sprintf(paste('points(1:9, ds[%d,],',
+                                         'col=%s, pch=19, type="b")\n'),
+                                   s+1, sprintf("rainbow(%d)[%d]",
+                                                nbenplots+1, s+1)),
+                           sep="")
+        }
+        newBindCmd <- paste(substr(newBindCmd, 1, nchar(newBindCmd)-7), ")",
+                            sep="")
         dataCmd <- paste(dataCmd, ")))", sep="")
 
-        if (! is.null(targets))
-          if (barbutton)
-            legendCmd <- sprintf(paste('legend("topright", c(%s), ',
-                                       'fill=heat.colors(%d), title="%s")'),
-                                 paste(sprintf('"%s"',
-                                               c("Benford", "All", targets)),
-                                       collapse=","),
-                                 length(targets)+2, target)
-          else
-            legendCmd <- sprintf(paste('legend("topright", c(%s), ',
-                                       'fill=rainbow(%d), title="%s")'),
-                                 paste(sprintf('"%s"',
-                                               c("Benford", "All", targets)),
-                                       collapse=","),
-                                 length(targets)+2, target)
-        else
-          if (barbutton)
-            legendCmd <- paste('legend("topright", c("Benford", "All"),',
-                               'fill=heat.colors(2))')
-          else
-            legendCmd <- paste('legend("topright", c("Benford", "All"), ',
-                               'fill=rainbow(2))')
-        
-        
-        cmd <- paste("sprintf(bindCmd,",
-                     paste(paste('"', rep(benplots[s], length(targets)+1),
-                                 '"', sep=""), collapse=","),
-                     ")")
-        cmd <- eval(parse(text=cmd))
-        
-        addToLog(paste("Generate just the data for the plot of",
-                       benplots[s], "."),
-                 paste("ds <-", cmd))
-        ds <- eval(parse(text=cmd))
-        
+        legendCmd <- sprintf(paste('legend("topright", c(%s), ',
+                                   'fill=rainbow(%d), title="%s")'),
+                             paste(sprintf('"%s"',
+                                           c("Benford", benplots)),
+                                   collapse=","),
+                             nbenplots+1, "Variables")
+
+        addToLog("Generate the required data.",
+                 paste("ds <-", newBindCmd))
+        ds <- eval(parse(text=newBindCmd))
+
         addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
         ds <- eval(parse(text=dataCmd))
 
@@ -3109,13 +3110,90 @@ executeExplorePlot <- function(dataset)
         eval(parse(text=legendCmd))
         
         if (sampling)
-          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s (sample)",
-                                               benplots[s]))
+          title.cmd <- genPlotTitleCmd("Benford's Law (sample)")
         else
-          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s",
-                                               benplots[s]))
+          title.cmd <- genPlotTitleCmd("Benford's Law")
+
         addToLog("Add a title to the plot.", title.cmd)
         eval(parse(text=title.cmd))
+        
+
+      }
+      else
+      {
+        # Plot multiple graphs.
+        
+        for (s in 1:nbenplots)
+        {
+          addLogSeparator()
+
+          dataCmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
+                           'All=calcInitialDigitDistr(ds[ds$grp=="All", 1])')
+        
+          if (! is.null(targets))
+            for (t in 1:length(targets))
+              dataCmd <- paste(dataCmd, ",\n     ",
+                               sprintf('"%s"=', targets[t]),
+                               'calcInitialDigitDistr(ds[ds$grp==',
+                               sprintf('"%s", ', targets[t]), '1])',
+                               sep="")
+          dataCmd <- paste(dataCmd, ")))", sep="")
+
+          if (! is.null(targets))
+            if (barbutton)
+              legendCmd <- sprintf(paste('legend("topright", c(%s), ',
+                                         'fill=heat.colors(%d), title="%s")'),
+                                   paste(sprintf('"%s"',
+                                                 c("Benford", "All", targets)),
+                                         collapse=","),
+                                   length(targets)+2, target)
+            else
+              legendCmd <- sprintf(paste('legend("topright", c(%s), ',
+                                         'fill=rainbow(%d), title="%s")'),
+                                   paste(sprintf('"%s"',
+                                                 c("Benford", "All", targets)),
+                                         collapse=","),
+                                   length(targets)+2, target)
+          else
+            if (barbutton)
+              legendCmd <- paste('legend("topright", c("Benford", "All"),',
+                                 'fill=heat.colors(2))')
+            else
+              legendCmd <- paste('legend("topright", c("Benford", "All"), ',
+                                 'fill=rainbow(2))')
+          
+          cmd <- paste("sprintf(bindCmd,",
+                       paste(paste('"', rep(benplots[s], length(targets)+1),
+                                   '"', sep=""), collapse=","),
+                       ")")
+          cmd <- eval(parse(text=cmd))
+          
+          addToLog(paste("Generate just the data for the plot of",
+                         benplots[s], "."),
+                   paste("ds <-", cmd))
+          ds <- eval(parse(text=cmd))
+          
+          addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
+          ds <- eval(parse(text=dataCmd))
+          
+          new.plot()
+          par(xpd=TRUE)
+          
+          addToLog("Now do the actual plot.", plotCmd)
+          eval(parse(text=plotCmd))
+          
+          addToLog("Add a legend to the plot.", legendCmd)
+          eval(parse(text=legendCmd))
+          
+          if (sampling)
+            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s (sample)",
+                                                 benplots[s]))
+          else
+            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s",
+                                                 benplots[s]))
+          addToLog("Add a title to the plot.", title.cmd)
+          eval(parse(text=title.cmd))
+        }
       }
     }
   }
