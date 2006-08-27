@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-26 20:33:22 Graham Williams>
+## Time-stamp: <2006-08-27 14:19:10 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -3429,6 +3429,18 @@ executeExploreCorrelation <- function(dataset)
                        "crsxc  <- crscor[crsord, crsord]",
                        sep="\n")
   print.cmd   <- "print(crsxc)"
+  if (nas)
+  {
+    print.cmd <- paste(print.cmd,
+                       "\ncat('\nCount of missing values:\n')\n",
+                       sprintf("print(apply(is.na(%s[naids]),2,sum))",
+                               dataset),
+                       "\ncat('\nPercent missing values:\n')\n",
+                       sprintf("print(100*apply(is.na(%s[naids]),2,sum)/nrow(%s))",
+                               dataset, dataset),
+                       sep="")
+    
+  }
   plot.cmd    <- paste("plotcorr(crsxc, ",
                        'col=genPathColors(11, ',
                        'c("red", "white", "blue"))[5*crsxc + 6])\n',
@@ -3451,7 +3463,9 @@ executeExploreCorrelation <- function(dataset)
   addToLog("Graphically display the correlations.", plot.cmd)
 
   append.textview(TV,
-               "Correlation Summary.\n\n",
+               ifelse(nas,
+                      "Missing Values Correlation Summary.\n\n",
+                      "Correlation Summary.\n\n"),
                "Note that only correlations between numeric variables ",
                "are reported.\n\n",
                collect.output(paste(crscor.cmd,

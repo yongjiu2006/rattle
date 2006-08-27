@@ -24,7 +24,7 @@ genPathColors(n, path=c('cyan', 'white', 'magenta'), interp=c('rgb','hsv'))
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
 \examples{
-plot(1:10, col=path.colors(10, c("red", "white", "blue")), pch=19)
+plot(1:10, col=genPathColors(10, c("red", "white", "blue")), pch=19)
 
 }
 \keyword{hplot}
