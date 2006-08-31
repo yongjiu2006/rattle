@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-08-27 14:19:10 Graham Williams>
+## Time-stamp: <2006-09-01 07:03:54 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -273,7 +273,9 @@ rattleBM <- function()
 ## Then paste the text into a text editor and save to file and/or print.
 ## The point of doing this would be to save a log of what you have done,
 ## potentially to repeat by sending the same commands directly to R.
-## You can also save and load projects, which also retains this log.")
+## You can also save and load projects, which also retains this log.
+
+crs <- NULL")
   
 }
 
@@ -702,12 +704,13 @@ setDefaultPath <- function(filename)
   if (! is.null(filename)) setwd(dirname(filename))
 }
 
-new.plot <- function()
+new.plot <- function(mfrow=c(1,1))
 {
   if (.Platform$GUI == "X11")
     x11()
   else if (is.windows())
     windows()
+  par(mfrow=mfrow)
 }
 
 genPlotTitleCmd <- function(..., vector=FALSE)
@@ -2708,6 +2711,10 @@ executeExplorePlot <- function(dataset)
   
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
+
+  pdim <- c(2,2)
+  pmax <- 4
+  pcnt <- 0
   
   ## Iterate over all target values if a target is defined and has
   ## less than 10 values. The plots will then also display the
@@ -2796,10 +2803,12 @@ executeExplorePlot <- function(dataset)
   totalPlots <- nboxplots + nhisplots + length(cumplots) +
     nbenplots + nbarplots + ndotplots
   
-  if (totalPlots > 10)
+  if (totalPlots > 10 && pdim[1] == 1 && pdim[2] == 1)
     if (is.null(questionDialog("Rattle is about to generate", totalPlots,
                                "individual plots. That's quite a few.",
-                               "You could select fewer variables, but you",
+                               "You could select fewer variables, or you",
+                               "can change the number of rows and columns",
+                               "per plot, but you",
                                "can also proceed if you like.",
                                "Would you like to proceed?")))
       return()
@@ -2849,8 +2858,10 @@ executeExplorePlot <- function(dataset)
                     boxplots[s], "."),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
-      new.plot()
 
+      if (pcnt %% pmax == 0) new.plot(pdim)
+      pcnt <- pcnt + 1
+      
       addToLog("Plot the data, grouped appropriately.", plotCmd)
       eval(parse(text=plotCmd))
 
@@ -2901,7 +2912,10 @@ executeExplorePlot <- function(dataset)
                     hisplots[s], "."),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
-      new.plot()
+
+      if (pcnt %% pmax == 0) new.plot(pdim)
+      pcnt <- pcnt + 1
+      
       addToLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
       addToLog("Add a rug to illustrate density.", rugCmd)
@@ -2962,7 +2976,9 @@ executeExplorePlot <- function(dataset)
                     cumplots[s], "."),
               paste("ds <-", cmd))
        ds <- eval(parse(text=cmd))
-       new.plot()
+
+      if (pcnt %% pmax == 0) new.plot(pdim)
+      pcnt <- pcnt + 1
 
       if (packageIsAvailable("Hmisc", "plot cumulative charts"))
       {
@@ -3100,7 +3116,9 @@ executeExplorePlot <- function(dataset)
         addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
         ds <- eval(parse(text=dataCmd))
 
-        new.plot()
+        if (pcnt %% pmax == 0) new.plot(pdim)
+        pcnt <- pcnt + 1
+
         par(xpd=TRUE)
         
         addToLog("Now do the actual plot.", plotCmd)
@@ -3176,7 +3194,9 @@ executeExplorePlot <- function(dataset)
           addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
           ds <- eval(parse(text=dataCmd))
           
-          new.plot()
+          if (pcnt %% pmax == 0) new.plot(pdim)
+          pcnt <- pcnt + 1
+
           par(xpd=TRUE)
           
           addToLog("Now do the actual plot.", plotCmd)
@@ -3251,7 +3271,9 @@ executeExplorePlot <- function(dataset)
         ## can extend to it. We save the output from barplot2 in order
         ## to add numbers to the plot.
     
-        new.plot()
+        if (pcnt %% pmax == 0) new.plot(pdim)
+        pcnt <- pcnt + 1
+
         maxFreq <- max(ds)
         plotCmd <- sprintf('barplot2(ds, beside=TRUE, ylim=c(0, %d))',
                            round(maxFreq+maxFreq*0.20))
@@ -3357,7 +3379,9 @@ executeExplorePlot <- function(dataset)
         ## Construct and evaluate the command to plot the
         ## distribution.
     
-        new.plot()
+        if (pcnt %% pmax == 0) new.plot(pdim)
+        pcnt <- pcnt + 1
+
         titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
                                           dotplots[s],
                                           ifelse(sampling," (sample)","")),
