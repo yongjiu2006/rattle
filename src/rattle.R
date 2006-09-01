@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-02 07:48:12 Graham Williams>
+## Time-stamp: <2006-09-02 09:09:45 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -704,13 +704,31 @@ setDefaultPath <- function(filename)
   if (! is.null(filename)) setwd(dirname(filename))
 }
 
-new.plot <- function(mfrow=c(1,1))
+newPlot <- function(pcnt=4)
 {
   if (.Platform$GUI == "X11")
     x11()
   else if (is.windows())
     windows()
-  par(mfrow=mfrow)
+
+  if (pcnt==1)
+    layout(matrix(c(1), 1, 1, byrow=TRUE))
+  else if (pcnt==2)
+    layout(matrix(c(1,2), 2, 1, byrow=TRUE))
+  else if (pcnt==3)
+    layout(matrix(c(1,1,2,3), 2, 2, byrow=TRUE))
+  else if (pcnt==4)
+    layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+  else if (pcnt==5)
+    layout(matrix(c(1,1,2,3,4,5), 2, 3, byrow=TRUE))
+  else if (pcnt==6)
+    layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow=TRUE))
+  else if (pcnt==7)
+    layout(matrix(c(1,1,2,3,3,4,5,6,7), 3, 3, byrow=TRUE))
+  else if (pcnt==8)
+    layout(matrix(c(1,1,2,3,4,5,6,7,8), 3, 3, byrow=TRUE))
+  else if (pcnt==9)
+    layout(matrix(c(1,2,3,4,5,6,7,8,9), 3, 3, byrow=TRUE))
 }
 
 genPlotTitleCmd <- function(..., vector=FALSE)
@@ -2712,8 +2730,7 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
-  pdim <- c(2,2) # TODO Determine this from the GUI
-  pmax <- pdim[1]*pdim[2]
+  pmax <- rattleWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
   
   ## Iterate over all target values if a target is defined and has
@@ -2803,13 +2820,12 @@ executeExplorePlot <- function(dataset)
   totalPlots <- nboxplots + nhisplots + length(cumplots) +
     nbenplots + nbarplots + ndotplots
   
-  if (totalPlots > 10 && pdim[1] == 1 && pdim[2] == 1)
+  if (totalPlots > 10 && pmax == 1)
     if (is.null(questionDialog("Rattle is about to generate", totalPlots,
                                "individual plots. That's quite a few.",
                                "You could select fewer variables, or you",
-                               "can change the number of rows and columns",
-                               "per plot, but you",
-                               "can also proceed if you like.",
+                               "can change the number of plots per page,",
+                               "but you can also proceed if you like.",
                                "Would you like to proceed?")))
       return()
 
@@ -2859,7 +2875,7 @@ executeExplorePlot <- function(dataset)
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
-      if (pcnt %% pmax == 0) new.plot(pdim)
+      if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
       addToLog("Plot the data, grouped appropriately.", plotCmd)
@@ -2913,7 +2929,7 @@ executeExplorePlot <- function(dataset)
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
-      if (pcnt %% pmax == 0) new.plot(pdim)
+      if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
       addToLog("Plot the data.", plot.cmd)
@@ -2977,7 +2993,7 @@ executeExplorePlot <- function(dataset)
               paste("ds <-", cmd))
        ds <- eval(parse(text=cmd))
 
-      if (pcnt %% pmax == 0) new.plot(pdim)
+      if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
 
       if (packageIsAvailable("Hmisc", "plot cumulative charts"))
@@ -2994,7 +3010,7 @@ executeExplorePlot <- function(dataset)
       }
       addToLog("Plot the data.", plotCmd)
       eval(parse(text=plotCmd))
-      title.cmd <- genPlotTitleCmd(sprintf("Cummulative Distribution of %s%s",
+      title.cmd <- genPlotTitleCmd(sprintf("Cummulative %s%s",
                                            cumplots[s],
                                            ifelse(sampling, " (sample)","")))
 
@@ -3116,7 +3132,7 @@ executeExplorePlot <- function(dataset)
         addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
         ds <- eval(parse(text=dataCmd))
 
-        if (pcnt %% pmax == 0) new.plot(pdim)
+        if (pcnt %% pmax == 0) newPlot(pmax)
         pcnt <- pcnt + 1
 
         par(xpd=TRUE)
@@ -3194,7 +3210,7 @@ executeExplorePlot <- function(dataset)
           addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
           ds <- eval(parse(text=dataCmd))
           
-          if (pcnt %% pmax == 0) new.plot(pdim)
+          if (pcnt %% pmax == 0) newPlot(pmax)
           pcnt <- pcnt + 1
 
           par(xpd=TRUE)
@@ -3271,10 +3287,13 @@ executeExplorePlot <- function(dataset)
         ## can extend to it. We save the output from barplot2 in order
         ## to add numbers to the plot.
     
-        if (pcnt %% pmax == 0) new.plot(pdim)
+        if (pcnt %% pmax == 0) newPlot(pmax)
         pcnt <- pcnt + 1
 
-        ordCmd <- 'order(ds[1,])'
+        #if (is.null(target))
+        #  ordCmd <- 'order(ds[1,])'
+        #else
+          ordCmd <- 'order(ds[1,], decreasing=TRUE)'
         addToLog("Sort the entries.", paste("ord <-", ordCmd))
         ord <- eval(parse(text=ordCmd))
 
@@ -3386,7 +3405,7 @@ executeExplorePlot <- function(dataset)
       ## Construct and evaluate the command to plot the
       ## distribution.
     
-      if (pcnt %% pmax == 0) new.plot(pdim)
+      if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
       titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
@@ -3505,7 +3524,7 @@ executeExploreCorrelation <- function(dataset)
                                     print.cmd,
                                     sep="\n")))
 
-  new.plot()
+  newPlot()
   eval(parse(text=paste(crscor.cmd,
                crsord.cmd,
                plot.cmd,
@@ -3572,7 +3591,7 @@ execute.explore.hiercor <- function(dataset)
   eval(parse(text=dend.cmd))
 
   addToLog("Now draw the dendrogram.", plot.cmd)
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
 
   ## Report completion to the user through the Status Bar.
@@ -3629,7 +3648,7 @@ execute.explore.prcomp <- function(dataset)
 
   addToLog("Display a plot showing the relative importance of the components.",
           plot.cmd)
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
   
   ## Report completion to the user through the Status Bar.
@@ -3765,7 +3784,7 @@ execute.cluster.kmeans <- function(include)
   {
     addToLog("Generate a discriminate coordinates plot using the fpc package.",
             plot.cmd)
-    new.plot()
+    newPlot()
     eval(parse(text=plot.cmd))
   }
 
@@ -3859,7 +3878,7 @@ execute.cluster.hclust <- function(include)
   if (packageIsAvailable("cba"))
   {
     eval(parse(text=library.cmd))
-    new.plot()
+    newPlot()
     append.textview(TV,
                     "\n\nNote that seriation is still experimental",
                     eval(parse(text=seriation.cmd)))
@@ -4444,13 +4463,13 @@ execute.model.rpart <- function()
 
   if (nrow(crs$rpart$frame) > 1)
   {
-    new.plot()
+    newPlot()
     addToLog(paste("Plot the resulting rpart tree using Rattle",
                   "and maptools support functions."),
             plot.cmd)
     eval(parse(text=plot.cmd))
 
-    ## new.plot()
+    ## newPlot()
     ## addToLog(plotcp.command)
     ## eval(parse(text=plotcp.command))
   }
@@ -6202,7 +6221,7 @@ execute.evaluate.risk <- function(probability.cmd, testset, testname)
 
   ## Display the Risk Chart itself now.
 
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
 
   ## Display the AUC measures.
@@ -6491,7 +6510,7 @@ execute.evaluate.lift <- function(predict.cmd, testset, testname)
            gsub("<<-", "<-", predict.cmd), "\n", plot.cmd)
 
   eval(parse(text=predict.cmd))
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
 
   return(sprintf("Generated Lift Chart for %s on %s.", mtype, testname))
@@ -6524,7 +6543,7 @@ executeEvaluateROC <- function(predict.cmd, testset, testname)
                   mtype, testname),
            gsub("<<-", "<-", predict.cmd), "\n", plot.cmd)
   eval(parse(text=predict.cmd))
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
   lines(c(0,1), c(0,1)) # Baseline
 
@@ -6571,7 +6590,7 @@ execute.evaluate.precision <- function(predict.cmd, testset, testname)
            gsub("<<-", "<-", predict.cmd), "\n", plot.cmd)
 
   eval(parse(text=predict.cmd))
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
 
   return(sprintf("Generated Precision/Recall Plot for %s on %s.",
@@ -6606,7 +6625,7 @@ execute.evaluate.sensitivity <- function(predict.cmd, testset, testname)
            gsub("<<-", "<-", predict.cmd), "\n", plot.cmd)
 
   eval(parse(text=predict.cmd))
-  new.plot()
+  newPlot()
   eval(parse(text=plot.cmd))
 
   return(sprintf("Generated Sensitivity/Specificity Plot for %s on %s.",
