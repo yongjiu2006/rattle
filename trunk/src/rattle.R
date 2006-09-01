@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-01 07:03:54 Graham Williams>
+## Time-stamp: <2006-09-02 07:48:12 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2712,8 +2712,8 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
-  pdim <- c(2,2)
-  pmax <- 4
+  pdim <- c(2,2) # TODO Determine this from the GUI
+  pmax <- pdim[1]*pdim[2]
   pcnt <- 0
   
   ## Iterate over all target values if a target is defined and has
@@ -3274,9 +3274,14 @@ executeExplorePlot <- function(dataset)
         if (pcnt %% pmax == 0) new.plot(pdim)
         pcnt <- pcnt + 1
 
+        ordCmd <- 'order(ds[1,])'
+        addToLog("Sort the entries.", paste("ord <-", ordCmd))
+        ord <- eval(parse(text=ordCmd))
+
         maxFreq <- max(ds)
-        plotCmd <- sprintf('barplot2(ds, beside=TRUE, ylim=c(0, %d))',
-                           round(maxFreq+maxFreq*0.20))
+        plotCmd <- sprintf(paste('barplot2(ds[,ord], beside=TRUE,',
+                                 'ylim=c(0, %d), col=rainbow(%d))'),
+                           round(maxFreq+maxFreq*0.20), length(targets)+1)
         addToLog("Plot the data.", paste("bp <- ", plotCmd))
         bp <- eval(parse(text=plotCmd))
 
@@ -3287,7 +3292,8 @@ executeExplorePlot <- function(dataset)
 
         if (ncol(bp) <= 5)
         {
-          textCmd <- sprintf("text(bp, ds+%d, ds)", round(maxFreq*0.020))
+          textCmd <- sprintf("text(bp, ds[,ord]+%d, ds[,ord])",
+                             round(maxFreq*0.040))
           addToLog("Add the actual frequencies.", textCmd)
           eval(parse(text=textCmd))
         }
@@ -3299,7 +3305,7 @@ executeExplorePlot <- function(dataset)
         if (! is.null(targets))
         {
           legendCmd <- sprintf(paste('legend("topright", c(%s), ',
-                                     "fill=heat.colors(%d), ",
+                                     "fill=rainbow(%d), ",
                                      'title="%s")'),
                                paste(sprintf('"%s"', c("All", targets)),
                                      collapse=","),
@@ -3347,60 +3353,62 @@ executeExplorePlot <- function(dataset)
     ## If the gplots package is available then generate a plot for
     ## each chosen vairable.
     
-    if (packageIsAvailable("lattice", "display a dot plot"))
+    addToLog("Use dotplot from lattice the plots.", libraryCmd)
+    eval(parse(text=libraryCmd))
+
+    for (s in 1:ndotplots)
     {
-      addToLog("Use dotplot from lattice the plots.", libraryCmd)
-      eval(parse(text=libraryCmd))
 
-      for (s in 1:ndotplots)
-      {
+      addLogSeparator()
 
-        addLogSeparator()
+      ## Construct and evaluate a command string to generate the
+      ## data for the plot.
 
-        ## Construct and evaluate a command string to generate the
-        ## data for the plot.
-
-        dsCmd <- paste(sprintf("sprintf('%s',", genericDataCmd),
-                       paste(paste('"', rep(dotplots[s], length(targets)+1),
+      dsCmd <- paste(sprintf("sprintf('%s',", genericDataCmd),
+                     paste(paste('"', rep(dotplots[s], length(targets)+1),
                                  '"', sep=""), collapse=","), ")")
-        dsCmd <- eval(parse(text=dsCmd))
-        addToLog("Generate the summary data for plotting.",
-                 paste("ds <-", dsCmd))
-        ds <- eval(parse(text=dsCmd))
+      dsCmd <- eval(parse(text=dsCmd))
+      addToLog("Generate the summary data for plotting.",
+               paste("ds <-", dsCmd))
+      ds <- eval(parse(text=dsCmd))
 
-        ## Construct and evaluate the command to determin the order in
-        ## which to print the catgories, from larges to smallest.
+      ## Construct and evaluate the command to determin the order in
+      ## which to print the catgories, from larges to smallest.
 
+      if (is.null(target))
         ordCmd <- 'order(ds[1,])'
-        addToLog("Sort the entries from smallest to largest.",
-                 paste("ord <-", ordCmd))
-        ord <- eval(parse(text=ordCmd))
+      else
+        ordCmd <- 'order(ds[1,], decreasing=TRUE)'
+      addToLog("Sort the entries.",
+               paste("ord <-", ordCmd))
+      ord <- eval(parse(text=ordCmd))
         
-        ## Construct and evaluate the command to plot the
-        ## distribution.
+      ## Construct and evaluate the command to plot the
+      ## distribution.
     
-        if (pcnt %% pmax == 0) new.plot(pdim)
-        pcnt <- pcnt + 1
+      if (pcnt %% pmax == 0) new.plot(pdim)
+      pcnt <- pcnt + 1
+      
+      titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
+                                        dotplots[s],
+                                        ifelse(sampling," (sample)","")),
+                                vector=TRUE)
+      plotCmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
+                               'col=rainbow(%d),%s',
+                               'xlab="Frequency", pch=19)'),
+                         "ds[,ord]", titles[1], titles[2], length(targets)+1,
+                         ifelse(is.null(target), "", ' labels="",'))
+      addToLog("Plot the data.", plotCmd)
+      eval(parse(text=plotCmd))
 
-        titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
-                                          dotplots[s],
-                                          ifelse(sampling," (sample)","")),
-                                  vector=TRUE)
-        ## TODO Fix for case where there is no target.
-        plotCmd <- sprintf(paste('dotplot(%s, main="%s", sub="%s",',
-                                 '%s, xlab="Frequency")'),
-                           ifelse(is.null(target), "ds[,ord]", "t(ds[,ord])"),
-                           titles[1], titles[2],
-                           ifelse(is.null(target), "",
-                                  sprintf('key=simpleKey(c(%s), columns=%d%s)',
-                                          paste(sprintf('"%s"',
-                                                        c("All", targets)),
-                                                collapse=","),
-                                          length(targets)+1,
-                                          sprintf(', title="%s"', target))))
-        addToLog("Plot the data.", plotCmd)
-        print(eval(parse(text=plotCmd))) # For some reason this is required.
-
+      if (! is.null(target))
+      {
+        legendCmd <- sprintf(paste('legend("bottomright", bg="white",',
+                                   'c("All","0","1"), col=rainbow(%d),',
+                                   'pch=19, title="Adjusted")'),
+                             length(targets)+1)
+        addToLog("Add a legend.", legendCmd)
+        eval(parse(text=legendCmd))
       }
     }
   }
