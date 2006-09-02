@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-02 09:09:45 Graham Williams>
+## Time-stamp: <2006-09-02 12:35:56 Graham>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -704,7 +704,7 @@ setDefaultPath <- function(filename)
   if (! is.null(filename)) setwd(dirname(filename))
 }
 
-newPlot <- function(pcnt=4)
+newPlot <- function(pcnt=1)
 {
   if (.Platform$GUI == "X11")
     x11()
@@ -3372,7 +3372,9 @@ executeExplorePlot <- function(dataset)
     ## If the gplots package is available then generate a plot for
     ## each chosen vairable.
     
-    addToLog("Use dotplot from lattice the plots.", libraryCmd)
+    if (packageIsAvailable("lattice", "display a dot plot"))
+    {
+    addToLog("Use dotplot from lattice for the plots.", libraryCmd)
     eval(parse(text=libraryCmd))
 
     for (s in 1:ndotplots)
@@ -3412,6 +3414,21 @@ executeExplorePlot <- function(dataset)
                                         dotplots[s],
                                         ifelse(sampling," (sample)","")),
                                 vector=TRUE)
+## USE THIS TO USE THE NEW dotplot BUT IT DOES NOT WORK FOR
+## THE CHOSEN LAYOUT SOMEHOW????
+##         plotCmd <- sprintf(paste('dotplot(%s, main="%s", sub="%s",',
+##                                  '%s, xlab="Frequency")'),
+##                            ifelse(is.null(target), "ds[,ord]", "t(ds[,ord])"),
+##                            titles[1], titles[2],
+##                            ifelse(is.null(target), "",
+##                                   sprintf('key=simpleKey(c(%s), columns=%d%s)',
+##                                           paste(sprintf('"%s"',
+##                                                         c("All", targets)),
+##                                                 collapse=","),
+##                                           length(targets)+1,
+##                                           sprintf(', title="%s"', target))))
+##       addToLog("Plot the data.", plotCmd)
+##       print(eval(parse(text=plotCmd)))
       plotCmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
                                'col=rainbow(%d),%s',
                                'xlab="Frequency", pch=19)'),
@@ -3424,12 +3441,13 @@ executeExplorePlot <- function(dataset)
       {
         legendCmd <- sprintf(paste('legend("bottomright", bg="white",',
                                    'c("All","0","1"), col=rainbow(%d),',
-                                   'pch=19, title="Adjusted")'),
-                             length(targets)+1)
+                                   'pch=19, title="%s")'),
+                             length(targets)+1, target)
         addToLog("Add a legend.", legendCmd)
         eval(parse(text=legendCmd))
       }
     }
+  }
   }
 
   ## Update the status bar.
@@ -3746,10 +3764,11 @@ execute.cluster.kmeans <- function(include)
 
   sampling  <- ! is.null(crs$sample)
 
+  nclust <- rattleWidget("kmeans_clusters_spinbutton")$getValue()
   
   kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %d)',
                         ifelse(sampling, "crs$sample", ""),
-                        include, 10)
+                        include, nclust)
 
   if (packageIsAvailable("fpc","plot discriminant coordinates charts"))
   {
