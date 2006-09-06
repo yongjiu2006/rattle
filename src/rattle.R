@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-06 21:30:54 Graham Williams>
+## Time-stamp: <2006-09-07 06:53:15 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -2572,7 +2572,7 @@ execute.explore.tab <- function()
   else if (rattleWidget("hiercor_radiobutton")$getActive())
     execute.explore.hiercor(ndataset)
   else if (rattleWidget("prcomp_radiobutton")$getActive())
-    execute.explore.prcomp(nidataset)
+    executeExplorePrcomp(nidataset)
 }
 
 execute.explore.summary <- function(dataset)
@@ -3621,7 +3621,7 @@ execute.explore.hiercor <- function(dataset)
 
 }
 
-execute.explore.prcomp <- function(dataset)
+executeExplorePrcomp <- function(dataset)
 {
   TV <- "prcomp_textview"
   
@@ -3635,10 +3635,15 @@ execute.explore.prcomp <- function(dataset)
 
   ## Construct the commands.
   
-  prcomp.cmd  <- sprintf('pc <<- prcomp(%s)', dataset) # The <<- is needed!
+  prcomp.cmd  <- sprintf('pc <<- prcomp(%s, scale=TRUE, center=TRUE, tol=0)',
+                         dataset)
   print.cmd   <- "pc"
   summary.cmd <- "summary(pc)"
   plot.cmd    <- paste('plot(pc, main="")',
+                       genPlotTitleCmd("Principal Components Importance",
+                                      crs$dataname),
+                       sep="\n")
+  biplot.cmd  <- paste('biplot(pc, main="")',
                        genPlotTitleCmd("Principal Components",
                                       crs$dataname),
                        sep="\n")
@@ -3667,10 +3672,15 @@ execute.explore.prcomp <- function(dataset)
   addToLog("Summarise the importance of the components found.", summary.cmd)
   append.textview(TV, collect.output(summary.cmd, TRUE))
 
+  newPlot(1)
   addToLog("Display a plot showing the relative importance of the components.",
           plot.cmd)
-  newPlot()
   eval(parse(text=plot.cmd))
+  
+  newPlot(1)
+  addToLog("Display a plot showing the two most principal components.",
+          biplot.cmd)
+  eval(parse(text=biplot.cmd))
   
   ## Report completion to the user through the Status Bar.
   
