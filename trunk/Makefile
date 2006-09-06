@@ -94,9 +94,7 @@ python:
 	python rattle.py
 
 test:
-	echo $(VERSION)
-	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
-	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
+	R --no-save --quiet < regression.R 
 
 clean:
 	rm -f rattle_*.tar.gz rattle_*.zip

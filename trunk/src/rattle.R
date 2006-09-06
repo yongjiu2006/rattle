@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-02 12:35:56 Graham>
+## Time-stamp: <2006-09-06 21:30:54 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -274,6 +274,8 @@ rattleBM <- function()
 ## The point of doing this would be to save a log of what you have done,
 ## potentially to repeat by sending the same commands directly to R.
 ## You can also save and load projects, which also retains this log.
+
+library(rattle)
 
 crs <- NULL")
   
@@ -563,6 +565,7 @@ setStatusBar <- function(..., sep=" ")
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0) msg <-""
   rattleWidget("statusbar")$push(1, msg)
+  invisible(NULL)
 }
 
 ## TODO Move from using setTextview.font and setTextview, to using
@@ -1447,7 +1450,7 @@ executeDataRdataset <- function()
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
   setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
                collect.output(str.cmd), sep="")
-  
+
   ## Update the variables treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
@@ -2014,7 +2017,7 @@ init.variables.treeview <- function()
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Cummulative",
+                                       "Cumulative",
                                        renderer,
                                        active = CONTINUOUS[["cumplot"]])
   
@@ -2948,7 +2951,7 @@ executeExplorePlot <- function(dataset)
   
   if (! is.null(cumplots))
   {
-    ## Cummulative plot for numeric data.
+    ## Cumulative plot for numeric data.
 
     nplots <- length(cumplots)
 
@@ -2974,9 +2977,9 @@ executeExplorePlot <- function(dataset)
       }
 
       if (! is.null(targets))
-        legendCmd <- sprintf(paste("legend(min(ds[1]), 1, c(%s), ",
+        legendCmd <- sprintf(paste('legend("bottomright", c(%s), ',
                                    "col=rainbow(%d), lty=1:%d,",
-                                   'title="%s")'),
+                                   'title="%s", inset=c(0.05,0.05))'),
                              paste(sprintf('"%s"', c("All", targets)),
                                    collapse=","),
                              length(targets)+1, length(targets)+1,
@@ -3003,14 +3006,14 @@ executeExplorePlot <- function(dataset)
       }
       else
       {
-        infoDialog("The cummulative plot requires the Hmisc package",
+        infoDialog("The cumulative plot requires the Hmisc package",
                    "which does not appear to be available.",
                    "Consider install.packages('Hmisc').")
         break()
       }
       addToLog("Plot the data.", plotCmd)
       eval(parse(text=plotCmd))
-      title.cmd <- genPlotTitleCmd(sprintf("Cummulative %s%s",
+      title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s",
                                            cumplots[s],
                                            ifelse(sampling, " (sample)","")))
 
@@ -3749,7 +3752,7 @@ execute.cluster.tab <- function()
   ## Dispatch
 
   if (rattleWidget("kmeans_radiobutton")$getActive())
-    execute.cluster.kmeans(include)
+    execute.cluster.kmeans(include, length(intersect(nums, indicies))>1)
   else if (rattleWidget("hclust_radiobutton")$getActive())
     execute.cluster.hclust(include)
 }
@@ -3759,7 +3762,7 @@ execute.cluster.tab <- function()
 ## KMEANS
 ##
 
-execute.cluster.kmeans <- function(include)
+execute.cluster.kmeans <- function(include, doPlot=TRUE)
 {
 
   sampling  <- ! is.null(crs$sample)
@@ -3799,7 +3802,7 @@ execute.cluster.kmeans <- function(include)
                collect.output("crs$kmeans$centers", TRUE),
                textviewSeparator())
 
-  if (packageIsAvailable("fpc"))
+  if (doPlot && packageIsAvailable("fpc"))
   {
     addToLog("Generate a discriminate coordinates plot using the fpc package.",
             plot.cmd)
@@ -3838,17 +3841,17 @@ execute.cluster.hclust <- function(include)
                                      crs$dataname),
                       sep="")
 
-  seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
-                         sprintf("[%s,%s]",
-                                 ifelse(sampling, "crs$sample", ""),
-                                 include),
-                         "))\n",
-                         "l <- pam(d, 10, cluster.only = TRUE)\n",
-                         "res <- cluproxplot(d, l, method = ",
-                         'c("Optimal", "Optimal"), plot = FALSE)\n',
-                         'plot(res, plotOptions = list(main = "PAM + ',
-                         'Seriation (Optimal Leaf ordering)", ',
-                         'col = terrain.colors(64)))', sep="")
+##   seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
+##                          sprintf("[%s,%s]",
+##                                  ifelse(sampling, "crs$sample", ""),
+##                                  include),
+##                          "))\n",
+##                          "l <- pam(d, 10, cluster.only = TRUE)\n",
+##                          "res <- cluproxplot(d, l, method = ",
+##                          'c("Optimal", "Optimal"), plot = FALSE)\n',
+##                          'plot(res, plotOptions = list(main = "PAM + ',
+##                          'Seriation (Optimal Leaf ordering)", ',
+##                          'col = terrain.colors(64)))', sep="")
 
   ## Log the R command
 
@@ -3882,11 +3885,11 @@ execute.cluster.hclust <- function(include)
   }
 
   addToLog("Plot the Hierarchical Dedogram.", plot.cmd)
-  if (packageIsAvailable("cba", "plot seriation charts"))
-  {
-    addToLog("We use the cba package for seriation.", library.cmd)
-    addToLog("Plot the Seriation (Experimental).", seriation.cmd)
-  }
+##   if (packageIsAvailable("cba", "plot seriation charts"))
+##   {
+##     addToLog("We use the cba package for seriation.", library.cmd)
+##     addToLog("Plot the Seriation (Experimental).", seriation.cmd)
+##   }
 
   clear.textview(TV)
   append.textview(TV,
@@ -3894,17 +3897,19 @@ execute.cluster.hclust <- function(include)
                   collect.output("crs$hclust", TRUE),
                   eval(parse(text=plot.cmd)))
 
-  if (packageIsAvailable("cba"))
-  {
-    eval(parse(text=library.cmd))
-    newPlot()
-    append.textview(TV,
-                    "\n\nNote that seriation is still experimental",
-                    eval(parse(text=seriation.cmd)))
-                                        #"\n\n",
-               #"Cluster centroids.\n\n",
-               #collect.output("crs$kmeans$centers", TRUE),
-  }
+## VERY SLOW - PERHAPS NEED A CHECKBOX TO TURN IT ON
+##
+##   if (packageIsAvailable("cba"))
+##   {
+##     eval(parse(text=library.cmd))
+##     newPlot()
+##     append.textview(TV,
+##                     "\n\nNote that seriation is still experimental",
+##                     eval(parse(text=seriation.cmd)))
+##                                         #"\n\n",
+##                #"Cluster centroids.\n\n",
+##                #collect.output("crs$kmeans$centers", TRUE),
+##   }
   
   setStatusBar("Hierarchical cluster has been generated.")
   
