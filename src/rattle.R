@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-07 06:53:15 Graham Williams>
+## Time-stamp: <2006-09-08 07:18:21 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -38,7 +38,7 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 ##
 ##    Use the "_" convention only for Glade variables and functions.
 ##    Use capitalised verbs for own functions: displayPlotAgain
-##    Use dot spearate words for variables: current.rattle.list.of.frames
+##    Use dot spearated words for variables: current.rattle.list.of.frames
 ##    RGtk2 uses the capitalised word convention.
 ##    Use same names in R code as for the Glade objects.
 
@@ -417,7 +417,6 @@ rattleTM <- function()
 
 ## Common Dialogs
 
-
 debugDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "ok",
@@ -568,14 +567,6 @@ setStatusBar <- function(..., sep=" ")
   invisible(NULL)
 }
 
-## TODO Move from using setTextview.font and setTextview, to using
-## clear.textview, and append.textview.
-
-setTextview.font <- function(tv)
-{
-  rattleWidget(tv)$modifyFont(pangoFontDescriptionFromString("monospace 10"))
-}
-
 setTextview <- function(tv, ..., sep="")
 {
   msg <- paste(sep=sep, ...)
@@ -590,13 +581,13 @@ textviewSeparator <- function()
                paste(rep("=", 70), collapse=""), "\n", sep=""))
 }
 
-clear.textview <- function(tv)
+clearTextview <- function(tv)
 {
   rattleWidget(tv)$modifyFont(pangoFontDescriptionFromString("monospace 10"))
   rattleWidget(tv)$getBuffer()$setText("")
 }
 
-append.textview <- function(tv, ..., sep="")
+appendTextview <- function(tv, ..., sep="")
 {
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0)
@@ -857,33 +848,6 @@ plotNetwork <- function(flow)
 
 }
 
-
-genPathColors <- function(n, path=c('cyan', 'white', 'magenta'),
-                          interp=c('rgb','hsv')) 
-{
-  interp <- match.arg(interp)
-  path <- col2rgb(path)
-  nin <- ncol(path)
-  if (interp == 'hsv') 
-  {
-    path <- rgb2hsv(path)
-    ## Modify the interpolation so that the circular nature of hue
-    for (i in 2:nin)
-      path[1,i] <- path[1,i] + round(path[1,i-1]-path[1,i])
-    result <- apply(path, 1, function(x) approx(seq(0, 1,
-                                                    len=nin),
-                                                x, seq(0, 1, len=n))$y)
-    return(hsv(result[,1] %% 1, result[,2], result[,3]))
-  } 
-  else 
-  {
-    result <- apply(path, 1, function(x) approx(seq(0, 1,
-                                                    len=nin),
-                                                x, seq(0, 1, len=n))$y)
-    return(rgb(result[,1]/255, result[,2]/255, result[,3]/255))
-  }
-}
-
 ########################################################################
 ##
 ## Shared callbacks
@@ -1031,8 +995,8 @@ load_rdata_set_combo <- function(button)
   }
   
   rattleWidget(TV)$setWrapMode("word")
-  clear.textview(TV)
-  append.textview(TV, "Now select a data frame from those available.")
+  clearTextview(TV)
+  appendTextview(TV, "Now select a data frame from those available.")
   setStatusBar()
 
 }
@@ -1115,8 +1079,8 @@ open_odbc_set_combo <- function(a, b)
   }
   
   rattleWidget(TV)$setWrapMode("word")
-  clear.textview(TV)
-  append.textview(TV, "Now select a table from those available.")
+  clearTextview(TV)
+  appendTextview(TV, "Now select a table from those available.")
   setStatusBar()
 
 }
@@ -1225,7 +1189,7 @@ execute.data.csv <- function()
 
   addLogSeparator()
   rattleWidget(TV)$setWrapMode("none") # On for welcome msg
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Load a dataset from a CSV file.", gsub('<<-', '<-', read.cmd))
   resetRattle()
@@ -1234,7 +1198,7 @@ execute.data.csv <- function()
   setRattleTitle(crs$dataname)
 
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  append.textview(TV, sprintf("Structure of %s.\n\n", filename),
+  appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
                   collect.output(str.cmd))
   
   ## Update the variables treeview and samples.
@@ -1295,7 +1259,7 @@ executeDataODBC <- function()
 
   addLogSeparator()
   rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Load a dataset from a database table.",
           gsub('<<-', '<-', assignCmd))
@@ -1305,7 +1269,7 @@ executeDataODBC <- function()
   setRattleTitle(crs$dataname)
 
   addToLog("Display a simple summary (structure) of the dataset.", strCmd)
-  append.textview(TV,
+  appendTextview(TV,
                   sprintf("Structure of %s from %s.\n\n", table, DNSname),
                   collect.output(strCmd))
   
@@ -1375,7 +1339,7 @@ executeDataRdata <- function()
 
   addLogSeparator()
   rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Assign an R dataset from the Rdata file.",
           gsub('<<-', '<-', assign.cmd))
@@ -1385,7 +1349,7 @@ executeDataRdata <- function()
   setRattleTitle(crs$dataname)
 
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  append.textview(TV,
+  appendTextview(TV,
                   sprintf("Structure of %s from %s.\n\n", dataset, filename),
                   collect.output(str.cmd))
   
@@ -1438,7 +1402,7 @@ executeDataRdataset <- function()
 
   addLogSeparator()
   rattleWidget(TV)$setWrapMode("none") # On for welcome msg
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Assign an R dataset into the crs object.",
           gsub('<<-', '<-', assign.cmd))
@@ -2611,12 +2575,12 @@ execute.explore.summary <- function(dataset)
   ## Start logging and executing the R code.
   
   addLogSeparator()
-  clear.textview(TV)
+  clearTextview(TV)
 
   addToLog("Generate a summary of the dataset.", summary.cmd)
   useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
   sampling  <- ! is.null(crs$sample)
-  append.textview(TV, paste("Summary of the",
+  appendTextview(TV, paste("Summary of the",
                             ifelse(useSample & sampling, "** sample **", "full"),
                             "dataset.\n\n",
                             "(Hint: 25% of values are below 1st Quartile.)",
@@ -2632,7 +2596,7 @@ execute.explore.summary <- function(dataset)
   if (packageIsAvailable("fBasics", "calculate measures of skew and shape"))
   {
     eval(parse(text=library.cmd))
-    append.textview(TV, paste("Kurtosis for numeric data:",
+    appendTextview(TV, paste("Kurtosis for numeric data:",
                               "Larger means sharper peak, flatter tails.\n\n"),
                     collect.output(kurtosis.cmd, TRUE),
                     paste("\n\nSkewness for numeric data:",
@@ -3514,8 +3478,8 @@ executeExploreCorrelation <- function(dataset)
     
   }
   plot.cmd    <- paste("plotcorr(crsxc, ",
-                       'col=genPathColors(11, ',
-                       'c("red", "white", "blue"))[5*crsxc + 6])\n',
+                       'col=colorRampPalette(c("red", "white", "blue"))(11)',
+                       '[5*crsxc + 6])\n',
                        genPlotTitleCmd("Correlation",
                                        ifelse(nas, "of Missing Values", ""),
                                        crs$dataname),
@@ -3524,7 +3488,7 @@ executeExploreCorrelation <- function(dataset)
   ## Start logging and executing the R code.
 
   addLogSeparator("Generate a correlation plot for the variables.")
-  clear.textview(TV)
+  clearTextview(TV)
 
   addToLog("The correlation plot uses the ellipse package.", library.cmd)
   eval(parse(text=library.cmd))
@@ -3534,7 +3498,7 @@ executeExploreCorrelation <- function(dataset)
   addToLog("Display the actual correlations.", print.cmd)
   addToLog("Graphically display the correlations.", plot.cmd)
 
-  append.textview(TV,
+  appendTextview(TV,
                ifelse(nas,
                       "Missing Values Correlation Summary.\n\n",
                       "Correlation Summary.\n\n"),
@@ -3651,13 +3615,13 @@ executeExplorePrcomp <- function(dataset)
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Perform a principal components analysis (numerics only).",
           gsub("<<-", "<-", prcomp.cmd))
   eval(parse(text=prcomp.cmd))
 
-  append.textview(TV, "Note that principal components on only the numeric\n",
+  appendTextview(TV, "Note that principal components on only the numeric\n",
                   "variables is calculated, and so we can not use this\n",
                   "approach to remove categorical variables from ",
                   "consideration.\n\n",
@@ -3667,10 +3631,10 @@ executeExplorePrcomp <- function(dataset)
                   "to include in the modelling.")
 
   addToLog("Show the output of the analysis,", print.cmd)
-  append.textview(TV, collect.output(print.cmd, TRUE))
+  appendTextview(TV, collect.output(print.cmd, TRUE))
   
   addToLog("Summarise the importance of the components found.", summary.cmd)
-  append.textview(TV, collect.output(summary.cmd, TRUE))
+  appendTextview(TV, collect.output(summary.cmd, TRUE))
 
   newPlot(1)
   addToLog("Display a plot showing the relative importance of the components.",
@@ -3803,14 +3767,14 @@ execute.cluster.kmeans <- function(include, doPlot=TRUE)
 
   ## Show the resulting model.
 
-  setTextview.font("kmeans_textview")
-  setTextview("kmeans_textview",
-               "Cluster Sizes\n\n",
-               collect.output("paste(crs$kmeans$size, collapse=' ')", TRUE),
-               "\n\n",
-               "Cluster centroids.\n\n",
-               collect.output("crs$kmeans$centers", TRUE),
-               textviewSeparator())
+  clearTextview("kmeans_textview")
+  appendTextview("kmeans_textview",
+                 "Cluster Sizes\n\n",
+                 collect.output("paste(crs$kmeans$size, collapse=' ')", TRUE),
+                 "\n\n",
+                 "Cluster centroids.\n\n",
+                 collect.output("crs$kmeans$centers", TRUE),
+                 textviewSeparator())
 
   if (doPlot && packageIsAvailable("fpc"))
   {
@@ -3901,8 +3865,8 @@ execute.cluster.hclust <- function(include)
 ##     addToLog("Plot the Seriation (Experimental).", seriation.cmd)
 ##   }
 
-  clear.textview(TV)
-  append.textview(TV,
+  clearTextview(TV)
+  appendTextview(TV,
                   "Hiearchical Cluster\n\n",
                   collect.output("crs$hclust", TRUE),
                   eval(parse(text=plot.cmd)))
@@ -3913,7 +3877,7 @@ execute.cluster.hclust <- function(include)
 ##   {
 ##     eval(parse(text=library.cmd))
 ##     newPlot()
-##     append.textview(TV,
+##     appendTextview(TV,
 ##                     "\n\nNote that seriation is still experimental",
 ##                     eval(parse(text=seriation.cmd)))
 ##                                         #"\n\n",
@@ -4197,14 +4161,14 @@ execute.model.tab <- function()
   {
     deactivate.rocr.plots()
     rattleWidget("confusion_textview")$setWrapMode("word")
-    setTextview.font("confusion_textview")
-    setTextview("confusion_textview",
-                 "Note that the target you have chosen has more than",
-                 "2 classes. Some functionality on the Evaluate tab",
-                 "will not be available. In particular, the ROCR",
-                 "package (Lift, ROC, Precision, and Sensitivity",
-                 "charts) and the Risk Chart only handle binary",
-                 "classification.")
+    clearTextview("confusion_textview")
+    appendTextview("confusion_textview",
+                   "Note that the target you have chosen has more than",
+                   "2 classes. Some functionality on the Evaluate tab",
+                   "will not be available. In particular, the ROCR",
+                   "package (Lift, ROC, Precision, and Sensitivity",
+                   "charts) and the Risk Chart only handle binary",
+                   "classification.")
   }
   else
   {
@@ -4284,11 +4248,11 @@ execute.model.glm <- function()
 
   addToLog("Summary of the resulting GLM model", summary.cmd)
           
-  setTextview.font("glm_textview")
+  clearTextview("glm_textview")
   setTextview("glm_textview",
-               "Summary of the model built using glm.\n",
-               collect.output(summary.cmd, TRUE),
-               textviewSeparator())
+              "Summary of the model built using glm.\n",
+              collect.output(summary.cmd, TRUE),
+              textviewSeparator())
 
   if (sampling) crs$smodel <<- union(crs$smodel, GLM)
   
@@ -4514,14 +4478,14 @@ execute.model.rpart <- function()
   addToLog("List the rules from the tree using a Rattle support function.",
           listrules.cmd)
           
-  setTextview.font("rpart_textview")
+  clearTextview("rpart_textview")
   setTextview("rpart_textview",
-               "Summary of the rpart model:\n\n",
-               collect.output(print.cmd),
-               textviewSeparator(),
-               "Tree as rules:\n\n",
-               collect.output(listrules.cmd, TRUE),
-               textviewSeparator())
+              "Summary of the rpart model:\n\n",
+              collect.output(print.cmd),
+              textviewSeparator(),
+              "Tree as rules:\n\n",
+              collect.output(listrules.cmd, TRUE),
+              textviewSeparator())
 
   if (sampling) crs$smodel <<- union(crs$smodel, RPART)
   
@@ -4935,7 +4899,7 @@ execute.model.gbm <- function()
 
   ## Run model and show results.
   eval(parse(text=library.cmd))
-  setTextview.font("gbm_textview")
+  clearTextview("gbm_textview")
   setTextview("gbm_textview",
                "Output from GBM model builder:\n\n",
                collect.output(boost.cmd),
@@ -5120,7 +5084,7 @@ execute.model.rf <- function()
   addToLog("Generate textual output of randomForest model.", summary.cmd)
   addToLog("List the importance of the variables.", importance.cmd)
   
-  setTextview.font("rf_textview")
+  clearTextview("rf_textview")
   setTextview("rf_textview",
               "Summary of the randomForest model:\n\n",
               collect.output(summary.cmd, TRUE),
@@ -5515,7 +5479,7 @@ executeModelSVM <- function()
   else
     summaryCmd <- "crs$svm"
   addToLog("Generate textual output of the svm model.", summaryCmd)
-  setTextview.font(TV)
+  clearTextview(TV)
   setTextview(TV,
               "Summary of the svm model:\n\n",
               collect.output(summaryCmd, TRUE),
@@ -6139,7 +6103,7 @@ execute.evaluate.confusion <- function(response.cmd, testset, testname)
   percentage.output <- collect.output(percentage.cmd, TRUE)
 
   
-  setTextview.font("confusion_textview")
+  clearTextview("confusion_textview")
   setTextview("confusion_textview",
                sprintf("Confusion matrix %s model on %s (counts):\n\n",
                        mtype, testname),
@@ -6211,7 +6175,7 @@ execute.evaluate.risk <- function(probability.cmd, testset, testname)
                                        risk),
                         sep="")
 
-  clear.textview(TV)
+  clearTextview(TV)
   
   addToLog("Generate a Risk Chart",
           "## Rattle provides evaluateRisk and plotRisk.\n\n",
@@ -6251,7 +6215,7 @@ execute.evaluate.risk <- function(probability.cmd, testset, testname)
   id <- sprintf("c(%s)", paste(id, collapse=","))
   msg <- paste("Below is a summary of the performance of the model ",
                "at different probability cutoffs.\n\n", msg, sep="")
-  append.textview(TV, msg, collect.output(sprintf("crs$eval[%s,]", id), TRUE))
+  appendTextview(TV, msg, collect.output(sprintf("crs$eval[%s,]", id), TRUE))
 
   ## Display the Risk Chart itself now.
 
@@ -6261,7 +6225,7 @@ execute.evaluate.risk <- function(probability.cmd, testset, testname)
   ## Display the AUC measures.
 
   auc <- calculateRiskAUC(crs$eval)
-  append.textview(TV, paste("The area under the Risk and Recall curves\n\n",
+  appendTextview(TV, paste("The area under the Risk and Recall curves\n\n",
                   sprintf("Area under the Risk   (red)   curve: %d%% (%0.3f)\n",
                           round(100*auc[1]), auc[1]),
                   sprintf("Area under the Recall (green) curve: %d%% (%0.3f)\n",
@@ -6588,7 +6552,7 @@ executeEvaluateROC <- function(predict.cmd, testset, testname)
                   '"auc")', sep="")
   addToLog("Calculate the area under the curve for the plot.", aucCmd)
   auc <- eval(parse(text=aucCmd))
-  append.textview(TV, paste("Area under the ROC curve for the",
+  appendTextview(TV, paste("Area under the ROC curve for the",
                             sprintf("%s model on %s is %0.4f",
                                     mtype, testname,
                                     attr(auc, "y.values"))))
@@ -7138,7 +7102,7 @@ saveProject <- function()
 
 restoreTextContents <- function(TV, text)
 {
-  clear.textview(TV)
+  clearTextview(TV)
   rattleWidget(TV)$setWrapMode("none")
   if (is.null(text))
     rattleWidget(TV)$getBuffer()$setText("")
