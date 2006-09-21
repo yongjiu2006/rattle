@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-08 07:18:21 Graham Williams>
+## Time-stamp: <2006-09-21 19:23:11 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -4388,7 +4388,8 @@ execute.model.rpart <- function()
       parms <- gsub(")$", sprintf(", loss=%s)", lo), parms)
   }
 
-  ## Build the formula for the model,
+  ## Build the formula for the model, noting that rpart has only a
+  ## formula interface.
 
   frml <- paste(crs$target, "~ .")
 
