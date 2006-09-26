@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-26 21:29:53 Graham Williams>
+## Time-stamp: <2006-09-26 21:50:45 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -1650,14 +1650,14 @@ execute.variables.tab <- function()
 
       ## Check if Weight variables are not ignored, and inform user if not
 
-      if ( ! is.element(identifiers[vars][i], union(ignore, risk)))
+      if ( ! is.element(identifiers[vars][i],
+                        union(ident, union(target, union(ignore, risk)))))
       {
         infoDialog("You have used the variable",
                     identifiers[vars][i],
-                    "in the weights formula but it is not ignored.",
-                    "This is unusual since the variable will be used",
-                    "as an input variable, yet it has a relationship",
-                    "with the output variable.",
+                    "in the weights formula but it is an input.",
+                    "This is unusual since it is both an input variable",
+                    "and used to weight the outputs.",
                     "Rattle suggests you ignore the variable.")
       }
       
