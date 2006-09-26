@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-09-21 19:23:11 Graham Williams>
+## Time-stamp: <2006-09-26 21:29:53 Graham Williams>
 
 ## rattleBM is the binary classification data mining tool
 ## rattleUN is the unsupervised learning tool
@@ -13,7 +13,10 @@ MINOR <- "1"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 
-## Copyright (c) Graham Williams, Togaware.com
+## Copyright (c) 2006 Graham Williams, Togaware.com
+
+cat("\nRattle, (c) 2006, Graham Williams, togaware.com, GPL")
+cat("\nGraphical interface for data mining using R\n")
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
 ## extensively tested the application.
@@ -175,6 +178,7 @@ rattleBM <- function()
                ident=NULL,
                ignore=NULL,
                sample=NULL,
+               seed=NULL,
                kmeans=NULL,
                hclust=NULL,
                smodel=NULL, # Record whether the sample has been modelled
@@ -297,6 +301,7 @@ resetRattle <- function()
   crs$ident    <<- NULL
   crs$ignore   <<- NULL
   crs$sample   <<- NULL
+  crs$seed     <<- NULL
   crs$kmeans   <<- NULL
   crs$hclust   <<- NULL
   crs$page     <<- NULL
@@ -1126,7 +1131,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   rattleWidget("sample_count_spinbutton")$setValue(srows)
   rattleWidget("sample_percentage_spinbutton")$setValue(per)
 
-  execute.sample.tab()
+  executeSampleTab()
 
 }
 
@@ -2229,6 +2234,8 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_percentage_label")$setSensitive(TRUE)
     rattleWidget("sample_count_spinbutton")$setSensitive(TRUE)
     rattleWidget("sample_count_label")$setSensitive(TRUE)
+    rattleWidget("sample_seed_spinbutton")$setSensitive(TRUE)
+    rattleWidget("sample_seed_label")$setSensitive(TRUE)
     rattleWidget("explore_sample_checkbutton")$setSensitive(TRUE)
     crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
   }
@@ -2238,6 +2245,8 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_percentage_label")$setSensitive(FALSE)
     rattleWidget("sample_count_spinbutton")$setSensitive(FALSE)
     rattleWidget("sample_count_label")$setSensitive(FALSE)
+    rattleWidget("sample_seed_spinbutton")$setSensitive(FALSE)
+    rattleWidget("sample_seed_label")$setSensitive(FALSE)
     rattleWidget("explore_sample_checkbutton")$setActive(FALSE)
     rattleWidget("explore_sample_checkbutton")$setSensitive(FALSE)
   }
@@ -2270,7 +2279,7 @@ on_sample_count_spinbutton_changed <- function(action, window)
 ##
 ## Execution
 ##
-execute.sample.tab <- function()
+executeSampleTab <- function()
 {
   ## Can not do any sampling if there is no dataset.
 
@@ -2284,7 +2293,10 @@ execute.sample.tab <- function()
     #ssize <- floor(nrow(crs$dataset)*ssize/100)
     ssize <- rattleWidget("sample_count_spinbutton")$getValue()
 
-    sample.cmd <- paste("crs$sample <<- sample(nrow(crs$dataset), ", ssize,
+    seed <- rattleWidget("sample_seed_spinbutton")$getValue()
+    
+    sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+                        "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
                         ")", sep="")
 
     addToLog("Build random sample for modelling.",
@@ -7079,6 +7091,10 @@ saveProject <- function()
   crs$barplots <<- getSelectedVariables("barplot")
   crs$dotplots <<- getSelectedVariables("dotplot")
 
+  ## Save Sample information
+
+  crs$seed <<- rattleWidget("sample_seed_spinbutton")$getValue()
+  
   ## Save Model options
 
   crs$rpart$priors <<- rattleWidget("rpart_priors_entry")$getText()
@@ -7208,6 +7224,8 @@ loadProject <- function()
   ## SAMPLE
 
   crs$sample   <<- crs$sample
+  crs$seed     <<- crs$seed
+
   if (!is.null(crs$sample))
   {
     nrows <- nrow(crs$dataset)
@@ -7216,6 +7234,10 @@ loadProject <- function()
     rattleWidget("sample_checkbutton")$setActive(TRUE)
     rattleWidget("sample_count_spinbutton")$setRange(1,nrows)
     rattleWidget("sample_count_spinbutton")$setValue(srows)
+    if (! is.null(crs$seed))
+      rattleWidget("sample_seed_spinbutton")$setValue(crs$seed)
+    else
+      rattleWidget("sample_seed_spinbutton")$setValue(123)
     rattleWidget("sample_percentage_spinbutton")$setValue(per)
   }
   
@@ -7338,7 +7360,7 @@ dispatchExecuteButton <- function()
   }
   else if (ct == NOTEBOOK.SAMPLE.TAB)
   {
-    execute.sample.tab()
+    executeSampleTab()
   }
   else if (ct == NOTEBOOK.CLUSTER.TAB)
   {
