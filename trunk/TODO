@@ -40,6 +40,9 @@ TODO
     Neural Networks using netalg
     Bayesian using bayesm
 
+  Plots:
+    All plots into a Cairo tabbed window!
+
 ========================================================================
 
 MAJOR
