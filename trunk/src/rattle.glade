@@ -5,7 +5,7 @@
 
 <widget class="GtkWindow" id="rattle_window">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Rattle: The Gnome R Data Miner</property>
+  <property name="title" translatable="yes">Rattle: Effective Data Mining with R</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -1160,6 +1160,7 @@
 
 			  <child>
 			    <widget class="GtkComboBox" id="rdataset_combobox">
+			      <property name="width_request">180</property>
 			      <property name="visible">True</property>
 			      <property name="items" translatable="yes">No data frames found.</property>
 			      <property name="add_tearoffs">False</property>
@@ -1170,7 +1171,7 @@
 			    <packing>
 			      <property name="padding">0</property>
 			      <property name="expand">False</property>
-			      <property name="fill">False</property>
+			      <property name="fill">True</property>
 			    </packing>
 			  </child>
 			</widget>
@@ -1887,6 +1888,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 	      <child>
 		<widget class="GtkLabel" id="sample_seed_label">
 		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
 		  <property name="label" translatable="yes">Seed:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
@@ -1915,6 +1917,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 	      <child>
 		<widget class="GtkSpinButton" id="sample_seed_spinbutton">
 		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
 		  <property name="tooltip" translatable="yes">Random number generator seed. Change this for different random samples.</property>
 		  <property name="can_focus">True</property>
 		  <property name="climb_rate">1</property>

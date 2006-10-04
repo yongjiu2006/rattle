@@ -1,12 +1,16 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-01 07:17:26 Graham Williams>
+## Time-stamp: <2006-10-04 20:34:48 Graham Williams>
 
-## rattleBM is the binary classification data mining tool
-## rattleUN is the unsupervised learning tool
-## rattleTM is the text mining tool
-## rattleMC is for multiple classification
-## rattleRG is for regression
+## The different varieties of Rattle paradigms can be chosen as radio
+## buttons above the tabs, and different choices result in different
+## collections of tabs being exposed.
+##
+## Two Class -> data variables sample explore model evaluate log
+## Unsupervised -> data variables sample explore cluster log
+## Text Miner -> text ... variables sample explore model evaluate log
+## Multi Class -> data variables sample explore model evaluate log
+## Regression ->  data variables sample explore model evaluate log
 
 MAJOR <- "2"
 MINOR <- "1"
@@ -15,8 +19,12 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 
 ## Copyright (c) 2006 Graham Williams, Togaware.com
 
-cat("\nRattle, (c) 2006, Graham Williams, togaware.com, GPL")
-cat("\nGraphical interface for data mining using R\n")
+.First.lib <- function()
+{
+  cat("\nRattle, (c) 2006, Graham Williams, togaware.com, GPL")
+  cat("\nGraphical interface for data mining using R\n")
+  cat(sprintf("Version %s\n", VERSION))
+}
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
 ## extensively tested the application.
@@ -54,36 +62,28 @@ cat("\nGraphical interface for data mining using R\n")
 ##   be merged into GTK. At that time, that functionality will be part
 ##   of RGtk2.
 
+rattleTODO <- function()
+{
+  
+  todo <- 'Suggestion, Proposed, Proposer, Comment
+Add SOMs (SOM_PAK3.1),2006-09-03,Stuart Hamilton,Suitable for RattleEX
+Add MART (R-MART),2006-09-03,Stuart Hamilton,Useful? Perhaps for rattleRG
+'
+  todo <- read.csv(textConnection(todo))
+
+  return(todo)
+}
+
+
 ########################################################################
 
 ## INITIALISATIONS
 
 rattle <- function()
 {
-  ## Pop up a chooser to choose which rattle to run:
-  ##
-  ## rattleBM binary classification
-  ## rattleRG continuous target
-  ## rattleTM text mining
-  ##
-  ## Only one should be running in any particular instance of R, at
-  ## least for now, since we have not encapsulated the functionality
-  ## within a single object, but globally.
-  
-  rattleBM()
-}
 
-rattleBM <- function()
-{
-  if (! packageIsAvailable("RGtk2", "run Rattle's graphical interface"))
-      return()
+  require(RGtk2) # From http://www.ggobi.org/rgtk2/
       
-  library(RGtk2) # From http://www.ggobi.org/rgtk2/
-      
-  ## This is the starts of a separate function, so that rattle
-  ## functionality can be loaded without starting rattle! Need to do
-  ## proper packaging and get away from the global variables.
-  
   ## Load the Rattle GUI specification. The three commands here
   ## represent an attempt to be independent of where R is running and
   ## where rattle.R is located by finding out from the system calls the
@@ -386,42 +386,6 @@ resetRattle <- function()
   
 }
 
-########################################################################
-
-rattleTM <- function()
-{
-
-  if (! packageIsAvailable("RGtk2", "run the graphical interface of rattleTM"))
-      return()
-      
-  require(RGtk2) # From http://www.ggobi.org/rgtk2/
-      
-  ## Try firstly to load the glade file from the installed rattle
-  ## package, if it exists. Otherwise, look locally.
-  
-  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
-                silent=TRUE)
-  if (inherits(result, "try-error"))
-    rattleGUI <<- gladeXMLNew("rattleTM.glade",root="rattle_window")
-  else
-    rattleGUI <<- gladeXMLNew(file.path(etc,"rattleTM.glade"),root="rattle_window")
-
-  ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
-  
-  if (is.windows()) memory.limit(2073)
-  
-  ##
-  
-  addToLog(sprintf("RattleTM started %s by %s", Sys.time(), Sys.info()["user"]),
-          "## You can save all this to file by using the right mouse button to
-## Select All of the text, and then the right mouse button again to Copy.
-## Then paste the text into a text editor and save to file and/or print.
-## The point of doing this would be to save a log of what you have done,
-## potentially to repeat by sending the same commands directly to R.
-## You can also save and load projects, which also retains this log.")
-  
-}
-
 ## Common Dialogs
 
 debugDialog <- function(...)
@@ -505,14 +469,14 @@ packageIsAvailable <- function(pkg, msg=NULL)
   if (! is.element(pkg, (rownames(installed.packages()))))
   {
     if (!is.null(msg))
-      errorDialog("The package", pkg, "is required to",
-                  paste(msg, ".", sep=""),
-                  "It does not appear to be installed.",
-                  "Please consider installing it, perhaps with the",
-                  "R command",
-                  sprintf('install.packages("%s")', pkg),
-                  "to use the full",
-                  "functionality of Rattle.")
+      infoDialog("The package", pkg, "is required to",
+                 paste(msg, ".", sep=""),
+                 "It does not appear to be installed.",
+                 "Please consider installing it, perhaps with the",
+                 "R command",
+                 sprintf('install.packages("%s")', pkg),
+                 "to use the full",
+                 "functionality of Rattle.")
     return(FALSE)
   }
   else
@@ -558,7 +522,7 @@ sampleNeedsExecute <- function()
 
 setRattleTitle <- function(title)
 {
-  standard <- "Rattle: The Gnome R Data Miner"
+  standard <- "Rattle: Effective Data Mining with R"
   if (is.null(title))
     rattleWidget("rattle_window")$setTitle(standard)
   else
@@ -864,10 +828,13 @@ plotNetwork <- function(flow)
 
 update_comboboxentry_with_dataframes <- function(action, window)
 {
+  #cat("XXX Update Combobox XXX\n")
+  current <- rattleWidget("rdataset_combobox")$getActiveText()
+  
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
-                        cmd <- sprintf("is.data.frame(%s)",x)
+                        cmd <- sprintf("is.data.frame(%s)", x)
                         var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
                                           x, NULL), silent=TRUE)
                         if (inherits(var, "try-error"))
@@ -878,6 +845,9 @@ update_comboboxentry_with_dataframes <- function(action, window)
   {
     action$getModel()$clear()
     lapply(dl, action$appendText)
+    ## Set the selection to that which was already selected, if possible.
+    if (! is.null(current) && is.element(current, dl))
+      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
 }
 
@@ -898,6 +868,7 @@ quit_rattle <- function(action, window)
 ##
 display_click_execute_message <- function(button)
 {
+  #cat("XXX Display Click Execute message XXX\n")
   rattleWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
                "Now click the Execute button to load the dataset.",
@@ -910,6 +881,7 @@ display_click_execute_message <- function(button)
 
 on_csv_radiobutton_toggled <- function(button)
 {
+  #cat("XXX CSV Radio Toggle XXX\n")
   if (button$getActive())
   {
     DATA$setCurrentPage(DATA.CSV.TAB)
@@ -1010,6 +982,7 @@ load_rdata_set_combo <- function(button)
 
 on_rdataset_radiobutton_toggled <- function(button)
 {
+  #cat("XXX R Dataset Radio toggled XXX\n")
   if (button$getActive())
   {
     DATA$setCurrentPage(DATA.RDATASET.TAB)
@@ -1048,6 +1021,9 @@ open_odbc_set_combo <- function(a, b)
   
   ## Start logging and executing the R code.
 
+  if (! packageIsAvailable("RODBC", "connect to an ODBC database"))
+      return()
+      
   addLogSeparator()
 
   addToLog("Require the RODBC library", libraryCmd)
@@ -2622,13 +2598,6 @@ execute.explore.summary <- function(dataset)
                     collect.output(basicstats.cmd, TRUE))
   }
 
-  else
-  {
-    infoDialog("The fBasics package does not appear to be available",
-                "in your installation. Some summary data information will",
-                "not be available (e.g., Kurtosis and Skew).",
-                "Consider installing the fBasics package.")
-  }
   ## Report completion to the user through the Status Bar.
   
   setStatusBar("Data summary generated.")
@@ -2661,6 +2630,9 @@ calcInitialDigitDistr <- function(l)
 
 plotBenfordsLaw <- function(l)
 {
+  if (! packageIsAvailable("gplots", "plot Benford's law"))
+    return()
+  
   require(gplots)
   
   actual <- calcInitialDigitDistr(l)
@@ -4881,6 +4853,9 @@ execute.model.gbm <- function()
   
   ## Required library
 
+  if (! packageIsAvailable("gbm", "build an AdaBoost model"))
+    return()
+  
   library.cmd <- paste(sprintf("\n\n## Build a GBN (%s) model.",
                                    distribution),
                            "\n\nlibrary(gbm)")
@@ -5926,7 +5901,8 @@ executeEvaluateTab <- function()
   if (is.element(RPART, mtypes))
   {
     testset[[RPART]] <- testset0
-    predcmd[[RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)", testset)
+    predcmd[[RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
+                                testset[[RPART]])
 
     ## For RPART, the default is to generate class probabilities for
     ## each output class, so ensure we instead generate the response.
@@ -5943,7 +5919,8 @@ executeEvaluateTab <- function()
   if (is.element(RF, mtypes))
   {
     testset[[RF]] <- testset0
-    predcmd[[RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)", testset)
+    predcmd[[RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
+                             testset[[RF]])
 
     ## The default for RF is to predict the class, so no
     ## modification of the predict command is required.
@@ -6010,12 +5987,13 @@ executeEvaluateTab <- function()
 
     testset[[KSVM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)", testset)
+    predcmd[[KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
+                               testset[[KSVM]])
 
     ## The default for KSVM is to predict the class, so no
     ## modification of the predict command is required.
 
-    respcmd[[RF]] <- predcmd[[RF]]
+    respcmd[[KSVM]] <- predcmd[[KSVM]]
 
     ## For KSVM we request a probability with the type argument set to
     ## probability (but need prob.model=TRUE in model building). For SVM
@@ -6036,8 +6014,13 @@ executeEvaluateTab <- function()
     
   if (is.element(GLM, mtypes))
   {
-    testset[[GLM]] <- testset0
-    predcmd[[GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)", testset)
+    ## GLM's predict removes rows with missing values, so we also need
+    ## to ensure we remove rows with missing values here.
+    
+    testset[[GLM]] <- sprintf("na.omit(%s)", testset0)
+
+    predcmd[[GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+                              testset[[GLM]])
 
     ## For GLM, a response is a figure close to the class, either close
     ## to 1 or close to 0, so threshold it to be either 1 or 0. TODO
@@ -6045,13 +6028,13 @@ executeEvaluateTab <- function()
     ##    response.cmd <- gsub("predict", "(predict",
     ##                         gsub(")$", ")>0.5)*1", response.cmd))
 
-    respcmd <- gsub("predict", "as.factor(as.vector(ifelse(predict",
-                    gsub(")$", ', type="response") > 0.5, 1, 0)))',
-                         predcmd))
+    respcmd[[GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
+                           gsub(")$", ', type="response") > 0.5, 1, 0)))',
+                                predcmd[[GLM]]))
 
     ## For GLM, the response is a probability of the class.
   
-    probcmd[[GLM]] <- gsub(")$", ', type="response")', probcmd[[GLM]])
+    probcmd[[GLM]] <- gsub(")$", ', type="response")', predcmd[[GLM]])
   
   }
     
@@ -6063,7 +6046,7 @@ executeEvaluateTab <- function()
 
     predcmd[[GBM]] <- sprintf(paste("crs$pr <<- predict(crs$gbm, %s,",
                                     "n.trees=length(crs$gbm$trees))"),
-                              testset)
+                              testset[[GBM]])
     respcmd[[GBM]] <- predcmd[[GBM]]
     probcmd[[GBM]] <- predcmd[[GBM]]
   }
@@ -6139,19 +6122,19 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     result <- try(eval(parse(text=respcmd[[mtype]])), TRUE)
     if (inherits(result, "try-error"))
     {
-      if (any(grep("has new level", result)))
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
         errorDialog("It seems that the dataset on which the predictions",
-                    "from the GLM model are required has a categorical",
+                    "from the", mtype, "model are required has a categorical",
                     "variable with levels not found in the training",
-                    "dataset. The GLM predictions can not be made in",
+                    "dataset. The predictions can not be made in",
                     "this situation. You may need to either ensure",
                     "the training dataset has representatives of all levels",
                     "or else remove them from the testing dataset.",
                     "Alternatively, do not include that variable in the",
                     "modelling. \n\n The actual error message was:\n\n",
-                    result)
+                    paste(result, "\n"))
       else
-        errorDialog("Some error occured.  Best to let",
+        errorDialog("Some error occured with", respcmd, "Best to let",
                     "Graham.Williams@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       return()
