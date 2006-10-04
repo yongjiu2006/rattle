@@ -29,6 +29,7 @@ evaluateRisk(predicted, actual, risks)
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{\code{\link{plotRisk}}.}
 \examples{
+
 ## simulate the data that is typical in data mining
 
 ## we often have only a small number of positive known case
@@ -55,6 +56,7 @@ head(ev)
 tail(ev)
 
 ## the performance is usually presented as a Risk Chart
-plotRisk(ev$Caseload, ev$Precision, ev$Recall, ev$Risk)
+## under the CRAN MS/Windows this causes a problem, so don't run for now
+\dontrun{plotRisk(ev$Caseload, ev$Precision, ev$Recall, ev$Risk)}
 }
 \keyword{dplot}
