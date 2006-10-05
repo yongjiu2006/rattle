@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-06 06:05:27 Graham Williams>
+## Time-stamp: <2006-10-06 06:27:37 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -19,7 +19,8 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 
 ## Copyright (c) 2006 Graham Williams, Togaware.com
 
-.First.lib <- function()
+##.First.lib <- function(libname, pkgname)
+.onLoad <- function(libname, pkgname)
 {
   cat("\nRattle, (c) 2006, Graham Williams, togaware.com, GPL")
   cat("\nGraphical interface for data mining using R\n")
@@ -82,7 +83,7 @@ Add MART (R-MART),2006-09-03,Stuart Hamilton,Useful? Perhaps for rattleRG
 rattle <- function()
 {
 
-  require(RGtk2) # From http://www.ggobi.org/rgtk2/
+  require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
       
   ## Load the Rattle GUI specification. The three commands here
   ## represent an attempt to be independent of where R is running and
@@ -777,7 +778,7 @@ get.stem <- function(path)
 plotNetwork <- function(flow)
 {
   if (! packageIsAvailable("network", "draw the network plot")) return()
-  require(network)
+  require(network, quietly=TRUE)
   
   flow.net <- network(as.matrix(flow))
 
@@ -1013,7 +1014,7 @@ open_odbc_set_combo <- function(a, b)
   
   ## Generate commands to connect to the database and retrieve the tables.
 
-  libraryCmd <- sprintf("require(RODBC)")
+  libraryCmd <- sprintf("require(RODBC, quietly=TRUE)")
   connectCmd <- sprintf('crs$odbc <<- odbcConnect("%s")', DNSname)
   tablesCmd  <- sprintf('sqlTables(crs$odbc)$TABLE_NAME')
   
@@ -2556,7 +2557,7 @@ execute.explore.summary <- function(dataset)
                                              sep=""),
                                              dataset, dataset))))
 
-  library.cmd <- "library(fBasics)"
+  library.cmd <- "require(fBasics, quietly=TRUE)"
   kurtosis.cmd <- sprintf("kurtosis(%s[,%s], na.rm=TRUE)", dataset,
                           ifelse(is.null(nvars), "", nvars))
   skewness.cmd <- sprintf("skewness(%s[,%s], na.rm=TRUE)", dataset,
@@ -2637,7 +2638,7 @@ calcInitialDigitDistr <- function(l)
 plotBenfordsLaw <- function(l)
 {
   if (! packageIsAvailable("gplots", "plot Benford's law")) return()
-  require(gplots)
+  require(gplots, quietly=TRUE)
   
   actual <- calcInitialDigitDistr(l)
   
@@ -2811,7 +2812,20 @@ executeExplorePlot <- function(dataset)
 
     doByLibrary <- "require(doBy, quietly=TRUE)"
     
-    ##   TRY USING "by" instead of needing another package
+    ## TODO: Try using "by" instead of needing another package to
+    ## provide summaryBy. Also, the new version of doBy (061006) seems
+    ## to be outputting extra status information that makes the R
+    ## Console a little chatty unneccessarily - perhaps this will
+    ## disappear again - it looks like debugging information!
+    ##
+    ## status:
+    ## lhsvar     : dat 
+    ## rhsvar     : grp 
+    ## idvar      :  
+    ## fun.names  : mean 
+    ## varPrefix  : mean 
+    ## newNames   : mean.dat 
+
     meanCmd <- paste(sprintf("points(1:%d,", length(targets)+1),
                      "summaryBy(dat ~ grp, data=ds, FUN=mean)$mean.dat,",
                      "pch=8)")
@@ -2985,7 +2999,7 @@ executeExplorePlot <- function(dataset)
     
     ## Using barplot2 from gplots
     
-    libraryCmd <- "require(gplots)"
+    libraryCmd <- "require(gplots, quietly=TRUE)"
 
     ## Calculate the expected distribution according to Benford's Law
     
@@ -3192,7 +3206,7 @@ executeExplorePlot <- function(dataset)
 
     ## Use barplot2 from gplots.
     
-    libraryCmd <- "require(gplots)"
+    libraryCmd <- "require(gplots, quietly=TRUE)"
 
     ## Construct a generic data command built using the genericDataSet
     ## values. To generate a barplot we use the output of the summary
@@ -3712,7 +3726,7 @@ execute.cluster.kmeans <- function(include, doPlot=TRUE)
 
   if (packageIsAvailable("fpc","plot discriminant coordinates charts"))
   {
-    plot.cmd <- paste("require(fpc)\n",
+    plot.cmd <- paste("require(fpc, quietly=TRUE)\n",
                       sprintf("plotcluster(crs$dataset[%s,%s], ",
                               ifelse(sampling, "crs$sample", ""),
                               include),
@@ -3763,7 +3777,7 @@ execute.cluster.hclust <- function(include)
   
   ## TODO : If data is larg put up a question about wanting to continue?
   
-  library.cmd <- "library(cba)"
+  library.cmd <- "require(cba, quietly=TRUE)"
 
   sampling  <- ! is.null(crs$sample)
 
@@ -4368,7 +4382,7 @@ execute.model.rpart <- function()
 
   ## Commands.
   
-  library.cmd <- "library(rpart)"
+  library.cmd <- "require(rpart, quietly=TRUE)"
   if (! packageIsAvailable("rpart", "build decision trees")) return()
     
   rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
@@ -4835,7 +4849,7 @@ execute.model.gbm <- function()
   
   library.cmd <- paste(sprintf("\n\n## Build a GBN (%s) model.",
                                    distribution),
-                           "\n\nlibrary(gbm)")
+                           "\n\require(gbm, quietly=TRUE)")
 
   ## Boost command
 
@@ -4855,7 +4869,7 @@ execute.model.gbm <- function()
   ## Summary command
 
   summary.cmd <- "summary(crs$gbm, cBars=5)"
-  show.cmd <- "gbm.show.rules(crs$gbm)"
+  show.cmd <- "gbmShowRules(crs$gbm)"
  
   ## Log
 
@@ -4881,9 +4895,9 @@ execute.model.gbm <- function()
   setStatusBar("Boosted model has been generated.")
 }
 
-gbm.show.rules <- function(object, rules=1:object$n.trees)
+gbmShowRules <- function(object, rules=1:object$n.trees)
 {
-  stopifnot(require(gbm))
+  stopifnot(require(gbm, quietly=TRUE))
   cat(sprintf("Number of models: %d\n", object$n.trees))
   for (i in rules)
   {
@@ -4997,7 +5011,7 @@ execute.model.rf <- function()
 
   ## Commands
 
-  library.cmd <- "library(randomForest)"
+  library.cmd <- "require(randomForest, quietly=TRUE)"
 
   rf.cmd <- paste("crs$rf <<- randomForest(", frml, ", data=crs$dataset",
                   if (subsetting) "[",
@@ -5073,7 +5087,7 @@ printRandomForests <- function(model, models=NULL)
   if (! packageIsAvailable("randomForest", "print the rule sets"))
     return()
 
-  require(randomForest)
+  require(randomForest, quietly=TRUE)
 
   if (is.null(models)) models <- 1:model$ntree
 
@@ -5090,7 +5104,7 @@ printRandomForest <- function(model, n)
   if (! packageIsAvailable("randomForest", "generate the rule sets"))
     return()
 
-  require(randomForest)
+  require(randomForest, quietly=TRUE)
 
   tr <- getTree(model, n)
   tr.paths <- getRFPathNodes(tr)
@@ -5159,7 +5173,7 @@ randomForest2Rules <- function(model, models=NULL)
   if (! packageIsAvailable("randomForest", "generate the rule sets"))
     return()
 
-  require(randomForest)
+  require(randomForest, quietly=TRUE)
 
   if (is.null(models)) models <- 1:model$ntree
 
@@ -5184,7 +5198,7 @@ getRFRuleSet <- function(model, n)
   if (! packageIsAvailable("randomForest", "generate the rule sets"))
     return()
 
-  require(randomForest)
+  require(randomForest, quietly=TRUE)
 
   tr <- getTree(model, n)
   tr.paths <- getRFPathNodes(tr)
@@ -5366,7 +5380,7 @@ executeModelSVM <- function()
   {
     if (packageIsAvailable("kernlab", "build an SVM model using ksvm"))
     {
-      libCmd <- "library(kernlab)"
+      libCmd <- "require(kernlab, quietly=TRUE)"
       addToLog("The kernlab package supplies the ksvm function.", libCmd)
     }
     else
@@ -5376,7 +5390,7 @@ executeModelSVM <- function()
   {
     if (packageIsAvailable("e1071", "build an SVM model using svm"))
     {
-      libCmd <- "library(e1071)"
+      libCmd <- "require(e1071, quietly=TRUE)"
       addToLog("The e1071 package supplies the svm function.", libCmd)
     }
     else
@@ -6518,7 +6532,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 
 executeEvaluateLift <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR)"
+  library.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6574,7 +6588,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
 {
   TV <- "roc_textview"
   clearTextview(TV)
-  library.cmd <- "require(ROCR)"
+  library.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6641,7 +6655,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
 
 executeEvaluatePrecision <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR)"
+  library.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6696,7 +6710,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
 
 executeEvaluateSensitivity <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR)"
+  library.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6824,7 +6838,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 ##
 on_export_pmml_activate <- function(action, window)
 {
-  require(XML)
+  require(XML, quietly=TRUE)
 
   if (noDatasetLoaded()) return()
 
@@ -7700,7 +7714,7 @@ on_help_odbc_activate <- function(action, window)
 through the RODBC package. Tables avilable in the database will then be
 listed for selection."))
   {
-    library(RODBC)
+    require(RODBC, quietly=TRUE)
     popup.textview.help.window("RODBC")
   }
 }
@@ -7784,7 +7798,7 @@ The fBasics package is used to obtain the kurtosis and skewness."))
       popup.textview.help.window("summary")
       if (packageIsAvailable("fBasics"))
       {
-        library(fBasics)
+        require(fBasics, quietly=TRUE)
         popup.textview.help.window("kurtosis")
         popup.textview.help.window("skewness")
       }
@@ -7881,7 +7895,7 @@ Decision trees work with both numeric and categorical data.
 <<>>
 The rpart package is used to build the decision tree."))
   {
-    require(rpart)
+    require(rpart, quietly=TRUE)
     popup.textview.help.window("rpart")
   }
 }
@@ -7929,7 +7943,7 @@ rate.
 <<>>
 The R package is called randomForest."))
     {
-      require(randomForest)
+      require(randomForest, quietly=TRUE)
       popup.textview.help.window("randomForest")
     }
 }
@@ -7944,12 +7958,12 @@ ksvm from the kernlab package."))
   {
     if (packageIsAvailable("e1071", "view documentation for e1071"))
     {
-      require(e1071)
+      require(e1071, quietly=TRUE)
       popup.textview.help.window("svm")
     }
     if (packageIsAvailable("kernlab", "view documentation for kernlab"))
     {
-      require(kernlab)
+      require(kernlab, quietly=TRUE)
       popup.textview.help.window("ksvm")
     }
   }
@@ -7967,7 +7981,7 @@ models built.
 <<>>
 The gbm package is used to build the boosted model."))
     {
-      require(gbm)
+      require(gbm, quietly=TRUE)
       popup.textview.help.window("gbm")
     }
 }
@@ -7996,7 +8010,7 @@ An ROC curve has the false positive rate instead of Specificity, which
 is simply the count of false positives divided by the number of negatives
 (1-fnr)."))
   {
-    require("ROCR")
+    require(ROCR, quietly=TRUE)
     popup.textview.help.window("performance")
   }
 }
