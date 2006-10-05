@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-04 20:34:48 Graham Williams>
+## Time-stamp: <2006-10-05 11:21:08 Graham Williams>
 
 ## The different varieties of Rattle paradigms can be chosen as radio
 ## buttons above the tabs, and different choices result in different
@@ -776,9 +776,7 @@ get.stem <- function(path)
 
 plotNetwork <- function(flow)
 {
-  if (! packageIsAvailable("network", "draw the network plot"))
-    return()
-
+  if (! packageIsAvailable("network", "draw the network plot")) return()
   require(network)
   
   flow.net <- network(as.matrix(flow))
@@ -1021,8 +1019,7 @@ open_odbc_set_combo <- function(a, b)
   
   ## Start logging and executing the R code.
 
-  if (! packageIsAvailable("RODBC", "connect to an ODBC database"))
-      return()
+  if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return()
       
   addLogSeparator()
 
@@ -2583,20 +2580,20 @@ execute.explore.summary <- function(dataset)
   addToLog("Sum: Only suitable for numeric data.", sum.cmd)
   addToLog("Basic Statustics: Only suitable for numeric data.", basicstats.cmd)
                             
-  if (packageIsAvailable("fBasics", "calculate measures of skew and shape"))
-  {
-    eval(parse(text=library.cmd))
-    appendTextview(TV, paste("Kurtosis for numeric data:",
-                              "Larger means sharper peak, flatter tails.\n\n"),
-                    collect.output(kurtosis.cmd, TRUE),
-                    paste("\n\nSkewness for numeric data:",
-                          "Positive means the right tail is longer.\n\n"),
-                    collect.output(skewness.cmd, TRUE),
-                    paste("\n\nSum of each numeric column\n\n"),
-                    collect.output(sum.cmd, TRUE),
-                    paste("\n\nBasic stats for each numeric column\n\n"),
-                    collect.output(basicstats.cmd, TRUE))
-  }
+  if (! packageIsAvailable("fBasics", "calculate measures of skew and shape"))
+    return()
+
+  eval(parse(text=library.cmd))
+  appendTextview(TV, paste("Kurtosis for numeric data:",
+                           "Larger means sharper peak, flatter tails.\n\n"),
+                 collect.output(kurtosis.cmd, TRUE),
+                 paste("\n\nSkewness for numeric data:",
+                       "Positive means the right tail is longer.\n\n"),
+                 collect.output(skewness.cmd, TRUE),
+                 paste("\n\nSum of each numeric column\n\n"),
+                 collect.output(sum.cmd, TRUE),
+                 paste("\n\nBasic stats for each numeric column\n\n"),
+                 collect.output(basicstats.cmd, TRUE))
 
   ## Report completion to the user through the Status Bar.
   
@@ -2630,9 +2627,7 @@ calcInitialDigitDistr <- function(l)
 
 plotBenfordsLaw <- function(l)
 {
-  if (! packageIsAvailable("gplots", "plot Benford's law"))
-    return()
-  
+  if (! packageIsAvailable("gplots", "plot Benford's law")) return()
   require(gplots)
   
   actual <- calcInitialDigitDistr(l)
@@ -2949,18 +2944,11 @@ executeExplorePlot <- function(dataset)
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
 
-      if (packageIsAvailable("Hmisc", "plot cumulative charts"))
-      {
-        addToLog("Used ecdf from the Hmisc package.", libraryCmd)
-        eval(parse(text=libraryCmd))
-      }
-      else
-      {
-        infoDialog("The cumulative plot requires the Hmisc package",
-                   "which does not appear to be available.",
-                   "Consider install.packages('Hmisc').")
-        break()
-      }
+      if (! packageIsAvailable("Hmisc", "plot cumulative charts")) break()
+
+      addToLog("Used ecdf from the Hmisc package.", libraryCmd)
+      eval(parse(text=libraryCmd))
+
       addToLog("Plot the data.", plotCmd)
       eval(parse(text=plotCmd))
       title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s",
@@ -3304,10 +3292,6 @@ executeExplorePlot <- function(dataset)
   if (ndotplots > 0)
   {
     
-    ## Use lattice from gplots.
-    
-    libraryCmd <- "require(lattice)"
-
     ## Construct a generic data command built using the genericDataSet
     ## values. To generate a barplot we use the output of the summary
     ## command on each element in the genericDataSet, and bring them
@@ -3322,11 +3306,7 @@ executeExplorePlot <- function(dataset)
                             collapse=",\n    ")
     genericDataCmd <- sprintf("rbind(%s)", genericDataCmd)
 
-    ## If the gplots package is available then generate a plot for
-    ## each chosen vairable.
-    
-    if (packageIsAvailable("lattice", "display a dot plot"))
-    {
+      
     addToLog("Use dotplot from lattice for the plots.", libraryCmd)
     eval(parse(text=libraryCmd))
 
@@ -3367,21 +3347,7 @@ executeExplorePlot <- function(dataset)
                                         dotplots[s],
                                         ifelse(sampling," (sample)","")),
                                 vector=TRUE)
-## USE THIS TO USE THE NEW dotplot BUT IT DOES NOT WORK FOR
-## THE CHOSEN LAYOUT SOMEHOW????
-##         plotCmd <- sprintf(paste('dotplot(%s, main="%s", sub="%s",',
-##                                  '%s, xlab="Frequency")'),
-##                            ifelse(is.null(target), "ds[,ord]", "t(ds[,ord])"),
-##                            titles[1], titles[2],
-##                            ifelse(is.null(target), "",
-##                                   sprintf('key=simpleKey(c(%s), columns=%d%s)',
-##                                           paste(sprintf('"%s"',
-##                                                         c("All", targets)),
-##                                                 collapse=","),
-##                                           length(targets)+1,
-##                                           sprintf(', title="%s"', target))))
-##       addToLog("Plot the data.", plotCmd)
-##       print(eval(parse(text=plotCmd)))
+
       plotCmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
                                'col=rainbow(%d),%s',
                                'xlab="Frequency", pch=19)'),
@@ -3400,7 +3366,6 @@ executeExplorePlot <- function(dataset)
         eval(parse(text=legendCmd))
       }
     }
-  }
   }
 
   ## Update the status bar.
@@ -3473,6 +3438,8 @@ executeExploreCorrelation <- function(dataset)
   
   ## Start logging and executing the R code.
 
+  if (! packageIsAvailable("ellipse","display a correlation plot")) return()
+     
   addLogSeparator("Generate a correlation plot for the variables.")
   clearTextview(TV)
 
@@ -3844,7 +3811,7 @@ execute.cluster.hclust <- function(include)
     return()
   }
 
-  addToLog("Plot the Hierarchical Dedogram.", plot.cmd)
+##  addToLog("Plot the Hierarchical Dedogram.", plot.cmd)
 ##   if (packageIsAvailable("cba", "plot seriation charts"))
 ##   {
 ##     addToLog("We use the cba package for seriation.", library.cmd)

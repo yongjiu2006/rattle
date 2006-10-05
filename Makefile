@@ -16,7 +16,8 @@ REPOSITORY=repository
 # Canonical version information from rattle.R
 MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
-REVISION:=$(shell egrep '^REVISION' src/rattle.R | cut -d" "  -f 4)
+REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
+#REVISION:=$(shell egrep '^REVISION' src/rattle.R | cut -d" "  -f 4)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 DATE:=$(shell date +%F)
 
