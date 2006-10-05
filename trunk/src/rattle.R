@@ -1,10 +1,10 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-05 11:21:08 Graham Williams>
+## Time-stamp: <2006-10-06 06:05:27 Graham Williams>
 
-## The different varieties of Rattle paradigms can be chosen as radio
-## buttons above the tabs, and different choices result in different
-## collections of tabs being exposed.
+## TODO: The different varieties of Rattle paradigms can be chosen as
+## radio buttons above the tabs, and different choices result in
+## different collections of tabs being exposed.
 ##
 ## Two Class -> data variables sample explore model evaluate log
 ## Unsupervised -> data variables sample explore cluster log
@@ -253,7 +253,7 @@ rattle <- function()
   
   ## Some initialisations
   
-  init.variables.treeview()
+  initialiseVariableViews()
   
   ## Turn off the sub-notebook tabs.
   
@@ -1745,7 +1745,7 @@ getSelectedVariables <- function(role, named=TRUE)
   return(variables)
 }
 
-init.variables.treeview <- function()
+initialiseVariableViews <- function()
 {
 
   ## Define the models.
@@ -2476,19 +2476,28 @@ execute.explore.tab <- function()
 
   ## Ensure Sample does not require executing.
 
-  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
   sampling <- rattleWidget("sample_checkbutton")$getActive()
-  if (useSample && sampleNeedsExecute()) return()
+  if (use.sample && sampleNeedsExecute()) return()
 
   ## We generate a string representing the subset of the dataset on
   ## which the exploration is to be performed. This is then passed to
   ## the individually dispatched functions.
 
-
   vars <- getIncludedVariables(risk=TRUE)
   dataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                     ifelse(useSample & sampling,"crs$sample", ""),
+                     ifelse(use.sample & sampling,"crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
+
+  ## For the distribution plot, we do list all variables in the
+  ## interface, even if they are ignored. TODO 061006 We could instead
+  ## grey out the ignored ones (i.e., make them not sensitive). But
+  ## for now, for plots, allow all variables, even the ignored ones,
+  ## and thus we need a dataset that includes all variables - the
+  ## "avdataset".
+
+  avdataset <- sprintf("%s[%s,]", "crs$dataset",
+                     ifelse(use.sample & sampling,"crs$sample", ""))
   
   vars <- getIncludedVariables(numonly=TRUE)
   ## TODO 060606 The question here is whether NULL means all variables
@@ -2498,13 +2507,13 @@ execute.explore.tab <- function()
   #  ndataset <- NULL
   #else
     ndataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                        ifelse(useSample & sampling,"crs$sample", ""),
+                        ifelse(use.sample & sampling,"crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
   ## Numeric input variables
   vars <- input.variables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                       ifelse(useSample & sampling,"crs$sample", ""),
+                       ifelse(use.sample & sampling,"crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
   ## Dispatch
@@ -2512,7 +2521,7 @@ execute.explore.tab <- function()
   if (rattleWidget("summary_radiobutton")$getActive())
     execute.explore.summary(dataset)
   else if (rattleWidget("explot_radiobutton")$getActive())
-    executeExplorePlot(dataset)
+    executeExplorePlot(avdataset)
   else if (rattleWidget("correlation_radiobutton")$getActive())
   {
     if (rattleWidget("correlation_na_checkbutton")$getActive())
@@ -2565,10 +2574,10 @@ execute.explore.summary <- function(dataset)
   clearTextview(TV)
 
   addToLog("Generate a summary of the dataset.", summary.cmd)
-  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
   sampling  <- ! is.null(crs$sample)
   appendTextview(TV, paste("Summary of the",
-                            ifelse(useSample & sampling, "** sample **", "full"),
+                            ifelse(use.sample & sampling, "** sample **", "full"),
                             "dataset.\n\n",
                             "(Hint: 25% of values are below 1st Quartile.)",
                             "\n\n"),
@@ -2646,10 +2655,10 @@ plotBenfordsLaw <- function(l)
 executeExplorePlot <- function(dataset)
 {
   ## DESCRIPTION
-  ## Perform the requested action of plotting data from the Explore tab
+  ## Plot the data
   ##
   ## ARGUMENTS
-  ## database = A string that defines the database to use.
+  ## dataset = A string that defines the dataset to use.
   ##
   ## RETURNS
   ## ignored
@@ -2700,8 +2709,8 @@ executeExplorePlot <- function(dataset)
   
   ## Check for sampling.
   
-  useSample <- rattleWidget("explore_sample_checkbutton")$getActive()
-  sampling  <- useSample & ! is.null(crs$sample)
+  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  sampling  <- use.sample & ! is.null(crs$sample)
 
   ## Split the data, first for all values.
 
@@ -2800,7 +2809,7 @@ executeExplorePlot <- function(dataset)
                             sprintf('xlab="%s",', target)),
                      'notch=TRUE)')
 
-    doByLibrary <- "require(doBy)"
+    doByLibrary <- "require(doBy, quietly=TRUE)"
     
     ##   TRY USING "by" instead of needing another package
     meanCmd <- paste(sprintf("points(1:%d,", length(targets)+1),
@@ -3204,6 +3213,7 @@ executeExplorePlot <- function(dataset)
     
     if (packageIsAvailable("gplots", "plot a bar chart"))
     {
+      addLogSeparator()
       addToLog("Use barplot2 from gplots for the barchart.", libraryCmd)
       eval(parse(text=libraryCmd))
 
