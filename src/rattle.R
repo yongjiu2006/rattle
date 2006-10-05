@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-06 06:27:37 Graham Williams>
+## Time-stamp: <2006-10-06 06:39:25 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -19,10 +19,13 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 
 ## Copyright (c) 2006 Graham Williams, Togaware.com
 
-##.First.lib <- function(libname, pkgname)
 .onLoad <- function(libname, pkgname)
 {
-  cat("\nRattle, (c) 2006, Graham Williams, togaware.com, GPL")
+  ## TODO: How to not do this if quietly=TRUE? Otherwise it will be
+  ## annoying, just like fBasics. randomForest seems to do it
+  ## correctly?
+  
+  cat("Rattle, (c) 2006, Graham Williams, togaware.com, GPL")
   cat("\nGraphical interface for data mining using R\n")
   cat(sprintf("Version %s\n", VERSION))
 }
@@ -2923,7 +2926,7 @@ executeExplorePlot <- function(dataset)
 
     nplots <- length(cumplots)
 
-    libraryCmd <- "library(Hmisc)"
+    libraryCmd <- "require(Hmisc, quietly=TRUE)"
     
     for (s in 1:nplots)
     {
@@ -3430,7 +3433,7 @@ executeExploreCorrelation <- function(dataset)
     }
   }
 
-  library.cmd <-"library(ellipse)"
+  library.cmd <-"require(ellipse, quietly=TRUE)"
   crscor.cmd  <- sprintf("%scrscor <- cor(%s, use='pairwise')",
                          ifelse(nas, naids.cmd, ""),
                          ifelse(nas,
