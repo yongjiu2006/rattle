@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-06 06:39:25 Graham Williams>
+## Time-stamp: <2006-10-06 21:00:44 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -3425,10 +3425,17 @@ executeExploreCorrelation <- function(dataset)
   {
     naids.cmd <- sprintf('naids <- attr(na.omit(t(%s)), "na.action")\n',
                          dataset)
-    if (is.null(eval(parse(text=naids.cmd))))
+    eval(parse(text=naids.cmd))
+    if (is.null(naids))
     {
       errorDialog("The data contains no missing values, and so no",
                   "missing value correlation plot can be generated.")
+      return()
+    }
+    if (length(naids) == 1)
+    {
+      errorDialog("The data contains only one column with missing values,",
+                  "and so no missing value correlation plot can be generated.")
       return()
     }
   }
