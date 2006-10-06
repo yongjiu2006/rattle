@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-06 21:00:44 Graham Williams>
+## Time-stamp: <2006-10-06 22:17:39 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -218,6 +218,7 @@ rattle <- function()
   EXPLORE                 <<- rattleWidget("explore_notebook")
   EXPLORE.SUMMARY.TAB     <<- getNotebookPage(EXPLORE, "summary")
   EXPLORE.PLOT.TAB        <<- getNotebookPage(EXPLORE, "explot")
+  EXPLORE.GGOBI.TAB       <<- getNotebookPage(EXPLORE, "ggobi")
   EXPLORE.CORRELATION.TAB <<- getNotebookPage(EXPLORE, "correlation")
   EXPLORE.HIERCOR.TAB     <<- getNotebookPage(EXPLORE, "hiercor")
   EXPLORE.PRCOMP.TAB      <<- getNotebookPage(EXPLORE, "prcomp")
@@ -2351,6 +2352,12 @@ on_explot_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+on_ggobi_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.GGOBI.TAB)
+  setStatusBar()
+}
+
 on_correlation_radiobutton_toggled <- function(button)
 {
   nabutton <- rattleWidget("correlation_na_checkbutton")
@@ -2471,7 +2478,7 @@ on_continuous_clear_button_clicked <- function(action, window)
 ## Execution
 ##
 
-execute.explore.tab <- function()
+executeExploreTab <- function()
 {
   
   ## Can not explore the data if there is no dataset.
@@ -2526,6 +2533,8 @@ execute.explore.tab <- function()
     execute.explore.summary(dataset)
   else if (rattleWidget("explot_radiobutton")$getActive())
     executeExplorePlot(avdataset)
+  else if (rattleWidget("ggobi_radiobutton")$getActive())
+    executeExploreGGobi(dataset)
   else if (rattleWidget("correlation_radiobutton")$getActive())
   {
     if (rattleWidget("correlation_na_checkbutton")$getActive())
@@ -3405,6 +3414,28 @@ executeExplorePlot <- function(dataset)
     setStatusBar("No plots selected.")
 }
   
+executeExploreGGobi <- function(dataset)
+{
+  ## Based on code from Marco Lo
+  
+  ## Construct the commands.
+
+  library.cmd <- "require(rggobi, quietly=TRUE)"
+  ggobi.cmd <- sprintf('gg <<- ggobi(%s)', dataset)
+              
+  ## Start logging and executing the R code.
+  
+  if (! packageIsAvailable("rggobi","explore the data using GGobi")) return()
+
+  addLogSeparator()
+  addToLog("GGobi is accessed using the rggobi package.", library.cmd)
+  eval(parse(text=library.cmd))
+  addToLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
+  eval(parse(text=ggobi.cmd))
+  
+  setStatusBar("GGobi executed.")
+}
+
 executeExploreCorrelation <- function(dataset)
 {
   TV <- "correlation_textview"
@@ -7484,7 +7515,7 @@ dispatchExecuteButton <- function()
   }
   else if (ct == NOTEBOOK.EXPLORE.TAB)
   {
-    execute.explore.tab()
+    executeExploreTab()
   }
   else if (ct == NOTEBOOK.VARIABLES.TAB)
   {
