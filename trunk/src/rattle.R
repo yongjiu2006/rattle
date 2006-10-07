@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-07 14:56:43 Graham Williams>
+## Time-stamp: <2006-10-07 21:26:20 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -25,8 +25,8 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
   ## annoying, just like fBasics. randomForest seems to do it
   ## correctly?
   
-  cat("Rattle, (c) 2006, Graham Williams, togaware.com, GPL")
-  cat("\nGraphical interface for data mining using R\n")
+  cat("Rattle, Graphical interface for data mining using R")
+  cat("\nCopyright (c) 2006, Graham Williams, rattle.togaware.com, GPL\n")
   cat(sprintf("Version %s\n", VERSION))
 }
 
@@ -593,7 +593,7 @@ addToLog <- function(start, ..., sep=" ", no.start=FALSE)
   log.buf$insert(location, msg)
 }
 
-collect.output <- function(command, use.print=FALSE)
+collectOutput <- function(command, use.print=FALSE, width=getOption("width"))
 {
   ## TODO Should this use cat or print? Cat translates the \n to a
   ## newline and doesn't precede the output by [1].  For pretty output
@@ -601,6 +601,8 @@ collect.output <- function(command, use.print=FALSE)
   ## of formatted text and you want to look at it (as data), print()
   ## would be better.
 
+  owidth <- getOption("width")
+  options(width=width)
   if (use.print)
     command <- paste("print(", command, ")", sep="")
   zz <- textConnection("commandsink", "w", TRUE)
@@ -615,6 +617,7 @@ collect.output <- function(command, use.print=FALSE)
                  "Refer to the R Console for details.")
     commandsink <- "FAILED"
   }
+  options(width=owidth)
   return(paste(commandsink, collapse="\n"))
 }
 
@@ -709,7 +712,7 @@ set.cursor <- function(cursor="left-ptr")
   setCursor(gdkCursorNew(cursor))
 }
 
-simplify.number.list <- function(nums)
+simplifyNumberList <- function(nums)
 {
   ## Convert 3 4 6 7 8 9 10 12 14 16 17 18 19 21 to
   ## "3:4,6:10,12,14,16:19,21"
@@ -1171,7 +1174,7 @@ execute.data.csv <- function()
 
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
-                  collect.output(str.cmd))
+                  collectOutput(str.cmd))
   
   ## Update the variables treeview and samples.
 
@@ -1243,7 +1246,7 @@ executeDataODBC <- function()
   addToLog("Display a simple summary (structure) of the dataset.", strCmd)
   appendTextview(TV,
                   sprintf("Structure of %s from %s.\n\n", table, DNSname),
-                  collect.output(strCmd))
+                  collectOutput(strCmd))
   
   ## Update the variables treeview and samples.
 
@@ -1323,7 +1326,7 @@ executeDataRdata <- function()
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV,
                   sprintf("Structure of %s from %s.\n\n", dataset, filename),
-                  collect.output(str.cmd))
+                  collectOutput(str.cmd))
   
   ## Update the variables treeview and samples.
 
@@ -1385,7 +1388,7 @@ executeDataRdataset <- function()
   
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
   setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
-               collect.output(str.cmd), sep="")
+               collectOutput(str.cmd), sep="")
 
   ## Update the variables treeview and samples.
 
@@ -2320,7 +2323,28 @@ executeSampleTab <- function()
 
 on_summary_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
+  summary.button  <- rattleWidget("summary_checkbutton")
+  describe.button <- rattleWidget("describe_checkbutton")
+  basics.button   <- rattleWidget("basics_checkbutton")
+  kurtosis.button <- rattleWidget("kurtosis_checkbutton")
+  skewness.button <- rattleWidget("skewness_checkbutton")
+  if (button$getActive())
+  {
+    EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
+    summary.button$show()
+    describe.button$show()
+    basics.button$show()
+    kurtosis.button$show()
+    skewness.button$show()
+  }
+  else
+  {
+    summary.button$hide()
+    describe.button$hide()
+    basics.button$hide()
+    kurtosis.button$hide()
+    skewness.button$hide()
+  }
   setStatusBar()
 }
 
@@ -2517,7 +2541,7 @@ executeExploreTab <- function()
   ## Dispatch
   
   if (rattleWidget("summary_radiobutton")$getActive())
-    execute.explore.summary(dataset)
+    executeExploreSummary(dataset)
   else if (rattleWidget("explot_radiobutton")$getActive())
     executeExplorePlot(avdataset)
   else if (rattleWidget("ggobi_radiobutton")$getActive())
@@ -2535,75 +2559,139 @@ executeExploreTab <- function()
     executeExplorePrcomp(nidataset)
 }
 
-execute.explore.summary <- function(dataset)
+executeExploreSummary <- function(dataset)
 {
   TV <- "summary_textview"
+
+  ## Get the current state of the relevant buttons.
   
-  ## Construct the command.
+  use.sample  <- rattleWidget("explore_sample_checkbutton")$getActive()
+  do.summary  <- rattleWidget("summary_checkbutton")$getActive()
+  do.describe <- rattleWidget("describe_checkbutton")$getActive()
+  do.basics   <- rattleWidget("basics_checkbutton")$getActive()
+  do.kurtosis <- rattleWidget("kurtosis_checkbutton")$getActive()
+  do.skewness <- rattleWidget("skewness_checkbutton")$getActive()
 
-  ## First, a basic summary command
+  ## Make sure something has been selected.
   
-  summary.cmd <- sprintf("summary(%s)", dataset)
-
-  ## Now some additional information: kurtosis, skewness, and sum.
-  ## Use the functions from fBasics. Different functions available in
-  ## the packages e1071, fBasics, moments.
-
-  ## We check for just those colums of the dataset which are numeric.
-
-  nvars <- simplify.number.list(eval(parse(text=sprintf(paste("seq(1,ncol(%s))",
-                                         "[as.logical(sapply(%s, is.numeric))]",
-                                             sep=""),
-                                             dataset, dataset))))
-
-  library.cmd <- "require(fBasics, quietly=TRUE)"
-  kurtosis.cmd <- sprintf("kurtosis(%s[,%s], na.rm=TRUE)", dataset,
-                          ifelse(is.null(nvars), "", nvars))
-  skewness.cmd <- sprintf("skewness(%s[,%s], na.rm=TRUE)", dataset,
-                          ifelse(is.null(nvars), "", nvars))
+  if (! (do.summary || do.describe || do.basics ||
+         do.kurtosis || do.skewness))
+  {
+    infoDialog("No summary type has been selected.",
+               "Please choose at least one to get some output.")
+    return()
+  }
+    
+  ## Other useful information:
+  ##   is there a sample
+  ##   list of numeric variables
   
-  basicstats.cmd <- sprintf("lapply(%s[,%s], basicStats)", dataset,
-                          ifelse(is.null(nvars), "", nvars))
-                            
-  sum.cmd <- sprintf("unlist(lapply(%s[,%s],function(x){sum(as.numeric(x), na.rm=TRUE)}))",
-                     dataset, ifelse(is.null(nvars), "", nvars))
-  
-  ## Start logging and executing the R code.
+  sampling  <- ! is.null(crs$sample)
+
+  numeric.cmd <- sprintf(paste("seq(1,ncol(%s))",
+                               "[as.logical(sapply(%s, is.numeric))]",
+                               sep=""), dataset, dataset)
+  nvars <- simplifyNumberList(eval(parse(text=numeric.cmd)))
+
+  ## Start the trace to the log.
   
   addLogSeparator()
   clearTextview(TV)
 
-  addToLog("Generate a summary of the dataset.", summary.cmd)
-  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
-  sampling  <- ! is.null(crs$sample)
-  appendTextview(TV, paste("Summary of the",
-                            ifelse(use.sample & sampling, "** sample **", "full"),
-                            "dataset.\n\n",
-                            "(Hint: 25% of values are below 1st Quartile.)",
-                            "\n\n"),
-                  collect.output(summary.cmd, TRUE))
+  ## Construct and execute the requested commands.
 
-  addToLog("Additional information using fBasics package.", library.cmd)
-  addToLog("Kurtosis: Only suitable for numeric data.", kurtosis.cmd)
-  addToLog("Skewness: Only suitable for numeric data.", skewness.cmd)
-  addToLog("Sum: Only suitable for numeric data.", sum.cmd)
-  addToLog("Basic Statustics: Only suitable for numeric data.", basicstats.cmd)
-                            
-  if (! packageIsAvailable("fBasics", "calculate measures of skew and shape"))
-    return()
+  if (do.summary)
+  {
+    ## A basic summary.
+  
+    summary.cmd <- sprintf("summary(%s)", dataset)
+    addToLog("Generate a summary of the dataset.", summary.cmd)
+    appendTextview(TV,
+                   paste("Summary of the",
+                         ifelse(use.sample & sampling, "** sample **", "full"),
+                         "dataset.\n\n",
+                         "(Hint: 25% of values are below 1st Quartile.)",
+                         "\n\n"),
+                   collectOutput(summary.cmd, TRUE))
+  }
 
-  eval(parse(text=library.cmd))
-  appendTextview(TV, paste("Kurtosis for numeric data:",
-                           "Larger means sharper peak, flatter tails.\n\n"),
-                 collect.output(kurtosis.cmd, TRUE),
-                 paste("\n\nSkewness for numeric data:",
-                       "Positive means the right tail is longer.\n\n"),
-                 collect.output(skewness.cmd, TRUE),
-                 paste("\n\nSum of each numeric column\n\n"),
-                 collect.output(sum.cmd, TRUE),
-                 paste("\n\nBasic stats for each numeric column\n\n"),
-                 collect.output(basicstats.cmd, TRUE))
+  if (do.describe)
+  {
+    ## A different summary, using Hmisc's describe.
+  
+    if (packageIsAvailable("Hmisc", "describe the data"))
+    {
+      library.cmd <- "require(Hmisc, quietly=TRUE)"
+      addToLog("The describe command comes from Hmisc.", library.cmd)
+      
+      describe.cmd <- sprintf("describe(%s)", dataset)
+      addToLog("Generate a description of the dataset.", describe.cmd)
+      appendTextview(TV,
+                     paste("Description of the",
+                           ifelse(use.sample & sampling,
+                                  "** sample **", "full"),
+                           "dataset.\n\n"),
+                     collectOutput(describe.cmd, TRUE, width=200))
+    }
+  }
 
+  if (do.basics || do.kurtosis || do.skewness)
+  {
+    ## These all require the fBasics library, so check only once.
+    
+    if (packageIsAvailable("fBasics", "calculate basics, skew and kurtosis"))
+    {
+      library.cmd <- "require(fBasics, quietly=TRUE)"
+      addToLog("Use functionality from the fBasics package.", library.cmd)
+      
+      if (do.basics)
+      {
+        basics.cmd <- sprintf("lapply(%s[,%s], basicStats)", dataset,
+                              ifelse(is.null(nvars), "", nvars))
+        addToLog("Generate a summary of the numeric data.", basics.cmd)
+        appendTextview(TV,
+                       paste("Basic statistics for each numeric variable",
+                             "of the",
+                             ifelse(use.sample & sampling,
+                                    "** sample **", "full"),
+                             "dataset.\n\n"),
+                       collectOutput(basics.cmd, TRUE))
+      }
+      
+      if (do.kurtosis)
+      {
+        kurtosis.cmd <- sprintf("kurtosis(%s[,%s], na.rm=TRUE)", dataset,
+                                ifelse(is.null(nvars), "", nvars))
+
+        addToLog("Summarise the kurtosis of the numeric data.", kurtosis.cmd)
+        appendTextview(TV,
+                       paste("Kurtosis for each numeric variable",
+                             "of the",
+                             ifelse(use.sample & sampling,
+                                    "** sample **", "full"),
+                             "dataset.\nLarger values",
+                             "mean sharper peaks and flatter tails.\n\n"),
+                       collectOutput(kurtosis.cmd, TRUE))
+      }
+
+      if (do.skewness)
+      {
+        skewness.cmd <- sprintf("skewness(%s[,%s], na.rm=TRUE)", dataset,
+                                ifelse(is.null(nvars), "", nvars))
+
+        addToLog("Summarise the skewness of the numeric data.", skewness.cmd)
+        appendTextview(TV,
+                       paste("Skewness for each numeric variable",
+                             "of the",
+                             ifelse(use.sample & sampling,
+                                    "** sample **", "full"),
+                             "dataset.\nPositive means the right tail",
+                             "is longer.\n\n"),
+                       collectOutput(skewness.cmd, TRUE))
+      }
+    }
+  }
+      
   ## Report completion to the user through the Status Bar.
   
   setStatusBar("Data summary generated.")
@@ -3509,7 +3597,7 @@ executeExploreCorrelation <- function(dataset)
                       "Correlation Summary.\n\n"),
                "Note that only correlations between numeric variables ",
                "are reported.\n\n",
-               collect.output(paste(crscor.cmd,
+               collectOutput(paste(crscor.cmd,
                                     crsord.cmd,
                                     print.cmd,
                                     sep="\n")))
@@ -3636,10 +3724,10 @@ executeExplorePrcomp <- function(dataset)
                   "to include in the modelling.")
 
   addToLog("Show the output of the analysis,", print.cmd)
-  appendTextview(TV, collect.output(print.cmd, TRUE))
+  appendTextview(TV, collectOutput(print.cmd, TRUE))
   
   addToLog("Summarise the importance of the components found.", summary.cmd)
-  appendTextview(TV, collect.output(summary.cmd, TRUE))
+  appendTextview(TV, collectOutput(summary.cmd, TRUE))
 
   newPlot(1)
   addToLog("Display a plot showing the relative importance of the components.",
@@ -3717,7 +3805,7 @@ execute.cluster.tab <- function()
   if (length(nums) > 0)
   {
     indicies <- getVariableIndicies(crs$input)
-    include <- simplify.number.list(intersect(nums, indicies))
+    include <- simplifyNumberList(intersect(nums, indicies))
   }
   
   if (length(nums) == 0 || length(indicies) == 0)
@@ -3775,10 +3863,10 @@ execute.cluster.kmeans <- function(include, doPlot=TRUE)
   clearTextview("kmeans_textview")
   appendTextview("kmeans_textview",
                  "Cluster Sizes\n\n",
-                 collect.output("paste(crs$kmeans$size, collapse=' ')", TRUE),
+                 collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
                  "\n\n",
                  "Cluster centroids.\n\n",
-                 collect.output("crs$kmeans$centers", TRUE),
+                 collectOutput("crs$kmeans$centers", TRUE),
                  textviewSeparator())
 
   if (doPlot && packageIsAvailable("fpc"))
@@ -3873,7 +3961,7 @@ execute.cluster.hclust <- function(include)
   clearTextview(TV)
   appendTextview(TV,
                   "Hiearchical Cluster\n\n",
-                  collect.output("crs$hclust", TRUE),
+                  collectOutput("crs$hclust", TRUE),
                   eval(parse(text=plot.cmd)))
 
 ## VERY SLOW - PERHAPS NEED A CHECKBOX TO TURN IT ON
@@ -3887,7 +3975,7 @@ execute.cluster.hclust <- function(include)
 ##                     eval(parse(text=seriation.cmd)))
 ##                                         #"\n\n",
 ##                #"Cluster centroids.\n\n",
-##                #collect.output("crs$kmeans$centers", TRUE),
+##                #collectOutput("crs$kmeans$centers", TRUE),
 ##   }
   
   setStatusBar("Hierarchical cluster has been generated.")
@@ -4055,7 +4143,7 @@ getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE)
   if (! listall && setequal(union(fi,union(ti, ri)), fl))
     return(NULL)
   else
-    return(simplify.number.list(intersect(fl, union(fi, union(ti, ri)))))
+    return(simplifyNumberList(intersect(fl, union(fi, union(ti, ri)))))
 }
 
 input.variables <- function(numonly=FALSE)
@@ -4084,7 +4172,7 @@ input.variables <- function(numonly=FALSE)
   if (setequal(fi, fl))
     return(NULL)
   else
-    return(simplify.number.list(intersect(fl,fi)))
+    return(simplifyNumberList(intersect(fl,fi)))
 }
 
 used.variables <- function(numonly=FALSE)
@@ -4104,7 +4192,7 @@ used.variables <- function(numonly=FALSE)
   if (setequal(fl, ii))
     return(NULL)
   else
-    return(simplify.number.list(setdiff(fl, ii)))
+    return(simplifyNumberList(setdiff(fl, ii)))
 }
 
 ##----------------------------------------------------------------------
@@ -4256,7 +4344,7 @@ execute.model.glm <- function()
   clearTextview("glm_textview")
   setTextview("glm_textview",
               "Summary of the model built using glm.\n",
-              collect.output(summary.cmd, TRUE),
+              collectOutput(summary.cmd, TRUE),
               textviewSeparator())
 
   if (sampling) crs$smodel <<- union(crs$smodel, GLM)
@@ -4487,10 +4575,10 @@ execute.model.rpart <- function()
   clearTextview("rpart_textview")
   setTextview("rpart_textview",
               "Summary of the rpart model:\n\n",
-              collect.output(print.cmd),
+              collectOutput(print.cmd),
               textviewSeparator(),
               "Tree as rules:\n\n",
-              collect.output(listrules.cmd, TRUE),
+              collectOutput(listrules.cmd, TRUE),
               textviewSeparator())
 
   if (sampling) crs$smodel <<- union(crs$smodel, RPART)
@@ -4883,7 +4971,7 @@ execute.model.gbm <- function()
 
   ## Use gbm.fit rather than gbm for more efficiency.
 
-  included <- simplify.number.list(indicies)
+  included <- simplifyNumberList(indicies)
   
   boost.cmd <- paste("crs$gbm <<- gbm.fit(crs$dataset[",
                          if (sampling) "crs$sample",
@@ -4911,11 +4999,11 @@ execute.model.gbm <- function()
   clearTextview("gbm_textview")
   setTextview("gbm_textview",
                "Output from GBM model builder:\n\n",
-               collect.output(boost.cmd),
+               collectOutput(boost.cmd),
                "\n\nSummary of relative influence of each variable:\n\n",
-               collect.output(paste("print(",summary.cmd, ")")),
+               collectOutput(paste("print(",summary.cmd, ")")),
                "\n\nRules making up the model:\n\n",
-               collect.output(show.cmd),
+               collectOutput(show.cmd),
                sep="")
 
   if (sampling) crs$smodel <<- union(crs$smodel, GBM)
@@ -5096,10 +5184,10 @@ execute.model.rf <- function()
   clearTextview("rf_textview")
   setTextview("rf_textview",
               "Summary of the randomForest model:\n\n",
-              collect.output(summary.cmd, TRUE),
+              collectOutput(summary.cmd, TRUE),
               textviewSeparator(),
               "Variable importance:\n\n",
-              collect.output(importance.cmd, TRUE),
+              collectOutput(importance.cmd, TRUE),
               textviewSeparator(),
               "To view model 5, for example, run printRandomForests(crs$rf, 5)\n",
               "in the R conosle. Generating all 500 models takes quite some time.",
@@ -5491,7 +5579,7 @@ executeModelSVM <- function()
   clearTextview(TV)
   setTextview(TV,
               "Summary of the svm model:\n\n",
-              collect.output(summaryCmd, TRUE),
+              collectOutput(summaryCmd, TRUE),
               textviewSeparator())
 
   if (sampling)
@@ -6161,11 +6249,11 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     
     addToLog("Now generate the confusion matrix.", confuse.cmd)
 
-    confuse.output <- collect.output(confuse.cmd, TRUE)
+    confuse.output <- collectOutput(confuse.cmd, TRUE)
   
     addToLog("Generate confusion matrix showing percentages.", percentage.cmd)
 
-    percentage.output <- collect.output(percentage.cmd, TRUE)
+    percentage.output <- collectOutput(percentage.cmd, TRUE)
   
     appendTextview("confusion_textview",
                    sprintf("Confusion matrix %s model on %s (counts):\n\n",
@@ -6281,7 +6369,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     msg <- paste("Summary ", mtype, " model on ",
                  testname,
                  " by probability cutoffs.\n\n", msg, sep="")
-    appendTextview(TV, msg, collect.output(sprintf("crs$eval[%s,]", id), TRUE))
+    appendTextview(TV, msg, collectOutput(sprintf("crs$eval[%s,]", id), TRUE))
 
     ## Display the Risk Chart itself now.
 
@@ -6886,7 +6974,7 @@ on_export_pmml_activate <- function(action, window)
       }
       else
       {
-        write(collect.output("pmml.kmeans(crs$kmeans)", TRUE),
+        write(collectOutput("pmml.kmeans(crs$kmeans)", TRUE),
               file=sprintf("%s-kmeans.pmml", gsub(".csv", "", crs$dataname)))
         infoDialog("The PMML file",
                     sprintf('"%s-kmeans.pmml"', gsub(".csv", "", crs$dataname)),
@@ -6914,7 +7002,7 @@ on_export_pmml_activate <- function(action, window)
       }
       else
       {
-        write(collect.output("pmml.rpart(crs$rpart)", TRUE),
+        write(collectOutput("pmml.rpart(crs$rpart)", TRUE),
               file=sprintf("%s-rpart.pmml", gsub(".csv", "", crs$dataname)))
         infoDialog("The PMML file",
                     sprintf('"%s-rpart.pmml"', gsub(".csv", "", crs$dataname)),
@@ -7598,9 +7686,9 @@ on_notebook_switch_page <- function(notebook, window, page)
 
 ## HELP
 
-popup.textview.help.window <- function(topic)
+popupTextviewHelpWindow <- function(topic)
 {
-  collect.output(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
+  collectOutput(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
 }
 
 further.help <- function(msg)
@@ -7711,7 +7799,7 @@ A common alternative is a tab (\\t), or simply leave it blank to have
 any white space act as a separator.
 <<>>
 The corresponding R code uses the simple read.csv() function."))
-    popup.textview.help.window("read.csv") }
+    popupTextviewHelpWindow("read.csv") }
 
 on_help_rdata_file_activate <- function(action, window)
 {
@@ -7743,7 +7831,7 @@ through the RODBC package. Tables avilable in the database will then be
 listed for selection."))
   {
     require(RODBC, quietly=TRUE)
-    popup.textview.help.window("RODBC")
+    popupTextviewHelpWindow("RODBC")
   }
 }
 
@@ -7800,19 +7888,24 @@ on_help_summary_activate <- function(action, window)
 information about each of the variables of the dataset.
 <<>>
 For numeric data, this
-will include the minimum, maximum, median (the value of the variable at the
+can include the minimum, maximum, median (the value of the variable at the
 midpoint of the dataset), mean (the average value of the variable),
-and the first and third quartiles (25% of the data has values below the first
-quartile, and another 25% of the data has values above the third quartile).
+and the first and third quartiles (25 percent of the data has values
+below the first
+quartile, and another 25 percent of the data has values above the third quartile).
 <<>>
 For categorical data the frequency distribution across the values is listed.
 If there are too many possible values, then only the top few are listed, with
 the remainder counted as Other.
 <<>>
-The R function summary() is used for the basic summary.
+The R function summary() is used for the summary.
 <<>>
-Additional information is provided for numeric variables, including the
-kurtosis and skewness. The kurtosis is a measure of the nature of the peaks
+Additional or differently presented summary information is provided
+through additional options. Describe produces a similar summary presented
+differently. For numeric variables, the Basic statistics can be obtained,
+includeing kurtosis and skewness.
+<<>>
+The kurtosis is a measure of the nature of the peaks
 in the distribution of the data. A high kurtosis indicates a sharper peak
 and fatter tails while a lower kurtosis indicates a more rounded peak
 with wider shoulders.
@@ -7821,14 +7914,19 @@ The skewness indicates the assymetry of the distribution. A positive skew
 indicates that the tail to the right is longer, and a negative skew that the
 tail to the left is longer.
 <<>>
-The fBasics package is used to obtain the kurtosis and skewness."))
+The fBasics package is used for the Basic summary and
+the kurtosis and skewness."))
     {
-      popup.textview.help.window("summary")
+      popupTextviewHelpWindow("summary")
+      if (packageIsAvailable("Hmisc"))
+      {
+        require(Hmisc, quietly=TRUE)
+        popupTextviewHelpWindow("describe")
+      }
       if (packageIsAvailable("fBasics"))
       {
         require(fBasics, quietly=TRUE)
-        popup.textview.help.window("kurtosis")
-        popup.textview.help.window("skewness")
+        popupTextviewHelpWindow("basicStats")
       }
     }
 }
@@ -7841,7 +7939,7 @@ a graphic plot is also generated. The plot uses circles and colour to
 indicate the strength of any correlation.
 <<>>
 The R function cor() is used to produce the correlation data."))
-    popup.textview.help.window("cor")
+    popupTextviewHelpWindow("cor")
 }
 
 on_help_hierarchical_correlation_activate <- function(action, window)
@@ -7854,9 +7952,9 @@ cor() function to gnerate the correlations between the variables, the
 hclust() function to perform the hierarchical clustering, and converts
 the result to a dendrogram, using as.dendrogram(), for plotting."))
   {
-    popup.textview.help.window("cor")
-    popup.textview.help.window("hclust")
-    popup.textview.help.window("dendrogram")
+    popupTextviewHelpWindow("cor")
+    popupTextviewHelpWindow("hclust")
+    popupTextviewHelpWindow("dendrogram")
   }
  
 }
@@ -7882,7 +7980,7 @@ which are then displayed in the textview and the relative importance
 of the components is plotted.
 <<>>
 Note that only numeric data is included in the analysis."))
-    popup.textview.help.window("prcomp")
+    popupTextviewHelpWindow("prcomp")
 }
 
 on_help_kmeans_activate <- function(action, window)
@@ -7891,8 +7989,8 @@ on_help_kmeans_activate <- function(action, window)
 In addition to building a cluster, a discriminate coordinates plot
 is generated, using tha package fpc, as a display of the clusters."))
   {
-    popup.textview.help.window("kmeans")
-    popup.textview.help.window("plotcluster")
+    popupTextviewHelpWindow("kmeans")
+    popupTextviewHelpWindow("plotcluster")
   }
 }
 
@@ -7924,7 +8022,7 @@ Decision trees work with both numeric and categorical data.
 The rpart package is used to build the decision tree."))
   {
     require(rpart, quietly=TRUE)
-    popup.textview.help.window("rpart")
+    popupTextviewHelpWindow("rpart")
   }
 }
 
@@ -7940,8 +8038,8 @@ Please see the additional documentation.
 <<>>
 The R function glm() is used for regression."))
   {
-    popup.textview.help.window("glm")
-    popup.textview.help.window("family")
+    popupTextviewHelpWindow("glm")
+    popupTextviewHelpWindow("family")
   }
 }
 
@@ -7972,7 +8070,7 @@ rate.
 The R package is called randomForest."))
     {
       require(randomForest, quietly=TRUE)
-      popup.textview.help.window("randomForest")
+      popupTextviewHelpWindow("randomForest")
     }
 }
 
@@ -7981,18 +8079,17 @@ on_help_support_vector_machine_activate <- function(action, window)
   if (further.help("SVM (Support Vector Machine) is a modern approach
 to modelling where the data is mapped to a higher dimensional space so
 that it is more likely that we can find vectors separating the classes.
-Rattle supports both svm from the e1071 package and
-ksvm from the kernlab package."))
+Rattle deploys ksvm from the kernlab package."))
   {
-    if (packageIsAvailable("e1071", "view documentation for e1071"))
-    {
-      require(e1071, quietly=TRUE)
-      popup.textview.help.window("svm")
-    }
+    #if (packageIsAvailable("e1071", "view documentation for e1071"))
+    #{
+    #  require(e1071, quietly=TRUE)
+    #  popupTextviewHelpWindow("svm")
+    #}
     if (packageIsAvailable("kernlab", "view documentation for kernlab"))
     {
       require(kernlab, quietly=TRUE)
-      popup.textview.help.window("ksvm")
+      popupTextviewHelpWindow("ksvm")
     }
   }
 }
@@ -8010,7 +8107,7 @@ models built.
 The gbm package is used to build the boosted model."))
     {
       require(gbm, quietly=TRUE)
-      popup.textview.help.window("gbm")
+      popupTextviewHelpWindow("gbm")
     }
 }
 
@@ -8023,7 +8120,7 @@ actual class to which that entity belongs. Rattle reports two confusion tables.
 The first is the raw entity counts whilst the second reports the
 percentages."))
   {
-    popup.textview.help.window("table")
+    popupTextviewHelpWindow("table")
   }
 }
 
@@ -8039,7 +8136,7 @@ is simply the count of false positives divided by the number of negatives
 (1-fnr)."))
   {
     require(ROCR, quietly=TRUE)
-    popup.textview.help.window("performance")
+    popupTextviewHelpWindow("performance")
   }
 }
 
