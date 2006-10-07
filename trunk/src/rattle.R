@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-06 22:17:39 Graham Williams>
+## Time-stamp: <2006-10-07 14:56:43 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -66,21 +66,8 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 ##   be merged into GTK. At that time, that functionality will be part
 ##   of RGtk2.
 
-rattleTODO <- function()
-{
-  
-  todo <- 'Suggestion, Proposed, Proposer, Comment
-Add SOMs (SOM_PAK3.1),2006-09-03,Stuart Hamilton,Suitable for RattleEX
-Add MART (R-MART),2006-09-03,Stuart Hamilton,Useful? Perhaps for rattleRG
-'
-  todo <- read.csv(textConnection(todo))
-
-  return(todo)
-}
-
-
 ########################################################################
-
+##
 ## INITIALISATIONS
 
 rattle <- function()
@@ -4888,9 +4875,9 @@ execute.model.gbm <- function()
   if (! packageIsAvailable("gbm", "build an AdaBoost model"))
     return()
   
-  library.cmd <- paste(sprintf("\n\n## Build a GBN (%s) model.",
+  library.cmd <- paste(sprintf("\n\n## Build a GBM (%s) model.",
                                    distribution),
-                           "\n\require(gbm, quietly=TRUE)")
+                           "\n\nrequire(gbm, quietly=TRUE)")
 
   ## Boost command
 
@@ -6578,7 +6565,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
   addplot <- "FALSE"
 
   nummodels <- length(predcmd)
-  mcolors <- rainbow(nummodels)
+  mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
   for (mtype in getEvaluateModels())
@@ -6606,7 +6593,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
                      sprintf("c(%s),",
                              paste('"', getEvaluateModels(), '"',
                                    sep="", collapse=",")),
-                     sprintf('col=rainbow(%d), lty=1:%d,',
+                     sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      'title="Models", inset=c(0.05, 0.05))')
   addToLog("Add a legend to the plot.", legendcmd)
@@ -6634,7 +6621,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   addplot <- "FALSE"
 
   nummodels <- length(predcmd)
-  mcolors <- rainbow(nummodels)
+  mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
   for (mtype in getEvaluateModels())
@@ -6675,7 +6662,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
                      sprintf("c(%s),",
                              paste('"', getEvaluateModels(), '"',
                                    sep="", collapse=",")),
-                     sprintf('col=rainbow(%d), lty=1:%d,',
+                     sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      'title="Models", inset=c(0.05, 0.05))')
   addToLog("Add a legend to the plot.", legendcmd)
@@ -6701,7 +6688,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
   addplot <- "FALSE"
 
   nummodels <- length(predcmd)
-  mcolors <- rainbow(nummodels)
+  mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
   for (mtype in getEvaluateModels())
@@ -6730,7 +6717,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
                      sprintf("c(%s),",
                              paste('"', getEvaluateModels(), '"',
                                    sep="", collapse=",")),
-                     sprintf('col=rainbow(%d), lty=1:%d,',
+                     sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      'title="Models", inset=c(0.05, 0.05))')
   addToLog("Add a legend to the plot.", legendcmd)
@@ -6756,7 +6743,7 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
   addplot <- "FALSE"
 
   nummodels <- length(predcmd)
-  mcolors <- rainbow(nummodels)
+  mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
   for (mtype in getEvaluateModels())
@@ -6785,7 +6772,7 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
                      sprintf("c(%s),",
                              paste('"', getEvaluateModels(), '"',
                                    sep="", collapse=",")),
-                     sprintf('col=rainbow(%d), lty=1:%d,',
+                     sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      'title="Models", inset=c(0.05, 0.05))')
   addToLog("Add a legend to the plot.", legendcmd)
