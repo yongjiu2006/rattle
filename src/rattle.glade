@@ -2170,6 +2170,106 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		  </child>
 
 		  <child>
+		    <widget class="GtkCheckButton" id="summary_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Summary, including Min, Quartiles, Mean, Max for numerics and top levels for factors.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Summary</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">True</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkCheckButton" id="describe_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Concise description including missing, unique, sum, mean, and the lowest and highest values. </property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Describe</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkCheckButton" id="basics_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Various basic measures of numeric data, including missing, min, max, quartiles, mean, sum, skewness, kurtosis. </property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Basics</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkCheckButton" id="kurtosis_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Summarise just the kurtosis - useful for comparing between all numeric variables at once.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Kurtosis</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkCheckButton" id="skewness_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Summarise just the skewness - useful for comparing between all numeric variables at once.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Skewness</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
 		    <widget class="GtkCheckButton" id="correlation_na_checkbutton">
 		      <property name="tooltip" translatable="yes">Whether we should display the correlation between missing values.</property>
 		      <property name="can_focus">True</property>
