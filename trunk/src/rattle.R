@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-07 21:26:20 Graham Williams>
+## Time-stamp: <2006-10-07 21:32:17 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -2623,6 +2623,7 @@ executeExploreSummary <- function(dataset)
     {
       library.cmd <- "require(Hmisc, quietly=TRUE)"
       addToLog("The describe command comes from Hmisc.", library.cmd)
+      eval(parse(text=library.cmd))
       
       describe.cmd <- sprintf("describe(%s)", dataset)
       addToLog("Generate a description of the dataset.", describe.cmd)
@@ -2643,6 +2644,7 @@ executeExploreSummary <- function(dataset)
     {
       library.cmd <- "require(fBasics, quietly=TRUE)"
       addToLog("Use functionality from the fBasics package.", library.cmd)
+      eval(parse(text=library.cmd))
       
       if (do.basics)
       {
