@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-08 07:55:58 Graham Williams>
+## Time-stamp: <2006-10-09 07:05:42 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -25,9 +25,12 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
   ## annoying, just like fBasics. randomForest seems to do it
   ## correctly?
   
-  cat("Rattle, Graphical interface for data mining using R")
-  cat("\nCopyright (c) 2006, Graham Williams, rattle.togaware.com, GPL\n")
-  cat(sprintf("Version %s\n", VERSION))
+  cat(sprintf(paste("Rattle, Graphical interface for data mining using R,",
+                    "Version %s.",
+                    "\nCopyright (c) 2006, Graham Williams,",
+                    "rattle.togaware.com, GPL",
+                    "\nType \"rattle()\" to initiate the GUI.\n"),
+              VERSION))
 }
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -3275,15 +3278,20 @@ executeExplorePlot <- function(dataset)
                    paste("ds <-", cmd))
           ds <- eval(parse(text=cmd))
           
-          addToLog("Generate specific plot data.", paste("ds <-", dataCmd))
+          addToLog("Generate frequency of initial digit.",
+                   paste("ds <-", dataCmd))
           ds <- eval(parse(text=dataCmd))
+
+          nan.cmd <- "ds[is.nan(ds)] <- 0"
+          addToLog("Ensure rows with no digits are treated as zeros.", nan.cmd)
+          ds[is.nan(ds)] <- 0
           
           if (pcnt %% pmax == 0) newPlot(pmax)
           pcnt <- pcnt + 1
 
           par(xpd=TRUE)
           
-          addToLog("Now do the actual plot.", plotCmd)
+          addToLog("Now do the actual Benford plot.", plotCmd)
           eval(parse(text=plotCmd))
           
           addToLog("Add a legend to the plot.", legendCmd)
@@ -4295,7 +4303,7 @@ execute.model.tab <- function()
   else if (currentModelTab() == GBM)
     execute.model.gbm()
   else if (currentModelTab() == RF)
-    execute.model.rf()
+    executeModelRF()
   else if (is.element(currentModelTab(), c(SVM, KSVM)))
     executeModelSVM()
 }
@@ -5081,7 +5089,7 @@ gbmShowRules <- function(object, rules=1:object$n.trees)
 ## MODEL RF - RANDOM FOREST
 ##
 
-execute.model.rf <- function()
+executeModelRF <- function()
 {
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   parms <- ""
@@ -6244,24 +6252,27 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
              gsub("<<-", "<-", respcmd[[mtype]]))
   
     result <- try(eval(parse(text=respcmd[[mtype]])), TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+
     if (inherits(result, "try-error"))
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
-        errorDialog("It seems that the dataset on which the predictions",
-                    "from the", mtype, "model are required has a categorical",
-                    "variable with levels not found in the training",
-                    "dataset. The predictions can not be made in",
-                    "this situation. You may need to either ensure",
-                    "the training dataset has representatives of all levels",
-                    "or else remove them from the testing dataset.",
-                    "Alternatively, do not include that variable in the",
-                    "modelling. \n\n The actual error message was:\n\n",
-                    paste(result, "\n"))
+        infoDialog("It seems that the dataset on which the predictions",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The predictions can not be made in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
       else
         errorDialog("Some error occured with", respcmd, "Best to let",
                     "Graham.Williams@togaware.com know.\n\n",
                     "The error was:\n\n", result)
-      return()
+      next()
     }
     
     addToLog("Now generate the confusion matrix.", confuse.cmd)
@@ -6353,7 +6364,32 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
              gsub("<<-", "<-", evaluate.cmd), "\n",
              plot.cmd, sep="")
 
-    eval(parse(text=probcmd[[mtype]]))
+    result <- try(eval(parse(text=probcmd[[mtype]])), TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
+    ## Check for all results the same.
+    
     if (length(levels(as.factor(crs$pr))) == 1)
     {
       errorDialog("The model predicts the same result for all records,",
@@ -6690,7 +6726,31 @@ executeEvaluateLift <- function(predcmd, testset, testname)
     addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
-    eval(parse(text=predcmd[[mtype]]))
+
+    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
     eval(parse(text=plot.cmd))
     
   }
@@ -6746,7 +6806,31 @@ executeEvaluateROC <- function(predcmd, testset, testname)
     addToLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
-    eval(parse(text=predcmd[[mtype]]))
+
+    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
     eval(parse(text=plot.cmd))
 
     ## Report the area under the curve.
@@ -6814,7 +6898,31 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
     addToLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
-    eval(parse(text=predcmd[[mtype]]))
+
+    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
     eval(parse(text=plot.cmd))
   }
 
@@ -6870,7 +6978,30 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
 
-    eval(parse(text=predcmd[[mtype]]))
+    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
     eval(parse(text=plot.cmd))
   }
   legendcmd <- paste('legend("bottomleft",',
@@ -6907,9 +7038,31 @@ executeEvaluateScore <- function(predcmd, testset, testname)
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]))
 
-    eval(parse(text=predcmd[[mtype]]))
+    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
 
-    ## Determine an appropriate filename (fixed for now)
+    ## Check for errors - in particular, new levels in the test dataset.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
+    ## Determine an appropriate filename (TODO fixed for now but should ask)
     
     score.file <- sprintf("%s_%s_score.csv",
                           gsub(" ", "_",

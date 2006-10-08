@@ -1,6 +1,16 @@
-export(rattle,evaluateRisk,plotRisk,genPlotTitleCmd,plotNetwork)
-export(plotOptimalLine,plotBenfordsLaw,drawTreeNodes)
-export(randomForest2Rules,printRandomForests,calculateRiskAUC)
-exportPattern("_") # Needed for the Glade interface
+export(
+       calcInitialDigitDistr,
+       calculateRiskAUC,
+       drawTreeNodes,
+       evaluateRisk,
+       genPlotTitleCmd,
+       plotBenfordsLaw,
+       plotNetwork,
+       plotOptimalLine,
+       plotRisk,
+       printRandomForests,
+       randomForest2Rules,
+       rattle
+       )
 
-##exportPattern("^[^\\.]")
+exportPattern("_") # Needed for the Glade interface
