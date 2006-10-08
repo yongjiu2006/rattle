@@ -1,3 +1,9 @@
+Rename Sample tab to Transform? Sampling is a kind of
+transformation. Or perhaps call it Process? Add in Marco's
+Transform/Cut/Factorise code?
+
+
+
 Move these to issue tracking in Google Code
 
 Version 2.1
@@ -20,6 +26,7 @@ Version 2.2
 
   Model tab
     Use tune to build the best model: rpart, randomForest, svm
+
 
 TODO
 
