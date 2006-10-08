@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_ggobi_radiobutton_toggled}
 \alias{on_score_radiobutton_toggled}
 \alias{on_help_rdata_file_activate}
 \alias{on_e1071_radiobutton_toggled}

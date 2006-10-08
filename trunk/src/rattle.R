@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-07 21:32:17 Graham Williams>
+## Time-stamp: <2006-10-08 07:55:58 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -2323,6 +2323,7 @@ executeSampleTab <- function()
 
 on_summary_radiobutton_toggled <- function(button)
 {
+  separator       <- rattleWidget("explore_vseparator")
   summary.button  <- rattleWidget("summary_checkbutton")
   describe.button <- rattleWidget("describe_checkbutton")
   basics.button   <- rattleWidget("basics_checkbutton")
@@ -2331,6 +2332,7 @@ on_summary_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
+    separator$show()
     summary.button$show()
     describe.button$show()
     basics.button$show()
@@ -2339,6 +2341,7 @@ on_summary_radiobutton_toggled <- function(button)
   }
   else
   {
+    separator$hide()
     summary.button$hide()
     describe.button$hide()
     basics.button$hide()
@@ -2350,14 +2353,17 @@ on_summary_radiobutton_toggled <- function(button)
 
 on_explot_radiobutton_toggled <- function(button)
 {
+  separator <- rattleWidget("explore_vseparator")
   barbutton <- rattleWidget("benford_bars_checkbutton")
   if (button$getActive()) 
   {
     EXPLORE$setCurrentPage(EXPLORE.PLOT.TAB)
+    separator$show()
     barbutton$show()
   }
   else
   {
+    separator$hide()
     barbutton$hide()
   }
   setStatusBar()
@@ -2371,14 +2377,17 @@ on_ggobi_radiobutton_toggled <- function(button)
 
 on_correlation_radiobutton_toggled <- function(button)
 {
-  nabutton <- rattleWidget("correlation_na_checkbutton")
+  separator <- rattleWidget("explore_vseparator")
+  nabutton  <- rattleWidget("correlation_na_checkbutton")
   if (button$getActive()) 
   {
     EXPLORE$setCurrentPage(EXPLORE.CORRELATION.TAB)
+    separator$show()
     nabutton$show()
   }
   else
   {
+    separator$hide()
     nabutton$hide()
   }
   setStatusBar()
@@ -2607,11 +2616,11 @@ executeExploreSummary <- function(dataset)
     summary.cmd <- sprintf("summary(%s)", dataset)
     addToLog("Generate a summary of the dataset.", summary.cmd)
     appendTextview(TV,
-                   paste("Summary of the",
+                   paste("Summary of the ",
                          ifelse(use.sample & sampling, "** sample **", "full"),
-                         "dataset.\n\n",
+                         " dataset.\n\n",
                          "(Hint: 25% of values are below 1st Quartile.)",
-                         "\n\n"),
+                         "\n\n", sep=""),
                    collectOutput(summary.cmd, TRUE))
   }
 
@@ -2668,11 +2677,17 @@ executeExploreSummary <- function(dataset)
         addToLog("Summarise the kurtosis of the numeric data.", kurtosis.cmd)
         appendTextview(TV,
                        paste("Kurtosis for each numeric variable",
-                             "of the",
+                             "of the ",
                              ifelse(use.sample & sampling,
                                     "** sample **", "full"),
-                             "dataset.\nLarger values",
-                             "mean sharper peaks and flatter tails.\n\n"),
+                             " dataset.\n",
+                             "Larger values mean sharper peaks and ",
+                             "flatter tails.\n",
+                             "Positive values indicate an acute peak around ",
+                             "the mean.\n",
+                             "Negative values indicate a smaller peak around ",
+                             "the mean.\n\n",
+                             sep=""),
                        collectOutput(kurtosis.cmd, TRUE))
       }
 
@@ -7905,7 +7920,7 @@ The R function summary() is used for the summary.
 Additional or differently presented summary information is provided
 through additional options. Describe produces a similar summary presented
 differently. For numeric variables, the Basic statistics can be obtained,
-includeing kurtosis and skewness.
+including kurtosis and skewness.
 <<>>
 The kurtosis is a measure of the nature of the peaks
 in the distribution of the data. A high kurtosis indicates a sharper peak
