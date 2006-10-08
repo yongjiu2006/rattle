@@ -21,6 +21,9 @@ REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 DATE:=$(shell date +%F)
 
+SOURCE = src/rattle.R src/rattle.glade \
+	$(NAMESPACE)
+
 install: build zip check
 	cp src/rattle.R src/rattle.glade /var/www/access/
 	chmod go+r /var/www/access/rattle*
@@ -43,7 +46,7 @@ devbuild:
 
 build: data rattle_$(VERSION).tar.gz
 
-rattle_$(VERSION).tar.gz: 
+rattle_$(VERSION).tar.gz: $(SOURCE)
 	cp src/rattle.R package/rattle/R/
 	cp src/rattle.glade package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
