@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-09 07:05:42 Graham Williams>
+## Time-stamp: <2006-10-12 05:44:01 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -2545,7 +2545,7 @@ executeExploreTab <- function()
                         ifelse(is.null(vars),"",vars))
 
   ## Numeric input variables
-  vars <- input.variables(numonly=TRUE)
+  vars <- inputVariables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
                        ifelse(use.sample & sampling,"crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
@@ -4171,7 +4171,7 @@ getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE)
     return(simplifyNumberList(intersect(fl, union(fi, union(ti, ri)))))
 }
 
-input.variables <- function(numonly=FALSE)
+inputVariables <- function(numonly=FALSE)
 {
   ## Return, as a comma separated list (as a string) the list of input
   ## variable indicies. If the list contains all variables except for
@@ -4297,18 +4297,23 @@ execute.model.tab <- function()
   ## DISPATCH
 
   if (currentModelTab() == GLM)
-    execute.model.glm()
+    executeModelGLM()
   else if (currentModelTab() == RPART)
-    execute.model.rpart()
+    executeModelRPart()
   else if (currentModelTab() == GBM)
-    execute.model.gbm()
+    executeModelGBM()
   else if (currentModelTab() == RF)
     executeModelRF()
   else if (is.element(currentModelTab(), c(SVM, KSVM)))
     executeModelSVM()
 }
 
-execute.model.glm <- function()
+##----------------------------------------------------------------------
+##
+## MODEL GLM
+##
+
+executeModelGLM <- function()
 {
 
   ## Currently only handling binary classification.
@@ -4382,7 +4387,7 @@ execute.model.glm <- function()
 ## MODEL RPART
 ##
 
-execute.model.rpart <- function()
+executeModelRPart <- function()
 {
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   control <- NULL
@@ -4953,7 +4958,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
 ## GBM - BOOSTING
 ##
 
-execute.model.gbm <- function()
+executeModelGBM <- function()
 {
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
 
@@ -5150,9 +5155,19 @@ executeModelRF <- function()
   including <- ! is.null(included)
   subsetting <- sampling || including
 
-  ## Commands
+  ## Start the log
+  
+  addLogSeparator()
+
+  ## Load the required library.
 
   library.cmd <- "require(randomForest, quietly=TRUE)"
+
+  addToLog("The randomForest package supplies the randomForest function.",
+          library.cmd)
+  eval(parse(text=library.cmd))
+
+  ## Build the model.
 
   rf.cmd <- paste("crs$rf <<- randomForest(", frml, ", data=crs$dataset",
                   if (subsetting) "[",
@@ -5164,21 +5179,9 @@ executeModelRF <- function()
                   ", na.action=na.omit",
                   ")", sep="")
 
-  summary.cmd <- "crs$rf"
-  
-  importance.cmd <- "round(importance(crs$rf), 2)"
- 
-  ## Load the required library.
-
-  addLogSeparator()
-  addToLog("The randomForest package supplies the randomForest function.",
-          library.cmd)
-  eval(parse(text=library.cmd))
-
-  ## Build the model.
-
   addToLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
+
   if (inherits(result, "try-error"))
   {
     if (any(grep("cannot allocate vector", result)))
@@ -5203,7 +5206,15 @@ executeModelRF <- function()
 
   ## Display the resulting model.
 
+  plot.cmd <- paste('varImpPlot(crs$rf,',
+                    'main="Relative Importance of Variables")')
+  addToLog("Plot the relative importance of the variables.", plot.cmd)
+  eval(parse(text=plot.cmd))
+  
+  summary.cmd <- "crs$rf"
   addToLog("Generate textual output of randomForest model.", summary.cmd)
+
+  importance.cmd <- "round(importance(crs$rf), 2)"
   addToLog("List the importance of the variables.", importance.cmd)
   
   clearTextview("rf_textview")
