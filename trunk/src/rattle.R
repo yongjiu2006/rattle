@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-12 05:44:01 Graham Williams>
+## Time-stamp: <2006-10-12 06:33:45 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -150,7 +150,7 @@ rattle <- function()
   
   RF.NTREE.DEFAULT    <<- 500
   RF.MTRY.DEFAULT     <<- 10
-  RF.SAMPSIZE.DEFAULT <<- 100
+  RF.SAMPSIZE.DEFAULT <<- ""
   
   ## MISC
   
@@ -2186,8 +2186,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   RF.MTRY.DEFAULT <<- floor(sqrt(ncol(crs$dataset)))
   rattleWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
-  RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
-  rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  #RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
+  #rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
 }
 
 ########################################################################
@@ -2296,11 +2296,11 @@ executeSampleTab <- function()
 
   ## Set some defaults that depend on sample size.
   
-  if (is.null(crs$sample))
-    RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
-  else
-    RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
-  rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  #if (is.null(crs$sample))
+  #  RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
+  #else
+  #  RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
+  #rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
   
 
   setStatusBar()
@@ -4404,7 +4404,7 @@ executeModelRPart <- function()
       {
         errorDialog(sprintf("The supplied priors (%s)", priors),
                      "need to correspond to the number of classes",
-                     sprintf("found in the selected variable '%s'.",crs$target),
+                     sprintf("found in the target variable '%s'.",crs$target),
                      sprintf("Please supply exactly %d priors.", num.classes))
         return()
       }
@@ -5127,10 +5127,25 @@ executeModelRF <- function()
   if (mtry != RF.MTRY.DEFAULT)
     parms <- sprintf("%s, mtry=%d", parms, mtry)
 
-  sampsize <- rattleWidget("rf_sampsize_spinbutton")$getValue()
-  if (sampsize != RF.SAMPSIZE.DEFAULT)
-    parms <- sprintf("%s, sampsize=%d", parms, sampsize)
+  sampsize <- rattleWidget("rf_sampsize_entry")$getText()
+  if (nchar(sampsize) > 0)
+  {
+    ss <- as.numeric(unlist(strsplit(sampsize, ",")))
+    if (length(ss) != num.classes)
+      {
+        errorDialog(sprintf("The supplied sample sizes (%s)", sampsize),
+                     "needs to correspond to the number of classes",
+                     sprintf("found in the target variable '%s'.",crs$target),
+                     sprintf("Please supply exactly %d sample sizes.",
+                             num.classes))
+        return()
+      }
+    
+    parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
+  }
 
+  ## TODO What's the relationship between this and actually displaying
+  ## importance!
   if (rattleWidget("rf_importance_checkbutton")$getActive())
     parms <- sprintf("%s, importance=TRUE", parms)
   
@@ -5833,24 +5848,13 @@ activate.rocr.plots <- function()
 executeEvaluateTab <- function()
 {
 
-  ## Work toward allowing mtype = "All" and then the ROCR plots are:
-  ## rp.pr <- predict(crs$rpart, crs$dataset[-crs$sample, c(2:10,13)])[,2]
-  ## rf.pr <- predict(crs$rf, crs$dataset[-crs$sample, c(2:10,13)], type="prob")[,2]
-  ## tg <- crs$dataset[-crs$sample, c(2:10,13)]$Adjusted
-  ## plot(performance(prediction(cbind(rp.pr, rf.pr), cbind(tg, tg)), "tpr", "fpr"))
-  ## OR this to get colours, then add a legend
-  ## plot(performance(prediction(rp.pr, tg), "tpr", "fpr"), col="red")
-  ## plot(performance(prediction(rf.pr, tg), "tpr", "fpr"), col="blue", add=TRUE)
-  ## THEN we might be able to simply use the code already here, but conditionally include the "add=TRUE"
-  
   ## Ensure a dataset exists.
 
   if (noDatasetLoaded()) return()
 
   ## Obtain some background information
   
-  #mtype <- getActiveModel()  # The chosen model type in the Evaluate tab.
-  mtypes <- getEvaluateModels() 
+  mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
   
   if (is.null(mtypes))
   {
@@ -8231,8 +8235,8 @@ decision trees from different samples of the dataset, and while
 building each tree, random subsets of the available variables are
 considered for splitting the data at each node of the tree. A simple
 majority vote is then used for prediction in the case of
-classificaiton (and average for
-regression). RandomForest's are generally robust against overfitting.
+classificaiton (and average for regression).
+RandomForest's are generally robust against overfitting.
 <<>>
 The default is to build 500 trees and to select the square root of the
 number of variables as the subset to choose from at each node. The
@@ -8248,7 +8252,11 @@ estimate. This applies each tree to the data that was not used in
 building the tree to give a quite accurate estimate of the error
 rate.
 <<>>
-The R package is called randomForest."))
+The Sample Size can be used to down-sampling larger classes.
+For a two-class problem with, for example, 5550 in class 0 and 250 in class 1,
+a Sample Size of \"250, 250\" will usually give a more \"balanced\" classifier.
+<<>>
+The R package for building Random Forests is called randomForest."))
     {
       require(randomForest, quietly=TRUE)
       popupTextviewHelpWindow("randomForest")
