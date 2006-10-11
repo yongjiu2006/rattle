@@ -4,6 +4,8 @@ rattleBM()	Ideal for binary classification tasks.
 
 HISTORY
 
+60 RF sampsize implemented
+59 Add varImpPlot to RF
 55 Support different summary options.
 54 Fix plot colours in ROCR plots.
 53 Add ggobi option to Explore tab (Marco Lo).
