@@ -47,6 +47,7 @@ devbuild:
 build: data rattle_$(VERSION).tar.gz
 
 rattle_$(VERSION).tar.gz: $(SOURCE)
+	svn update
 	cp src/rattle.R package/rattle/R/
 	cp src/rattle.glade package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
