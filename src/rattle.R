@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-12 06:33:45 Graham Williams>
+## Time-stamp: <2006-10-12 17:54:41 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -5140,7 +5140,7 @@ executeModelRF <- function()
                              num.classes))
         return()
       }
-    
+    ## TODO Check if sample sizes are larger than the classes!
     parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
   }
 
@@ -5221,6 +5221,7 @@ executeModelRF <- function()
 
   ## Display the resulting model.
 
+  newPlot()
   plot.cmd <- paste('varImpPlot(crs$rf,',
                     'main="Relative Importance of Variables")')
   addToLog("Plot the relative importance of the variables.", plot.cmd)
@@ -7526,7 +7527,7 @@ saveProject <- function()
 
   crs$rf$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
   crs$rf$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
-  crs$rf$sample    <<- rattleWidget("rf_sampsize_spinbutton")$getValue()
+  crs$rf$sample    <<- rattleWidget("rf_sampsize_entry")$getValue()
   crs$rf$import    <<- rattleWidget("rf_importance_checkbutton")$getActive()
   crs$rf$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
 
@@ -7708,7 +7709,7 @@ loadProject <- function()
   if (! is.null(crs$rf$vars))
     rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf$vars)
   if (! is.null(crs$rf$sample))
-    rattleWidget("rf_sampsize_spinbutton")$setValue(crs$rf$sample)
+    rattleWidget("rf_sampsize_entry")$setValue(crs$rf$sample)
   if (! is.null(crs$rf$import))
     rattleWidget("rf_importance_checkbutton")$setActive(crs$rf$import)
   if (! is.null(crs$rf$proximity))
@@ -8252,8 +8253,8 @@ estimate. This applies each tree to the data that was not used in
 building the tree to give a quite accurate estimate of the error
 rate.
 <<>>
-The Sample Size can be used to down-sampling larger classes.
-For a two-class problem with, for example, 5550 in class 0 and 250 in class 1,
+The Sample Size can be used to down-sample larger classes.
+For a two-class problem with, for example, 5000 in class 0 and 250 in class 1,
 a Sample Size of \"250, 250\" will usually give a more \"balanced\" classifier.
 <<>>
 The R package for building Random Forests is called randomForest."))
