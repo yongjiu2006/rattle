@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-12 17:54:41 Graham Williams>
+## Time-stamp: <2006-10-13 18:55:43 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -268,7 +268,8 @@ rattle <- function()
   
   ##
   
-  addToLog(sprintf("Started %s by %s", Sys.time(), Sys.info()["user"]),
+  addToLog(sprintf("Rattle version %s", VERSION),
+           sprintf("## Started %s by %s", Sys.time(), Sys.info()["user"]),
           "## You can save all this to file by using the right mouse button to
 ## Select All of the text, and then the right mouse button again to Copy.
 ## Then paste the text into a text editor and save to file and/or print.
@@ -5795,16 +5796,6 @@ on_risk_comboboxentry_changed <- function(action, window)
 ##
 ## Support Functions
 
-getActiveModel <- function()
-{
-  ## THIS NO LONGER EXISTS - FOR NOW JUST RETURN FIRST MODEL SELECTED!
-  ## AND THEN MIGRATE TO WORKING ON ALL MODELS!
-  ## mtype <- rattleWidget("model_evaluate_comboboxentry")$getActiveText()
-  mtype <- getEvaluateModels()
-  if (!is.null(mtype)) mtype <- mtype[1]
-  return(mtype)
-}
-
 getEvaluateModels <- function()
 {
   ## Return a list of models selected for evaluation
@@ -7111,7 +7102,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 
     if (length(grep(",", scoreset)) > 0)
     {
-      scoreset = gsub(",.*", ",]", scoreset)
+      scoreset = gsub(",.*]", ",]", scoreset)
     }
     scoreset <- sprintf('subset(%s, select=getSelectedVariables("ident"))',
                         scoreset)
@@ -7527,7 +7518,7 @@ saveProject <- function()
 
   crs$rf$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
   crs$rf$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
-  crs$rf$sample    <<- rattleWidget("rf_sampsize_entry")$getValue()
+  crs$rf$sample    <<- rattleWidget("rf_sampsize_entry")$getText()
   crs$rf$import    <<- rattleWidget("rf_importance_checkbutton")$getActive()
   crs$rf$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
 
@@ -7709,7 +7700,7 @@ loadProject <- function()
   if (! is.null(crs$rf$vars))
     rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf$vars)
   if (! is.null(crs$rf$sample))
-    rattleWidget("rf_sampsize_entry")$setValue(crs$rf$sample)
+    rattleWidget("rf_sampsize_entry")$setText(crs$rf$sample)
   if (! is.null(crs$rf$import))
     rattleWidget("rf_importance_checkbutton")$setActive(crs$rf$import)
   if (! is.null(crs$rf$proximity))
@@ -7723,14 +7714,6 @@ loadProject <- function()
 
   ## EVALUATE
 
-  ## 060930 Only restore the checkbuttons that have a model
-  ## Currently, bleow is still the old version.
-  
-  combo <- rattleWidget("model_evaluate_comboboxentry")
-  combo$getModel()$clear()
-#  combo$appendText("All")
-  lapply(listBuiltModels(), combo$appendText)
-  combo$setActive(0)
   restoreTextContents("risk_textview", crs$text$risk)
 
   restoreTextContents("roc_textview", crs$text$roc )
