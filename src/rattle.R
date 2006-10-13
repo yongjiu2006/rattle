@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-13 18:55:43 Graham Williams>
+## Time-stamp: <2006-10-13 21:24:31 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -29,7 +29,8 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
                     "Version %s.",
                     "\nCopyright (c) 2006, Graham Williams,",
                     "rattle.togaware.com, GPL",
-                    "\nType \"rattle()\" to initiate the GUI.\n"),
+                    "\nType \"rattle()\" to shake, rattle, and roll",
+                    "your data.\n"),
               VERSION))
 }
 
@@ -188,6 +189,9 @@ rattle <- function()
                eval=NULL,
                testset=NULL,
                testname=NULL)
+
+  ## TODO I'm going to have to move away from using these numbers as I
+  ## proceed to the Paradigm selection model.
   
   NOTEBOOK               <<- rattleWidget("notebook")
   NOTEBOOK.DATA.TAB      <<- getNotebookPage(NOTEBOOK, "Data")
@@ -198,6 +202,12 @@ rattle <- function()
   NOTEBOOK.MODEL.TAB     <<- getNotebookPage(NOTEBOOK, "Model")
   NOTEBOOK.EVALUATE.TAB  <<- getNotebookPage(NOTEBOOK, "Evaluate")
   NOTEBOOK.LOG.TAB       <<- getNotebookPage(NOTEBOOK, "Log")
+
+  ## Track the widgets that are needed for removing and inserting tabs
+  ## in the notebook, depending on the selected paradigm.
+  
+  NOTEBOOK.CLUSTER.WIDGET <<- rattleWidget("cluster_tab_widget")
+  NOTEBOOK.CLUSTER.LABEL  <<- rattleWidget("cluster_tab_label")
   
   DATA              <<- rattleWidget("data_notebook")
   DATA.CSV.TAB      <<- getNotebookPage(DATA, "csv")
@@ -379,6 +389,10 @@ resetRattle <- function()
   rattleWidget("evaluate_training_radiobutton")$setActive(TRUE)
   rattleWidget("evaluate_filechooserbutton")$setFilename("")
   rattleWidget("evaluate_rdataset_combobox")$setActive(-1)
+
+  ## By default the CLUSTER page is not showing.
+
+  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
   
 }
 
@@ -852,6 +866,33 @@ quit_rattle <- function(action, window)
 {
   for (i in dev.list()) dev.off(i)
   rattleWidget("rattle_window")$destroy()
+}
+
+########################################################################
+##
+## PARADIGM CONTROL
+##
+
+on_twoclass_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    #DATA$setCurrentPage(DATA.CSV.TAB)
+  }
+  setStatusBar()
+}
+
+on_unsupervised_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    NOTEBOOK$insertPage(NOTEBOOK.CLUSTER.WIDGET, NOTEBOOK.CLUSTER.LABEL, 4)
+  }
+  else
+  {
+    NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
+  }
+    setStatusBar()
 }
 
 ########################################################################
@@ -7801,6 +7842,60 @@ on_notebook_switch_page <- function(notebook, window, page)
   ## page is the index of the page switched to.
 
   #ct <- current_(page)
+
+  switchToPage(page)
+}
+
+on_tools_data_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Data"))
+  switchToPage(NOTEBOOK.DATA.TAB)
+}
+
+on_tools_variables_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Variables"))
+  switchToPage(NOTEBOOK.VARIABLES.TAB)
+}
+
+on_tools_sample_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Sample"))
+  switchToPage(NOTEBOOK.SAMPLE.TAB)
+}
+
+on_tools_explore_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Explore"))
+  switchToPage(NOTEBOOK.EXPLORE.TAB)
+}
+
+on_tools_cluster_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Cluster"))
+  switchToPage(NOTEBOOK.CLUSTER.TAB)
+}
+
+on_tools_model_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Model"))
+  switchToPage(NOTEBOOK.MODEL.TAB)
+}
+
+on_tools_evaluate_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Evaluate"))
+  switchToPage(NOTEBOOK.EVALUATE.TAB)
+}
+
+on_tools_log_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Log"))
+  switchToPage(NOTEBOOK.LOG.TAB)
+}
+
+switchToPage <- function(page)
+{
 
   ## Blank the status bar whenever we change pages
   
