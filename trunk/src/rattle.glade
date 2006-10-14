@@ -711,7 +711,6 @@
 	      <child>
 		<widget class="GtkToolButton" id="new_button">
 		  <property name="visible">True</property>
-		  <property name="sensitive">False</property>
 		  <property name="tooltip" translatable="yes">Start a new project.</property>
 		  <property name="stock_id">gtk-new</property>
 		  <property name="visible_horizontal">True</property>
