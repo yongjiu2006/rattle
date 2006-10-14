@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 
-## Time-stamp: <2006-10-13 21:24:31 Graham Williams>
+## Time-stamp: <2006-10-14 16:46:32 Graham Williams>
 
 ## TODO: The different varieties of Rattle paradigms can be chosen as
 ## radio buttons above the tabs, and different choices result in
@@ -178,6 +178,7 @@ rattle <- function()
                seed=NULL,
                kmeans=NULL,
                hclust=NULL,
+               page="",
                smodel=NULL, # Record whether the sample has been modelled
                glm=NULL,
                rpart=NULL,
@@ -190,25 +191,43 @@ rattle <- function()
                testset=NULL,
                testname=NULL)
 
-  ## TODO I'm going to have to move away from using these numbers as I
-  ## proceed to the Paradigm selection model.
+  ## Main notebook related constants and widgets.  Track the widgets
+  ## that are needed for removing and inserting tabs in the notebook,
+  ## depending on the selected paradigm.
   
   NOTEBOOK               <<- rattleWidget("notebook")
-  NOTEBOOK.DATA.TAB      <<- getNotebookPage(NOTEBOOK, "Data")
-  NOTEBOOK.EXPLORE.TAB   <<- getNotebookPage(NOTEBOOK, "Explore")
-  NOTEBOOK.VARIABLES.TAB <<- getNotebookPage(NOTEBOOK, "Variables")
-  NOTEBOOK.SAMPLE.TAB    <<- getNotebookPage(NOTEBOOK, "Sample")
-  NOTEBOOK.CLUSTER.TAB   <<- getNotebookPage(NOTEBOOK, "Cluster")
-  NOTEBOOK.MODEL.TAB     <<- getNotebookPage(NOTEBOOK, "Model")
-  NOTEBOOK.EVALUATE.TAB  <<- getNotebookPage(NOTEBOOK, "Evaluate")
-  NOTEBOOK.LOG.TAB       <<- getNotebookPage(NOTEBOOK, "Log")
 
-  ## Track the widgets that are needed for removing and inserting tabs
-  ## in the notebook, depending on the selected paradigm.
-  
+  NOTEBOOK.DATA.PAGE      <<- "Data"
+
+  NOTEBOOK.EXPLORE.PAGE   <<- "Explore"
+
+  NOTEBOOK.VARIABLES.PAGE <<- "Variables"
+
+  NOTEBOOK.SAMPLE.PAGE    <<- "Sample"
+
+  NOTEBOOK.CLUSTER.PAGE    <<- "Cluster"
   NOTEBOOK.CLUSTER.WIDGET <<- rattleWidget("cluster_tab_widget")
   NOTEBOOK.CLUSTER.LABEL  <<- rattleWidget("cluster_tab_label")
+
+  NOTEBOOK.MODEL.PAGE     <<- "Model"
+  NOTEBOOK.MODEL.WIDGET  <<- rattleWidget("model_tab_widget")
+  NOTEBOOK.MODEL.LABEL   <<- rattleWidget("model_tab_label")
+
+  NOTEBOOK.EVALUATE.PAGE    <<- "Evaluate"
+  NOTEBOOK.EVALUATE.WIDGET <<- rattleWidget("evaluate_tab_widget")
+  NOTEBOOK.EVALUATE.LABEL  <<- rattleWidget("evaluate_tab_label")
+
+  NOTEBOOK.LOG.PAGE       <<- "Log"
+
+  ## Pages that are common to all paradigms.
+
+  NOTEBOOK.COMMON.PAGES <<- c(NOTEBOOK.DATA.PAGE,
+                              NOTEBOOK.SAMPLE.PAGE,
+                              NOTEBOOK.VARIABLES.PAGE,
+                              NOTEBOOK.LOG.PAGE)
   
+  ## DATA tab pages.
+
   DATA              <<- rattleWidget("data_notebook")
   DATA.CSV.TAB      <<- getNotebookPage(DATA, "csv")
   DATA.RDATA.TAB    <<- getNotebookPage(DATA, "rdata")
@@ -291,6 +310,14 @@ library(rattle)
 
 crs <- NULL")
   
+  ## By default the CLUSTER page is not showing.
+
+  ## Don't turn this off until we move away from using the numeric tab
+  ## variables above, since a Execute on the Model tab runs the
+  ## Cluster tab :-)
+
+  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
+  
 }
 
 resetRattle <- function()
@@ -312,7 +339,7 @@ resetRattle <- function()
   crs$seed     <<- NULL
   crs$kmeans   <<- NULL
   crs$hclust   <<- NULL
-  crs$page     <<- NULL
+  crs$page     <<- ""
   crs$smodel   <<- NULL
   crs$glm      <<- NULL
   crs$rpart    <<- NULL
@@ -390,10 +417,6 @@ resetRattle <- function()
   rattleWidget("evaluate_filechooserbutton")$setFilename("")
   rattleWidget("evaluate_rdataset_combobox")$setActive(-1)
 
-  ## By default the CLUSTER page is not showing.
-
-  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
-  
 }
 
 ## Common Dialogs
@@ -660,6 +683,11 @@ getNotebookPage <- function(notebook, label)
   return(NULL)
 }
 
+getCurrentPageLabel <- function(nb)
+{
+  return(nb$getTabLabelText(nb$getNthPage(nb$getCurrentPage())))
+}
+
 is.windows <- function()
 {
   return(.Platform$OS.type == "windows")
@@ -877,8 +905,29 @@ on_twoclass_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    #DATA$setCurrentPage(DATA.CSV.TAB)
+    NOTEBOOK$insertPage(NOTEBOOK.MODEL.WIDGET, NOTEBOOK.MODEL.LABEL, 4)
+    NOTEBOOK$insertPage(NOTEBOOK.EVALUATE.WIDGET, NOTEBOOK.EVALUATE.LABEL, 5)
+
+    ## If the previous current page is not one of the common pages,
+    ## then make the newly inserted page the current page. This
+    ## doesn't work, since if we are coming from a CLuster page, for
+    ## example, that page no longer exists, so we get the Explore as
+    ## the last page, and thus this does nothing - unless I remove
+    ## Explore from the common pages list! Will result in one oddity,
+    ## but we might get away with it.
+
+    if (! is.element(crs$page, NOTEBOOK.COMMON.PAGES))
+    {
+      NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.PAGE))
+      switchToPage(NOTEBOOK.MODEL.PAGE)
+    }
   }
+  else
+  {
+    NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.PAGE))
+    NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.EVALUATE.PAGE))
+  }
+    
   setStatusBar()
 }
 
@@ -887,12 +936,22 @@ on_unsupervised_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     NOTEBOOK$insertPage(NOTEBOOK.CLUSTER.WIDGET, NOTEBOOK.CLUSTER.LABEL, 4)
+
+    ## If the previous current page is not one of the common pages,
+    ## then make the newly inserted page the current page.
+
+    if (! is.element(crs$page, NOTEBOOK.COMMON.PAGES))
+    {
+      NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.PAGE))
+      switchToPage(NOTEBOOK.CLUSTER.PAGE)
+    }
+    
+    setStatusBar("Added the Cluster tab")
   }
   else
   {
-    NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
+    NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.PAGE))
   }
-    setStatusBar()
 }
 
 ########################################################################
@@ -4167,8 +4226,7 @@ on_rpart_loss_comboboxentry_set_focus_child <- function(action, window)
 
 currentModelTab <- function()
 {
-  cp <- MODEL$getCurrentPage()
-  lb <- MODEL$getTabLabelText(MODEL$getNthPage(cp))
+  lb <- getCurrentPageLabel(MODEL)
   if (lb == SVM && rattleWidget("kernlab_radiobutton")$getActive())
     lb <- KSVM
   return(lb)
@@ -7170,16 +7228,17 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 ##
 ## PMML Generation
 ##
-on_export_pmml_activate <- function(action, window)
+on_export_activate <- function(action, window)
 {
   require(XML, quietly=TRUE)
 
   if (noDatasetLoaded()) return()
 
-  ct <- NOTEBOOK$getCurrentPage()
-      
-  if (ct == NOTEBOOK.CLUSTER.TAB)
-    
+  #ct <- NOTEBOOK$getCurrentPage()
+  ct <- getCurrentPageLabel(NOTEBOOK)
+  
+  if (ct == NOTEBOOK.CLUSTER.PAGE)
+  {  
     if (rattleWidget("kmeans_radiobutton")$getActive())
     {
       if (is.null(crs$kmeans))
@@ -7205,8 +7264,8 @@ on_export_pmml_activate <- function(action, window)
                    "implemented.")
       return()
     }
-
-  if (ct == NOTEBOOK.MODEL.TAB)
+  }
+  else if (ct == NOTEBOOK.MODEL.PAGE)
   {
     if (rattleWidget("rpart_radiobutton")$getActive())
     {
@@ -7233,6 +7292,9 @@ on_export_pmml_activate <- function(action, window)
       return()
     }
   }
+  else
+    infoDialog("No export functionality is available for the",
+               ct, "tab. Nothing done.")
 }
 
 pmml.kmeans <- function(cl)
@@ -7792,33 +7854,34 @@ dispatchExecuteButton <- function()
   
   ## Check which tab of notebook and dispatch to appropriate execute action
 
-  ct <- NOTEBOOK$getCurrentPage()
+  #ct <- NOTEBOOK$getCurrentPage()
+  ct <- getCurrentPageLabel(NOTEBOOK)
   
-  if (ct == NOTEBOOK.DATA.TAB) 
+  if (ct == NOTEBOOK.DATA.PAGE) 
   {
     executeDataTab()
   }
-  else if (ct == NOTEBOOK.EXPLORE.TAB)
+  else if (ct == NOTEBOOK.EXPLORE.PAGE)
   {
     executeExploreTab()
   }
-  else if (ct == NOTEBOOK.VARIABLES.TAB)
+  else if (ct == NOTEBOOK.VARIABLES.PAGE)
   {
     execute.variables.tab()
   }
-  else if (ct == NOTEBOOK.SAMPLE.TAB)
+  else if (ct == NOTEBOOK.SAMPLE.PAGE)
   {
     executeSampleTab()
   }
-  else if (ct == NOTEBOOK.CLUSTER.TAB)
+  else if (ct == NOTEBOOK.CLUSTER.PAGE)
   {
     execute.cluster.tab()
   }
-  else if (ct == NOTEBOOK.MODEL.TAB)
+  else if (ct == NOTEBOOK.MODEL.PAGE)
   {
     execute.model.tab()
   }
-  else if (ct == NOTEBOOK.EVALUATE.TAB)
+  else if (ct == NOTEBOOK.EVALUATE.PAGE)
   {
     
     ## The wrap mode of the confusion_textview may have been set to
@@ -7848,50 +7911,50 @@ on_notebook_switch_page <- function(notebook, window, page)
 
 on_tools_data_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Data"))
-  switchToPage(NOTEBOOK.DATA.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.DATA.PAGE))
+  switchToPage(NOTEBOOK.DATA.PAGE)
 }
 
 on_tools_variables_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Variables"))
-  switchToPage(NOTEBOOK.VARIABLES.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.VARIABLES.PAGE))
+  switchToPage(NOTEBOOK.VARIABLES.PAGE)
 }
 
 on_tools_sample_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Sample"))
-  switchToPage(NOTEBOOK.SAMPLE.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.SAMPLE.PAGE))
+  switchToPage(NOTEBOOK.SAMPLE.PAGE)
 }
 
 on_tools_explore_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Explore"))
-  switchToPage(NOTEBOOK.EXPLORE.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.EXPLORE.PAGE))
+  switchToPage(NOTEBOOK.EXPLORE.PAGE)
 }
 
 on_tools_cluster_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Cluster"))
-  switchToPage(NOTEBOOK.CLUSTER.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.PAGE))
+  switchToPage(NOTEBOOK.CLUSTER.PAGE)
 }
 
 on_tools_model_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Model"))
-  switchToPage(NOTEBOOK.MODEL.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.PAGE))
+  switchToPage(NOTEBOOK.MODEL.PAGE)
 }
 
 on_tools_evaluate_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Evaluate"))
-  switchToPage(NOTEBOOK.EVALUATE.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.EVALUATE.PAGE))
+  switchToPage(NOTEBOOK.EVALUATE.PAGE)
 }
 
 on_tools_log_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, "Log"))
-  switchToPage(NOTEBOOK.LOG.TAB)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.LOG.PAGE))
+  switchToPage(NOTEBOOK.LOG.PAGE)
 }
 
 switchToPage <- function(page)
@@ -7901,7 +7964,10 @@ switchToPage <- function(page)
   
   setStatusBar()
 
-  if (page == NOTEBOOK.EVALUATE.TAB)
+  if (is.numeric(page))
+    page <- NOTEBOOK$getTabLabelText(NOTEBOOK$getNthPage(page))
+  
+  if (page == NOTEBOOK.EVALUATE.PAGE)
   {
     ## On moving to the EVALUATE page, ensure each built model's
     ## checkbox is active, and check the active model's checkbox, but
@@ -7918,7 +7984,7 @@ switchToPage <- function(page)
              function(x) rattleWidget(paste(x, "_evaluate_checkbutton",
                                             sep=""))$setSensitive(TRUE))
       
-      if (is.null(crs$page) || crs$page == NOTEBOOK.MODEL.TAB)
+      if (is.null(crs$page) || crs$page == NOTEBOOK.MODEL.PAGE)
       {
         ## By default check the current model's check button if we
         ## have just come from the MODEL page. This makes it easy when
@@ -7933,13 +7999,18 @@ switchToPage <- function(page)
   }
   
   ## When changing to the LOG page desensitise the Execute button.
-  ## TODO: The execute button could be used to save the log file.
   
-  if (page == NOTEBOOK.LOG.TAB)
+  if (page == NOTEBOOK.LOG.PAGE)
+  {
     rattleWidget("execute_button")$setSensitive(FALSE)
+    rattleWidget("execute_menu")$setSensitive(FALSE)
+  }
   else
+  {
     rattleWidget("execute_button")$setSensitive(TRUE)
-
+    rattleWidget("execute_menu")$setSensitive(TRUE)
+  }
+    
   ## Record the current page so when we change we know which was last.
 
   crs$page <<- page

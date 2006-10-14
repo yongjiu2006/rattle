@@ -162,7 +162,7 @@
 		<widget class="GtkMenu" id="tools1_menu">
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="execute1">
+		    <widget class="GtkImageMenuItem" id="execute_menu">
 		      <property name="visible">True</property>
 		      <property name="tooltip" translatable="yes">Execute to have the current tab take effect.</property>
 		      <property name="label" translatable="yes">E_xecute</property>
@@ -171,7 +171,7 @@
 		      <accelerator key="F5" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image92">
+			<widget class="GtkImage" id="image104">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -198,7 +198,7 @@
 		      <property name="use_underline">True</property>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image93">
+			<widget class="GtkImage" id="image105">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-print</property>
 			  <property name="icon_size">1</property>
@@ -212,14 +212,14 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="export_pmml_menu">
+		    <widget class="GtkImageMenuItem" id="export_menu">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Export PMML</property>
+		      <property name="label" translatable="yes">_Export</property>
 		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="on_export_pmml_activate" last_modification_time="Thu, 16 Mar 2006 08:15:43 GMT"/>
+		      <signal name="activate" handler="on_export_activate" last_modification_time="Sat, 14 Oct 2006 06:45:27 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image94">
+			<widget class="GtkImage" id="image106">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -246,7 +246,7 @@
 		      <signal name="activate" handler="on_tools_data_activate" last_modification_time="Fri, 13 Oct 2006 09:18:41 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image95">
+			<widget class="GtkImage" id="image107">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-file</property>
 			  <property name="icon_size">1</property>
@@ -946,7 +946,7 @@
 		      <child>
 			<widget class="GtkRadioButton" id="unsupervised_radiobutton">
 			  <property name="visible">True</property>
-			  <property name="sensitive">False</property>
+			  <property name="tooltip" translatable="yes">Select this option for data that has no target variable or you wish to ignore the target for now.</property>
 			  <property name="can_focus">True</property>
 			  <property name="label" translatable="yes">Unsupervised</property>
 			  <property name="use_underline">True</property>
@@ -1637,6 +1637,12 @@
 Rattle is an Open Source project to develop a GNOME Data Mining suite of applications built on top of the statistical and data mining package R, licensed under the GNU General Public License, and Copyright (c) Graham J Williams.
 
 See the Help menu for extensive support in using Rattle.
+
+Togaware's Desktop Data Mining Survival Guide (under development) at 
+
+http://datamining.togaware.com/survivor/Rattle.html 
+
+provides a guide to using Rattle.
 </property>
 		    </widget>
 		  </child>
@@ -3580,7 +3586,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox6">
+	    <widget class="GtkVBox" id="model_tab_widget">
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
@@ -5366,7 +5372,7 @@ poisson(log)</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label10">
+	    <widget class="GtkLabel" id="model_tab_label">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Model</property>
 	      <property name="use_underline">False</property>
@@ -5389,7 +5395,7 @@ poisson(log)</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox7">
+	    <widget class="GtkVBox" id="evaluate_tab_widget">
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
@@ -6454,7 +6460,7 @@ The default chart displays caseload versus performance.</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label11">
+	    <widget class="GtkLabel" id="evaluate_tab_label">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Evaluate</property>
 	      <property name="use_underline">False</property>
@@ -6575,10 +6581,11 @@ The default chart displays caseload versus performance.</property>
   <property name="name" translatable="yes">Rattle</property>
   <property name="copyright" translatable="yes">Copyright (C) 2006 Graham.Williams@togaware.com</property>
   <property name="comments" translatable="yes">A GNOME Data Miner Built on R.</property>
-  <property name="license" translatable="yes">This program is free software; you can redistribute it and/or modify
+  <property name="license" translatable="yes">This program is copyright free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version. See the file gpl-license.
+(at your option) any later version. See the file gpl-license in the
+distribution and at http://www.gnu.org/copyleft/gpl.html for details.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
