@@ -2,6 +2,7 @@ Rattle is a collection of graphical interfaces for data mining in R.
 
 HISTORY
 
+65 Move to multiple R src files and modularisation.
 64 Initial implementation of paradigms.
 63 Tools menu to navigate tabs (Anthony Nolan).
 60 RF sampsize implemented.

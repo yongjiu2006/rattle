@@ -1,8 +1,8 @@
 # TARGETS
 #
+# local:	Build and install in the local machine's R archive
 # check:	As R to check that the package looks okay
 # html:		Build the HTML documents and view in a browser
-# local:	Build and install in the local machine's R archive
 # install:	Build and copy the package across to the public www
 # access:	Have a look at who might be downloading rattle
 
@@ -17,12 +17,22 @@ REPOSITORY=repository
 MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
-#REVISION:=$(shell egrep '^REVISION' src/rattle.R | cut -d" "  -f 4)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 DATE:=$(shell date +%F)
 
-SOURCE = src/rattle.R src/rattle.glade \
-	$(NAMESPACE)
+R_SOURCE = \
+	src/rattle.R \
+	src/execute.R \
+	src/paradigm.R \
+	src/projects.R \
+	src/textview.R \
+	src/zzz.R
+
+GLADE_SOURCE = src/rattle.glade
+
+SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
+
+default: local
 
 install: build zip check
 	cp src/rattle.R src/rattle.glade /var/www/access/
@@ -48,8 +58,8 @@ build: data rattle_$(VERSION).tar.gz
 
 rattle_$(VERSION).tar.gz: $(SOURCE)
 	svn update
-	cp src/rattle.R package/rattle/R/
-	cp src/rattle.glade package/rattle/inst/etc/
+	cp $(R_SOURCE) package/rattle/R/
+	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
 	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	(cd /home/gjw/projects/togaware/www/;\
@@ -108,4 +118,4 @@ clean:
 
 realclean:
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
-	rm -rf rattle.Rcheck
+	rm -rf rattle.Rcheck rattle_$(VERSION).tar.gz
