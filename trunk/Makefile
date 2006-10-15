@@ -70,9 +70,9 @@ rattle_$(VERSION).tar.gz: $(SOURCE)
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
 	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
-			dmsurvivor.tex;\
+			rattle_overview.tex;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			dmsurvivor.tex)
+			rattle_overview.tex)
 	R CMD build $(PACKAGE)
 	chmod -R go+rX $(PACKAGE)
 
