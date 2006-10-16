@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-15 13:11:02 Graham Williams>
+## Time-stamp: <2006-10-16 06:53:05 Graham Williams>
 ##
 ## Paradigm control.
 ##
@@ -35,14 +35,13 @@ on_twoclass_radiobutton_toggled <- function(button)
       NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.NAME))
       switchToPage(NOTEBOOK.MODEL.NAME)
     }
+    setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
   {
     NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.NAME))
     NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.EVALUATE.NAME))
   }
-    
-  setStatusBar()
 }
 
 on_unsupervised_radiobutton_toggled <- function(button)
@@ -65,7 +64,7 @@ on_unsupervised_radiobutton_toggled <- function(button)
       switchToPage(NOTEBOOK.CLUSTER.NAME)
     }
     
-    setStatusBar("Added the Cluster tab")
+    setStatusBar("Exposed the Cluster tab")
   }
   else
   {

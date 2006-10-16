@@ -35,7 +35,6 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 default: local
 
 install: build zip check
-	cp src/rattle.R src/rattle.glade /var/www/access/
 	chmod go+r /var/www/access/rattle*
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
 	R --no-save < support/repository.R

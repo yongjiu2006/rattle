@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-14 20:46:06 Graham Williams>
+## Time-stamp: <2006-10-16 07:11:11 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -282,15 +282,24 @@ rattle <- function()
   ##
   
   addToLog(sprintf("Rattle version %s", VERSION),
-           sprintf("## Started %s by %s", Sys.time(), Sys.info()["user"]),
-          "## You can save all this to file by using the right mouse button to
-## Select All of the text, and then the right mouse button again to Copy.
-## Then paste the text into a text editor and save to file and/or print.
-## The point of doing this would be to save a log of what you have done,
-## potentially to repeat by sending the same commands directly to R.
-## You can also save and load projects, which also retains this log.
+           sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
+          "## We can save the contents of this log textview to file by using
+## the right mouse button to Select All of the text, and then the right mouse
+## button again to Copy. Then paste the text into a text editor and save to
+## file and/or print. The point of doing this would be to save a log of what
+## we have done, potentially to repeat the process by sending the same
+## commands directly to R. If we save to the file \"model061205.R\" then in the
+## R Console we can issue the command 'source(\"model061205.R\")' to run the
+## commands in the file. We may want to edit the file to suit our needs.
+##
+## We can also save and load projects, which also retains this log.
 
 library(rattle)
+
+## The variable crs is used by Rattle to store the Current Rattle State.
+## We initialise it here to be empty and Rattle then starts populating it.
+## Simply type \"str(crs)\" in the R Console to see a summary of what is
+## stored there!
 
 crs <- NULL")
   
@@ -561,7 +570,7 @@ addLogSeparator <- function(msg=NULL)
   ## section.
   
   addToLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
-                "\n## Timestamp: ", Sys.time(), sep=""),
+                "\n## Rattle timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
   if (!is.null(msg))
     addToLog(paste(sep="", START.LOG.COMMENT, msg), no.start=TRUE)
@@ -2264,7 +2273,7 @@ executeSampleTab <- function()
                         "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
                         ")", sep="")
 
-    addToLog("Build random sample for modelling.",
+    addToLog("Build a random sample for modelling.",
             gsub("<<-", "<-", sample.cmd))
     eval(parse(text=sample.cmd))
 
