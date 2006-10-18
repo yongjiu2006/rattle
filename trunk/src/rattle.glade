@@ -45,10 +45,9 @@
 		  <child>
 		    <widget class="GtkImageMenuItem" id="new1">
 		      <property name="visible">True</property>
-		      <property name="sensitive">False</property>
 		      <property name="label">gtk-new</property>
 		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_new1_activate" last_modification_time="Fri, 03 Feb 2006 22:44:13 GMT"/>
+		      <signal name="activate" handler="on_new_activate" last_modification_time="Wed, 18 Oct 2006 18:14:24 GMT"/>
 		    </widget>
 		  </child>
 
@@ -171,7 +170,7 @@
 		      <accelerator key="F5" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image104">
+			<widget class="GtkImage" id="image107">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -198,7 +197,7 @@
 		      <property name="use_underline">True</property>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image105">
+			<widget class="GtkImage" id="image108">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-print</property>
 			  <property name="icon_size">1</property>
@@ -214,12 +213,13 @@
 		  <child>
 		    <widget class="GtkImageMenuItem" id="export_menu">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
 		      <property name="label" translatable="yes">_Export</property>
 		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="on_export_activate" last_modification_time="Sat, 14 Oct 2006 06:45:27 GMT"/>
+		      <signal name="activate" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 18:19:08 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image106">
+			<widget class="GtkImage" id="image109">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -246,7 +246,7 @@
 		      <signal name="activate" handler="on_tools_data_activate" last_modification_time="Fri, 13 Oct 2006 09:18:41 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image107">
+			<widget class="GtkImage" id="image110">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-file</property>
 			  <property name="icon_size">1</property>
@@ -770,7 +770,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkToolButton" id="toolbutton1">
+		<widget class="GtkToolButton" id="export_button">
 		  <property name="visible">True</property>
 		  <property name="sensitive">False</property>
 		  <property name="tooltip" translatable="yes">Export the current tab in an appropriate form.</property>
@@ -780,7 +780,7 @@
 		  <property name="visible_horizontal">True</property>
 		  <property name="visible_vertical">True</property>
 		  <property name="is_important">False</property>
-		  <signal name="clicked" handler="on_execute_button_clicked" last_modification_time="Sat, 04 Feb 2006 02:43:12 GMT"/>
+		  <signal name="clicked" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 17:57:11 GMT"/>
 		</widget>
 		<packing>
 		  <property name="expand">False</property>
@@ -1998,7 +1998,7 @@ provides a guide to using Rattle.
 	      <property name="n_rows">3</property>
 	      <property name="n_columns">9</property>
 	      <property name="homogeneous">False</property>
-	      <property name="row_spacing">5</property>
+	      <property name="row_spacing">10</property>
 	      <property name="column_spacing">5</property>
 
 	      <child>
@@ -2044,52 +2044,6 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		<packing>
 		  <property name="left_attach">2</property>
 		  <property name="right_attach">3</property>
-		  <property name="top_attach">0</property>
-		  <property name="bottom_attach">1</property>
-		  <property name="x_options">fill</property>
-		  <property name="y_options"></property>
-		</packing>
-	      </child>
-
-	      <child>
-		<widget class="GtkCheckButton" id="train_test_checkbutton">
-		  <property name="sensitive">False</property>
-		  <property name="tooltip" translatable="yes">Use the sample to partition the dataset into a training set and a test set. The training set (of the size specified for the sample) is used to build a model, and the test set will then be used to evluate the model.</property>
-		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Training/Test</property>
-		  <property name="use_underline">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
-		  <property name="active">True</property>
-		  <property name="inconsistent">False</property>
-		  <property name="draw_indicator">True</property>
-		</widget>
-		<packing>
-		  <property name="left_attach">7</property>
-		  <property name="right_attach">8</property>
-		  <property name="top_attach">0</property>
-		  <property name="bottom_attach">1</property>
-		  <property name="x_options">fill</property>
-		  <property name="y_options"></property>
-		</packing>
-	      </child>
-
-	      <child>
-		<widget class="GtkCheckButton" id="remove_missing_checkbutton">
-		  <property name="sensitive">False</property>
-		  <property name="tooltip" translatable="yes">Some algorithms do not deal with any entities with missing values for any variables. Enabling this check box will remove such entities from the dataset.</property>
-		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Remove Missing</property>
-		  <property name="use_underline">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
-		  <property name="active">False</property>
-		  <property name="inconsistent">False</property>
-		  <property name="draw_indicator">True</property>
-		</widget>
-		<packing>
-		  <property name="left_attach">8</property>
-		  <property name="right_attach">9</property>
 		  <property name="top_attach">0</property>
 		  <property name="bottom_attach">1</property>
 		  <property name="x_options">fill</property>
@@ -2232,6 +2186,172 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		  <property name="y_options"></property>
 		</packing>
 	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="factorize_checkbutton">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Factorize</property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkLabel" id="label134">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="label" translatable="yes">Variable:</property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">False</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkComboBox" id="factorize_variables_combobox">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="add_tearoffs">False</property>
+		  <property name="focus_on_click">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">2</property>
+		  <property name="right_attach">5</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options">fill</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkLabel" id="label135">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="label" translatable="yes">Breaks:</property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">False</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">5</property>
+		  <property name="right_attach">6</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="remove_missing_checkbutton">
+		  <property name="sensitive">False</property>
+		  <property name="tooltip" translatable="yes">Some algorithms do not deal with any entities with missing values for any variables. Enabling this check box will remove such entities from the dataset.</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Remove Missing</property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">7</property>
+		  <property name="right_attach">8</property>
+		  <property name="top_attach">0</property>
+		  <property name="bottom_attach">1</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="checkbutton2">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Imputation</property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">2</property>
+		  <property name="bottom_attach">3</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkEntry" id="factorize_breaks_entry">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="can_focus">True</property>
+		  <property name="editable">True</property>
+		  <property name="visibility">True</property>
+		  <property name="max_length">0</property>
+		  <property name="text" translatable="yes"></property>
+		  <property name="has_frame">True</property>
+		  <property name="invisible_char">*</property>
+		  <property name="activates_default">False</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">6</property>
+		  <property name="right_attach">9</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
 	    </widget>
 	    <packing>
 	      <property name="tab_expand">False</property>
@@ -2242,7 +2362,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 	  <child>
 	    <widget class="GtkLabel" id="sample_tab_label">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Sample</property>
+	      <property name="label" translatable="yes">Transform</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -3615,11 +3735,14 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox4">
+		<widget class="GtkTable" id="table13">
 		  <property name="border_width">5</property>
 		  <property name="visible">True</property>
+		  <property name="n_rows">1</property>
+		  <property name="n_columns">8</property>
 		  <property name="homogeneous">False</property>
-		  <property name="spacing">10</property>
+		  <property name="row_spacing">0</property>
+		  <property name="column_spacing">5</property>
 
 		  <child>
 		    <widget class="GtkLabel" id="label23">
@@ -3640,9 +3763,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="angle">0</property>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">0</property>
+		      <property name="right_attach">1</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
@@ -3661,9 +3787,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_dtree_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:02 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">1</property>
+		      <property name="right_attach">2</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
@@ -3683,9 +3812,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_rf_radiobutton_toggled" last_modification_time="Wed, 08 Mar 2006 08:17:30 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">2</property>
+		      <property name="right_attach">3</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
@@ -3705,9 +3837,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_svm_radiobutton_toggled" last_modification_time="Wed, 22 Mar 2006 11:06:16 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">3</property>
+		      <property name="right_attach">4</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
@@ -3727,9 +3862,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_regression_radiobutton_toggled" last_modification_time="Fri, 10 Mar 2006 03:33:48 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">4</property>
+		      <property name="right_attach">5</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
@@ -3749,14 +3887,18 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_boost_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:16 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">5</property>
+		      <property name="right_attach">6</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
 		  <child>
 		    <widget class="GtkRadioButton" id="nn_radiobutton">
+		      <property name="visible">True</property>
 		      <property name="sensitive">False</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Neural Network</property>
@@ -3769,14 +3911,18 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="group">rpart_radiobutton</property>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">6</property>
+		      <property name="right_attach">7</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 
 		  <child>
 		    <widget class="GtkRadioButton" id="radiobutton9">
+		      <property name="visible">True</property>
 		      <property name="sensitive">False</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">MARS</property>
@@ -3789,9 +3935,12 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="group">rpart_radiobutton</property>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
+		      <property name="left_attach">7</property>
+		      <property name="right_attach">8</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
 		    </packing>
 		  </child>
 		</widget>
@@ -4488,7 +4637,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
-			      <property name="active">False</property>
+			      <property name="active">True</property>
 			      <property name="inconsistent">False</property>
 			      <property name="draw_indicator">True</property>
 			    </widget>
@@ -6524,7 +6673,7 @@ The default chart displays caseload versus performance.</property>
 		    <widget class="GtkTextView" id="log_textview">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="editable">False</property>
+		      <property name="editable">True</property>
 		      <property name="overwrite">False</property>
 		      <property name="accepts_tab">True</property>
 		      <property name="justification">GTK_JUSTIFY_LEFT</property>

@@ -1,11 +1,8 @@
-Rattle is a collection of graphical interfaces for data mining in R.
-
-HISTORY
-
+68 Implement export of Log tab.
 65 Move to multiple R src files and modularisation. Implement New button.
 64 Initial implementation of paradigms.
 63 Tools menu to navigate tabs (Anthony Nolan).
-60 RF sampsize implemented.
+60 RF sampsize implemented (Stuart Hamilton)
 59 Add varImpPlot to RF.
 55 Support different summary options.
 54 Fix plot colours in ROCR plots.

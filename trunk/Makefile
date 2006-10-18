@@ -23,8 +23,11 @@ DATE:=$(shell date +%F)
 R_SOURCE = \
 	src/rattle.R \
 	src/execute.R \
+	src/export.R \
+	src/log.R \
 	src/paradigm.R \
 	src/projects.R \
+	src/random_forest.R \
 	src/textview.R \
 	src/zzz.R
 
@@ -35,7 +38,6 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 default: local
 
 install: build zip check
-	chmod go+r /var/www/access/rattle*
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
 	R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*

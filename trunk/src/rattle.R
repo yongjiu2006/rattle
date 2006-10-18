@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-16 07:11:11 Graham Williams>
+## Time-stamp: <2006-10-19 04:36:06 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -187,7 +187,7 @@ rattle <- function()
 
   NOTEBOOK.VARIABLES.NAME <<- "Variables"
 
-  NOTEBOOK.SAMPLE.NAME    <<- "Sample"
+  NOTEBOOK.SAMPLE.NAME    <<- "Transform"
 
   NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
   NOTEBOOK.CLUSTER.WIDGET <<- rattleWidget("cluster_tab_widget")
@@ -280,28 +280,8 @@ rattle <- function()
   if (is.windows()) memory.limit(2073)
   
   ##
-  
-  addToLog(sprintf("Rattle version %s", VERSION),
-           sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
-          "## We can save the contents of this log textview to file by using
-## the right mouse button to Select All of the text, and then the right mouse
-## button again to Copy. Then paste the text into a text editor and save to
-## file and/or print. The point of doing this would be to save a log of what
-## we have done, potentially to repeat the process by sending the same
-## commands directly to R. If we save to the file \"model061205.R\" then in the
-## R Console we can issue the command 'source(\"model061205.R\")' to run the
-## commands in the file. We may want to edit the file to suit our needs.
-##
-## We can also save and load projects, which also retains this log.
 
-library(rattle)
-
-## The variable crs is used by Rattle to store the Current Rattle State.
-## We initialise it here to be empty and Rattle then starts populating it.
-## Simply type \"str(crs)\" in the R Console to see a summary of what is
-## stored there!
-
-crs <- NULL")
+  addInitialLogMessage()
   
   ## By default the CLUSTER page is not showing.
 
@@ -5088,434 +5068,6 @@ gbmShowRules <- function(object, rules=1:object$n.trees)
   }
 }
 
-
-##------------------------------------------------------------------------
-##
-## MODEL RF - RANDOM FOREST
-##
-
-executeModelRF <- function()
-{
-  num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
-  parms <- ""
-
-  ## Make sure there are no included variables which have more than 32
-  ## levels, which can not be handled by randomForest (perhaps a limit
-  ## only on 32 bit machines)
-  
-  categoricals <- crs$input[unlist(lapply(crs$input,
-                            function(x) is.factor(crs$dataset[,x])))]
-
-  for (i in categoricals)
-    if (length(levels(crs$dataset[,i])) > 32)
-    {
-      errorDialog("This implementation of randomForest does not handle",
-                   "categorical variables with more than 32 levels.",
-                   "The variable", i, "has", length(levels(crs$dataset[,i])),
-                   "levels. Please choose to ignore it in the",
-                   "Variables tab if you wish to build a randomForest model.")
-      return()
-    }
-
-  ## Retrieve options and set up parms.
-
-  ntree <- rattleWidget("rf_ntree_spinbutton")$getValue()
-  if (ntree != RF.NTREE.DEFAULT)
-    parms <- sprintf("%s, ntree=%d", parms, ntree)
-  
-  mtry <- rattleWidget("rf_mtry_spinbutton")$getValue()
-  if (mtry != RF.MTRY.DEFAULT)
-    parms <- sprintf("%s, mtry=%d", parms, mtry)
-
-  sampsize <- rattleWidget("rf_sampsize_entry")$getText()
-  if (nchar(sampsize) > 0)
-  {
-    ss <- as.numeric(unlist(strsplit(sampsize, ",")))
-    if (length(ss) != num.classes)
-      {
-        errorDialog(sprintf("The supplied sample sizes (%s)", sampsize),
-                     "needs to correspond to the number of classes",
-                     sprintf("found in the target variable '%s'.",crs$target),
-                     sprintf("Please supply exactly %d sample sizes.",
-                             num.classes))
-        return()
-      }
-    ## TODO Check if sample sizes are larger than the classes!
-    parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
-  }
-
-  ## TODO What's the relationship between this and actually displaying
-  ## importance!
-  if (rattleWidget("rf_importance_checkbutton")$getActive())
-    parms <- sprintf("%s, importance=TRUE", parms)
-  
-  if (rattleWidget("rf_proximity_checkbutton")$getActive())
-    parms <- sprintf("%s, proximity=TRUE", parms)
-  
-  ## Build the formula for the model. TODO We assume we will always do
-  ## classification rather than regression, at least for now.
-
-  frml <- paste(ifelse(is.factor(crs$dataset[[crs$target]]),
-                       crs$target,
-                       sprintf("as.factor(%s)", crs$target)),
-                "~ .")
-
-  ## List, as a string of indicies, the variables to be included. 
-
-  included <- getIncludedVariables()
-  
-  ## Some convenience booleans
-
-  sampling <- ! is.null(crs$sample)
-  including <- ! is.null(included)
-  subsetting <- sampling || including
-
-  ## Start the log
-  
-  addLogSeparator()
-
-  ## Load the required library.
-
-  library.cmd <- "require(randomForest, quietly=TRUE)"
-
-  addToLog("The randomForest package supplies the randomForest function.",
-          library.cmd)
-  eval(parse(text=library.cmd))
-
-  ## Build the model.
-
-  rf.cmd <- paste("crs$rf <<- randomForest(", frml, ", data=crs$dataset",
-                  if (subsetting) "[",
-                  if (sampling) "crs$sample",
-                  if (subsetting) ",",
-                  if (including) included,
-                  if (subsetting) "]",
-                  parms,
-                  ", na.action=na.omit",
-                  ")", sep="")
-
-  addToLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
-  result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
-
-  if (inherits(result, "try-error"))
-  {
-    if (any(grep("cannot allocate vector", result)))
-    {
-      errorDialog("The call to randomForest appears to have failed.",
-                   "This is often due, as in this case,",
-                   "to running out of memory",
-                   "as randomForest is rather memory hungry.",
-                   "A quick solution is to sample the dataset, through the",
-                   "Sample tab. On 32 bit machines you may be limited to",
-                   "less than 2000 entities.")
-      setTextview("rf_textview")
-    }
-    else
-      errorDialog("The call to randomForest appears to have failed.",
-                   "The error message was:", result,
-                   "I am not familiar with this error, and you may",
-                   "want to report it to the Rattle author",
-                   "at Graham.Williams@togaware.com")
-    return()
-  }
-
-  ## Display the resulting model.
-
-  newPlot()
-  plot.cmd <- paste('varImpPlot(crs$rf,',
-                    'main="Relative Importance of Variables")')
-  addToLog("Plot the relative importance of the variables.", plot.cmd)
-  eval(parse(text=plot.cmd))
-  
-  summary.cmd <- "crs$rf"
-  addToLog("Generate textual output of randomForest model.", summary.cmd)
-
-  importance.cmd <- "round(importance(crs$rf), 2)"
-  addToLog("List the importance of the variables.", importance.cmd)
-  
-  clearTextview("rf_textview")
-  setTextview("rf_textview",
-              "Summary of the randomForest model:\n\n",
-              collectOutput(summary.cmd, TRUE),
-              textviewSeparator(),
-              "Variable importance:\n\n",
-              collectOutput(importance.cmd, TRUE),
-              textviewSeparator(),
-              "To view model 5, for example, run printRandomForests(crs$rf, 5)\n",
-              "in the R conosle. Generating all 500 models takes quite some time.",
-              textviewSeparator())
-
-  if (sampling) crs$smodel <<- union(crs$smodel, RF)
-
-  setStatusBar("A randomForest model has been generated.")
-}
-
-printRandomForests <- function(model, models=NULL)
-{
-  if (! packageIsAvailable("randomForest", "print the rule sets"))
-    return()
-
-  require(randomForest, quietly=TRUE)
-
-  if (is.null(models)) models <- 1:model$ntree
-
-  strings <- c()
-  
-  for (i in models)
-    printRandomForest(model, i)
-  
-  return(strings)
-}
-
-printRandomForest <- function(model, n)
-{
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
-    return()
-
-  require(randomForest, quietly=TRUE)
-
-  tr <- getTree(model, n)
-  tr.paths <- getRFPathNodes(tr)
-  tr.vars <- attr(model$terms, "dataClasses")[-1]
-  
-  ## Initialise the output
-
-  cat("===================================================================\n")
-  cat(sprintf("Random Forest Model %d\n\n", n))
-
-  ## Generate rpart form for each rule.
-
-  cat("-----------------------------------------------------------------\n")
-  
-  for (i in 1:length(tr.paths))
-  {
-    cat(sprintf("Rule Number %d of Forest %d\n\n", i, n))
-    
-    tr.path <- tr.paths[[i]]
-
-    ## Indicies of variables in the path
-    
-    var.index <- tr[,3][abs(tr.path)] # 3rd col is "split var"
-    var.names <- names(tr.vars)[var.index]
-    var.values <- tr[,4][abs(tr.path)] # 4th col is "split point"
-    
-    for (j in 1:length(tr.path))
-    {
-      var.class <- tr.vars[var.index[j]]
-      if (var.class == "character" | var.class == "factor")
-      {
-        node.op <- "="
-
-        ## Convert the binary to a 0/1 list for the levels.
-        
-        var.levels <- levels(eval(model$call$data)[[var.names[j]]])
-        bins <- sdecimal2binary(var.values[j])
-        bins <- c(bins, rep(0, length(var.levels)-length(bins)))
-        if (tr.path[j] > 0)
-          node.value <- var.levels[bins==1]
-        else
-          node.value <- var.levels[bins==0]
-        node.value <- paste(node.value, collapse=",")
-      }
-      else if (var.class == "integer" | var.class == "numeric")
-      {
-        ## Assume spliting to the left means "<", and right ">="
-        if (tr.path[j]>0)
-          node.op <- "<"
-        else
-          node.op <- ">="
-        node.value <- var.values[j]
-      }
-      else
-        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
-                     var.class))
-
-      cat(sprintf("%s %s %s\n", var.names[j], node.op, node.value))
-    }
-    cat("-----------------------------------------------------------------\n")
-  }
-}
-
-randomForest2Rules <- function(model, models=NULL)
-{
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
-    return()
-
-  require(randomForest, quietly=TRUE)
-
-  if (is.null(models)) models <- 1:model$ntree
-
-  ## Obtain information we need about the data
-  
-  vars <- attr(model$terms, "dataClasses")[-1]
-
-  ruleset <- list()
-  
-  for (i in models)
-  {
-    ruleset[[i]] <- list(ruleset=getRFRuleSet(model, i))
-  }
-  return(ruleset)
-}
-
-## Generate a list of rules (conditions and outcomes) for RF MODEL
-## number N.
-
-getRFRuleSet <- function(model, n)
-{
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
-    return()
-
-  require(randomForest, quietly=TRUE)
-
-  tr <- getTree(model, n)
-  tr.paths <- getRFPathNodes(tr)
-  tr.vars <- attr(model$terms, "dataClasses")[-1]
-  
-  ## Initialise the output
-  
-  rules <- list()
-
-  ## Generate rpart form for each rule.
-
-  for (i in 1:length(tr.paths))
-  {
-    tr.path <- tr.paths[[i]]
-
-    ## Indicies of variables in the path
-    
-    var.index <- tr[,3][abs(tr.path)] # 3rd col is "split var"
-    var.names <- names(tr.vars)[var.index]
-    var.values <- tr[,4][abs(tr.path)] # 4th col is "split point"
-    
-    tr.rule <- c("root")
-
-    for (j in 1:length(tr.path))
-    {
-      var.class <- tr.vars[var.index[j]]
-      if (var.class == "character" | var.class == "factor")
-      {
-        node.op <- "="
-
-        ## Convert the binary to a 0/1 list for the levels.
-        
-        var.levels <- levels(eval(model$call$data)[[var.names[j]]])
-        bins <- sdecimal2binary(var.values[j])
-        bins <- c(bins, rep(0, length(var.levels)-length(bins)))
-        if (tr.path[j] > 0)
-          node.value <- var.levels[bins==1]
-        else
-          node.value <- var.levels[bins==0]
-        node.value <- paste(node.value, collapse=",")
-      }
-      else if (var.class == "integer" | var.class == "numeric")
-      {
-        ## Assume spliting to the left means "<", and right ">="
-        if (tr.path[j]>0)
-          node.op <- "<"
-        else
-          node.op <- ">="
-        node.value <- var.values[j]
-      }
-      else
-        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
-                     var.class))
-
-      tr.rule <- c(tr.rule, paste(var.names[j], node.op, node.value))
-    }
-    
-    ## TODO Walk through tr.rule and remove all but the last "VAR<"
-    ## and "VAR>=" conditions.
-    
-    rules[[i]] <- list(rule=tr.rule)
-  }
-  return(rules)
-}
-
-getRFPathNodes <- function(treeMat)
-{
-  ## The columns in the RF tree matrix are:
-  ##   1. left daughter;
-  ##   2. right daughter;
-  ##   3. split var;
-  ##   4. split point;
-  ##   5. status;
-  ##   6. prediction
-
-  ## Number of nodes in the tree
-  
-  nnodes <- dim(treeMat)[1] 
-
-  ## Leaf node indices
-
-  leafIndex <- 1:nnodes * as.integer(treeMat[,5]== -1) # Non-leaf index is 0
-  leafIndex <- leafIndex[leafIndex!=0] # Remove non-zeros (non-leafs)
-	  
-  paths <- list() # A list, each element a vector of the indices of a path
-
-  ## Process each leaf's path
-  
-  for (i in 1:length(leafIndex))
-  {
-    ## Initialise the node to the leaf index
-    
-    node <- leafIndex[i] # e.g. i=1, node=3
-    pathI <- c()
-    repeat
-    {
-      leftV <- 1:nnodes * as.integer(treeMat[,1]==abs(node))
-      leftNode <- leftV[leftV!=0]
-      if (length(leftNode)!= 0)
-      {
-        node <- leftNode
-      }
-      else # else must not be in the next line
-      {
-        rightV <- 1:nnodes * as.integer(treeMat[,2]==abs(node))
-        node <- -rightV[rightV!=0] # rhs node identified with negative index
-      }
-
-      pathI <-c(node, pathI)
-
-      ## If the node is the root node (first row in the matrix), then
-      ## the path is complete.
-      
-      if (abs(node)==1) break
-    }
-    paths[[i]] <- pathI
-  }
-
-  ## Each path is named after its leaf index number
-  
-  names(paths) <- as.character(leafIndex)
-
-  return(paths)
-}
-
-sdecimal2binary <- function(x)
-{
-  return(rev(sdecimal2binary.smallEndian(x)))
-}
-	
-sdecimal2binary.smallEndian <- function(x)
-{
-  if (x==0) return(0)
-  if (x<0) stop("Sorry, the input must be positive")
-  dec <- x
-	 
-  n <- floor(log(x)/log(2))
-  bin <- c(1)
-  dec <- dec - 2 ^ n
-	  
-  while(n > 0)
-  {
-    if (dec >= 2 ^ (n-1)) {bin <- c(bin,1); dec <- dec - 2 ^ (n-1)}
-    else bin <- c(bin,0)
-    n <- n - 1
-  }
-  return(bin)
-}
-	
 ##------------------------------------------------------------------------
 ##
 ## MODEL SVM - SUPPORT VECTOR MACHINE
@@ -7124,79 +6676,6 @@ executeEvaluateScore <- function(predcmd, testset, testname)
   return(sprintf("Scores saved.", getwd(), score.file))
 }
 
-########################################################################
-##
-## PMML Generation
-##
-on_export_activate <- function(action, window)
-{
-  require(XML, quietly=TRUE)
-
-  if (noDatasetLoaded()) return()
-
-  #ct <- NOTEBOOK$getCurrentPage()
-  ct <- getCurrentPageLabel(NOTEBOOK)
-  
-  if (ct == NOTEBOOK.CLUSTER.NAME)
-  {  
-    if (rattleWidget("kmeans_radiobutton")$getActive())
-    {
-      if (is.null(crs$kmeans))
-      {
-        errorDialog("No KMeans cluster is available. Be sure to build",
-                     "a cluster before trying to export it! You will need",
-                     "to press the Execute button (F5) in order to build the",
-                     "KMeans cluster.")
-        return()
-      }
-      else
-      {
-        write(collectOutput("pmml.kmeans(crs$kmeans)", TRUE),
-              file=sprintf("%s-kmeans.pmml", gsub(".csv", "", crs$dataname)))
-        infoDialog("The PMML file",
-                    sprintf('"%s-kmeans.pmml"', gsub(".csv", "", crs$dataname)),
-                    "has been written.")
-      }
-    }
-    else if (rattleWidget("hclust_radiobutton")$getActive())
-    {
-      errorDialog("PMML export for hierarchical clustering is not yet",
-                   "implemented.")
-      return()
-    }
-  }
-  else if (ct == NOTEBOOK.MODEL.NAME)
-  {
-    if (rattleWidget("rpart_radiobutton")$getActive())
-    {
-      if (is.null(crs$rpart))
-      {
-        errorDialog("No decision tree model is available. Be sure to build",
-                     "the model before trying to export it! You will need",
-                     "to press the Execute button (F5) in order to build the",
-                     "model.")
-        return()
-      }
-      else
-      {
-        write(collectOutput("pmml.rpart(crs$rpart)", TRUE),
-              file=sprintf("%s-rpart.pmml", gsub(".csv", "", crs$dataname)))
-        infoDialog("The PMML file",
-                    sprintf('"%s-rpart.pmml"', gsub(".csv", "", crs$dataname)),
-                    "has been written.")
-      }
-    }
-    else
-    {
-      errorDialog("PMML export for this model is not yet implemented.")
-      return()
-    }
-  }
-  else
-    infoDialog("No export functionality is available for the",
-               ct, "tab. Nothing done.")
-}
-
 pmml.kmeans <- function(cl)
 {
   
@@ -7381,8 +6860,6 @@ on_delete_menu_activate <- notImplemented
 
 ## Map the unchanged glade defaults
 
-on_new1_activate <- notImplemented
-
 on_cut1_activate <- notImplemented
 
 on_about_menu_activate <-  function(action, window)
@@ -7411,29 +6888,6 @@ on_tooltips_activate <- function(action, window)
 }
   
 ##----------------------------------------------------------------------
-
-## Button Callbacks
-
-on_new_button_clicked <- function(action, window)
-{
-  if ( ! is.null(listBuiltModels()) )
-  {
-    if (is.null(questionDialog("You have requested to start a new project.",
-                               "This will clear the current project (dataset",
-                               "and models).",
-                               "Do you wish to continue, and lose the current",
-                               "project? If you choose not to continue",
-                               "you can save the project, and then start",
-                               "a new project.")))
-      return()
-  }
-  resetRattle()
-  ## TODO Plenty of other things that should be reset as well.
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.DATA.NAME))
-  switchToPage(NOTEBOOK.DATA.NAME)
-  
-}
-  
 
 ## Miscellaneous callbacks
 
@@ -7543,11 +6997,15 @@ switchToPage <- function(page)
   {
     rattleWidget("execute_button")$setSensitive(FALSE)
     rattleWidget("execute_menu")$setSensitive(FALSE)
+    rattleWidget("export_button")$setSensitive(TRUE)
+    rattleWidget("export_menu")$setSensitive(TRUE)
   }
   else
   {
     rattleWidget("execute_button")$setSensitive(TRUE)
     rattleWidget("execute_menu")$setSensitive(TRUE)
+    rattleWidget("export_button")$setSensitive(FALSE)
+    rattleWidget("export_menu")$setSensitive(FALSE)
   }
     
   ## Record the current page so when we change we know which was last.

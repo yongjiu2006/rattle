@@ -23,7 +23,7 @@
 \alias{on_evaluate_rdataset_radiobutton_toggled}
 \alias{on_execute_button_clicked}
 \alias{on_explot_radiobutton_toggled}
-\alias{on_export_activate}
+\alias{on_export_button_clicked}
 \alias{on_export_pmml_activate}
 \alias{on_ggobi_radiobutton_toggled}
 \alias{on_hclust_radiobutton_toggled}
@@ -51,7 +51,7 @@
 \alias{on_kernlab_radiobutton_toggled}
 \alias{on_kmeans_radiobutton_toggled}
 \alias{on_lift_radiobutton_toggled}
-\alias{on_new1_activate}
+\alias{on_new_activate}
 \alias{on_new_button_clicked}
 \alias{on_notebook_switch_page}
 \alias{on_odbc_radiobutton_toggled}
