@@ -1,17 +1,39 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-14 20:28:19 Graham Williams>
+## Time-stamp: <2006-10-19 04:16:57 Graham Williams>
 ##
 ## Project functionality.
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
-on_open_activate <- function(action, window) {loadProject()}
-on_save_as_activate <- function(action, window) {saveProject()}
+on_new_activate <- function(action, window)     { newProject()  }
+on_open_activate <- function(action, window)    { loadProject() }
+on_save_as_activate <- function(action, window) { saveProject() }
 
+on_new_button_clicked <- function(action, window)  { newProject() }
 on_open_button_clicked <- function(action, window) { loadProject() }
 on_save_button_clicked <- function(action, window) { saveProject() }
 
+newProject <- function()
+{
+  if ( ! is.null(listBuiltModels()) )
+  {
+    if (is.null(questionDialog("You have requested to start a new project.",
+                               "This will clear the current project (dataset",
+                               "and models).",
+                               "Do you wish to continue, and lose the current",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then start",
+                               "a new project.")))
+      return()
+  }
+  resetRattle()
+  ## TODO Plenty of other things that should be reset as well.
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.DATA.NAME))
+  switchToPage(NOTEBOOK.DATA.NAME)
+  
+}
+  
 saveProject <- function()
 {
 
