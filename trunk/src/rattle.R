@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-19 04:36:06 Graham Williams>
+## Time-stamp: <2006-10-21 06:56:22 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -159,8 +159,9 @@ rattle <- function()
                ident=NULL,
                ignore=NULL,
                sample=NULL,
-               seed=NULL,
+               sample.seed=NULL,
                kmeans=NULL,
+               kmeans.seed=NULL,
                hclust=NULL,
                page="",
                smodel=NULL, # Record whether the sample has been modelled
@@ -309,8 +310,9 @@ resetRattle <- function()
   crs$ident    <<- NULL
   crs$ignore   <<- NULL
   crs$sample   <<- NULL
-  crs$seed     <<- NULL
+  crs$sample.seed <<- NULL
   crs$kmeans   <<- NULL
+  crs$kmeans.seed <<- NULL
   crs$hclust   <<- NULL
   crs$page     <<- ""
   crs$smodel   <<- NULL
@@ -2189,7 +2191,7 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_count_spinbutton")$setSensitive(TRUE)
     rattleWidget("sample_count_label")$setSensitive(TRUE)
     rattleWidget("sample_seed_spinbutton")$setSensitive(TRUE)
-    rattleWidget("sample_seed_label")$setSensitive(TRUE)
+    rattleWidget("sample_seed_button")$setSensitive(TRUE)
     rattleWidget("explore_sample_checkbutton")$setSensitive(TRUE)
     crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
   }
@@ -2200,7 +2202,7 @@ on_sample_checkbutton_toggled <- function(button)
     rattleWidget("sample_count_spinbutton")$setSensitive(FALSE)
     rattleWidget("sample_count_label")$setSensitive(FALSE)
     rattleWidget("sample_seed_spinbutton")$setSensitive(FALSE)
-    rattleWidget("sample_seed_label")$setSensitive(FALSE)
+    rattleWidget("sample_seed_button")$setSensitive(FALSE)
     rattleWidget("explore_sample_checkbutton")$setActive(FALSE)
     rattleWidget("explore_sample_checkbutton")$setSensitive(FALSE)
   }
@@ -2227,6 +2229,12 @@ on_sample_count_spinbutton_changed <- function(action, window)
   if (per != cper)
     rattleWidget("sample_percentage_spinbutton")$setValue(per)
   setStatusBar()
+}
+
+on_sample_seed_button_clicked <- function(button)
+{
+  rseed <- as.integer(runif(1, 0, 1000000))
+  rattleWidget("sample_seed_spinbutton")$setValue(rseed)
 }
 
 ##----------------------------------------------------------------------
@@ -2614,9 +2622,9 @@ executeExploreSummary <- function(dataset)
   
     if (packageIsAvailable("Hmisc", "describe the data"))
     {
-      library.cmd <- "require(Hmisc, quietly=TRUE)"
-      addToLog("The describe command comes from Hmisc.", library.cmd)
-      eval(parse(text=library.cmd))
+      lib.cmd <- "require(Hmisc, quietly=TRUE)"
+      addToLog("The describe command comes from Hmisc.", lib.cmd)
+      eval(parse(text=lib.cmd))
       
       describe.cmd <- sprintf("describe(%s)", dataset)
       addToLog("Generate a description of the dataset.", describe.cmd)
@@ -2635,9 +2643,9 @@ executeExploreSummary <- function(dataset)
     
     if (packageIsAvailable("fBasics", "calculate basics, skew and kurtosis"))
     {
-      library.cmd <- "require(fBasics, quietly=TRUE)"
-      addToLog("Use functionality from the fBasics package.", library.cmd)
-      eval(parse(text=library.cmd))
+      lib.cmd <- "require(fBasics, quietly=TRUE)"
+      addToLog("Use functionality from the fBasics package.", lib.cmd)
+      eval(parse(text=lib.cmd))
       
       if (do.basics)
       {
@@ -3501,7 +3509,7 @@ executeExploreGGobi <- function(dataset)
   
   ## Construct the commands.
 
-  library.cmd <- "require(rggobi, quietly=TRUE)"
+  lib.cmd <- "require(rggobi, quietly=TRUE)"
   ggobi.cmd <- sprintf('gg <<- ggobi(%s)', dataset)
               
   ## Start logging and executing the R code.
@@ -3509,8 +3517,8 @@ executeExploreGGobi <- function(dataset)
   if (! packageIsAvailable("rggobi","explore the data using GGobi")) return()
 
   addLogSeparator()
-  addToLog("GGobi is accessed using the rggobi package.", library.cmd)
-  eval(parse(text=library.cmd))
+  addToLog("GGobi is accessed using the rggobi package.", lib.cmd)
+  eval(parse(text=lib.cmd))
   addToLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
   eval(parse(text=ggobi.cmd))
   
@@ -3552,7 +3560,7 @@ executeExploreCorrelation <- function(dataset)
     }
   }
 
-  library.cmd <-"require(ellipse, quietly=TRUE)"
+  lib.cmd <-"require(ellipse, quietly=TRUE)"
   crscor.cmd  <- sprintf("%scrscor <- cor(%s, use='pairwise')",
                          ifelse(nas, naids.cmd, ""),
                          ifelse(nas,
@@ -3589,8 +3597,8 @@ executeExploreCorrelation <- function(dataset)
   addLogSeparator("Generate a correlation plot for the variables.")
   clearTextview(TV)
 
-  addToLog("The correlation plot uses the ellipse package.", library.cmd)
-  eval(parse(text=library.cmd))
+  addToLog("The correlation plot uses the ellipse package.", lib.cmd)
+  eval(parse(text=lib.cmd))
 
   addToLog("Correlations work for numeric variables only.", crscor.cmd)
   addToLog("Order the correlations by their strength.", crsord.cmd)
@@ -3749,243 +3757,6 @@ executeExplorePrcomp <- function(dataset)
   
   setStatusBar("A principal components analysis has been completed.")
 
-}
-
-########################################################################
-##
-## CLUSTER TAB
-##
-
-##----------------------------------------------------------------------
-##
-## Interface Actions
-##
-
-## When radio button is selected, display appropriate tab page
-
-on_kmeans_radiobutton_toggled <- function(button)
-{
-  if (button$getActive())
-    CLUSTER$setCurrentPage(CLUSTER.KMEANS.TAB)
-  setStatusBar()
-}
-
-on_hclust_radiobutton_toggled <- function(button)
-{
-  if (button$getActive())
-    CLUSTER$setCurrentPage(CLUSTER.HCLUST.TAB)
-  setStatusBar()
-}
-
-##----------------------------------------------------------------------
-##
-## Execution
-##
-executeClusterTab <- function()
-{
-  ## Can not cluster without a dataset.
-
-  if (noDatasetLoaded()) return()
-
-  ## If it looks like the VARIABLES page has not been executed, complain..
-
-  if (length(crs$input) != length(getSelectedVariables("input")) ||
-      length(crs$ident) != length(getSelectedVariables("ident")) ||
-      length(crs$ignore) != length(getSelectedVariables("ignore")))
-  {
-    errorDialog("You seem to have changed some selections in the",
-                 "Variables tab, but have not Executed the Variables tab.",
-                 "Please do so before clustering.")
-    return()
-  }
-
-  ## Check if sampling needs executing.
-
-  if (sampleNeedsExecute()) return()
-    
-  ## Kmeans only works for numeric data, so identify variables to
-  ## include.  Only work with the INPUT/TARGET/RISK
-  ## variables. That is, only exclude the IGNORE variables.
-
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
-  
-  if (length(nums) == 0 || length(indicies) == 0)
-  {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                 "No numeric variables were found in the dataset",
-                 "from amongst those having an input role.")
-    return()
-  }
-
-  ## Dispatch
-
-  if (rattleWidget("kmeans_radiobutton")$getActive())
-    execute.cluster.kmeans(include, length(intersect(nums, indicies))>1)
-  else if (rattleWidget("hclust_radiobutton")$getActive())
-    execute.cluster.hclust(include)
-}
-
-##----------------------------------------------------------------------
-##
-## KMEANS
-##
-
-execute.cluster.kmeans <- function(include, doPlot=TRUE)
-{
-
-  sampling  <- ! is.null(crs$sample)
-
-  nclust <- rattleWidget("kmeans_clusters_spinbutton")$getValue()
-  
-  kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %d)',
-                        ifelse(sampling, "crs$sample", ""),
-                        include, nclust)
-
-  if (packageIsAvailable("fpc","plot discriminant coordinates charts"))
-  {
-    plot.cmd <- paste("require(fpc, quietly=TRUE)\n",
-                      sprintf("plotcluster(crs$dataset[%s,%s], ",
-                              ifelse(sampling, "crs$sample", ""),
-                              include),
-                      "crs$kmeans$cluster)\n",
-                      genPlotTitleCmd("Discriminant Coordinates",
-                                     crs$dataname),
-                      sep="")
-  }
-  ## Log the R commands and execute them.
-
-  addLogSeparator()
-  addToLog("Generate a kmeans cluster of size 10.",
-          gsub("<<-", "<-", kmeans.cmd))
-  eval(parse(text=kmeans.cmd))
-
-  ## Show the resulting model.
-
-  clearTextview("kmeans_textview")
-  appendTextview("kmeans_textview",
-                 "Cluster Sizes\n\n",
-                 collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
-                 "\n\n",
-                 "Cluster centroids.\n\n",
-                 collectOutput("crs$kmeans$centers", TRUE),
-                 textviewSeparator())
-
-  if (doPlot && packageIsAvailable("fpc"))
-  {
-    addToLog("Generate a discriminate coordinates plot using the fpc package.",
-            plot.cmd)
-    newPlot()
-    eval(parse(text=plot.cmd))
-  }
-
-  setStatusBar("K Means cluster has been generated.")
-  
-}
-
-##----------------------------------------------------------------------
-##
-## HCLUST
-##
-
-execute.cluster.hclust <- function(include)
-{
-
-  TV <- "hclust_textview"
-  
-  ## TODO : If data is larg put up a question about wanting to continue?
-  
-  library.cmd <- "require(cba, quietly=TRUE)"
-
-  sampling  <- ! is.null(crs$sample)
-
-  hclust.cmd <- paste("crs$hclust <<- ",
-                      sprintf('hclust(dist(crs$dataset[%s,%s]), "%s")',
-                              ifelse(sampling, "crs$sample", ""),
-                              include, "ave"),
-                      sep="")
-
-  plot.cmd <- paste("plot(as.dendrogram(crs$hclust))\n",
-                    genPlotTitleCmd("Discriminant Coordinates",
-                                     crs$dataname),
-                      sep="")
-
-##   seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
-##                          sprintf("[%s,%s]",
-##                                  ifelse(sampling, "crs$sample", ""),
-##                                  include),
-##                          "))\n",
-##                          "l <- pam(d, 10, cluster.only = TRUE)\n",
-##                          "res <- cluproxplot(d, l, method = ",
-##                          'c("Optimal", "Optimal"), plot = FALSE)\n',
-##                          'plot(res, plotOptions = list(main = "PAM + ',
-##                          'Seriation (Optimal Leaf ordering)", ',
-##                          'col = terrain.colors(64)))', sep="")
-
-  ## Log the R command
-
-  addLogSeparator()
-  addToLog("Generate a hierarchical cluster of the data.",
-          gsub("<<-", "<-", hclust.cmd))
-  
-  ## Perform the commands.
-
-  result <- try(eval(parse(text=hclust.cmd)), silent=TRUE)
-  if (inherits(result, "try-error"))
-  {
-    if (any(grep("cannot allocate vector", result)))
-    {
-      errorDialog("The call to hclust appears to have failed.",
-                   "This is often due, as in this case,",
-                   "to running out of memory",
-                   "as hclust is rather memory hungry.",
-                   "A quick solution is to sample the dataset, through the",
-                   "Sample tab. On 32 bit machines you may be limited to",
-                   "less than 2000 entities.")
-      setTextview(TV)
-    }
-    else
-      errorDialog("The call to hclust appears to have failed.",
-                   "The error message was:", result,
-                   "I am not familiar with this error, and you may",
-                   "want to report it to the Rattle author",
-                   "at Graham.Williams@togaware.com")
-    return()
-  }
-
-##  addToLog("Plot the Hierarchical Dedogram.", plot.cmd)
-##   if (packageIsAvailable("cba", "plot seriation charts"))
-##   {
-##     addToLog("We use the cba package for seriation.", library.cmd)
-##     addToLog("Plot the Seriation (Experimental).", seriation.cmd)
-##   }
-
-  clearTextview(TV)
-  appendTextview(TV,
-                  "Hiearchical Cluster\n\n",
-                  collectOutput("crs$hclust", TRUE),
-                  eval(parse(text=plot.cmd)))
-
-## VERY SLOW - PERHAPS NEED A CHECKBOX TO TURN IT ON
-##
-##   if (packageIsAvailable("cba"))
-##   {
-##     eval(parse(text=library.cmd))
-##     newPlot()
-##     appendTextview(TV,
-##                     "\n\nNote that seriation is still experimental",
-##                     eval(parse(text=seriation.cmd)))
-##                                         #"\n\n",
-##                #"Cluster centroids.\n\n",
-##                #collectOutput("crs$kmeans$centers", TRUE),
-##   }
-  
-  setStatusBar("Hierarchical cluster has been generated.")
-  
 }
 
 ########################################################################
@@ -4508,7 +4279,7 @@ executeModelRPart <- function()
 
   ## Commands.
   
-  library.cmd <- "require(rpart, quietly=TRUE)"
+  lib.cmd <- "require(rpart, quietly=TRUE)"
   if (! packageIsAvailable("rpart", "build decision trees")) return()
     
   rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
@@ -4542,8 +4313,8 @@ executeModelRPart <- function()
   ## Load the required library.
 
   addLogSeparator()
-  addToLog("Build a decision tree using the rpart package.", library.cmd)
-  eval(parse(text=library.cmd))
+  addToLog("Build a decision tree using the rpart package.", lib.cmd)
+  eval(parse(text=lib.cmd))
 
   ## Build the model.
 
@@ -4973,7 +4744,7 @@ executeModelGBM <- function()
   if (! packageIsAvailable("gbm", "build an AdaBoost model"))
     return()
   
-  library.cmd <- paste(sprintf("\n\n## Build a GBM (%s) model.",
+  lib.cmd <- paste(sprintf("\n\n## Build a GBM (%s) model.",
                                    distribution),
                            "\n\nrequire(gbm, quietly=TRUE)")
 
@@ -4999,13 +4770,13 @@ executeModelGBM <- function()
  
   ## Log
 
-  addToLog(library.cmd, "\n",
+  addToLog(lib.cmd, "\n",
           gsub("<<-", "<-", boost.cmd), "\n",
           summary.cmd, "\n",
           show.cmd, sep="")
 
   ## Run model and show results.
-  eval(parse(text=library.cmd))
+  eval(parse(text=lib.cmd))
   clearTextview("gbm_textview")
   setTextview("gbm_textview",
                "Output from GBM model builder:\n\n",
@@ -6259,7 +6030,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 
 executeEvaluateLift <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR, quietly=TRUE)"
+  lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6278,8 +6049,8 @@ executeEvaluateLift <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
     
-    addToLog("Display Lift Chart using the ROCR package.", library.cmd)
-    eval(parse(text=library.cmd))
+    addToLog("Display Lift Chart using the ROCR package.", lib.cmd)
+    eval(parse(text=lib.cmd))
     
     addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, testname),
@@ -6339,7 +6110,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
 {
   TV <- "roc_textview"
   clearTextview(TV)
-  library.cmd <- "require(ROCR, quietly=TRUE)"
+  lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6358,8 +6129,8 @@ executeEvaluateROC <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
 
-    addToLog("Plot an ROC curve using the ROCR package.", library.cmd)
-    eval(parse(text=library.cmd))
+    addToLog("Plot an ROC curve using the ROCR package.", lib.cmd)
+    eval(parse(text=lib.cmd))
   
     addToLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, testname),
@@ -6430,7 +6201,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
 
 executeEvaluatePrecision <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR, quietly=TRUE)"
+  lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6450,8 +6221,8 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
   
-    addToLog("Precision/Recall Plot using the ROCR package", library.cmd)
-    eval(parse(text=library.cmd))
+    addToLog("Precision/Recall Plot using the ROCR package", lib.cmd)
+    eval(parse(text=lib.cmd))
 
     addToLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, testname),
@@ -6509,7 +6280,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
 
 executeEvaluateSensitivity <- function(predcmd, testset, testname)
 {
-  library.cmd <- "require(ROCR, quietly=TRUE)"
+  lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
@@ -6529,8 +6300,8 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
      addplot <- "TRUE"
  
     addToLog("Display a Sensitivity/Specificity Plot using the ROCR package",
-             library.cmd)
-    eval(parse(text=library.cmd))
+             lib.cmd)
+    eval(parse(text=lib.cmd))
 
     addToLog(sprintf("Generate Sensitivity/Specificity Plot for %s model on %s.",
                      mtype, testname),
@@ -7313,17 +7084,6 @@ of the components is plotted.
 <<>>
 Note that only numeric data is included in the analysis."))
     popupTextviewHelpWindow("prcomp")
-}
-
-on_help_kmeans_activate <- function(action, window)
-{
-  if (further.help("KMeans is a traditional approach to clustering.
-In addition to building a cluster, a discriminate coordinates plot
-is generated, using tha package fpc, as a display of the clusters."))
-  {
-    popupTextviewHelpWindow("kmeans")
-    popupTextviewHelpWindow("plotcluster")
-  }
 }
 
 on_help_rpart_activate <- function(action, window)

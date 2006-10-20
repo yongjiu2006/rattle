@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-19 04:16:57 Graham Williams>
+## Time-stamp: <2006-10-21 07:00:36 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -112,9 +112,10 @@ saveProject <- function()
   crs$barplots <<- getSelectedVariables("barplot")
   crs$dotplots <<- getSelectedVariables("dotplot")
 
-  ## Save Sample information
+  ## Save seed information
 
-  crs$seed <<- rattleWidget("sample_seed_spinbutton")$getValue()
+  crs$sample.seed <<- rattleWidget("sample_seed_spinbutton")$getValue()
+  crs$kmeans.seed <<- rattleWidget("kmeans_seed_spinbutton")$getValue()
   
   ## Save Model options
 
@@ -234,8 +235,8 @@ loadProject <- function()
 
   ## SAMPLE
 
-  crs$sample   <<- crs$sample
-  crs$seed     <<- crs$seed
+  crs$sample      <<- crs$sample
+  crs$sample.seed <<- crs$sample.seed
 
   if (!is.null(crs$sample))
   {
@@ -245,8 +246,8 @@ loadProject <- function()
     rattleWidget("sample_checkbutton")$setActive(TRUE)
     rattleWidget("sample_count_spinbutton")$setRange(1,nrows)
     rattleWidget("sample_count_spinbutton")$setValue(srows)
-    if (! is.null(crs$seed))
-      rattleWidget("sample_seed_spinbutton")$setValue(crs$seed)
+    if (! is.null(crs$sample.seed))
+      rattleWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
     else
       rattleWidget("sample_seed_spinbutton")$setValue(123)
     rattleWidget("sample_percentage_spinbutton")$setValue(per)
@@ -260,8 +261,14 @@ loadProject <- function()
 
   ## CLUSTER
   
-  crs$kmeans   <<- crs$kmeans
+  crs$kmeans      <<- crs$kmeans
+  crs$kmeans.seed <<- crs$kmeans.seed
+  if (! is.null(crs$kmeans.seed))
+    rattleWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
+  else
+    rattleWidget("kmeans_seed_spinbutton")$setValue(123)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
+
   crs$hclust   <<- crs$hclust
 
   ## MODELS

@@ -1,3 +1,70 @@
+========================================================================
+Decsription: 
+Proposer: 
+DateProposed: 
+Status: 
+Effort: 
+Required: 
+Completed: 
+
+========================================================================
+Decsription: Optionally add cluster statistics.
+Proposer: Graham Williams
+DateProposed: 20 Oct 2006
+Status: Done for kmeans. Do for hclust
+Effort: 2 hours
+Required: 
+
+This would be something like the output of
+
+library(fpc)
+cluster.stats(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), crs$kmeans$cluster)
+
+Can it be pretty printed for the textview?
+
+========================================================================
+Decsription: Improve hclust options
+Proposer: Stuart Hamilton
+DateProposed: 12 Oct 2006
+Status: Suggested
+Effort: 2 hours
+Required: 
+
+Need to expose the hclust plot command in the log file.
+
+Explore hclust and then cutree options for hclust. Then also include
+the cluster.stats summary.
+
+crs$hclust <- hclust(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), "ave")
+cluster.stats(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), cutree(crs$hclust,10))
+plotcluster(crs$dataset[crs$sample,c(2,7,9:10,12)], cutree(crs$hclust,10))
+
+========================================================================
+Decsription: Move to using kmeansCBI etc for all clustering.
+Proposer: Graham Williams
+DateProposed: 20 Oct 2006
+Status: Suggested
+Effort: 4 hours
+Required: 
+
+Seems to provide a uniform interface and uniform output.
+
+========================================================================
+Decsription: Multiple evaluation plots for kmeans
+Proposer: Graham Williams
+DateProposed: 21 October 2006
+Status: Suggested
+Effort: 2 hours
+Required: 
+Completed: 
+
+plotcluster in fpc can plot many different plots. Perhaps plot several
+in the one plot. Need to determine which ones would be useful.
+
+========================================================================
+
+OLD
+
 Rename Sample tab to Transform? Sampling is a kind of
 transformation. Or perhaps call it Process? Add in Marco's
 Transform/Cut/Factorise code?
