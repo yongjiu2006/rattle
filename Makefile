@@ -22,6 +22,7 @@ DATE:=$(shell date +%F)
 
 R_SOURCE = \
 	src/rattle.R \
+	src/cluster.R \
 	src/execute.R \
 	src/export.R \
 	src/log.R \

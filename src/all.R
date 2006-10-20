@@ -1,5 +1,6 @@
 source("rattle.R")
 source("zzz.R")
+source("cluster.R")
 source("execute.R")
 source("export.R")
 source("log.R")
