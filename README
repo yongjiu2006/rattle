@@ -1,3 +1,4 @@
+69 Add new options for KMeans. Generate random numbers for seeds.
 68 Implement export of Log tab.
 65 Move to multiple R src files and modularisation. Implement New button.
 64 Initial implementation of paradigms.

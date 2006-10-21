@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 06:51:16 Graham Williams>
+## Time-stamp: <2006-10-21 11:38:30 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -24,27 +24,6 @@ on_hclust_radiobutton_toggled <- function(button)
   if (button$getActive())
     CLUSTER$setCurrentPage(CLUSTER.HCLUST.TAB)
   setStatusBar()
-}
-
-on_kmeans_seed_button_clicked <- function(button)
-{
-  rseed <- as.integer(runif(1, 0, 1000000))
-  rattleWidget("kmeans_seed_spinbutton")$setValue(rseed)
-}
-
-on_help_kmeans_activate <- function(action, window)
-{
-  if (further.help("KMeans is a traditional approach to clustering.
-In addition to building a cluster, a discriminant coordinates plot
-can be generated, using tha package fpc, as a display of the clusters."))
-  {
-    popupTextviewHelpWindow("kmeans")
-    if (packageIsAvailable("fpc", "view documentation for plotcluster"))
-    {
-      require(fpc, quietly=TRUE)
-      popupTextviewHelpWindow("plotcluster")
-    }
-  }
 }
 
 ########################################################################
@@ -96,7 +75,7 @@ executeClusterTab <- function()
   ## Dispatch.
 
   if (rattleWidget("kmeans_radiobutton")$getActive())
-    executeClusterKMeans(include, length(intersect(nums, indicies))==1)
+    executeClusterKMeans(include)
   else if (rattleWidget("hclust_radiobutton")$getActive())
     executeClusterHClust(include)
 }
@@ -106,7 +85,7 @@ executeClusterTab <- function()
 ## KMEANS
 ##
 
-executeClusterKMeans <- function(include, onlyOneVariable=TRUE)
+executeClusterKMeans <- function(include)
 {
   TV <- "kmeans_textview"
   sampling  <- ! is.null(crs$sample)
@@ -114,21 +93,8 @@ executeClusterKMeans <- function(include, onlyOneVariable=TRUE)
   ## Obtain interface information.
   
   nclust <- rattleWidget("kmeans_clusters_spinbutton")$getValue()
-  discrim.plot <- rattleWidget("kmeans_discriminant_checkbutton")$getActive()
-  do.stats <- rattleWidget("kmeans_statistics_checkbutton")$getActive()
   seed <- rattleWidget("kmeans_seed_spinbutton")$getValue()
   
-  ## Can only do a plot if it is appropriate (i.e., more than a single
-  ## variable).
-
-  if (discrim.plot && onlyOneVariable)
-  {
-    infoDialog("You've requested a discriminant coordinates plot,",
-               "but there is only one numeric variable available",
-               "in the data. No plot will be generated.")
-    discrim.plot <- FALSE
-  }
-
   addLogSeparator()
 
   ## SEED: Log the R command and execute.
@@ -155,52 +121,146 @@ executeClusterKMeans <- function(include, onlyOneVariable=TRUE)
                  "\n\nWithin cluster sum of squares.\n\n",
                  collectOutput("crs$kmeans$withinss", TRUE))
 
-  ## LIBRARY: Ensure the appropriate package is available for the plot
-  ## and cluster statistics, and log the R command and execute.
-  
-  if ((discrim.plot || do.stats) &&
-      ! packageIsAvailable("fpc",
-                           "plot discriminant coordinates or generate stats"))
-    return()
+  ## Ensure the kmeans buttons are now active
 
-  if (discrim.plot || do.stats)
+  rattleWidget("kmeans_stats_button")$setSensitive(TRUE)
+  rattleWidget("kmeans_plot_button")$setSensitive(TRUE)
+  
+  setStatusBar("K Means cluster has been generated.")
+  
+}
+
+on_kmeans_seed_button_clicked <- function(button)
+{
+  rseed <- as.integer(runif(1, 0, 1000000))
+  rattleWidget("kmeans_seed_spinbutton")$setValue(rseed)
+}
+
+on_help_kmeans_activate <- function(action, window)
+{
+  if (further.help("KMeans is a traditional approach to clustering.
+In addition to building a cluster, a discriminant coordinates plot
+can be generated, using tha package fpc, as a display of the clusters."))
   {
-    lib.cmd <- "require(fpc, quietly=TRUE)"
-    addToLog("The following functionality is provided by the fpc package.",
-             lib.cmd)
-    eval(parse(text=lib.cmd))
+    popupTextviewHelpWindow("kmeans")
+    if (packageIsAvailable("fpc", "view documentation for plotcluster"))
+    {
+      require(fpc, quietly=TRUE)
+      popupTextviewHelpWindow("plotcluster")
+    }
   }
-  
-  ## PLOT: Log the R command and execute.
+}
 
-  if (discrim.plot)
+on_kmeans_stats_button_clicked <- function(button)
+{
+  ## Make sure there is a cluster first.
+  
+  if (is.null(crs$kmeans))
   {
-    plot.cmd <- sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
-                              "crs$kmeans$cluster)\n",
-                              genPlotTitleCmd("Discriminant Coordinates",
-                                              crs$dataname),
-                              sep=""),
-                        ifelse(sampling, "crs$sample", ""), include)
-    addToLog("Generate a discriminant coordinates plot using the fpc package.",
-             plot.cmd)
-    newPlot()
-    eval(parse(text=plot.cmd))
+    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## LIBRARY: Ensure the appropriate package is available for the
+  ## plot, and log the R command and execute.
+  
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  TV <- "kmeans_textview"
+  sampling  <- ! is.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
   }
 
   ## STATS: Log the R command and execute.
 
-  if (do.stats)
+  stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
+                             "crs$kmeans$cluster)\n"),
+                       ifelse(sampling, "crs$sample", ""), include)
+  addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  appendTextview(TV, "General cluster statistics:\n\n",
+                 collectOutput(stats.cmd, use.print=TRUE))
+
+  setStatusBar("K Means cluster statistics have been generated.")
+}
+
+on_kmeans_plot_button_clicked <- function(button)
+{
+
+  ## Make sure there is a cluster first.
+
+  if (is.null(crs$kmeans))
   {
-    stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
-                               "crs$kmeans$cluster)\n"),
-                         ifelse(sampling, "crs$sample", ""), include)
-    addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
-    appendTextview(TV, "General cluster statistics:\n\n",
-                   collectOutput(stats.cmd, use.print=TRUE))
+    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+                "Graham.Williams@togaware.com")
+    return()
   }
 
-  setStatusBar("K Means cluster has been generated.")
+  ## LIBRARY: Ensure the appropriate package is available for the
+  ## plot, and log the R command and execute.
   
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  sampling  <- ! is.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A discriminant coordinates plot can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  ## PLOT: Log the R command and execute.
+
+  plot.cmd <- sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
+                            "crs$kmeans$cluster)\n",
+                            genPlotTitleCmd("Discriminant Coordinates",
+                                            crs$dataname), sep=""),
+                      ifelse(sampling, "crs$sample", ""), include)
+  addToLog("Generate a discriminant coordinates plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Discriminant coordinates plot has been generated.")
 }
 
 ########################################################################
@@ -225,10 +285,24 @@ executeClusterHClust <- function(include)
                               include, "ave"),
                       sep="")
 
+  ## USE PLOT, NOT AS.DENDROGRAM - IS QUICKER
+
+  ## IF NUMBER OF ENTITIES > 100 THEN USE
+  ##
+  ## plot(crs$hclust, labels=FALSE, hang=0)
+  ##
+  ## For the book, illustrate
+  ##
+##   hc <- hclust(dist(crs$dataset[1:17,c(2,7,9:10,12)]), "ave")
+##   plot(hc)
+##   This looks like 4 clusters.
+##   km <- kmeans(crs$dataset[1:17,c(2,7,9:10,12)], 4)
+##   km$cluster
+##   This gives the same clusters!
+  
   plot.cmd <- paste("plot(as.dendrogram(crs$hclust))\n",
-                    genPlotTitleCmd("Discriminant Coordinates",
-                                     crs$dataname),
-                      sep="")
+                    genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
+                    sep="")
 
 ##   seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
 ##                          sprintf("[%s,%s]",
