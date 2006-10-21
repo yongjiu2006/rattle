@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 06:56:22 Graham Williams>
+## Time-stamp: <2006-10-21 11:55:39 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -4138,6 +4138,50 @@ executeModelGLM <- function()
 ## MODEL RPART
 ##
 
+on_rpart_plot_button_clicked <- function(button)
+{
+
+  ## Make sure there is an rpart object first.
+
+  if (is.null(crs$rpart))
+  {
+    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+  
+  ## If there is only a root node then there is nothing to plot.
+
+  if (nrow(crs$rpart$frame) == 1)
+  {
+    errorDialog("The tree consists just of a root node. Thus there is",
+                "nothing to plot.")
+    return()
+  }
+
+  ## PLOT: Log the R command and execute.
+
+  plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
+                    genPlotTitleCmd("Decision Tree",
+                                    crs$dataname, "$", crs$target),
+                    sep="")
+  
+  ##   plotcp.cmd <- paste("\n\n## Plot the cross validation results.\n\n",
+  ##                           "plotcp(crs$rpart)\n",
+  ##                           genPlotTitleCmd("Cross Validated Error",
+  ##                                              crs$dataname, "$", crs$target))
+  addToLog(paste("Plot the resulting rpart tree using Rattle",
+                  "and maptools support functions."), plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+  
+  ## newPlot()
+  ## addToLog(plotcp.command)
+  ## eval(parse(text=plotcp.command))
+
+  setStatusBar("Decision tree has been plotted.")
+}
+
 executeModelRPart <- function()
 {
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
@@ -4297,16 +4341,6 @@ executeModelRPart <- function()
                      ifelse(is.null(control), "", control),
                      ")", sep="")
 
-  plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
-                    genPlotTitleCmd("Decision Tree",
-                                   crs$dataname, "$", crs$target),
-                    sep="")
-  
-##   plotcp.cmd <- paste("\n\n## Plot the cross validation results.\n\n",
-##                           "plotcp(crs$rpart)\n",
-##                           genPlotTitleCmd("Cross Validated Error",
-##                                              crs$dataname, "$", crs$target))
-
   print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   listrules.cmd <- "list.rules.rpart(crs$rpart)"
                              
@@ -4332,21 +4366,6 @@ executeModelRPart <- function()
     return()
   }
 
-  ## If more than a root node then plot the model.
-
-  if (nrow(crs$rpart$frame) > 1)
-  {
-    newPlot()
-    addToLog(paste("Plot the resulting rpart tree using Rattle",
-                  "and maptools support functions."),
-            plot.cmd)
-    eval(parse(text=plot.cmd))
-
-    ## newPlot()
-    ## addToLog(plotcp.command)
-    ## eval(parse(text=plotcp.command))
-  }
-  
   ## Display the resulting model.
 
   addToLog("Generate textual output of the rpart model.", print.cmd)
@@ -4363,7 +4382,11 @@ executeModelRPart <- function()
               textviewSeparator())
 
   if (sampling) crs$smodel <<- union(crs$smodel, RPART)
+
+  ## Now that we have a model, make sure the plot button is sensitive.
   
+  rattleWidget("rpart_plot_button")$setSensitive(TRUE)
+
   setStatusBar("An RPart model has been generated.")
 }
 
