@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 11:38:30 Graham Williams>
+## Time-stamp: <2006-10-21 14:24:02 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -273,7 +273,8 @@ executeClusterHClust <- function(include)
 
   TV <- "hclust_textview"
   
-  ## TODO : If data is larg put up a question about wanting to continue?
+  ## TODO : If data is large put up a question about wanting to
+  ## continue?
   
   library.cmd <- "require(cba, quietly=TRUE)"
 
@@ -284,37 +285,6 @@ executeClusterHClust <- function(include)
                               ifelse(sampling, "crs$sample", ""),
                               include, "ave"),
                       sep="")
-
-  ## USE PLOT, NOT AS.DENDROGRAM - IS QUICKER
-
-  ## IF NUMBER OF ENTITIES > 100 THEN USE
-  ##
-  ## plot(crs$hclust, labels=FALSE, hang=0)
-  ##
-  ## For the book, illustrate
-  ##
-##   hc <- hclust(dist(crs$dataset[1:17,c(2,7,9:10,12)]), "ave")
-##   plot(hc)
-##   This looks like 4 clusters.
-##   km <- kmeans(crs$dataset[1:17,c(2,7,9:10,12)], 4)
-##   km$cluster
-##   This gives the same clusters!
-  
-  plot.cmd <- paste("plot(as.dendrogram(crs$hclust))\n",
-                    genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
-                    sep="")
-
-##   seriation.cmd <- paste("d <- dist(as.matrix(crs$dataset",
-##                          sprintf("[%s,%s]",
-##                                  ifelse(sampling, "crs$sample", ""),
-##                                  include),
-##                          "))\n",
-##                          "l <- pam(d, 10, cluster.only = TRUE)\n",
-##                          "res <- cluproxplot(d, l, method = ",
-##                          'c("Optimal", "Optimal"), plot = FALSE)\n',
-##                          'plot(res, plotOptions = list(main = "PAM + ',
-##                          'Seriation (Optimal Leaf ordering)", ',
-##                          'col = terrain.colors(64)))', sep="")
 
   ## Log the R command
 
@@ -347,34 +317,101 @@ executeClusterHClust <- function(include)
     return()
   }
 
-##  addToLog("Plot the Hierarchical Dedogram.", plot.cmd)
-##   if (packageIsAvailable("cba", "plot seriation charts"))
-##   {
-##     addToLog("We use the cba package for seriation.", library.cmd)
-##     addToLog("Plot the Seriation (Experimental).", seriation.cmd)
-##   }
-
   clearTextview(TV)
-  appendTextview(TV,
-                  "Hiearchical Cluster\n\n",
-                  collectOutput("crs$hclust", TRUE),
-                  eval(parse(text=plot.cmd)))
+  appendTextview(TV, "Hiearchical Cluster\n",
+                 collectOutput("crs$hclust", TRUE))
 
-## VERY SLOW - PERHAPS NEED A CHECKBOX TO TURN IT ON
-##
-##   if (packageIsAvailable("cba"))
-##   {
-##     eval(parse(text=library.cmd))
-##     newPlot()
-##     appendTextview(TV,
-##                     "\n\nNote that seriation is still experimental",
-##                     eval(parse(text=seriation.cmd)))
-##                                         #"\n\n",
-##                #"Cluster centroids.\n\n",
-##                #collectOutput("crs$kmeans$centers", TRUE),
-##   }
-  
+  rattleWidget("hclust_dendrogram_button")$setSensitive(TRUE)
+
   setStatusBar("Hierarchical cluster has been generated.")
   
 }
+
+on_hclust_dendrogram_button_clicked <- function(button)
+{
+
+  ## Make sure there is a hclust object first.
+
+  if (is.null(crs$hclust))
+  {
+    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## The library, cba, should already be loaded. But check anyhow.
+
+  lib.cmd <- "require(cba, quietly=TRUE)"
+  addToLog("The plot functionality is provided by the cba package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  ## PLOT: Generate the plot command to not print the xaxis labels if
+  ## there are too many entities, the log the R command and execute.
+
+  if (length(crs$hclust$order) > 100)
+    limit <- ", labels=FALSE, hang=0"
+  else
+    limit <- ""
+  plot.cmd <- paste(sprintf('plot(crs$hclust, main="", sub="", xlab=""%s)\n',
+                            limit),
+                    genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
+                    sep="")
+  addToLog("Generate a dendrogram plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+  
+  setStatusBar("Dendrogram plot completed.")
+}
+
+## THIS IS NOT EVEN RELATED TO hclust!!!! USES PAM
+
+## on_hclust_seriation_button_clicked <- function(button)
+## {
+
+##   ## Make sure there is a hclust object first.
+
+##   if (is.null(crs$hclust))
+##   {
+##     errorDialog("SHOULD NOT BE HERE. REPORT TO",
+##                 "Graham.Williams@togaware.com")
+##     return()
+##   }
+
+##   ## The library, cba, should already be loaded. But check anyhow. I
+##   ## think this is required for the seriation. Need to check.
+
+##   lib.cmd <- "require(cba, quietly=TRUE)"
+##   if (! packageIsAvailable("cba", "generate a seriation plot")) return()
+##   addToLog("Seriation is provided by the cba package.", lib.cmd)
+##   eval(parse(text=lib.cmd))
+  
+##   ## Some background information.
+
+##   sampling  <- ! is.null(crs$sample)
+##   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+##   if (length(nums) > 0)
+##   {
+##     indicies <- getVariableIndicies(crs$input)
+##     include <- simplifyNumberList(intersect(nums, indicies))
+##   }
+
+##   plot.cmd <- paste("d <- dist(as.matrix(crs$dataset",
+##                     sprintf("[%s,%s]",
+##                             ifelse(sampling, "crs$sample", ""),
+##                             include),
+##                     "))\n",
+##                     "l <- pam(d, 10, cluster.only = TRUE)\n",
+##                     "res <- cluproxplot(d, l, method = ",
+##                     'c("Optimal", "Optimal"), plot = FALSE)\n',
+##                     'plot(res, plotOptions = list(main = "PAM + ',
+##                     'Seriation (Optimal Leaf ordering)", ',
+##                     'col = terrain.colors(64)))', sep="")
+
+##   addToLog("Generate a seriation plot.", plot.cmd)
+##   newPlot()
+##   eval(parse(text=plot.cmd))
+  
+##   setStatusBar("Seriation plot completed.")
+## }
+
 
