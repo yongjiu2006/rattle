@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 14:24:02 Graham Williams>
+## Time-stamp: <2006-10-22 07:07:50 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -157,7 +157,7 @@ on_kmeans_stats_button_clicked <- function(button)
   
   if (is.null(crs$kmeans))
   {
-    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+    errorDialog("E124: Should not be here. Plaes report to",
                 "Graham.Williams@togaware.com")
     return()
   }
@@ -208,7 +208,7 @@ on_kmeans_plot_button_clicked <- function(button)
 
   if (is.null(crs$kmeans))
   {
-    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+    errorDialog("E125: Should not be here. Please report to",
                 "Graham.Williams@togaware.com")
     return()
   }
@@ -322,6 +322,10 @@ executeClusterHClust <- function(include)
                  collectOutput("crs$hclust", TRUE))
 
   rattleWidget("hclust_dendrogram_button")$setSensitive(TRUE)
+  rattleWidget("hclust_clusters_label")$setSensitive(TRUE)
+  rattleWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
+  rattleWidget("hclust_stats_button")$setSensitive(TRUE)
+  rattleWidget("hclust_plot_button")$setSensitive(TRUE)
 
   setStatusBar("Hierarchical cluster has been generated.")
   
@@ -334,7 +338,7 @@ on_hclust_dendrogram_button_clicked <- function(button)
 
   if (is.null(crs$hclust))
   {
-    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+    errorDialog("E126: Should not be here. Please report to",
                 "Graham.Williams@togaware.com")
     return()
   }
@@ -361,6 +365,122 @@ on_hclust_dendrogram_button_clicked <- function(button)
   eval(parse(text=plot.cmd))
   
   setStatusBar("Dendrogram plot completed.")
+}
+
+on_hclust_stats_button_clicked <- function(button)
+{
+  ## Make sure there is a cluster first.
+  
+  if (is.null(crs$hclust))
+  {
+    errorDialog("E127: Should not be here. Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## LIBRARY: Ensure the appropriate package is available for the
+  ## plot, and log the R command and execute.
+  
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  TV <- "hclust_textview"
+  num.clusters <- rattleWidget("hclust_clusters_spinbutton")$getValue()
+  sampling  <- ! is.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## STATS: Log the R command and execute.
+
+  stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
+                             "cutree(crs$hclust, %d))\n"),
+                       ifelse(sampling, "crs$sample", ""), include,
+                       num.clusters)
+  addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  appendTextview(TV, "General cluster statistics:\n\n",
+                 collectOutput(stats.cmd, use.print=TRUE))
+
+  setStatusBar("HClust cluster statistics have been generated.")
+}
+
+on_hclust_plot_button_clicked <- function(button)
+{
+
+  ## Make sure there is a cluster first.
+
+  if (is.null(crs$hclust))
+  {
+    errorDialog("E128 Should not be here. Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## LIBRARY: Ensure the appropriate package is available for the
+  ## plot, and log the R command and execute.
+  
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  sampling  <- ! is.null(crs$sample)
+  num.clusters <- rattleWidget("hclust_clusters_spinbutton")$getValue()
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A discriminant coordinates plot can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  ## PLOT: Log the R command and execute.
+
+  plot.cmd <- sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
+                            "cutree(crs$hclust, %d))\n",
+                            genPlotTitleCmd("Discriminant Coordinates",
+                                            crs$dataname), sep=""),
+                      ifelse(sampling, "crs$sample", ""), include,
+                      num.clusters)
+  addToLog("Generate a discriminant coordinates plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Discriminant coordinates plot has been generated.")
 }
 
 ## THIS IS NOT EVEN RELATED TO hclust!!!! USES PAM

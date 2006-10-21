@@ -24,17 +24,27 @@ Can it be pretty printed for the textview?
 
 Also, move to using buttons to generate plots and additional statistics.
 
+Currently to do - in hclust, enable the number of clusters and the
+statstics and discriminant plot. Whenever the number of clusters
+changes, update the internal crs variable to record this. And the
+buttons then work from this??? Perhaps.
+
 ========================================================================
 Description: Move to using buttons, not check buttons
 Proposer: Graham Williams
 DateProposed: 21 Oct 2006
-Status: Suggested
+Status: Done for rpart. Do for rf, svm, glm, and gbm.
 Effort: 2 hours
 Required: 
 Completed: 
 
 In the model tabs use buttons to invoke plots and additional stats, as
 in the kmeans tab. Thus replacing some checkbuttons.
+
+This has been done for rpart. Let's see how users react. 
+
+For RF the VarImp plot will have a button.
+
 
 ========================================================================
 Decsription: Improve hclust options
@@ -43,8 +53,6 @@ DateProposed: 12 Oct 2006
 Status: Suggested
 Effort: 2 hours
 Required: 
-
-Need to expose the hclust plot command in the log file.
 
 Explore hclust and then cutree options for hclust. Then also include
 the cluster.stats summary.

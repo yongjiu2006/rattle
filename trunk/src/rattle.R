@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 12:03:13 Graham Williams>
+## Time-stamp: <2006-10-22 07:31:57 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -174,7 +174,9 @@ rattle <- function()
                perf=NULL,
                eval=NULL,
                testset=NULL,
-               testname=NULL)
+               testname=NULL,
+               alog=NULL	# Record of interaction - useful?
+               )
 
   ## Main notebook related constants and widgets.  Track the widgets
   ## that are needed for removing and inserting tabs in the notebook,
@@ -4145,7 +4147,7 @@ on_rpart_plot_button_clicked <- function(button)
 
   if (is.null(crs$rpart))
   {
-    errorDialog("SHOULD NOT BE HERE. REPORT TO",
+    errorDialog("E122: Should not be here. Please report to",
                 "Graham.Williams@togaware.com")
     return()
   }
@@ -5204,7 +5206,7 @@ executeEvaluateTab <- function()
   
   if (length(setdiff(mtypes, MODELLERS)) > 0)
   {
-    errorDialog("This is a traditional 'You should not be here'",
+    errorDialog("E121: This is a traditional 'You should not be here'",
                 "error message! A model type is not recognised.",
                 "We found the model types to be:", mtypes,
                 "Please report this to Graham.Williams@togaware.com.")
@@ -5215,7 +5217,7 @@ executeEvaluateTab <- function()
   
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
-    errorDialog("We should not be here. Some model has not been built?",
+    errorDialog("E120: We should not be here. Some model has not been built?",
                 mtypes)
     return()
   }
