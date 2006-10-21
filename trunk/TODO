@@ -1,5 +1,5 @@
 ========================================================================
-Decsription: 
+Description: 
 Proposer: 
 DateProposed: 
 Status: 
@@ -8,7 +8,7 @@ Required:
 Completed: 
 
 ========================================================================
-Decsription: Optionally add cluster statistics.
+Description: Optionally add cluster statistics.
 Proposer: Graham Williams
 DateProposed: 20 Oct 2006
 Status: Done for kmeans. Do for hclust
@@ -21,6 +21,20 @@ library(fpc)
 cluster.stats(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), crs$kmeans$cluster)
 
 Can it be pretty printed for the textview?
+
+Also, move to using buttons to generate plots and additional statistics.
+
+========================================================================
+Description: Move to using buttons, not check buttons
+Proposer: Graham Williams
+DateProposed: 21 Oct 2006
+Status: Suggested
+Effort: 2 hours
+Required: 
+Completed: 
+
+In the model tabs use buttons to invoke plots and additional stats, as
+in the kmeans tab. Thus replacing some checkbuttons.
 
 ========================================================================
 Decsription: Improve hclust options
@@ -48,6 +62,9 @@ Effort: 4 hours
 Required: 
 
 Seems to provide a uniform interface and uniform output.
+
+But each model produces a lot more output. Do I really want to have
+all of that included in the model? crs will get large.
 
 ========================================================================
 Decsription: Multiple evaluation plots for kmeans
