@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 11:55:39 Graham Williams>
+## Time-stamp: <2006-10-21 12:03:13 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -5678,6 +5678,8 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     return()
   }
 
+  newPlot(length(getEvaluateModels()))
+  
   for (mtype in getEvaluateModels())
   {
 
@@ -5778,7 +5780,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
     ## Display the Risk Chart itself now.
 
-    newPlot()
+    #newPlot()
     eval(parse(text=plot.cmd))
 
     ## Display the AUC measures.
