@@ -1,5 +1,6 @@
+74 Implement hclust stats and plot buttons.
 73 Add a Dendrogram button to hclust.
-72 Multiple risk charts now on onr plot.
+72 Multiple risk charts now on one plot.
 71 RPart does not display tree by default - use the button.
 69 Add new options for KMeans. Generate random numbers for seeds.
 68 Implement export of Log tab.

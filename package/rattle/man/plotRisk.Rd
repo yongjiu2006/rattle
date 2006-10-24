@@ -126,5 +126,8 @@ ev$Risk      <- c(1.0, 0.98, 0.90, 0.77, 0.30, 0.0)
 ## plot the Risk Chart
 plotRisk(ev$Caseload, ev$Precision, ev$Recall, ev$Risk,
          chosen=60, chosen.label="Pr=0.45")
+
+## Add a title
+eval(parse(text=genPlotTitleCmd("Sample Risk Chart")))
 }
 \keyword{hplot}

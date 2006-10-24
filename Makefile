@@ -26,6 +26,7 @@ R_SOURCE = \
 	src/execute.R \
 	src/export.R \
 	src/log.R \
+	src/model.R \
 	src/paradigm.R \
 	src/projects.R \
 	src/random_forest.R \
@@ -36,9 +37,23 @@ GLADE_SOURCE = src/rattle.glade
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
+#temp:
+#	echo $(VERSION)
+
 default: local
 
 install: build zip check
+	(cd /home/gjw/projects/togaware/www/;\
+	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
+			rattle.html.in;\
+	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
+			rattle.html.in;\
+	 make local; lftp -f .lftp-rattle)
+	(cd /home/gjw/projects/dmsurvivor/;\
+	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
+			rattle_overview.tex;\
+	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
+			rattle_overview.tex)
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
 	R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
@@ -64,17 +79,6 @@ rattle_$(VERSION).tar.gz: $(SOURCE)
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
 	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
-	(cd /home/gjw/projects/togaware/www/;\
-	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
-			rattle.html.in;\
-	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			rattle.html.in;\
-	 make local; lftp -f .lftp-rattle)
-	(cd /home/gjw/projects/dmsurvivor/;\
-	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
-			rattle_overview.tex;\
-	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			rattle_overview.tex)
 	R CMD build $(PACKAGE)
 	chmod -R go+rX $(PACKAGE)
 

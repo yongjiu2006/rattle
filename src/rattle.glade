@@ -772,7 +772,6 @@
 	      <child>
 		<widget class="GtkToolButton" id="export_button">
 		  <property name="visible">True</property>
-		  <property name="sensitive">False</property>
 		  <property name="tooltip" translatable="yes">Export the current tab in an appropriate form.</property>
 		  <property name="label" translatable="yes">Export</property>
 		  <property name="use_underline">True</property>
