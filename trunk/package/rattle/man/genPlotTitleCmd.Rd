@@ -9,7 +9,7 @@
   will add a title and sub-title to a plot. The string is a call to
   \code{\link{title}}, supplying the given arguments,
   \code{\link{paste}}d together, as the main title, and generating a
-  sub-title that begins with `Rattle' and contunes with the current date
+  sub-title that begins with `Rattle' and continues with the current date
   and time, and finishes with the current user's username. This is used
   internally in Rattle to adorn a plot with relevant information, but
   may be useful outside of Rattle.

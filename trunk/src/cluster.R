@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-22 07:07:50 Graham Williams>
+## Time-stamp: <2006-10-22 08:53:50 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -8,8 +8,9 @@
 
 ########################################################################
 ##
-## Interface Actions
+## CALLBACKS
 ##
+
 ## When a radio button is selected, display the appropriate tab page.
 
 on_kmeans_radiobutton_toggled <- function(button)
@@ -28,7 +29,7 @@ on_hclust_radiobutton_toggled <- function(button)
 
 ########################################################################
 ##
-## Execution
+## EXECUTION
 ##
 
 executeClusterTab <- function()
@@ -80,7 +81,7 @@ executeClusterTab <- function()
     executeClusterHClust(include)
 }
 
-########################################################################
+##----------------------------------------------------------------------
 ##
 ## KMEANS
 ##
@@ -263,7 +264,7 @@ on_kmeans_plot_button_clicked <- function(button)
   setStatusBar("Discriminant coordinates plot has been generated.")
 }
 
-########################################################################
+##------------------------------------------------------------------------
 ##
 ## HCLUST
 ##
@@ -534,4 +535,164 @@ on_hclust_plot_button_clicked <- function(button)
 ##   setStatusBar("Seriation plot completed.")
 ## }
 
+########################################################################
+##
+## EXPORT
+##
+
+exportClusterTab <- function()
+{
+
+  ## Background information
+
+  cluster.type <- ""
+  if (rattleWidget("kmeans_radiobutton")$getActive())
+    cluster.type <- "kmeans"
+  else if (rattleWidget("hclust_radiobutton")$getActive())
+    cluster.type <- "hclust"
+  
+  ## Obtain filename to write the clusters to.
+  
+  dialog <- gtkFileChooserDialog("Export Cluster", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+
+  default.name <- paste(get.stem(crs$dataname), "_", cluster.type, sep="")
+  if(! is.null(crs$dataname)) dialog$setCurrentName(default.name)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("R Files")
+  ff$addPattern("*.csv")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+  
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) != "csv")
+    save.name <- sprintf("%s.csv", save.name)
+    
+  if (file.exists(save.name))
+    if (is.null(questionDialog("A file of the same name as", save.name,
+                                "already exists. Do you want to overwrite",
+                                "this file?")))
+      return()
+
+  if (rattleWidget("kmeans_radiobutton")$getActive())
+    exportKMeans(save.name)
+  else if (rattleWidget("hclust_radiobutton")$getActive())
+    exportHClust(save.name)
+
+  return()
+  
+  setStatusBar("The cluster has been exported to", save.name)
+
+  infoDialog("The cluster has been exported to", save.name)
+
+}
+
+exportKMeans <- function(file)
+{
+  infoDialog("The export of the KMeans clusters is under development.",
+             "Please check back later.")
+}
+
+exportHClust <- function(file)
+{
+  infoDialog("The export of the HClust clusters is under development.",
+             "Please check back later.")
+}
+
+
+## EXPORT TO PMML
+
+##     if (noDatasetLoaded()) return()
+##     require(XML, quietly=TRUE)
+##     if (rattleWidget("kmeans_radiobutton")$getActive())
+##     {
+##       if (is.null(crs$kmeans))
+##       {
+##         errorDialog("No KMeans cluster is available. Be sure to build",
+##                      "a cluster before trying to export it! You will need",
+##                      "to press the Execute button (F5) in order to build the",
+##                      "KMeans cluster.")
+##         return()
+##       }
+##       else
+##       {
+##         write(collectOutput("pmml.kmeans(crs$kmeans)", TRUE),
+##               file=sprintf("%s-kmeans.pmml", gsub(".csv", "", crs$dataname)))
+##         infoDialog("The PMML file",
+##                     sprintf('"%s-kmeans.pmml"', gsub(".csv", "", crs$dataname)),
+##                     "has been written.")
+##       }
+##     }
+##     else if (rattleWidget("hclust_radiobutton")$getActive())
+##     {
+##       errorDialog("PMML export for hierarchical clustering is not yet",
+##                    "implemented.")
+##       return()
+##     }
+
+pmml.kmeans <- function(cl)
+{
+  
+  ## First collect the required information
+
+  number.of.fields <- ncol(cl$centers)
+  field.names <-  colnames(cl$centers)
+  number.of.clusters <- length(cl$size)
+  cluster.names <- rownames(cl$centers)
+
+  ## Root node
+
+  pmml <- xmlNode("PMML")
+
+  ## DataDictionary child node
+
+  data.dictionary <- xmlNode("DataDictionary",
+                             attrs=c(numderOfFields=number.of.fields))
+  data.fields <- list()
+  for (i in 1:number.of.fields)
+  {
+    data.fields[[i]] <- xmlNode("DataField",
+                                attrs=c(name=field.names[i]))
+  }
+  data.dictionary$children <- data.fields
+  pmml$children[[1]] <- data.dictionary
+  #
+  # ClusteringModel root node
+  #
+  clustering.model <- xmlNode("ClusteringModel",
+                              attrs=c(algorithmName="KMeans",
+                                numberOfClusters=number.of.clusters))
+  clusters <- list()
+  for (i in 1:number.of.clusters)
+  {
+    clusters[[i]] <- xmlNode("Cluster",
+                             attrs=c(name=cluster.names[i],
+                               size=cl$size[i]),
+                             xmlNode("Array",
+                                     attrs=c(n=number.of.fields),
+                                     paste(cl$centers[i,], collapse=" ")))
+  }
+  clustering.model$children <- clusters
+  pmml$children[[2]] <- clustering.model
+  #
+  # All done
+  #
+  return(pmml)
+}
 
