@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-22 21:28:08 Graham Williams>
+## Time-stamp: <2006-10-28 07:39:08 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -220,6 +220,10 @@ rattle <- function()
   NOTEBOOK.CLUSTER.WIDGET <<- rattleWidget("cluster_tab_widget")
   NOTEBOOK.CLUSTER.LABEL  <<- rattleWidget("cluster_tab_label")
 
+  NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
+  NOTEBOOK.ASSOCIATE.WIDGET <<- rattleWidget("associate_tab_widget")
+  NOTEBOOK.ASSOCIATE.LABEL  <<- rattleWidget("associate_tab_label")
+
   NOTEBOOK.MODEL.NAME     <<- "Model"
   NOTEBOOK.MODEL.WIDGET  <<- rattleWidget("model_tab_widget")
   NOTEBOOK.MODEL.LABEL   <<- rattleWidget("model_tab_label")
@@ -316,7 +320,8 @@ rattle <- function()
   ## variables above, since a Execute on the Model tab runs the
   ## Cluster tab :-)
 
-  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, "Cluster"))
+  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
+  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
   
 }
 
@@ -460,9 +465,17 @@ notImplemented <- function(action, window)
 {
   ## Popup a little information window for non-implemented functions.
 
+  aname <- action$getName()
+  result <- try(atype <- action$typeName(), silent=TRUE)
+  if (inherits(result, "try-error")) atype <- NULL
+  
   infoDialog(sprintf(paste("The function you activated (via %s)",
-                            "of type %s is not yet implemented."),
-                      action$getName(), action$typeName()))
+                            "%s is not yet implemented."),
+                      aname,
+                     ifelse(is.null(atype), "", sprintf("of type %s", atype))))
+#  infoDialog(sprintf(paste("The function you activated (via %s)",
+#                            "of type %s is not yet implemented."),
+#                      action$getName(), action$typeName()))
 }
 
 noDatasetLoaded <- function()

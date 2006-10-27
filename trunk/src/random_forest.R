@@ -135,6 +135,7 @@ executeModelRF <- function()
   }
 
   ## Display the resulting model.
+  plot.performance <- TRUE
 
   if (importance)
   {
@@ -142,6 +143,14 @@ executeModelRF <- function()
     plot.cmd <- paste('varImpPlot(crs$rf,',
                       'main="Relative Importance of Variables")')
     addToLog("Plot the relative importance of the variables.", plot.cmd)
+    eval(parse(text=plot.cmd))
+  }
+
+  if (plot.performance)
+  {
+    newPlot()
+    plot.cmd <- 'plot(crs$rf)'
+    addToLog("Plot error rate as we increase the number of trees.", plot.cmd)
     eval(parse(text=plot.cmd))
   }
   

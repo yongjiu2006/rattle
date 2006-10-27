@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-14 17:29:36 Graham Williams>
+## Time-stamp: <2006-10-28 06:44:59 Graham Williams>
 ##
 ## Implement functionality associated with the Execute button and Menu.
 ##
@@ -43,6 +43,10 @@ dispatchExecuteButton <- function()
   else if (ct == NOTEBOOK.CLUSTER.NAME)
   {
     executeClusterTab()
+  }
+  else if (ct == NOTEBOOK.ASSOCIATE.NAME)
+  {
+    executeAssociateTab()
   }
   else if (ct == NOTEBOOK.MODEL.NAME)
   {
