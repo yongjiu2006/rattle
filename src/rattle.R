@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 12:27:53 Graham Williams>
+## Time-stamp: <2006-10-28 20:20:34 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -308,7 +308,7 @@ rattle <- function()
   
   ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   
-  if (is.windows()) memory.limit(2073)
+  if (isWindows()) memory.limit(2073)
   
   ##
 
@@ -641,7 +641,7 @@ getCurrentPageLabel <- function(nb)
   return(nb$getTabLabelText(nb$getNthPage(nb$getCurrentPage())))
 }
 
-is.windows <- function()
+isWindows <- function()
 {
   return(.Platform$OS.type == "windows")
 }
@@ -667,7 +667,7 @@ newPlot <- function(pcnt=1)
 {
   if (.Platform$GUI == "X11")
     x11()
-  else if (is.windows())
+  else if (isWindows())
     windows()
 
   if (pcnt==1)
@@ -941,7 +941,7 @@ load_rdata_set_combo <- function(button)
   
   ## Fix filename for MS - otherwise eval/parse strip the \\.
 
-  if (is.windows()) filename <- gsub("\\\\", "/", filename)
+  if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
   ## Generate commands to read the data and then display the structure.
 
@@ -1141,7 +1141,7 @@ executeDataCSV <- function()
 
   ## Fix filename for MS - otherwise eval/parse strip the \\.
 
-  if (is.windows()) filename <- gsub("\\\\", "/", filename)
+  if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
   ## Get the separator to use.
 
@@ -1475,7 +1475,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
     ## on MS/Windows 500! But the extra test also slows things down,
     ## so best not to conditionalise for now.
 
-    #if (is.windows())
+    #if (isWindows())
       for (c in columns)
         if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     #else
@@ -1507,7 +1507,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     model$set(iter, COLUMN[["input"]], TRUE)
     columns <- setdiff(COLUMN[["input"]]:COLUMN[["ignore"]], COLUMN[["input"]])
 
-    #if (is.windows())
+    #if (isWindows())
       for (c in columns)
         if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     #else
@@ -4146,7 +4146,7 @@ executeEvaluateTab <- function()
     {
       ## Fix filename for MS/Windows - otherwise eval/parse strips the \\.
 
-      if (is.windows()) filename <- gsub("\\\\", "/", filename)
+      if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
       nastring <- ', na.strings=c(".", "NA")'
       read.cmd <- sprintf('crs$testset <<- read.csv("%s"%s)',
