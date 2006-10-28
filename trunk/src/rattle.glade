@@ -3986,7 +3986,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		  <child>
 		    <widget class="GtkButton" id="associate_plot_frequency_button">
 		      <property name="visible">True</property>
-		      <property name="tooltip" translatable="yes">Plot the frequency of the more common items.</property>
+		      <property name="tooltip" translatable="yes">Plot the frequency of the more common items. The support value is used. This is also the items that have enough support to appear in the association rules.</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Freq Plot</property>
 		      <property name="use_underline">True</property>
@@ -5170,7 +5170,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 			      <property name="visible">True</property>
 			      <property name="tooltip" translatable="yes">Enable this check button to display a measure of the importance of each variable. This is estimated by considering the increase in prediction error when any variable is permuted while all others remain constant. Four measures are actually computed, and the resulting plot can be used to decide to remove irrelevant variables to achieve model reduction (building simpler and more readily interpretable models), and to achieve more accurate models.</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Variable Importance</property>
+			      <property name="label" translatable="yes">Plot Results</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>

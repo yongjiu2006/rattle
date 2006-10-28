@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-22 09:02:13 Graham Williams>
+## Time-stamp: <2006-10-28 09:41:57 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -265,7 +265,7 @@ executeModelGLM <- function()
   
   ## Build the model.
 
-  addLogSeparator()
+  addLogSeparator("LOGISTIC REGRESSION")
   addToLog("Build a logistic regression model using glm.",
           gsub("<<-", "<-", glm.cmd), sep="")
 
@@ -499,7 +499,7 @@ executeModelRPart <- function()
                              
   ## Load the required library.
 
-  addLogSeparator()
+  addLogSeparator("DECISION TREE")
   addToLog("Build a decision tree using the rpart package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -1039,7 +1039,7 @@ executeModelSVM <- function()
 
   TV <- ifelse(useKernlab, "ksvm_textview", "esvm_textview")
   
-  addLogSeparator()
+  addLogSeparator("SUPPORT VECTOR MACHINE")
 
   ## Library.
 

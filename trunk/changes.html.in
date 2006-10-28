@@ -1,0 +1,128 @@
+  <p class="bigb">
+    Rattle: Change Log
+  </p>
+
+  <p> This is a brief <b>Rattle</b> change log, recording the major
+    changes on each release. </p>
+
+<pre>
+76 Initial Associations interface.
+75 Include Random Forest error rate plot.
+74 Implement hclust stats and plot buttons.
+73 Add a Dendrogram button to hclust.
+72 Multiple risk charts now on one plot.
+71 RPart does not display tree by default - use the button.
+69 Add new options for KMeans. Generate random numbers for seeds.
+68 Implement export of Log tab.
+65 Move to multiple R src files and modularisation. Implement New button.
+64 Initial implementation of paradigms.
+63 Tools menu to navigate tabs (Anthony Nolan).
+60 RF sampsize implemented (Stuart Hamilton)
+59 Add varImpPlot to RF.
+55 Support different summary options.
+54 Fix plot colours in ROCR plots.
+53 Add ggobi option to Explore tab (Marco Lo).
+50 All packages loaded with quietly=TRUE.
+48 All packages loaded with require.
+47 Don't run examples in evaluateRisk.Rd (fails on CRAN MS/Windows).
+45 Remove e1071's svm. Allow multiple model evaluation (Stuart Hamilton).
+44 Allow target to be a weight variable (Liyin Xue).
+43 Add a seed to the sampling for repeatable modelling (Liyin Zue).
+42 Make ksvm the default SVM.
+40 Add a biplot to principal components.
+39 Remove seriation plot---too slow.
+38 KMeans GUI now allows specifying k (Weiqiang Lin). 
+37 Multiple plots per page.
+29 Add a density plot to histograms (John Maindonald).
+26 Add line plots for Benford's law (Tatiana Semenova).
+23 Add Missing Value correlations (Ray Lindsay).
+20 Add RData to file filter in loading Rdata files.
+19 The default working directory follows latest openned file.
+18 A Sample checkbutton has been added to the Explore tab.
+14 Moved to hosting at google code.
+</pre>
+
+
+  <p><b>Version 2.1</b> 2006-10-23</p>
+  <ul>
+    <li>General: Save/Load variable, model, and plot selections</li>
+    <li>Data: Load data from an ODBC source</li>
+    <li>Transform: Sample, Factorise, Imputation</li>
+    <li>Explore: Distribution plots (box, hist, cdf, Benford's Law,
+    bar, dot)</li>
+    <li>Cluster: Visualise both kmeans and hierarchical clusters.</li>
+    <li>Model: Support SVM (kernlab)</li>
+    <li>Evaluate: Report AUC (area under the curve). Save scores to file.</li>
+  </ul>
+
+  <p><b>Version 2.0</b> 2006-06-10</p>
+  <ul>
+    <li>General: R Package for inclusion in CRAN; GUI improvements;
+        Bug fixes</li>
+  </ul>
+
+  <p><b>Version 1.117</b> 2006-05-27</p>
+  <ul>
+    <li>General: Save/Load project functionality implemented.
+    <li>Data: Allow other separators in CSV files!
+  </ul>
+
+  <p><b>Version 1.105</b> 2006-05-06</p>
+  <ul>
+    <li>General: Various code cleanup; More extensive help.</li>
+    <li>Features: Add a Weight Calculator for instance weights.</i>
+    <li>Sample: Sampling is now the default.</li>
+    <li>Summary: Include kurtosis and skewness measures.</li>
+    <li>Model: Add SVM (using kernlab) and Regression (using glm).</li>
+  </ul>
+
+  <p><b>Version 1.77</b> 2006-03-20</p>
+  <ul>
+    <li>General: Reorder tabs more logically; Update Help; Implement
+    Save; Export PMML for Kmeans</li>
+    <li>Features: Select roles for each feature</li>
+    <li>Explore: Add Hierarchical Feature Correlation; Add Principal
+    Components</li>
+    <li>Cluster: Add Hierarchical, with dendrogram and seriation plots</li>
+    <li>Model: Add RandomForest and GLM</li>
+    <li>Evaluate: Clean up the interface for choosing a dataset</li>
+    <li>Log: Add timestamps and clean up a number of logs</li>
+  </ul>
+
+    <p><b>Version 1.44</b> 2006-03-05</p>
+    <ul>
+      <li>Prepare: Introduce feature roles; allow multiple selection</li>
+      <li>Cluster: New tab with kmeans for a start</li>
+      <li>Model: Implement many RPart parameters</li>
+      <li>Evaluate: Load CSV/RDataset for training dataset.
+    </ul>
+
+    <p><b>Version 1.20</b> 2006-02-27</p>
+    <ul>
+      <li>Data: Link to any data frame in the current R session.</li>
+      <li>Explore: Add correlation plots.</li>
+      <li>Model: Add boosting using GBM.</li>
+      <li>Evaluate: Add Risk Charts</li>
+      <li>Log: Added a log tab to trace all actions for repeatability</li>
+    </ul>
+
+    <p><b>Version 1.1</b> 2006-02-15</p>
+    <ul>
+      <li>Data: Load CSV files.</li>
+      <li>Explore: Data summary.</li>
+      <li>Prepare: Allow features to be ignored. </li>
+      <li>Select: Sample a percentage.</li>
+      <li>Model: Decision tree using rpart.</li>
+      <li>Evaluate: Confusion table and ROCR plots.</li>
+    </ul>
+
+
+    
+  <p class="copyright">
+    
+    <COPYRIGHT>
+
+<!-- hhmts start -->
+Last modified: Sat Oct 28 08:17:51 EST 2006
+<!-- hhmts end -->
+  </p>

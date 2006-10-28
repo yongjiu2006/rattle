@@ -1,7 +1,7 @@
 # TARGETS
 #
-# local:	Build and install in the local machine's R archive
-# check:	As R to check that the package looks okay
+# local:	Build and install into the local machine's R archive
+# check:	Ask R to check that the package looks okay
 # html:		Build the HTML documents and view in a browser
 # install:	Build and copy the package across to the public www
 # access:	Have a look at who might be downloading rattle
@@ -44,6 +44,7 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 default: local
 
 install: build zip check
+	cp changes.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
 	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\

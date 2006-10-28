@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 07:39:08 Graham Williams>
+## Time-stamp: <2006-10-28 09:39:32 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -582,35 +582,6 @@ setStatusBar <- function(..., sep=" ")
   if (length(msg) == 0) msg <-""
   rattleWidget("statusbar")$push(1, msg)
   invisible(NULL)
-}
-
-addLogSeparator <- function(msg=NULL)
-{
-  ## Output a suitable separator to the log textview, and if there is
-  ## an optional MSG, display that message, as an introduction to this
-  ## section.
-  
-  addToLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
-                "\n## Rattle timestamp: ", Sys.time(), sep=""),
-          no.start=TRUE)
-  if (!is.null(msg))
-    addToLog(paste(sep="", START.LOG.COMMENT, msg), no.start=TRUE)
-}
-
-addToLog <- function(start, ..., sep=" ", no.start=FALSE)
-{
-  if (no.start)
-    msg <- paste(sep=sep, start, ...)
-  else
-    msg <- paste(sep="", START.LOG.COMMENT, start, END.LOG.COMMENT, ...)
-  if (length(msg) == 0) msg <-""
-
-  ## Always place text at the end, irrespective of where the cursor is.
-
-  log.buf <- rattleWidget("log_textview")$getBuffer()
-  location <- log.buf$getEndIter()$iter
-
-  log.buf$insert(location, msg)
 }
 
 collectOutput <- function(command, use.print=FALSE, width=getOption("width"))
@@ -2303,6 +2274,38 @@ used.variables <- function(numonly=FALSE)
     return(NULL)
   else
     return(simplifyNumberList(setdiff(fl, ii)))
+}
+
+getCategoricalVariables <- function()
+{
+  ## Returns a list of categorical variables
+  
+  cats <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.factor))]
+  if (length(cats) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(cats, indicies))
+  }
+  else
+    inlcude <- NULL
+
+ return(include)
+}
+
+getNumericVariables <- function()
+{
+  ## Returns a list of cumeric variables
+  
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+  else
+    inlcude <- NULL
+
+ return(include)
 }
 
 ########################################################################

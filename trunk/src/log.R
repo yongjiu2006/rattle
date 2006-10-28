@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-19 04:41:58 Graham Williams>
+## Time-stamp: <2006-10-28 09:40:12 Graham Williams>
 ##
 ## Implement LOG functionality.
 ##
@@ -78,3 +78,33 @@ exportLogTab <- function()
   infoDialog("The log has been exported to", save.name)
 
 }
+
+addLogSeparator <- function(msg=NULL)
+{
+  ## Output a suitable separator to the log textview, and if there is
+  ## an optional MSG, display that message, as an introduction to this
+  ## section.
+  
+  addToLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
+                "\n## Rattle timestamp: ", Sys.time(), sep=""),
+          no.start=TRUE)
+  if (!is.null(msg))
+    addToLog(paste(sep="", START.LOG.COMMENT, msg), no.start=TRUE)
+}
+
+addToLog <- function(start, ..., sep=" ", no.start=FALSE)
+{
+  if (no.start)
+    msg <- paste(sep=sep, start, ...)
+  else
+    msg <- paste(sep="", START.LOG.COMMENT, start, END.LOG.COMMENT, ...)
+  if (length(msg) == 0) msg <-""
+
+  ## Always place text at the end, irrespective of where the cursor is.
+
+  log.buf <- rattleWidget("log_textview")$getBuffer()
+  location <- log.buf$getEndIter()$iter
+
+  log.buf$insert(location, msg)
+}
+
