@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-22 08:53:50 Graham Williams>
+## Time-stamp: <2006-10-28 09:41:20 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -40,15 +40,7 @@ executeClusterTab <- function()
 
   ## If it looks like the VARIABLES page has not been executed, complain..
 
-  if (length(crs$input) != length(getSelectedVariables("input")) ||
-      length(crs$ident) != length(getSelectedVariables("ident")) ||
-      length(crs$ignore) != length(getSelectedVariables("ignore")))
-  {
-    errorDialog("You seem to have changed some selections in the",
-                 "Variables tab, but have not Executed the Variables tab.",
-                 "Please do so before clustering.")
-    return()
-  }
+  if (variablesHaveChanged()) return()
 
   ## Check if sampling needs executing.
 
@@ -58,14 +50,8 @@ executeClusterTab <- function()
   ## include.  Only work with the INPUT/TARGET/RISK
   ## variables. That is, only exclude the IGNORE and IDENT variables.
 
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
-  
-  if (length(nums) == 0 || length(indicies) == 0)
+  include <- getNumericVariables()
+  if (length(include) == 0)
   {
     errorDialog("Clusters are currently calculated only for numeric data.",
                 "No numeric variables were found in the dataset",
@@ -96,7 +82,7 @@ executeClusterKMeans <- function(include)
   nclust <- rattleWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- rattleWidget("kmeans_seed_spinbutton")$getValue()
   
-  addLogSeparator()
+  addLogSeparator("KMEANS CLUSTER")
 
   ## SEED: Log the R command and execute.
 
@@ -175,14 +161,9 @@ on_kmeans_stats_button_clicked <- function(button)
 
   TV <- "kmeans_textview"
   sampling  <- ! is.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
 
-  if (length(nums) == 0 || length(indicies) == 0)
+  include <- getNumericVariables()
+  if (length(include) == 0)
   {
     errorDialog("Clusters are currently calculated only for numeric data.",
                 "No numeric variables were found in the dataset",
@@ -289,7 +270,7 @@ executeClusterHClust <- function(include)
 
   ## Log the R command
 
-  addLogSeparator()
+  addLogSeparator("HIERARCHICAL CLUSTER")
   addToLog("Generate a hierarchical cluster of the data.",
           gsub("<<-", "<-", hclust.cmd))
   

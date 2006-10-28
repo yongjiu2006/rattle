@@ -1,4 +1,15 @@
 \name{rattle_gui}
+\alias{on_associate_plot_frequency_button_clicked}
+\alias{on_associate_rules_button_clicked}
+\alias{on_hclust_dendrogram_button_clicked}
+\alias{on_hclust_plot_button_clicked}
+\alias{on_hclust_stats_button_clicked}
+\alias{on_kmeans_plot_button_clicked}
+\alias{on_kmeans_seed_button_clicked}
+\alias{on_kmeans_stats_button_clicked}
+\alias{on_rpart_plot_button_clicked}
+\alias{on_sample_seed_button_clicked}
+\alias{on_tools_associate_activate}
 \alias{cat_toggled}
 \alias{con_toggled}
 \alias{display_click_execute_message}
@@ -98,7 +109,7 @@
 \alias{update_comboboxentry_with_dataframes}
 \title{Interal Rattle user interface callbacks.}
 \description{These are exported from the package so that the GUI can
-  access the callbacks.}
+  access the callbacks. They should otherwise be ignored.}
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
 \keyword{internal}
