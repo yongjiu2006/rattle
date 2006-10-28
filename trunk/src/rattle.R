@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 09:39:32 Graham Williams>
+## Time-stamp: <2006-10-28 12:27:53 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -584,7 +584,8 @@ setStatusBar <- function(..., sep=" ")
   invisible(NULL)
 }
 
-collectOutput <- function(command, use.print=FALSE, width=getOption("width"))
+collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
+                          width=getOption("width"))
 {
   ## TODO Should this use cat or print? Cat translates the \n to a
   ## newline and doesn't precede the output by [1].  For pretty output
@@ -596,6 +597,8 @@ collectOutput <- function(command, use.print=FALSE, width=getOption("width"))
   options(width=width)
   if (use.print)
     command <- paste("print(", command, ")", sep="")
+  else if (use.cat)
+    command <- paste("cat(", command, ")", sep="")
   zz <- textConnection("commandsink", "w", TRUE)
   sink(zz)
   result <- try(eval(parse(text=command)))

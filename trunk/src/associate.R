@@ -1,0 +1,232 @@
+## Gnome R Data Miner: GNOME interface to R for Data Mining
+##
+## Time-stamp: <2006-10-28 14:30:03 Graham Williams>
+##
+## Implement associations functionality.
+##
+## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+
+########################################################################
+##
+## CALLBACKS
+##
+
+on_tools_associate_activate <- function(action, window)
+{
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
+  switchToPage(NOTEBOOK.ASSOCIATE.NAME)
+}
+
+on_associate_plot_frequency_button_clicked <-  function(action, window)
+{
+  plotAssociateFrequencies()
+}
+
+on_associate_rules_button_clicked <-  function(action, window)
+{
+  listAssociateRules()
+}
+
+########################################################################
+##
+## SUPPORT
+##
+
+generateAprioriSummary <- function(ap)
+{
+ result <- sprintf("Number of Rules: %d\n\n", length(ap))
+ result <- paste(result, "Rule Length Distribution (LHS + RHS):\n\n", sep="")
+ pp <- table(size(ap@lhs)+size(ap@rhs))
+ result <- paste(result, paste(sprintf("\tRules of length %s:  %-4d",
+                                           names(pp), pp), collapse="\n"),
+                 "\n\n", sep="")
+ return(result)
+}
+
+########################################################################
+##
+## EXECUTION
+##
+
+executeAssociateTab <- function()
+{
+
+  ## We require a dataset
+
+  if (noDatasetLoaded()) return()
+
+  ## If it looks like the VARIABLES page has not been executed, complain..
+
+  if (variablesHaveChanged()) return()
+
+  ## Check if sampling needs executing.
+
+  if (sampleNeedsExecute()) return()
+    
+  ## Check that we have only categorical attributes.
+
+  include <- getCategoricalVariables()
+  if (length(include) == 0)
+  {
+    errorDialog("Associations are calculated only for categorical data.",
+                "No categorical variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## Ensure the arules library is available and loaded.
+
+  if (! packageIsAvailable("arules", "generate associations")) return()
+  addLogSeparator("ASSOCIATION RULES GENERATION")
+  lib.cmd <- "require(arules, quietly=TRUE)"
+  addToLog("Association rules are implemented in the arules package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+ 
+  ## Initialise the textview.
+  
+  TV <- "associate_textview"
+  clearTextview(TV)
+  
+  ## Required information
+  
+  sampling   <- ! is.null(crs$sample)
+  support    <- rattleWidget("associate_support_spinbutton")$getValue()
+  confidence <- rattleWidget("associate_confidence_spinbutton")$getValue()
+
+  ## Transform data into a transactions dataset for arules.
+  
+  transaction.cmd <- paste("crs$transactions <<- as(",
+                           sprintf('crs$dataset[%s,%s], "transactions")',
+                                   ifelse(sampling, "crs$sample", ""),
+                                   include), sep="")
+  addToLog("Generate a transactions dataset.",
+           gsub("<<-", "<-", transaction.cmd))
+  eval(parse(text=transaction.cmd))
+
+  ## Now generate the association rules.
+
+  apriori.cmd <- paste("crs$apriori <<- apriori(crs$transactions, ",
+                       "parameter = list(",
+                       sprintf("support=%.3f, confidence=%.3f",
+                               support, confidence),
+                       "))", sep="")
+  addToLog("Generate the association rules.",
+           gsub("<<-", "<-", apriori.cmd))
+  cmd.output <- collectOutput(apriori.cmd)
+
+  ## Add a summary of the rules.
+
+  mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
+  addToLog("Summarise the resulting rule set.", mysummary.cmd)
+
+  summary.cmd <- "summary(crs$apriori@quality)"
+  appendTextview(TV, "Summary of the Apriori Association Rules\n\n",
+                 collectOutput(mysummary.cmd, use.cat=TRUE),
+                 "\nSummry of the Intersting Measures\n\n",
+                 collectOutput(summary.cmd, use.print=TRUE))
+  
+  appendTextview(TV, "Summary of the execution of the apriori command.\n",
+                 cmd.output)
+  
+  setStatusBar("Generated the association rules.")
+}
+
+plotAssociateFrequencies <- function()
+{
+  ## We require a dataset
+
+  if (noDatasetLoaded()) return()
+
+  ## If it looks like the VARIABLES page has not been executed, complain..
+
+  if (variablesHaveChanged()) return()
+
+  ## Check if sampling needs executing.
+
+  if (sampleNeedsExecute()) return()
+    
+  ## Check that we have only categorical attributes.
+
+  include <- getCategoricalVariables()
+  if (length(include) == 0)
+  {
+    errorDialog("Associations are calculated only for categorical data.",
+                "No categorical variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## Ensure the arules library is available and loaded.
+
+  if (! packageIsAvailable("arules", "generate associations")) return()
+  addLogSeparator("RELATIVE FREQUENCIES PLOT")
+  lib.cmd <- "require(arules, quietly=TRUE)"
+  addToLog("Association rules are implemented in the arules package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+ 
+  ## Required information
+  
+  sampling  <- ! is.null(crs$sample)
+  support <- rattleWidget("associate_support_spinbutton")$getValue()
+
+  ## Transform data into a transactions dataset for arules.
+  
+  transaction.cmd <- paste("crs$transactions <<- as(",
+                           sprintf('crs$dataset[%s,%s], "transactions")',
+                                   ifelse(sampling, "crs$sample", ""),
+                                   include), sep="")
+  addToLog("Generate a transactions dataset.",
+           gsub("<<-", "<-", transaction.cmd))
+  eval(parse(text=transaction.cmd))
+
+  ## Now plot the relative frequencies.
+
+  plot.cmd <- paste("itemFrequencyPlot(crs$transactions, support=",
+                    support, ", cex=0.8)", sep="")
+  newPlot()
+  addToLog("Plot the relative frequecies.", plot.cmd)
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Generated the relative frequency plot.")
+}
+
+listAssociateRules <- function()
+{
+  ## We require a dataset
+
+  if (noDatasetLoaded()) return()
+
+  ## Also make sure we have already generated the association rules.
+  
+  if (is.null(crs$apriori))
+  {
+    errorDialog("You first need to generate the association rules.",
+                "Perhaps you need to click the Execute button.")
+    return()
+  }
+
+  ## Note the textview.
+  
+  TV <- "associate_textview"
+  
+  ## Required information
+  
+  lift    <- rattleWidget("associate_lift_spinbutton")$getValue()
+
+  appendTextview(TV, "Top Rules\n\n",
+                 "For now, run the following command in the console:\n\n",
+                 paste('inspect(SORT(subset(crs$apriori, lift >',
+                       lift, '), by="confidence"))'))
+
+  ## This is what it should be, but when loading rattle as a library
+  ## this just does not work!! Works just fine when sourceing the
+  ## package....
+  ##
+  ##summary.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+  ##                     lift, '),  by="confidence"))')
+  ##addToLog("List the top rules.", summary.cmd)
+  ##appendTextview(TV, "Top Rules\n\n",
+  ##               collectOutput(summary.cmd))
+
+  setStatusBar("Finished listing the rules.")
+}

@@ -6,6 +6,7 @@
     changes on each release. </p>
 
 <pre>
+77 Initial Associations implementation.
 76 Initial Associations interface.
 75 Include Random Forest error rate plot.
 74 Implement hclust stats and plot buttons.
@@ -123,6 +124,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Oct 28 08:17:51 EST 2006
+Last modified: Sat Oct 28 10:25:03 EST 2006
 <!-- hhmts end -->
   </p>
