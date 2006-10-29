@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 14:30:03 Graham Williams>
+## Time-stamp: <2006-10-28 22:04:32 Graham Williams>
 ##
 ## Implement associations functionality.
 ##
@@ -122,7 +122,7 @@ executeAssociateTab <- function()
   summary.cmd <- "summary(crs$apriori@quality)"
   appendTextview(TV, "Summary of the Apriori Association Rules\n\n",
                  collectOutput(mysummary.cmd, use.cat=TRUE),
-                 "\nSummry of the Intersting Measures\n\n",
+                 "\nSummary of the Intersting Measures\n\n",
                  collectOutput(summary.cmd, use.print=TRUE))
   
   appendTextview(TV, "Summary of the execution of the apriori command.\n",
@@ -213,20 +213,38 @@ listAssociateRules <- function()
   
   lift    <- rattleWidget("associate_lift_spinbutton")$getValue()
 
-  appendTextview(TV, "Top Rules\n\n",
-                 "For now, run the following command in the console:\n\n",
+#  appendTextview(TV, "Top Rules\n\n",
+#                 "For now, run the following command in the console:\n\n",
+#                 paste('inspect(SORT(subset(crs$apriori, lift >',
+#                       lift, '), by="confidence"))'))
+
+  ## I wanted to use the subset function to list just the top rules,
+  ## but the use of "lift" has issues when run within a library, even
+  ## though it is fine when loaded using source.
+  ##
+  summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+                       lift, '),  by="confidence"))')
+  ## This suceeds.
+  ##result <- eval(parse(text=summary1.cmd))
+  ## This fails
+  ##result <- collectOutput(summary1.cmd)
+  ## This succeeds
+  zz <- textConnection("commandsink", "w", TRUE)
+  sink(zz)
+  cat(eval(parse(text=summary1.cmd)))
+  sink()
+  close(zz)
+  result <- paste(commandsink, collapse="\n")
+  appendTextview(TV, "Top Rules\n\n", result, "\n\n",
+                 "If nothing appears above, ",
+                 "past the following into the console:\n\n",
                  paste('inspect(SORT(subset(crs$apriori, lift >',
                        lift, '), by="confidence"))'))
-
-  ## This is what it should be, but when loading rattle as a library
-  ## this just does not work!! Works just fine when sourceing the
-  ## package....
-  ##
-  ##summary.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
-  ##                     lift, '),  by="confidence"))')
-  ##addToLog("List the top rules.", summary.cmd)
-  ##appendTextview(TV, "Top Rules\n\n",
-  ##               collectOutput(summary.cmd))
+  
+  ## This works but it lists all rules.
+  summary.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
+  addToLog("List all rules.", summary.cmd)
+  appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
 
   setStatusBar("Finished listing the rules.")
 }

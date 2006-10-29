@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 20:20:34 Graham Williams>
+## Time-stamp: <2006-10-29 08:00:07 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -322,7 +322,7 @@ rattle <- function()
 
   NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
   NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
-  
+
 }
 
 resetRattle <- function()
@@ -847,6 +847,15 @@ quit_rattle <- function(action, window)
 {
   for (i in dev.list()) dev.off(i)
   rattleWidget("rattle_window")$destroy()
+  
+  ## Communicate to R that Rattle has finished. This is used by the
+  ## rattle script on GNU/Linux using the littler package which allows
+  ## one to use R as a scripting language. But rattle dispatches
+  ## itself from R, and so normally the script immediately
+  ## terminates. Instead we can have a loop that checks if rattleGUI
+  ## is NULL, and when it is we finish! Seems to work.
+
+  rattleGUI <<- NULL
 }
 
 ########################################################################
