@@ -4790,7 +4790,7 @@ The default priors are set to be the class proprtions as found in the training d
 			      <property name="visible">True</property>
 			      <property name="tooltip" translatable="yes">The loss matrix is used to weight the outcome classes differently (the default is that all outcomes have the same loss of 1). The matrix will be constructed row-wise from the list of numbers you supply, and is of the same dimensions as the number of classes in the training dataset. Thus, for binary classification, four numbers must be supplied. The diagonal should be all zeros. 
 
-An example is: 0,10,1,0, which might be interpreted as saying that an acutal 1, predicted as 0 (i.e., a false negative) is 10 times more unwelcome that a false positive!
+An example is: 0,10,1,0, which might be interpreted as saying that an actual 1, predicted as 0 (i.e., a false negative) is 10 times more unwelcome that a false positive!
 
 RPart will use the loss matrix to alter the priors which will affect the choice of variable to split the dataset on at each node, giving more weight where appropriate.</property>
 			      <property name="can_focus">True</property>
