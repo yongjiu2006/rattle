@@ -6,6 +6,7 @@
     changes on each release. </p>
 
 <pre>
+80 Work around library/source for arules inspect problems.
 77 Initial Associations implementation.
 76 Initial Associations interface.
 75 Include Random Forest error rate plot.
@@ -124,6 +125,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Oct 28 10:25:03 EST 2006
+Last modified: Sun Oct 29 20:17:20 EST 2006
 <!-- hhmts end -->
   </p>

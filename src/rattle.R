@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-29 08:00:07 Graham Williams>
+## Time-stamp: <2006-10-30 07:17:03 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -422,6 +422,18 @@ resetRattle <- function()
   rattleWidget("evaluate_training_radiobutton")$setActive(TRUE)
   rattleWidget("evaluate_filechooserbutton")$setFilename("")
   rattleWidget("evaluate_rdataset_combobox")$setActive(-1)
+
+  rattleWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
+  rattleWidget("rf_evaluate_checkbutton")$setActive(FALSE)
+  rattleWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
+  rattleWidget("glm_evaluate_checkbutton")$setActive(FALSE)
+  rattleWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
+
+  rattleWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
+  rattleWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
+  rattleWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
+  rattleWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
+  rattleWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
 
 }
 
@@ -4075,6 +4087,9 @@ executeEvaluateTab <- function()
   }
 
   ## Ensure there is a model for each that is selected.
+
+  print(mtypes)
+  print(crs[[mtypes[1]]])
   
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
