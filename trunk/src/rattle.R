@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-30 07:17:03 Graham Williams>
+## Time-stamp: <2006-11-01 06:57:32 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -14,6 +14,7 @@ MAJOR <- "2"
 MINOR <- "1"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
+COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
 ## extensively tested the application. Many colleagues at the
@@ -308,7 +309,11 @@ rattle <- function()
   
   ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   
-  if (isWindows()) memory.limit(2073)
+  if (isWindows())
+  {
+    require(utils) # In case rattle is loaded in .Rprofile, before utils.
+    memory.limit(2073)
+  }
   
   ##
 
@@ -4088,9 +4093,6 @@ executeEvaluateTab <- function()
 
   ## Ensure there is a model for each that is selected.
 
-  print(mtypes)
-  print(crs[[mtypes[1]]])
-  
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
     errorDialog("E120: We should not be here. Some model has not been built?",
@@ -5375,7 +5377,7 @@ on_about_menu_activate <-  function(action, window)
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
   about$getWidget("aboutdialog")$
-    setCopyright("Copyright (C) 2006 Graham.Williams@togaware.com")
+    setCopyright(COPYRIGHT)
 }
 
 on_paste1_activate <- notImplemented

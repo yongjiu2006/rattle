@@ -1671,10 +1671,13 @@ See the Help menu for extensive support in using Rattle.
 
 Togaware's Desktop Data Mining Survival Guide (under development) at 
 
-http://datamining.togaware.com/survivor/Rattle.html 
+    http://datamining.togaware.com/survivor/Rattle.html 
 
 provides a guide to using Rattle.
-</property>
+
+Rattle is Copyright (c) 2006, Graham.Williams@togaware.com.
+Rattle is licensed under the GNU General Public License, Version 2.
+See Help->About for details.</property>
 		    </widget>
 		  </child>
 		</widget>

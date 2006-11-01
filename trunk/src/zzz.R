@@ -4,12 +4,10 @@
   ## annoying, just like fBasics. randomForest seems to do it
   ## correctly? Maybe not....
   
-  cat(sprintf(paste("Rattle, Graphical interface for data mining using R,",
-                    "Version %s.",
-                    "\nCopyright (c) 2006, Graham Williams,",
-                    "rattle.togaware.com, GPL",
-                    "\nType \"rattle()\" to shake, rattle, and roll",
-                    "your data.\n"),
+  cat(sprintf(paste("Rattle, Graphical interface for data mining using R, ",
+                    "Version %s.\n", COPYRIGHT,
+                    "\nType \"rattle()\" to shake, rattle, and roll ",
+                    "your data.\n", sep=""),
               VERSION))
 }
 
