@@ -31,6 +31,7 @@ R_SOURCE = \
 	src/paradigm.R \
 	src/projects.R \
 	src/random_forest.R \
+	src/rpart.R \
 	src/textview.R \
 	src/zzz.R
 
