@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-01 06:57:32 Graham Williams>
+## Time-stamp: <2006-11-02 07:07:48 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -5268,6 +5268,44 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
 
 executeEvaluateScore <- function(predcmd, testset, testname)
 {
+
+  ## Obtain filename to write the scores to. TODO Wait until we get
+  ## all scores into a single file, then this will be the filename we
+  ## obtain here (since currently need to add the mtyp to each file
+  ## name.
+  
+##   dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
+##                                  "gtk-cancel", GtkResponseType["cancel"],
+##                                  "gtk-save", GtkResponseType["accept"])
+
+##   if(! is.null(testname))
+##     dialog$setCurrentName(paste(get.stem(testname), "_", mtype, "_score"))
+  
+##   ff <- gtkFileFilterNew()
+##   ff$setName("CSV Files")
+##   ff$addPattern("*.csv")
+##   dialog$addFilter(ff)
+
+##   ff <- gtkFileFilterNew()
+##   ff$setName("All Files")
+##   ff$addPattern("*")
+##   dialog$addFilter(ff)
+  
+##   if (dialog$run() == GtkResponseType["accept"])
+##   {
+##     save.name <- dialog$getFilename()
+##     dialog$destroy()
+##   }
+##   else
+##   {
+##     dialog$destroy()
+##     return()
+##   }
+
+  ## Now process each model separately, at least for now. TODO,
+  ## collect the outputs and then wrtie them all at once.
+  
+  
   for (mtype in getEvaluateModels())
   {
 
@@ -5306,7 +5344,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
                                gsub("\\.[[:alnum:]]*", "",
                                     gsub("(\\[|\\])", "", testname))),
                           mtype)
-  
+
     ## Obtain a list of the identity vartiables
     
     idents <- getSelectedVariables("ident")
