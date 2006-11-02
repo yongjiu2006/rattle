@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-01 21:24:02 Graham Williams>
+## Time-stamp: <2006-11-01 22:18:21 Graham Williams>
 ##
 ## RPART TAB
 ##
@@ -728,6 +728,9 @@ pmml.rpart <- function(rp)
                            timestamp=sprintf("%s", Sys.time()),
                            username=sprintf("%s", Sys.info()["user"])))
 
+  header[[2]] <- xmlNode("Annotation",
+                         "Export of PMML for RPart models is experimental.")
+  
   pmml$children[[1]] <- header
   
   ## DataDictionary child node
@@ -737,8 +740,25 @@ pmml.rpart <- function(rp)
   data.fields <- list()
   for (i in 1:number.of.fields)
   {
+    ## Determine the operation type
+
+    optype <- "UNKNOWN"
+    values <- NULL
+
+    if (rp$terms@dataClasses[[field.names[i]]] == "numeric")
+      optype <- "continuous"
+    else if (rp$terms@dataClasses[[field.names[i]]] == "factor")
+    {
+      optype <- "categorical"
+      for (j in 1:length(rp@xlevels[[field.names[i]]]))
+      {
+        ## Build up the Values list of elements!
+        values <- rp@xlevels[[field.names[i]]][j]
+      }
+    }
     data.fields[[i]] <- xmlNode("DataField",
-                                attrs=c(name=field.names[i]))
+                                attrs=c(name=field.names[i],
+                                  optype=optype))
   }
   data.dictionary$children <- data.fields
   pmml$children[[2]] <- data.dictionary
