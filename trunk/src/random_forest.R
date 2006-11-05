@@ -1,4 +1,27 @@
-##------------------------------------------------------------------------
+## Gnome R Data Miner: GNOME interface to R for Data Mining
+##
+## Time-stamp: <2006-11-06 06:41:12 Graham Williams>
+##
+## RANDOM FOREST TAB
+##
+## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+
+########################################################################
+##
+## CALLBACKS
+##
+
+on_rf_importance_button_clicked <- function(button)
+{
+  plotRandomForestImportance()
+}
+
+on_rf_errors_button_clicked <- function(button)
+{
+  plotRandomForestError()
+}
+
+########################################################################
 ##
 ## MODEL RF - RANDOM FOREST
 ##
@@ -57,15 +80,19 @@ executeModelRF <- function()
   }
 
   ## By default the MeanDecreaseGini is available for plotting. With
-  ## importance we, MeanDecreaseAccuracy is also available, and it
-  ## seems to also print the relative importance with regard class.
+  ## importance MeanDecreaseAccuracy is also available, and it seems
+  ## to also print the relative importance with regard class. So by
+  ## default, generate them both.
   
-  importance <- rattleWidget("rf_importance_checkbutton")$getActive()
-  if (importance)
-    parms <- sprintf("%s, importance=TRUE", parms)
+  ##importance <- rattleWidget("rf_importance_checkbutton")$getActive()
+  ##if (importance)
+  parms <- sprintf("%s, importance=TRUE", parms)
+
+  ## Proximity is for unsupervised - not sure why I originally put it
+  ## in here?
   
-  if (rattleWidget("rf_proximity_checkbutton")$getActive())
-    parms <- sprintf("%s, proximity=TRUE", parms)
+  ##if (rattleWidget("rf_proximity_checkbutton")$getActive())
+  ##  parms <- sprintf("%s, proximity=TRUE", parms)
   
   ## Build the formula for the model. TODO We assume we will always do
   ## classification rather than regression, at least for now.
@@ -136,23 +163,6 @@ executeModelRF <- function()
 
   ## Display the resulting model.
 
-  if (importance)
-  {
-    
-    ## TODO How to get these onto the one plot.
-    
-    newPlot()
-    plot.cmd <- paste('varImpPlot(crs$rf,',
-                      'main="Relative Importance of Variables")')
-    addToLog("Plot the relative importance of the variables.", plot.cmd)
-    eval(parse(text=plot.cmd))
-
-    newPlot()
-    plot.cmd <- 'plot(crs$rf)'
-    addToLog("Plot error rate as we increase the number of trees.", plot.cmd)
-    eval(parse(text=plot.cmd))
-  }
-  
   summary.cmd <- "crs$rf"
   addToLog("Generate textual output of randomForest model.", summary.cmd)
 
@@ -173,7 +183,57 @@ executeModelRF <- function()
 
   if (sampling) crs$smodel <<- union(crs$smodel, RF)
 
+  ## Now that we have a model, make sure the plot button is sensitive.
+  
+  rattleWidget("rf_importance_button")$setSensitive(TRUE)
+  rattleWidget("rf_errors_button")$setSensitive(TRUE)
+
   setStatusBar("A randomForest model has been generated.")
+}
+
+plotRandomForestImportance <- function()
+{
+
+  ## Make sure there is an rf object first.
+
+  if (is.null(crs$rf))
+  {
+    errorDialog("E123: Should not be here.",
+                "There is no RF and attempting to plot importance.",
+                "Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+  
+  newPlot()
+  plot.cmd <- paste('varImpPlot(crs$rf,',
+                    'main="Relative Importance of Variables")')
+  addToLog("Plot the relative importance of the variables.", plot.cmd)
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Random Forest Importance has been plotted.")
+}
+  
+plotRandomForestError <- function()
+{
+
+  ## Make sure there is an rf object first.
+
+  if (is.null(crs$rf))
+  {
+    errorDialog("E129: Should not be here.",
+                "There is no RF and attempting to plot errors.",
+                "Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+  
+  newPlot()
+  plot.cmd <- 'plot(crs$rf)'
+  addToLog("Plot error rate as we increase the number of trees.", plot.cmd)
+  eval(parse(text=plot.cmd))
+  
+  setStatusBar("Random Forest Errors has been plotted.")
 }
 
 printRandomForests <- function(model, models=NULL)

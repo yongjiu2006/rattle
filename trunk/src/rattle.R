@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-02 07:07:48 Graham Williams>
+## Time-stamp: <2006-11-06 06:54:26 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -4558,7 +4558,11 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     return()
   }
 
-  newPlot(length(getEvaluateModels()))
+  
+  if (length(getEvaluateModels())%%2 == 0)
+    newPlot(length(getEvaluateModels()))
+  else
+    newPlot(length(getEvaluateModels())+1)
   
   for (mtype in getEvaluateModels())
   {
