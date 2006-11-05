@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-01 22:18:21 Graham Williams>
+## Time-stamp: <2006-11-06 06:41:07 Graham Williams>
 ##
 ## RPART TAB
 ##
@@ -41,11 +41,6 @@ on_rpart_loss_comboboxentry_set_focus_child <- function(action, window)
     lapply(ml, action$appendText)
   }
 }
-
-##----------------------------------------------------------------------
-##
-## MODEL RPART
-##
 
 on_rpart_plot_button_clicked <- function(button)
 {
@@ -90,6 +85,11 @@ on_rpart_plot_button_clicked <- function(button)
 
   setStatusBar("Decision tree has been plotted.")
 }
+
+########################################################################
+##
+## MODEL RPART
+##
 
 executeModelRPart <- function()
 {

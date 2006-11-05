@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-05 22:41:44 Graham Williams>
+## Time-stamp: <2006-11-06 06:49:43 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -182,6 +182,8 @@ executeModelTab <- function()
     rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
     rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+
+    setStatusBar("All models have been generated.")
   }
   else if (currentModelTab() == GLM)
     executeModelGLM()
@@ -269,7 +271,7 @@ executeModelGLM <- function()
   setStatusBar("GLM model has been generated.")
 }
 
-##------------------------------------------------------------------------
+########################################################################
 ##
 ## GBM - BOOSTING
 ##
@@ -330,7 +332,7 @@ executeModelGBM <- function()
 
   ## Summary command
 
-  summary.cmd <- "summary(crs$gbm, cBars=5)"
+  summary.cmd <- "summary(crs$gbm, cBars=5, plotit=FALSE)"
   show.cmd <- "gbmShowRules(crs$gbm)"
  
   ## Log
