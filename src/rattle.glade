@@ -1677,7 +1677,7 @@ provides a guide to using Rattle.
 
 Rattle is Copyright (c) 2006, Graham.Williams@togaware.com.
 Rattle is licensed under the GNU General Public License, Version 2.
-See Help->About for details.</property>
+See Help-&gt;About for details.</property>
 		    </widget>
 		  </child>
 		</widget>
@@ -4257,7 +4257,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		  <property name="border_width">5</property>
 		  <property name="visible">True</property>
 		  <property name="n_rows">1</property>
-		  <property name="n_columns">8</property>
+		  <property name="n_columns">9</property>
 		  <property name="homogeneous">False</property>
 		  <property name="row_spacing">0</property>
 		  <property name="column_spacing">5</property>
@@ -4299,14 +4299,14 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
-		      <property name="active">True</property>
+		      <property name="active">False</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
 		      <signal name="toggled" handler="on_dtree_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:02 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">1</property>
-		      <property name="right_attach">2</property>
+		      <property name="left_attach">2</property>
+		      <property name="right_attach">3</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4330,8 +4330,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_rf_radiobutton_toggled" last_modification_time="Wed, 08 Mar 2006 08:17:30 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">2</property>
-		      <property name="right_attach">3</property>
+		      <property name="left_attach">3</property>
+		      <property name="right_attach">4</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4355,8 +4355,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_svm_radiobutton_toggled" last_modification_time="Wed, 22 Mar 2006 11:06:16 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">3</property>
-		      <property name="right_attach">4</property>
+		      <property name="left_attach">4</property>
+		      <property name="right_attach">5</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4380,8 +4380,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_regression_radiobutton_toggled" last_modification_time="Fri, 10 Mar 2006 03:33:48 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">4</property>
-		      <property name="right_attach">5</property>
+		      <property name="left_attach">5</property>
+		      <property name="right_attach">6</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4405,8 +4405,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_boost_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:16 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">5</property>
-		      <property name="right_attach">6</property>
+		      <property name="left_attach">6</property>
+		      <property name="right_attach">7</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4429,8 +4429,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="group">rpart_radiobutton</property>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">6</property>
-		      <property name="right_attach">7</property>
+		      <property name="left_attach">7</property>
+		      <property name="right_attach">8</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4453,8 +4453,32 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="group">rpart_radiobutton</property>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">7</property>
-		      <property name="right_attach">8</property>
+		      <property name="left_attach">8</property>
+		      <property name="right_attach">9</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkRadioButton" id="all_models_radiobutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Build one model of each type using the specified parameters.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">All</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">True</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		      <property name="group">rpart_radiobutton</property>
+		    </widget>
+		    <packing>
+		      <property name="left_attach">1</property>
+		      <property name="right_attach">2</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
