@@ -26,6 +26,7 @@ R_SOURCE = \
 	src/cluster.R \
 	src/execute.R \
 	src/export.R \
+	src/gbm.R \
 	src/log.R \
 	src/model.R \
 	src/paradigm.R \

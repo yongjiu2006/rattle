@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 06:49:43 Graham Williams>
+## Time-stamp: <2006-11-06 20:42:14 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -171,17 +171,16 @@ executeModelTab <- function()
 
   if (rattleWidget("all_models_radiobutton")$getActive())
   {
-    executeModelRPart()
-    executeModelRF()
-    executeModelSVM()
-    executeModelGLM()
-    executeModelGBM()
-
-    rattleWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-    rattleWidget("rf_evaluate_checkbutton")$setActive(TRUE)
-    rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
-    rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-    rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+    if (executeModelRPart())
+      rattleWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+    if (executeModelRF())
+      rattleWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+    if (executeModelSVM())
+      rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+    if (executeModelGLM())
+      rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+    if (executeModelGBM())
+      rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
 
     setStatusBar("All models have been generated.")
   }
@@ -214,7 +213,7 @@ executeModelGLM <- function()
 ##                  "binary classification.",
 ##                  sprintf("The %s dataset has %d classes.",
 ##                          crs$dataname, num.classes))
-##     return()
+##     return(FALSE)
 ##   }
 
   ## Obtain the family
@@ -269,141 +268,7 @@ executeModelGLM <- function()
   if (sampling) crs$smodel <<- union(crs$smodel, GLM)
   
   setStatusBar("GLM model has been generated.")
-}
-
-########################################################################
-##
-## GBM - BOOSTING
-##
-
-executeModelGBM <- function()
-{
-  num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
-
-  ## Check for ignored variables
-
-  indicies <- NULL
-  if (! is.null(crs$input))
-    indicies <- getVariableIndicies(crs$input)
-
-  ## Build the formula for the model - why can't GBM use "."?
-
-  target.index <- which(colnames(crs$dataset)==crs$target)
-##   frml <- paste(target, "~",
-##                 paste(colnames(crs$dataset)[-c(indicies, target.index)],
-##                       collapse="+"))
-
-  ## Some convenience booleans
-
-  sampling <- ! is.null(crs$sample)
-  subsetting <- sampling
-
-  ## Greg Ridgway's advice is to use bernoulli, not adaboost or gaussian
-
-  if (is.factor(crs$dataset[[crs$target]]) || num.classes > 2)
-    distribution <- "gaussian"
-  else
-    #distribution <- "adaboost"
-    distribution <- "bernoulli"
-  
-  ## Required library
-
-  if (! packageIsAvailable("gbm", "build an AdaBoost model"))
-    return()
-  
-  lib.cmd <- paste(sprintf("\n\n## Build a GBM (%s) model.",
-                                   distribution),
-                           "\n\nrequire(gbm, quietly=TRUE)")
-
-  ## Boost command
-
-  ## Use gbm.fit rather than gbm for more efficiency.
-
-  included <- simplifyNumberList(indicies)
-  
-  boost.cmd <- paste("crs$gbm <<- gbm.fit(crs$dataset[",
-                         if (sampling) "crs$sample",
-                         ",", included, "], ",
-                         "crs$dataset$", crs$target,
-                         if (sampling) "[crs$sample]",
-                         ", ",
-                         'distribution="', distribution, '"',
-                         ")", sep="")
-
-  ## Summary command
-
-  summary.cmd <- "summary(crs$gbm, cBars=5, plotit=FALSE)"
-  show.cmd <- "gbmShowRules(crs$gbm)"
- 
-  ## Log
-
-  addToLog(lib.cmd, "\n",
-          gsub("<<-", "<-", boost.cmd), "\n",
-          summary.cmd, "\n",
-          show.cmd, sep="")
-
-  ## Run model and show results.
-  eval(parse(text=lib.cmd))
-  clearTextview("gbm_textview")
-  setTextview("gbm_textview",
-               "Output from GBM model builder:\n\n",
-               collectOutput(boost.cmd),
-               "\n\nSummary of relative influence of each variable:\n\n",
-               collectOutput(paste("print(",summary.cmd, ")")),
-               "\n\nRules making up the model:\n\n",
-               collectOutput(show.cmd),
-               sep="")
-
-  if (sampling) crs$smodel <<- union(crs$smodel, GBM)
-  
-  setStatusBar("Boosted model has been generated.")
-}
-
-gbmShowRules <- function(object, rules=1:object$n.trees)
-{
-  stopifnot(require(gbm, quietly=TRUE))
-  cat(sprintf("Number of models: %d\n", object$n.trees))
-  for (i in rules)
-  {
-    cat(sprintf("\nTree %d: \n", i))
-
-    tmp.frame <- data.frame(object$trees[[i]])
-    split.var <- tmp.frame[1,1]
-    split.var.name <- object$var.names[split.var+1]
-    left.predict <- if (tmp.frame[2,8] < 0) 0 else 1
-    right.predict <- if (tmp.frame[3,8] < 0) 0 else 1
-    miss.predict <- if  (tmp.frame[4,8] < 0) 0 else 1
-
-    ## TODO Should get if it is a factor from object - perhaps saver to do so.
-    ## object$var.names is the variable names. object$var.type != 0 => factor
-    if (is.factor(crs$dataset[[split.var.name]]))
-    {
-      val.index <- tmp.frame[1,2]
-      categories <- levels(crs$dataset[[split.var.name]])
-      lf <- paste(categories[object$c.split[[val.index+1]]==-1], collapse=",")
-      rh <- paste(categories[object$c.split[[val.index+1]]==1], collapse=",")
-
-      ## TODO Replace the predict values with object$data$y if Factor.
-      cat(sprintf("  %s == %s : %.0f \n",
-                  split.var.name, lf, left.predict))
-      cat(sprintf("  %s == %s : %.0f \n",
-                  split.var.name, rh, right.predict))
-      cat(sprintf("  %s missing : %.0f \n",
-                  split.var.name, miss.predict))
-    }
-    else
-    {
-      split.val <- tmp.frame[1,2]
-
-      ## TODO Replace the predict values with object$data$y if Factor.
-      cat(sprintf("  %s < %.2f : %.0f \n",
-                  split.var.name, split.val, left.predict))
-      cat(sprintf("  %s >= %.2f : %.0f \n",
-                  split.var.name,split.val,right.predict))
-      cat(sprintf("  %s missing : %.0f \n",
-                  split.var.name, miss.predict))
-    }
-  }
+  return(TRUE)
 }
 
 ##------------------------------------------------------------------------
@@ -442,7 +307,7 @@ executeModelSVM <- function()
       addToLog("The kernlab package supplies the ksvm function.", libCmd)
     }
     else
-      return()
+      return(FALSE)
   }
   else
   {
@@ -452,7 +317,7 @@ executeModelSVM <- function()
       addToLog("The e1071 package supplies the svm function.", libCmd)
     }
     else
-      return()
+      return(FALSE)
    }
   eval(parse(text=libCmd))
 
@@ -508,7 +373,7 @@ executeModelSVM <- function()
                  "I am not familiar with this error, and you may",
                  "want to report it to the Rattle author",
                  "at Graham.Williams@togaware.com")
-    return()
+    return(FALSE)
   }
 
   ## Display the resulting model.
@@ -532,6 +397,8 @@ executeModelSVM <- function()
 
   setStatusBar(sprintf("A %s model has been generated.",
                        ifelse(useKernlab, KSVM, SVM)))
+
+  return(TRUE)
 }
 
 ##----------------------------------------------------------------------

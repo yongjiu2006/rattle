@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 06:41:07 Graham Williams>
+## Time-stamp: <2006-11-06 20:38:18 Graham Williams>
 ##
 ## RPART TAB
 ##
@@ -110,14 +110,14 @@ executeModelRPart <- function()
                      "need to correspond to the number of classes",
                      sprintf("found in the target variable '%s'.",crs$target),
                      sprintf("Please supply exactly %d priors.", num.classes))
-        return()
+        return(FALSE)
       }
     if (sum(pr) != 1)
       {
         errorDialog(sprintf("The supplied priors (%s)", priors),
                      sprintf("add up to %0.2f whereas", sum(pr)),
                      "they need to add up 1.00")
-        return()
+        return(FALSE)
       }
     if (is.null(parms))
       parms <- sprintf(", parms=list(prior=c(%s))", priors)
@@ -199,7 +199,7 @@ executeModelRPart <- function()
       errorDialog(sprintf("The supplied loss matrix values (%s)", loss),
                    sprintf("need to have %d values.", num.classes*num.classes),
                    "Please enter that many values, comma separated.")
-      return()
+      return(FALSE)
     }
       
     ## TODO: Perform other checks on the matrix here.  The loss matrix
@@ -233,7 +233,7 @@ executeModelRPart <- function()
   ## Commands.
   
   lib.cmd <- "require(rpart, quietly=TRUE)"
-  if (! packageIsAvailable("rpart", "build decision trees")) return()
+  if (! packageIsAvailable("rpart", "build decision trees")) return(FALSE)
     
   rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
@@ -272,7 +272,7 @@ executeModelRPart <- function()
     else
       errorDialog("An error occured in the call to rpart.",
                    "the error was:", result)
-    return()
+    return(FALSE)
   }
 
   ## Display the resulting model.
@@ -297,6 +297,7 @@ executeModelRPart <- function()
   rattleWidget("rpart_plot_button")$setSensitive(TRUE)
 
   setStatusBar("An RPart model has been generated.")
+  return(TRUE)
 }
 
 ##----------------------------------------------------------------------
