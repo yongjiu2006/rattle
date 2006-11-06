@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 06:54:26 Graham Williams>
+## Time-stamp: <2006-11-06 20:35:24 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -390,7 +390,7 @@ resetRattle <- function()
   rattleWidget("kmeans_radiobutton")$setActive(TRUE)
 
   MODEL$setCurrentPage(MODEL.RPART.TAB)
-  rattleWidget("rpart_radiobutton")$setActive(TRUE)
+  rattleWidget("all_models_radiobutton")$setActive(TRUE)
 
   EVALUATE$setCurrentPage(EVALUATE.CONFUSION.TAB)
   rattleWidget("confusion_radiobutton")$setActive(TRUE)
@@ -4558,11 +4558,11 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     return()
   }
 
-  
-  if (length(getEvaluateModels())%%2 == 0)
-    newPlot(length(getEvaluateModels()))
+  lenplots <- length(getEvaluateModels())
+  if (lenplots == 1 || lenplots %% 2 == 0)
+    newPlot(lenplots)
   else
-    newPlot(length(getEvaluateModels())+1)
+    newPlot(lenplots + 1)
   
   for (mtype in getEvaluateModels())
   {

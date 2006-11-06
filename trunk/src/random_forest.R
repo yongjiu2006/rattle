@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 06:41:12 Graham Williams>
+## Time-stamp: <2006-11-06 20:39:35 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -49,7 +49,7 @@ executeModelRF <- function()
                    "The variable", i, "has", length(levels(crs$dataset[,i])),
                    "levels. Please choose to ignore it in the",
                    "Variables tab if you wish to build a randomForest model.")
-      return()
+      return(FALSE)
     }
 
   ## Retrieve options and set up parms.
@@ -73,7 +73,7 @@ executeModelRF <- function()
                      sprintf("found in the target variable '%s'.",crs$target),
                      sprintf("Please supply exactly %d sample sizes.",
                              num.classes))
-        return()
+        return(FALSE)
       }
     ## TODO Check if sample sizes are larger than the classes!
     parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
@@ -158,7 +158,7 @@ executeModelRF <- function()
                    "I am not familiar with this error, and you may",
                    "want to report it to the Rattle author",
                    "at Graham.Williams@togaware.com")
-    return()
+    return(FALSE)
   }
 
   ## Display the resulting model.
@@ -189,6 +189,7 @@ executeModelRF <- function()
   rattleWidget("rf_errors_button")$setSensitive(TRUE)
 
   setStatusBar("A randomForest model has been generated.")
+  return(TRUE)
 }
 
 plotRandomForestImportance <- function()
@@ -206,8 +207,9 @@ plotRandomForestImportance <- function()
   }
   
   newPlot()
-  plot.cmd <- paste('varImpPlot(crs$rf,',
-                    'main="Relative Importance of Variables")')
+  plot.cmd <- paste('varImpPlot(crs$rf, main="")\n',
+                    genPlotTitleCmd("Variable Importance rf", crs$dataname),
+                    sep="")
   addToLog("Plot the relative importance of the variables.", plot.cmd)
   eval(parse(text=plot.cmd))
 
@@ -229,7 +231,10 @@ plotRandomForestError <- function()
   }
   
   newPlot()
-  plot.cmd <- 'plot(crs$rf)'
+  plot.cmd <- paste('plot(crs$rf, main="")\n',
+                    genPlotTitleCmd("Error Rates rf", crs$dataname),
+                    sep="")
+
   addToLog("Plot error rate as we increase the number of trees.", plot.cmd)
   eval(parse(text=plot.cmd))
   
