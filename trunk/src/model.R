@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 20:42:14 Graham Williams>
+## Time-stamp: <2006-11-07 22:29:55 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -252,7 +252,7 @@ executeModelGLM <- function()
   addLogSeparator("LOGISTIC REGRESSION")
   addToLog("Build a logistic regression model using glm.",
           gsub("<<-", "<-", glm.cmd), sep="")
-
+  startTime <- Sys.time()
   eval(parse(text=glm.cmd))
   
   ## Summarise the model.
@@ -267,6 +267,8 @@ executeModelGLM <- function()
 
   if (sampling) crs$smodel <<- union(crs$smodel, GLM)
   
+  timeTaken <- Sys.time()-startTime
+  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar("GLM model has been generated.")
   return(TRUE)
 }
@@ -364,6 +366,7 @@ executeModelSVM <- function()
   else
     svmCmd <- paste(svmCmd, ", probability=TRUE", sep="")  # Probabilities
   svmCmd <- paste(svmCmd, ")", sep="")
+  startTime <- Sys.time()
   addToLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -395,6 +398,8 @@ executeModelSVM <- function()
     else
       crs$smodel <<- union(crs$smodel, SVM)
 
+  timeTaken <- Sys.time()-startTime
+  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar(sprintf("A %s model has been generated.",
                        ifelse(useKernlab, KSVM, SVM)))
 

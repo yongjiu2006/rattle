@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 20:39:35 Graham Williams>
+## Time-stamp: <2006-11-07 22:26:34 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -137,6 +137,7 @@ executeModelRF <- function()
                   ")", sep="")
 
   addToLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
+  startTime <- Sys.time()
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
 
   if (inherits(result, "try-error"))
@@ -188,6 +189,8 @@ executeModelRF <- function()
   rattleWidget("rf_importance_button")$setSensitive(TRUE)
   rattleWidget("rf_errors_button")$setSensitive(TRUE)
 
+  timeTaken <- Sys.time()-startTime
+  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar("A randomForest model has been generated.")
   return(TRUE)
 }

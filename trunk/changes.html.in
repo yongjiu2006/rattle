@@ -6,9 +6,10 @@
     changes on each release. </p>
 
 <pre>
+86 Importance button for GBM. "All" as the default for model tab.
 85 Replace RF checkbutton plots with buttons to plot.
 84 Add an All radio button to Models tab (Stuart Hamilton).
-83 Progress rpart PMML export.
+83 Progress rpart PMML export. (Ray Lindsay)
 82 RPart split out. On PMML export ask for file name.
 81 Reset model check buttons on evaluate on a reset.
 80 Work around library/source for arules inspect problems.
@@ -130,6 +131,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Nov  6 06:43:01 EST 2006
+Last modified: Tue Nov  7 05:53:59 EST 2006
 <!-- hhmts end -->
   </p>
