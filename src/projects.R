@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-21 07:00:36 Graham Williams>
+## Time-stamp: <2006-11-08 06:26:35 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -218,7 +218,8 @@ loadProject <- function()
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
                      crs$barplot, crs$dotplot)
-
+  executeVariablesTab()
+  
   if (!is.null(crs$risk))
     rattleWidget("evaluate_risk_label")$setText(crs$risk)
   
