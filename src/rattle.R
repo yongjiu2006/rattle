@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-07 21:48:17 Graham Williams>
+## Time-stamp: <2006-11-08 06:15:29 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -4564,11 +4564,26 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     return()
   }
 
-  lenplots <- length(getEvaluateModels())
-  if (lenplots == 1 || lenplots %% 2 == 0)
-    newPlot(lenplots)
+  ## Put 1 or 2 charts onto their own plots. Otherwise, put the
+  ## multiple charts onto one plot, keeping them all the same size
+  ## (thus if numplots is odd, leave a cell of the plot empty.
+  
+  numplots <- length(getEvaluateModels())
+  if (numplots == 1 || numplots == 2)
+    newPlot(numplots)
+  else if (numplots %% 2 == 0)
+    newPlot(numplots)
   else
-    newPlot(lenplots + 1)
+    newPlot(numplots + 1)
+
+  if (numplots <= 2 )
+    cex <- 1.0
+  else if (numplots <= 4)
+    cex <- 0.5
+  else
+    cex <- 0.5
+
+  opar <- par(cex=cex)
   
   for (mtype in getEvaluateModels())
   {
@@ -4644,6 +4659,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     ## cutoffs, with the result being stored in crs$eval.
   
     eval(parse(text=evaluate.cmd))
+
     ## We want to display the numeric results of the evaluation. But if
     ## there are too many rows, as produced by KSVM for example, it will
     ## be too much, so limit it to 100 row, which need to be selected
@@ -4668,26 +4684,33 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                  " by probability cutoffs.\n\n", msg, sep="")
     appendTextview(TV, msg, collectOutput(sprintf("crs$eval[%s,]", id), TRUE))
 
+    ## Display the AUC measures.
+
+    #auc <- calculateRiskAUC(crs$eval)
+    #print(auc)
+    aucRisk <- calculateAUC(crs$eval$Caseload, crs$eval$Risk)
+    aucRecall <- calculateAUC(crs$eval$Caseload, crs$eval$Recall)
+    appendTextview(TV, paste("The area under the Risk and Recall curves for ",
+                             mtype, " model\n\n",
+                             "Area under the Risk   (red)   curve: ",
+                             sprintf("%d%% (%0.3f)\n",
+                                     round(100*aucRisk), aucRisk),
+                             "Area under the Recall (green) curve: ",
+                             sprintf("%d%% (%0.3f)\n",
+                                     round(100*aucRecall), aucRecall),
+                             sep=""))
+    
     ## Display the Risk Chart itself now.
 
     #newPlot()
     eval(parse(text=plot.cmd))
 
-    ## Display the AUC measures.
-
-    auc <- calculateRiskAUC(crs$eval)
-    appendTextview(TV, paste("The area under the Risk and Recall curves for ",
-                             mtype, " model\n\n",
-                             "Area under the Risk   (red)   curve: ",
-                             sprintf("%d%% (%0.3f)\n",
-                                     round(100*auc[1]), auc[1]),
-                             "Area under the Recall (green) curve: ",
-                             sprintf("%d%% (%0.3f)\n",
-                                     round(100*auc[2]), auc[2]),
-                             sep=""))
-    
   }
   
+  ## Restore par
+  
+  par(opar)
+
   return("Generated Risk Charts.")
 
 }
@@ -4783,22 +4806,37 @@ evaluateRisk <- function(predicted, actual, risks)
   return(ds.evaluation)
 }
 
-calculateRiskAUC <- function(ev)
+## REPLACED BY calculateAUC
+##
+## calculateRiskAUC <- function(ev)
+## {
+##   len <- nrow(ev)
+##   ria <- ev$Caseload[len] * ev$Risk[len] / 2
+##   rea <- ev$Caseload[len] * ev$Recall[len] / 2
+
+##   for (i in (len-1):1)
+##   {
+##     ria <- ria +
+##       (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Risk[i+1] +
+##       (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Risk[i] - ev$Risk[i+1]) / 2
+##     rea <- rea + 
+##       (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Recall[i+1] +
+##       (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Recall[i] - ev$Recall[i+1]) / 2
+##   }
+##   return(c(ria, rea))
+## }
+
+calculateAUC <- function(x, y)
 {
-  len <- nrow(ev)
-  ria <- ev$Caseload[len] * ev$Risk[len] / 2
-  rea <- ev$Caseload[len] * ev$Recall[len] / 2
+  len <- length(x)
+  ria <- x[len] * y[len] / 2
 
   for (i in (len-1):1)
   {
     ria <- ria +
-      (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Risk[i+1] +
-      (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Risk[i] - ev$Risk[i+1]) / 2
-    rea <- rea + 
-      (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Recall[i+1] +
-      (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Recall[i] - ev$Recall[i+1]) / 2
+      (x[i] - x[i+1]) * y[i+1] + (x[i] - x[i+1]) * (y[i] - y[i+1]) / 2
   }
-  return(c(ria, rea))
+  return(ria)
 }
 
 openMyDevice <- function(dev, filename)
@@ -4823,7 +4861,7 @@ openMyDevice <- function(dev, filename)
 plotRisk <- function (cl, pr, re, ri=NULL,
                       title=NULL,
                       show.legend=TRUE,
-                      xleg=70, yleg=60,
+                      xleg=60, yleg=55,
                       optimal=NULL, optimal.label="",
                       chosen=NULL, chosen.label="",
                       include.baseline=TRUE,
@@ -4835,9 +4873,8 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 {
   openMyDevice(dev, filename)
 
-  #
-  # If proportions, convert to percentages
-  #
+  ## If proportions, convert to percentages
+
   if (all(cl <= 1)) cl <- cl * 100
   if (all(re <= 1)) re <- re * 100
   if (!is.null(ri) & all(ri <= 1.5)) ri <- ri * 100 # Can sometimes be just >1
@@ -4872,7 +4909,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   #
   # Now plot
   #
-  par(lwd=2)
+  opar <- par(lwd=2)
   plot(c(0,100), c(0,100), type='l', col=1,
        xlab="Caseload (%)", ylab="Performance (%)",
        ylim=c(0,100), xlim=c(0,100))
@@ -4905,11 +4942,14 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   col <- c()
   if (!is.null(ri))
   {
-    legend <- c(legend, risk.name)
+    auc <- calculateAUC(cl/100, ri/100)
+    legend <- c(legend, sprintf("%s (%d%%)", risk.name, round(100*auc)))
     lty <- c(lty, 1)
     col <- c(col, 2)
   }  
-  legend <- c(legend, recall.name, precision.name)
+  auc <- calculateAUC(cl/100, re/100)
+  legend <- c(legend, sprintf("%s (%d%%)", recall.name, round(100*auc)))
+  legend <- c(legend, precision.name)
   lty <- c(lty,5,4)
   col <- c(col,3,4)
   if (!is.null(optimal))
@@ -4936,6 +4976,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
     text(cl[c(-1,-len)]-2, ri[c(-1,-len)]+3, rev(show.knots)[-1])
   }
   if (dev != "") dev.off()
+  par(opar)
 }
 
 ##----------------------------------------------------------------------
