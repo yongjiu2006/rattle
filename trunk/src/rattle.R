@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-08 06:15:29 Graham Williams>
+## Time-stamp: <2006-11-08 06:26:20 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -1208,7 +1208,7 @@ executeDataCSV <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  setStatusBar("The data has been loaded:", crs$dataname)
+  setStatusBar("The CSV data has been loaded:", crs$dataname)
 }
 
 executeDataODBC <- function()
@@ -1280,7 +1280,7 @@ executeDataODBC <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  setStatusBar("The data has been loaded:", crs$dataname)
+  setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
 }
 
