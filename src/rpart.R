@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 20:38:18 Graham Williams>
+## Time-stamp: <2006-11-07 22:26:57 Graham Williams>
 ##
 ## RPART TAB
 ##
@@ -262,6 +262,7 @@ executeModelRPart <- function()
   ## Build the model.
 
   addToLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
+  startTime <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -296,6 +297,8 @@ executeModelRPart <- function()
   
   rattleWidget("rpart_plot_button")$setSensitive(TRUE)
 
+  timeTaken <- Sys.time()-startTime
+  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar("An RPart model has been generated.")
   return(TRUE)
 }

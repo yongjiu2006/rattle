@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 20:43:00 Graham Williams>
+## Time-stamp: <2006-11-07 22:28:03 Graham Williams>
 ##
 ## GBM TAB
 ##
@@ -88,6 +88,8 @@ executeModelGBM <- function()
           show.cmd, sep="")
 
   ## Run model and show results.
+
+  startTime <- Sys.time()
   eval(parse(text=lib.cmd))
   clearTextview("gbm_textview")
   setTextview("gbm_textview",
@@ -101,6 +103,8 @@ executeModelGBM <- function()
 
   if (sampling) crs$smodel <<- union(crs$smodel, GBM)
   
+  timeTaken <- Sys.time()-startTime
+  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar("Boosted model has been generated.")
   return(TRUE)
 }

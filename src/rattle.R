@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-06 20:35:24 Graham Williams>
+## Time-stamp: <2006-11-07 21:48:17 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -87,7 +87,10 @@ rattle <- function()
 {
 
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
-      
+
+  ## Keep the loading of Hmisc quiet.
+  options(Hverbose=FALSE)
+
   ## Load the Rattle GUI specification. The three commands here
   ## represent an attempt to be independent of where R is running and
   ## where rattle.R is located by finding out from the system calls the
@@ -1191,7 +1194,7 @@ executeDataCSV <- function()
   rattleWidget(TV)$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
-  addToLog("Load a dataset from a CSV file.", gsub('<<-', '<-', read.cmd))
+  addToLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
   resetRattle()
   eval(parse(text=read.cmd))
   crs$dataname <<- basename(filename)
@@ -1261,7 +1264,7 @@ executeDataODBC <- function()
   rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
-  addToLog("Load a dataset from a database table.",
+  addToLog("LOAD FROM DATABASE TABLE",
           gsub('<<-', '<-', assignCmd))
   resetRattle()
   eval(parse(text=assignCmd))
@@ -1341,7 +1344,7 @@ executeDataRdata <- function()
   rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
-  addToLog("Assign an R dataset from the Rdata file.",
+  addToLog("LOAD RDATA FILE",
           gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
@@ -1404,7 +1407,7 @@ executeDataRdataset <- function()
   rattleWidget(TV)$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
-  addToLog("Assign an R dataset into the crs object.",
+  addToLog("LOAD R DATA FRAME",
           gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
@@ -2770,7 +2773,7 @@ executeExploreSummary <- function(dataset)
     ## A basic summary.
   
     summary.cmd <- sprintf("summary(%s)", dataset)
-    addToLog("Generate a summary of the dataset.", summary.cmd)
+    addToLog("SUMMARY OF DATASET.", summary.cmd)
     appendTextview(TV,
                    paste("Summary of the ",
                          ifelse(use.sample & sampling, "** sample **", "full"),
@@ -3094,6 +3097,7 @@ executeExplorePlot <- function(dataset)
     {
 
       addLogSeparator()
+      addToLog("BOX PLOT")
 
       cmd <- paste("sprintf(bindCmd,",
                    paste(paste('"', rep(boxplots[s], length(targets)+1), '"',
@@ -3101,8 +3105,8 @@ executeExplorePlot <- function(dataset)
                          collapse=","),
                    ")")
       cmd <- eval(parse(text=cmd))
-      addToLog(paste("Generate just the data for a boxplot of",
-                    boxplots[s], "."),
+      addToLog(paste("Generate just the data for a boxplot of ",
+                    boxplots[s], ".", sep=""),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
@@ -3148,15 +3152,16 @@ executeExplorePlot <- function(dataset)
     for (s in 1:nhisplots)
     {
       addLogSeparator()
-
+      addToLog("HISTOGRAM")
+      
       cmd <- paste("sprintf(bindCmd,",
                    paste(paste('"', rep(hisplots[s], length(targets)+1), '"',
                                sep=""),
                          collapse=","),
                    ")")
       cmd <- eval(parse(text=cmd))
-      addToLog(paste("Generate just the data for a histogram of",
-                    hisplots[s], "."),
+      addToLog(paste("Generate just the data for a histogram of ",
+                    hisplots[s], ".", sep=""),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
@@ -3229,7 +3234,7 @@ executeExplorePlot <- function(dataset)
 
       if (! packageIsAvailable("Hmisc", "plot cumulative charts")) break()
 
-      addToLog("Used ecdf from the Hmisc package.", libraryCmd)
+      addToLog("Use ecdf from the Hmisc package.", libraryCmd)
       eval(parse(text=libraryCmd))
 
       addToLog("Plot the data.", plotCmd)
@@ -3297,7 +3302,8 @@ executeExplorePlot <- function(dataset)
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
     {
       addLogSeparator()
-
+      addToLog("BENFORD'S LAW")
+      
       addToLog("Use barplot2 from gplots to plot Benford's Law.", libraryCmd)
       eval(parse(text=libraryCmd))
       
