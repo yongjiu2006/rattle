@@ -6,6 +6,8 @@
     changes on each release. </p>
 
 <pre>
+88 Include AUC in the Risk Charts.
+87 Include time taken in the log for model building.
 86 Importance button for GBM. "All" as the default for model tab.
 85 Replace RF checkbutton plots with buttons to plot.
 84 Add an All radio button to Models tab (Stuart Hamilton).
@@ -131,6 +133,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue Nov  7 05:53:59 EST 2006
+Last modified: Wed Nov  8 06:18:49 EST 2006
 <!-- hhmts end -->
   </p>
