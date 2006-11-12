@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-07 22:29:55 Graham Williams>
+## Time-stamp: <2006-11-12 12:46:48 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -269,7 +269,7 @@ executeModelGLM <- function()
   
   timeTaken <- Sys.time()-startTime
   addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
-  setStatusBar("GLM model has been generated.")
+  setStatusBar("A glm model has been generated.")
   return(TRUE)
 }
 

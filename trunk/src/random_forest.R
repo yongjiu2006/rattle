@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-07 22:26:34 Graham Williams>
+## Time-stamp: <2006-11-12 12:42:39 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -29,7 +29,6 @@ on_rf_errors_button_clicked <- function(button)
 executeModelRF <- function()
 {
   TV <- "rf_textview"
-  setStatusBar()
   
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   parms <- ""

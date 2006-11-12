@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-08 06:26:20 Graham Williams>
+## Time-stamp: <2006-11-12 12:45:46 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -112,7 +112,22 @@ rattle <- function()
     rattleGUI<<-gladeXMLNew("rattle.glade",root="rattle_window")
   else
     rattleGUI<<-gladeXMLNew(file.path(etc,"rattle.glade"),root="rattle_window")
-  
+
+  ## Some default GUI settings
+
+  #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
+  id.string <- paste('<span foreground="blue">',
+                     '<i>Rattle</i> ',
+                     '<i>Version ', VERSION, '</i> ',
+                     '<i><span underline="single">togaware.com</span></i>',
+                     '</span>')
+  rattle.menu <- rattleWidget("rattle_menu")
+  rattle.menu$SetRightJustified(TRUE)
+  #rattle.menu$getChild()$setText(id.string)
+  #rattle.menu$getChild()$setUseMarkup(TRUE)
+  rattle.menu$getChild()$setMarkup(id.string)
+  #rattle.menu$getChild()$setText(id.string)
+
 ########################################################################
 
   ## Constants: I would like these available within this package, but
@@ -330,6 +345,8 @@ rattle <- function()
 
   NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
   NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
+
+  while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
 }
 
@@ -601,6 +618,7 @@ setStatusBar <- function(..., sep=" ")
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0) msg <-""
   rattleWidget("statusbar")$push(1, msg)
+  while (gtkEventsPending()) gtkMainIteration() # Refresh status and windows
   invisible(NULL)
 }
 
@@ -4570,7 +4588,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   
   numplots <- length(getEvaluateModels())
   if (numplots == 1 || numplots == 2)
-    newPlot(numplots)
+    newPlot(1)
   else if (numplots %% 2 == 0)
     newPlot(numplots)
   else
@@ -5447,6 +5465,11 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 ########################################################################
 
 ## General Menu Callbacks
+
+on_rattle_menu_activate <- function(action, window)
+{
+  browseURL("http://rattle.togaware.com")
+}
 
 on_save_menu_activate <- function(action, window) {saveProject()}
 on_delete_menu_activate <- notImplemented

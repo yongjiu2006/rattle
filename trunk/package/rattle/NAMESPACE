@@ -1,6 +1,6 @@
 export(
        calcInitialDigitDistr,
-       calculateRiskAUC,
+       calculateAUC,
        drawTreeNodes,
        evaluateRisk,
        genPlotTitleCmd,
