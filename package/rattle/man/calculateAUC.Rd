@@ -1,26 +1,27 @@
-\name{calculateRiskAUC}
-\alias{calculateRiskAUC}
+\name{calculateAUC}
+\alias{calculateAUC}
 \title{
-  Determine the area under the risk and recall curves of a risk chart
+  Determine area under a curve (e.g. a risk or recall curve) of a risk chart
 }
 \description{
   
-  Given the evaluation returned by evaluateRisk, calculate the area
-  under the risk and recall curves, to use as a metric to compare the
-  performance of a model.
+  Given the evaluation returned by evaluateRisk, for example, calculate
+  the area under the risk or recall curves, to use as a metric to
+  compare the performance of a model.
   
 }
 \usage{
-calculateRiskAUC(ev)
+calculateAUC(x, y)
 }
 \arguments{
   
-  \item{ev}{an evaluation matrix as returned by evaluateRisk.}
+  \item{x}{a vector of values for the x points.}
+  \item{y}{a vector of values for the y points.}
 
 }
 \details{
 
-  The two areas are returned.
+  The area is returned.
 
 }
 \references{Package home page: \url{http://rattle.togaware.com}}
@@ -37,7 +38,8 @@ ev <- data.frame(Caseload=c(1.0, 0.8, 0.6, 0.4, 0.2, 0),
                  Risk=c(1.0, 0.98, 0.90, 0.77, 0.30, 0.0))
 
 ## Calculate the areas unde the Risk and the Recall curves.
-calculateRiskAUC(ev)
+calculateAUC(ev$Caseload, ev$Risk)
+calculateAUC(ev$Caseload, ev$Recall)
 
 }
 \keyword{hplot}

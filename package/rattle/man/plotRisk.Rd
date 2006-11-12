@@ -13,7 +13,7 @@
 }
 \usage{
 plotRisk(cl, pr, re, ri = NULL, title = NULL,
-    show.legend = TRUE, xleg = 70, yleg = 60,
+    show.legend = TRUE, xleg = 60, yleg = 55,
     optimal = NULL, optimal.label = "", chosen = NULL, chosen.label = "",
     include.baseline = TRUE, dev = "", filename = "", show.knots = NULL,
     risk.name = "Revenue", recall.name = "Adjustments",

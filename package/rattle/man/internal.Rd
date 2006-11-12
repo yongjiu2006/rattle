@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{on_gbm_importance_button_clicked}
+\alias{on_rf_errors_button_clicked}
+\alias{on_rf_importance_button_clicked}
 \alias{on_associate_plot_frequency_button_clicked}
 \alias{on_associate_rules_button_clicked}
 \alias{on_hclust_dendrogram_button_clicked}

@@ -170,7 +170,7 @@
 		      <accelerator key="F5" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image113">
+			<widget class="GtkImage" id="image208">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -197,7 +197,7 @@
 		      <property name="use_underline">True</property>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image114">
+			<widget class="GtkImage" id="image209">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-print</property>
 			  <property name="icon_size">1</property>
@@ -219,7 +219,7 @@
 		      <signal name="activate" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 18:19:08 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image115">
+			<widget class="GtkImage" id="image210">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -246,7 +246,7 @@
 		      <signal name="activate" handler="on_tools_data_activate" last_modification_time="Fri, 13 Oct 2006 09:18:41 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image116">
+			<widget class="GtkImage" id="image211">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-file</property>
 			  <property name="icon_size">1</property>
@@ -660,6 +660,28 @@
 		      <signal name="activate" handler="on_about_menu_activate" last_modification_time="Sat, 04 Feb 2006 11:44:07 GMT"/>
 		    </widget>
 		  </child>
+		</widget>
+	      </child>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="GtkImageMenuItem" id="rattle_menu">
+	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Double click to browse to the Rattle home page.</property>
+	      <property name="label" translatable="yes">rattlemenu</property>
+	      <property name="use_underline">True</property>
+	      <signal name="activate" handler="on_rattle_menu_activate" last_modification_time="Sat, 11 Nov 2006 21:37:00 GMT"/>
+
+	      <child internal-child="image">
+		<widget class="GtkImage" id="image212">
+		  <property name="visible">True</property>
+		  <property name="stock">gtk-info</property>
+		  <property name="icon_size">1</property>
+		  <property name="xalign">0.5</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
 		</widget>
 	      </child>
 	    </widget>
@@ -2006,7 +2028,7 @@ See Help-&gt;About for details.</property>
 	    <widget class="GtkTable" id="sample_tab_widget">
 	      <property name="border_width">5</property>
 	      <property name="visible">True</property>
-	      <property name="n_rows">4</property>
+	      <property name="n_rows">5</property>
 	      <property name="n_columns">9</property>
 	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">10</property>
@@ -2353,6 +2375,29 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		  <property name="right_attach">1</property>
 		  <property name="top_attach">2</property>
 		  <property name="bottom_attach">3</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="checkbutton3">
+		  <property name="visible">True</property>
+		  <property name="sensitive">False</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Remove Outliers</property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">4</property>
+		  <property name="bottom_attach">5</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options"></property>
 		</packing>
