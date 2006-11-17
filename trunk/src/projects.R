@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-08 06:26:35 Graham Williams>
+## Time-stamp: <2006-11-18 06:42:11 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -21,10 +21,12 @@ newProject <- function()
     if (is.null(questionDialog("You have requested to start a new project.",
                                "This will clear the current project (dataset",
                                "and models).",
-                               "Do you wish to continue, and lose the current",
-                               "project? If you choose not to continue",
-                               "you can save the project, and then start",
-                               "a new project.")))
+                               "If you choose not to continue you can save",
+                               "the project, and then start a new project.",
+                               "\n\n",
+                               "Do you wish to continue, and overwrite the",
+                               "current project?"
+                               )))
       return()
   }
   resetRattle()
@@ -135,7 +137,8 @@ saveProject <- function()
   crs$glm$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
   
   save(crs, file=save.name, compress=TRUE)
-
+  setDefaultPath(save.name)
+  
   setStatusBar("The current project has been saved to", save.name)
 }
 
@@ -146,12 +149,14 @@ loadProject <- function()
   if ( ! is.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a project.",
-                                "This will clear the old project (dataset and",
-                                "models) which may not have been saved.",
-                                "Do you wish to continue, and lose the old",
-                                "project? If you choose not to continue",
-                                "you can save the project, and then load",
-                                "the new project.")))
+                               "This will clear the old project (dataset and",
+                               "models) which may not have been saved.",
+                               "If you choose not to continue you can save",
+                               "the project, and then load the new project.",
+                               "\n\n",
+                               "Do you wish to continue, and overwrite the",
+                               "current project?"
+                               )))
         
       return()
   }
@@ -199,6 +204,7 @@ loadProject <- function()
 
   NOTEBOOK$setCurrentPage(0)
   load(load.name)
+  setDefaultPath(load.name)
   
   ## Now update all appropriate textviews and associated data.
 
