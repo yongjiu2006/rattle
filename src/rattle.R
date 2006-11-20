@@ -1,6 +1,6 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
+# Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-12 12:45:46 Graham Williams>
+## Time-stamp: <2006-11-20 18:27:19 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -195,6 +195,7 @@ rattle <- function()
   
   crs <<- list(dataset=NULL,
                dataname=NULL,
+               cwd=getwd(),
                input=NULL,
                target=NULL,
                weights=NULL,
@@ -410,7 +411,8 @@ resetRattle <- function()
   rattleWidget("kmeans_radiobutton")$setActive(TRUE)
 
   MODEL$setCurrentPage(MODEL.RPART.TAB)
-  rattleWidget("all_models_radiobutton")$setActive(TRUE)
+  rattleWidget("rpart_radiobutton")$setActive(TRUE)
+  #rattleWidget("all_models_radiobutton")$setActive(TRUE)
 
   EVALUATE$setCurrentPage(EVALUATE.CONFUSION.TAB)
   rattleWidget("confusion_radiobutton")$setActive(TRUE)
@@ -698,7 +700,11 @@ listBuiltModels <- function()
 
 setDefaultPath <- function(filename)
 {
-  if (! is.null(filename)) setwd(dirname(filename))
+  if (! is.null(filename))
+  {
+    crs$cwd <<- dirname(filename)
+    setwd(crs$cwd)
+  }
 }
 
 newPlot <- function(pcnt=1)
@@ -928,7 +934,7 @@ on_csv_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_csv_filechooserbutton_update_preview<- function(button)
+on_csv_filechooserbutton_update_preview <- function(button)
 {
   if (length(button$listFilters()) == 0)
   {
@@ -947,6 +953,7 @@ on_csv_filechooserbutton_update_preview<- function(button)
     ff$addPattern("*")
     button$addFilter(ff)
   }
+  # CAN'T GO HERE - NEED ANOTHER CALLBACK button$setCurrentFolder(crs$cwd)
 }
 
 on_rdata_radiobutton_toggled <- function(button)
@@ -960,6 +967,8 @@ on_rdata_radiobutton_toggled <- function(button)
 
 on_rdata_filechooserbutton_update_preview<- function(button)
 {
+  #button$setCurrentFolder(crs$cwd)
+
   if (length(button$listFilters()) == 0)
   {
     ff <- gtkFileFilterNew()
@@ -5349,8 +5358,10 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 
 ##   if(! is.null(testname))
 ##     dialog$setCurrentName(paste(get.stem(testname), "_", mtype, "_score"))
-  
-##   ff <- gtkFileFilterNew()
+
+  ##  dialog$setCurrentFolder(crs$cwd)
+
+  ##   ff <- gtkFileFilterNew()
 ##   ff$setName("CSV Files")
 ##   ff$addPattern("*.csv")
 ##   dialog$addFilter(ff)
