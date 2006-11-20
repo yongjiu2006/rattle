@@ -6,7 +6,10 @@
     changes on each release. </p>
 
 <pre>
-89 Bug: project load did not executeVariablesTab (noted by Frank Lu).
+92 Do not make All the default for the model tab. (Suggested by Robert Williams)
+91 Save/Load project set default directory. (Suggested by Michael Fogliani)
+90 Add Togaware pointer to menu bar. (Suggested by Tony Nolan)
+89 Bug: project load did not executeVariablesTab. (Noted by Frank Lu)
 88 Include AUC in the Risk Charts. (Suggested by Frank Lu)
 87 Include time taken in the log for model building.
 86 Importance button for GBM. "All" as the default for model tab.
@@ -134,6 +137,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Nov  8 06:30:25 EST 2006
+Last modified: Mon Nov 20 19:03:15 EST 2006
 <!-- hhmts end -->
   </p>
