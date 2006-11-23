@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-20 18:27:19 Graham Williams>
+## Time-stamp: <2006-11-20 19:44:34 Graham Williams>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -163,11 +163,12 @@ rattle <- function()
   GLM   <<- "glm"
   RPART <<- "rpart"
   GBM   <<- "gbm"
+  ADA   <<- "ada"
   RF    <<- "rf"
   SVM   <<- "svm"
   KSVM  <<- "ksvm"
 
-  MODELLERS <<- c(RPART, RF, KSVM, GLM, GBM)
+  MODELLERS <<- c(RPART, RF, KSVM, GLM, ADA)
   
   ## RPART
   
@@ -284,6 +285,7 @@ rattle <- function()
   MODEL           <<- rattleWidget("model_notebook")
   MODEL.RPART.TAB <<- getNotebookPage(MODEL, RPART)
   MODEL.GLM.TAB   <<- getNotebookPage(MODEL, GLM)
+  MODEL.ADA.TAB   <<- getNotebookPage(MODEL, ADA)
   MODEL.GBM.TAB   <<- getNotebookPage(MODEL, GBM)
   MODEL.RF.TAB    <<- getNotebookPage(MODEL, RF)
   MODEL.SVM.TAB   <<- getNotebookPage(MODEL, SVM)
