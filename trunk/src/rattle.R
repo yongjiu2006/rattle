@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-20 19:44:34 Graham Williams>
+## Time-stamp: <2006-11-26 07:24:14 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -3211,8 +3211,14 @@ executeExplorePlot <- function(dataset)
 
   ##---------------------------------------------------------------------
   
-  if (! is.null(cumplots))
+if (! is.null(cumplots))
+    infoDialog("The current version of HMisc uses a new ecdf. Thus",
+               "cummulative plots are temporarily not supported in Rattle.")
+    
+  if (! is.null(cumplots) && FALSE)
   {
+    ## New HMisc Fails
+    
     ## Cumulative plot for numeric data.
 
     nplots <- length(cumplots)
@@ -4598,9 +4604,10 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   ## (thus if numplots is odd, leave a cell of the plot empty.
   
   numplots <- length(getEvaluateModels())
-  if (numplots == 1 || numplots == 2)
-    newPlot(1)
-  else if (numplots %% 2 == 0)
+  #if (numplots == 1 || numplots == 2)
+  #  newPlot(1)
+  #else
+  if (numplots %% 2 == 0)
     newPlot(numplots)
   else
     newPlot(numplots + 1)
@@ -4732,6 +4739,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     ## Display the Risk Chart itself now.
 
     #newPlot()
+    if (numplots == 1 || numplots == 2) newPlot(1)
     eval(parse(text=plot.cmd))
 
   }
