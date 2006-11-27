@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-12 12:42:39 Graham Williams>
+## Time-stamp: <2006-11-26 07:19:33 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -176,9 +176,9 @@ executeModelRF <- function()
   appendTextview(TV, "Variable importance:\n\n",
                    collectOutput(importance.cmd, TRUE))
 
-  appendTextview(TV, "To view model 5, for example, run",
-                 "printRandomForests(crs$rf, 5)\n",
-                 "in the R conosle. Generating all 500 models takes",
+  appendTextview(TV, "To view model 5, for example, run ",
+                 "printRandomForests(crs$rf, 5)",
+                 "\nin the R console. Generating all 500 models takes ",
                  "quite some time.")
 
   if (sampling) crs$smodel <<- union(crs$smodel, RF)
