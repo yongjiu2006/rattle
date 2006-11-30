@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-26 07:24:14 Graham>
+## Time-stamp: <2006-11-28 06:41:18 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -3212,10 +3212,10 @@ executeExplorePlot <- function(dataset)
   ##---------------------------------------------------------------------
   
 if (! is.null(cumplots))
-    infoDialog("The current version of HMisc uses a new ecdf. Thus",
-               "cummulative plots are temporarily not supported in Rattle.")
+    #infoDialog("The current version of HMisc uses a new ecdf. Thus",
+    #           "cummulative plots are temporarily not supported in Rattle.")
     
-  if (! is.null(cumplots) && FALSE)
+  if (! is.null(cumplots)) # && FALSE)
   {
     ## New HMisc Fails
     
