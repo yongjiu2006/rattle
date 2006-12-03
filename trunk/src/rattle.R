@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-28 06:41:18 Graham>
+## Time-stamp: <2006-12-03 22:01:09 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -2152,7 +2152,23 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     iter <- model$append()$iter
 
     cl <- class(crs$dataset[[variables[i]]])
-    if (cl == "factor")
+
+    ## First check for special variable names. Want to also do this
+    ## for TARGET.
+    
+    if (substr(variables[i], 1, 2) == "ID")
+    {
+      ident <- c(ident, variables[i])
+    }
+    else if (substr(variables[i], 1, 6) == "IGNORE")
+    {
+      ignore <- c(ignore, variables[i])
+    }
+    else if (substr(variables[i], 1, 4) == "RISK")
+    {
+      risk <- c(risk, variables[i])
+    }
+    else if (cl == "factor")
     {
       lv <- length(levels(crs$dataset[[variables[i]]]))
       if (lv == nrow(crs$dataset))
@@ -2188,7 +2204,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         ignore <- c(ignore, variables[i])
       }
     }
-    input <- setdiff(setdiff(input, ignore), ident)
+    input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
     
     model$set(iter,
               COLUMN["number"], i,
