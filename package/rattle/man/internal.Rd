@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_rf_print_tree_button_clicked}
+\alias{on_rpart_rules_button_clicked}
 \alias{on_rattle_menu_activate}
 \alias{on_gbm_importance_button_clicked}
 \alias{on_rf_errors_button_clicked}
