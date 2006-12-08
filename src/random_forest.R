@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 13:06:05 Graham>
+## Time-stamp: <2006-12-08 23:53:08 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -19,6 +19,11 @@ on_rf_importance_button_clicked <- function(button)
 on_rf_errors_button_clicked <- function(button)
 {
   plotRandomForestError()
+}
+
+on_rf_print_tree_button_clicked <- function(button)
+{
+  displayRandomForestTree()
 }
 
 ########################################################################
@@ -85,8 +90,6 @@ executeModelRF <- function()
   ## to also print the relative importance with regard class. So by
   ## default, generate them both.
   
-  ##importance <- rattleWidget("rf_importance_checkbutton")$getActive()
-  ##if (importance)
   parms <- sprintf("%s, importance=TRUE", parms)
 
   ## Proximity is for unsupervised - not sure why I originally put it
@@ -190,6 +193,8 @@ executeModelRF <- function()
   
   rattleWidget("rf_importance_button")$setSensitive(TRUE)
   rattleWidget("rf_errors_button")$setSensitive(TRUE)
+  rattleWidget("rf_print_tree_button")$setSensitive(TRUE)
+  rattleWidget("rf_print_tree_spinbutton")$setSensitive(TRUE)
 
   ## Finish up.
 
@@ -250,6 +255,28 @@ plotRandomForestError <- function()
   setStatusBar("Random Forest Errors has been plotted.")
 }
 
+displayRandomForestTree <- function()
+{
+  ## Initial setup 
+  
+  TV <- "rf_textview"
+
+  ## Obtain which tree to display.
+  
+  tree.num <- rattleWidget("rf_print_tree_spinbutton")$getValue()
+
+  ## Command to run.
+
+  display.cmd <- sprintf("printRandomForests(crs$rf, %d)", tree.num)
+
+  ## Perform the action.
+
+  addToLog(sprintf("Display tree number %d.", tree.num), display.cmd)
+  addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
+  setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
+                     "You may need to scroll the textview to see it."))
+}
+
 printRandomForests <- function(model, models=NULL)
 {
   if (! packageIsAvailable("randomForest", "print the rule sets"))
@@ -280,7 +307,6 @@ printRandomForest <- function(model, n)
   
   ## Initialise the output
 
-  cat("===================================================================\n")
   cat(sprintf("Random Forest Model %d\n\n", n))
 
   ## Generate rpart form for each rule.

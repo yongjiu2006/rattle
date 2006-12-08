@@ -6,7 +6,12 @@
     changes on each release. </p>
 
 <pre>
-93 Use ada instead of gbm. (Suggested by Rohan Baxter)
+99 RF can now display selected trees.
+98 RPart shows rules on request. (Rules button)
+97 Ada is now used for boosting.  (Suggested by Rohan Baxter)
+96 Identify variable roles from names. (Suggested by Shaun Wicks)
+94 Bug fixes.
+93 Initial work on ada instead of gbm.  (Suggested by Rohan Baxter)
 92 RPart default for the model tab, not All. (Suggested by Robert Williams)
 91 Save/Load project set default directory. (Suggested by Michael Fogliani)
 90 Add Togaware pointer to menu bar. (Suggested by Tony Nolan)
