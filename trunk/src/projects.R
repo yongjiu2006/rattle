@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-18 06:42:11 Graham Williams>
+## Time-stamp: <2006-12-08 23:39:02 Graham>
 ##
 ## Project functionality.
 ##
@@ -131,7 +131,6 @@ saveProject <- function()
   crs$rf$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
   crs$rf$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
   crs$rf$sample    <<- rattleWidget("rf_sampsize_entry")$getText()
-  crs$rf$import    <<- rattleWidget("rf_importance_checkbutton")$getActive()
   crs$rf$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
 
   crs$glm$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
@@ -314,8 +313,6 @@ loadProject <- function()
     rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf$vars)
   if (! is.null(crs$rf$sample))
     rattleWidget("rf_sampsize_entry")$setText(crs$rf$sample)
-  if (! is.null(crs$rf$import))
-    rattleWidget("rf_importance_checkbutton")$setActive(crs$rf$import)
   if (! is.null(crs$rf$proximity))
     rattleWidget("rf_proximity_checkbutton")$setActive(crs$rf$proximity)
 
