@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-12 12:46:48 Graham Williams>
+## Time-stamp: <2006-12-08 17:55:50 Graham>
 ##
 ## MODEL TAB
 ##
@@ -37,7 +37,8 @@ on_boost_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.GBM.TAB)
+    ## MODEL$setCurrentPage(MODEL.GBM.TAB)
+    MODEL$setCurrentPage(MODEL.ADA.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -83,7 +84,7 @@ on_kernlab_radiobutton_toggled <- function(button)
 
 ########################################################################
 ##
-## GENERAL SUPPORT
+## SUPPORT FUNCTIONS
 ##
 
 currentModelTab <- function()
@@ -94,9 +95,27 @@ currentModelTab <- function()
   return(lb)
 }
 
+deactivateROCRPlots <- function()
+{
+  rattleWidget("lift_radiobutton")$setSensitive(FALSE)
+  rattleWidget("roc_radiobutton")$setSensitive(FALSE)
+  rattleWidget("precision_radiobutton")$setSensitive(FALSE)
+  rattleWidget("sensitivity_radiobutton")$setSensitive(FALSE)
+  rattleWidget("risk_radiobutton")$setSensitive(FALSE)
+}
+
+activateROCRPlots <- function()
+{
+  rattleWidget("lift_radiobutton")$setSensitive(TRUE)
+  rattleWidget("roc_radiobutton")$setSensitive(TRUE)
+  rattleWidget("precision_radiobutton")$setSensitive(TRUE)
+  rattleWidget("sensitivity_radiobutton")$setSensitive(TRUE)
+  rattleWidget("risk_radiobutton")$setSensitive(TRUE)
+}
+
 ########################################################################
 ##
-## EXECUTION
+## EXECUTE MODEL TAB
 ##
 
 executeModelTab <- function()
@@ -109,10 +128,11 @@ executeModelTab <- function()
 
   if (variablesHaveChanged("building a model")) return()
 
-  ## If WeightCalculator has changed but not same as crs$weight,
-  ## complain. This doesn't work any more since we add crs$dataset to
-  ## the variable names in the Weights Calculator, so they are
-  ## different! But, let's remove the crs$dataset and compare.
+  ## If the WeightCalculator has changed but it is not the same as
+  ## crs$weight, complain. This doesn't work any more since we add
+  ## crs$dataset to the variable names in the Weights Calculator, so
+  ## they are different! But, let's remove the crs$dataset and
+  ## compare.
 
   weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
 
@@ -120,11 +140,12 @@ executeModelTab <- function()
       && weights.display != rattleWidget("weight_entry")$getText())
   {
     errorDialog("You appear to have changed the formula for calculating the",
-                 "weights on the Variables tab, but have not executed the tab.",
-                 "The previous formula",
-                 sprintf('was "%s" and is now "%s".', crs$weights,
-                         rattleWidget("weight_entry")$getText()),
-                 "Please be sure to execute the tab before continuing.")
+                "weights on the Variables tab without executing the tab.",
+                "The previous formula",
+                sprintf('was "%s" and it is now "%s".', crs$weights,
+                        rattleWidget("weight_entry")$getText()),
+                "Please be sure to execute the Variables tab",
+                "before continuing.")
     return()
   }
     
@@ -150,7 +171,7 @@ executeModelTab <- function()
   
   if (length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
   {
-    deactivate.rocr.plots()
+    deactivateROCRPlots()
     rattleWidget("confusion_textview")$setWrapMode("word")
     clearTextview("confusion_textview")
     appendTextview("confusion_textview",
@@ -163,7 +184,7 @@ executeModelTab <- function()
   }
   else
   {
-    activate.rocr.plots()
+    activateROCRPlots()
     setTextview("confusion_textview") # Clear any confusion table
   }
 
@@ -171,16 +192,21 @@ executeModelTab <- function()
 
   if (rattleWidget("all_models_radiobutton")$getActive())
   {
+    ## This order of execution should correspond to the order in the
+    ## GUI as this makes most logical sense to the user.
+    
     if (executeModelRPart())
       rattleWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+    if (executeModelADA())
+      rattleWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
     if (executeModelRF())
       rattleWidget("rf_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelSVM())
       rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelGLM())
       rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-    if (executeModelGBM())
-      rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+    ##if (executeModelGBM())
+    ##  rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
 
     setStatusBar("All models have been generated.")
   }
@@ -188,8 +214,10 @@ executeModelTab <- function()
     executeModelGLM()
   else if (currentModelTab() == RPART)
     executeModelRPart()
-  else if (currentModelTab() == GBM)
-    executeModelGBM()
+  ## else if (currentModelTab() == GBM)
+  ##  executeModelGBM()
+  else if (currentModelTab() == ADA)
+    executeModelADA()
   else if (currentModelTab() == RF)
     executeModelRF()
   else if (is.element(currentModelTab(), c(SVM, KSVM)))
@@ -203,7 +231,10 @@ executeModelTab <- function()
 
 executeModelGLM <- function()
 {
-
+  ## Initial setup. 
+  
+  TV <- "glm_textview"
+  
   ## Currently only handling binary classification.
   
 ##   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
@@ -252,23 +283,25 @@ executeModelGLM <- function()
   addLogSeparator("LOGISTIC REGRESSION")
   addToLog("Build a logistic regression model using glm.",
           gsub("<<-", "<-", glm.cmd), sep="")
-  startTime <- Sys.time()
+  start.time <- Sys.time()
   eval(parse(text=glm.cmd))
   
   ## Summarise the model.
 
   addToLog("Summary of the resulting GLM model", summary.cmd)
           
-  clearTextview("glm_textview")
-  setTextview("glm_textview",
-              "Summary of the model built using glm.\n",
-              collectOutput(summary.cmd, TRUE),
-              textviewSeparator())
+  clearTextview(TV)
+  setTextview(TV, "Summary of the model built using glm.\n",
+              collectOutput(summary.cmd, TRUE))
 
   if (sampling) crs$smodel <<- union(crs$smodel, GLM)
   
-  timeTaken <- Sys.time()-startTime
-  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  ## Finish up.
+  
+  time.taken <- Sys.time()-start.time
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
   setStatusBar("A glm model has been generated.")
   return(TRUE)
 }
@@ -366,7 +399,7 @@ executeModelSVM <- function()
   else
     svmCmd <- paste(svmCmd, ", probability=TRUE", sep="")  # Probabilities
   svmCmd <- paste(svmCmd, ")", sep="")
-  startTime <- Sys.time()
+  start.time <- Sys.time()
   addToLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -387,10 +420,8 @@ executeModelSVM <- function()
     summaryCmd <- "crs$svm"
   addToLog("Generate textual output of the svm model.", summaryCmd)
   clearTextview(TV)
-  setTextview(TV,
-              "Summary of the svm model:\n\n",
-              collectOutput(summaryCmd, TRUE),
-              textviewSeparator())
+  setTextview(TV, "Summary of the svm model:\n\n",
+              collectOutput(summaryCmd, TRUE), "\n")
 
   if (sampling)
     if (useKernlab)
@@ -398,11 +429,14 @@ executeModelSVM <- function()
     else
       crs$smodel <<- union(crs$smodel, SVM)
 
-  timeTaken <- Sys.time()-startTime
-  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  ## Finish up.
+
+  time.taken <- Sys.time()-start.time
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",
                        ifelse(useKernlab, KSVM, SVM)))
-
   return(TRUE)
 }
 

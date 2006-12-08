@@ -1,10 +1,11 @@
+redo <- function() {source("all.R"); rattle()}
 source("rattle.R")
 source("zzz.R")
 source("associate.R")
 source("cluster.R")
 source("execute.R")
 source("export.R")
-source("gbm.R")
+source("ada.R"); source("gbm.R")
 source("log.R")
 source("model.R")
 source("paradigm.R")
