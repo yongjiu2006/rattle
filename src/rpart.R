@@ -1,10 +1,16 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-18 08:08:42 Graham Williams>
+## Time-stamp: <2006-12-08 12:59:26 Graham>
 ##
 ## RPART TAB
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+
+########################################################################
+##
+## TODO
+##
+## Add a Rules button to  print the rules.
 
 ########################################################################
 ##
@@ -93,6 +99,10 @@ on_rpart_plot_button_clicked <- function(button)
 
 executeModelRPart <- function()
 {
+  ## Initial setup 
+
+  TV <- "rpart_textview"
+
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   control <- NULL
   parms <- NULL
@@ -215,12 +225,12 @@ executeModelRPart <- function()
       parms <- gsub(")$", sprintf(", loss=%s)", lo), parms)
   }
 
-  ## Build the formula for the model, noting that rpart has only a
-  ## formula interface.
+  ## Build the formula for the model. Rpart has only a formula
+  ## interface.
 
   frml <- paste(crs$target, "~ .")
 
-  ## List, as a string of indicies, the variables to be included. 
+  ## Variables to be included --- a string of indicies.
   
   included <- getIncludedVariables()
   
@@ -262,7 +272,7 @@ executeModelRPart <- function()
   ## Build the model.
 
   addToLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
-  startTime <- Sys.time()
+  start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -282,14 +292,13 @@ executeModelRPart <- function()
   addToLog("List the rules from the tree using a Rattle support function.",
           listrules.cmd)
           
-  clearTextview("rpart_textview")
-  setTextview("rpart_textview",
+  clearTextview(TV)
+  setTextview(TV,
               "Summary of the rpart model:\n\n",
               collectOutput(print.cmd),
               textviewSeparator(),
               "Tree as rules:\n\n",
-              collectOutput(listrules.cmd, TRUE),
-              textviewSeparator())
+              collectOutput(listrules.cmd, TRUE))
 
   if (sampling) crs$smodel <<- union(crs$smodel, RPART)
 
@@ -297,8 +306,12 @@ executeModelRPart <- function()
   
   rattleWidget("rpart_plot_button")$setSensitive(TRUE)
 
-  timeTaken <- Sys.time()-startTime
-  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  ## Finish up.
+  
+  time.taken <- Sys.time()-start.time
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
   setStatusBar("An rpart model has been generated.")
   return(TRUE)
 }

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-26 07:19:33 Graham>
+## Time-stamp: <2006-12-08 13:06:05 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -28,6 +28,8 @@ on_rf_errors_button_clicked <- function(button)
 
 executeModelRF <- function()
 {
+  ## Initial setup 
+  
   TV <- "rf_textview"
   
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
@@ -136,7 +138,7 @@ executeModelRF <- function()
                   ")", sep="")
 
   addToLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
-  startTime <- Sys.time()
+  start.time <- Sys.time()
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
 
   if (inherits(result, "try-error"))
@@ -170,16 +172,17 @@ executeModelRF <- function()
   addToLog("List the importance of the variables.", importance.cmd)
 
   clearTextview(TV)
-  appendTextview(TV, "Summary of the randomForest model:\n\n",
-                 collectOutput(summary.cmd, TRUE))
+  addTextview(TV, "Summary of the randomForest model:\n\n",
+              collectOutput(summary.cmd, TRUE))
 
-  appendTextview(TV, "Variable importance:\n\n",
-                   collectOutput(importance.cmd, TRUE))
+  addTextview(TV, "\n\nVARIABLE IMPORTANCE:\n\n",
+              collectOutput(importance.cmd, TRUE))
 
-  appendTextview(TV, "To view model 5, for example, run ",
-                 "printRandomForests(crs$rf, 5)",
-                 "\nin the R console. Generating all 500 models takes ",
-                 "quite some time.")
+  addTextview(TV, "\n\nDISPLAY THE MODEL\n\n",
+              "To view model 5, for example, run ",
+              "printRandomForests(crs$rf, 5)",
+              "\nin the R console. Generating all 500 models takes ",
+              "quite some time.\n")
 
   if (sampling) crs$smodel <<- union(crs$smodel, RF)
 
@@ -188,8 +191,12 @@ executeModelRF <- function()
   rattleWidget("rf_importance_button")$setSensitive(TRUE)
   rattleWidget("rf_errors_button")$setSensitive(TRUE)
 
-  timeTaken <- Sys.time()-startTime
-  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  ## Finish up.
+
+  time.taken <- Sys.time()-start.time
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
   setStatusBar("A randomForest model has been generated.")
   return(TRUE)
 }

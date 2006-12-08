@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-03 22:01:09 Graham>
+## Time-stamp: <2006-12-08 12:44:55 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -42,7 +42,7 @@ COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
 ##
 ##    Use the "_" convention only for Glade variables and functions.
 ##    Use capitalised verbs for own functions: displayPlotAgain
-##    Use dot spearated words for variables: current.rattle.list.of.frames
+##    Use dot spearated words for variables: list.of.frames, lib.cmd
 ##    RGtk2 uses the capitalised word convention.
 ##    Use same names in R code as for the Glade objects.
 
@@ -162,7 +162,7 @@ rattle <- function()
 
   GLM   <<- "glm"
   RPART <<- "rpart"
-  GBM   <<- "gbm"
+  ## GBM   <<- "gbm"
   ADA   <<- "ada"
   RF    <<- "rf"
   SVM   <<- "svm"
@@ -212,7 +212,7 @@ rattle <- function()
                smodel=NULL, # Record whether the sample has been modelled
                glm=NULL,
                rpart=NULL,
-               gbm=NULL,
+               ada=NULL,
                rf=NULL,
                svm=NULL,
                ksvm=NULL,
@@ -286,7 +286,7 @@ rattle <- function()
   MODEL.RPART.TAB <<- getNotebookPage(MODEL, RPART)
   MODEL.GLM.TAB   <<- getNotebookPage(MODEL, GLM)
   MODEL.ADA.TAB   <<- getNotebookPage(MODEL, ADA)
-  MODEL.GBM.TAB   <<- getNotebookPage(MODEL, GBM)
+  ## MODEL.GBM.TAB   <<- getNotebookPage(MODEL, GBM)
   MODEL.RF.TAB    <<- getNotebookPage(MODEL, RF)
   MODEL.SVM.TAB   <<- getNotebookPage(MODEL, SVM)
 
@@ -377,7 +377,7 @@ resetRattle <- function()
   crs$smodel   <<- NULL
   crs$glm      <<- NULL
   crs$rpart    <<- NULL
-  crs$gbm      <<- NULL
+  crs$ada      <<- NULL
   crs$rf       <<- NULL
   crs$svm      <<- NULL
   crs$ksvm     <<- NULL
@@ -396,7 +396,8 @@ resetRattle <- function()
   setTextview("hclust_textview")
   setTextview("rpart_textview")
   setTextview("glm_textview")
-  setTextview("gbm_textview")
+  ##setTextview("gbm_textview")
+  setTextview("ada_textview")
   setTextview("rf_textview")
   setTextview("esvm_textview")
   setTextview("ksvm_textview")
@@ -443,7 +444,8 @@ resetRattle <- function()
 
   rattleWidget("glm_target_label")$setText("No target selected")
   rattleWidget("rpart_target_label")$setText("No target selected")
-  rattleWidget("gbm_target_label")$setText("No target selected")
+  ##rattleWidget("gbm_target_label")$setText("No target selected")
+  rattleWidget("ada_target_label")$setText("No target selected")
   rattleWidget("rf_target_label")$setText("No target selected")
   rattleWidget("svm_target_label")$setText("No target selected")
   rattleWidget("evaluate_risk_label")$setText("No risk variable selected")
@@ -456,13 +458,15 @@ resetRattle <- function()
   rattleWidget("rf_evaluate_checkbutton")$setActive(FALSE)
   rattleWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
   rattleWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  rattleWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
+  ## rattleWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
+  rattleWidget("ada_evaluate_checkbutton")$setActive(FALSE)
 
   rattleWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
   rattleWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
   rattleWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
   rattleWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
-  rattleWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
+  ## rattleWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
+  rattleWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
 
 }
 
@@ -1718,7 +1722,8 @@ executeVariablesTab <- function()
   rattleWidget("rf_target_label")$setText(the.target)
   rattleWidget("svm_target_label")$setText(the.target)
   rattleWidget("glm_target_label")$setText(the.target)
-  rattleWidget("gbm_target_label")$setText(the.target)
+  ## rattleWidget("gbm_target_label")$setText(the.target)
+  rattleWidget("ada_target_label")$setText(the.target)
 
   ## Update MODEL weights
 
@@ -2132,7 +2137,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   rattleWidget("glm_target_label")$setText(the.target)
   rattleWidget("rpart_target_label")$setText(the.target)
-  rattleWidget("gbm_target_label")$setText(the.target)
+  ## rattleWidget("gbm_target_label")$setText(the.target)
+  rattleWidget("ada_target_label")$setText(the.target)
   rattleWidget("rf_target_label")$setText(the.target)
   rattleWidget("svm_target_label")$setText(the.target)
 
@@ -4096,24 +4102,6 @@ current.evaluate.tab <- function()
 }
 
 
-deactivate.rocr.plots <- function()
-{
-  rattleWidget("lift_radiobutton")$setSensitive(FALSE)
-  rattleWidget("roc_radiobutton")$setSensitive(FALSE)
-  rattleWidget("precision_radiobutton")$setSensitive(FALSE)
-  rattleWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-  rattleWidget("risk_radiobutton")$setSensitive(FALSE)
-}
-
-activate.rocr.plots <- function()
-{
-  rattleWidget("lift_radiobutton")$setSensitive(TRUE)
-  rattleWidget("roc_radiobutton")$setSensitive(TRUE)
-  rattleWidget("precision_radiobutton")$setSensitive(TRUE)
-  rattleWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-  rattleWidget("risk_radiobutton")$setSensitive(TRUE)
-}
-
 ##----------------------------------------------------------------------
 ##
 ## Execution
@@ -4141,9 +4129,10 @@ executeEvaluateTab <- function()
   
   if (length(setdiff(mtypes, MODELLERS)) > 0)
   {
-    errorDialog("E121: This is a traditional 'You should not be here'",
-                "error message! A model type is not recognised.",
+    errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
+                "Yet, Rattle only knows about:", MODELLERS,
+                "This is a Rattle bug.",
                 "Please report this to Graham.Williams@togaware.com.")
     return()
   }
@@ -4152,8 +4141,12 @@ executeEvaluateTab <- function()
 
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
-    errorDialog("E120: We should not be here. Some model has not been built?",
-                mtypes)
+    errorDialog("E120: Some model has not been built?",
+                "We found the model types to be:", mtypes,
+                "The models not built:",
+                sapply(mtypes, function(x) is.null(crs[[x]])),
+                "This is a Rattle bug.",
+                "Please report this to Graham.Williams@togaware.com.")
     return()
   }
 
@@ -4161,11 +4154,14 @@ executeEvaluateTab <- function()
   ## example, when loading a project and going straight to Evaluate,
   ## and wanting to run predict.svm on new data).
 
+  if (is.element(ADA, mtypes) &&
+      ! packageIsAvailable("ada", "evaluate an adaboost model"))
+    return()
+  if (is.element(KSVM, mtypes) &&
+      ! packageIsAvailable("kernlab", "evaluate this SVM"))
+    return()
   if (is.element(RF, mtypes) &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
-    return()
-  if (is.element(KSVM,mtypes) &&
-      ! packageIsAvailable("kernlab", "evaluate this SVM"))
     return()
   
   ## Identify the data on which evaluation is to be performed.
@@ -4297,12 +4293,12 @@ executeEvaluateTab <- function()
                                        setdiff(levels(crs$dataset[[c]]),
                                                levels(crs$testset[[c]])))
 
-  ## Default command for prediction from any model is predict(model,
-  ## data). Here we tune the predict command to particular types of
-  ## models where they have specific general requirements. We then
-  ## modify the default predict command to generate either a
-  ## prediction of the response or a probability of the class, as
-  ## appropriate to the particular evaluator.
+  ## The default command for prediction from any model is
+  ## predict(model, data). Here we tune the predict command to
+  ## particular types of models where they have specific general
+  ## requirements. We then modify the default predict command to
+  ## generate either a prediction of the response or a probability of
+  ## the class, as appropriate to the particular evaluator.
   ##
   ## PREDICT: crs$pr <<- predict(crs$model, crs$testset[crs$sample, c(...)])
   
@@ -4319,6 +4315,17 @@ executeEvaluateTab <- function()
   respcmd <- list() # Command string for response - class of entities
   probcmd <- list() # Command string for probability
   
+  if (is.element(ADA, mtypes))
+  {
+    testset[[ADA]] <- testset0
+
+    predcmd[[ADA]] <- sprintf("crs$pr <<- predict(crs$ada, %s)",
+                              testset[[ADA]])
+    respcmd[[ADA]] <- predcmd[[ADA]]
+    probcmd[[ADA]] <- sprintf("%s[,2]",
+                              gsub(")$", ', type="prob")', predcmd[[ADA]]))
+  }
+
   if (is.element(RPART, mtypes))
   {
     testset[[RPART]] <- testset0
@@ -4459,18 +4466,18 @@ executeEvaluateTab <- function()
   
   }
     
-  if (is.element(GBM, mtypes))
-  {
-    testset[[GBM]] <- testset0
+##   if (is.element(GBM, mtypes))
+##   {
+##     testset[[GBM]] <- testset0
 
-    ## For GBM the default needs to know the number of trees to include.
+##     ## For GBM the default needs to know the number of trees to include.
 
-    predcmd[[GBM]] <- sprintf(paste("crs$pr <<- predict(crs$gbm, %s,",
-                                    "n.trees=length(crs$gbm$trees))"),
-                              testset[[GBM]])
-    respcmd[[GBM]] <- predcmd[[GBM]]
-    probcmd[[GBM]] <- predcmd[[GBM]]
-  }
+##     predcmd[[GBM]] <- sprintf(paste("crs$pr <<- predict(crs$gbm, %s,",
+##                                     "n.trees=length(crs$gbm$trees))"),
+##                               testset[[GBM]])
+##     respcmd[[GBM]] <- predcmd[[GBM]]
+##     probcmd[[GBM]] <- predcmd[[GBM]]
+##   }
 
   ## Currently (and perhaps permanently) the ROCR package deals only
   ## with binary classification, as does my own Risk Chart.

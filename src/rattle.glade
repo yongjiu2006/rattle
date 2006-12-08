@@ -4375,8 +4375,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_rf_radiobutton_toggled" last_modification_time="Wed, 08 Mar 2006 08:17:30 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">2</property>
-		      <property name="right_attach">3</property>
+		      <property name="left_attach">3</property>
+		      <property name="right_attach">4</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4400,8 +4400,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <signal name="toggled" handler="on_svm_radiobutton_toggled" last_modification_time="Wed, 22 Mar 2006 11:06:16 GMT"/>
 		    </widget>
 		    <packing>
-		      <property name="left_attach">3</property>
-		      <property name="right_attach">4</property>
+		      <property name="left_attach">4</property>
+		      <property name="right_attach">5</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -4423,31 +4423,6 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		      <property name="draw_indicator">True</property>
 		      <property name="group">rpart_radiobutton</property>
 		      <signal name="toggled" handler="on_regression_radiobutton_toggled" last_modification_time="Fri, 10 Mar 2006 03:33:48 GMT"/>
-		    </widget>
-		    <packing>
-		      <property name="left_attach">4</property>
-		      <property name="right_attach">5</property>
-		      <property name="top_attach">0</property>
-		      <property name="bottom_attach">1</property>
-		      <property name="x_options">fill</property>
-		      <property name="y_options"></property>
-		    </packing>
-		  </child>
-
-		  <child>
-		    <widget class="GtkRadioButton" id="boost_radiobutton">
-		      <property name="visible">True</property>
-		      <property name="tooltip" translatable="yes">Boosting builds multiple simple models, combined into an ensemble.</property>
-		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Boosting</property>
-		      <property name="use_underline">True</property>
-		      <property name="relief">GTK_RELIEF_NORMAL</property>
-		      <property name="focus_on_click">True</property>
-		      <property name="active">False</property>
-		      <property name="inconsistent">False</property>
-		      <property name="draw_indicator">True</property>
-		      <property name="group">rpart_radiobutton</property>
-		      <signal name="toggled" handler="on_boost_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:16 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">5</property>
@@ -4522,6 +4497,31 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
 		    <packing>
 		      <property name="left_attach">8</property>
 		      <property name="right_attach">9</property>
+		      <property name="top_attach">0</property>
+		      <property name="bottom_attach">1</property>
+		      <property name="x_options">fill</property>
+		      <property name="y_options"></property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkRadioButton" id="boost_radiobutton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Boosting builds multiple simple models, combined into an ensemble.</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Boosting</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		      <property name="group">rpart_radiobutton</property>
+		      <signal name="toggled" handler="on_boost_radiobutton_toggled" last_modification_time="Fri, 17 Feb 2006 21:20:16 GMT"/>
+		    </widget>
+		    <packing>
+		      <property name="left_attach">2</property>
+		      <property name="right_attach">3</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>
@@ -6233,6 +6233,7 @@ poisson(log)</property>
 
 			  <child>
 			    <widget class="GtkLabel" id="label140">
+			      <property name="visible">True</property>
 			      <property name="sensitive">False</property>
 			      <property name="label" translatable="yes">Priors:</property>
 			      <property name="use_underline">False</property>
@@ -6553,7 +6554,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="label146">
+			    <widget class="GtkLabel" id="ada_target_label">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">No target selected</property>
 			      <property name="use_underline">False</property>
@@ -6674,7 +6675,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTextView" id="textview2">
+			    <widget class="GtkTextView" id="ada_textview">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="editable">False</property>
@@ -6707,7 +6708,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="ada_target_label">
+		    <widget class="GtkLabel" id="ada_tab_label">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">ada</property>
 		      <property name="use_underline">False</property>
@@ -7076,7 +7077,7 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 		  </child>
 
 		  <child>
-		    <widget class="GtkCheckButton" id="gbm_evaluate_checkbutton">
+		    <widget class="GtkCheckButton" id="ada_evaluate_checkbutton">
 		      <property name="visible">True</property>
 		      <property name="sensitive">False</property>
 		      <property name="can_focus">True</property>
