@@ -33,6 +33,6 @@ rattle()
 }
 \examples{
 ## simply issue the command to run the GUI
-rattle()
+\dontrun{rattle()}
 }
 \keyword{environment}
