@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 12:59:26 Graham>
+## Time-stamp: <2006-12-08 20:11:00 Graham>
 ##
 ## RPART TAB
 ##
@@ -90,6 +90,32 @@ on_rpart_plot_button_clicked <- function(button)
   ## eval(parse(text=plotcp.command))
 
   setStatusBar("Decision tree has been plotted.")
+}
+
+on_rpart_rules_button_clicked <- function(button)
+{
+  ## Initial setup 
+
+  TV <- "rpart_textview"
+
+  ## Make sure there is an rpart object first.
+
+  if (is.null(crs$rpart))
+  {
+    errorDialog("E130: There is no rpart model yet.",
+                "This is a Rattle bug. Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  rules.cmd <- "list.rules.rpart(crs$rpart)"
+  addToLog("List the rules from the tree using a Rattle support function.",
+          rules.cmd)
+  addTextview(TV, "Tree as rules:\n\n", collectOutput(rules.cmd, TRUE),
+              textviewSeparator())
+         
+  setStatusBar(paste("The corresponding rules have been listed.",
+                     "You may need to scroll the textview to see them."))
 }
 
 ########################################################################
@@ -261,7 +287,6 @@ executeModelRPart <- function()
                      ")", sep="")
 
   print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
-  listrules.cmd <- "list.rules.rpart(crs$rpart)"
                              
   ## Load the required library.
 
@@ -289,22 +314,18 @@ executeModelRPart <- function()
   ## Display the resulting model.
 
   addToLog("Generate textual output of the rpart model.", print.cmd)
-  addToLog("List the rules from the tree using a Rattle support function.",
-          listrules.cmd)
-          
+
   clearTextview(TV)
   setTextview(TV,
               "Summary of the rpart model:\n\n",
-              collectOutput(print.cmd),
-              textviewSeparator(),
-              "Tree as rules:\n\n",
-              collectOutput(listrules.cmd, TRUE))
+              collectOutput(print.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, RPART)
 
   ## Now that we have a model, make sure the plot button is sensitive.
   
   rattleWidget("rpart_plot_button")$setSensitive(TRUE)
+  rattleWidget("rpart_rules_button")$setSensitive(TRUE)
 
   ## Finish up.
   
