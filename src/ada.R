@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 13:01:56 Graham>
+## Time-stamp: <2006-12-09 12:38:03 Graham>
 ##
 ## ADA TAB
 ##
@@ -100,7 +100,7 @@ executeModelADA <- function()
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
-  setStatusBar("An adaboost model has been generated.")
+  setStatusBar("An adaboost model has been generated.", time.msg)
   return(TRUE)
 }
 

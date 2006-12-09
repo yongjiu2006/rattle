@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 20:11:00 Graham>
+## Time-stamp: <2006-12-09 13:01:22 Graham>
 ##
 ## RPART TAB
 ##
@@ -333,7 +333,7 @@ executeModelRPart <- function()
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
-  setStatusBar("An rpart model has been generated.")
+  setStatusBar("An rpart model has been generated.", time.msg)
   return(TRUE)
 }
 
@@ -413,9 +413,6 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
                            decimals = 2,
                            print.levels = TRUE, new = TRUE) 
 {
-  #if (!packageIsAvailable("maptree", "draw a decision tree"))
-  #  return
-  #require(maptree)
   if (new) 
     plot.new()
   rtree <- length(attr(tree, "ylevels")) == 0

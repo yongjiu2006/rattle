@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 23:53:08 Graham>
+## Time-stamp: <2006-12-09 12:39:27 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -202,7 +202,7 @@ executeModelRF <- function()
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
-  setStatusBar("A randomForest model has been generated.")
+  setStatusBar("A randomForest model has been generated.", time.msg)
   return(TRUE)
 }
 
