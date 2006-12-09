@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 17:55:50 Graham>
+## Time-stamp: <2006-12-09 12:40:53 Graham>
 ##
 ## MODEL TAB
 ##
@@ -302,7 +302,7 @@ executeModelGLM <- function()
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
-  setStatusBar("A glm model has been generated.")
+  setStatusBar("A glm model has been generated.", time.msg)
   return(TRUE)
 }
 
@@ -436,7 +436,7 @@ executeModelSVM <- function()
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",
-                       ifelse(useKernlab, KSVM, SVM)))
+                       ifelse(useKernlab, KSVM, SVM)), time.msg)
   return(TRUE)
 }
 

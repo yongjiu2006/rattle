@@ -6,9 +6,9 @@ Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.2.0)
-Suggests: RGtk2, ada, bitops, combinat, ellipse, fBasics, fpc, gplots,
-  gregmisc, Hmisc, kernlab, maptree, network, randomForest, RODBC, ROCR, 
-  rpart, XML
+Suggests: RGtk2, ada, arules, bitops, cba, combinat, doBy,
+  ellipse, fBasics, fCalebdar, fEcofin, fpc, gdata, gtools, gplots, Hmisc, 
+  kernlab, MASS, network, randomForest, rggobi, ROCR, RODBC, rpart, XML
 Description: Rattle provides a Gnome (RGtk2) based interface to
   R functionality for data mining. The aim is to provide
   a simple and intuitive interface that allows a user to quickly 

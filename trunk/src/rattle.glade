@@ -170,7 +170,7 @@
 		      <accelerator key="F5" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image208">
+			<widget class="GtkImage" id="image216">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -197,7 +197,7 @@
 		      <property name="use_underline">True</property>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image209">
+			<widget class="GtkImage" id="image217">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-print</property>
 			  <property name="icon_size">1</property>
@@ -219,7 +219,7 @@
 		      <signal name="activate" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 18:19:08 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image210">
+			<widget class="GtkImage" id="image218">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -246,7 +246,7 @@
 		      <signal name="activate" handler="on_tools_data_activate" last_modification_time="Fri, 13 Oct 2006 09:18:41 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image211">
+			<widget class="GtkImage" id="image219">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-file</property>
 			  <property name="icon_size">1</property>
@@ -576,6 +576,15 @@
 			  </child>
 
 			  <child>
+			    <widget class="GtkMenuItem" id="boosting1">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">Boosting</property>
+			      <property name="use_underline">True</property>
+			      <signal name="activate" handler="on_help_ada_activate" last_modification_time="Sat, 09 Dec 2006 03:51:00 GMT"/>
+			    </widget>
+			  </child>
+
+			  <child>
 			    <widget class="GtkMenuItem" id="random_forest1">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">Random Forest</property>
@@ -599,15 +608,6 @@
 			      <property name="label" translatable="yes">Regression</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_glm_activate" last_modification_time="Tue, 14 Mar 2006 19:50:36 GMT"/>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="boosting1">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Boosting</property>
-			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_help_gbm_activate" last_modification_time="Tue, 14 Mar 2006 19:53:10 GMT"/>
 			    </widget>
 			  </child>
 			</widget>
@@ -674,7 +674,7 @@
 	      <signal name="activate" handler="on_rattle_menu_activate" last_modification_time="Sat, 11 Nov 2006 21:37:00 GMT"/>
 
 	      <child internal-child="image">
-		<widget class="GtkImage" id="image212">
+		<widget class="GtkImage" id="image220">
 		  <property name="visible">True</property>
 		  <property name="stock">gtk-info</property>
 		  <property name="icon_size">1</property>
@@ -3201,7 +3201,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 
 GGobi provides highly dynamic and interactive graphics such as tours, as well as familiar graphics such as the scatterplot, barchart and parallel coordinates plots. Plots are interactive and linked with brushing and identification.
 
-CLick the Execute button (or F5) to run GGobi.</property>
+Click the Execute button (or F5) to run GGobi.</property>
 			</widget>
 			<packing>
 			  <property name="tab_expand">False</property>
@@ -7084,6 +7084,26 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 		  </child>
 
 		  <child>
+		    <widget class="GtkCheckButton" id="ada_evaluate_checkbutton">
+		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Boosting</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
 		    <widget class="GtkCheckButton" id="rf_evaluate_checkbutton">
 		      <property name="visible">True</property>
 		      <property name="sensitive">False</property>
@@ -7129,26 +7149,6 @@ RPart will use the loss matrix to alter the priors which will affect the choice 
 		      <property name="sensitive">False</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Regression</property>
-		      <property name="use_underline">True</property>
-		      <property name="relief">GTK_RELIEF_NORMAL</property>
-		      <property name="focus_on_click">True</property>
-		      <property name="active">False</property>
-		      <property name="inconsistent">False</property>
-		      <property name="draw_indicator">True</property>
-		    </widget>
-		    <packing>
-		      <property name="padding">0</property>
-		      <property name="expand">False</property>
-		      <property name="fill">False</property>
-		    </packing>
-		  </child>
-
-		  <child>
-		    <widget class="GtkCheckButton" id="ada_evaluate_checkbutton">
-		      <property name="visible">True</property>
-		      <property name="sensitive">False</property>
-		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Boosting</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>

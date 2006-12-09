@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 09:41:20 Graham Williams>
+## Time-stamp: <2006-12-09 13:10:57 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -258,7 +258,7 @@ executeClusterHClust <- function(include)
   ## TODO : If data is large put up a question about wanting to
   ## continue?
   
-  library.cmd <- "require(cba, quietly=TRUE)"
+  lib.cmd <- "require(cba, quietly=TRUE)"
 
   sampling  <- ! is.null(crs$sample)
 

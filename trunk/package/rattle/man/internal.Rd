@@ -47,7 +47,7 @@
 \alias{on_help_confusion_table_activate}
 \alias{on_help_correlation_activate}
 \alias{on_help_csv_activate}
-\alias{on_help_gbm_activate}
+\alias{on_help_ada_activate}
 \alias{on_help_general_activate}
 \alias{on_help_glm_activate}
 \alias{on_help_hierarchical_correlation_activate}
