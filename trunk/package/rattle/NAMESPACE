@@ -1,9 +1,11 @@
 export(
        calcInitialDigitDistr,
        calculateAUC,
+       drawAdaTrees,
        drawTreeNodes,
        evaluateRisk,
        genPlotTitleCmd,
+       listAdaTrees,
        plotBenfordsLaw,
        plotNetwork,
        plotOptimalLine,

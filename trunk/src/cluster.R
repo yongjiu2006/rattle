@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-09 13:10:57 Graham>
+## Time-stamp: <2006-12-22 13:08:14 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -113,7 +113,8 @@ executeClusterKMeans <- function(include)
   rattleWidget("kmeans_stats_button")$setSensitive(TRUE)
   rattleWidget("kmeans_plot_button")$setSensitive(TRUE)
   
-  setStatusBar("K Means cluster has been generated.")
+  setStatusBar("K Means cluster has been generated.",
+               "You may need to scroll the textview to see them." )
   
 }
 
@@ -408,7 +409,7 @@ on_hclust_plot_button_clicked <- function(button)
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E128 Should not be here. Please report to",
+    errorDialog("E128: Should not be here. Please report to",
                 "Graham.Williams@togaware.com")
     return()
   }

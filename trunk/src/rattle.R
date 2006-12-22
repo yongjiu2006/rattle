@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-09 14:51:20 Graham>
+## Time-stamp: <2006-12-22 17:43:23 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -176,6 +176,8 @@ rattle <- function()
   RPART.MINSPLIT.DEFAULT  <<- 20
   RPART.MINBUCKET.DEFAULT <<- 7
   RPART.MAXDEPTH.DEFAULT  <<- 30
+
+  ADA.NTREE.DEFAULT   <<- 50
   
   RF.NTREE.DEFAULT    <<- 500
   RF.MTRY.DEFAULT     <<- 10
@@ -1213,12 +1215,19 @@ executeDataCSV <- function()
   else
     sep <- ""
 
+  ## Check whether we expect a header or not.
+
+  if (rattleWidget("csv_header_checkbutton")$getActive())
+    hdr <- ""
+  else
+    hdr <- ", header=FALSE"
+  
   nastring <- ', na.strings=c(".", "NA")'
   
   ## Generate commands to read the data and then display the structure.
 
-  read.cmd <- sprintf('crs$dataset <<- read.csv("%s"%s%s)',
-                      filename, sep, nastring)
+  read.cmd <- sprintf('crs$dataset <<- read.csv("%s"%s%s%s)',
+                      filename, hdr, sep, nastring)
   str.cmd  <- "str(crs$dataset)"
   
   ## Start logging and executing the R code.

@@ -1,3 +1,11 @@
+Fix "save" to not expose use of getSelectedVariables
+Implement nnet (Yale)
+Implement knn (Yale)
+Score SVM fails with NAs
+Score Regression failes with NAs
+Save all scores in one file
+
+
 ========================================================================
 Description: 
 Proposer: 
