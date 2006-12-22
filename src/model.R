@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-09 12:40:53 Graham>
+## Time-stamp: <2006-12-22 17:36:35 Graham>
 ##
 ## MODEL TAB
 ##
@@ -197,7 +197,7 @@ executeModelTab <- function()
     
     if (executeModelRPart())
       rattleWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-    if (executeModelADA())
+    if (executeModelAda())
       rattleWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
     if (executeModelRF())
       rattleWidget("rf_evaluate_checkbutton")$setActive(TRUE)
@@ -217,7 +217,7 @@ executeModelTab <- function()
   ## else if (currentModelTab() == GBM)
   ##  executeModelGBM()
   else if (currentModelTab() == ADA)
-    executeModelADA()
+    executeModelAda()
   else if (currentModelTab() == RF)
     executeModelRF()
   else if (is.element(currentModelTab(), c(SVM, KSVM)))

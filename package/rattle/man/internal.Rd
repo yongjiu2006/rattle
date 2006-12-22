@@ -1,4 +1,8 @@
 \name{rattle_gui}
+\alias{on_ada_draw_button_clicked}
+\alias{on_ada_errors_button_clicked}
+\alias{on_ada_list_button_clicked}
+\alias{on_ada_importance_button_clicked}
 \alias{on_rf_print_tree_button_clicked}
 \alias{on_rpart_rules_button_clicked}
 \alias{on_rattle_menu_activate}
