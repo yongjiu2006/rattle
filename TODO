@@ -1,4 +1,4 @@
-Fix "save" to not expose use of getSelectedVariables
+Implement bagged boosted stumps
 Implement nnet (Yale)
 Implement knn (Yale)
 Score SVM fails with NAs
@@ -98,10 +98,7 @@ in the one plot. Need to determine which ones would be useful.
 
 OLD
 
-Rename Sample tab to Transform? Sampling is a kind of
-transformation. Or perhaps call it Process? Add in Marco's
-Transform/Cut/Factorise code?
-
+Implement Marco's Transform/Cut/Factorise code?
 Export on the Data Tab should save to a CSV file.
 
 IMPUTATION
@@ -139,7 +136,7 @@ TODO
 
   General:
     Export each model to PMML, SQL, and standalone R script.
-    Add a parameter to rattle to load the csv file.
+    Add an argument to rattle to load the csv file.
     Add a button to run an R script? (Tony Nolan)
     Add R commands to status line as they are run (Tony Nolan)
     Use rgl for sophisticated graphics?
@@ -186,35 +183,16 @@ Memory
 
 ========================================================================
 
-NO LONGER UNDER CONSIDERATION
-
-RODBC
-	How best to use RODBC (to MySQL) to properly manage data?
-	How would all this be different if all data was stored in MySQL or DWH?
-	Or do we handle memory better ourselves by splitting files somewhow?
-
-========================================================================
-
-UNSORTED
-
-
-##   On load in library, startup the GUI unless some option is set.
-##   Rewrite based on example code from Rcmdr as in QCUGUI
-##   Identify where Warnings occur and use suppressWarnings(code...)
-##   Replace Distributions Button with Radio - make it first/default
-##     When execute, for each categorical, if num levels differ, report in TV
-##   "New" button to set CRS to zero and clear all textviews and options.
-##   Automatically identify bad boxplots (outliers) and do log)
-##   For boxplot add a selection box to choose variables to plot.
-##   Boxplot fails if not numeric data.
-##   Graphs to compare distributions of the same variables between datasets 
-##   Release on CTAN and write article for Newsletter
-##
-##   prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
-##   Choice of Kernel for SVMs. 
-##   For each textview, add initial text to explain the point (c.f. prcomp)
-##
-##   Variables: Impute NA as 0, Mean, or KNN (Michael)
+Rewrite based on example code from Rcmdr as in QCUGUI
+Identify where Warnings occur and use suppressWarnings(code...)
+When execute, for each categorical, if num levels differ, report in TV
+Automatically identify bad boxplots (outliers) and do log.
+Graphs to compare distributions of the same variables between datasets 
+Write article for Newsletter
+prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
+Choice of Kernel for SVMs. 
+For each textview, add initial text to explain the point (c.f. prcomp)
+Variables: Impute NA as 0, Mean, or KNN (Michael)
 ##   Mosaic plots (Rohan)
 ##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
 ##   Add t/z test and chi2 test in explore tab (Tony)
