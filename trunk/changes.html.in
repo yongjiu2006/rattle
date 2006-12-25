@@ -6,10 +6,12 @@
     changes on each release. </p>
 
 <pre>
-103 Ada options implemented.
-102 
-101 
-100 
+105 Bug fix.
+104 Add missing manual pages.
+103 Ada options implemented. Support CSV without headers.
+102 Add timestamps to modelling. Make Ada second modeller.
+101 Add AdaBoost from the ada package (Suggested by Rohan Baxter)
+100 Documentation updates.
 99 RF can now display selected trees.
 98 RPart shows rules on request. (Rules button)
 97 Ada is now used for boosting.  (Suggested by Rohan Baxter)

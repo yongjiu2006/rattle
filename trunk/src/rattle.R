@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-22 17:43:23 Graham>
+## Time-stamp: <2006-12-23 22:08:29 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -5497,8 +5497,10 @@ executeEvaluateScore <- function(predcmd, testset, testname)
     {
       scoreset = gsub(",.*]", ",]", scoreset)
     }
-    scoreset <- sprintf('subset(%s, select=getSelectedVariables("ident"))',
-                        scoreset)
+    scoreset <- sprintf('subset(%s, select=c(%s))',
+                        scoreset,
+                        ifelse(is.null(idents), "", 
+                               sprintf('"%s"', paste(idents, collapse='", "'))))
 
     addToLog("Extract the corresponding identifier fields from the dataset.",
              sprintf("scores <- %s", scoreset))
