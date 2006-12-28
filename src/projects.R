@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-08 23:39:02 Graham>
+## Time-stamp: <2006-12-28 21:29:44 Graham>
 ##
 ## Project functionality.
 ##
@@ -121,19 +121,19 @@ saveProject <- function()
   
   ## Save Model options
 
-  crs$rpart$priors <<- rattleWidget("rpart_priors_entry")$getText()
-  crs$rpart$loss   <<- rattleWidget("rpart_loss_entry")$getText()
-  crs$rpart$split  <<- rattleWidget("rpart_minsplit_spinbutton")$getValue()
-  crs$rpart$depth  <<- rattleWidget("rpart_maxdepth_spinbutton")$getValue()
-  crs$rpart$cp     <<- rattleWidget("rpart_cp_spinbutton")$getValue()
-  crs$rpart$bucket <<- rattleWidget("rpart_minbucket_spinbutton")$getValue()
+  crs$rpart.opt$priors <<- rattleWidget("rpart_priors_entry")$getText()
+  crs$rpart.opt$loss   <<- rattleWidget("rpart_loss_entry")$getText()
+  crs$rpart.opt$split  <<- rattleWidget("rpart_minsplit_spinbutton")$getValue()
+  crs$rpart.opt$depth  <<- rattleWidget("rpart_maxdepth_spinbutton")$getValue()
+  crs$rpart.opt$cp     <<- rattleWidget("rpart_cp_spinbutton")$getValue()
+  crs$rpart.opt$bucket <<- rattleWidget("rpart_minbucket_spinbutton")$getValue()
 
-  crs$rf$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
-  crs$rf$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
-  crs$rf$sample    <<- rattleWidget("rf_sampsize_entry")$getText()
-  crs$rf$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
+  crs$rf.opt$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
+  crs$rf.opt$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
+  crs$rf.opt$sample    <<- rattleWidget("rf_sampsize_entry")$getText()
+  crs$rf.opt$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
 
-  crs$glm$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
+  crs$glm.opt$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
   
   save(crs, file=save.name, compress=TRUE)
   setDefaultPath(save.name)
@@ -294,33 +294,33 @@ loadProject <- function()
   crs$gbm      <<- crs$gbm
   setTextviewContents("gbm_textview", crs$text$gbm)
 
-  if (! is.null(crs$rpart$priors))
-    rattleWidget("rpart_priors_entry")$setText(crs$rpart$priors)
-  if (! is.null(crs$rpart$loss))
-    rattleWidget("rpart_loss_entry")$setText(crs$rpart$loss)
-  if (! is.null(crs$rpart$split))
-    rattleWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart$split)
-  if (! is.null(crs$rpart$depth))
-    rattleWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart$depth)
-  if (! is.null(crs$rpart$cp))
-    rattleWidget("rpart_cp_spinbutton")$setValue(crs$rpart$cp)
-  if (! is.null(crs$rpart$bucket))
-    rattleWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart$bucket)
+  if (! is.null(crs$rpart.opt$priors))
+    rattleWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
+  if (! is.null(crs$rpart.opt$loss))
+    rattleWidget("rpart_loss_entry")$setText(crs$rpart.opt$loss)
+  if (! is.null(crs$rpart.opt$split))
+    rattleWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart.opt$split)
+  if (! is.null(crs$rpart.opt$depth))
+    rattleWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart.opt$depth)
+  if (! is.null(crs$rpart.opt$cp))
+    rattleWidget("rpart_cp_spinbutton")$setValue(crs$rpart.opt$cp)
+  if (! is.null(crs$rpart.opt$bucket))
+    rattleWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
 
-  if (! is.null(crs$rf$trees))
-    rattleWidget("rf_ntree_spinbutton")$setValue(crs$rf$trees)
-  if (! is.null(crs$rf$vars))
-    rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf$vars)
-  if (! is.null(crs$rf$sample))
-    rattleWidget("rf_sampsize_entry")$setText(crs$rf$sample)
-  if (! is.null(crs$rf$proximity))
-    rattleWidget("rf_proximity_checkbutton")$setActive(crs$rf$proximity)
+  if (! is.null(crs$rf.opt$trees))
+    rattleWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
+  if (! is.null(crs$rf.opt$vars))
+    rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf.opt$vars)
+  if (! is.null(crs$rf.opt$sample))
+    rattleWidget("rf_sampsize_entry")$setText(crs$rf.opt$sample)
+  if (! is.null(crs$rf.opt$proximity))
+    rattleWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
 
   if (! is.null(crs$svm))
     rattleWidget("e1071_radiobutton")$setActive(TRUE)
 
-  if (! is.null(crs$glm$family))
-    rattleWidget("glm_family_comboboxentry")$setActive(crs$glm$family)
+  if (! is.null(crs$glm.opt$family))
+    rattleWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
 
   ## EVALUATE
 
