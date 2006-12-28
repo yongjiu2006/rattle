@@ -6,7 +6,9 @@
     changes on each release. </p>
 
 <pre>
-105 Bug fix.
+107 Save any ada model along with the project!
+106 Bug fix project saving where crs$rpart fields were being overwritten.
+105 Bug fix to not expose use of getSelectedVariables.
 104 Add missing manual pages.
 103 Ada options implemented. Support CSV without headers.
 102 Add timestamps to modelling. Make Ada second modeller.
@@ -149,6 +151,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Nov 20 19:45:54 EST 2006
+Last modified: Thu Dec 28 22:25:25 EST 2006
 <!-- hhmts end -->
   </p>
