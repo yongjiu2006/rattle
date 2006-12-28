@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-28 21:29:44 Graham>
+## Time-stamp: <2006-12-28 22:23:10 Graham>
 ##
 ## Project functionality.
 ##
@@ -100,7 +100,8 @@ saveProject <- function()
   crs$text$esvm <<-  getTextviewContent("esvm_textview")
   crs$text$ksvm <<-  getTextviewContent("ksvm_textview")
   crs$text$glm <<-  getTextviewContent("glm_textview")
-  crs$text$gbm <<-  getTextviewContent("gbm_textview")
+  crs$text$ada <<-  getTextviewContent("ada_textview")
+  #crs$text$gbm <<-  getTextviewContent("gbm_textview")
   crs$text$risk <<- getTextviewContent("risk_textview")
   crs$text$roc <<- getTextviewContent("roc_textview")
   crs$text$log <<- getTextviewContent("log_textview")
@@ -134,8 +135,10 @@ saveProject <- function()
   crs$rf.opt$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
 
   crs$glm.opt$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
-  
+
+  set.cursor("watch")
   save(crs, file=save.name, compress=TRUE)
+  set.cursor()
   setDefaultPath(save.name)
   
   setStatusBar("The current project has been saved to", save.name)
@@ -291,8 +294,10 @@ loadProject <- function()
   setTextviewContents("ksvm_textview", crs$text$ksvm)
   crs$glm      <<- crs$glm
   setTextviewContents("glm_textview", crs$text$glm)
-  crs$gbm      <<- crs$gbm
-  setTextviewContents("gbm_textview", crs$text$gbm)
+  crs$ada      <<- crs$ada
+  setTextviewContents("ada_textview", crs$text$ada)
+  #REMOVE crs$gbm      <<- crs$gbm
+  #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
   if (! is.null(crs$rpart.opt$priors))
     rattleWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
