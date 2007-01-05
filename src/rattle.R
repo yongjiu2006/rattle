@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-28 22:14:46 Graham>
+## Time-stamp: <2007-01-06 08:33:07 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -162,13 +162,14 @@ rattle <- function()
 
   GLM   <<- "glm"
   RPART <<- "rpart"
-  ## GBM   <<- "gbm"
+  ##GBM <<- "gbm"
   ADA   <<- "ada"
   RF    <<- "rf"
   SVM   <<- "svm"
   KSVM  <<- "ksvm"
+  NNET  <<- "nnet"
 
-  MODELLERS <<- c(RPART, ADA, RF, KSVM, GLM)
+  MODELLERS <<- c(RPART, ADA, RF, KSVM, GLM, NNET)
   
   ## RPART
   
@@ -291,6 +292,7 @@ rattle <- function()
   ## MODEL.GBM.TAB   <<- getNotebookPage(MODEL, GBM)
   MODEL.RF.TAB    <<- getNotebookPage(MODEL, RF)
   MODEL.SVM.TAB   <<- getNotebookPage(MODEL, SVM)
+  MODEL.NNET.TAB   <<- getNotebookPage(MODEL, NNET)
 
   SVMNB           <<- rattleWidget("svm_notebook")
   SVMNB.ESVM.TAB  <<- getNotebookPage(SVMNB, "esvm")
@@ -4166,7 +4168,10 @@ executeEvaluateTab <- function()
   if (is.element(RF, mtypes) &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
     return()
-  
+  if (is.element(NNET, mtypes) &&
+      ! packageIsAvailable("nnet", "evaluate a neural network model"))
+    return()
+
   ## Identify the data on which evaluation is to be performed.
 
   testset0 <- "crs$dataset"
@@ -4328,6 +4333,17 @@ executeEvaluateTab <- function()
     probcmd[[ADA]] <- sprintf("%s[,2]",
                               gsub(")$", ', type="prob")', predcmd[[ADA]]))
   }
+
+##   if (is.element(NNET, mtypes))
+##   {
+##     testset[[NNET]] <- testset0
+
+##     predcmd[[NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
+##                               testset[[NNET]])
+##     respcmd[[NNET]] <- predcmd[[NNET]]
+##     probcmd[[NNET]] <- sprintf("%s[,2]",
+##                               gsub(")$", ', type="class")', predcmd[[NNET]]))
+##   }
 
   if (is.element(RPART, mtypes))
   {
@@ -5430,12 +5446,11 @@ executeEvaluateScore <- function(predcmd, testset, testname)
   ## Now process each model separately, at least for now. TODO,
   ## collect the outputs and then wrtie them all at once.
   
-  
   for (mtype in getEvaluateModels())
   {
 
-    addToLog(sprintf("Save the probability scores to file for the %s model on %s.",
-                     mtype, testname),
+    addToLog(sprintf("%s: Save probability scores to file for %s model on %s.",
+                     toupper(mtype), mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]))
 
     result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
@@ -5487,21 +5502,61 @@ executeEvaluateScore <- function(predcmd, testset, testname)
     ## Want
     ##    subset(crs$dataset[-crs$sample,], select=Idents) + crs$pr
     ##
-    
+
     scoreset <- testset[[mtype]]
 
     ## If no comma in scoreset, leave as is, else find first comma,
-    ## remove everything after, and replace with "]"
+    ## remove everything after, and replace with "]". PROBLEM TODO If
+    ## the testset[[MODEL]] includes na.omit, we need to do something
+    ## different because after the following step of replacing the
+    ## column list with nothing, it is very likely that new columns
+    ## are included that have NAs, and hence the na.omit will remove
+    ## even more rows for the subset command than it does for the
+    ## predict command. Yet we still want to ensure we have all the
+    ## appropriate columns available. So use
+    ## na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action to
+    ## remove the rows from crs$dataset[-crs$sample,] that have
+    ## missing values with regard the columns c(2:4,6:10,13). Thus if
+    ## we have scoreset as:
+    ##
+    ##  na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])
+    ##
+    ## we want to:
+    ##
+    ##  omitted <- na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action
+    ##
+    ## and then scoreset should become:
+    ##
+    ##  crs$dataset[-crs$sample,][-omitted,]
 
-    if (length(grep(",", scoreset)) > 0)
+    ## First deal with the na.omit case, to capture the list of rows
+    ## omitted.
+    
+    if (substr(scoreset, 1, 7) == "na.omit")
     {
-      scoreset = gsub(",.*]", ",]", scoreset)
+      omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
+      addToLog("Record rows omitted from predict command.", omit.cmd)
+      eval(parse(text=omit.cmd))
     }
+    else
+      omitted <- NULL
+
+    ## Now clean out the column subsets.
+    
+    if (length(grep(",", scoreset)) > 0)
+      scoreset = gsub(",.*]", ",]", scoreset)
+
+    ## And finally, remove the na.omit if there is one, replacing it
+    ## with specifically removing just the rows that were removed in
+    ## the predict command.
+
+    if (! is.null(omitted))
+      scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
+    
     scoreset <- sprintf('subset(%s, select=c(%s))',
                         scoreset,
                         ifelse(is.null(idents), "", 
                                sprintf('"%s"', paste(idents, collapse='", "'))))
-
     addToLog("Extract the corresponding identifier fields from the dataset.",
              sprintf("scores <- %s", scoreset))
     

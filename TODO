@@ -1,19 +1,23 @@
 Implement bagged boosted stumps
-Implement nnet (Yale)
 Implement knn (Yale)
-Score SVM fails with NAs
-Score Regression failes with NAs
 Save all scores in one file
 
-
 ========================================================================
-Description: 
+Description: Implement nnet (Yale)
 Proposer: 
 DateProposed: 
 Status: 
 Effort: 
 Required: 
 Completed: 
+
+061230 This is not so satraightforward. I want this for two class
+prediction, so need a framework for building a model and then
+generating the predictions.  Currently the following is not quite
+it....
+
+crs$nnet <- nnet(as.factor(Adjusted) ~ ., data=......, size=1, na.action=na.omit)predict(crs$nnet, crs$dataset[crs$sample,c(1:6,9,12)], type="class")
+
 
 ========================================================================
 Description: Optionally add cluster statistics.
@@ -36,23 +40,6 @@ Currently to do - in hclust, enable the number of clusters and the
 statstics and discriminant plot. Whenever the number of clusters
 changes, update the internal crs variable to record this. And the
 buttons then work from this??? Perhaps.
-
-========================================================================
-Description: Move to using buttons, not check buttons
-Proposer: Graham Williams
-DateProposed: 21 Oct 2006
-Status: Done for rpart. Do for rf, svm, glm, and gbm.
-Effort: 2 hours
-Required: 
-Completed: 
-
-In the model tabs use buttons to invoke plots and additional stats, as
-in the kmeans tab. Thus replacing some checkbuttons.
-
-This has been done for rpart. Let's see how users react. 
-
-For RF the VarImp plot will have a button.
-
 
 ========================================================================
 Decsription: Improve hclust options

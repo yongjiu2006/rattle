@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-22 17:36:35 Graham>
+## Time-stamp: <2007-01-06 08:32:25 Graham>
 ##
 ## MODEL TAB
 ##
@@ -39,6 +39,16 @@ on_boost_radiobutton_toggled <- function(button)
   {
     ## MODEL$setCurrentPage(MODEL.GBM.TAB)
     MODEL$setCurrentPage(MODEL.ADA.TAB)
+    setTextview("confusion_textview")
+  }
+  setStatusBar()
+}
+
+on_nnet_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    MODEL$setCurrentPage(MODEL.NNET.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -205,8 +215,10 @@ executeModelTab <- function()
       rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelGLM())
       rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-    ##if (executeModelGBM())
-    ##  rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+##     if (executeModelGBM())
+##       rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+##     if (executeModelNNet())
+##       rattleWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
 
     setStatusBar("All models have been generated.")
   }
@@ -214,14 +226,16 @@ executeModelTab <- function()
     executeModelGLM()
   else if (currentModelTab() == RPART)
     executeModelRPart()
-  ## else if (currentModelTab() == GBM)
-  ##  executeModelGBM()
+##   else if (currentModelTab() == GBM)
+##     executeModelGBM()
   else if (currentModelTab() == ADA)
     executeModelAda()
   else if (currentModelTab() == RF)
     executeModelRF()
   else if (is.element(currentModelTab(), c(SVM, KSVM)))
     executeModelSVM()
+##   else if (currentModelTab() == NNET)
+##     executeModelNNet()
 }
 
 ##----------------------------------------------------------------------

@@ -6,6 +6,7 @@
     changes on each release. </p>
 
 <pre>
+108 Initial nnet framework. Expose load/save commands. Bug fixes.
 107 Save any ada model along with the project!
 106 Bug fix project saving where crs$rpart fields were being overwritten.
 105 Bug fix to not expose use of getSelectedVariables.
@@ -151,6 +152,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Thu Dec 28 22:25:25 EST 2006
+Last modified: Sat Jan  6 09:11:42 EST 2007
 <!-- hhmts end -->
   </p>
