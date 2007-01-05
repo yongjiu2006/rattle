@@ -1,8 +1,8 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-23 09:47:18 Graham>
+## Time-stamp: <2006-12-30 11:39:50 Graham>
 ##
-## ADA TAB
+## ADA TAB 061215
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 

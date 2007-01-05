@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-28 22:23:10 Graham>
+## Time-stamp: <2006-12-30 09:08:10 Graham>
 ##
 ## Project functionality.
 ##
@@ -137,6 +137,9 @@ saveProject <- function()
   crs$glm.opt$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
+  addLogSeparator()
+  addToLog("Saved the project data (variable crs) to file.",
+           sprintf('save(crs, file="%s", compress=TRUE)', save.name))
   save(crs, file=save.name, compress=TRUE)
   set.cursor()
   setDefaultPath(save.name)
@@ -280,22 +283,34 @@ loadProject <- function()
 
   crs$hclust   <<- crs$hclust
 
-  ## MODELS
+  ## MODELS - Ensure libraries are loaded.
 
   crs$page     <<- crs$page
   crs$smodel   <<- crs$smodel
+
   crs$rpart    <<- crs$rpart
   setTextviewContents("rpart_textview", crs$text$rpart)
+  if (! is.null(crs$rpart)) require(rpart, quietly=TRUE)
+  
   crs$rf       <<- crs$rf
   setTextviewContents("rf_textview", crs$text$rf)
+  if (! is.null(crs$rf)) require(randomForest, quietly=TRUE)
+
   crs$svm      <<- crs$svm
   setTextviewContents("esvm_textview", crs$text$esvm)
+  if (! is.null(crs$svm)) require(e1071, quietly=TRUE)
+
   crs$ksvm     <<- crs$ksvm
   setTextviewContents("ksvm_textview", crs$text$ksvm)
+  if (! is.null(crs$ksvm)) require(kernlab, quietly=TRUE)
+
   crs$glm      <<- crs$glm
   setTextviewContents("glm_textview", crs$text$glm)
+
   crs$ada      <<- crs$ada
   setTextviewContents("ada_textview", crs$text$ada)
+  if (! is.null(crs$ada)) require(ada, quietly=TRUE)
+
   #REMOVE crs$gbm      <<- crs$gbm
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
@@ -342,10 +357,10 @@ loadProject <- function()
   ## LOG
   
   setTextviewContents("log_textview", crs$text$log)
-  addLogSeparator(paste("Reloaded the project from", load.name))
-
+  addLogSeparator()
+  addToLog("Reloaded the project data (variable crs) from file.",
+           sprintf('load("%s")', load.name))
   set.cursor()
-  
   setStatusBar("Project loaded from", load.name)
 
 }
