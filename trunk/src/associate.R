@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 22:04:32 Graham Williams>
+## Time-stamp: <2007-01-06 19:34:43 Graham>
 ##
 ## Implement associations functionality.
 ##
@@ -62,15 +62,47 @@ executeAssociateTab <- function()
   ## Check if sampling needs executing.
 
   if (sampleNeedsExecute()) return()
-    
+
+  ## Determine whether we want basket analysis of transactions or
+  ## rules from the categorical variables. The former is indicated if
+  ## there is a single IDENT variable and a TARGET with multiple
+  ## values. Perhaps we just see if the GUI checkbutton is set and if
+  ## so, check that the variables meet these criteria, and if not the
+  ## return. Also, on executeVariablesTab, if there is one ID and the
+  ## TARGET is factor or integer and there are no inputs then set the
+  ## default to Baskets.
+
+  baskets <- theWidget("associate_baskets_checkbutton")$getActive()
+  if (baskets && length(crs$ident) != 1)
+  {
+    errorDialog("Exactly one variable must be identified as an Ident",
+                "in the Variables tab to be used as",
+                "the identifier of the transactions.",
+                "I found", length(crs$ident), "variables.",
+                "The entities need to be aggregated by the Ident to",
+                "create the baskets for association analysis.")
+    return()
+  }
+  if (baskets && length(crs$target) != 1)
+  {
+    errorDialog("You need to specify a Target variable in the Variables tab.",
+                "This vairable then identifies the items associated with each",
+                "basket or transaction in the analysis. Each basket or",
+                "transaction is uniquely identified using the Ident variable.")
+    return()
+  }
+      
   ## Check that we have only categorical attributes.
 
   include <- getCategoricalVariables()
-  if (length(include) == 0)
+  if (!baskets && length(include) == 0)
   {
     errorDialog("Associations are calculated only for categorical data.",
                 "No categorical variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+                "from amongst those having an input role.",
+                "If you wanted a basket analysis with the Target variable",
+                "listing the items, and the Ident variable identifying",
+                "the baskets, then lease check the Baskets button.")
     return()
   }
 
@@ -90,15 +122,25 @@ executeAssociateTab <- function()
   ## Required information
   
   sampling   <- ! is.null(crs$sample)
-  support    <- rattleWidget("associate_support_spinbutton")$getValue()
-  confidence <- rattleWidget("associate_confidence_spinbutton")$getValue()
+  support    <- theWidget("associate_support_spinbutton")$getValue()
+  confidence <- theWidget("associate_confidence_spinbutton")$getValue()
 
   ## Transform data into a transactions dataset for arules.
-  
-  transaction.cmd <- paste("crs$transactions <<- as(",
-                           sprintf('crs$dataset[%s,%s], "transactions")',
-                                   ifelse(sampling, "crs$sample", ""),
-                                   include), sep="")
+
+  if (baskets)
+
+    transaction.cmd <- paste("crs$transactions <<- as(split(",
+                             sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
+                                     ifelse(sampling, "[crs$sample,]", ""),
+                                     crs$target,
+                                     ifelse(sampling, "[crs$sample,]", ""),
+                                     crs$ident),
+                             '), "transactions")', sep="") 
+  else
+    transaction.cmd <- paste("crs$transactions <<- as(",
+                             sprintf('crs$dataset[%s,%s], "transactions")',
+                                     ifelse(sampling, "crs$sample", ""),
+                                     include), sep="")
   addToLog("Generate a transactions dataset.",
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
@@ -167,7 +209,7 @@ plotAssociateFrequencies <- function()
   ## Required information
   
   sampling  <- ! is.null(crs$sample)
-  support <- rattleWidget("associate_support_spinbutton")$getValue()
+  support <- theWidget("associate_support_spinbutton")$getValue()
 
   ## Transform data into a transactions dataset for arules.
   
@@ -211,7 +253,7 @@ listAssociateRules <- function()
   
   ## Required information
   
-  lift    <- rattleWidget("associate_lift_spinbutton")$getValue()
+  lift    <- theWidget("associate_lift_spinbutton")$getValue()
 
 #  appendTextview(TV, "Top Rules\n\n",
 #                 "For now, run the following command in the console:\n\n",

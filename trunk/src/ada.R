@@ -51,12 +51,12 @@ executeModelAda <- function()
 
   ## Obtain user interface model options.
 
-  if (rattleWidget("ada_stumps_checkbutton")$getActive())
+  if (theWidget("ada_stumps_checkbutton")$getActive())
     stumps <- ", control=rpart.control(maxdepth=1,cp=-1,minsplit=0,xval=0)"
   else
     stumps <- ""
   
-  ntree <- rattleWidget("ada_ntree_spinbutton")$getValue()
+  ntree <- theWidget("ada_ntree_spinbutton")$getValue()
   if (ntree != ADA.NTREE.DEFAULT)
     ntree <- sprintf(", iter=%d", ntree)
   else
@@ -130,11 +130,11 @@ executeModelAda <- function()
 
   ## Now that we have a model, make sure appropriate actions are sensitive.
   
-  rattleWidget("ada_importance_button")$setSensitive(TRUE)
-  rattleWidget("ada_errors_button")$setSensitive(TRUE)
-  rattleWidget("ada_list_button")$setSensitive(TRUE)
-  rattleWidget("ada_draw_button")$setSensitive(TRUE)
-  rattleWidget("ada_draw_spinbutton")$setSensitive(TRUE)
+  theWidget("ada_importance_button")$setSensitive(TRUE)
+  theWidget("ada_errors_button")$setSensitive(TRUE)
+  theWidget("ada_list_button")$setSensitive(TRUE)
+  theWidget("ada_draw_button")$setSensitive(TRUE)
+  theWidget("ada_draw_spinbutton")$setSensitive(TRUE)
 
   ## Finish up.
   
@@ -226,7 +226,7 @@ doListAdaTrees <- function()
 
   ## Obtain user interface options.
 
-  tree.num <- rattleWidget("ada_draw_spinbutton")$getValue()
+  tree.num <- theWidget("ada_draw_spinbutton")$getValue()
 
   ## Command to run.
 
@@ -256,7 +256,7 @@ doDrawAdaTrees <- function()
 {
   ## Obtain user interface options.
 
-  tree.num <- rattleWidget("ada_draw_spinbutton")$getValue()
+  tree.num <- theWidget("ada_draw_spinbutton")$getValue()
 
   ## Command to run.
 

@@ -136,7 +136,7 @@ executeModelRPart <- function()
   ## Retrieve the Priors, and check there is the right number and that
   ## they add up to 1.
   
-  priors <- rattleWidget("rpart_priors_entry")$getText()
+  priors <- theWidget("rpart_priors_entry")$getText()
   if (nchar(priors) > 0)
   {
     pr <- as.numeric(unlist(strsplit(priors, ",")))
@@ -164,7 +164,7 @@ executeModelRPart <- function()
   ## Retrieve the Min Split and check if it is different from the
   ## default, and if so then use it.
 
-  minsplit <- rattleWidget("rpart_minsplit_spinbutton")$getValue()
+  minsplit <- theWidget("rpart_minsplit_spinbutton")$getValue()
   if (minsplit != RPART.MINSPLIT.DEFAULT)
   {
     if (is.null(control))
@@ -176,7 +176,7 @@ executeModelRPart <- function()
   ## Retrieve the Min Bucket and check if it is different from the
   ## default, and if so then use it.
 
-  minbucket <- rattleWidget("rpart_minbucket_spinbutton")$getValue()
+  minbucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
   if (minbucket != RPART.MINBUCKET.DEFAULT)
   {
     if (is.null(control))
@@ -188,7 +188,7 @@ executeModelRPart <- function()
   ## Retrieve the Max Depth and check if it is different from the
   ## default, and if so then use it.
 
-  maxdepth <- rattleWidget("rpart_maxdepth_spinbutton")$getValue()
+  maxdepth <- theWidget("rpart_maxdepth_spinbutton")$getValue()
   if (maxdepth != RPART.MAXDEPTH.DEFAULT)
   {
     if (is.null(control))
@@ -200,7 +200,7 @@ executeModelRPart <- function()
   ## Retrieve the Complexity and check if it is different from the
   ## default, and if so then use it.
 
-  cp <- rattleWidget("rpart_cp_spinbutton")$getValue()
+  cp <- theWidget("rpart_cp_spinbutton")$getValue()
 
   if (abs(cp-RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
   {
@@ -214,7 +214,7 @@ executeModelRPart <- function()
   ## default, use it. No longer. Common wisdom is that 10 is right, so
   ## in Rattle just go with that.
   
-  ## xval <- rattleWidget("rpart_xval_spinbutton")$getValue()
+  ## xval <- theWidget("rpart_xval_spinbutton")$getValue()
   ## if (xval != RPART.XVAL.DEFAULT)
   ## {
   ##  if (is.null(control))
@@ -226,7 +226,7 @@ executeModelRPart <- function()
   ## Retrieve the loss matrix and ensure it matches the shape of the
   ## data.
 
-  loss <- rattleWidget("rpart_loss_entry")$getText()
+  loss <- theWidget("rpart_loss_entry")$getText()
   if (nchar(loss) > 0)
   {
     lo <- as.numeric(unlist(strsplit(loss, ",")))
@@ -324,8 +324,8 @@ executeModelRPart <- function()
 
   ## Now that we have a model, make sure the plot button is sensitive.
   
-  rattleWidget("rpart_plot_button")$setSensitive(TRUE)
-  rattleWidget("rpart_rules_button")$setSensitive(TRUE)
+  theWidget("rpart_plot_button")$setSensitive(TRUE)
+  theWidget("rpart_rules_button")$setSensitive(TRUE)
 
   ## Finish up.
   

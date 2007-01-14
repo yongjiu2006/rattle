@@ -60,15 +60,15 @@ executeModelRF <- function()
 
   ## Retrieve options and set up parms.
 
-  ntree <- rattleWidget("rf_ntree_spinbutton")$getValue()
+  ntree <- theWidget("rf_ntree_spinbutton")$getValue()
   if (ntree != RF.NTREE.DEFAULT)
     parms <- sprintf("%s, ntree=%d", parms, ntree)
   
-  mtry <- rattleWidget("rf_mtry_spinbutton")$getValue()
+  mtry <- theWidget("rf_mtry_spinbutton")$getValue()
   if (mtry != RF.MTRY.DEFAULT)
     parms <- sprintf("%s, mtry=%d", parms, mtry)
 
-  sampsize <- rattleWidget("rf_sampsize_entry")$getText()
+  sampsize <- theWidget("rf_sampsize_entry")$getText()
   if (nchar(sampsize) > 0)
   {
     ss <- as.numeric(unlist(strsplit(sampsize, ",")))
@@ -95,7 +95,7 @@ executeModelRF <- function()
   ## Proximity is for unsupervised - not sure why I originally put it
   ## in here?
   
-  ##if (rattleWidget("rf_proximity_checkbutton")$getActive())
+  ##if (theWidget("rf_proximity_checkbutton")$getActive())
   ##  parms <- sprintf("%s, proximity=TRUE", parms)
   
   ## Build the formula for the model. TODO We assume we will always do
@@ -191,10 +191,10 @@ executeModelRF <- function()
 
   ## Now that we have a model, make sure the plot button is sensitive.
   
-  rattleWidget("rf_importance_button")$setSensitive(TRUE)
-  rattleWidget("rf_errors_button")$setSensitive(TRUE)
-  rattleWidget("rf_print_tree_button")$setSensitive(TRUE)
-  rattleWidget("rf_print_tree_spinbutton")$setSensitive(TRUE)
+  theWidget("rf_importance_button")$setSensitive(TRUE)
+  theWidget("rf_errors_button")$setSensitive(TRUE)
+  theWidget("rf_print_tree_button")$setSensitive(TRUE)
+  theWidget("rf_print_tree_spinbutton")$setSensitive(TRUE)
 
   ## Finish up.
 
@@ -263,7 +263,7 @@ displayRandomForestTree <- function()
 
   ## Obtain which tree to display.
   
-  tree.num <- rattleWidget("rf_print_tree_spinbutton")$getValue()
+  tree.num <- theWidget("rf_print_tree_spinbutton")$getValue()
 
   ## Command to run.
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-06 08:33:07 Graham>
+## Time-stamp: <2007-01-07 18:44:14 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -121,7 +121,7 @@ rattle <- function()
                      '<i>Version ', VERSION, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>')
-  rattle.menu <- rattleWidget("rattle_menu")
+  rattle.menu <- theWidget("rattle_menu")
   rattle.menu$SetRightJustified(TRUE)
   #rattle.menu$getChild()$setText(id.string)
   #rattle.menu$getChild()$setUseMarkup(TRUE)
@@ -230,7 +230,7 @@ rattle <- function()
   ## that are needed for removing and inserting tabs in the notebook,
   ## depending on the selected paradigm.
   
-  NOTEBOOK               <<- rattleWidget("notebook")
+  NOTEBOOK               <<- theWidget("notebook")
 
   NOTEBOOK.DATA.NAME      <<- "Data"
 
@@ -241,20 +241,20 @@ rattle <- function()
   NOTEBOOK.SAMPLE.NAME    <<- "Transform"
 
   NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
-  NOTEBOOK.CLUSTER.WIDGET <<- rattleWidget("cluster_tab_widget")
-  NOTEBOOK.CLUSTER.LABEL  <<- rattleWidget("cluster_tab_label")
+  NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
+  NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
 
   NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
-  NOTEBOOK.ASSOCIATE.WIDGET <<- rattleWidget("associate_tab_widget")
-  NOTEBOOK.ASSOCIATE.LABEL  <<- rattleWidget("associate_tab_label")
+  NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
+  NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
 
   NOTEBOOK.MODEL.NAME     <<- "Model"
-  NOTEBOOK.MODEL.WIDGET  <<- rattleWidget("model_tab_widget")
-  NOTEBOOK.MODEL.LABEL   <<- rattleWidget("model_tab_label")
+  NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
+  NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
 
   NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
-  NOTEBOOK.EVALUATE.WIDGET <<- rattleWidget("evaluate_tab_widget")
-  NOTEBOOK.EVALUATE.LABEL  <<- rattleWidget("evaluate_tab_label")
+  NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
+  NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
 
   NOTEBOOK.LOG.NAME       <<- "Log"
 
@@ -267,13 +267,13 @@ rattle <- function()
   
   ## DATA tab pages.
 
-  DATA              <<- rattleWidget("data_notebook")
+  DATA              <<- theWidget("data_notebook")
   DATA.CSV.TAB      <<- getNotebookPage(DATA, "csv")
   DATA.RDATA.TAB    <<- getNotebookPage(DATA, "rdata")
   DATA.RDATASET.TAB <<- getNotebookPage(DATA, "rdataset")
   DATA.ODBC.TAB     <<- getNotebookPage(DATA, "odbc")
   
-  EXPLORE                 <<- rattleWidget("explore_notebook")
+  EXPLORE                 <<- theWidget("explore_notebook")
   EXPLORE.SUMMARY.TAB     <<- getNotebookPage(EXPLORE, "summary")
   EXPLORE.PLOT.TAB        <<- getNotebookPage(EXPLORE, "explot")
   EXPLORE.GGOBI.TAB       <<- getNotebookPage(EXPLORE, "ggobi")
@@ -281,11 +281,11 @@ rattle <- function()
   EXPLORE.HIERCOR.TAB     <<- getNotebookPage(EXPLORE, "hiercor")
   EXPLORE.PRCOMP.TAB      <<- getNotebookPage(EXPLORE, "prcomp")
   
-  CLUSTER            <<- rattleWidget("cluster_notebook")
+  CLUSTER            <<- theWidget("cluster_notebook")
   CLUSTER.KMEANS.TAB <<- getNotebookPage(CLUSTER, "kmeans")
   CLUSTER.HCLUST.TAB <<- getNotebookPage(CLUSTER, "hclust")
   
-  MODEL           <<- rattleWidget("model_notebook")
+  MODEL           <<- theWidget("model_notebook")
   MODEL.RPART.TAB <<- getNotebookPage(MODEL, RPART)
   MODEL.GLM.TAB   <<- getNotebookPage(MODEL, GLM)
   MODEL.ADA.TAB   <<- getNotebookPage(MODEL, ADA)
@@ -294,11 +294,11 @@ rattle <- function()
   MODEL.SVM.TAB   <<- getNotebookPage(MODEL, SVM)
   MODEL.NNET.TAB   <<- getNotebookPage(MODEL, NNET)
 
-  SVMNB           <<- rattleWidget("svm_notebook")
+  SVMNB           <<- theWidget("svm_notebook")
   SVMNB.ESVM.TAB  <<- getNotebookPage(SVMNB, "esvm")
   SVMNB.KSVM.TAB  <<- getNotebookPage(SVMNB, "ksvm")
   
-  EVALUATE                 <<- rattleWidget("evaluate_notebook")
+  EVALUATE                 <<- theWidget("evaluate_notebook")
   EVALUATE.CONFUSION.TAB   <<- getNotebookPage(EVALUATE, "confusion")
   EVALUATE.RISK.TAB        <<- getNotebookPage(EVALUATE, "risk")
   EVALUATE.LIFT.TAB        <<- getNotebookPage(EVALUATE, "lift")
@@ -330,7 +330,7 @@ rattle <- function()
   
   ## Set glm_family_comboboxentry to default value.
   
-  rattleWidget("glm_family_comboboxentry")$setActive(0)
+  theWidget("glm_family_comboboxentry")$setActive(0)
   
   ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   
@@ -412,67 +412,71 @@ resetRattle <- function()
   ## the appropriate radio button.
 
   EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
-  rattleWidget("summary_radiobutton")$setActive(TRUE)
+  theWidget("summary_radiobutton")$setActive(TRUE)
 
   CLUSTER$setCurrentPage(CLUSTER.KMEANS.TAB)
-  rattleWidget("kmeans_radiobutton")$setActive(TRUE)
+  theWidget("kmeans_radiobutton")$setActive(TRUE)
 
   MODEL$setCurrentPage(MODEL.RPART.TAB)
-  rattleWidget("rpart_radiobutton")$setActive(TRUE)
-  #rattleWidget("all_models_radiobutton")$setActive(TRUE)
+  theWidget("rpart_radiobutton")$setActive(TRUE)
+  #theWidget("all_models_radiobutton")$setActive(TRUE)
 
   EVALUATE$setCurrentPage(EVALUATE.CONFUSION.TAB)
-  rattleWidget("confusion_radiobutton")$setActive(TRUE)
+  theWidget("confusion_radiobutton")$setActive(TRUE)
 
   ## Reset the VARIABLES tab.
   
-  rattleWidget("variables_treeview")$getModel()$clear()
-  rattleWidget("categorical_treeview")$getModel()$clear()
-  rattleWidget("continuous_treeview")$getModel()$clear()
+  theWidget("variables_treeview")$getModel()$clear()
+  theWidget("categorical_treeview")$getModel()$clear()
+  theWidget("continuous_treeview")$getModel()$clear()
 
-  rattleWidget("weight_entry")$setText("")
-  rattleWidget("rpart_weights_label")$setText("Weights:")
+  theWidget("weight_entry")$setText("")
+  theWidget("rpart_weights_label")$setText("Weights:")
   
   ## Reset RPART options.
   
-  rattleWidget("rpart_priors_entry")$setText("")
-  rattleWidget("rpart_loss_entry")$setText("")
-  rattleWidget("rpart_minsplit_spinbutton")$setValue(RPART.MINSPLIT.DEFAULT)
-  rattleWidget("rpart_maxdepth_spinbutton")$setValue(RPART.MAXDEPTH.DEFAULT)
-  rattleWidget("rpart_cp_spinbutton")$setValue(RPART.CP.DEFAULT)
-  rattleWidget("rpart_minbucket_spinbutton")$setValue(RPART.MINBUCKET.DEFAULT)
+  theWidget("rpart_priors_entry")$setText("")
+  theWidget("rpart_loss_entry")$setText("")
+  theWidget("rpart_minsplit_spinbutton")$setValue(RPART.MINSPLIT.DEFAULT)
+  theWidget("rpart_maxdepth_spinbutton")$setValue(RPART.MAXDEPTH.DEFAULT)
+  theWidget("rpart_cp_spinbutton")$setValue(RPART.CP.DEFAULT)
+  theWidget("rpart_minbucket_spinbutton")$setValue(RPART.MINBUCKET.DEFAULT)
   
   ## Update EXPLORE, MODEL and EVALUATE targets
 
-  rattleWidget("explot_target_label")$setText("No target selected")
+  theWidget("explot_target_label")$setText("No target selected")
 
-  rattleWidget("glm_target_label")$setText("No target selected")
-  rattleWidget("rpart_target_label")$setText("No target selected")
-  ##rattleWidget("gbm_target_label")$setText("No target selected")
-  rattleWidget("ada_target_label")$setText("No target selected")
-  rattleWidget("rf_target_label")$setText("No target selected")
-  rattleWidget("svm_target_label")$setText("No target selected")
-  rattleWidget("evaluate_risk_label")$setText("No risk variable selected")
+  theWidget("glm_target_label")$setText("No target selected")
+  theWidget("rpart_target_label")$setText("No target selected")
+  ##theWidget("gbm_target_label")$setText("No target selected")
+  theWidget("ada_target_label")$setText("No target selected")
+  theWidget("rf_target_label")$setText("No target selected")
+  theWidget("svm_target_label")$setText("No target selected")
+  theWidget("evaluate_risk_label")$setText("No risk variable selected")
   
-  rattleWidget("evaluate_training_radiobutton")$setActive(TRUE)
-  rattleWidget("evaluate_filechooserbutton")$setFilename("")
-  rattleWidget("evaluate_rdataset_combobox")$setActive(-1)
+  theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+  theWidget("evaluate_filechooserbutton")$setFilename("")
+  theWidget("evaluate_rdataset_combobox")$setActive(-1)
 
-  rattleWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
-  rattleWidget("rf_evaluate_checkbutton")$setActive(FALSE)
-  rattleWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
-  rattleWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  ## rattleWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
-  rattleWidget("ada_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
+  ## theWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
 
-  rattleWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
-  rattleWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
-  rattleWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
-  rattleWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
-  ## rattleWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
-  rattleWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
+  ## theWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
 
 }
+
+## UTILITIES
+
+"%notin%" <- function(x,y) ! x %in% y
 
 ## Common Dialogs
 
@@ -562,7 +566,7 @@ variablesHaveChanged <- function(action)
 
 packageIsAvailable <- function(pkg, msg=NULL)
 {
-  if (! is.element(pkg, (rownames(installed.packages()))))
+  if (pkg %notin% rownames(installed.packages()))
   {
     if (!is.null(msg))
       infoDialog("The package", pkg, "is required to",
@@ -586,7 +590,7 @@ sampleNeedsExecute <- function()
 
   ## If sampling is active, make sure there is a sample.
   
-  if (rattleWidget("sample_checkbutton")$getActive()
+  if (theWidget("sample_checkbutton")$getActive()
       && is.null(crs$sample))
   {
     errorDialog("Sampling is active but has not been Executed.",
@@ -598,7 +602,7 @@ sampleNeedsExecute <- function()
 
   ## If sampling is inactive, make sure there is no sample.
 
-  if (! rattleWidget("sample_checkbutton")$getActive()
+  if (! theWidget("sample_checkbutton")$getActive()
       && ! is.null(crs$sample))
   {
     errorDialog("Sampling is inactive but has not been Executed",
@@ -620,16 +624,16 @@ setRattleTitle <- function(title)
 {
   standard <- "Rattle: Effective Data Mining with R"
   if (is.null(title))
-    rattleWidget("rattle_window")$setTitle(standard)
+    theWidget("rattle_window")$setTitle(standard)
   else
-    rattleWidget("rattle_window")$setTitle(sprintf("%s: %s", standard, title))
+    theWidget("rattle_window")$setTitle(sprintf("%s: %s", standard, title))
 }
 
 setStatusBar <- function(..., sep=" ")
 {
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0) msg <-""
-  rattleWidget("statusbar")$push(1, msg)
+  theWidget("statusbar")$push(1, msg)
   while (gtkEventsPending()) gtkMainIteration() # Refresh status and windows
   invisible(NULL)
 }
@@ -670,7 +674,7 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
 ## Miscellaneous Support
 ##
 
-rattleWidget <- function(widget)
+theWidget <- function(widget)
 {
   return(rattleGUI$getWidget(widget))
 }
@@ -719,7 +723,10 @@ setDefaultPath <- function(filename)
 
 newPlot <- function(pcnt=1)
 {
-  if (.Platform$GUI == "X11")
+  ## Add "unknown" to handle the case with the littler script
+  ## interface which runs with an "unknown" GUI.
+
+  if (.Platform$GUI %in% c("X11", "unknown"))
     x11()
   else if (isWindows())
     windows()
@@ -761,7 +768,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
 
 set.cursor <- function(cursor="left-ptr")
 {
-  rattleWidget("rattle_window")$getWindow()$
+  theWidget("rattle_window")$getWindow()$
   setCursor(gdkCursorNew(cursor))
 }
 
@@ -875,7 +882,7 @@ plotNetwork <- function(flow)
 update_comboboxentry_with_dataframes <- function(action, window)
 {
   #cat("XXX Update Combobox XXX\n")
-  current <- rattleWidget("rdataset_combobox")$getActiveText()
+  current <- theWidget("rdataset_combobox")$getActiveText()
   
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
@@ -892,7 +899,7 @@ update_comboboxentry_with_dataframes <- function(action, window)
     action$getModel()$clear()
     lapply(dl, action$appendText)
     ## Set the selection to that which was already selected, if possible.
-    if (! is.null(current) && is.element(current, dl))
+    if (! is.null(current) && current %in% dl)
       action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
 }
@@ -900,7 +907,7 @@ update_comboboxentry_with_dataframes <- function(action, window)
 quit_rattle <- function(action, window)
 {
   for (i in dev.list()) dev.off(i)
-  rattleWidget("rattle_window")$destroy()
+  theWidget("rattle_window")$destroy()
   
   ## Communicate to R that Rattle has finished. This is used by the
   ## rattle script on GNU/Linux using the littler package which allows
@@ -924,7 +931,7 @@ quit_rattle <- function(action, window)
 display_click_execute_message <- function(button)
 {
   #cat("XXX Display Click Execute message XXX\n")
-  rattleWidget("data_textview")$setWrapMode("word")
+  theWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
                "Now click the Execute button to load the dataset.",
                "\n\nAny R errors will be displayed in the R Console. ",
@@ -1002,7 +1009,7 @@ load_rdata_set_combo <- function(button)
   
   ## Collect relevant data
 
-  filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
+  filename <- theWidget("rdata_filechooserbutton")$getFilename()
   setDefaultPath(filename)
   
   ## Fix filename for MS - otherwise eval/parse strip the \\.
@@ -1024,14 +1031,14 @@ load_rdata_set_combo <- function(button)
 
   ## Add new dataframes to the combo box.
 
-  combobox <- rattleWidget("rdata_combobox")
+  combobox <- theWidget("rdata_combobox")
   if (! is.null(new.objects))
   {
     combobox$getModel()$clear()
     lapply(new.objects, combobox$appendText)
   }
   
-  rattleWidget(TV)$setWrapMode("word")
+  theWidget(TV)$setWrapMode("word")
   clearTextview(TV)
   appendTextview(TV, "Now select a data frame from those available.")
   setStatusBar()
@@ -1069,7 +1076,7 @@ open_odbc_set_combo <- function(a, b)
   
   ## Obtain name of the DNS.
 
-  DNSname <- rattleWidget("odbc_dns_entry")$getText()
+  DNSname <- theWidget("odbc_dns_entry")$getText()
   
   ## Generate commands to connect to the database and retrieve the tables.
 
@@ -1111,14 +1118,14 @@ open_odbc_set_combo <- function(a, b)
 
   ## Add list of tables to the combo box.
 
-  combobox <- rattleWidget("odbc_combobox")
+  combobox <- theWidget("odbc_combobox")
   if (! is.null(tables))
   {
     combobox$getModel()$clear()
     lapply(tables, combobox$appendText)
   }
   
-  rattleWidget(TV)$setWrapMode("word")
+  theWidget(TV)$setWrapMode("word")
   clearTextview(TV)
   appendTextview(TV, "Now select a table from those available.")
   setStatusBar()
@@ -1131,13 +1138,13 @@ open_odbc_set_combo <- function(a, b)
 ##
 executeDataTab <- function()
 {
-  if (rattleWidget("csv_radiobutton")$getActive())
+  if (theWidget("csv_radiobutton")$getActive())
     executeDataCSV()
-  else if (rattleWidget("odbc_radiobutton")$getActive())
+  else if (theWidget("odbc_radiobutton")$getActive())
     executeDataODBC()
-  else if (rattleWidget("rdata_radiobutton")$getActive())
+  else if (theWidget("rdata_radiobutton")$getActive())
     executeDataRdata()
-  else if (rattleWidget("rdataset_radiobutton")$getActive())
+  else if (theWidget("rdataset_radiobutton")$getActive())
     executeDataRdataset()
 }
 
@@ -1161,10 +1168,10 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 
   per <- 70
   srows <- round(nrows * per / 100)
-  rattleWidget("sample_checkbutton")$setActive(TRUE)
-  rattleWidget("sample_count_spinbutton")$setRange(1,nrows)
-  rattleWidget("sample_count_spinbutton")$setValue(srows)
-  rattleWidget("sample_percentage_spinbutton")$setValue(per)
+  theWidget("sample_checkbutton")$setActive(TRUE)
+  theWidget("sample_count_spinbutton")$setRange(1,nrows)
+  theWidget("sample_count_spinbutton")$setValue(srows)
+  theWidget("sample_percentage_spinbutton")$setValue(per)
 
   executeSampleTab()
 
@@ -1176,7 +1183,7 @@ executeDataCSV <- function()
   
   ## Collect relevant data
 
-  filename <- rattleWidget("csv_filechooserbutton")$getFilename()
+  filename <- theWidget("csv_filechooserbutton")$getFilename()
   setDefaultPath(filename)
   
   ## Error exit if no filename is given
@@ -1211,7 +1218,7 @@ executeDataCSV <- function()
 
   ## Get the separator to use.
 
-  sep = rattleWidget("csv_separator_entry")$getText()
+  sep = theWidget("csv_separator_entry")$getText()
   if (sep != ",")
     sep <- sprintf(', sep="%s"', sep)
   else
@@ -1219,7 +1226,7 @@ executeDataCSV <- function()
 
   ## Check whether we expect a header or not.
 
-  if (rattleWidget("csv_header_checkbutton")$getActive())
+  if (theWidget("csv_header_checkbutton")$getActive())
     hdr <- ""
   else
     hdr <- ", header=FALSE"
@@ -1235,7 +1242,7 @@ executeDataCSV <- function()
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  rattleWidget(TV)$setWrapMode("none") # On for welcome msg
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
   addToLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
@@ -1259,7 +1266,7 @@ executeDataODBC <- function()
 {
   TV <- "data_textview"
 
-  table <- rattleWidget("odbc_combobox")$getActiveText()
+  table <- theWidget("odbc_combobox")$getActiveText()
 
   ## Error if no table from the database has been chosen.
   
@@ -1292,7 +1299,7 @@ executeDataODBC <- function()
 
   numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
 
-  DNSname <- rattleWidget("odbc_dns_entry")$getText()
+  DNSname <- theWidget("odbc_dns_entry")$getText()
   if (numRows > 50000)
     if (is.null(questionDialog("You are about to extract", numRows,
                                "rows from the table", table,
@@ -1305,7 +1312,7 @@ executeDataODBC <- function()
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
+  theWidget("data_textview")$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
   addToLog("LOAD FROM DATABASE TABLE",
@@ -1334,9 +1341,9 @@ executeDataRdata <- function()
   
   ## Collect relevant data
 
-  filename <- rattleWidget("rdata_filechooserbutton")$getFilename()
+  filename <- theWidget("rdata_filechooserbutton")$getFilename()
   setDefaultPath(filename)
-  dataset <- rattleWidget("rdata_combobox")$getActiveText()
+  dataset <- theWidget("rdata_combobox")$getActiveText()
 
   ## Error exit if no filename is given
 
@@ -1385,7 +1392,7 @@ executeDataRdata <- function()
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  rattleWidget("data_textview")$setWrapMode("none") # On for welcome msg
+  theWidget("data_textview")$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
   addToLog("LOAD RDATA FILE",
@@ -1412,7 +1419,7 @@ executeDataRdataset <- function()
   TV <- "data_textview"
   
   ## Collect relevant data
-  dataset <- rattleWidget("rdataset_combobox")$getActiveText()
+  dataset <- theWidget("rdataset_combobox")$getActiveText()
   
   if (is.null(dataset))
   {
@@ -1448,7 +1455,7 @@ executeDataRdataset <- function()
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  rattleWidget(TV)$setWrapMode("none") # On for welcome msg
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
   addToLog("LOAD R DATA FRAME",
@@ -1529,7 +1536,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
 
   ##ptm <- proc.time()
   set.cursor("watch")
-  tree.selection <- rattleWidget("variables_treeview")$getSelection()
+  tree.selection <- theWidget("variables_treeview")$getSelection()
 
   ## Under MS/Windows with Terminal Services to the host we get very
   ## slow redraws? Tried fixing it with freezeUpdates and thawUpdates
@@ -1537,7 +1544,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   ## seconds. When connected over terminal services the elapsed time
   ## is 16 seconds, still with 5 seconds user time.
   
-  ## rattleWidget("rattle_window")$getWindow()$freezeUpdates()
+  ## theWidget("rattle_window")$getWindow()$freezeUpdates()
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
@@ -1560,7 +1567,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   ##cat("->Ig", proc.time() - ptm, "\n")
   set.cursor()
 
-  ## rattleWidget("rattle_window")$getWindow()$thawUpdates()
+  ## theWidget("rattle_window")$getWindow()$thawUpdates()
 }
 
 on_variables_toggle_input_button_clicked <- function(action, window)
@@ -1571,9 +1578,9 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   ##ptm <- proc.time()
   set.cursor("watch")
 
-  treeview <- rattleWidget("variables_treeview")
+  treeview <- theWidget("variables_treeview")
   tree.selection <- treeview$getSelection()
-  #rattleWidget("rattle_window")$getWindow()$freezeUpdates()
+  #theWidget("rattle_window")$getWindow()$freezeUpdates()
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
@@ -1591,7 +1598,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 
   ##cat("->In", proc.time() - ptm, "\n")
   set.cursor()
-  #rattleWidget("rattle_window")$getWindow()$thawUpdates()
+  #theWidget("rattle_window")$getWindow()$thawUpdates()
 }
 
 ##----------------------------------------------------------------------
@@ -1611,7 +1618,7 @@ executeVariablesTab <- function()
   risk    <- getSelectedVariables("risk")
   ident   <- getSelectedVariables("ident")
   ignore  <- getSelectedVariables("ignore")
-  weights <- rattleWidget("weight_entry")$getText()
+  weights <- theWidget("weight_entry")$getText()
   if (weights == "") weights <- NULL
   
   ## Fail if there is more than one target
@@ -1682,7 +1689,7 @@ executeVariablesTab <- function()
     {
       ## Check for any missing variables
 
-      if ( ! is.element(identifiers[vars][i], allvars))
+      if (identifiers[vars][i] %notin% allvars)
       {
         errorDialog("The Weight Calculator contains the variable",
                      identifiers[vars][i], "which is not known in the",
@@ -1692,8 +1699,8 @@ executeVariablesTab <- function()
 
       ## Check if Weight variables are not ignored, and inform user if not
 
-      if ( ! is.element(identifiers[vars][i],
-                        union(ident, union(target, union(ignore, risk)))))
+      if (identifiers[vars][i] %notin%
+                        union(ident, union(target, union(ignore, risk))))
       {
         infoDialog("You have used the variable",
                     identifiers[vars][i],
@@ -1727,14 +1734,14 @@ executeVariablesTab <- function()
   the.target <- sprintf("Target: %s", ifelse(is.null(crs$target),
                                              "None", crs$target))
 
-  rattleWidget("explot_target_label")$setText(the.target)
+  theWidget("explot_target_label")$setText(the.target)
 
-  rattleWidget("rpart_target_label")$setText(the.target)
-  rattleWidget("rf_target_label")$setText(the.target)
-  rattleWidget("svm_target_label")$setText(the.target)
-  rattleWidget("glm_target_label")$setText(the.target)
-  ## rattleWidget("gbm_target_label")$setText(the.target)
-  rattleWidget("ada_target_label")$setText(the.target)
+  theWidget("rpart_target_label")$setText(the.target)
+  theWidget("rf_target_label")$setText(the.target)
+  theWidget("svm_target_label")$setText(the.target)
+  theWidget("glm_target_label")$setText(the.target)
+  ## theWidget("gbm_target_label")$setText(the.target)
+  theWidget("ada_target_label")$setText(the.target)
 
   ## Update MODEL weights
 
@@ -1742,17 +1749,17 @@ executeVariablesTab <- function()
   {
     weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
     the.weight <- sprintf("Weights: %s", weights.display)
-    rattleWidget("rpart_weights_label")$setText(the.weight)
+    theWidget("rpart_weights_label")$setText(the.weight)
   }
   
   ## Update EVALUATE risk variable
   
-  rattleWidget("evaluate_risk_label")$setText(crs$risk)
+  theWidget("evaluate_risk_label")$setText(crs$risk)
 
   ## Update defaults tha rely on the number of variables.
   
   RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
-  rattleWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
+  theWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
 
   ## Finished - update the status bar.
   
@@ -1780,19 +1787,19 @@ getSelectedVariables <- function(role, named=TRUE)
   ## same in each of COLUMNS, CATEGORICAL, and CONTINUOUS.
 
   variables <- NULL
-  if (is.element(role, c("input", "target", "risk", "ident", "ignore")))
+  if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
-    model <- rattleWidget("variables_treeview")$getModel()
+    model <- theWidget("variables_treeview")$getModel()
     rcol  <- COLUMN[[role]]
   }
-  else if (is.element(role, c("boxplot", "hisplot", "cumplot", "benplot")))
+  else if (role %in% c("boxplot", "hisplot", "cumplot", "benplot"))
   {
-    model <- rattleWidget("continuous_treeview")$getModel()
+    model <- theWidget("continuous_treeview")$getModel()
     rcol  <- CONTINUOUS[[role]]
   }
-  else if (is.element(role, c("barplot", "dotplot")))
+  else if (role %in% c("barplot", "dotplot"))
   {
-    model <- rattleWidget("categorical_treeview")$getModel()
+    model <- theWidget("categorical_treeview")$getModel()
     rcol  <- CATEGORICAL[[role]]
   }
   else
@@ -1832,13 +1839,13 @@ initialiseVariableViews <- function()
   
   
   ## View the model through the treeview in the VARIABLES tab
-  treeview <- rattleWidget("variables_treeview")
+  treeview <- theWidget("variables_treeview")
   treeview$setModel(model)
 
-  catview <- rattleWidget("categorical_treeview")
+  catview <- theWidget("categorical_treeview")
   catview$setModel(categorical)
   
-  conview <- rattleWidget("continuous_treeview")
+  conview <- theWidget("continuous_treeview")
   conview$setModel(continuous)
 
   ## Add the NUMBER column as the row number.
@@ -2096,9 +2103,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   ## Retrieve the models.
   
-  model <- rattleWidget("variables_treeview")$getModel()
-  categorical <- rattleWidget("categorical_treeview")$getModel()
-  continuous  <- rattleWidget("continuous_treeview")$getModel()
+  model <- theWidget("variables_treeview")$getModel()
+  categorical <- theWidget("categorical_treeview")$getModel()
+  continuous  <- theWidget("continuous_treeview")$getModel()
 
   ## Identify a default target - the last or first if it's a factor,
   ## or has only a few values. Then the treeview model will record
@@ -2144,14 +2151,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   the.target <- sprintf("Target: %s", ifelse(is.null(target), "None", target))
 
-  rattleWidget("explot_target_label")$setText(the.target)
+  theWidget("explot_target_label")$setText(the.target)
 
-  rattleWidget("glm_target_label")$setText(the.target)
-  rattleWidget("rpart_target_label")$setText(the.target)
-  ## rattleWidget("gbm_target_label")$setText(the.target)
-  rattleWidget("ada_target_label")$setText(the.target)
-  rattleWidget("rf_target_label")$setText(the.target)
-  rattleWidget("svm_target_label")$setText(the.target)
+  theWidget("glm_target_label")$setText(the.target)
+  theWidget("rpart_target_label")$setText(the.target)
+  ## theWidget("gbm_target_label")$setText(the.target)
+  theWidget("ada_target_label")$setText(the.target)
+  theWidget("rf_target_label")$setText(the.target)
+  theWidget("svm_target_label")$setText(the.target)
 
   plots <- union(boxplot,
                  union(hisplot,
@@ -2214,7 +2221,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         cl <- "missing"
         ignore <- c(ignore, variables[i])
       }
-      else if (is.element(sd(crs$dataset[[variables[i]]], na.rm=TRUE), c(NA, 0)))
+      else if (sd(crs$dataset[[variables[i]]], na.rm=TRUE) %in% c(NA, 0))
       {
         ## sd is NA if all data items  are NA.
         cl <- "constant"
@@ -2227,11 +2234,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               COLUMN["number"], i,
               COLUMN["variable"], variables[i],
               COLUMN["type"], cl,
-              COLUMN["input"], is.element(variables[i], input),
-              COLUMN["target"], is.element(variables[i], target),
-              COLUMN["risk"], is.element(variables[i], risk),
-              COLUMN["ident"], is.element(variables[i], ident),
-              COLUMN["ignore"], is.element(variables[i], ignore))
+              COLUMN["input"], variables[i] %in% input,
+              COLUMN["target"], variables[i] %in% target,
+              COLUMN["risk"], variables[i] %in% risk,
+              COLUMN["ident"], variables[i] %in% ident,
+              COLUMN["ignore"], variables[i] %in% ignore)
 
     if (strsplit(cl, " ")[[1]][1] == "factor")
     {
@@ -2239,8 +2246,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       categorical$set(catiter,
                       CATEGORICAL["number"], i,
                       CATEGORICAL["variable"], variables[i],
-                      CATEGORICAL["barplot"],is.element(variables[i],barplot),
-                      CATEGORICAL["dotplot"],is.element(variables[i],dotplot),
+                      CATEGORICAL["barplot"], variables[i] %in% barplot,
+                      CATEGORICAL["dotplot"], variables[i] %in% dotplot,
                       CATEGORICAL["comment"],
                       sprintf("%s", strsplit(cl, " ")[[1]][2]))
     }
@@ -2250,10 +2257,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       continuous$set(coniter,
                      CONTINUOUS["number"], i,
                      CONTINUOUS["variable"], variables[i],
-                     CONTINUOUS["boxplot"],is.element(variables[i],boxplot),
-                     CONTINUOUS["hisplot"],is.element(variables[i],hisplot),
-                     CONTINUOUS["cumplot"],is.element(variables[i],cumplot),
-                     CONTINUOUS["benplot"],is.element(variables[i],benplot),
+                     CONTINUOUS["boxplot"], variables[i] %in% boxplot,
+                     CONTINUOUS["hisplot"], variables[i] %in% hisplot,
+                     CONTINUOUS["cumplot"], variables[i] %in% cumplot,
+                     CONTINUOUS["benplot"], variables[i] %in% benplot,
                      CONTINUOUS["comment"],
                      sprintf("%.2f; %.2f/%.2f; %.2f",
                              min(crs$dataset[,i], na.rm=TRUE),
@@ -2272,9 +2279,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   ## Perform other setups associated with a new dataset
 
   RF.MTRY.DEFAULT <<- floor(sqrt(ncol(crs$dataset)))
-  rattleWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
+  theWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
   #RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
-  #rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  #theWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
 }
 
 ##----------------------------------------------------------------------
@@ -2372,18 +2379,17 @@ used.variables <- function(numonly=FALSE)
 
 getCategoricalVariables <- function()
 {
-  ## Returns a list of categorical variables
+  ## Return a list of categorical variables from amongst those with an
+  ## INPUT role.
   
+  include <- NULL
   cats <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.factor))]
   if (length(cats) > 0)
   {
     indicies <- getVariableIndicies(crs$input)
     include <- simplifyNumberList(intersect(cats, indicies))
   }
-  else
-    inlcude <- NULL
-
- return(include)
+  return(include)
 }
 
 getNumericVariables <- function()
@@ -2415,25 +2421,25 @@ on_sample_checkbutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    rattleWidget("sample_percentage_spinbutton")$setSensitive(TRUE)
-    rattleWidget("sample_percentage_label")$setSensitive(TRUE)
-    rattleWidget("sample_count_spinbutton")$setSensitive(TRUE)
-    rattleWidget("sample_count_label")$setSensitive(TRUE)
-    rattleWidget("sample_seed_spinbutton")$setSensitive(TRUE)
-    rattleWidget("sample_seed_button")$setSensitive(TRUE)
-    rattleWidget("explore_sample_checkbutton")$setSensitive(TRUE)
+    theWidget("sample_percentage_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_percentage_label")$setSensitive(TRUE)
+    theWidget("sample_count_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_count_label")$setSensitive(TRUE)
+    theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_seed_button")$setSensitive(TRUE)
+    theWidget("explore_sample_checkbutton")$setSensitive(TRUE)
     crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
   }
   else
   {
-    rattleWidget("sample_percentage_spinbutton")$setSensitive(FALSE)
-    rattleWidget("sample_percentage_label")$setSensitive(FALSE)
-    rattleWidget("sample_count_spinbutton")$setSensitive(FALSE)
-    rattleWidget("sample_count_label")$setSensitive(FALSE)
-    rattleWidget("sample_seed_spinbutton")$setSensitive(FALSE)
-    rattleWidget("sample_seed_button")$setSensitive(FALSE)
-    rattleWidget("explore_sample_checkbutton")$setActive(FALSE)
-    rattleWidget("explore_sample_checkbutton")$setSensitive(FALSE)
+    theWidget("sample_percentage_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_percentage_label")$setSensitive(FALSE)
+    theWidget("sample_count_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_count_label")$setSensitive(FALSE)
+    theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_seed_button")$setSensitive(FALSE)
+    theWidget("explore_sample_checkbutton")$setActive(FALSE)
+    theWidget("explore_sample_checkbutton")$setSensitive(FALSE)
   }
     setStatusBar()
 }
@@ -2441,29 +2447,29 @@ on_sample_checkbutton_toggled <- function(button)
 on_sample_percentage_spinbutton_changed <- function(action, window)
 {
   if (is.null(crs$dataset)) return()
-  per <- rattleWidget("sample_percentage_spinbutton")$getValue()
+  per <- theWidget("sample_percentage_spinbutton")$getValue()
   rows <- round(nrow(crs$dataset) * per / 100)
-  crows <- rattleWidget("sample_count_spinbutton")$getValue()
+  crows <- theWidget("sample_count_spinbutton")$getValue()
   if (rows != crows)
-    rattleWidget("sample_count_spinbutton")$setValue(rows)
+    theWidget("sample_count_spinbutton")$setValue(rows)
   setStatusBar()
 }
 
 on_sample_count_spinbutton_changed <- function(action, window)
 {
   if (is.null(crs$dataset)) return()
-  rows <- rattleWidget("sample_count_spinbutton")$getValue()
+  rows <- theWidget("sample_count_spinbutton")$getValue()
   per <- round(100*rows/nrow(crs$dataset))
-  cper <- rattleWidget("sample_percentage_spinbutton")$getValue()
+  cper <- theWidget("sample_percentage_spinbutton")$getValue()
   if (per != cper)
-    rattleWidget("sample_percentage_spinbutton")$setValue(per)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
   setStatusBar()
 }
 
 on_sample_seed_button_clicked <- function(button)
 {
   rseed <- as.integer(runif(1, 0, 1000000))
-  rattleWidget("sample_seed_spinbutton")$setValue(rseed)
+  theWidget("sample_seed_spinbutton")$setValue(rseed)
 }
 
 ##----------------------------------------------------------------------
@@ -2478,13 +2484,13 @@ executeSampleTab <- function()
 
   ## Record that a random sample of the dataset is desired.
 
-  if (rattleWidget("sample_checkbutton")$getActive())
+  if (theWidget("sample_checkbutton")$getActive())
   {
-    #ssize <- rattleWidget("sample_percentage_spinbutton")$getValue()
+    #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
     #ssize <- floor(nrow(crs$dataset)*ssize/100)
-    ssize <- rattleWidget("sample_count_spinbutton")$getValue()
+    ssize <- theWidget("sample_count_spinbutton")$getValue()
 
-    seed <- rattleWidget("sample_seed_spinbutton")$getValue()
+    seed <- theWidget("sample_seed_spinbutton")$getValue()
     
     sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
                         "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
@@ -2497,15 +2503,15 @@ executeSampleTab <- function()
     ## When we have sampling, assume the remainder is the test set and
     ## so enable the Testing radio button in Evaluate.
     
-    rattleWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
-    rattleWidget("evaluate_testing_radiobutton")$setActive(TRUE)
+    theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
+    theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
   }
   else
   {
     crs$sample <<- NULL
 
-    rattleWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    rattleWidget("evaluate_training_radiobutton")$setActive(TRUE)
+    theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
+    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
   }
   
   crs$smodel <<- vector()
@@ -2518,12 +2524,12 @@ executeSampleTab <- function()
   #  RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
   #else
   #  RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
-  #rattleWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  #theWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
   
 
   setStatusBar()
 
-  if (rattleWidget("sample_checkbutton")$getActive())
+  if (theWidget("sample_checkbutton")$getActive())
     setStatusBar("The sample has been generated.",
                   "There are", length(crs$sample), "entities.")
   else
@@ -2544,12 +2550,12 @@ executeSampleTab <- function()
 
 on_summary_radiobutton_toggled <- function(button)
 {
-  separator       <- rattleWidget("explore_vseparator")
-  summary.button  <- rattleWidget("summary_checkbutton")
-  describe.button <- rattleWidget("describe_checkbutton")
-  basics.button   <- rattleWidget("basics_checkbutton")
-  kurtosis.button <- rattleWidget("kurtosis_checkbutton")
-  skewness.button <- rattleWidget("skewness_checkbutton")
+  separator       <- theWidget("explore_vseparator")
+  summary.button  <- theWidget("summary_checkbutton")
+  describe.button <- theWidget("describe_checkbutton")
+  basics.button   <- theWidget("basics_checkbutton")
+  kurtosis.button <- theWidget("kurtosis_checkbutton")
+  skewness.button <- theWidget("skewness_checkbutton")
   if (button$getActive())
   {
     EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
@@ -2574,8 +2580,8 @@ on_summary_radiobutton_toggled <- function(button)
 
 on_explot_radiobutton_toggled <- function(button)
 {
-  separator <- rattleWidget("explore_vseparator")
-  barbutton <- rattleWidget("benford_bars_checkbutton")
+  separator <- theWidget("explore_vseparator")
+  barbutton <- theWidget("benford_bars_checkbutton")
   if (button$getActive()) 
   {
     EXPLORE$setCurrentPage(EXPLORE.PLOT.TAB)
@@ -2598,8 +2604,8 @@ on_ggobi_radiobutton_toggled <- function(button)
 
 on_correlation_radiobutton_toggled <- function(button)
 {
-  separator <- rattleWidget("explore_vseparator")
-  nabutton  <- rattleWidget("correlation_na_checkbutton")
+  separator <- theWidget("explore_vseparator")
+  nabutton  <- theWidget("correlation_na_checkbutton")
   if (button$getActive()) 
   {
     EXPLORE$setCurrentPage(EXPLORE.CORRELATION.TAB)
@@ -2682,7 +2688,7 @@ on_categorical_clear_button_clicked <- function(action, window)
 
   ## Only clear selected rows.
 
-  tree.selection <- rattleWidget("categorical_treeview")$getSelection()
+  tree.selection <- theWidget("categorical_treeview")$getSelection()
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
@@ -2702,7 +2708,7 @@ on_continuous_clear_button_clicked <- function(action, window)
 
   ## Only clear selected rows.
 
-  tree.selection <- rattleWidget("continuous_treeview")$getSelection()
+  tree.selection <- theWidget("continuous_treeview")$getSelection()
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
@@ -2728,8 +2734,8 @@ executeExploreTab <- function()
 
   ## Ensure Sample does not require executing.
 
-  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
-  sampling <- rattleWidget("sample_checkbutton")$getActive()
+  use.sample <- theWidget("explore_sample_checkbutton")$getActive()
+  sampling <- theWidget("sample_checkbutton")$getActive()
   if (use.sample && sampleNeedsExecute()) return()
 
   ## We generate a string representing the subset of the dataset on
@@ -2770,22 +2776,22 @@ executeExploreTab <- function()
   
   ## Dispatch
   
-  if (rattleWidget("summary_radiobutton")$getActive())
+  if (theWidget("summary_radiobutton")$getActive())
     executeExploreSummary(dataset)
-  else if (rattleWidget("explot_radiobutton")$getActive())
+  else if (theWidget("explot_radiobutton")$getActive())
     executeExplorePlot(avdataset)
-  else if (rattleWidget("ggobi_radiobutton")$getActive())
+  else if (theWidget("ggobi_radiobutton")$getActive())
     executeExploreGGobi(dataset)
-  else if (rattleWidget("correlation_radiobutton")$getActive())
+  else if (theWidget("correlation_radiobutton")$getActive())
   {
-    if (rattleWidget("correlation_na_checkbutton")$getActive())
+    if (theWidget("correlation_na_checkbutton")$getActive())
       executeExploreCorrelation(dataset)
     else
       executeExploreCorrelation(ndataset)
   }
-  else if (rattleWidget("hiercor_radiobutton")$getActive())
+  else if (theWidget("hiercor_radiobutton")$getActive())
     executeExploreHiercor(ndataset)
-  else if (rattleWidget("prcomp_radiobutton")$getActive())
+  else if (theWidget("prcomp_radiobutton")$getActive())
     executeExplorePrcomp(nidataset)
 }
 
@@ -2795,12 +2801,12 @@ executeExploreSummary <- function(dataset)
 
   ## Get the current state of the relevant buttons.
   
-  use.sample  <- rattleWidget("explore_sample_checkbutton")$getActive()
-  do.summary  <- rattleWidget("summary_checkbutton")$getActive()
-  do.describe <- rattleWidget("describe_checkbutton")$getActive()
-  do.basics   <- rattleWidget("basics_checkbutton")$getActive()
-  do.kurtosis <- rattleWidget("kurtosis_checkbutton")$getActive()
-  do.skewness <- rattleWidget("skewness_checkbutton")$getActive()
+  use.sample  <- theWidget("explore_sample_checkbutton")$getActive()
+  do.summary  <- theWidget("summary_checkbutton")$getActive()
+  do.describe <- theWidget("describe_checkbutton")$getActive()
+  do.basics   <- theWidget("basics_checkbutton")$getActive()
+  do.kurtosis <- theWidget("kurtosis_checkbutton")$getActive()
+  do.skewness <- theWidget("skewness_checkbutton")$getActive()
 
   ## Make sure something has been selected.
   
@@ -3013,7 +3019,7 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
-  pmax <- rattleWidget("plots_per_page_spinbutton")$getValue()
+  pmax <- theWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
   
   ## Iterate over all target values if a target is defined and has
@@ -3035,7 +3041,7 @@ executeExplorePlot <- function(dataset)
   
   ## Check for sampling.
   
-  use.sample <- rattleWidget("explore_sample_checkbutton")$getActive()
+  use.sample <- theWidget("explore_sample_checkbutton")$getActive()
   sampling  <- use.sample & ! is.null(crs$sample)
 
   ## Split the data, first for all values.
@@ -3322,7 +3328,7 @@ executeExplorePlot <- function(dataset)
   {
     ## Plot Benford's Law for numeric data.
 
-    barbutton <- rattleWidget("benford_bars_checkbutton")$getActive()
+    barbutton <- theWidget("benford_bars_checkbutton")$getActive()
     
     ## Using barplot2 from gplots
     
@@ -3772,7 +3778,7 @@ executeExploreCorrelation <- function(dataset)
 
   ## Deal with showing the missing values plot.
   
-  nas <- rattleWidget("correlation_na_checkbutton")$getActive()
+  nas <- theWidget("correlation_na_checkbutton")$getActive()
   if (nas)
   {
     naids.cmd <- sprintf('naids <- attr(na.omit(t(%s)), "na.action")\n',
@@ -4004,18 +4010,18 @@ executeExplorePrcomp <- function(dataset)
 on_evaluate_csv_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    rattleWidget("evaluate_filechooserbutton")$setSensitive(TRUE)
+    theWidget("evaluate_filechooserbutton")$setSensitive(TRUE)
   else
-    rattleWidget("evaluate_filechooserbutton")$setSensitive(FALSE)
+    theWidget("evaluate_filechooserbutton")$setSensitive(FALSE)
   setStatusBar()
 }
 
 on_evaluate_rdataset_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    rattleWidget("evaluate_rdataset_combobox")$setSensitive(TRUE)
+    theWidget("evaluate_rdataset_combobox")$setSensitive(TRUE)
   else
-    rattleWidget("evaluate_rdataset_combobox")$setSensitive(FALSE)
+    theWidget("evaluate_rdataset_combobox")$setSensitive(FALSE)
   setStatusBar()
 }
 
@@ -4031,13 +4037,13 @@ on_risk_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     EVALUATE$setCurrentPage(EVALUATE.RISK.TAB)
-    rattleWidget("evaluate_risk_variable_label")$setSensitive(TRUE)
-    rattleWidget("evaluate_risk_label")$setSensitive(TRUE)
+    theWidget("evaluate_risk_variable_label")$setSensitive(TRUE)
+    theWidget("evaluate_risk_label")$setSensitive(TRUE)
   }
   else
   {
-    rattleWidget("evaluate_risk_variable_label")$setSensitive(FALSE)
-    rattleWidget("evaluate_risk_label")$setSensitive(FALSE)
+    theWidget("evaluate_risk_variable_label")$setSensitive(FALSE)
+    theWidget("evaluate_risk_label")$setSensitive(FALSE)
   }  
   setStatusBar()
 }
@@ -4095,7 +4101,7 @@ getEvaluateModels <- function()
 
   models <- c()
   for (m in MODELLERS)
-    if (rattleWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
+    if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
       models <- c(models, m)
   return(models)
 }
@@ -4159,16 +4165,16 @@ executeEvaluateTab <- function()
   ## example, when loading a project and going straight to Evaluate,
   ## and wanting to run predict.svm on new data).
 
-  if (is.element(ADA, mtypes) &&
+  if (ADA %in%  mtypes &&
       ! packageIsAvailable("ada", "evaluate an adaboost model"))
     return()
-  if (is.element(KSVM, mtypes) &&
+  if (KSVM %in%  mtypes &&
       ! packageIsAvailable("kernlab", "evaluate this SVM"))
     return()
-  if (is.element(RF, mtypes) &&
+  if (RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
     return()
-  if (is.element(NNET, mtypes) &&
+  if (NNET %in%  mtypes &&
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
 
@@ -4180,7 +4186,7 @@ executeEvaluateTab <- function()
 
   addLogSeparator()
 
-  if (rattleWidget("evaluate_training_radiobutton")$getActive())
+  if (theWidget("evaluate_training_radiobutton")$getActive())
   {
     infoDialog("You are using the same dataset to evaluate your model as you",
                 "did to build it. This will give you an optimistic estimate",
@@ -4190,7 +4196,7 @@ executeEvaluateTab <- function()
                 "load a separate test dataset from a CSV File or a",
                 "pre-existing R Dataset here.")
 
-    if (rattleWidget("sample_checkbutton")$getActive())
+    if (theWidget("sample_checkbutton")$getActive())
       if (is.null(included))
         testset0 <- "crs$dataset[crs$sample,]"
       else
@@ -4203,7 +4209,7 @@ executeEvaluateTab <- function()
 
     testname <- sprintf("%s [**train**]", crs$dataname)
   }
-  else if (rattleWidget("evaluate_testing_radiobutton")$getActive())
+  else if (theWidget("evaluate_testing_radiobutton")$getActive())
   {
     if (is.null(included))
       testset0 <- "crs$dataset[-crs$sample,]"
@@ -4211,9 +4217,9 @@ executeEvaluateTab <- function()
       testset0 <- sprintf("crs$dataset[-crs$sample, %s]", included)
     testname <- sprintf("%s [test]", crs$dataname)
   }
-  else if (rattleWidget("evaluate_csv_radiobutton")$getActive())
+  else if (theWidget("evaluate_csv_radiobutton")$getActive())
   {
-    filename <- rattleWidget("evaluate_filechooserbutton")$getFilename()
+    filename <- theWidget("evaluate_filechooserbutton")$getFilename()
     setDefaultPath(filename)
 
     if (is.null(filename))
@@ -4258,9 +4264,9 @@ executeEvaluateTab <- function()
       testname <- crs$testname
     }
   }
-  else if (rattleWidget("evaluate_rdataset_radiobutton")$getActive())
+  else if (theWidget("evaluate_rdataset_radiobutton")$getActive())
   {
-    dataset <- rattleWidget("evaluate_rdataset_combobox")$
+    dataset <- theWidget("evaluate_rdataset_combobox")$
                getActiveText()
 
     if (is.null(dataset) || nchar(dataset) == 0)
@@ -4323,7 +4329,7 @@ executeEvaluateTab <- function()
   respcmd <- list() # Command string for response - class of entities
   probcmd <- list() # Command string for probability
   
-  if (is.element(ADA, mtypes))
+  if (ADA %in%  mtypes)
   {
     testset[[ADA]] <- testset0
 
@@ -4334,7 +4340,7 @@ executeEvaluateTab <- function()
                               gsub(")$", ', type="prob")', predcmd[[ADA]]))
   }
 
-##   if (is.element(NNET, mtypes))
+##   if ( NNET %in%  mtypes)
 ##   {
 ##     testset[[NNET]] <- testset0
 
@@ -4345,7 +4351,7 @@ executeEvaluateTab <- function()
 ##                               gsub(")$", ', type="class")', predcmd[[NNET]]))
 ##   }
 
-  if (is.element(RPART, mtypes))
+  if (RPART %in%  mtypes)
   {
     testset[[RPART]] <- testset0
     predcmd[[RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
@@ -4363,7 +4369,7 @@ executeEvaluateTab <- function()
     probcmd[[RPART]] <- sprintf("%s[,2]", predcmd[[RPART]])
   }
     
-  if (is.element(RF, mtypes))
+  if (RF %in%  mtypes)
   {
     testset[[RF]] <- testset0
     predcmd[[RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
@@ -4382,7 +4388,7 @@ executeEvaluateTab <- function()
 
   }
     
-  if (is.element(KSVM, mtypes))
+  if (KSVM %in%  mtypes)
   {
 
     ## For SVM and KSVM, we need to deal with NA's. The predict seems to
@@ -4459,7 +4465,7 @@ executeEvaluateTab <- function()
     ##                                  probability.cmd))
   }
     
-  if (is.element(GLM, mtypes))
+  if (GLM %in%  mtypes)
   {
     ## GLM's predict removes rows with missing values, so we also need
     ## to ensure we remove rows with missing values here.
@@ -4485,7 +4491,7 @@ executeEvaluateTab <- function()
   
   }
     
-##   if (is.element(GBM, mtypes))
+##   if (GBM %in%  mtypes)
 ##   {
 ##     testset[[GBM]] <- testset0
 
@@ -4501,7 +4507,7 @@ executeEvaluateTab <- function()
   ## Currently (and perhaps permanently) the ROCR package deals only
   ## with binary classification, as does my own Risk Chart.
   
-  if (!rattleWidget("confusion_radiobutton")$getActive()
+  if (!theWidget("confusion_radiobutton")$getActive()
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
@@ -4517,19 +4523,19 @@ executeEvaluateTab <- function()
 
   ## DISPATCH
   
-  if (rattleWidget("confusion_radiobutton")$getActive())
+  if (theWidget("confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)
-  else if (rattleWidget("risk_radiobutton")$getActive())
+  else if (theWidget("risk_radiobutton")$getActive())
     msg <- executeEvaluateRisk(probcmd, testset, testname)
-  else if (rattleWidget("roc_radiobutton")$getActive())
+  else if (theWidget("roc_radiobutton")$getActive())
     msg <- executeEvaluateROC(probcmd, testset, testname)
-  else if (rattleWidget("lift_radiobutton")$getActive())
+  else if (theWidget("lift_radiobutton")$getActive())
     msg <- executeEvaluateLift(probcmd, testset, testname)
-  else if (rattleWidget("precision_radiobutton")$getActive())
+  else if (theWidget("precision_radiobutton")$getActive())
     msg <- executeEvaluatePrecision(probcmd, testset, testname)
-  else if (rattleWidget("sensitivity_radiobutton")$getActive())
+  else if (theWidget("sensitivity_radiobutton")$getActive())
     msg <- executeEvaluateSensitivity(probcmd, testset, testname)
-  else if (rattleWidget("score_radiobutton")$getActive())
+  else if (theWidget("score_radiobutton")$getActive())
     msg <- executeEvaluateScore(probcmd, testset, testname)
 
   if (! is.null(msg)) setStatusBar(msg)
@@ -5708,7 +5714,7 @@ switchToPage <- function(page)
       ## sensitive.
 
       lapply(mtypes,
-             function(x) rattleWidget(paste(x, "_evaluate_checkbutton",
+             function(x) theWidget(paste(x, "_evaluate_checkbutton",
                                             sep=""))$setSensitive(TRUE))
       
       if (is.null(crs$page) || crs$page == NOTEBOOK.MODEL.NAME)
@@ -5719,7 +5725,7 @@ switchToPage <- function(page)
         ## just built model (usually). The NULL test on crs$page
         ## simply covers the loading of a project that did not save
         ## the crs$page, as was the case for old project files.
-        rattleWidget(paste(currentModelTab(), "_evaluate_checkbutton",
+        theWidget(paste(currentModelTab(), "_evaluate_checkbutton",
                            sep=""))$setActive(TRUE)
       }
     }
@@ -5733,13 +5739,13 @@ switchToPage <- function(page)
   
   if (page == NOTEBOOK.LOG.NAME)
   {
-    rattleWidget("execute_button")$setSensitive(FALSE)
-    rattleWidget("execute_menu")$setSensitive(FALSE)
+    theWidget("execute_button")$setSensitive(FALSE)
+    theWidget("execute_menu")$setSensitive(FALSE)
   }
   else
   {
-    rattleWidget("execute_button")$setSensitive(TRUE)
-    rattleWidget("execute_menu")$setSensitive(TRUE)
+    theWidget("execute_button")$setSensitive(TRUE)
+    theWidget("execute_menu")$setSensitive(TRUE)
   }
     
   ## Record the current page so when we change we know which was last.

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-10-28 07:37:23 Graham Williams>
+## Time-stamp: <2007-01-07 12:10:31 Graham>
 ##
 ## Paradigm control.
 ##
@@ -30,7 +30,7 @@ on_twoclass_radiobutton_toggled <- function(button)
     ## Explore from the common pages list! Will result in one oddity,
     ## but we might get away with it.
 
-    if (crs$page != "" && ! is.element(crs$page, NOTEBOOK.COMMON.NAMES))
+    if (crs$page != "" && crs$page %notin% NOTEBOOK.COMMON.NAMES)
     {
       NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.NAME))
       switchToPage(NOTEBOOK.MODEL.NAME)
@@ -61,7 +61,7 @@ on_unsupervised_radiobutton_toggled <- function(button)
     ## If the previous current page is not one of the common pages,
     ## then make the newly inserted page the current page.
 
-    if (crs$page != "" && ! is.element(crs$page, NOTEBOOK.COMMON.NAMES))
+    if (crs$page != "" && crs$page %notin% NOTEBOOK.COMMON.NAMES)
     {
       NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
       switchToPage(NOTEBOOK.CLUSTER.NAME)

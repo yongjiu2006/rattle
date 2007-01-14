@@ -60,7 +60,7 @@ dispatchExecuteButton <- function()
     ## classes, since a message is printed about ROCR etc not handling
     ## any more than 2 classes.
     
-    rattleWidget("confusion_textview")$setWrapMode("none")
+    theWidget("confusion_textview")$setWrapMode("none")
     executeEvaluateTab()
   }
 }

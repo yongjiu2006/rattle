@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-06 08:32:25 Graham>
+## Time-stamp: <2007-01-07 12:00:33 Graham>
 ##
 ## MODEL TAB
 ##
@@ -100,27 +100,27 @@ on_kernlab_radiobutton_toggled <- function(button)
 currentModelTab <- function()
 {
   lb <- getCurrentPageLabel(MODEL)
-  if (lb == SVM && rattleWidget("kernlab_radiobutton")$getActive())
+  if (lb == SVM && theWidget("kernlab_radiobutton")$getActive())
     lb <- KSVM
   return(lb)
 }
 
 deactivateROCRPlots <- function()
 {
-  rattleWidget("lift_radiobutton")$setSensitive(FALSE)
-  rattleWidget("roc_radiobutton")$setSensitive(FALSE)
-  rattleWidget("precision_radiobutton")$setSensitive(FALSE)
-  rattleWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-  rattleWidget("risk_radiobutton")$setSensitive(FALSE)
+  theWidget("lift_radiobutton")$setSensitive(FALSE)
+  theWidget("roc_radiobutton")$setSensitive(FALSE)
+  theWidget("precision_radiobutton")$setSensitive(FALSE)
+  theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
+  theWidget("risk_radiobutton")$setSensitive(FALSE)
 }
 
 activateROCRPlots <- function()
 {
-  rattleWidget("lift_radiobutton")$setSensitive(TRUE)
-  rattleWidget("roc_radiobutton")$setSensitive(TRUE)
-  rattleWidget("precision_radiobutton")$setSensitive(TRUE)
-  rattleWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-  rattleWidget("risk_radiobutton")$setSensitive(TRUE)
+  theWidget("lift_radiobutton")$setSensitive(TRUE)
+  theWidget("roc_radiobutton")$setSensitive(TRUE)
+  theWidget("precision_radiobutton")$setSensitive(TRUE)
+  theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
+  theWidget("risk_radiobutton")$setSensitive(TRUE)
 }
 
 ########################################################################
@@ -147,13 +147,13 @@ executeModelTab <- function()
   weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
 
   if (! is.null(crs$weights)
-      && weights.display != rattleWidget("weight_entry")$getText())
+      && weights.display != theWidget("weight_entry")$getText())
   {
     errorDialog("You appear to have changed the formula for calculating the",
                 "weights on the Variables tab without executing the tab.",
                 "The previous formula",
                 sprintf('was "%s" and it is now "%s".', crs$weights,
-                        rattleWidget("weight_entry")$getText()),
+                        theWidget("weight_entry")$getText()),
                 "Please be sure to execute the Variables tab",
                 "before continuing.")
     return()
@@ -182,7 +182,7 @@ executeModelTab <- function()
   if (length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
   {
     deactivateROCRPlots()
-    rattleWidget("confusion_textview")$setWrapMode("word")
+    theWidget("confusion_textview")$setWrapMode("word")
     clearTextview("confusion_textview")
     appendTextview("confusion_textview",
                    "Note that the target you have chosen has more than",
@@ -200,25 +200,25 @@ executeModelTab <- function()
 
   ## DISPATCH
 
-  if (rattleWidget("all_models_radiobutton")$getActive())
+  if (theWidget("all_models_radiobutton")$getActive())
   {
     ## This order of execution should correspond to the order in the
     ## GUI as this makes most logical sense to the user.
     
     if (executeModelRPart())
-      rattleWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelAda())
-      rattleWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
+      theWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
     if (executeModelRF())
-      rattleWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelSVM())
-      rattleWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     if (executeModelGLM())
-      rattleWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
 ##     if (executeModelGBM())
-##       rattleWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+##       theWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
 ##     if (executeModelNNet())
-##       rattleWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
+##       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
 
     setStatusBar("All models have been generated.")
   }
@@ -232,7 +232,7 @@ executeModelTab <- function()
     executeModelAda()
   else if (currentModelTab() == RF)
     executeModelRF()
-  else if (is.element(currentModelTab(), c(SVM, KSVM)))
+  else if (currentModelTab() %in% c(SVM, KSVM))
     executeModelSVM()
 ##   else if (currentModelTab() == NNET)
 ##     executeModelNNet()
@@ -263,7 +263,7 @@ executeModelGLM <- function()
 
   ## Obtain the family
 
-  family <- rattleWidget("glm_family_comboboxentry")$getActiveText()
+  family <- theWidget("glm_family_comboboxentry")$getActiveText()
   
   ## Build the formula for the model.
 
@@ -340,7 +340,7 @@ executeModelSVM <- function()
   ## essentially I think it is an issue with svm using all variables,
   ## so I had to clean up my handling of NAs.
   
-  useKernlab <- rattleWidget("kernlab_radiobutton")$getActive()
+  useKernlab <- theWidget("kernlab_radiobutton")$getActive()
 
   TV <- ifelse(useKernlab, "ksvm_textview", "esvm_textview")
   
@@ -517,7 +517,7 @@ exportModelTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  if (rattleWidget("rpart_radiobutton")$getActive())
+  if (theWidget("rpart_radiobutton")$getActive())
   {
     exportRpartTab()
   }

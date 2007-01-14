@@ -61,9 +61,9 @@ executeClusterTab <- function()
 
   ## Dispatch.
 
-  if (rattleWidget("kmeans_radiobutton")$getActive())
+  if (theWidget("kmeans_radiobutton")$getActive())
     executeClusterKMeans(include)
-  else if (rattleWidget("hclust_radiobutton")$getActive())
+  else if (theWidget("hclust_radiobutton")$getActive())
     executeClusterHClust(include)
 }
 
@@ -79,8 +79,8 @@ executeClusterKMeans <- function(include)
 
   ## Obtain interface information.
   
-  nclust <- rattleWidget("kmeans_clusters_spinbutton")$getValue()
-  seed <- rattleWidget("kmeans_seed_spinbutton")$getValue()
+  nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
+  seed <- theWidget("kmeans_seed_spinbutton")$getValue()
   
   addLogSeparator("KMEANS CLUSTER")
 
@@ -110,8 +110,8 @@ executeClusterKMeans <- function(include)
 
   ## Ensure the kmeans buttons are now active
 
-  rattleWidget("kmeans_stats_button")$setSensitive(TRUE)
-  rattleWidget("kmeans_plot_button")$setSensitive(TRUE)
+  theWidget("kmeans_stats_button")$setSensitive(TRUE)
+  theWidget("kmeans_plot_button")$setSensitive(TRUE)
   
   setStatusBar("K Means cluster has been generated.",
                "You may need to scroll the textview to see them." )
@@ -121,7 +121,7 @@ executeClusterKMeans <- function(include)
 on_kmeans_seed_button_clicked <- function(button)
 {
   rseed <- as.integer(runif(1, 0, 1000000))
-  rattleWidget("kmeans_seed_spinbutton")$setValue(rseed)
+  theWidget("kmeans_seed_spinbutton")$setValue(rseed)
 }
 
 on_help_kmeans_activate <- function(action, window)
@@ -304,11 +304,11 @@ executeClusterHClust <- function(include)
   appendTextview(TV, "Hiearchical Cluster\n",
                  collectOutput("crs$hclust", TRUE))
 
-  rattleWidget("hclust_dendrogram_button")$setSensitive(TRUE)
-  rattleWidget("hclust_clusters_label")$setSensitive(TRUE)
-  rattleWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
-  rattleWidget("hclust_stats_button")$setSensitive(TRUE)
-  rattleWidget("hclust_plot_button")$setSensitive(TRUE)
+  theWidget("hclust_dendrogram_button")$setSensitive(TRUE)
+  theWidget("hclust_clusters_label")$setSensitive(TRUE)
+  theWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
+  theWidget("hclust_stats_button")$setSensitive(TRUE)
+  theWidget("hclust_plot_button")$setSensitive(TRUE)
 
   setStatusBar("Hierarchical cluster has been generated.")
   
@@ -372,7 +372,7 @@ on_hclust_stats_button_clicked <- function(button)
   ## cluster, and so we don't need to check so many conditions.
 
   TV <- "hclust_textview"
-  num.clusters <- rattleWidget("hclust_clusters_spinbutton")$getValue()
+  num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
   sampling  <- ! is.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
@@ -425,7 +425,7 @@ on_hclust_plot_button_clicked <- function(button)
   ## cluster, and so we don't need to check so many conditions.
 
   sampling  <- ! is.null(crs$sample)
-  num.clusters <- rattleWidget("hclust_clusters_spinbutton")$getValue()
+  num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
@@ -528,9 +528,9 @@ exportClusterTab <- function()
   ## Background information
 
   cluster.type <- ""
-  if (rattleWidget("kmeans_radiobutton")$getActive())
+  if (theWidget("kmeans_radiobutton")$getActive())
     cluster.type <- "kmeans"
-  else if (rattleWidget("hclust_radiobutton")$getActive())
+  else if (theWidget("hclust_radiobutton")$getActive())
     cluster.type <- "hclust"
   
   ## Obtain filename to write the clusters to.
@@ -572,9 +572,9 @@ exportClusterTab <- function()
                                 "this file?")))
       return()
 
-  if (rattleWidget("kmeans_radiobutton")$getActive())
+  if (theWidget("kmeans_radiobutton")$getActive())
     exportKMeans(save.name)
-  else if (rattleWidget("hclust_radiobutton")$getActive())
+  else if (theWidget("hclust_radiobutton")$getActive())
     exportHClust(save.name)
 
   return()
@@ -602,7 +602,7 @@ exportHClust <- function(file)
 
 ##     if (noDatasetLoaded()) return()
 ##     require(XML, quietly=TRUE)
-##     if (rattleWidget("kmeans_radiobutton")$getActive())
+##     if (theWidget("kmeans_radiobutton")$getActive())
 ##     {
 ##       if (is.null(crs$kmeans))
 ##       {
@@ -621,7 +621,7 @@ exportHClust <- function(file)
 ##                     "has been written.")
 ##       }
 ##     }
-##     else if (rattleWidget("hclust_radiobutton")$getActive())
+##     else if (theWidget("hclust_radiobutton")$getActive())
 ##     {
 ##       errorDialog("PMML export for hierarchical clustering is not yet",
 ##                    "implemented.")
