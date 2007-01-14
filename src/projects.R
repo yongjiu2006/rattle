@@ -117,24 +117,24 @@ saveProject <- function()
 
   ## Save seed information
 
-  crs$sample.seed <<- rattleWidget("sample_seed_spinbutton")$getValue()
-  crs$kmeans.seed <<- rattleWidget("kmeans_seed_spinbutton")$getValue()
+  crs$sample.seed <<- theWidget("sample_seed_spinbutton")$getValue()
+  crs$kmeans.seed <<- theWidget("kmeans_seed_spinbutton")$getValue()
   
   ## Save Model options
 
-  crs$rpart.opt$priors <<- rattleWidget("rpart_priors_entry")$getText()
-  crs$rpart.opt$loss   <<- rattleWidget("rpart_loss_entry")$getText()
-  crs$rpart.opt$split  <<- rattleWidget("rpart_minsplit_spinbutton")$getValue()
-  crs$rpart.opt$depth  <<- rattleWidget("rpart_maxdepth_spinbutton")$getValue()
-  crs$rpart.opt$cp     <<- rattleWidget("rpart_cp_spinbutton")$getValue()
-  crs$rpart.opt$bucket <<- rattleWidget("rpart_minbucket_spinbutton")$getValue()
+  crs$rpart.opt$priors <<- theWidget("rpart_priors_entry")$getText()
+  crs$rpart.opt$loss   <<- theWidget("rpart_loss_entry")$getText()
+  crs$rpart.opt$split  <<- theWidget("rpart_minsplit_spinbutton")$getValue()
+  crs$rpart.opt$depth  <<- theWidget("rpart_maxdepth_spinbutton")$getValue()
+  crs$rpart.opt$cp     <<- theWidget("rpart_cp_spinbutton")$getValue()
+  crs$rpart.opt$bucket <<- theWidget("rpart_minbucket_spinbutton")$getValue()
 
-  crs$rf.opt$trees     <<- rattleWidget("rf_ntree_spinbutton")$getValue()
-  crs$rf.opt$vars      <<- rattleWidget("rf_mtry_spinbutton")$getValue()
-  crs$rf.opt$sample    <<- rattleWidget("rf_sampsize_entry")$getText()
-  crs$rf.opt$proximity <<- rattleWidget("rf_proximity_checkbutton")$getActive()
+  crs$rf.opt$trees     <<- theWidget("rf_ntree_spinbutton")$getValue()
+  crs$rf.opt$vars      <<- theWidget("rf_mtry_spinbutton")$getValue()
+  crs$rf.opt$sample    <<- theWidget("rf_sampsize_entry")$getText()
+  crs$rf.opt$proximity <<- theWidget("rf_proximity_checkbutton")$getActive()
 
-  crs$glm.opt$family   <<- rattleWidget("glm_family_comboboxentry")$getActive()
+  crs$glm.opt$family   <<- theWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
   addLogSeparator()
@@ -218,7 +218,7 @@ loadProject <- function()
 
   ## DATA
 
-  rattleWidget("csv_filechooserbutton")$setFilename("")
+  theWidget("csv_filechooserbutton")$setFilename("")
   
   setTextviewContents("data_textview", crs$text$data)
   
@@ -232,16 +232,16 @@ loadProject <- function()
   executeVariablesTab()
   
   if (!is.null(crs$risk))
-    rattleWidget("evaluate_risk_label")$setText(crs$risk)
+    theWidget("evaluate_risk_label")$setText(crs$risk)
   
   ## VARIABLES
 
   if (! is.null(crs$weights))
   {
     weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
-    rattleWidget("weight_entry")$setText(weights.display)
+    theWidget("weight_entry")$setText(weights.display)
     the.weight <- sprintf("Weights: %s",weights.display)
-    rattleWidget("rpart_weights_label")$setText(the.weight)
+    theWidget("rpart_weights_label")$setText(the.weight)
     crs$weights <<- crs$weights
   }
 
@@ -255,14 +255,14 @@ loadProject <- function()
     nrows <- nrow(crs$dataset)
     srows <- length(crs$sample)
     per <- 100*srows/nrows
-    rattleWidget("sample_checkbutton")$setActive(TRUE)
-    rattleWidget("sample_count_spinbutton")$setRange(1,nrows)
-    rattleWidget("sample_count_spinbutton")$setValue(srows)
+    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("sample_count_spinbutton")$setRange(1,nrows)
+    theWidget("sample_count_spinbutton")$setValue(srows)
     if (! is.null(crs$sample.seed))
-      rattleWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
+      theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
     else
-      rattleWidget("sample_seed_spinbutton")$setValue(123)
-    rattleWidget("sample_percentage_spinbutton")$setValue(per)
+      theWidget("sample_seed_spinbutton")$setValue(123)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   
   ## EXPLORE
@@ -276,9 +276,9 @@ loadProject <- function()
   crs$kmeans      <<- crs$kmeans
   crs$kmeans.seed <<- crs$kmeans.seed
   if (! is.null(crs$kmeans.seed))
-    rattleWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
+    theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
-    rattleWidget("kmeans_seed_spinbutton")$setValue(123)
+    theWidget("kmeans_seed_spinbutton")$setValue(123)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
   crs$hclust   <<- crs$hclust
@@ -315,32 +315,32 @@ loadProject <- function()
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
   if (! is.null(crs$rpart.opt$priors))
-    rattleWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
+    theWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
   if (! is.null(crs$rpart.opt$loss))
-    rattleWidget("rpart_loss_entry")$setText(crs$rpart.opt$loss)
+    theWidget("rpart_loss_entry")$setText(crs$rpart.opt$loss)
   if (! is.null(crs$rpart.opt$split))
-    rattleWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart.opt$split)
+    theWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart.opt$split)
   if (! is.null(crs$rpart.opt$depth))
-    rattleWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart.opt$depth)
+    theWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart.opt$depth)
   if (! is.null(crs$rpart.opt$cp))
-    rattleWidget("rpart_cp_spinbutton")$setValue(crs$rpart.opt$cp)
+    theWidget("rpart_cp_spinbutton")$setValue(crs$rpart.opt$cp)
   if (! is.null(crs$rpart.opt$bucket))
-    rattleWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
+    theWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
 
   if (! is.null(crs$rf.opt$trees))
-    rattleWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
+    theWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
   if (! is.null(crs$rf.opt$vars))
-    rattleWidget("rf_mtry_spinbutton")$setValue(crs$rf.opt$vars)
+    theWidget("rf_mtry_spinbutton")$setValue(crs$rf.opt$vars)
   if (! is.null(crs$rf.opt$sample))
-    rattleWidget("rf_sampsize_entry")$setText(crs$rf.opt$sample)
+    theWidget("rf_sampsize_entry")$setText(crs$rf.opt$sample)
   if (! is.null(crs$rf.opt$proximity))
-    rattleWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
+    theWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
 
   if (! is.null(crs$svm))
-    rattleWidget("e1071_radiobutton")$setActive(TRUE)
+    theWidget("e1071_radiobutton")$setActive(TRUE)
 
   if (! is.null(crs$glm.opt$family))
-    rattleWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
+    theWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
 
   ## EVALUATE
 

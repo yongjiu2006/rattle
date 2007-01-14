@@ -102,7 +102,7 @@ addToLog <- function(start, ..., sep=" ", no.start=FALSE)
 
   ## Always place text at the end, irrespective of where the cursor is.
 
-  log.buf <- rattleWidget("log_textview")$getBuffer()
+  log.buf <- theWidget("log_textview")$getBuffer()
   location <- log.buf$getEndIter()$iter
 
   log.buf$insert(location, msg)
