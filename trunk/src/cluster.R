@@ -75,7 +75,7 @@ executeClusterTab <- function()
 executeClusterKMeans <- function(include)
 {
   TV <- "kmeans_textview"
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
 
   ## Obtain interface information.
   
@@ -161,7 +161,7 @@ on_kmeans_stats_button_clicked <- function(button)
   ## cluster, and so we don't need to check so many conditions.
 
   TV <- "kmeans_textview"
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
 
   include <- getNumericVariables()
   if (length(include) == 0)
@@ -206,7 +206,7 @@ on_kmeans_plot_button_clicked <- function(button)
   ## Some background information.  Assume we have already built the
   ## cluster, and so we don't need to check so many conditions.
 
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
@@ -261,7 +261,7 @@ executeClusterHClust <- function(include)
   
   lib.cmd <- "require(cba, quietly=TRUE)"
 
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
 
   hclust.cmd <- paste("crs$hclust <<- ",
                       sprintf('hclust(dist(crs$dataset[%s,%s]), "%s")',
@@ -373,7 +373,7 @@ on_hclust_stats_button_clicked <- function(button)
 
   TV <- "hclust_textview"
   num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
@@ -424,7 +424,7 @@ on_hclust_plot_button_clicked <- function(button)
   ## Some background information.  Assume we have already built the
   ## cluster, and so we don't need to check so many conditions.
 
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
   num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
@@ -490,7 +490,7 @@ on_hclust_plot_button_clicked <- function(button)
   
 ##   ## Some background information.
 
-##   sampling  <- ! is.null(crs$sample)
+##   sampling  <- not.null(crs$sample)
 ##   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
 ##   if (length(nums) > 0)
 ##   {
@@ -540,7 +540,7 @@ exportClusterTab <- function()
                                  "gtk-save", GtkResponseType["accept"])
 
   default.name <- paste(get.stem(crs$dataname), "_", cluster.type, sep="")
-  if(! is.null(crs$dataname)) dialog$setCurrentName(default.name)
+  if(not.null(crs$dataname)) dialog$setCurrentName(default.name)
 
   ff <- gtkFileFilterNew()
   ff$setName("R Files")

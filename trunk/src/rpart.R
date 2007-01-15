@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-09 13:01:22 Graham>
+## Time-stamp: <2007-01-15 20:28:19 Graham>
 ##
 ## RPART TAB
 ##
@@ -41,7 +41,7 @@ on_rpart_loss_comboboxentry_set_focus_child <- function(action, window)
                           var <- NULL
                         return(var)
                       }))
-  if (! is.null(ml))
+  if (not.null(ml))
   {
     action$getModel()$clear()
     lapply(ml, action$appendText)
@@ -262,8 +262,8 @@ executeModelRPart <- function()
   
   ## Some convenience booleans
 
-  sampling  <- ! is.null(crs$sample)
-  including <- ! is.null(included)
+  sampling  <- not.null(crs$sample)
+  including <- not.null(included)
   subsetting <- sampling || including
 
   ## Commands.
@@ -324,8 +324,7 @@ executeModelRPart <- function()
 
   ## Now that we have a model, make sure the plot button is sensitive.
   
-  theWidget("rpart_plot_button")$setSensitive(TRUE)
-  theWidget("rpart_rules_button")$setSensitive(TRUE)
+  makeRPartSensitive()
 
   ## Finish up.
   
@@ -335,6 +334,12 @@ executeModelRPart <- function()
   addToLog(time.msg)
   setStatusBar("An rpart model has been generated.", time.msg)
   return(TRUE)
+}
+
+makeRPartSensitive <- function(state=TRUE)
+{
+  theWidget("rpart_plot_button")$setSensitive(state)
+  theWidget("rpart_rules_button")$setSensitive(state)
 }
 
 ##----------------------------------------------------------------------
@@ -690,7 +695,7 @@ exportRpartTab <- function()
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
-  if(! is.null(crs$dataname))
+  if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_rpart", sep=""))
 
   ff <- gtkFileFilterNew()

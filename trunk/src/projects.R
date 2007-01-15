@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-30 09:08:10 Graham>
+## Time-stamp: <2007-01-15 20:33:42 Graham>
 ##
 ## Project functionality.
 ##
@@ -16,7 +16,7 @@ on_save_button_clicked <- function(action, window) { saveProject() }
 
 newProject <- function()
 {
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have requested to start a new project.",
                                "This will clear the current project (dataset",
@@ -122,18 +122,24 @@ saveProject <- function()
   
   ## Save Model options
 
-  crs$rpart.opt$priors <<- theWidget("rpart_priors_entry")$getText()
-  crs$rpart.opt$loss   <<- theWidget("rpart_loss_entry")$getText()
-  crs$rpart.opt$split  <<- theWidget("rpart_minsplit_spinbutton")$getValue()
-  crs$rpart.opt$depth  <<- theWidget("rpart_maxdepth_spinbutton")$getValue()
-  crs$rpart.opt$cp     <<- theWidget("rpart_cp_spinbutton")$getValue()
-  crs$rpart.opt$bucket <<- theWidget("rpart_minbucket_spinbutton")$getValue()
+  if (not.null(crs$rpart))
+  {
+    crs$rpart.opt$priors <<- theWidget("rpart_priors_entry")$getText()
+    crs$rpart.opt$loss   <<- theWidget("rpart_loss_entry")$getText()
+    crs$rpart.opt$split  <<- theWidget("rpart_minsplit_spinbutton")$getValue()
+    crs$rpart.opt$depth  <<- theWidget("rpart_maxdepth_spinbutton")$getValue()
+    crs$rpart.opt$cp     <<- theWidget("rpart_cp_spinbutton")$getValue()
+    crs$rpart.opt$bucket <<- theWidget("rpart_minbucket_spinbutton")$getValue()
+  }
 
-  crs$rf.opt$trees     <<- theWidget("rf_ntree_spinbutton")$getValue()
-  crs$rf.opt$vars      <<- theWidget("rf_mtry_spinbutton")$getValue()
-  crs$rf.opt$sample    <<- theWidget("rf_sampsize_entry")$getText()
-  crs$rf.opt$proximity <<- theWidget("rf_proximity_checkbutton")$getActive()
-
+  if (not.null(crs$rf))
+  {
+    crs$rf.opt$trees     <<- theWidget("rf_ntree_spinbutton")$getValue()
+    crs$rf.opt$vars      <<- theWidget("rf_mtry_spinbutton")$getValue()
+    crs$rf.opt$sample    <<- theWidget("rf_sampsize_entry")$getText()
+    crs$rf.opt$proximity <<- theWidget("rf_proximity_checkbutton")$getActive()
+  }
+    
   crs$glm.opt$family   <<- theWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
@@ -151,7 +157,7 @@ loadProject <- function()
 {
   ## Check if crs exists and if so warn about losing the current project.
 
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a project.",
                                "This will clear the old project (dataset and",
@@ -231,12 +237,12 @@ loadProject <- function()
                      crs$barplot, crs$dotplot)
   executeVariablesTab()
   
-  if (!is.null(crs$risk))
+  if (not.null(crs$risk))
     theWidget("evaluate_risk_label")$setText(crs$risk)
   
   ## VARIABLES
 
-  if (! is.null(crs$weights))
+  if (not.null(crs$weights))
   {
     weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
     theWidget("weight_entry")$setText(weights.display)
@@ -250,7 +256,7 @@ loadProject <- function()
   crs$sample      <<- crs$sample
   crs$sample.seed <<- crs$sample.seed
 
-  if (!is.null(crs$sample))
+  if (not.null(crs$sample))
   {
     nrows <- nrow(crs$dataset)
     srows <- length(crs$sample)
@@ -258,7 +264,7 @@ loadProject <- function()
     theWidget("sample_checkbutton")$setActive(TRUE)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
-    if (! is.null(crs$sample.seed))
+    if (not.null(crs$sample.seed))
       theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
     else
       theWidget("sample_seed_spinbutton")$setValue(123)
@@ -275,7 +281,7 @@ loadProject <- function()
   
   crs$kmeans      <<- crs$kmeans
   crs$kmeans.seed <<- crs$kmeans.seed
-  if (! is.null(crs$kmeans.seed))
+  if (not.null(crs$kmeans.seed))
     theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
     theWidget("kmeans_seed_spinbutton")$setValue(123)
@@ -290,56 +296,68 @@ loadProject <- function()
 
   crs$rpart    <<- crs$rpart
   setTextviewContents("rpart_textview", crs$text$rpart)
-  if (! is.null(crs$rpart)) require(rpart, quietly=TRUE)
+  if (not.null(crs$rpart)) require(rpart, quietly=TRUE)
   
   crs$rf       <<- crs$rf
   setTextviewContents("rf_textview", crs$text$rf)
-  if (! is.null(crs$rf)) require(randomForest, quietly=TRUE)
+  if (not.null(crs$rf)) require(randomForest, quietly=TRUE)
 
   crs$svm      <<- crs$svm
   setTextviewContents("esvm_textview", crs$text$esvm)
-  if (! is.null(crs$svm)) require(e1071, quietly=TRUE)
+  if (not.null(crs$svm)) require(e1071, quietly=TRUE)
 
   crs$ksvm     <<- crs$ksvm
   setTextviewContents("ksvm_textview", crs$text$ksvm)
-  if (! is.null(crs$ksvm)) require(kernlab, quietly=TRUE)
+  if (not.null(crs$ksvm)) require(kernlab, quietly=TRUE)
 
   crs$glm      <<- crs$glm
   setTextviewContents("glm_textview", crs$text$glm)
 
   crs$ada      <<- crs$ada
   setTextviewContents("ada_textview", crs$text$ada)
-  if (! is.null(crs$ada)) require(ada, quietly=TRUE)
+  if (not.null(crs$ada)) require(ada, quietly=TRUE)
 
   #REMOVE crs$gbm      <<- crs$gbm
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
-  if (! is.null(crs$rpart.opt$priors))
+  if (not.null(crs$rpart.opt$priors))
     theWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
-  if (! is.null(crs$rpart.opt$loss))
+  if (not.null(crs$rpart.opt$loss))
     theWidget("rpart_loss_entry")$setText(crs$rpart.opt$loss)
-  if (! is.null(crs$rpart.opt$split))
+  if (not.null(crs$rpart.opt$split))
     theWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart.opt$split)
-  if (! is.null(crs$rpart.opt$depth))
+  if (not.null(crs$rpart.opt$depth))
     theWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart.opt$depth)
-  if (! is.null(crs$rpart.opt$cp))
+  if (not.null(crs$rpart.opt$cp))
     theWidget("rpart_cp_spinbutton")$setValue(crs$rpart.opt$cp)
-  if (! is.null(crs$rpart.opt$bucket))
+  if (not.null(crs$rpart.opt$bucket))
     theWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
 
-  if (! is.null(crs$rf.opt$trees))
+  ## Make buttons sensitive for MODEL:RPART if there is an RPART model
+  
+  if (not.null(crs$rpart)) makeRPartSensitive()
+
+  ## Make buttons sensitive for MODEL:ADA if there is an ADA model
+  
+  if (not.null(crs$ada)) makeAdaSensitive()
+
+  if (not.null(crs$rf.opt$trees))
     theWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
-  if (! is.null(crs$rf.opt$vars))
+  if (not.null(crs$rf.opt$vars))
     theWidget("rf_mtry_spinbutton")$setValue(crs$rf.opt$vars)
-  if (! is.null(crs$rf.opt$sample))
+  if (not.null(crs$rf.opt$sample))
     theWidget("rf_sampsize_entry")$setText(crs$rf.opt$sample)
-  if (! is.null(crs$rf.opt$proximity))
+  if (not.null(crs$rf.opt$proximity))
     theWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
 
-  if (! is.null(crs$svm))
+  ## Make buttons sensitive for MODEL:RF if there is an RF model
+
+  if (not.null(crs$rf)) makeRandomForestSensitive()
+  
+  if (not.null(crs$svm))
     theWidget("e1071_radiobutton")$setActive(TRUE)
 
-  if (! is.null(crs$glm.opt$family))
+  if (not.null(crs$glm.opt$family))
     theWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
 
   ## EVALUATE

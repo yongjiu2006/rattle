@@ -40,7 +40,7 @@ exportLogTab <- function()
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
-  if(! is.null(crs$dataname)) dialog$setCurrentName(get.stem(crs$dataname))
+  if(not.null(crs$dataname)) dialog$setCurrentName(get.stem(crs$dataname))
 
   ff <- gtkFileFilterNew()
   ff$setName("R Files")
@@ -88,7 +88,7 @@ addLogSeparator <- function(msg=NULL)
   addToLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
                 "\n## Rattle timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
-  if (!is.null(msg))
+  if (not.null(msg))
     addToLog(paste(sep="", START.LOG.COMMENT, msg), no.start=TRUE)
 }
 

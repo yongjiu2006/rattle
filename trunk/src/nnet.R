@@ -79,8 +79,8 @@ executeModelNNet <- function()
 
   ## Some convenience booleans
 
-  sampling <- ! is.null(crs$sample)
-  including <- ! is.null(included)
+  sampling <- not.null(crs$sample)
+  including <- not.null(included)
   subsetting <- sampling
 
   ## Time the model building.
