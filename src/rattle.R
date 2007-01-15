@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-07 18:44:14 Graham>
+## Time-stamp: <2007-01-15 18:59:20 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -2838,16 +2838,24 @@ executeExploreSummary <- function(dataset)
 
   if (do.summary)
   {
+    ## Find the number of entities with any missing value for the
+    ## non-ignored variables.
+    
+    missing.cmd <- sprintf("length((na.omit(%s))@na.action)", dataset)
+    result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
+    if (inherits(result, "try-error")) missing <- 0
+    
     ## A basic summary.
-  
+
     summary.cmd <- sprintf("summary(%s)", dataset)
     addToLog("SUMMARY OF DATASET.", summary.cmd)
     appendTextview(TV,
                    paste("Summary of the ",
                          ifelse(use.sample & sampling, "** sample **", "full"),
-                         " dataset.\n\n",
-                         "(Hint: 25% of values are below 1st Quartile.)",
-                         "\n\n", sep=""),
+                         " dataset.\n\n", sep=""),
+                   sprintf("The data contains %d entities with missing values.",
+                           missing),
+                   "\n\n(Hint: 25% of values are below 1st Quartile.)\n\n",
                    collectOutput(summary.cmd, TRUE))
   }
 

@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_nnet_radiobutton_toggled}
 \alias{on_ada_draw_button_clicked}
 \alias{on_ada_errors_button_clicked}
 \alias{on_ada_list_button_clicked}
