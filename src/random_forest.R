@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-09 12:39:27 Graham>
+## Time-stamp: <2007-01-15 20:14:27 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -112,8 +112,8 @@ executeModelRF <- function()
   
   ## Some convenience booleans
 
-  sampling <- ! is.null(crs$sample)
-  including <- ! is.null(included)
+  sampling <- not.null(crs$sample)
+  including <- not.null(included)
   subsetting <- sampling || including
 
   ## Start the log
@@ -189,12 +189,9 @@ executeModelRF <- function()
 
   if (sampling) crs$smodel <<- union(crs$smodel, RF)
 
-  ## Now that we have a model, make sure the plot button is sensitive.
-  
-  theWidget("rf_importance_button")$setSensitive(TRUE)
-  theWidget("rf_errors_button")$setSensitive(TRUE)
-  theWidget("rf_print_tree_button")$setSensitive(TRUE)
-  theWidget("rf_print_tree_spinbutton")$setSensitive(TRUE)
+  ## Now that we have a model, make sure the buttons are sensitive.
+
+  makeRandomForestSensitive()
 
   ## Finish up.
 
@@ -204,6 +201,14 @@ executeModelRF <- function()
   addToLog(time.msg)
   setStatusBar("A randomForest model has been generated.", time.msg)
   return(TRUE)
+}
+
+makeRandomForestSensitive <- function(state=TRUE)
+{
+  theWidget("rf_importance_button")$setSensitive(state)
+  theWidget("rf_errors_button")$setSensitive(state)
+  theWidget("rf_print_tree_button")$setSensitive(state)
+  theWidget("rf_print_tree_spinbutton")$setSensitive(state)
 }
 
 plotRandomForestImportance <- function()

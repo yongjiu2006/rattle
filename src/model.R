@@ -146,7 +146,7 @@ executeModelTab <- function()
 
   weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
 
-  if (! is.null(crs$weights)
+  if (not.null(crs$weights)
       && weights.display != theWidget("weight_entry")$getText())
   {
     errorDialog("You appear to have changed the formula for calculating the",
@@ -275,8 +275,8 @@ executeModelGLM <- function()
   
   ## Some convenience booleans.
 
-  sampling  <- ! is.null(crs$sample)
-  including <- ! is.null(included)
+  sampling  <- not.null(crs$sample)
+  including <- not.null(included)
   subsetting <- sampling || including
   
   ## Assume logistic regression for binary classification for now.
@@ -387,8 +387,8 @@ executeModelSVM <- function()
   
   ## Convenience booleans.
 
-  sampling   <- ! is.null(crs$sample)
-  including  <- ! is.null(included)
+  sampling   <- not.null(crs$sample)
+  including  <- not.null(included)
   subsetting <- sampling || including
 
   ## Parameters.

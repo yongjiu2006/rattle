@@ -28,7 +28,7 @@ executeModelGBM <- function()
   ## Check for ignored variables
 
   indicies <- NULL
-  if (! is.null(crs$input))
+  if (not.null(crs$input))
     indicies <- getVariableIndicies(crs$input)
 
   ## Build the formula for the model - why can't GBM use "."?
@@ -40,7 +40,7 @@ executeModelGBM <- function()
 
   ## Some convenience booleans
 
-  sampling <- ! is.null(crs$sample)
+  sampling <- not.null(crs$sample)
   subsetting <- sampling
 
   ## Greg Ridgway's advice is to use bernoulli, not adaboost or gaussian

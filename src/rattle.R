@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 18:59:20 Graham>
+## Time-stamp: <2007-01-15 20:29:08 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -433,7 +433,7 @@ resetRattle <- function()
   theWidget("weight_entry")$setText("")
   theWidget("rpart_weights_label")$setText("Weights:")
   
-  ## Reset RPART options.
+  ## Reset MODEL:RPART
   
   theWidget("rpart_priors_entry")$setText("")
   theWidget("rpart_loss_entry")$setText("")
@@ -441,6 +441,15 @@ resetRattle <- function()
   theWidget("rpart_maxdepth_spinbutton")$setValue(RPART.MAXDEPTH.DEFAULT)
   theWidget("rpart_cp_spinbutton")$setValue(RPART.CP.DEFAULT)
   theWidget("rpart_minbucket_spinbutton")$setValue(RPART.MINBUCKET.DEFAULT)
+  makeRPartSensitive(FALSE)
+
+  ## Reset MODEL:ADA
+  
+  makeAdaSensitive(FALSE)
+
+  ## Reset MODEL:RF
+  
+  makeRandomForestSensitive(FALSE)
   
   ## Update EXPLORE, MODEL and EVALUATE targets
 
@@ -477,6 +486,8 @@ resetRattle <- function()
 ## UTILITIES
 
 "%notin%" <- function(x,y) ! x %in% y
+
+not.null <- function(x) ! is.null(x)
 
 ## Common Dialogs
 
@@ -568,7 +579,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
 {
   if (pkg %notin% rownames(installed.packages()))
   {
-    if (!is.null(msg))
+    if (not.null(msg))
       infoDialog("The package", pkg, "is required to",
                  paste(msg, ".", sep=""),
                  "It does not appear to be installed.",
@@ -603,7 +614,7 @@ sampleNeedsExecute <- function()
   ## If sampling is inactive, make sure there is no sample.
 
   if (! theWidget("sample_checkbutton")$getActive()
-      && ! is.null(crs$sample))
+      && not.null(crs$sample))
   {
     errorDialog("Sampling is inactive but has not been Executed",
                  "since being made inactive.",
@@ -707,14 +718,14 @@ listBuiltModels <- function()
 #            is.null(crs$svm)))
   models <- c()
   for (m in MODELLERS)
-    if (! is.null(eval(parse(text=sprintf("crs$%s", m)))))
+    if (not.null(eval(parse(text=sprintf("crs$%s", m)))))
       models <- c(models, m)
   return(models)
 }
 
 setDefaultPath <- function(filename)
 {
-  if (! is.null(filename))
+  if (not.null(filename))
   {
     crs$cwd <<- dirname(filename)
     setwd(crs$cwd)
@@ -894,12 +905,12 @@ update_comboboxentry_with_dataframes <- function(action, window)
                           var <- NULL
                         return(var)
                       }))
-  if (! is.null(dl))
+  if (not.null(dl))
   {
     action$getModel()$clear()
     lapply(dl, action$appendText)
     ## Set the selection to that which was already selected, if possible.
-    if (! is.null(current) && current %in% dl)
+    if (not.null(current) && current %in% dl)
       action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
 }
@@ -1032,7 +1043,7 @@ load_rdata_set_combo <- function(button)
   ## Add new dataframes to the combo box.
 
   combobox <- theWidget("rdata_combobox")
-  if (! is.null(new.objects))
+  if (not.null(new.objects))
   {
     combobox$getModel()$clear()
     lapply(new.objects, combobox$appendText)
@@ -1072,7 +1083,7 @@ open_odbc_set_combo <- function(a, b)
   TV <- "data_textview"
   ## Close previous channel
 
-  if (! is.null(crs$odbc)) close(crs$odbc)
+  if (not.null(crs$odbc)) close(crs$odbc)
   
   ## Obtain name of the DNS.
 
@@ -1119,7 +1130,7 @@ open_odbc_set_combo <- function(a, b)
   ## Add list of tables to the combo box.
 
   combobox <- theWidget("odbc_combobox")
-  if (! is.null(tables))
+  if (not.null(tables))
   {
     combobox$getModel()$clear()
     lapply(tables, combobox$appendText)
@@ -1199,7 +1210,7 @@ executeDataCSV <- function()
 
   ## If there is a model warn about losing it.
 
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
@@ -1281,7 +1292,7 @@ executeDataODBC <- function()
   
   ## If there is a model warn about losing it.
 
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
@@ -1371,7 +1382,7 @@ executeDataRdata <- function()
 
   ## If there is a model warn about losing it.
 
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
@@ -1433,7 +1444,7 @@ executeDataRdataset <- function()
 
   ## Check if there is a model first and then warn about losing it.
 
-  if ( ! is.null(listBuiltModels()) )
+  if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have chosen to load a new dataset",
                                "into Rattle.",
@@ -1636,7 +1647,7 @@ executeVariablesTab <- function()
   
   ## Fail if the Target does not look like a taget.
 
-##   if (! is.null(target) && is.numeric(crs$dataset[[target]]) &&
+##   if (not.null(target) && is.numeric(crs$dataset[[target]]) &&
 ##       length(levels(as.factor(crs$dataset[[target]]))) > 20)
 ##   {
 ##     errorDialog("The column selected for your target",
@@ -1662,7 +1673,7 @@ executeVariablesTab <- function()
 
   ## Fail if the Risk column is not numeric.
 
-  if (! is.null(risk) && ! is.numeric(crs$dataset[[risk]]))
+  if (not.null(risk) && ! is.numeric(crs$dataset[[risk]]))
   {
     errorDialog("The column selected for your risk",
                  sprintf("(%s)", crs$dataset[[risk]]),
@@ -1672,7 +1683,7 @@ executeVariablesTab <- function()
 
   ## Obtain a list of variables and R functions in the Weight Calculator
 
-  if (! is.null(weights) && nchar(weights) > 0)
+  if (not.null(weights) && nchar(weights) > 0)
   {
     identifiers <- unlist(strsplit(weights, "[^a-zA-Z._]"))
     identifiers <- identifiers[nchar(identifiers) > 0]
@@ -1745,7 +1756,7 @@ executeVariablesTab <- function()
 
   ## Update MODEL weights
 
-  if (! is.null(crs$weights))
+  if (not.null(crs$weights))
   {
     weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
     the.weight <- sprintf("Weights: %s", weights.display)
@@ -2822,7 +2833,7 @@ executeExploreSummary <- function(dataset)
   ##   is there a sample
   ##   list of numeric variables
   
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
 
   numeric.cmd <- sprintf(paste("seq(1,ncol(%s))",
                                "[as.logical(sapply(%s, is.numeric))]",
@@ -2952,7 +2963,7 @@ executeExploreSummary <- function(dataset)
 getVariableIndicies <- function(variables)
 {
   indicies <- NULL
-  if (! is.null(variables))
+  if (not.null(variables))
     indicies <- unlist(lapply(variables, match, colnames(crs$dataset)))
   return(indicies)
 }
@@ -3050,13 +3061,13 @@ executeExplorePlot <- function(dataset)
   ## Check for sampling.
   
   use.sample <- theWidget("explore_sample_checkbutton")$getActive()
-  sampling  <- use.sample & ! is.null(crs$sample)
+  sampling  <- use.sample & not.null(crs$sample)
 
   ## Split the data, first for all values.
 
   bind.cmd <- sprintf('rbind(data.frame(dat=%s[,"%%s"], grp="All")', dataset)
 
-  if (! is.null(targets))
+  if (not.null(targets))
   {
     for (i in 1:length(targets))
     {
@@ -3100,7 +3111,7 @@ executeExplorePlot <- function(dataset)
   ## this approach rather than using bind.cmd.
 
   genericDataSet <- data.frame(All=sprintf('%s$%%s', dataset))
-  if (! is.null(targets))
+  if (not.null(targets))
     for (i in 1:length(targets))
     {
       tmpDataSet <- data.frame(New=sprintf('%s[crs$dataset%s$%s=="%s",]$%%s',
@@ -3258,7 +3269,7 @@ executeExplorePlot <- function(dataset)
 
   ##---------------------------------------------------------------------
   
-  if (! is.null(cumplots))
+  if (not.null(cumplots))
   {
     ## Cumulative plot for numeric data.
 
@@ -3275,7 +3286,7 @@ executeExplorePlot <- function(dataset)
                        sprintf('col="%s",', col[1]),
                        'xlab="",',
                        'subtitles=FALSE)\n')
-      if (! is.null(targets))
+      if (not.null(targets))
       for (t in 1:length(targets))
       {
         plot.cmd <- paste(plot.cmd,
@@ -3285,7 +3296,7 @@ executeExplorePlot <- function(dataset)
                          sep="")
       }
 
-      if (! is.null(targets))
+      if (not.null(targets))
         legend.cmd <- sprintf(paste('legend("bottomright", c(%s), ',
                                    "col=rainbow(%d), lty=1:%d,",
                                    'title="%s", inset=c(0.05,0.05))'),
@@ -3319,7 +3330,7 @@ executeExplorePlot <- function(dataset)
                                            cumplots[s],
                                            ifelse(sampling, " (sample)","")))
 
-      if (! is.null(targets))
+      if (not.null(targets))
       {
         addToLog("Add a legend to the plot.", legend.cmd)
         eval(parse(text=legend.cmd))
@@ -3364,7 +3375,7 @@ executeExplorePlot <- function(dataset)
                                       sprintf("rainbow(%d)[2]",
                                               length(targets)+2))),
                        sep="")
-      if (! is.null(targets))
+      if (not.null(targets))
         for (i in 1:length(targets))
         {
           plot.cmd <- sprintf(paste('%s\npoints(1:9, ds[%d,],',
@@ -3470,7 +3481,7 @@ executeExplorePlot <- function(dataset)
           data.cmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
                            'All=calcInitialDigitDistr(ds[ds$grp=="All", 1])')
         
-          if (! is.null(targets))
+          if (not.null(targets))
             for (t in 1:length(targets))
               data.cmd <- paste(data.cmd, ",\n     ",
                                sprintf('"%s"=', targets[t]),
@@ -3479,7 +3490,7 @@ executeExplorePlot <- function(dataset)
                                sep="")
           data.cmd <- paste(data.cmd, ")))", sep="")
 
-          if (! is.null(targets))
+          if (not.null(targets))
             if (barbutton)
               legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
                                          'fill=heat.colors(%d), title="%s")'),
@@ -3633,7 +3644,7 @@ executeExplorePlot <- function(dataset)
         ## plot, but only if there is a target, optherwise it is
         ## obvious.
         
-        if (! is.null(targets))
+        if (not.null(targets))
         {
           legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
                                      "fill=rainbow(%d), ",
@@ -3727,7 +3738,7 @@ executeExplorePlot <- function(dataset)
       addToLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
 
-      if (! is.null(target))
+      if (not.null(target))
       {
         legend.cmd <- sprintf(paste('legend("bottomright", bg="white",',
                                    'c("All","0","1"), col=rainbow(%d),',
@@ -4242,7 +4253,7 @@ executeEvaluateTab <- function()
                    
     ## Only load the test dataset if it is not already loaded.
     
-    if (! is.null(filename) &&
+    if (not.null(filename) &&
         (is.null(crs$testname) || (basename(filename) != crs$testname)))
     {
       ## Fix filename for MS/Windows - otherwise eval/parse strips the \\.
@@ -4308,7 +4319,7 @@ executeEvaluateTab <- function()
   ## might need to check for the former and error out if it is the
   ## case.
 
-  if (! is.null(crs$testname) && crs$testname != crs$dataname)
+  if (not.null(crs$testname) && crs$testname != crs$dataname)
     for (c in colnames(crs$dataset))
       if (is.factor(crs$dataset[[c]]))
         levels(crs$testset[[c]]) <<- c(levels(crs$testset[[c]]),
@@ -4546,7 +4557,7 @@ executeEvaluateTab <- function()
   else if (theWidget("score_radiobutton")$getActive())
     msg <- executeEvaluateScore(probcmd, testset, testname)
 
-  if (! is.null(msg)) setStatusBar(msg)
+  if (not.null(msg)) setStatusBar(msg)
 }
 
 ##----------------------------------------------------------------------
@@ -4830,13 +4841,13 @@ plotOptimalLine <- function(x, y1, y2, pr=NULL, colour="plum", label=NULL)
   lines(c(x, x), c(-13, max(y1, y2)), lty=6, col=colour)
   lines(c(-13, x), c(y1, y1), lty=6, col=colour)
   lines(c(-13, x), c(y2, y2), lty=6, col=colour)
-  if (!is.null(label))
+  if (not.null(label))
   {
     text(x, 0, label, pos=4)
     text(x, 0, sprintf("%2.0f%%", x), pos=2)
     text(0, y2, sprintf("%2.0f%%", y2), pos=3, offset=0.2)
     text(0, y1, sprintf("%2.0f%%", y1), pos=3, offset=0.2)
-    if (!is.null(pr))
+    if (not.null(pr))
       text(x, pr+4, sprintf("%2.0f%%", pr), pos=2)
   }
 }
@@ -4979,7 +4990,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 
   if (all(cl <= 1)) cl <- cl * 100
   if (all(re <= 1)) re <- re * 100
-  if (!is.null(ri) & all(ri <= 1.5)) ri <- ri * 100 # Can sometimes be just >1
+  if (not.null(ri) & all(ri <= 1.5)) ri <- ri * 100 # Can sometimes be just >1
   if (all(pr <= 1)) pr <- pr * 100
   #
   # If list is in min to max order then reverse
@@ -4996,7 +5007,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   #
   cl <- c(cl, 0)
   re <- c(re, 0)
-  if (!is.null(ri)) ri <- c(ri, 0)
+  if (not.null(ri)) ri <- c(ri, 0)
   pr <- c(pr, NA)
   #
   # Also add the 100 point just in case?
@@ -5005,7 +5016,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   {
     cl <- c(100, cl)
     re <- c(100, re)
-    if (!is.null(ri)) ri <- c(100, ri)
+    if (not.null(ri)) ri <- c(100, ri)
     pr <- c(min( pr[!is.na(pr)]), pr)
   }
   #
@@ -5016,14 +5027,14 @@ plotRisk <- function (cl, pr, re, ri=NULL,
        xlab="Caseload (%)", ylab="Performance (%)",
        ylim=c(0,100), xlim=c(0,100))
   grid.plot()
-  if (!is.null(title))
+  if (not.null(title))
     title(main=title, sub=paste("Rattle", Sys.time(), Sys.info()["user"]))
   points(re ~ cl, type='l', col=3, lty=5)
   points(pr ~ cl, type='l', col=4, lty=4)
-  if (!is.null(ri)) points(ri ~ cl, type='l', col=2, lty=1)
+  if (not.null(ri)) points(ri ~ cl, type='l', col=2, lty=1)
   if (include.baseline) text(100, pr[1]+4, sprintf("%0.0f%%", pr[1]))
   # Optimal
-  if (!is.null(optimal))
+  if (not.null(optimal))
   {
     optimal.index <- which(abs(cl-optimal) == min(abs(cl-optimal)))
     if (length(optimal.index) > 1) optimal.index <- optimal.index[1]
@@ -5031,7 +5042,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
                       pr[optimal.index], label=optimal.label)
   }
   # Chosen
-  if (!is.null(chosen))
+  if (not.null(chosen))
   {
     chosen.index <- which(abs(cl-chosen) == min(abs(cl-chosen)))
     if (length(chosen.index) > 1) chosen.index <- chosen.index[1]
@@ -5042,7 +5053,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   legend <- c()
   lty <- c()
   col <- c()
-  if (!is.null(ri))
+  if (not.null(ri))
   {
     auc <- calculateAUC(cl/100, ri/100)
     legend <- c(legend, sprintf("%s (%d%%)", risk.name, round(100*auc)))
@@ -5054,13 +5065,13 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   legend <- c(legend, precision.name)
   lty <- c(lty,5,4)
   col <- c(col,3,4)
-  if (!is.null(optimal))
+  if (not.null(optimal))
   {
     legend <- c(legend, "Optimal")
     lty <- c(lty,6)
     col <- c(col,"plum")
   }
-  if (!is.null(chosen))
+  if (not.null(chosen))
   {
     legend <- c(legend, "Chosen")
     lty <- c(lty,6)
@@ -5072,7 +5083,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   #
   # Add in knot labels
   #
-  if (!is.null(show.knots))
+  if (not.null(show.knots))
   {
     len <- length(cl)
     text(cl[c(-1,-len)]-2, ri[c(-1,-len)]+3, rev(show.knots)[-1])
@@ -5431,7 +5442,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 ##                                  "gtk-cancel", GtkResponseType["cancel"],
 ##                                  "gtk-save", GtkResponseType["accept"])
 
-##   if(! is.null(testname))
+##   if(not.null(testname))
 ##     dialog$setCurrentName(paste(get.stem(testname), "_", mtype, "_score"))
 
   ##  dialog$setCurrentFolder(crs$cwd)
@@ -5564,7 +5575,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
     ## with specifically removing just the rows that were removed in
     ## the predict command.
 
-    if (! is.null(omitted))
+    if (not.null(omitted))
       scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
     
     scoreset <- sprintf('subset(%s, select=c(%s))',
@@ -5716,7 +5727,7 @@ switchToPage <- function(page)
 
     mtypes <- listBuiltModels()
     
-    if (! is.null(mtypes) )
+    if (not.null(mtypes) )
     {
       ## We have some models, so make sure their checkboxes are
       ## sensitive.

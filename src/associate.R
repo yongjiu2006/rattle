@@ -121,7 +121,7 @@ executeAssociateTab <- function()
   
   ## Required information
   
-  sampling   <- ! is.null(crs$sample)
+  sampling   <- not.null(crs$sample)
   support    <- theWidget("associate_support_spinbutton")$getValue()
   confidence <- theWidget("associate_confidence_spinbutton")$getValue()
 
@@ -208,7 +208,7 @@ plotAssociateFrequencies <- function()
  
   ## Required information
   
-  sampling  <- ! is.null(crs$sample)
+  sampling  <- not.null(crs$sample)
   support <- theWidget("associate_support_spinbutton")$getValue()
 
   ## Transform data into a transactions dataset for arules.

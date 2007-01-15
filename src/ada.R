@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-30 11:39:50 Graham>
+## Time-stamp: <2007-01-15 20:28:27 Graham>
 ##
 ## ADA TAB 061215
 ##
@@ -80,8 +80,8 @@ executeModelAda <- function()
 
   ## Some convenience booleans
 
-  sampling <- ! is.null(crs$sample)
-  including <- ! is.null(included)
+  sampling <- not.null(crs$sample)
+  including <- not.null(included)
   subsetting <- sampling
 
   ## Time the model building.
@@ -129,13 +129,9 @@ executeModelAda <- function()
               collectOutput(print.cmd))
 
   ## Now that we have a model, make sure appropriate actions are sensitive.
-  
-  theWidget("ada_importance_button")$setSensitive(TRUE)
-  theWidget("ada_errors_button")$setSensitive(TRUE)
-  theWidget("ada_list_button")$setSensitive(TRUE)
-  theWidget("ada_draw_button")$setSensitive(TRUE)
-  theWidget("ada_draw_spinbutton")$setSensitive(TRUE)
 
+  makeAdaSensitive()
+  
   ## Finish up.
   
   time.taken <- Sys.time()-start.time
@@ -144,6 +140,15 @@ executeModelAda <- function()
   addToLog(time.msg)
   setStatusBar("An adaboost model has been generated.", time.msg)
   return(TRUE)
+}
+
+makeAdaSensitive <- function(state=TRUE)
+{
+  theWidget("ada_importance_button")$setSensitive(state)
+  theWidget("ada_errors_button")$setSensitive(state)
+  theWidget("ada_list_button")$setSensitive(state)
+  theWidget("ada_draw_button")$setSensitive(state)
+  theWidget("ada_draw_spinbutton")$setSensitive(state)
 }
 
 plotAdaImportance <- function()
