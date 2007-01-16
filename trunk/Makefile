@@ -17,6 +17,7 @@ REPOSITORY=repository
 MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
+FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 DATE:=$(shell date +%F)
 
@@ -43,6 +44,9 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 #temp:
 #	echo $(VERSION)
+#temp:
+#	grep REVISION src/rattle.R
+
 
 default: local
 
