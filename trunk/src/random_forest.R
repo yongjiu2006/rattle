@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 20:14:27 Graham>
+## Time-stamp: <2007-01-16 18:55:53 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -116,6 +116,31 @@ executeModelRF <- function()
   including <- not.null(included)
   subsetting <- sampling || including
 
+  ## Ensure we have some data - i.e., not all records will be removed
+  ## because they have missing values.
+
+  dataset <- paste("crs$dataset",
+                   if (subsetting) "[",
+                   if (sampling) "crs$sample",
+                   if (subsetting) ",",
+                   if (including) included,
+                   if (subsetting) "]",
+                   sep="")
+  missing.cmd <- sprintf("length((na.omit(%s))@na.action)", dataset)
+  result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
+  if (inherits(result, "try-error")) missing <- 0
+  dsrow.cmd <- sprintf("nrow(%s)", dataset)
+  result <- try(dsrow <- eval(parse(text=dsrow.cmd)), silent=TRUE)
+  if (inherits(result, "try-error")) dsrow <- 0
+  if (missing == dsrow)
+  {
+    errorDialog("Each entity in the dataset has at least one missing",
+                "value. A random forest can not be built. To fix, you can,",
+                "for example, remove any variable with vary many missing",
+                "values (NAs). Or else employ imputation.")
+    return()
+  }
+    
   ## Start the log
   
   addLogSeparator("RANDOM FOREST")
