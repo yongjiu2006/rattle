@@ -6,6 +6,9 @@
     changes on each release. </p>
 
 <pre>
+113 Transform tab now uses radio buttons in preparation for imputation etc.
+112 RF check if na.omit removes all entities (Michael Fogliani).
+111 Activate proper model buttons on project load.
 110 Report num entities with missing values in Summary (Michael Fogliani).
 109 Market basket with arules (Suggested by Daniele Medri).
 108 Initial nnet framework. Expose load/save commands in log. Bug fixes.
@@ -154,6 +157,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Jan 15 19:01:49 EST 2007
+Last modified: Wed Jan 17 06:53:54 EST 2007
 <!-- hhmts end -->
   </p>

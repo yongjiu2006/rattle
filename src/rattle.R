@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 20:29:08 Graham>
+## Time-stamp: <2007-01-17 06:45:51 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -272,6 +272,12 @@ rattle <- function()
   DATA.RDATA.TAB    <<- getNotebookPage(DATA, "rdata")
   DATA.RDATASET.TAB <<- getNotebookPage(DATA, "rdataset")
   DATA.ODBC.TAB     <<- getNotebookPage(DATA, "odbc")
+
+  TRANSFORM               <<- theWidget("transform_notebook")
+  TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(TRANSFORM, "sample")
+  TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(TRANSFORM, "impute")
+  TRANSFORM.FACTORISE.TAB <<- getNotebookPage(TRANSFORM, "factorise")
+  TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(TRANSFORM, "outlier")
   
   EXPLORE                 <<- theWidget("explore_notebook")
   EXPLORE.SUMMARY.TAB     <<- getNotebookPage(EXPLORE, "summary")
@@ -323,6 +329,7 @@ rattle <- function()
   ## Turn off the sub-notebook tabs.
   
   DATA$setShowTabs(FALSE)
+  TRANSFORM$setShowTabs(FALSE)
   EXPLORE$setShowTabs(FALSE)
   CLUSTER$setShowTabs(FALSE)
   MODEL$setShowTabs(FALSE)
