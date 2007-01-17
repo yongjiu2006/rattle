@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-17 06:45:51 Graham>
+## Time-stamp: <2007-01-17 19:28:15 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -5159,17 +5159,52 @@ executeEvaluateLift <- function(predcmd, testset, testname)
     eval(parse(text=plot.cmd))
     
   }
+
+  ## If just one model, and we are plotting the test dataset, then
+  ## also plot the training dataset.
+
+  if (nummodels == 1 && grep("\\[test\\]", testname))
+  {
+    mcount <- mcount + 1
+    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+                      sprintf("%s$%s),",
+                              sub("-crs\\$sample", "crs$sample",
+                                  testset[[mtype]]), crs$target),
+                      '"lift", "rpp"), ',
+                      'col="#00CCCCFF", lty=2, ',
+                      sprintf("add=%s)\n", addplot),
+                      sep="")
+    addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+                     mtype, sub('\\[test\\]', '[train]', testname)),
+             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
+                                   predcmd[[mtype]])), "\n", plot.cmd)
+
+    result <- try(eval(parse(text=sub("-crs\\$sample",
+                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+    eval(parse(text=plot.cmd))
+    models <- c("Test", "Train")
+    nummodels <- 2
+    legtitle <- getEvaluateModels()
+    title <- sub('\\[test\\]', '', testname)
+  }
+  else
+  {
+    models <- getEvaluateModels()
+    legtitle <- "Models"
+    title <- testname
+  }
+
   legendcmd <- paste('legend("topright",',
                      sprintf("c(%s),",
-                             paste('"', getEvaluateModels(), '"',
+                             paste('"', models, '"',
                                    sep="", collapse=",")),
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
-                     'title="Models", inset=c(0.05, 0.05))')
+                     sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
   addToLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
-  decorcmd <- paste(genPlotTitleCmd("Lift Chart", "", testname),
+  decorcmd <- paste(genPlotTitleCmd("Lift Chart", "", title),
                     '\ngrid()', sep="")
   addToLog("Add decorations to the plot.", decorcmd)
   eval(parse(text=decorcmd))
@@ -5252,17 +5287,51 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   }
   lines(c(0,1), c(0,1)) # Baseline
 
+  ## If just one model, and we are plotting the test dataset, then
+  ## also plot the training dataset.
+
+  if (nummodels == 1 && grep("\\[test\\]", testname))
+  {
+    mcount <- mcount + 1
+    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+                      sprintf("%s$%s),",
+                              sub("-crs\\$sample", "crs$sample",
+                                  testset[[mtype]]), crs$target),
+                      '"tpr", "fpr"), ',
+                      'col="#00CCCCFF", lty=2, ',
+                      sprintf("add=%s)\n", addplot),
+                      sep="")
+    addToLog(sprintf("Generate an ROC Curve for the %s model on %s.",
+                     mtype, sub('\\[test\\]', '[train]', testname)),
+             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
+                                   predcmd[[mtype]])), "\n", plot.cmd)
+
+    result <- try(eval(parse(text=sub("-crs\\$sample",
+                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+    eval(parse(text=plot.cmd))
+    models <- c("Test", "Train")
+    nummodels <- 2
+    legtitle <- getEvaluateModels()
+    title <- sub('\\[test\\]', '', testname)
+  }
+  else
+  {
+    models <- getEvaluateModels()
+    legtitle <- "Models"
+    title <- testname
+  }
+
   legendcmd <- paste('legend("bottomright",',
                      sprintf("c(%s),",
-                             paste('"', getEvaluateModels(), '"',
+                             paste('"', models, '"',
                                    sep="", collapse=",")),
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
-                     'title="Models", inset=c(0.05, 0.05))')
+                     sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
   addToLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
-  decor.cmd <- paste(genPlotTitleCmd("ROC Curve", "", testname),
+  decor.cmd <- paste(genPlotTitleCmd("ROC Curve", "", title),
                     '\ngrid()', sep="")
   addToLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
@@ -5331,22 +5400,56 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
     eval(parse(text=plot.cmd))
   }
 
+  ## If just one model, and we are plotting the test dataset, then
+  ## also plot the training dataset.
+
+  if (nummodels == 1 && grep("\\[test\\]", testname))
+  {
+    mcount <- mcount + 1
+    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+                      sprintf("%s$%s),",
+                              sub("-crs\\$sample", "crs$sample",
+                                  testset[[mtype]]), crs$target),
+                      '"prec", "rec"), ',
+                      'col="#00CCCCFF", lty=2, ',
+                      sprintf("add=%s)\n", addplot),
+                      sep="")
+    addToLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
+                     mtype, sub('\\[test\\]', '[train]', testname)),
+             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
+                                   predcmd[[mtype]])), "\n", plot.cmd)
+
+    result <- try(eval(parse(text=sub("-crs\\$sample",
+                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+    eval(parse(text=plot.cmd))
+    models <- c("Test", "Train")
+    nummodels <- 2
+    legtitle <- getEvaluateModels()
+    title <- sub('\\[test\\]', '', testname)
+  }
+  else
+  {
+    models <- getEvaluateModels()
+    legtitle <- "Models"
+    title <- testname
+  }
+
   legendcmd <- paste('legend("bottomleft",',
                      sprintf("c(%s),",
-                             paste('"', getEvaluateModels(), '"',
+                             paste('"', models, '"',
                                    sep="", collapse=",")),
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
-                     'title="Models", inset=c(0.05, 0.05))')
+                     sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
   addToLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
-  decor.cmd <- paste(genPlotTitleCmd("Precision/Recall Chart", "", testname),
+  decor.cmd <- paste(genPlotTitleCmd("Precision/Recall Chart", "", title),
                     '\ngrid()', sep="")
   addToLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
   
-  return(sprintf("Generated Precision/Recall Plot on %s.", testname))
+  return(sprintf("Generated Precision/Recall Plot on %s.", title))
 }
 
 ##----------------------------------------------------------------------
@@ -5409,18 +5512,52 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
 
     eval(parse(text=plot.cmd))
   }
+  ## If just one model, and we are plotting the test dataset, then
+  ## also plot the training dataset.
+
+  if (nummodels == 1 && grep("\\[test\\]", testname))
+  {
+    mcount <- mcount + 1
+    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+                      sprintf("%s$%s),",
+                              sub("-crs\\$sample", "crs$sample",
+                                  testset[[mtype]]), crs$target),
+                      '"sens", "spec"), ',
+                      'col="#00CCCCFF", lty=2, ',
+                      sprintf("add=%s)\n", addplot),
+                      sep="")
+    addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+                     mtype, sub('\\[test\\]', '[train]', testname)),
+             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
+                                   predcmd[[mtype]])), "\n", plot.cmd)
+
+    result <- try(eval(parse(text=sub("-crs\\$sample",
+                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+    eval(parse(text=plot.cmd))
+    models <- c("Test", "Train")
+    nummodels <- 2
+    legtitle <- getEvaluateModels()
+    title <- sub('\\[test\\]', '', testname)
+  }
+  else
+  {
+    models <- getEvaluateModels()
+    legtitle <- "Models"
+    title <- testname
+  }
+
   legendcmd <- paste('legend("bottomleft",',
                      sprintf("c(%s),",
-                             paste('"', getEvaluateModels(), '"',
+                             paste('"', models, '"',
                                    sep="", collapse=",")),
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
-                     'title="Models", inset=c(0.05, 0.05))')
+                     sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
   addToLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
   decor.cmd <- paste(genPlotTitleCmd("Sensitivity/Specificity (tpr/tnr)", "",
-                                    testname),
+                                    title),
                     '\ngrid()', sep="")
   addToLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
