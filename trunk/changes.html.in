@@ -6,6 +6,7 @@
     changes on each release. </p>
 
 <pre>
+114 ROC plots of one model/testset also plot training (Robert Williams).
 113 Transform tab now uses radio buttons in preparation for imputation etc.
 112 RF check if na.omit removes all entities (Michael Fogliani).
 111 Activate proper model buttons on project load.
@@ -157,6 +158,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Jan 17 06:53:54 EST 2007
+Last modified: Wed Jan 17 19:32:04 EST 2007
 <!-- hhmts end -->
   </p>
