@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-17 19:28:15 Graham>
+## Time-stamp: <2007-01-18 21:27:14 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -147,11 +147,13 @@ rattle <- function()
   ## These are double arrow assigned here to place them in .GlobalEnv. I
   ## couldn't figure out an easy way to keep them scoped locally.
   
-  ## VARIABLES Treeview Columns
+  ## Various Treeview Columns
 
   COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
 
+  IMPUTE <<- c(number=0, variable=1, zero=2, comment=3)
+  
   CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
                     dotplot = 3, comment = 4)
 
@@ -418,6 +420,9 @@ resetRattle <- function()
   ## Set all sub tabs back to the default tab page and reflect this in
   ## the appropriate radio button.
 
+  TRANSFORM$setCurrentPage(TRANSFORM.SAMPLE.TAB)
+  theWidget("sample_radiobutton")$setActive(TRUE)
+  
   EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
@@ -434,6 +439,7 @@ resetRattle <- function()
   ## Reset the VARIABLES tab.
   
   theWidget("variables_treeview")$getModel()$clear()
+  theWidget("impute_treeview")$getModel()$clear()
   theWidget("categorical_treeview")$getModel()$clear()
   theWidget("continuous_treeview")$getModel()$clear()
 
@@ -1168,13 +1174,14 @@ executeDataTab <- function()
 
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                risk=NULL, ident=NULL, ignore=NULL,
+                               zero=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
                                barplot=NULL, dotplot=NULL)
 {
   ## Update the variables treeview with the dataset variables.
 
-  createVariablesModel(variables, input, target, risk, ident, ignore,
+  createVariablesModel(variables, input, target, risk, ident, ignore, zero,
                        boxplot, hisplot, cumplot, benplot, barplot, dotplot)
 
   ## Turn sampling on, set range bounds and generate the default 70%
@@ -1191,7 +1198,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   theWidget("sample_count_spinbutton")$setValue(srows)
   theWidget("sample_percentage_spinbutton")$setValue(per)
 
-  executeSampleTab()
+  executeTransformSample()
 
 }
 
@@ -1805,21 +1812,31 @@ getSelectedVariables <- function(role, named=TRUE)
   ## same in each of COLUMNS, CATEGORICAL, and CONTINUOUS.
 
   variables <- NULL
+
   if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
     model <- theWidget("variables_treeview")$getModel()
     rcol  <- COLUMN[[role]]
   }
+
   else if (role %in% c("boxplot", "hisplot", "cumplot", "benplot"))
   {
     model <- theWidget("continuous_treeview")$getModel()
     rcol  <- CONTINUOUS[[role]]
   }
+
   else if (role %in% c("barplot", "dotplot"))
   {
     model <- theWidget("categorical_treeview")$getModel()
     rcol  <- CATEGORICAL[[role]]
   }
+
+  else if (role %in% c("zero"))
+  {
+    model <- theWidget("impute_treeview")$getModel()
+    rcol  <- IMPUTE[[role]]
+  }
+  
   else
     return(variables)
 
@@ -1846,6 +1863,9 @@ initialiseVariableViews <- function()
                            "gboolean", "gboolean", "gboolean", "gboolean",
                            "gboolean", "gchararray")
 
+  impute <- gtkListStoreNew("gchararray", "gchararray", "gboolean",
+                            "gchararray")
+  
   continuous <- gtkListStoreNew("gchararray", "gchararray",
                                 "gboolean", "gboolean",
                                 "gboolean", "gboolean", "gchararray")
@@ -1860,6 +1880,9 @@ initialiseVariableViews <- function()
   treeview <- theWidget("variables_treeview")
   treeview$setModel(model)
 
+  impview <- theWidget("impute_treeview")
+  impview$setModel(impute)
+  
   catview <- theWidget("categorical_treeview")
   catview$setModel(categorical)
   
@@ -1875,6 +1898,14 @@ initialiseVariableViews <- function()
                                         "No.",
                                         renderer,
                                         text= COLUMN[["number"]])
+  
+  renderer <- gtkCellRendererTextNew()
+  renderer$set(xalign = 0.0)
+  imp.offset <-
+    impview$insertColumnWithAttributes(-1,
+                                       "No.",
+                                       renderer,
+                                       text= IMPUTE[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1901,6 +1932,14 @@ initialiseVariableViews <- function()
                                         "Variable",
                                         renderer, 
                                         text = COLUMN[["variable"]])
+
+  renderer <- gtkCellRendererTextNew()
+  renderer$set(xalign = 0.0)
+  imp.offset <-
+    impview$insertColumnWithAttributes(-1,
+                                       "Variable",
+                                       renderer, 
+                                       text = IMPUTE[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1998,6 +2037,20 @@ initialiseVariableViews <- function()
                                         renderer,
                                         active = COLUMN[["ignore"]]) 
 
+  ## Add the ZERO column to the IMPUTE view.
+
+  renderer <- gtkCellRendererToggleNew()
+  renderer$set(xalign = 0.0)
+  renderer$set(radio = TRUE)
+  renderer$set(width = 60)
+  renderer$setData("column", IMPUTE["zero"])
+  connectSignal(renderer, "toggled", imp_toggled, impute)
+  imp.offset <-
+    impview$insertColumnWithAttributes(-1,
+                                       "Zero/Missing",
+                                        renderer,
+                                        active = IMPUTE[["zero"]]) 
+
   ## Add the barplot and dotplot.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2081,6 +2134,14 @@ initialiseVariableViews <- function()
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
+  imp.offset <-
+    impview$insertColumnWithAttributes(-1,
+                                       "Data Type and Number Missing",
+                                        renderer,
+                                        text = IMPUTE[["comment"]])
+
+  renderer <- gtkCellRendererTextNew()
+  renderer$set(xalign = 0.0)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Levels",
@@ -2098,6 +2159,7 @@ initialiseVariableViews <- function()
   ## Allow multiple selections.
   
   treeview$getSelection()$setMode("multiple")
+  impview$getSelection()$setMode("multiple")
   catview$getSelection()$setMode("multiple")
   conview$getSelection()$setMode("multiple")
 
@@ -2105,6 +2167,7 @@ initialiseVariableViews <- function()
 
 createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  risk=NULL, ident=NULL, ignore=NULL,
+                                 zero=NULL,
                                  boxplot=NULL,
                                  hisplot=NULL, cumplot=NULL, benplot=NULL,
                                  barplot=NULL, dotplot=NULL)
@@ -2122,6 +2185,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   ## Retrieve the models.
   
   model <- theWidget("variables_treeview")$getModel()
+  impute <- theWidget("impute_treeview")$getModel()
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
 
@@ -2132,12 +2196,22 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   if (is.null(target))
   {
+    ## Find the last variable that is not an IMP (imputed). This is
+    ## jsut a general heuristic, and works particularly for imputation
+    ## performed in Rattle. Should also do this for first, and also
+    ## for IGNORE variables.
+    last.var <- length(variables)
+    while (last.var > 1 && substr(variables[last.var], 1, 4) == "IMP_")
+    {
+      last.var <- last.var - 1
+    }
+    
     target <- -1
-    if ((is.factor(crs$dataset[,length(variables)]) &&
-         length(levels(crs$dataset[,length(variables)])) > 1)
-        || (length(levels(as.factor(crs$dataset[,length(variables)]))) < 5
-            && length(levels(as.factor(crs$dataset[,length(variables)]))) > 1))
-      target <- length(variables)
+    if ((is.factor(crs$dataset[,last.var]) &&
+         length(levels(crs$dataset[,last.var])) > 1)
+        || (length(levels(as.factor(crs$dataset[,last.var]))) < 5
+            && length(levels(as.factor(crs$dataset[,last.var]))) > 1))
+      target <- last.var
     else if ((is.factor(crs$dataset[,1]) && length(levels(crs$dataset[,1])) > 1)
              || (length(levels(as.factor(crs$dataset[,1]))) < 5
                  && length(levels(as.factor(crs$dataset[,1]))) > 1))
@@ -2197,8 +2271,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     ## First check for special variable names. Want to also do this
     ## for TARGET.
-    
-    if (substr(variables[i], 1, 2) == "ID")
+    if (paste("IMP_", variables[i], sep="") %in% variables)
+    {
+      ## This works with SAS/EM IMPutations and Rattle's imputations.
+      ignore <- c(ignore, variables[i])
+      ## Be sure to also remove any other role for the original
+      ## variable.
+    }
+    else if (substr(variables[i], 1, 2) == "ID")
     {
       ident <- c(ident, variables[i])
     }
@@ -2247,6 +2327,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       }
     }
     input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
+
+    missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
+
+    ## Every variable goes into the VARIABLES treeview.
     
     model$set(iter,
               COLUMN["number"], i,
@@ -2256,8 +2340,26 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               COLUMN["target"], variables[i] %in% target,
               COLUMN["risk"], variables[i] %in% risk,
               COLUMN["ident"], variables[i] %in% ident,
-              COLUMN["ignore"], variables[i] %in% ignore)
+              COLUMN["ignore"], variables[i] %in% ignore,
+              COLUMN["comment"], ifelse(missing.count > 0,
+                                        sprintf("%d missing values.",
+                                                missing.count),
+                                        ""))
 
+    ## Selected variables go into the other treeviews.
+
+    if (missing.count > 0) # Ignore IGNOREd variables. But crs$ignore
+                           # is not yet set. Need to remove later.
+    {
+      impiter <- impute$append()$iter
+      impute$set(impiter,
+                 IMPUTE["number"], i,
+                 IMPUTE["variable"], variables[i],
+                 IMPUTE["zero"], variables[i] %in% zero,
+                 IMPUTE["comment"], sprintf("%s with %d missing.",
+                                            cl, missing.count))
+    }
+        
     if (strsplit(cl, " ")[[1]][1] == "factor")
     {
       catiter <- categorical$append()$iter
@@ -2269,6 +2371,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                       CATEGORICAL["comment"],
                       sprintf("%s", strsplit(cl, " ")[[1]][2]))
     }
+
     if (cl == "integer" || cl == "numeric")
     {
       coniter <- continuous$append()$iter
@@ -2428,13 +2531,59 @@ getNumericVariables <- function()
 
 ########################################################################
 ##
-## SAMPLE TAB
+## TRANSFORM TAB
 ##
 
 ##----------------------------------------------------------------------
 ##
 ## Interface Actions
 ##
+
+## When a radio button is selected, display the appropriate tab
+
+on_sample_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) 
+  {
+    TRANSFORM$setCurrentPage(TRANSFORM.SAMPLE.TAB)
+  }
+  setStatusBar()
+}
+
+on_impute_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) 
+  {
+    TRANSFORM$setCurrentPage(TRANSFORM.IMPUTE.TAB)
+  }
+  setStatusBar()
+}
+
+imp_toggled <- function(cell, path.str, model)
+{
+  ## A impute variable's radio button has been toggled in the
+  ## TRANSFORM's tab IMPUTE option. Handle the choice.
+
+  ## The data passed in is the model used in the treeview.
+
+  checkPtrType(model, "GtkTreeModel")
+
+  ## Extract the column number of the model that has changed.
+
+  column <- cell$getData("column")
+
+  ## Get the current value of the corresponding flag
+  
+  path <- gtkTreePathNewFromString(path.str) # Current row
+  iter <- model$getIter(path)$iter           # Iter for the row
+  current <- model$get(iter, column)[[1]]    # Get data from specific column
+
+  ## Always invert
+  
+  model$set(iter, column, !current)
+
+}
+
 on_sample_checkbutton_toggled <- function(button)
 {
   if (button$getActive())
@@ -2494,12 +2643,29 @@ on_sample_seed_button_clicked <- function(button)
 ##
 ## Execution
 ##
-executeSampleTab <- function()
+
+executeTransformTab <- function()
 {
-  ## Can not do any sampling if there is no dataset.
+  ## Can not do any transforms if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
+  ## DISPATCH
+
+  if (theWidget("sample_radiobutton")$getActive())
+  {
+    executeTransformSample()
+  }
+  
+  else if (theWidget("impute_radiobutton")$getActive())
+  {
+    executeTransformImpute()
+  }
+  
+}
+
+executeTransformSample <- function()
+{
   ## Record that a random sample of the dataset is desired.
 
   if (theWidget("sample_checkbutton")$getActive())
@@ -2553,6 +2719,40 @@ executeSampleTab <- function()
   else
     setStatusBar("Sampling is inactive.")
 }
+
+executeTransformImpute <- function()
+{
+  zero <- getSelectedVariables("zero")
+  for (z in zero)
+  {
+    vname <- paste("IMP_", z, sep="")
+    crs$dataset[[vname]] <<- crs$dataset[[z]]
+    cl <- class(crs$dataset[[vname]])
+    if (cl == "factor")
+    {
+      if ("Missing" %notin% levels(crs$dataset[[vname]]))
+        levels(crs$dataset[[vname]]) <<- c(levels(crs$dataset[[vname]]),
+                                           "Missing")
+      crs$dataset[[vname]][is.na(crs$dataset[[z]])] <<- "Missing"
+    }
+    else
+    {
+      crs$dataset[[vname]][is.na(crs$dataset[[z]])] <<- 0
+    }
+  }
+  ## Reset the treeviews.
+  theWidget("variables_treeview")$getModel()$clear()
+  theWidget("impute_treeview")$getModel()$clear()
+  theWidget("categorical_treeview")$getModel()$clear()
+  theWidget("continuous_treeview")$getModel()$clear()
+  ## Recreate the treeviews.
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset))
+  ## Reset the original Data textview to output of new str.
+  clearTextview("data_textview")
+  appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+  ## Update the status bar
+  setStatusBar("Imputed variables added to the dataset.")
+}  
 
 ########################################################################
 ##

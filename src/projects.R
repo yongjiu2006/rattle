@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 20:33:42 Graham>
+## Time-stamp: <2007-01-17 21:35:09 Graham>
 ##
 ## Project functionality.
 ##
@@ -106,14 +106,19 @@ saveProject <- function()
   crs$text$roc <<- getTextviewContent("roc_textview")
   crs$text$log <<- getTextviewContent("log_textview")
 
+  ## Save Transform variables selections - not sure it is really
+  ## needed, but follow the template!
+
+  crs$zero <<- getSelectedVariables("zero")
+  
   ## Save Distribution variable selections
 
-  crs$boxplots <<- getSelectedVariables("boxplot")
-  crs$hisplots <<- getSelectedVariables("hisplot")
-  crs$cumplots <<- getSelectedVariables("cumplot")
-  crs$benplots <<- getSelectedVariables("benplot")
-  crs$barplots <<- getSelectedVariables("barplot")
-  crs$dotplots <<- getSelectedVariables("dotplot")
+  crs$boxplot <<- getSelectedVariables("boxplot")
+  crs$hisplot <<- getSelectedVariables("hisplot")
+  crs$cumplot <<- getSelectedVariables("cumplot")
+  crs$benplot <<- getSelectedVariables("benplot")
+  crs$barplot <<- getSelectedVariables("barplot")
+  crs$dotplot <<- getSelectedVariables("dotplot")
 
   ## Save seed information
 
@@ -233,6 +238,7 @@ loadProject <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
+                     crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
                      crs$barplot, crs$dotplot)
   executeVariablesTab()

@@ -6,9 +6,10 @@
     changes on each release. </p>
 
 <pre>
-114 ROC plots of one model/testset also plot training (Robert Williams).
+115 Initial imputation (Zero/Missing) (suggested by Michael Fogliani)
+114 ROC plots of one model/testset also plot training (suggest Robert Williams).
 113 Transform tab now uses radio buttons in preparation for imputation etc.
-112 RF check if na.omit removes all entities (Michael Fogliani).
+112 RF check if na.omit removes all entities (suggested by Michael Fogliani).
 111 Activate proper model buttons on project load.
 110 Report num entities with missing values in Summary (Michael Fogliani).
 109 Market basket with arules (Suggested by Daniele Medri).
@@ -158,6 +159,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Jan 17 19:32:04 EST 2007
+Last modified: Thu Jan 18 21:46:34 EST 2007
 <!-- hhmts end -->
   </p>
