@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-16 18:55:53 Graham>
+## Time-stamp: <2007-01-18 06:23:00 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -134,10 +134,14 @@ executeModelRF <- function()
   if (inherits(result, "try-error")) dsrow <- 0
   if (missing == dsrow)
   {
-    errorDialog("Each entity in the dataset has at least one missing",
-                "value. A random forest can not be built. To fix, you can,",
-                "for example, remove any variable with vary many missing",
-                "values (NAs). Or else employ imputation.")
+    errorDialog("A review of the dataset has found all entities have one",
+                "or more missing values amongst the vriables selected.",
+                "A random forest can not be built from data with missing",
+                "values, and thus there are no entities left to model.",
+                "To fix this problem, you can, for example, Ignore any",
+                "variable with many (or any) missing values (NAs).",
+                "Or else employ imputation to fill in default or modelled",
+                "values for the missing cells.")
     return()
   }
     

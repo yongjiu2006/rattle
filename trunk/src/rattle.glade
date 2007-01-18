@@ -2065,6 +2065,7 @@ See Help-&gt;About for details.</property>
 		      <property name="active">False</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
+		      <signal name="toggled" handler="on_sample_radiobutton_toggled" last_modification_time="Wed, 17 Jan 2007 09:52:10 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -2076,7 +2077,6 @@ See Help-&gt;About for details.</property>
 		  <child>
 		    <widget class="GtkRadioButton" id="impute_radiobutton">
 		      <property name="visible">True</property>
-		      <property name="sensitive">False</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Impute</property>
 		      <property name="use_underline">True</property>
@@ -2086,6 +2086,7 @@ See Help-&gt;About for details.</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
 		      <property name="group">sample_radiobutton</property>
+		      <signal name="toggled" handler="on_impute_radiobutton_toggled" last_modification_time="Wed, 17 Jan 2007 09:52:21 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -2422,7 +2423,7 @@ A random sample is taken each time this tab is Executed. The Seed can be changed
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="treeview1">
+			    <widget class="GtkTreeView" id="impute_treeview">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">True</property>
@@ -2455,7 +2456,7 @@ A random sample is taken each time this tab is Executed. The Seed can be changed
 		  <child>
 		    <widget class="GtkLabel" id="label156">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">imputate</property>
+		      <property name="label" translatable="yes">impute</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
