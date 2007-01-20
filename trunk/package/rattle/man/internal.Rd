@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{imp_toggled}
+\alias{on_impute_radiobutton_toggled}
+\alias{on_sample_radiobutton_toggled}
 \alias{on_nnet_radiobutton_toggled}
 \alias{on_ada_draw_button_clicked}
 \alias{on_ada_errors_button_clicked}

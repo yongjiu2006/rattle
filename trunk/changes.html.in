@@ -2,11 +2,12 @@
     Rattle: Change Log
   </p>
 
-  <p> This is a brief <b>Rattle</b> change log, recording the major
-    changes on each release. </p>
+  <p>This is a brief <b>Rattle</b> change log, recording the major
+    changes on each version control check-in.</p>
 
 <pre>
-115 Initial imputation (Zero/Missing) (suggested by Michael Fogliani)
+116 Add missing value summary (from mice) to Impute.
+115 Initial imputation (Zero/Missing) (suggested by Michael Fogliani).
 114 ROC plots of one model/testset also plot training (suggest Robert Williams).
 113 Transform tab now uses radio buttons in preparation for imputation etc.
 112 RF check if na.omit removes all entities (suggested by Michael Fogliani).
@@ -159,6 +160,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Thu Jan 18 21:46:34 EST 2007
+Last modified: Sat Jan 20 20:41:02 EST 2007
 <!-- hhmts end -->
   </p>

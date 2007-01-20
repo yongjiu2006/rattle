@@ -82,15 +82,73 @@ plotcluster in fpc can plot many different plots. Perhaps plot several
 in the one plot. Need to determine which ones would be useful.
 
 ========================================================================
+Description: Implement IMPUTATION
+Proposer: Michael.
+DateProposed: 
+Status: 
+Effort: 
+Required: 
+Completed: 
+
+Impute NA as 0, Mean, or KNN (Michael)
+
+http://www.napier.ac.uk/depts/fhls/peas/imputation.asp
+
+Packages: norm, pan, "mix" knn
+
+------------------------------------------------------------------------
+
+mice looks promising but get errors:
+
+mp <- mice(crs$dataset)
+
+ iter imp variable
+  1   1  Employment  Employment.d.1  Occupation  Occupation.d.1  AccountsError in nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax = TRUE,  :
+        too many (1683) weights
+
+However, 
+
+md.patter(crs$datset) gives very useful information:
+
+     ID Age Education Marital Income Sex Deductions Hours Adjustment Adjusted
+1859  1   1         1       1      1   1          1     1          1        1
+   1  1   1         1       1      1   1          1     1          1        1
+  40  1   1         1       1      1   1          1     1          1        1
+  97  1   1         1       1      1   1          1     1          1        1
+   3  1   1         1       1      1   1          1     1          1        1
+      0   0         0       0      0   0          0     0          0        0
+     Accounts Employment Occupation
+1859        1          1          1   0
+   1        1          1          0   1
+  40        0          1          1   1
+  97        1          0          0   2
+   3        0          0          0   3
+           43        100        101 244
+
+Here, 1859 entities have no missing values (i.e, a row of 1's and the
+final column is 0). 1 entity has a missing value for Occupation only
+(i.e, a row of 1's except under occupation where it is 0, and the
+final column is 1, indicating just 1 missing value). 40 entities have
+missing values for Accounts only, 90 have missing values for both
+Employment and Occupation, and 3 entities for all of Account,
+Employment and Occupation.
+
+This would be very useful information to include in Rattle.
+
+------------------------------------------------------------------------
+
+Amelia II http://gking.harvard.edu/amelia/ Is this really primarily
+for time series? An initial test indicates not much from this. Could
+not get categoricals working.
+
+output <- amelia(data=ds[,c(1,2,7,9,10,12,13)], m=1)
+
+========================================================================
 
 OLD
 
 Implement Marco's Transform/Cut/Factorise code?
 Export on the Data Tab should save to a CSV file.
-
-IMPUTATION
-
-http://www.napier.ac.uk/depts/fhls/peas/imputation.asp
 
 
 
@@ -179,7 +237,6 @@ Write article for Newsletter
 prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
 Choice of Kernel for SVMs. 
 For each textview, add initial text to explain the point (c.f. prcomp)
-Variables: Impute NA as 0, Mean, or KNN (Michael)
 ##   Mosaic plots (Rohan)
 ##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
 ##   Add t/z test and chi2 test in explore tab (Tony)
