@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-18 21:27:14 Graham>
+## Time-stamp: <2007-01-20 20:30:53 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -403,6 +403,7 @@ resetRattle <- function()
 
   setTextview("data_textview")
   setTextview("summary_textview")
+  setTextview("impute_textview")
   setTextview("correlation_textview")
   setTextview("prcomp_textview")
   setTextview("kmeans_textview")
@@ -1177,28 +1178,32 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                zero=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
-                               barplot=NULL, dotplot=NULL)
+                               barplot=NULL, dotplot=NULL,
+                               resample=TRUE)
 {
   ## Update the variables treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
                        boxplot, hisplot, cumplot, benplot, barplot, dotplot)
 
-  ## Turn sampling on, set range bounds and generate the default 70%
-  ## sample. Do the range bounds first since otherwise the value gets
-  ## set back to 1. Also, need to set both the percentage and the
-  ## count since if the old percentage is 70 and the new is 70, then
-  ## no change in value is noticed, and thus the count is not
-  ## automatically updated.
+  if (resample)
+  {
+    ## Turn sampling on, set range bounds and generate the default 70%
+    ## sample. Do the range bounds first since otherwise the value
+    ## gets set back to 1. Also, need to set both the percentage and
+    ## the count since if the old percentage is 70 and the new is 70,
+    ## then no change in value is noticed, and thus the count is not
+    ## automatically updated.
 
-  per <- 70
-  srows <- round(nrows * per / 100)
-  theWidget("sample_checkbutton")$setActive(TRUE)
-  theWidget("sample_count_spinbutton")$setRange(1,nrows)
-  theWidget("sample_count_spinbutton")$setValue(srows)
-  theWidget("sample_percentage_spinbutton")$setValue(per)
+    per <- 70
+    srows <- round(nrows * per / 100)
+    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("sample_count_spinbutton")$setRange(1,nrows)
+    theWidget("sample_count_spinbutton")$setValue(srows)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
 
-  executeTransformSample()
+    executeTransformSample()
+  }
 
 }
 
@@ -2659,7 +2664,11 @@ executeTransformTab <- function()
   
   else if (theWidget("impute_radiobutton")$getActive())
   {
-    executeTransformImpute()
+    if (getCurrentPageLabel(theWidget("impute_notebook")) ==
+        "Perform Imputation")
+      executeTransformImputePerform()
+    else
+      executeTransformImputeSummary()
   }
   
 }
@@ -2720,39 +2729,122 @@ executeTransformSample <- function()
     setStatusBar("Sampling is inactive.")
 }
 
-executeTransformImpute <- function()
+executeTransformImputePerform <- function()
 {
   zero <- getSelectedVariables("zero")
+
+  if (length(zero) > 0) addLogSeparator("MISSING VALUE IMPUTATION")
+
   for (z in zero)
   {
+    ## Take a copy of the variable to be imputed.
+    
     vname <- paste("IMP_", z, sep="")
-    crs$dataset[[vname]] <<- crs$dataset[[z]]
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]', vname, z)
+    addToLog(sprintf("IMPUTE %s.", z),
+             sub("<<-", "<-", copy.cmd))
+    eval(parse(text=copy.cmd))
+             
     cl <- class(crs$dataset[[vname]])
     if (cl == "factor")
     {
+      ## If Missing is not currently a category for this variable, add
+      ## it in.
+      
       if ("Missing" %notin% levels(crs$dataset[[vname]]))
-        levels(crs$dataset[[vname]]) <<- c(levels(crs$dataset[[vname]]),
-                                           "Missing")
-      crs$dataset[[vname]][is.na(crs$dataset[[z]])] <<- "Missing"
+      {
+        levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
+                                    'c(levels(crs$dataset[["%s"]]),"Missing")'),
+                              vname, vname)
+        addToLog("Add a new category to the variable",
+                 sub("<<-", "<-", levels.cmd))
+        eval(parse(text=levels.cmd))
+      }
+        
+      ## Change all NAs to Missing.
+      
+      missing.cmd <- sprintf(paste('crs$dataset[["%s"]][is.na(',
+                                   'crs$dataset[["%s"]])] <<- "Missing"',
+                                   sep=""),
+                             vname, z)
+      addToLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
+      eval(parse(text=missing.cmd))
     }
     else
     {
-      crs$dataset[[vname]][is.na(crs$dataset[[z]])] <<- 0
+      zero.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                '[is.na(crs$dataset[["%s"]])]',
+                                " <<- 0", sep=""), vname, z)
+      addToLog("Change all NAs to 0.", sub("<<-", "<-", zero.cmd))
+      eval(parse(text=zero.cmd))
     }
   }
-  ## Reset the treeviews.
-  theWidget("variables_treeview")$getModel()$clear()
-  theWidget("impute_treeview")$getModel()$clear()
-  theWidget("categorical_treeview")$getModel()$clear()
-  theWidget("continuous_treeview")$getModel()$clear()
-  ## Recreate the treeviews.
-  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset))
-  ## Reset the original Data textview to output of new str.
-  clearTextview("data_textview")
-  appendTextview("data_textview", collectOutput("str(crs$dataset)"))
-  ## Update the status bar
-  setStatusBar("Imputed variables added to the dataset.")
+  
+  if (length(zero) > 0)
+  {
+    
+    ## Reset the treeviews.
+
+    theWidget("variables_treeview")$getModel()$clear()
+    theWidget("impute_treeview")$getModel()$clear()
+    theWidget("categorical_treeview")$getModel()$clear()
+    theWidget("continuous_treeview")$getModel()$clear()
+
+    ## Recreate the treeviews.
+
+    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset), resample=FALSE)
+
+    ## Reset the original Data textview to output of new str.
+
+    clearTextview("data_textview")
+    appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+
+    ## Update the status bar
+
+    setStatusBar("Imputed variables added to the dataset.")
+  }
+  else
+    setStatusBar("No variables selected to be imputed.")
 }  
+
+executeTransformImputeSummary <- function()
+{
+  ## Initial setup. 
+  
+  TV <- "impute_textview"
+
+  ## Load the mice package into the library
+
+  addLogSeparator("MISSING VALUE SUMMARY")
+  lib.cmd <-  "require(mice, quietly=TRUE)"
+  if (! packageIsAvailable("mice", "summarise missing values")) return(FALSE)
+  addToLog("Summarise missing values in the dataset using the mice package.",
+           lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## Variables to be included, as a string of indicies.
+  
+  included <- getIncludedVariables()
+  including <- not.null(included)
+
+  ## Add radio buttons to choose: Full, Train, Test dataset to summarise.
+  
+  ## Build the summary command
+
+  clearTextview(TV)
+  theWidget(TV)$setWrapMode("none")
+  summary.cmd <- paste("md.pattern(crs$dataset[,",
+                       if (including) included,
+                       "])", sep="")
+
+  addToLog("Generate a summary of the missing values in the dataset.",
+           summary.cmd)
+  ow <- options(width=300)
+  setTextview(TV, collectOutput(summary.cmd, TRUE))
+  options(ow)
+
+  setStatusBar("Summary has been generated.")
+}
 
 ########################################################################
 ##
