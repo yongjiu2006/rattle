@@ -19,6 +19,7 @@ MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
+PVERSION="1.0.0"
 DATE:=$(shell date +%F)
 
 R_SOURCE = \
@@ -36,11 +37,17 @@ R_SOURCE = \
 	src/random_forest.R \
 	src/rpart.R \
 	src/textview.R \
-	src/zzz.R
+	src/zzz.R \
+	src/pmml.R
+
+# Eventually remove pmml.R from above and put into own package.
+
+PMML_SOURCE = \
+	src/pmml.R
 
 GLADE_SOURCE = src/rattle.glade
 
-SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
+SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE) $(PMML_SOURCE)
 
 #temp:
 #	echo $(VERSION)

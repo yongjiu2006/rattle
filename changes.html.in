@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+119 Begin migration of pmml code into own pmml package (Tobias Verbeke)
 118 Bug Fix - missing internal.Rd docs.
 117 Update some help documentation.
 116 Add missing value summary (from mice) to Impute.
@@ -162,6 +163,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Jan 20 20:41:02 EST 2007
+Last modified: Sun Feb  4 21:15:24 EST 2007
 <!-- hhmts end -->
   </p>
