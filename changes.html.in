@@ -6,6 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
+118 Bug Fix - missing internal.Rd docs.
+117 Update some help documentation.
 116 Add missing value summary (from mice) to Impute.
 115 Initial imputation (Zero/Missing) (suggested by Michael Fogliani).
 114 ROC plots of one model/testset also plot training (suggest Robert Williams).
