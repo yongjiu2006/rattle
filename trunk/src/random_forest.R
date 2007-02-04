@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-18 06:23:00 Graham>
+## Time-stamp: <2007-01-26 17:21:34 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -24,6 +24,41 @@ on_rf_errors_button_clicked <- function(button)
 on_rf_print_tree_button_clicked <- function(button)
 {
   displayRandomForestTree()
+}
+
+on_help_randomForest_activate <- function(action, window)
+{
+  if (showHelpPlus("The randomForest algorithm builds multiple
+decision trees from different samples of the dataset, and while
+building each tree, random subsets of the available variables are
+considered for splitting the data at each node of the tree. A simple
+majority vote is then used for prediction in the case of
+classificaiton (and average for regression).
+RandomForest's are generally robust against overfitting.
+<<>>
+The default is to build 500 trees and to select the square root of the
+number of variables as the subset to choose from at each node. The
+resulting model is generally not very sensitive to the choice of these
+parameters.
+<<>>
+Any entity with missing values will be ignored, which may lead to some
+suprises, like many fewer entities to model when many missing values
+exist. It can also lead to losing all examples of a particular class!
+<<>>
+An estimate of the error rate is provided as the out-of-bag (OOB)
+estimate. This applies each tree to the data that was not used in
+building the tree to give a quite accurate estimate of the error
+rate.
+<<>>
+The Sample Size can be used to down-sample larger classes.
+For a two-class problem with, for example, 5000 in class 0 and 250 in class 1,
+a Sample Size of \"250, 250\" will usually give a more \"balanced\" classifier.
+<<>>
+The R package for building Random Forests is called randomForest."))
+    {
+      require(randomForest, quietly=TRUE)
+      popupTextviewHelpWindow("randomForest")
+    }
 }
 
 ########################################################################

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 20:28:19 Graham>
+## Time-stamp: <2007-01-26 17:21:08 Graham>
 ##
 ## RPART TAB
 ##
@@ -116,6 +116,38 @@ on_rpart_rules_button_clicked <- function(button)
          
   setStatusBar(paste("The corresponding rules have been listed.",
                      "You may need to scroll the textview to see them."))
+}
+
+on_help_rpart_activate <- function(action, window)
+{
+  if (showHelpPlus("A decision tree is quite the typical data mining tool,
+used widely for its ease of interpretation. It consists of a root node
+split by a single variable into two partitions. In turn, these two new
+nodes may then each be further split on a single (and usually
+different) variable. This divide and conquering continues until no
+further splitting would improve the performance of the model.
+<<>>
+While a choice of measures are available to select a variable to split
+the dataset on, the Gini measure is used, and generally is no
+different to the information measure for binary classification. To
+explore the alternatives, copy the relevant code from the Log and
+paste it into the R Console and change any of the options.
+<<>>
+Common options that a user may change from their default values are
+available. Tooltips with each of them provide further details. Other
+options exist, but are not usually required. For example, 10-fold
+cross validation, used in deciding how to prune to the best deicision
+tree, is generally regarded as the right number. Transfering the
+commands from the Log tab into the R Console does give you full access
+to all options.
+<<>>
+Decision trees work with both numeric and categorical data.
+<<>>
+The rpart package is used to build the decision tree."))
+  {
+    require(rpart, quietly=TRUE)
+    popupTextviewHelpWindow("rpart")
+  }
 }
 
 ########################################################################

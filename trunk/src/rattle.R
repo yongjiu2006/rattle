@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-20 20:30:53 Graham>
+## Time-stamp: <2007-01-26 17:22:02 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -418,6 +418,17 @@ resetRattle <- function()
   setTextview("confusion_textview")
   setTextview("roc_textview")
 
+  ## Reset some textviews back to standard text.
+
+  setTextview("impute_textview",
+  gsub("\n", " ",
+       "Click the Execute Button (or Menu or F5) to obtain a summary of the
+missing values in our data. In the resulting summary, we will see a
+matrix with headings corresponding to the variables in our data. The
+body of the matrix includes 1's and 0's, with a 0 indicating missing
+values. The rows of the matrix show the missing values for each
+variable in combination with the other variables."))
+  
   ## Set all sub tabs back to the default tab page and reflect this in
   ## the appropriate radio button.
 
@@ -6104,10 +6115,10 @@ on_tools_variables_activate <- function(action, window)
   switchToPage(NOTEBOOK.VARIABLES.NAME)
 }
 
-on_tools_sample_activate <- function(action, window)
+on_tools_transform_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.SAMPLE.NAME))
-  switchToPage(NOTEBOOK.SAMPLE.NAME)
+  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.TRANSFORM.NAME))
+  switchToPage(NOTEBOOK.TRANSFORM.NAME)
 }
 
 on_tools_explore_activate <- function(action, window)
@@ -6218,7 +6229,7 @@ popupTextviewHelpWindow <- function(topic)
   collectOutput(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
 }
 
-further.help <- function(msg)
+showHelpPlus <- function(msg)
 {
   if (is.null(questionDialog(paste(gsub(" <<>> ", "\n\n",
                                          gsub("\n", " ", msg)),
@@ -6229,14 +6240,14 @@ further.help <- function(msg)
     return(TRUE)
 }
 
-no.further.help <- function(msg)
+showHelp <- function(msg)
 {
   infoDialog(paste(gsub(" <<>> ", "\n\n", gsub("\n", " ", msg))))
 }
 
 on_help_general_activate <- function(action, window)
 {
-  no.further.help("Rattle is an Open Source project
+  showHelp("Rattle is an Open Source project
 written in GNOME and R, and licensed under the GNU General Public License.
 <<>>
 Interaction with Rattle logically proceeds by progressing through the Tabs:
@@ -6275,7 +6286,7 @@ Enjoy.")
 
 on_help_nomenclature_data_activate <- function(action, window)
 {
-  no.further.help("There are many
+  showHelp("There are many
 different nomenclatures being used in data mining, deriving from the many
 different contributory fields. Here, we attempt to stay with a single,
 consistent nomenclature.
@@ -6309,7 +6320,7 @@ numbers.")
 
 on_help_csv_activate <- function(action, window)
 {
-  if (further.help("Rattle can load data from
+  if (showHelpPlus("Rattle can load data from
 a comma separated value (CSV) file, as might be generated
 by spreadsheets and databases,
 including Excel, Gnumeric, SAS/EM, QueryMan, and many other applications.
@@ -6330,7 +6341,7 @@ The corresponding R code uses the simple read.csv() function."))
 
 on_help_rdata_file_activate <- function(action, window)
 {
-  no.further.help("Choose this if you have data stored in an R dataset
+  showHelp("Choose this if you have data stored in an R dataset
 (usually with a filename extension of .Rdata).
 The named file will be loaded and any data frames found in there will
 be listed for selection.")
@@ -6338,7 +6349,7 @@ be listed for selection.")
 
 on_help_rdataset_activate <- function(action, window)
 {
-  no.further.help("Rattle can use a dataset that is already loaded
+  showHelp("Rattle can use a dataset that is already loaded
 into R (although it will take a copy of it, with memory implications).
 Only data frames are currently supported, and Rattle will list
 for you the names of all of the available data frames.
@@ -6353,7 +6364,7 @@ data from a database directly.")
 
 on_help_odbc_activate <- function(action, window)
 {
-  if(further.help("Rattle can establish a connection to a database
+  if(showHelpPlus("Rattle can establish a connection to a database
 through the RODBC package. Tables avilable in the database will then be
 listed for selection."))
   {
@@ -6364,7 +6375,7 @@ listed for selection."))
 
 on_help_roles_activate <- function(action, window)
 {
-  no.further.help("The Variables tab allows you to select roles for the
+  showHelp("The Variables tab allows you to select roles for the
 variables.
 <<>>
 By default, all variables have an Input role, except for any variables
@@ -6397,7 +6408,7 @@ to assign a weight to each entity. See the separate help for details.")
 
 on_help_weight_calculator_activate <- function(action, window)
 {
-  no.further.help("Weights are used by variable modellers to identify
+  showHelp("Weights are used by variable modellers to identify
 some entities as more important than others. The Weights Calculator
 can be used to specify a formula in terms of the variables in the dataset.
 You can list just a variable name, or
@@ -6409,9 +6420,31 @@ value of a variable called Rev, divides it by the maximum value of Rev in the
 dataset, times 10, adding 1 to it to give numbers from 1 up.")
 }
 
+on_help_sample_activate <- function(action, window)
+{
+  showHelp("Sampling is activated by default, randomly choosing 70%% of the
+data for a training dataset and 30%% for a test dataset. The training dataset
+is used to build models whilst the test dataset is used to evaluate the
+models on otherwise unseen data.
+<<>>
+A new random sample is extracted each time the tab is executed. However,
+you will get the same random sample each time, for a given seed. Changing the
+seed allows different random samples to be extracted. This could be useful in
+testing the sensitivity of modelling with different training sets.")
+}
+
+
+on_help_impute_activate <- function(action, window)
+{
+  showHelp("Imputation is used to fill in the missing values in our data.
+The Zero/Missing imputation is a very simple method. Any missing numeric data
+is simply assigned 0 and any missing categorical data is put into a new
+category, Missing.")
+}
+
 on_help_summary_activate <- function(action, window)
 {
-  if (further.help("A summary of the dataset includes various pieces of
+  if (showHelpPlus("A summary of the dataset includes various pieces of
 information about each of the variables of the dataset.
 <<>>
 For numeric data, this
@@ -6460,7 +6493,7 @@ the kurtosis and skewness."))
 
 on_help_correlation_activate <- function(action, window)
 {
-  if (further.help( "A pairwise correlation between each numeric variable
+  if (showHelpPlus( "A pairwise correlation between each numeric variable
 is calculated and displayed numerically in the text window whilst
 a graphic plot is also generated. The plot uses circles and colour to
 indicate the strength of any correlation.
@@ -6471,7 +6504,7 @@ The R function cor() is used to produce the correlation data."))
 
 on_help_hierarchical_correlation_activate <- function(action, window)
 {
-  if (further.help( "A hierarchical cluster
+  if (showHelpPlus( "A hierarchical cluster
 of the correlations between the variables of the dataset is generated, and
 presented pictorially as a dendrogram.  From the dendrogram you can
 see groups of variables that are highly correlated. The code uses the
@@ -6488,7 +6521,7 @@ the result to a dendrogram, using as.dendrogram(), for plotting."))
 
 on_help_principal_components_activate <- function(action, window)
 {
-  if (further.help("Principal components analysis identifies
+  if (showHelpPlus("Principal components analysis identifies
 a collection of derived variables (expressed as a linear combination
 of the other variables) that account for the variance
 in the data. Often, the first few components account for the majority
@@ -6510,41 +6543,9 @@ Note that only numeric data is included in the analysis."))
     popupTextviewHelpWindow("prcomp")
 }
 
-on_help_rpart_activate <- function(action, window)
-{
-  if (further.help("A decision tree is quite the typical data mining tool,
-used widely for its ease of interpretation. It consists of a root node
-split by a single variable into two partitions. In turn, these two new
-nodes may then each be further split on a single (and usually
-different) variable. This divide and conquering continues until no
-further splitting would improve the performance of the model.
-<<>>
-While a choice of measures are available to select a variable to split
-the dataset on, the Gini measure is used, and generally is no
-different to the information measure for binary classification. To
-explore the alternatives, copy the relevant code from the Log and
-paste it into the R Console and change any of the options.
-<<>>
-Common options that a user may change from their default values are
-available. Tooltips with each of them provide further details. Other
-options exist, but are not usually required. For example, 10-fold
-cross validation, used in deciding how to prune to the best deicision
-tree, is generally regarded as the right number. Transfering the
-commands from the Log tab into the R Console does give you full access
-to all options.
-<<>>
-Decision trees work with both numeric and categorical data.
-<<>>
-The rpart package is used to build the decision tree."))
-  {
-    require(rpart, quietly=TRUE)
-    popupTextviewHelpWindow("rpart")
-  }
-}
-
 on_help_glm_activate <- function(action, window)
 {
-  if (further.help("A tradition approach to model building is
+  if (showHelpPlus("A tradition approach to model building is
 regression. Logistic regression (using the binomial family) is used
 to model binary outcomes. Linear regression (using the gaussian family)
 is used to model a linear numeric outcome. For predicting where the
@@ -6559,44 +6560,9 @@ The R function glm() is used for regression."))
   }
 }
 
-on_help_randomForest_activate <- function(action, window)
-{
-  if (further.help("The randomForest algorithm builds multiple
-decision trees from different samples of the dataset, and while
-building each tree, random subsets of the available variables are
-considered for splitting the data at each node of the tree. A simple
-majority vote is then used for prediction in the case of
-classificaiton (and average for regression).
-RandomForest's are generally robust against overfitting.
-<<>>
-The default is to build 500 trees and to select the square root of the
-number of variables as the subset to choose from at each node. The
-resulting model is generally not very sensitive to the choice of these
-parameters.
-<<>>
-Any entity with missing values will be ignored, which may lead to some
-suprises, like many fewer entities to model when many missing values
-exist. It can also lead to losing all examples of a particular class!
-<<>>
-An estimate of the error rate is provided as the out-of-bag (OOB)
-estimate. This applies each tree to the data that was not used in
-building the tree to give a quite accurate estimate of the error
-rate.
-<<>>
-The Sample Size can be used to down-sample larger classes.
-For a two-class problem with, for example, 5000 in class 0 and 250 in class 1,
-a Sample Size of \"250, 250\" will usually give a more \"balanced\" classifier.
-<<>>
-The R package for building Random Forests is called randomForest."))
-    {
-      require(randomForest, quietly=TRUE)
-      popupTextviewHelpWindow("randomForest")
-    }
-}
-
 on_help_support_vector_machine_activate <- function(action, window)
 {
-  if (further.help("SVM (Support Vector Machine) is a modern approach
+  if (showHelpPlus("SVM (Support Vector Machine) is a modern approach
 to modelling where the data is mapped to a higher dimensional space so
 that it is more likely that we can find vectors separating the classes.
 Rattle deploys ksvm from the kernlab package."))
@@ -6614,26 +6580,9 @@ Rattle deploys ksvm from the kernlab package."))
   }
 }
 
-on_help_ada_activate <- function(action, window)
-{
-  if (further.help("Boosting builds multiple, but generally simple, models.
-The models might be decision trees that have just one split - these
-are often called decision stumps. After building each model any
-training entities that the model misclassifies are boosted - they are
-given more weight or more importance in the next model building
-step. The resulting model is then the weighted sum of the ensemble of
-models built.
-<<>>
-The ada package is used to build the boosted model."))
-    {
-      require(ada, quietly=TRUE)
-      popupTextviewHelpWindow("ada")
-    }
-}
-
 on_help_confusion_table_activate <- function(action, window)
 {
-  if (further.help("A confusion table concisely reports the performance
+  if (showHelpPlus("A confusion table concisely reports the performance
 of a model against a testing dataset. Generally, the number of entities
 predicted by the model into each of the classes is presented against the
 actual class to which that entity belongs. Rattle reports two confusion tables.
@@ -6646,7 +6595,7 @@ percentages."))
 
 on_help_sensitivity_activate <- function(action, window)
 {
-  if (further.help("The Sensitivity versus Specificity chart
+  if (showHelpPlus("The Sensitivity versus Specificity chart
 is simply an alternative ROC curve, with Sensitivity being the
 true positive rate (the count of true positives divided by the
 count of positives) and Specificity being the true negative rate
