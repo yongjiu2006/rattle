@@ -126,7 +126,7 @@ on_kmeans_seed_button_clicked <- function(button)
 
 on_help_kmeans_activate <- function(action, window)
 {
-  if (further.help("KMeans is a traditional approach to clustering.
+  if (showHelpPlus("KMeans is a traditional approach to clustering.
 In addition to building a cluster, a discriminant coordinates plot
 can be generated, using tha package fpc, as a display of the clusters."))
   {

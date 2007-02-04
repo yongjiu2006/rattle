@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-15 20:28:27 Graham>
+## Time-stamp: <2007-01-26 17:22:10 Graham>
 ##
 ## ADA TAB 061215
 ##
@@ -36,6 +36,23 @@ on_ada_list_button_clicked <- function(button)
 on_ada_draw_button_clicked <- function(button)
 {
   doDrawAdaTrees()
+}
+
+on_help_ada_activate <- function(action, window)
+{
+  if (showHelpPlus("Boosting builds multiple, but generally simple, models.
+The models might be decision trees that have just one split - these
+are often called decision stumps. After building each model any
+training entities that the model misclassifies are boosted - they are
+given more weight or more importance in the next model building
+step. The resulting model is then the weighted sum of the ensemble of
+models built.
+<<>>
+The ada package is used to build the boosted model."))
+    {
+      require(ada, quietly=TRUE)
+      popupTextviewHelpWindow("ada")
+    }
 }
 
 ########################################################################
