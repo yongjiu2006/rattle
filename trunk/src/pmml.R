@@ -115,7 +115,7 @@ pmml.rpart <- function(rp, model.name="RPart Model", app.name="Rattle",
   ## PMML -> TreeModel -> Node
 
   label <- labels(rp)
-  depth <- rpart:::tree.depth(node)
+  depth <- rpart:::tree.depth(as.numeric(row.names(rp$frame)))
   count <- rp$frame$n
   score <- rp@ylevels[rp$frame$yval]
   
