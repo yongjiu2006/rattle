@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+120 Initial and basic rpart -> pmml: only >= and < supported. 
 119 Begin migration of pmml code into own pmml package (Tobias Verbeke)
 118 Bug Fix - missing internal.Rd docs.
 117 Update some help documentation.
