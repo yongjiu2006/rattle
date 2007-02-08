@@ -1,7 +1,7 @@
-#MAJOR <- "2"
-#MINOR <- "1"
-#REVISION <- unlist(strsplit("$Revision: 118 $", split=" "))[2]
-#VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
+MAJOR <- "2"
+MINOR <- "1"
+REVISION <- unlist(strsplit("$Revision: 118 $", split=" "))[2]
+VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 COPYRIGHT <- "Copyright (c) 2007, Togaware. All Rights Reserved. GPL."
 
 pmml.rpart <- function(rp, model.name="RPart Model", app.name="Rattle",
@@ -20,10 +20,11 @@ pmml.rpart <- function(rp, model.name="RPart Model", app.name="Rattle",
   field.names <- as.character(rp$terms@variables)[-1]
   target <- field.names[1]
   number.of.fields <- length(field.names)
-
-  tree.nodes <- rownames(rp$frame)
-  rule.paths <- path.rpart(rp, node=c(tree.nodes), print.it=FALSE)
-
+  
+  #tree.nodes <- rownames(rp$frame)
+  #rule.paths <- path.rpart(rp, node=c(tree.nodes), print.it=FALSE)
+  
+  
   ## PMML
   
   pmml <- xmlNode("PMML",
@@ -113,17 +114,88 @@ pmml.rpart <- function(rp, model.name="RPart Model", app.name="Rattle",
 
   ## PMML -> TreeModel -> Node
 
-  node <- xmlNode("Node", attrs=c(score=rp@ylevels[rp$frame[1,]$yval],
-                            recordCount=rp$frame[1,]$n))
-  node[[1]] <- xmlNode("True")
+  label <- labels(rp)
+  depth <- rpart:::tree.depth(node)
+  count <- rp$frame$n
+  score <- rp@ylevels[rp$frame$yval]
+  
+  node <- genNodes(label, depth, count, score)
 
   tree.model[[2]] <- node
-  
+
   ## Add to the top level structure.
   
   pmml$children[[3]] <- tree.model
 
   return(pmml)
+}
+
+# Currently assuming it is always a binary tree.
+
+genNodes <- function(label, depth, count, score)
+{
+  node <- xmlNode("Node", attrs=c(score=score[1],
+                             recordCount=count[1]))
+  if (label[1] =="root")
+    predicate <- xmlNode("True")
+  else
+  {
+    # Create the SimplePredicate or SimpeSetPredicate node.
+    
+    # Split the label into constituent parts.
+
+    field <-  strsplit(label[1], '>|<|=')[[1]][1]
+    operator <- substr(label[1], nchar(field)+1, nchar(field)+2)
+    if (operator == ">=")
+    {
+      operator <- "greaterOrEqual"
+      value <- substr(label[1], nchar(field)+3, nchar(label[1]))
+      predicate <- xmlNode("SimplePredicate",
+                           attrs=c(field=field,
+                             operator=operator,
+                             value=value))
+    }
+    else if (operator == "< ")
+    {
+      operator <- "lessThan"
+      value <- substr(label[1], nchar(field)+3, nchar(label[1]))
+      predicate <- xmlNode("SimplePredicate",
+                           attrs=c(field=field,
+                             operator=operator,
+                             value=value))
+    }
+    else if (substr(operator, 1, 1) == "=")
+    {
+      operator <- "isIn"
+      value <- substr(label[1], nchar(field)+2, nchar(label[1]))
+      predicate <- xmlNode("SimpleSetPredicate",
+                           attrs=c(field=field,
+                             operator=operator))
+      predicate[[1]] <- xmlNode("Array", value,
+                                attrs=c(n=nchar(value), type="string"))
+    }
+  }
+
+  if (length(label) == 1)
+  {
+    left <- NULL
+    right <- NULL
+  }
+  else
+  {
+    split.point <- which(depth[c(-1,-2)] == depth[2]) + 1 # Binary tree
+    lb <- 2:split.point
+    rb <- (split.point + 1):length(depth)
+    left <- genNodes(label[lb], depth[lb], count[lb], score[lb])
+    right <- genNodes(label[rb], depth[rb], count[rb], score[rb])
+  }
+  node[[1]] <- predicate
+  if (!is.null(left))
+  {
+    node[[2]] <- left
+    node[[3]] <- right
+  }
+  return(node)
 }
 
 pmml.rpart.asrules <- function(rp, model.name="RPart Model", app.name="RPart",
