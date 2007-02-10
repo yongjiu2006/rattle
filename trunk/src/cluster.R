@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-22 13:08:14 Graham>
+## Time-stamp: <2007-02-10 19:08:21 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -627,54 +627,4 @@ exportHClust <- function(file)
 ##                    "implemented.")
 ##       return()
 ##     }
-
-pmml.kmeans <- function(cl)
-{
-  
-  ## First collect the required information
-
-  number.of.fields <- ncol(cl$centers)
-  field.names <-  colnames(cl$centers)
-  number.of.clusters <- length(cl$size)
-  cluster.names <- rownames(cl$centers)
-
-  ## Root node
-
-  pmml <- xmlNode("PMML")
-
-  ## DataDictionary child node
-
-  data.dictionary <- xmlNode("DataDictionary",
-                             attrs=c(numderOfFields=number.of.fields))
-  data.fields <- list()
-  for (i in 1:number.of.fields)
-  {
-    data.fields[[i]] <- xmlNode("DataField",
-                                attrs=c(name=field.names[i]))
-  }
-  data.dictionary$children <- data.fields
-  pmml$children[[1]] <- data.dictionary
-  #
-  # ClusteringModel root node
-  #
-  clustering.model <- xmlNode("ClusteringModel",
-                              attrs=c(algorithmName="KMeans",
-                                numberOfClusters=number.of.clusters))
-  clusters <- list()
-  for (i in 1:number.of.clusters)
-  {
-    clusters[[i]] <- xmlNode("Cluster",
-                             attrs=c(name=cluster.names[i],
-                               size=cl$size[i]),
-                             xmlNode("Array",
-                                     attrs=c(n=number.of.fields),
-                                     paste(cl$centers[i,], collapse=" ")))
-  }
-  clustering.model$children <- clusters
-  pmml$children[[2]] <- clustering.model
-  #
-  # All done
-  #
-  return(pmml)
-}
 
