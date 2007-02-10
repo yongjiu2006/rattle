@@ -6,6 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
+123 Bug fix - IGN vars in Distributions had no levels.
+122 pmml now separately packaged and include pmml.kmeans
 121 Bug fix - variable initialisation problem in pmml.print
 120 Initial and basic rpart -> pmml: only >= and < supported. 
 119 Begin migration of pmml code into own pmml package (Tobias Verbeke)
@@ -165,6 +167,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Feb  9 07:14:56 EST 2007
+Last modified: Sun Feb 11 09:52:31 EST 2007
 <!-- hhmts end -->
   </p>

@@ -2461,7 +2461,7 @@ A random sample is taken each time this tab is Executed. The Seed can be changed
 			      <property name="left_margin">0</property>
 			      <property name="right_margin">0</property>
 			      <property name="indent">0</property>
-			      <property name="text" translatable="yes">Click the Execute Button (or Menu or F5) to obtain a summary of the missing values in our data. In the resulting summary, we will see a matrix with headings corresponding to the variables in our data. The body of the matrix includes 1's and 0's, with a 0 indicating missing values. The rows of the matrix show the missing values for each variable in combination with the other variables.</property>
+			      <property name="text" translatable="yes">Click the Execute Button (or Menu or F5) to obtain a summary of the missing values in the data. In the resulting summary, we will see a matrix with headings corresponding to the variables in the data. The body of the matrix includes 1's and 0's, with a 0 indicating missing values. The rows of the matrix show the missing values for each variable in combination with the other variables.</property>
 			    </widget>
 			  </child>
 			</widget>
@@ -3694,7 +3694,7 @@ Click the Execute button (or F5) to run GGobi.</property>
 			      <property name="indent">0</property>
 			      <property name="text" translatable="yes">Dendrograms provide a visual clue to  the degree of closeness between variables.
 
-The hierarchical correlation dendrogram produced here presents a view of the variables of the dataset showing their relationships (correlations). Depending on your data, you may find groupings of variables that are highly correlated. These will be fairly obvious in most cases. The length of the lines in the dendrogram provide a visual indication of the degree of correlation (or perhaps the tightness of the correlation - shorter lines indicate more tighly correlated variables).
+The hierarchical correlation dendrogram produced here presents a view of the variables of the dataset showing their relationships (correlations). Depending on the data, you may find groupings of variables that are highly correlated. These will be fairly obvious in most cases. The length of the lines in the dendrogram provide a visual indication of the degree of correlation (or perhaps the tightness of the correlation - shorter lines indicate more tighly correlated variables).
 
 Once you have identified the groups of variables that are correlated, you may want to reduce the number of variables you are including in your modelling.
 
