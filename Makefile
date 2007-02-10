@@ -11,6 +11,9 @@ DESCRIPTION=$(PACKAGE)/DESCRIPTION
 DESCRIPTIN=support/DESCRIPTION.in
 NAMESPACE=$(PACKAGE)/NAMESPACE
 
+P_PACKAGE=package/pmml
+
+
 REPOSITORY=repository
 
 # Canonical version information from rattle.R
@@ -19,7 +22,7 @@ MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
-PVERSION="1.0.0"
+P_VERSION="1.0.1"
 DATE:=$(shell date +%F)
 
 R_SOURCE = \
@@ -37,17 +40,16 @@ R_SOURCE = \
 	src/random_forest.R \
 	src/rpart.R \
 	src/textview.R \
-	src/zzz.R \
-	src/pmml.R
+	src/zzz.R
 
 # Eventually remove pmml.R from above and put into own package.
 
-PMML_SOURCE = \
+P_SOURCE = \
 	src/pmml.R
 
 GLADE_SOURCE = src/rattle.glade
 
-SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE) $(PMML_SOURCE)
+SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 #temp:
 #	echo $(VERSION)
@@ -78,6 +80,9 @@ install: build zip check
 check: build
 	R CMD check $(PACKAGE)
 
+pcheck: pbuild
+	R CMD check $(P_PACKAGE)
+
 # For development, temporarily remove the NAMESPACE so all is exposed.
 
 devbuild:
@@ -89,14 +94,23 @@ devbuild:
 
 build: data rattle_$(VERSION).tar.gz
 
+pbuild: data pmml_$(P_VERSION).tar.gz
+
 rattle_$(VERSION).tar.gz: $(SOURCE)
 	svn update
+	rm -f package/rattle/R/*
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
 	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	R CMD build $(PACKAGE)
 	chmod -R go+rX $(PACKAGE)
+
+pmml_$(P_VERSION).tar.gz: $(P_SOURCE)
+	svn update
+	cp $(P_SOURCE) package/pmml/R/
+	R CMD build $(P_PACKAGE)
+	chmod -R go+rX $(P_PACKAGE)
 
 data: package/rattle/data/audit.RData
 
@@ -122,7 +136,10 @@ html:
 	done
 
 local: rattle_$(VERSION).tar.gz
-	R CMD INSTALL rattle_$(VERSION).tar.gz
+	R CMD INSTALL $^
+
+plocal: pmml_$(P_VERSION).tar.gz
+	R CMD INSTALL $^
 
 access:
 	grep 'rattle' /home/gjw/projects/ilisys/log
