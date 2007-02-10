@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-26 17:22:02 Graham>
+## Time-stamp: <2007-02-11 09:44:15 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -423,8 +423,8 @@ resetRattle <- function()
   setTextview("impute_textview",
   gsub("\n", " ",
        "Click the Execute Button (or Menu or F5) to obtain a summary of the
-missing values in our data. In the resulting summary, we will see a
-matrix with headings corresponding to the variables in our data. The
+missing values in the data. In the resulting summary, we will see a
+matrix with headings corresponding to the variables in the data. The
 body of the matrix includes 1's and 0's, with a 0 indicating missing
 values. The rows of the matrix show the missing values for each
 variable in combination with the other variables."))
@@ -2286,13 +2286,18 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     cl <- class(crs$dataset[[variables[i]]])
 
     ## First check for special variable names. Want to also do this
-    ## for TARGET.
+    ## for TARGET_, eventually
+    
     if (paste("IMP_", variables[i], sep="") %in% variables)
     {
-      ## This works with SAS/EM IMPutations and Rattle's imputations.
+      ## This works with SAS/EM IMPutations and Rattle's imputations,
+      ## which add the IMP_ at the beginning of the name of any
+      ## imputed variables.
+      
       ignore <- c(ignore, variables[i])
+      
       ## Be sure to also remove any other role for the original
-      ## variable.
+      ## variable?
     }
     else if (substr(variables[i], 1, 2) == "ID")
     {
@@ -2378,6 +2383,12 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         
     if (strsplit(cl, " ")[[1]][1] == "factor")
     {
+      ## For the IMP_ and IGNORE_ variables we don't get a chance
+      ## above to add in the number of levels, so do it here.
+
+      if (cl == "factor")
+        cl <- paste(cl, length(levels(crs$dataset[[variables[i]]])))
+      
       catiter <- categorical$append()$iter
       categorical$set(catiter,
                       CATEGORICAL["number"], i,
@@ -4844,7 +4855,7 @@ executeEvaluateTab <- function()
                  "Currently, Rattle's Risk chart, and the ROCR package",
                  "(which implements the Lift, ROC, Precision, and Specificity",
                  "charts) apply only for binary classification.",
-                 "Either restructure your data for binary classificaiton,",
+                 "Either restructure the data for binary classificaiton,",
                  "or else suggest an alternative to the author of Rattle",
                  "at Graham.Williams@togaware.com!")
     return()
@@ -6436,7 +6447,7 @@ testing the sensitivity of modelling with different training sets.")
 
 on_help_impute_activate <- function(action, window)
 {
-  showHelp("Imputation is used to fill in the missing values in our data.
+  showHelp("Imputation is used to fill in the missing values in the data.
 The Zero/Missing imputation is a very simple method. Any missing numeric data
 is simply assigned 0 and any missing categorical data is put into a new
 category, Missing.")
