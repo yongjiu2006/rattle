@@ -6,7 +6,7 @@ Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.2.0)
-Suggests: RGtk2, ada, arules, bitops, cba, combinat, doBy,
+Suggests: RGtk2, ada, arules, bitops, cba, combinat, doBy, e1071,
   ellipse, fBasics, fCalendar, fEcofin, fpc, gdata, gtools, gplots, Hmisc, 
   kernlab, MASS, mice, network, pmml, randomForest, rggobi, ROCR, RODBC, 
   rpart, XML

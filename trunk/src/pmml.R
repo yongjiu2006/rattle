@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-02-10 16:27:09 Graham>
+## Time-stamp: <2007-02-17 04:27:17 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -11,60 +11,57 @@
 ##	Extract the DataDictionary stuff to a separate function to
 ##	share between pmml.rpat and pmml.kmeans.
 
-PMML.VERSION <- "3.1"
-VERSION <- "1.0.1"
-
-pmml.rpart <- function(model,
-                       model.name="RPart Model",
-                       app.name="Rattle/PMML",
-                       description="RPart decision tree model",
-                       copyright=NULL)
+pmmlRootNode <- function()
 {
-  require(XML, quietly=TRUE)
-  require(rpart, quietly=TRUE)
-
-  if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
-
-  ## Collect the required information. We list all variables,
-  ## irrespective of whether they appear in the final model. This
-  ## seems to be the standard thing to do with PMML. It also adds
-  ## extra information - i.e., the model did not need these extra
-  ## variables!
-
-  field.names <- as.character(model$terms@variables)[-1]
-  target <- field.names[1]
-  number.of.fields <- length(field.names)
-  
   ## PMML
   
-  pmml <- xmlNode("PMML",
-                  attrs=c(version=PMML.VERSION,
-                    xmlns="http://www.dmg.org/PMML-3_1", 
-                    "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance"))
+  PMML.VERSION <- "3.1"
+  return(xmlNode("PMML",
+                 attrs=c(version=PMML.VERSION,
+                   xmlns="http://www.dmg.org/PMML-3_1", 
+                   "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance")))
+}
 
-  ## PMML -> Header
+pmmlHeader <- function(description, copyright, app.name)
+{
+  ## Header
+  
+  VERSION <- "1.0.2"
 
   if (is.null(copyright))
     header <- xmlNode("Header", attrs=c(description=description))
   else
     header <- xmlNode("Header",
                       attrs=c(copyright=copyright, description=description))
-  
-  header[[1]] <- xmlNode("Application",
-                         attrs=c(name=app.name,
-                           version=VERSION))
 
-  header[[2]] <- xmlNode("Annotation",
-                         paste("Export of PMML from Rattle for",
-                               "RPart models is experimental."))
-  header[[2]][[2]] <- xmlNode("Extension", sprintf("%s", Sys.time()),
-                              attrs=c(description="timestamp"))
-  header[[2]][[3]] <- xmlNode("Extension", sprintf("%s", Sys.info()["user"]),
-                              attrs=c(description="username"))
+  ## Header -> Extension
   
-  pmml$children[[1]] <- header
+  header <- append.XMLNode(header,
+                           xmlNode("Extension", sprintf("%s", Sys.time()),
+                                       attrs=c(description="timestamp")))
+  
+  header <- append.XMLNode(header, xmlNode("Extension",
+                                           sprintf("%s", Sys.info()["user"]),
+                                           attrs=c(description="username")))
 
-  ## PMML -> DataDictionary
+  ## Header -> Application
+
+  header <- append.XMLNode(header, xmlNode("Application",
+                                           attrs=c(name=app.name,
+                                             version=VERSION)))
+
+  return(header)
+}
+  
+pmmlDataDictionary <- function(field)
+{
+  ## field$name is a vector of strings, and includes target
+  ## field$class is indexed by fields$names
+  ## field$levels is indexed by fields$names
+  
+  number.of.fields <- length(field$name)
+
+  ## DataDictionary
   
   data.dictionary <- xmlNode("DataDictionary",
                              attrs=c(numderOfFields=number.of.fields))
@@ -76,31 +73,95 @@ pmml.rpart <- function(model,
     optype <- "UNKNOWN"
     values <- NULL
 
-    if (model$terms@dataClasses[[field.names[i]]] == "numeric")
+    if (field$class[[field$name[i]]] == "numeric")
       optype <- "continuous"
-    else if (model$terms@dataClasses[[field.names[i]]] == "factor")
+    else if (field$class[[field$name[i]]] == "factor")
       optype <- "categorical"
 
-    ## PMML -> DataDictionary -> DataField
+    ## DataDictionary -> DataField
     
-    data.fields[[i]] <- xmlNode("DataField",
-                                attrs=c(name=field.names[i],
-                                  optype=optype))
+     data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
+                                                optype=optype))
 
-    ## PMML -> DataDictionary -> DataField -> Value
+    ## DataDictionary -> DataField -> Value
     
     if (optype == "categorical")
-    {
-      if (field.names[i] == target)
-        clevels <- model@ylevels
-      else
-        clevels <- model@xlevels[[field.names[i]]]
-      for (j in 1:length(clevels))
-        data.fields[[i]][[j]] <- xmlNode("Value", attrs=c(value=clevels[j]))
-    }
+      for (j in 1:length(field$levels[[field$name[i]]]))
+        data.fields[[i]][[j]] <- xmlNode("Value",
+                                         attrs=c(value=
+                                           field$levels[[field$name[i]]][j]))
   }
   data.dictionary$children <- data.fields
-  pmml$children[[2]] <- data.dictionary
+
+  return(data.dictionary)
+    
+}
+
+pmmlMiningSchema <- function(field, target=NULL)
+{
+  number.of.fields <- length(field$name)
+  mining.fields <- list()
+  for (i in 1:number.of.fields)
+  {
+    if (is.null(target))
+      usage <- "active"
+    else
+      usage <- ifelse(field$name[i] == target, "predicted", "active")
+    mining.fields[[i]] <- xmlNode("MiningField",
+                                  attrs=c(name=field$name[i],
+                                    usageType=usage))
+  }
+  mining.schema <- xmlNode("MiningSchema")
+  mining.schema$children <- mining.fields
+  return(mining.schema)
+}
+
+
+########################################################################
+
+pmml.rpart <- function(model,
+                       model.name="RPart_Model",
+                       app.name="Rattle/PMML",
+                       description="RPart decision tree model",
+                       copyright=NULL)
+{
+  if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
+
+  require(XML, quietly=TRUE)
+  require(rpart, quietly=TRUE)
+
+  ## Collect the required information. We list all variables,
+  ## irrespective of whether they appear in the final model. This
+  ## seems to be the standard thing to do with PMML. It also adds
+  ## extra information - i.e., the model did not need these extra
+  ## variables!
+
+  field <- NULL
+  field$name <- as.character(model$terms@variables)[-1]
+  number.of.fields <- length(field$name)
+  field$class <- model$terms@dataClasses
+  target <- field$name[1]
+
+  for (i in 1:number.of.fields)
+  {
+    if (field$class[[field$name[i]]] == "factor")
+      if (field$name[i] == target)
+        field$levels[[field$name[i]]] <- model@ylevels
+      else
+        field$levels[[field$name[i]]] <- model@xlevels[[field$name[i]]]
+  }
+  
+  ## PMML
+
+  pmml <- pmmlRootNode()
+
+  ## PMML -> Header
+
+  pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
+  
+  ## PMML -> DataDictionary
+
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
   ## PMML -> TreeModel
 
@@ -113,18 +174,7 @@ pmml.rpart <- function(model,
   
   ## PMML -> TreeModel -> MiningSchema
   
-  mining.fields <- list()
-  for (i in 1:number.of.fields)
-  {
-    usage <- ifelse(field.names[i] == target, "predicted", "active") 
-    mining.fields[[i]] <- xmlNode("MiningField",
-                                  attrs=c(name=field.names[i],
-                                    usageType=usage))
-  }
-
-  mining.schema <- xmlNode("MiningSchema")
-  mining.schema$children <- mining.fields
-  tree.model[[1]] <- mining.schema
+  tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
 
   ## PMML -> TreeModel -> Node
 
@@ -159,11 +209,13 @@ pmml.rpart <- function(model,
   
   node <- genBinaryTreeNodes(depth, count, score, field, operator, value)
 
-  tree.model[[2]] <- node
+  ## tree.model[[2]] <- node
+  tree.model <- append.XMLNode(tree.model, node)
 
   ## Add to the top level structure.
   
-  pmml$children[[3]] <- tree.model
+  ## pmml$children[[3]] <- tree.model
+  pmml <- append.XMLNode(pmml, tree.model)
 
   return(pmml)
 }
@@ -195,9 +247,14 @@ genBinaryTreeNodes <- function(depths, counts, scores, fields, ops, values)
       # Do we need quotes around the values?
       # vals <- paste('"', value, '"', collapse=" ", sep="")
       vals <- paste(value, collapse=" ", sep="")
-      predicate[[1]] <- xmlNode("Array",
-                                vals,
-                                attrs=c(n=length(value), type="string"))
+      ##predicate[[1]] <- xmlNode("Array",
+      ##                          vals,
+      ##                          attrs=c(n=length(value), type="string"))
+      predicate <- append.XMLNode(predicate,
+                                  xmlNode("Array",
+                                          vals,
+                                          attrs=c(n=length(value),
+                                            type="string")))
     }
   }
   if (length(depths) == 1)
@@ -215,16 +272,24 @@ genBinaryTreeNodes <- function(depths, counts, scores, fields, ops, values)
     right <- genBinaryTreeNodes(depths[rb], counts[rb], scores[rb],
                                 fields[rb], ops[rb], values[rb])
   }
-  node[[1]] <- predicate
+  ## node[[1]] <- predicate
+  node <- append.XMLNode(node, predicate)
   if (!is.null(left))
   {
-    node[[2]] <- left
-    node[[3]] <- right
+    ##node[[2]] <- left
+    ##node[[3]] <- right
+    node <- append.XMLNode(node, left)
+    node <- append.XMLNode(node, right)
   }
   return(node)
 }
 
-pmml.rpart.as.rules <- function(model, model.name="RPart Model", app.name="RPart",
+########################################################################
+
+pmml.rpart.as.rules <- function(model,
+                                model.name="RPart_Model",
+                                app.name="RPart",
+                                description="RPart model as rules",
                                 copyright=NULL)
 {
   require(XML, quietly=TRUE)
@@ -234,99 +299,51 @@ pmml.rpart.as.rules <- function(model, model.name="RPart Model", app.name="RPart
 
   ## Collect the required information
 
-  field.names <- as.character(model$frame$var) # GET UNIQUE LIST.....
-  field.names <- setdiff(union(field.names, field.names), "<leaf>")
-  number.of.fields <- length(field.names)
-  tree.nodes <- rownames(model$frame)
-  rule.paths <- path.rpart(model, node=c(tree.nodes), print.it=FALSE)
-  
-  ## Root node
-  
-  pmml <- xmlNode("PMML", attrs=c(version="3.1"))
+  field <- NULL
+  field$name <- as.character(model$terms@variables)[-1]
+  number.of.fields <- length(field$name)
+  field$class <- model$terms@dataClasses
+  target <- field$name[1]
 
-  ## Header
-
-  header <- xmlNode("Header",
-                    attrs=c(copyright=copyright))
-  header[[1]] <- xmlNode("Application",
-                         attrs=c(name=app.name,
-                           version=VERSION,
-                           timestamp=sprintf("%s", Sys.time()),
-                           username=sprintf("%s", Sys.info()["user"])))
-
-  header[[2]] <- xmlNode("Annotation",
-                         "Export of PMML for RPart models is experimental.")
-  
-  pmml$children[[1]] <- header
-  
-  ## DataDictionary child node
-  
-  data.dictionary <- xmlNode("DataDictionary",
-                             attrs=c(numderOfFields=number.of.fields))
-  data.fields <- list()
   for (i in 1:number.of.fields)
   {
-    ## Determine the operation type
-
-    optype <- "UNKNOWN"
-    values <- NULL
-
-    if (model$terms@dataClasses[[field.names[i]]] == "numeric")
-      optype <- "continuous"
-    else if (model$terms@dataClasses[[field.names[i]]] == "factor")
-    {
-      optype <- "categorical"
-      for (j in 1:length(model@xlevels[[field.names[i]]]))
-      {
-        ## Build up the Values list of elements!
-        values <- model@xlevels[[field.names[i]]][j]
-      }
-    }
-    data.fields[[i]] <- xmlNode("DataField",
-                                attrs=c(name=field.names[i],
-                                  optype=optype))
+    if (field$class[[field$name[i]]] == "factor")
+      if (field$name[i] == target)
+        field$levels[[field$name[i]]] <- model@ylevels
+      else
+        field$levels[[field$name[i]]] <- model@xlevels[[field$name[i]]]
   }
-  data.dictionary$children <- data.fields
-  pmml$children[[2]] <- data.dictionary
 
-  ## Tree Node: Generate a rule set for now - simpler that a decision
-  ## tree.
+  ## PMML
   
-##   tree.model <- xmlNode("TreeModel",
-##                         attrs=c(modelName=model.name,
-##                           functionName="classification",
-##                           splitCharacteristic="binary",
-##                           algorithmName="rpart"))
+  pmml <- pmmlRootNode()
 
+  ## PMML -> Header
+
+  pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
+  
+  ## PMML -> DataDictionary
+  
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+
+  ## PMML -> RuleSetModel
+  
   tree.model <- xmlNode("RuleSetModel",
                         attrs=c(modelName=model.name,
                           functionName="classification",
                           splitCharacteristic="binary",
                           algorithmName="rpart"))
 
-  ## Mining Schema
+  ## MiningSchema
   
-  mining.fields <- list()
-  for (i in 1:number.of.fields)
-  {
-    mining.fields[[i]] <- xmlNode("MiningField",
-                                  attrs=c(name=field.names[i],
-                                    usageType="active"))
-  }
-  target <- attr(model$terms,"variables")[[2]]
-  mining.fields[[i+1]] <- xmlNode("MiningField",
-                                  attrs=c(name=target,
-                                    usageType="predicted"))
-
-  mining.schema <- xmlNode("MiningSchema")
-  mining.schema$children <- mining.fields
-  tree.model[[1]] <- mining.schema
+  tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
 
   ## Add in actual tree nodes.
 
   rule.set <- xmlNode("RuleSet")
-  rule.set$children[[1]] <- xmlNode("RuleSelectionMethod",
-                                    attrs=c(criterion="firstHit"))
+  rule.set <- append.XMLNode(rule.set,
+                             xmlNode("RuleSelectionMethod",
+                                     attrs=c(criterion="firstHit")))
   
   ## Visit each leaf node to generate a rule.
 
@@ -365,17 +382,19 @@ pmml.rpart.as.rules <- function(model, model.name="RPart Model", app.name="RPart
     }
   }
 
-  tree.model[[2]] <- rule.set
+  tree.model <- append.XMLNode(tree.model, rule.set)
   
   ## Add to the top level structure.
   
-  pmml$children[[3]] <- tree.model
+  pmml <- append.XMLNode(pmml, tree.model)
   
   return(pmml)
 }
 
+########################################################################
+
 pmml.kmeans <- function(model,
-                        model.name="KMeans Model",
+                        model.name="KMeans_Model",
                         app.name="Rattle/PMML",
                         description="KMeans cluster model",
                         copyright=NULL)
@@ -386,73 +405,61 @@ pmml.kmeans <- function(model,
 
   ## Collect the required information.
 
-  number.of.fields <- ncol(model$centers)
-  field.names <-  colnames(model$centers)
+  field <- NULL
+  field$name <-  colnames(model$centers)
+  number.of.fields <- length(field$name)
+  field$class <- rep("numeric", number.of.fields) # All fields ar numeric
+  names(field$class) <- field$name
   number.of.clusters <- length(model$size)
   cluster.names <- rownames(model$centers)
 
   ## PMML
 
-  pmml <- xmlNode("PMML",
-                  attrs=c(version=PMML.VERSION,
-                    xmlns="http://www.dmg.org/PMML-3_1", 
-                    "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance"))
+  pmml <- pmmlRootNode()
 
   ## PMML -> Header
 
-  if (is.null(copyright))
-    header <- xmlNode("Header", attrs=c(description=description))
-  else
-    header <- xmlNode("Header",
-                      attrs=c(copyright=copyright, description=description))
-
-  header[[1]] <- xmlNode("Application",
-                         attrs=c(name=app.name,
-                           version=VERSION))
-
-  header[[2]] <- xmlNode("Annotation",
-                         paste("Export of PMML from Rattle for",
-                               "KMeans models is experimental."))
-  header[[2]][[2]] <- xmlNode("Extension", sprintf("%s", Sys.time()),
-                              attrs=c(description="timestamp"))
-  header[[2]][[3]] <- xmlNode("Extension", sprintf("%s", Sys.info()["user"]),
-                              attrs=c(description="username"))
-  
-  pmml$children[[1]] <- header
+  header <- pmmlHeader(description, copyright, app.name)
+  pmml <- append.XMLNode(pmml, header)
 
   ## PMML -> DataDictionary
 
-  data.dictionary <- xmlNode("DataDictionary",
-                             attrs=c(numderOfFields=number.of.fields))
-  data.fields <- list()
-  for (i in 1:number.of.fields)
-  {
-    data.fields[[i]] <- xmlNode("DataField",
-                                attrs=c(name=field.names[i]))
-  }
-  data.dictionary$children <- data.fields
-  pmml$children[[2]] <- data.dictionary
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
   ## PMML -> ClusteringModel
 
-  clustering.model <- xmlNode("ClusteringModel",
-                              attrs=c(algorithmName="KMeans",
-                                numberOfClusters=number.of.clusters))
+  cl.model <- xmlNode("ClusteringModel",
+                      attrs=c(modelName=model.name,
+                        functionName="clustering",
+                        algorithmName="KMeans",
+                        modelClass="centerBased",
+                        numberOfClusters=number.of.clusters))
+
+  ## PMML -> ClusteringModel -> MiningSchema
+
+  cl.model <- append.XMLNode(cl.model, pmmlMiningSchema(field))
+
+  ## PMML -> ClusteringModel -> ComparisonMeasure
+  
+  cl.model <- append.XMLNode(cl.model, xmlNode("ComparisonMeasure",
+                                               attrs=c(kind="distance")))
+  
+  ## PMML -> ClusteringModel -> Cluster -> Array
+  
   clusters <- list()
   for (i in 1:number.of.clusters)
   {
-    clusters[[i]] <- xmlNode("Cluster",
-                             attrs=c(name=cluster.names[i],
-                               size=model$size[i]),
-                             xmlNode("Array",
-                                     attrs=c(n=number.of.fields),
-                                     paste(model$centers[i,], collapse=" ")))
+    cl.model <- append.XMLNode(cl.model,
+                               xmlNode("Cluster",
+                                       attrs=c(name=cluster.names[i],
+                                         size=model$size[i]),
+                                       xmlNode("Array",
+                                               attrs=c(n=number.of.fields),
+                                               paste(model$centers[i,],
+                                                     collapse=" "))))
   }
-  clustering.model$children <- clusters
-  pmml$children[[3]] <- clustering.model
-  #
-  # All done
-  #
+  pmml <- append.XMLNode(pmml, cl.model)
+
   return(pmml)
 }
 

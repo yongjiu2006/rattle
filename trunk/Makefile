@@ -22,7 +22,7 @@ MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
-P_VERSION="1.0.1"
+P_VERSION="1.0.2"
 DATE:=$(shell date +%F)
 
 R_SOURCE = \
@@ -149,6 +149,9 @@ python:
 
 test:
 	R --no-save --quiet < regression.R 
+
+ptest:
+	r ptest.R
 
 clean:
 	rm -f rattle_*.tar.gz rattle_*.zip
