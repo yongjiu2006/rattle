@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-10 19:08:21 Graham>
+## Time-stamp: <2007-02-17 03:48:10 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -524,27 +524,51 @@ on_hclust_plot_button_clicked <- function(button)
 
 exportClusterTab <- function()
 {
+  if (noDatasetLoaded()) return()
 
-  ## Background information
-
-  cluster.type <- ""
   if (theWidget("kmeans_radiobutton")$getActive())
-    cluster.type <- "kmeans"
-  else if (theWidget("hclust_radiobutton")$getActive())
-    cluster.type <- "hclust"
+  {
+    exportKMeansTab()
+  }
+  else
+  {
+    errorDialog("PMML export for this model is not yet implemented.")
+    return()
+  }
+}
+
+exportKMeansTab <- function(file)
+{
+  ## Make sure we have a model first!
+  
+  if (is.null(crs$kmeans))
+  {
+    errorDialog("No kmeans cluster model is available. Be sure to build",
+                "the model before trying to export it! You will need",
+                "to press the Execute button (F5) in order to build the",
+                "model.")
+    return()
+  }
+
+  ## Require the pmml package
+  
+  lib.cmd <- "require(pmml, quietly=TRUE)"
+  if (! packageIsAvailable("pmml", "export kmeans clusters")) return(FALSE)
+  addToLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
+  eval(parse(text=lib.cmd))
   
   ## Obtain filename to write the clusters to.
   
-  dialog <- gtkFileChooserDialog("Export Cluster", NULL, "save",
+  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
-  default.name <- paste(get.stem(crs$dataname), "_", cluster.type, sep="")
-  if(not.null(crs$dataname)) dialog$setCurrentName(default.name)
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
 
   ff <- gtkFileFilterNew()
-  ff$setName("R Files")
-  ff$addPattern("*.csv")
+  ff$setName("PMML Files")
+  ff$addPattern("*.xml")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
@@ -563,68 +587,20 @@ exportClusterTab <- function()
     return()
   }
 
-  if (get.extension(save.name) != "csv")
-    save.name <- sprintf("%s.csv", save.name)
+  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
   if (file.exists(save.name))
     if (is.null(questionDialog("A file of the same name as", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+                               "already exists. Do you want to overwrite",
+                               "this file?")))
       return()
 
-  if (theWidget("kmeans_radiobutton")$getActive())
-    exportKMeans(save.name)
-  else if (theWidget("hclust_radiobutton")$getActive())
-    exportHClust(save.name)
-
-  return()
+  pmml.cmd <- "pmml.kmeans(crs$kmeans)"
+  addToLog("Export the cluster as PMML.", pmml.cmd)
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
   
-  setStatusBar("The cluster has been exported to", save.name)
+  infoDialog("The PMML file", save.name, "has been written.")
 
-  infoDialog("The cluster has been exported to", save.name)
+  setStatusBar("The PMML file", save.name, "has been written.")
 
 }
-
-exportKMeans <- function(file)
-{
-  infoDialog("The export of the KMeans clusters is under development.",
-             "Please check back later.")
-}
-
-exportHClust <- function(file)
-{
-  infoDialog("The export of the HClust clusters is under development.",
-             "Please check back later.")
-}
-
-
-## EXPORT TO PMML
-
-##     if (noDatasetLoaded()) return()
-##     require(XML, quietly=TRUE)
-##     if (theWidget("kmeans_radiobutton")$getActive())
-##     {
-##       if (is.null(crs$kmeans))
-##       {
-##         errorDialog("No KMeans cluster is available. Be sure to build",
-##                      "a cluster before trying to export it! You will need",
-##                      "to press the Execute button (F5) in order to build the",
-##                      "KMeans cluster.")
-##         return()
-##       }
-##       else
-##       {
-##         write(collectOutput("pmml.kmeans(crs$kmeans)", TRUE),
-##               file=sprintf("%s-kmeans.pmml", gsub(".csv", "", crs$dataname)))
-##         infoDialog("The PMML file",
-##                     sprintf('"%s-kmeans.pmml"', gsub(".csv", "", crs$dataname)),
-##                     "has been written.")
-##       }
-##     }
-##     else if (theWidget("hclust_radiobutton")$getActive())
-##     {
-##       errorDialog("PMML export for hierarchical clustering is not yet",
-##                    "implemented.")
-##       return()
-##     }
-

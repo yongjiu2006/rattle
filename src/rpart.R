@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-10 16:05:07 Graham>
+## Time-stamp: <2007-02-17 03:33:48 Graham>
 ##
 ## RPART TAB
 ##
@@ -769,9 +769,7 @@ exportRpartTab <- function()
 
   pmml.cmd <- "pmml.rpart(crs$rpart)"
   addToLog("Export a decision tree as PMML.", pmml.cmd)
-  write(paste('<?xml version="1.0"?>\n',
-              collectOutput(pmml.cmd, TRUE),
-              sep=""), file=save.name)
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
 
   infoDialog("The PMML file", save.name, "has been written.")
 
