@@ -1,14 +1,13 @@
 \name{pmml.rpart}
 \alias{pmml.rpart}
-\title{
-  Generate PMML for an rpart object
-}
+\title{Generate PMML for an rpart object}
 \description{
   
-  Generate the PMML representation of an rpart object (classification
-  tree).  The rpart object (currently expected to be a classification
-  tree) is converted into a PMML representation. The PMML can then be
-  imported into other systems that accept PMML.
+  Generate the Predictive Model Markup Language (PMML) representation of
+  an \pkg{rpart} object (classification tree).  The rpart object
+  (currently expected to be a classification tree) is converted into a
+  PMML representation. The PMML can then be imported into other systems
+  that accept PMML.
   
 }
 \usage{
@@ -119,3 +118,4 @@ fit <- rpart(Kyphosis ~ Age + Number + Start, data=kyphosis)
 pmml.rpart(fit)
 }
 \keyword{interface}
+\keyword{tree}
