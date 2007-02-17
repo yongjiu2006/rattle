@@ -5477,7 +5477,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
   ## If just one model, and we are plotting the test dataset, then
   ## also plot the training dataset.
 
-  if (nummodels == 1 && grep("\\[test\\]", testname))
+  if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
@@ -5604,7 +5604,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   ## If just one model, and we are plotting the test dataset, then
   ## also plot the training dataset.
 
-  if (nummodels == 1 && grep("\\[test\\]", testname))
+  if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
@@ -5717,7 +5717,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
   ## If just one model, and we are plotting the test dataset, then
   ## also plot the training dataset.
 
-  if (nummodels == 1 && grep("\\[test\\]", testname))
+  if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
@@ -5829,7 +5829,7 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
   ## If just one model, and we are plotting the test dataset, then
   ## also plot the training dataset.
 
-  if (nummodels == 1 && grep("\\[test\\]", testname))
+  if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",

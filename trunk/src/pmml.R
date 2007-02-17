@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-02-17 12:28:09 Graham>
+## Time-stamp: <2007-02-17 14:37:45 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -773,5 +773,30 @@ rsfMakeTree <- function(recursiveObject, nativeArray, predictorNames,
 
 sql.pmml <- function(pmml)
 {
-  return("SELECT * FROM *")
+  ## pmml <- xmlTreeParse("../TARGET.rpart.xml")
+  ## pmml <- xmlTreeParse("../TARGET.rpart.xml", useInternalNodes=TRUE)
+
+  root <- xmlRoot(pmml)
+  children <- xmlChildren(root)
+
+  if ("TreeModel" %in% names(children))
+    sql <- generateTreeModelSQL(children$TreeModel)
+  else if ("ClusteringModel" %in% names(children))
+    sql <- generateClusteringModelSQL(children$TreeModel)
+  else
+    sql <- "SELECT * FROM *"
+
+  return(sql)
+}
+
+generateTreeModelSQL <- function(tree)
+{
+  nodes <- xmlChildren(tree)$Node
+
+  return("SELECT TREE")
+}
+
+generateClusteringModelSQL <- function(tree)
+{
+  return("SELECT CLUSTER NOT YET IMPLEMENTED")
 }
