@@ -13,8 +13,8 @@
 
 on_tools_associate_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
-  switchToPage(NOTEBOOK.ASSOCIATE.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.ASSOCIATE.NAME))
+  switchToPage(.NOTEBOOK.ASSOCIATE.NAME)
 }
 
 on_associate_plot_frequency_button_clicked <-  function(action, window)

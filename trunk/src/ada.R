@@ -74,7 +74,7 @@ executeModelAda <- function()
     stumps <- ""
   
   ntree <- theWidget("ada_ntree_spinbutton")$getValue()
-  if (ntree != ADA.NTREE.DEFAULT)
+  if (ntree != .ADA.NTREE.DEFAULT)
     ntree <- sprintf(", iter=%d", ntree)
   else
     ntree <- ""

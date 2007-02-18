@@ -22,37 +22,37 @@ dispatchExecuteButton <- function()
   
   ## Check which tab of notebook and dispatch to appropriate execute action
 
-  ct <- getCurrentPageLabel(NOTEBOOK)
+  ct <- getCurrentPageLabel(.NOTEBOOK)
   
-  if (ct == NOTEBOOK.DATA.NAME) 
+  if (ct == .NOTEBOOK.DATA.NAME) 
   {
     executeDataTab()
   }
-  else if (ct == NOTEBOOK.EXPLORE.NAME)
+  else if (ct == .NOTEBOOK.EXPLORE.NAME)
   {
     executeExploreTab()
   }
-  else if (ct == NOTEBOOK.VARIABLES.NAME)
+  else if (ct == .NOTEBOOK.VARIABLES.NAME)
   {
     executeVariablesTab()
   }
-  else if (ct == NOTEBOOK.SAMPLE.NAME)
+  else if (ct == .NOTEBOOK.SAMPLE.NAME)
   {
     executeTransformTab()
   }
-  else if (ct == NOTEBOOK.CLUSTER.NAME)
+  else if (ct == .NOTEBOOK.CLUSTER.NAME)
   {
     executeClusterTab()
   }
-  else if (ct == NOTEBOOK.ASSOCIATE.NAME)
+  else if (ct == .NOTEBOOK.ASSOCIATE.NAME)
   {
     executeAssociateTab()
   }
-  else if (ct == NOTEBOOK.MODEL.NAME)
+  else if (ct == .NOTEBOOK.MODEL.NAME)
   {
     executeModelTab()
   }
-  else if (ct == NOTEBOOK.EVALUATE.NAME)
+  else if (ct == .NOTEBOOK.EVALUATE.NAME)
   {
 
     ## The wrap mode of the confusion_textview may have been set to

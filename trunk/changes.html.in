@@ -6,7 +6,10 @@
     changes on each version control check-in.</p>
 
 <pre>
-125 Include randomSurvivalForest export of pmml.
+128 Introduce pmml as an S3 function (Tobias Verbeke)
+127 Ensure global variables are hidden (begin with ".") (Tobias Verbeke)
+126 Bug fix non-sample ROCR plots (Tobias Verbeke)
+125 Include randomSurvivalForest export of pmml (Udaya Kogalur)
 124 Refine pmml implementation.
 123 Bug fix - IGN vars in Distributions had no levels.
 122 pmml now separately packaged and include pmml.kmeans
@@ -17,7 +20,7 @@
 117 Update some help documentation.
 116 Add missing value summary (from mice) to Impute.
 115 Initial imputation (Zero/Missing) (suggested by Michael Fogliani).
-114 ROC plots of one model/testset also plot training (suggest Robert Williams).
+114 ROC plots of one model/testset also plot training (suggest Robert Williams)
 113 Transform tab now uses radio buttons in preparation for imputation etc.
 112 RF check if na.omit removes all entities (suggested by Michael Fogliani).
 111 Activate proper model buttons on project load.
@@ -169,6 +172,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Feb 17 13:37:55 EST 2007
+Last modified: Mon Feb 19 06:13:51 EST 2007
 <!-- hhmts end -->
   </p>

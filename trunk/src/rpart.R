@@ -197,7 +197,7 @@ executeModelRPart <- function()
   ## default, and if so then use it.
 
   minsplit <- theWidget("rpart_minsplit_spinbutton")$getValue()
-  if (minsplit != RPART.MINSPLIT.DEFAULT)
+  if (minsplit != .RPART.MINSPLIT.DEFAULT)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(minsplit=%d)", minsplit)
@@ -209,7 +209,7 @@ executeModelRPart <- function()
   ## default, and if so then use it.
 
   minbucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
-  if (minbucket != RPART.MINBUCKET.DEFAULT)
+  if (minbucket != .RPART.MINBUCKET.DEFAULT)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(minbucket=%d)", minbucket)
@@ -221,7 +221,7 @@ executeModelRPart <- function()
   ## default, and if so then use it.
 
   maxdepth <- theWidget("rpart_maxdepth_spinbutton")$getValue()
-  if (maxdepth != RPART.MAXDEPTH.DEFAULT)
+  if (maxdepth != .RPART.MAXDEPTH.DEFAULT)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(maxdepth=%d)", maxdepth)
@@ -234,7 +234,7 @@ executeModelRPart <- function()
 
   cp <- theWidget("rpart_cp_spinbutton")$getValue()
 
-  if (abs(cp-RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
+  if (abs(cp-.RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(cp=%f)", cp)
@@ -247,7 +247,7 @@ executeModelRPart <- function()
   ## in Rattle just go with that.
   
   ## xval <- theWidget("rpart_xval_spinbutton")$getValue()
-  ## if (xval != RPART.XVAL.DEFAULT)
+  ## if (xval != .RPART.XVAL.DEFAULT)
   ## {
   ##  if (is.null(control))
   ##    control <- sprintf(", control=rpart.control(xval=%d)", xval)
@@ -352,7 +352,7 @@ executeModelRPart <- function()
               "Summary of the rpart model:\n\n",
               collectOutput(print.cmd))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, RPART)
+  if (sampling) crs$smodel <<- union(crs$smodel, .RPART)
 
   ## Now that we have a model, make sure the plot button is sensitive.
   

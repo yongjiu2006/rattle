@@ -16,14 +16,14 @@
 on_kmeans_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    CLUSTER$setCurrentPage(CLUSTER.KMEANS.TAB)
+    .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   setStatusBar()
 }
 
 on_hclust_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    CLUSTER$setCurrentPage(CLUSTER.HCLUST.TAB)
+    .CLUSTER$setCurrentPage(.CLUSTER.HCLUST.TAB)
   setStatusBar()
 }
 
