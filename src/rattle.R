@@ -45,6 +45,7 @@ COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
 ##    Use dot spearated words for variables: list.of.frames, lib.cmd
 ##    RGtk2 uses the capitalised word convention.
 ##    Use same names in R code as for the Glade objects.
+##    Hide global variables, all capitalised, by beginning with "."
 
 ## INTERFACE STYLE
 ##
@@ -149,48 +150,48 @@ rattle <- function()
   
   ## Various Treeview Columns
 
-  COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
+  .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
 
-  IMPUTE <<- c(number=0, variable=1, zero=2, comment=3)
+  .IMPUTE <<- c(number=0, variable=1, zero=2, comment=3)
   
-  CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
+  .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
                     dotplot = 3, comment = 4)
 
-  CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
+  .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
   ## MODELLERS
 
-  GLM   <<- "glm"
-  RPART <<- "rpart"
+  .GLM   <<- "glm"
+  .RPART <<- "rpart"
   ##GBM <<- "gbm"
-  ADA   <<- "ada"
-  RF    <<- "rf"
-  SVM   <<- "svm"
-  KSVM  <<- "ksvm"
-  NNET  <<- "nnet"
+  .ADA   <<- "ada"
+  .RF    <<- "rf"
+  .SVM   <<- "svm"
+  .KSVM  <<- "ksvm"
+  .NNET  <<- "nnet"
 
-  MODELLERS <<- c(RPART, ADA, RF, KSVM, GLM, NNET)
+  .MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, .GLM, .NNET)
   
   ## RPART
   
-  RPART.CP.DEFAULT        <<- 0.010
-  RPART.MINSPLIT.DEFAULT  <<- 20
-  RPART.MINBUCKET.DEFAULT <<- 7
-  RPART.MAXDEPTH.DEFAULT  <<- 30
+  .RPART.CP.DEFAULT        <<- 0.010
+  .RPART.MINSPLIT.DEFAULT  <<- 20
+  .RPART.MINBUCKET.DEFAULT <<- 7
+  .RPART.MAXDEPTH.DEFAULT  <<- 30
 
-  ADA.NTREE.DEFAULT   <<- 50
+  .ADA.NTREE.DEFAULT   <<- 50
   
-  RF.NTREE.DEFAULT    <<- 500
-  RF.MTRY.DEFAULT     <<- 10
-  RF.SAMPSIZE.DEFAULT <<- ""
+  .RF.NTREE.DEFAULT    <<- 500
+  .RF.MTRY.DEFAULT     <<- 10
+  .RF.SAMPSIZE.DEFAULT <<- ""
   
   ## MISC
   
-  START.LOG.COMMENT <<- "\n\n## "	# Assume paste with sep=""
-  LOG.COMMENT       <<- "\n## "	# Assume paste with sep=""
-  END.LOG.COMMENT   <<- "\n\n"	# Assume paste with sep=""
+  .START.LOG.COMMENT <<- "\n\n## "	# Assume paste with sep=""
+  .LOG.COMMENT       <<- "\n## "	# Assume paste with sep=""
+  .END.LOG.COMMENT   <<- "\n\n"	# Assume paste with sep=""
   
 ########################################################################
   
@@ -232,87 +233,87 @@ rattle <- function()
   ## that are needed for removing and inserting tabs in the notebook,
   ## depending on the selected paradigm.
   
-  NOTEBOOK               <<- theWidget("notebook")
+  .NOTEBOOK               <<- theWidget("notebook")
 
-  NOTEBOOK.DATA.NAME      <<- "Data"
+  .NOTEBOOK.DATA.NAME      <<- "Data"
 
-  NOTEBOOK.EXPLORE.NAME   <<- "Explore"
+  .NOTEBOOK.EXPLORE.NAME   <<- "Explore"
 
-  NOTEBOOK.VARIABLES.NAME <<- "Variables"
+  .NOTEBOOK.VARIABLES.NAME <<- "Variables"
 
-  NOTEBOOK.SAMPLE.NAME    <<- "Transform"
+  .NOTEBOOK.SAMPLE.NAME    <<- "Transform"
 
-  NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
-  NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
-  NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
+  .NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
+  .NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
+  .NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
 
-  NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
-  NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
-  NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
+  .NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
+  .NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
+  .NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
 
-  NOTEBOOK.MODEL.NAME     <<- "Model"
-  NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
-  NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
+  .NOTEBOOK.MODEL.NAME     <<- "Model"
+  .NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
+  .NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
 
-  NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
-  NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
-  NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
+  .NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
+  .NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
+  .NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
 
-  NOTEBOOK.LOG.NAME       <<- "Log"
+  .NOTEBOOK.LOG.NAME       <<- "Log"
 
   ## Pages that are common to all paradigms.
 
-  NOTEBOOK.COMMON.NAMES <<- c(NOTEBOOK.DATA.NAME,
-                              NOTEBOOK.SAMPLE.NAME,
-                              NOTEBOOK.VARIABLES.NAME,
-                              NOTEBOOK.LOG.NAME)
+  .NOTEBOOK.COMMON.NAMES <<- c(.NOTEBOOK.DATA.NAME,
+                              .NOTEBOOK.SAMPLE.NAME,
+                              .NOTEBOOK.VARIABLES.NAME,
+                              .NOTEBOOK.LOG.NAME)
   
   ## DATA tab pages.
 
-  DATA              <<- theWidget("data_notebook")
-  DATA.CSV.TAB      <<- getNotebookPage(DATA, "csv")
-  DATA.RDATA.TAB    <<- getNotebookPage(DATA, "rdata")
-  DATA.RDATASET.TAB <<- getNotebookPage(DATA, "rdataset")
-  DATA.ODBC.TAB     <<- getNotebookPage(DATA, "odbc")
+  .DATA              <<- theWidget("data_notebook")
+  .DATA.CSV.TAB      <<- getNotebookPage(.DATA, "csv")
+  .DATA.RDATA.TAB    <<- getNotebookPage(.DATA, "rdata")
+  .DATA.RDATASET.TAB <<- getNotebookPage(.DATA, "rdataset")
+  .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
 
-  TRANSFORM               <<- theWidget("transform_notebook")
-  TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(TRANSFORM, "sample")
-  TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(TRANSFORM, "impute")
-  TRANSFORM.FACTORISE.TAB <<- getNotebookPage(TRANSFORM, "factorise")
-  TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(TRANSFORM, "outlier")
+  .TRANSFORM               <<- theWidget("transform_notebook")
+  .TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(.TRANSFORM, "sample")
+  .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
+  .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
+  .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
   
-  EXPLORE                 <<- theWidget("explore_notebook")
-  EXPLORE.SUMMARY.TAB     <<- getNotebookPage(EXPLORE, "summary")
-  EXPLORE.PLOT.TAB        <<- getNotebookPage(EXPLORE, "explot")
-  EXPLORE.GGOBI.TAB       <<- getNotebookPage(EXPLORE, "ggobi")
-  EXPLORE.CORRELATION.TAB <<- getNotebookPage(EXPLORE, "correlation")
-  EXPLORE.HIERCOR.TAB     <<- getNotebookPage(EXPLORE, "hiercor")
-  EXPLORE.PRCOMP.TAB      <<- getNotebookPage(EXPLORE, "prcomp")
+  .EXPLORE                 <<- theWidget("explore_notebook")
+  .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
+  .EXPLORE.PLOT.TAB        <<- getNotebookPage(.EXPLORE, "explot")
+  .EXPLORE.GGOBI.TAB       <<- getNotebookPage(.EXPLORE, "ggobi")
+  .EXPLORE.CORRELATION.TAB <<- getNotebookPage(.EXPLORE, "correlation")
+  .EXPLORE.HIERCOR.TAB     <<- getNotebookPage(.EXPLORE, "hiercor")
+  .EXPLORE.PRCOMP.TAB      <<- getNotebookPage(.EXPLORE, "prcomp")
   
-  CLUSTER            <<- theWidget("cluster_notebook")
-  CLUSTER.KMEANS.TAB <<- getNotebookPage(CLUSTER, "kmeans")
-  CLUSTER.HCLUST.TAB <<- getNotebookPage(CLUSTER, "hclust")
+  .CLUSTER            <<- theWidget("cluster_notebook")
+  .CLUSTER.KMEANS.TAB <<- getNotebookPage(.CLUSTER, "kmeans")
+  .CLUSTER.HCLUST.TAB <<- getNotebookPage(.CLUSTER, "hclust")
   
-  MODEL           <<- theWidget("model_notebook")
-  MODEL.RPART.TAB <<- getNotebookPage(MODEL, RPART)
-  MODEL.GLM.TAB   <<- getNotebookPage(MODEL, GLM)
-  MODEL.ADA.TAB   <<- getNotebookPage(MODEL, ADA)
-  ## MODEL.GBM.TAB   <<- getNotebookPage(MODEL, GBM)
-  MODEL.RF.TAB    <<- getNotebookPage(MODEL, RF)
-  MODEL.SVM.TAB   <<- getNotebookPage(MODEL, SVM)
-  MODEL.NNET.TAB   <<- getNotebookPage(MODEL, NNET)
+  .MODEL           <<- theWidget("model_notebook")
+  .MODEL.RPART.TAB <<- getNotebookPage(.MODEL, .RPART)
+  .MODEL.GLM.TAB   <<- getNotebookPage(.MODEL, .GLM)
+  .MODEL.ADA.TAB   <<- getNotebookPage(.MODEL, .ADA)
+  ## .MODEL.GBM.TAB   <<- getNotebookPage(.MODEL, .GBM)
+  .MODEL.RF.TAB    <<- getNotebookPage(.MODEL, .RF)
+  .MODEL.SVM.TAB   <<- getNotebookPage(.MODEL, .SVM)
+  .MODEL.NNET.TAB   <<- getNotebookPage(.MODEL, .NNET)
 
-  SVMNB           <<- theWidget("svm_notebook")
-  SVMNB.ESVM.TAB  <<- getNotebookPage(SVMNB, "esvm")
-  SVMNB.KSVM.TAB  <<- getNotebookPage(SVMNB, "ksvm")
+  .SVMNB           <<- theWidget("svm_notebook")
+  .SVMNB.ESVM.TAB  <<- getNotebookPage(.SVMNB, "esvm")
+  .SVMNB.KSVM.TAB  <<- getNotebookPage(.SVMNB, "ksvm")
   
-  EVALUATE                 <<- theWidget("evaluate_notebook")
-  EVALUATE.CONFUSION.TAB   <<- getNotebookPage(EVALUATE, "confusion")
-  EVALUATE.RISK.TAB        <<- getNotebookPage(EVALUATE, "risk")
-  EVALUATE.LIFT.TAB        <<- getNotebookPage(EVALUATE, "lift")
-  EVALUATE.ROC.TAB         <<- getNotebookPage(EVALUATE, "roc")
-  EVALUATE.PRECISION.TAB   <<- getNotebookPage(EVALUATE, "precision")
-  EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(EVALUATE, "sensitivity")
+  .EVALUATE                 <<- theWidget("evaluate_notebook")
+  .EVALUATE.CONFUSION.TAB   <<- getNotebookPage(.EVALUATE, "confusion")
+  .EVALUATE.RISK.TAB        <<- getNotebookPage(.EVALUATE, "risk")
+  .EVALUATE.LIFT.TAB        <<- getNotebookPage(.EVALUATE, "lift")
+  .EVALUATE.ROC.TAB         <<- getNotebookPage(.EVALUATE, "roc")
+  .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
+  .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
   
 ########################################################################
   
@@ -330,12 +331,12 @@ rattle <- function()
   
   ## Turn off the sub-notebook tabs.
   
-  DATA$setShowTabs(FALSE)
-  TRANSFORM$setShowTabs(FALSE)
-  EXPLORE$setShowTabs(FALSE)
-  CLUSTER$setShowTabs(FALSE)
-  MODEL$setShowTabs(FALSE)
-  EVALUATE$setShowTabs(FALSE)
+  .DATA$setShowTabs(FALSE)
+  .TRANSFORM$setShowTabs(FALSE)
+  .EXPLORE$setShowTabs(FALSE)
+  .CLUSTER$setShowTabs(FALSE)
+  .MODEL$setShowTabs(FALSE)
+  .EVALUATE$setShowTabs(FALSE)
   
   ## Set glm_family_comboboxentry to default value.
   
@@ -359,8 +360,8 @@ rattle <- function()
   ## variables above, since a Execute on the Model tab runs the
   ## Cluster tab :-)
 
-  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
-  NOTEBOOK$removePage(getNotebookPage(NOTEBOOK, NOTEBOOK.ASSOCIATE.NAME))
+  .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
+  .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.ASSOCIATE.NAME))
 
   while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
@@ -432,20 +433,20 @@ variable in combination with the other variables."))
   ## Set all sub tabs back to the default tab page and reflect this in
   ## the appropriate radio button.
 
-  TRANSFORM$setCurrentPage(TRANSFORM.SAMPLE.TAB)
+  .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
   theWidget("sample_radiobutton")$setActive(TRUE)
   
-  EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
+  .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
-  CLUSTER$setCurrentPage(CLUSTER.KMEANS.TAB)
+  .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
 
-  MODEL$setCurrentPage(MODEL.RPART.TAB)
+  .MODEL$setCurrentPage(.MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
 
-  EVALUATE$setCurrentPage(EVALUATE.CONFUSION.TAB)
+  .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
 
   ## Reset the VARIABLES tab.
@@ -462,10 +463,10 @@ variable in combination with the other variables."))
   
   theWidget("rpart_priors_entry")$setText("")
   theWidget("rpart_loss_entry")$setText("")
-  theWidget("rpart_minsplit_spinbutton")$setValue(RPART.MINSPLIT.DEFAULT)
-  theWidget("rpart_maxdepth_spinbutton")$setValue(RPART.MAXDEPTH.DEFAULT)
-  theWidget("rpart_cp_spinbutton")$setValue(RPART.CP.DEFAULT)
-  theWidget("rpart_minbucket_spinbutton")$setValue(RPART.MINBUCKET.DEFAULT)
+  theWidget("rpart_minsplit_spinbutton")$setValue(.RPART.MINSPLIT.DEFAULT)
+  theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
+  theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
+  theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
   makeRPartSensitive(FALSE)
 
   ## Reset MODEL:ADA
@@ -742,7 +743,7 @@ listBuiltModels <- function()
 #            is.null(crs$gbm) && is.null(crs$rf) &&
 #            is.null(crs$svm)))
   models <- c()
-  for (m in MODELLERS)
+  for (m in .MODELLERS)
     if (not.null(eval(parse(text=sprintf("crs$%s", m)))))
       models <- c(models, m)
   return(models)
@@ -982,7 +983,7 @@ on_csv_radiobutton_toggled <- function(button)
   #cat("XXX CSV Radio Toggle XXX\n")
   if (button$getActive())
   {
-    DATA$setCurrentPage(DATA.CSV.TAB)
+    .DATA$setCurrentPage(.DATA.CSV.TAB)
   }
   setStatusBar()
 }
@@ -1013,7 +1014,7 @@ on_rdata_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    DATA$setCurrentPage(DATA.RDATA.TAB)
+    .DATA$setCurrentPage(.DATA.RDATA.TAB)
   }
   setStatusBar()
 }
@@ -1086,14 +1087,14 @@ on_rdataset_radiobutton_toggled <- function(button)
   #cat("XXX R Dataset Radio toggled XXX\n")
   if (button$getActive())
   {
-    DATA$setCurrentPage(DATA.RDATASET.TAB)
+    .DATA$setCurrentPage(.DATA.RDATASET.TAB)
   }
   setStatusBar()
 }
 
 on_odbc_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) DATA$setCurrentPage(DATA.ODBC.TAB)
+  if (button$getActive()) .DATA$setCurrentPage(.DATA.ODBC.TAB)
   setStatusBar()
 }
 
@@ -1558,7 +1559,7 @@ item.toggled <- function(cell, path.str, model)
 
     ## Uncheck all other Roles for this row, acting like radio buttons.
     
-    columns <- COLUMN[["input"]]:COLUMN[["ignore"]]
+    columns <- .COLUMN[["input"]]:.COLUMN[["ignore"]]
     lapply(setdiff(columns, column), function(x) model$set(iter, x, FALSE))
 
     ## TODO Now fix up other buttons. Any in the same column, if it is
@@ -1589,8 +1590,8 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
-    model$set(iter, COLUMN[["ignore"]], TRUE)
-    columns <- setdiff(COLUMN[["input"]]:COLUMN[["ignore"]], COLUMN[["ignore"]])
+    model$set(iter, .COLUMN[["ignore"]], TRUE)
+    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]], .COLUMN[["ignore"]])
 
     ## Timing indicates the for loop is slower on GNU/Linux but faster
     ## on MS/Windows 500! But the extra test also slows things down,
@@ -1625,8 +1626,8 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
-    model$set(iter, COLUMN[["input"]], TRUE)
-    columns <- setdiff(COLUMN[["input"]]:COLUMN[["ignore"]], COLUMN[["input"]])
+    model$set(iter, .COLUMN[["input"]], TRUE)
+    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]], .COLUMN[["input"]])
 
     #if (isWindows())
       for (c in columns)
@@ -1799,8 +1800,8 @@ executeVariablesTab <- function()
 
   ## Update defaults tha rely on the number of variables.
   
-  RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
-  theWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
+  .RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
+  theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
 
   ## Finished - update the status bar.
   
@@ -1825,39 +1826,39 @@ getSelectedVariables <- function(role, named=TRUE)
   ## return NULL, rather than an error (for no particular reason).
   ##
   ## ASSUMPTIONS The variable and number columns are assumed to be the
-  ## same in each of COLUMNS, CATEGORICAL, and CONTINUOUS.
+  ## same in each of .COLUMNS, .CATEGORICAL, and .CONTINUOUS.
 
   variables <- NULL
 
   if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
     model <- theWidget("variables_treeview")$getModel()
-    rcol  <- COLUMN[[role]]
+    rcol  <- .COLUMN[[role]]
   }
 
   else if (role %in% c("boxplot", "hisplot", "cumplot", "benplot"))
   {
     model <- theWidget("continuous_treeview")$getModel()
-    rcol  <- CONTINUOUS[[role]]
+    rcol  <- .CONTINUOUS[[role]]
   }
 
   else if (role %in% c("barplot", "dotplot"))
   {
     model <- theWidget("categorical_treeview")$getModel()
-    rcol  <- CATEGORICAL[[role]]
+    rcol  <- .CATEGORICAL[[role]]
   }
 
   else if (role %in% c("zero"))
   {
     model <- theWidget("impute_treeview")$getModel()
-    rcol  <- IMPUTE[[role]]
+    rcol  <- .IMPUTE[[role]]
   }
   
   else
     return(variables)
 
-  vcol <- COLUMN[["variable"]]
-  ncol <- COLUMN[["number"]]
+  vcol <- .COLUMN[["variable"]]
+  ncol <- .COLUMN[["number"]]
   model$foreach(function(model, path, iter, data)
                 {
                   flag <- model$get(iter, rcol)[[1]]
@@ -1913,7 +1914,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "No.",
                                         renderer,
-                                        text= COLUMN[["number"]])
+                                        text= .COLUMN[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1921,7 +1922,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= IMPUTE[["number"]])
+                                       text= .IMPUTE[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1929,7 +1930,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= CATEGORICAL[["number"]])
+                                       text= .CATEGORICAL[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1937,7 +1938,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= CONTINUOUS[["number"]])
+                                       text= .CONTINUOUS[["number"]])
   
   ## Add the VARIABLE NAME column to the views.
   
@@ -1947,7 +1948,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Variable",
                                         renderer, 
-                                        text = COLUMN[["variable"]])
+                                        text = .COLUMN[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1955,7 +1956,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = IMPUTE[["variable"]])
+                                       text = .IMPUTE[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1963,7 +1964,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = CATEGORICAL[["variable"]])
+                                       text = .CATEGORICAL[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -1971,7 +1972,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = CONTINUOUS[["variable"]])
+                                       text = .CONTINUOUS[["variable"]])
 
   ## Add the TYPE column.
 
@@ -1981,7 +1982,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Data Type",
                                         renderer,
-                                        text = COLUMN[["type"]])
+                                        text = .COLUMN[["type"]])
   
   ## Add the INPUT column.
 
@@ -1989,13 +1990,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", COLUMN["input"])
+  renderer$setData("column", .COLUMN["input"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Input",
                                         renderer,
-                                        active = COLUMN[["input"]])
+                                        active = .COLUMN[["input"]])
   
   ## Add the TARGET column.
 
@@ -2003,13 +2004,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", COLUMN["target"])
+  renderer$setData("column", .COLUMN["target"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Target",
                                         renderer,
-                                        active = COLUMN[["target"]])
+                                        active = .COLUMN[["target"]])
   
   ## Add the RISK column.
 
@@ -2017,13 +2018,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", COLUMN["risk"])
+  renderer$setData("column", .COLUMN["risk"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Risk",
                                         renderer,
-                                        active = COLUMN[["risk"]])
+                                        active = .COLUMN[["risk"]])
   
   ## Add the IDENT column.
 
@@ -2031,13 +2032,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", COLUMN["ident"])
+  renderer$setData("column", .COLUMN["ident"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Ident",
                                         renderer,
-                                        active = COLUMN[["ident"]])
+                                        active = .COLUMN[["ident"]])
   
   ## Add the IGNORE column (the Ignore check button) to the view.
 
@@ -2045,13 +2046,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", COLUMN["ignore"])
+  renderer$setData("column", .COLUMN["ignore"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Ignore",
                                         renderer,
-                                        active = COLUMN[["ignore"]]) 
+                                        active = .COLUMN[["ignore"]]) 
 
   ## Add the ZERO column to the IMPUTE view.
 
@@ -2059,84 +2060,84 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", IMPUTE["zero"])
+  renderer$setData("column", .IMPUTE["zero"])
   connectSignal(renderer, "toggled", imp_toggled, impute)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
                                        "Zero/Missing",
                                         renderer,
-                                        active = IMPUTE[["zero"]]) 
+                                        active = .IMPUTE[["zero"]]) 
 
   ## Add the barplot and dotplot.
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CATEGORICAL["barplot"])
+  renderer$setData("column", .CATEGORICAL["barplot"])
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Bar Plot",
                                        renderer,
-                                       active = CATEGORICAL[["barplot"]])
+                                       active = .CATEGORICAL[["barplot"]])
   
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CATEGORICAL["dotplot"])
+  renderer$setData("column", .CATEGORICAL["dotplot"])
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Dot Plot",
                                        renderer,
-                                       active = CATEGORICAL[["dotplot"]])
+                                       active = .CATEGORICAL[["dotplot"]])
   
   ## Add the boxplot, hisplot, cumplot, benplot buttons
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CONTINUOUS["boxplot"])
+  renderer$setData("column", .CONTINUOUS["boxplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Box Plot",
                                        renderer,
-                                       active = CONTINUOUS[["boxplot"]])
+                                       active = .CONTINUOUS[["boxplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CONTINUOUS["hisplot"])
+  renderer$setData("column", .CONTINUOUS["hisplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Histogram",
                                        renderer,
-                                       active = CONTINUOUS[["hisplot"]])
+                                       active = .CONTINUOUS[["hisplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CONTINUOUS["cumplot"])
+  renderer$setData("column", .CONTINUOUS["cumplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Cumulative",
                                        renderer,
-                                       active = CONTINUOUS[["cumplot"]])
+                                       active = .CONTINUOUS[["cumplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", CONTINUOUS["benplot"])
+  renderer$setData("column", .CONTINUOUS["benplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Benford",
                                        renderer,
-                                       active = CONTINUOUS[["benplot"]])
+                                       active = .CONTINUOUS[["benplot"]])
   
   ## Add the COMMENT column.
 
@@ -2146,7 +2147,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Comment",
                                         renderer,
-                                        text = COLUMN[["comment"]])
+                                        text = .COLUMN[["comment"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2154,7 +2155,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "Data Type and Number Missing",
                                         renderer,
-                                        text = IMPUTE[["comment"]])
+                                        text = .IMPUTE[["comment"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2162,7 +2163,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "Levels",
                                        renderer,
-                                       text = CATEGORICAL[["comment"]])
+                                       text = .CATEGORICAL[["comment"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2170,7 +2171,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "Min; Median/Mean; Max",
                                        renderer,
-                                       text = CONTINUOUS[["comment"]])
+                                       text = .CONTINUOUS[["comment"]])
 
   ## Allow multiple selections.
   
@@ -2354,15 +2355,15 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     ## Every variable goes into the VARIABLES treeview.
     
     model$set(iter,
-              COLUMN["number"], i,
-              COLUMN["variable"], variables[i],
-              COLUMN["type"], cl,
-              COLUMN["input"], variables[i] %in% input,
-              COLUMN["target"], variables[i] %in% target,
-              COLUMN["risk"], variables[i] %in% risk,
-              COLUMN["ident"], variables[i] %in% ident,
-              COLUMN["ignore"], variables[i] %in% ignore,
-              COLUMN["comment"], ifelse(missing.count > 0,
+              .COLUMN["number"], i,
+              .COLUMN["variable"], variables[i],
+              .COLUMN["type"], cl,
+              .COLUMN["input"], variables[i] %in% input,
+              .COLUMN["target"], variables[i] %in% target,
+              .COLUMN["risk"], variables[i] %in% risk,
+              .COLUMN["ident"], variables[i] %in% ident,
+              .COLUMN["ignore"], variables[i] %in% ignore,
+              .COLUMN["comment"], ifelse(missing.count > 0,
                                         sprintf("%d missing values.",
                                                 missing.count),
                                         ""))
@@ -2374,10 +2375,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     {
       impiter <- impute$append()$iter
       impute$set(impiter,
-                 IMPUTE["number"], i,
-                 IMPUTE["variable"], variables[i],
-                 IMPUTE["zero"], variables[i] %in% zero,
-                 IMPUTE["comment"], sprintf("%s with %d missing.",
+                 .IMPUTE["number"], i,
+                 .IMPUTE["variable"], variables[i],
+                 .IMPUTE["zero"], variables[i] %in% zero,
+                 .IMPUTE["comment"], sprintf("%s with %d missing.",
                                             cl, missing.count))
     }
         
@@ -2391,11 +2392,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       catiter <- categorical$append()$iter
       categorical$set(catiter,
-                      CATEGORICAL["number"], i,
-                      CATEGORICAL["variable"], variables[i],
-                      CATEGORICAL["barplot"], variables[i] %in% barplot,
-                      CATEGORICAL["dotplot"], variables[i] %in% dotplot,
-                      CATEGORICAL["comment"],
+                      .CATEGORICAL["number"], i,
+                      .CATEGORICAL["variable"], variables[i],
+                      .CATEGORICAL["barplot"], variables[i] %in% barplot,
+                      .CATEGORICAL["dotplot"], variables[i] %in% dotplot,
+                      .CATEGORICAL["comment"],
                       sprintf("%s", strsplit(cl, " ")[[1]][2]))
     }
 
@@ -2403,13 +2404,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     {
       coniter <- continuous$append()$iter
       continuous$set(coniter,
-                     CONTINUOUS["number"], i,
-                     CONTINUOUS["variable"], variables[i],
-                     CONTINUOUS["boxplot"], variables[i] %in% boxplot,
-                     CONTINUOUS["hisplot"], variables[i] %in% hisplot,
-                     CONTINUOUS["cumplot"], variables[i] %in% cumplot,
-                     CONTINUOUS["benplot"], variables[i] %in% benplot,
-                     CONTINUOUS["comment"],
+                     .CONTINUOUS["number"], i,
+                     .CONTINUOUS["variable"], variables[i],
+                     .CONTINUOUS["boxplot"], variables[i] %in% boxplot,
+                     .CONTINUOUS["hisplot"], variables[i] %in% hisplot,
+                     .CONTINUOUS["cumplot"], variables[i] %in% cumplot,
+                     .CONTINUOUS["benplot"], variables[i] %in% benplot,
+                     .CONTINUOUS["comment"],
                      sprintf("%.2f; %.2f/%.2f; %.2f",
                              min(crs$dataset[,i], na.rm=TRUE),
                              median(crs$dataset[,i], na.rm=TRUE),
@@ -2426,10 +2427,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   
   ## Perform other setups associated with a new dataset
 
-  RF.MTRY.DEFAULT <<- floor(sqrt(ncol(crs$dataset)))
-  theWidget("rf_mtry_spinbutton")$setValue(RF.MTRY.DEFAULT)
-  #RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
-  #theWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  .RF.MTRY.DEFAULT <<- floor(sqrt(ncol(crs$dataset)))
+  theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
+  #.RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
+  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
 }
 
 ##----------------------------------------------------------------------
@@ -2572,7 +2573,7 @@ on_sample_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    TRANSFORM$setCurrentPage(TRANSFORM.SAMPLE.TAB)
+    .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
   }
   setStatusBar()
 }
@@ -2581,7 +2582,7 @@ on_impute_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    TRANSFORM$setCurrentPage(TRANSFORM.IMPUTE.TAB)
+    .TRANSFORM$setCurrentPage(.TRANSFORM.IMPUTE.TAB)
   }
   setStatusBar()
 }
@@ -2736,10 +2737,10 @@ executeTransformSample <- function()
   ## Set some defaults that depend on sample size.
   
   #if (is.null(crs$sample))
-  #  RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
+  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
   #else
-  #  RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
-  #theWidget("rf_sampsize_spinbutton")$setValue(RF.SAMPSIZE.DEFAULT)
+  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
+  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
   
 
   setStatusBar()
@@ -2890,7 +2891,7 @@ on_summary_radiobutton_toggled <- function(button)
   skewness.button <- theWidget("skewness_checkbutton")
   if (button$getActive())
   {
-    EXPLORE$setCurrentPage(EXPLORE.SUMMARY.TAB)
+    .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
     separator$show()
     summary.button$show()
     describe.button$show()
@@ -2916,7 +2917,7 @@ on_explot_radiobutton_toggled <- function(button)
   barbutton <- theWidget("benford_bars_checkbutton")
   if (button$getActive()) 
   {
-    EXPLORE$setCurrentPage(EXPLORE.PLOT.TAB)
+    .EXPLORE$setCurrentPage(.EXPLORE.PLOT.TAB)
     separator$show()
     barbutton$show()
   }
@@ -2930,7 +2931,7 @@ on_explot_radiobutton_toggled <- function(button)
 
 on_ggobi_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.GGOBI.TAB)
+  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.GGOBI.TAB)
   setStatusBar()
 }
 
@@ -2940,7 +2941,7 @@ on_correlation_radiobutton_toggled <- function(button)
   nabutton  <- theWidget("correlation_na_checkbutton")
   if (button$getActive()) 
   {
-    EXPLORE$setCurrentPage(EXPLORE.CORRELATION.TAB)
+    .EXPLORE$setCurrentPage(.EXPLORE.CORRELATION.TAB)
     separator$show()
     nabutton$show()
   }
@@ -2954,13 +2955,13 @@ on_correlation_radiobutton_toggled <- function(button)
 
 on_hiercor_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.HIERCOR.TAB)
+  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.HIERCOR.TAB)
   setStatusBar()
 }
 
 on_prcomp_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) EXPLORE$setCurrentPage(EXPLORE.PRCOMP.TAB)
+  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.PRCOMP.TAB)
   setStatusBar()
 }
 
@@ -3024,7 +3025,7 @@ on_categorical_clear_button_clicked <- function(action, window)
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
-    columns <- CATEGORICAL[["barplot"]]:CATEGORICAL[["dotplot"]]
+    columns <- .CATEGORICAL[["barplot"]]:.CATEGORICAL[["dotplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
   })
@@ -3044,7 +3045,7 @@ on_continuous_clear_button_clicked <- function(action, window)
 
   tree.selection$selectedForeach(function(model, path, iter)
   {
-    columns <- CONTINUOUS[["boxplot"]]:CONTINUOUS[["benplot"]]
+    columns <- .CONTINUOUS[["boxplot"]]:.CONTINUOUS[["benplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
   })
@@ -4368,7 +4369,7 @@ on_evaluate_rdataset_radiobutton_toggled <- function(button)
 on_confusion_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    EVALUATE$setCurrentPage(EVALUATE.CONFUSION.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   setStatusBar()
 }
 
@@ -4376,7 +4377,7 @@ on_risk_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    EVALUATE$setCurrentPage(EVALUATE.RISK.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.RISK.TAB)
     theWidget("evaluate_risk_variable_label")$setSensitive(TRUE)
     theWidget("evaluate_risk_label")$setSensitive(TRUE)
   }
@@ -4391,28 +4392,28 @@ on_risk_radiobutton_toggled <- function(button)
 on_lift_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    EVALUATE$setCurrentPage(EVALUATE.LIFT.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.LIFT.TAB)
   setStatusBar()
 }
 
 on_roc_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    EVALUATE$setCurrentPage(EVALUATE.ROC.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.ROC.TAB)
   setStatusBar()
 }
 
 on_precision_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    EVALUATE$setCurrentPage(EVALUATE.PRECISION.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.PRECISION.TAB)
   setStatusBar()
 }
 
 on_sensitivity_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    EVALUATE$setCurrentPage(EVALUATE.SENSITIVITY.TAB)
+    .EVALUATE$setCurrentPage(.EVALUATE.SENSITIVITY.TAB)
   setStatusBar()
 }
 
@@ -4440,7 +4441,7 @@ getEvaluateModels <- function()
   ## Return a list of models selected for evaluation
 
   models <- c()
-  for (m in MODELLERS)
+  for (m in .MODELLERS)
     if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
       models <- c(models, m)
   return(models)
@@ -4448,8 +4449,8 @@ getEvaluateModels <- function()
 
 current.evaluate.tab <- function()
 {
-  cp <- EVALUATE$getCurrentPage()
-  return(EVALUATE$getTabLabelText(EVALUATE$getNthPage(cp)))
+  cp <- .EVALUATE$getCurrentPage()
+  return(.EVALUATE$getTabLabelText(.EVALUATE$getNthPage(cp)))
 }
 
 
@@ -4478,11 +4479,11 @@ executeEvaluateTab <- function()
 
   ## Ensure we recognise the model type.
   
-  if (length(setdiff(mtypes, MODELLERS)) > 0)
+  if (length(setdiff(mtypes, .MODELLERS)) > 0)
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
-                "Yet, Rattle only knows about:", MODELLERS,
+                "Yet, Rattle only knows about:", .MODELLERS,
                 "This is a Rattle bug.",
                 "Please report this to Graham.Williams@togaware.com.")
     return()
@@ -4505,16 +4506,16 @@ executeEvaluateTab <- function()
   ## example, when loading a project and going straight to Evaluate,
   ## and wanting to run predict.svm on new data).
 
-  if (ADA %in%  mtypes &&
+  if (.ADA %in%  mtypes &&
       ! packageIsAvailable("ada", "evaluate an adaboost model"))
     return()
-  if (KSVM %in%  mtypes &&
+  if (.KSVM %in%  mtypes &&
       ! packageIsAvailable("kernlab", "evaluate this SVM"))
     return()
-  if (RF %in%  mtypes &&
+  if (.RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
     return()
-  if (NNET %in%  mtypes &&
+  if (.NNET %in%  mtypes &&
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
 
@@ -4669,66 +4670,66 @@ executeEvaluateTab <- function()
   respcmd <- list() # Command string for response - class of entities
   probcmd <- list() # Command string for probability
   
-  if (ADA %in%  mtypes)
+  if (.ADA %in%  mtypes)
   {
-    testset[[ADA]] <- testset0
+    testset[[.ADA]] <- testset0
 
-    predcmd[[ADA]] <- sprintf("crs$pr <<- predict(crs$ada, %s)",
-                              testset[[ADA]])
-    respcmd[[ADA]] <- predcmd[[ADA]]
-    probcmd[[ADA]] <- sprintf("%s[,2]",
-                              gsub(")$", ', type="prob")', predcmd[[ADA]]))
+    predcmd[[.ADA]] <- sprintf("crs$pr <<- predict(crs$ada, %s)",
+                              testset[[.ADA]])
+    respcmd[[.ADA]] <- predcmd[[.ADA]]
+    probcmd[[.ADA]] <- sprintf("%s[,2]",
+                              gsub(")$", ', type="prob")', predcmd[[.ADA]]))
   }
 
-##   if ( NNET %in%  mtypes)
+##   if ( .NNET %in%  mtypes)
 ##   {
-##     testset[[NNET]] <- testset0
+##     testset[[.NNET]] <- testset0
 
-##     predcmd[[NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
-##                               testset[[NNET]])
-##     respcmd[[NNET]] <- predcmd[[NNET]]
-##     probcmd[[NNET]] <- sprintf("%s[,2]",
-##                               gsub(")$", ', type="class")', predcmd[[NNET]]))
+##     predcmd[[.NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
+##                               testset[[.NNET]])
+##     respcmd[[.NNET]] <- predcmd[[.NNET]]
+##     probcmd[[.NNET]] <- sprintf("%s[,2]",
+##                               gsub(")$", ', type="class")', predcmd[[.NNET]]))
 ##   }
 
-  if (RPART %in%  mtypes)
+  if (.RPART %in%  mtypes)
   {
-    testset[[RPART]] <- testset0
-    predcmd[[RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
-                                testset[[RPART]])
+    testset[[.RPART]] <- testset0
+    predcmd[[.RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
+                                testset[[.RPART]])
 
-    ## For RPART, the default is to generate class probabilities for
+    ## For .RPART, the default is to generate class probabilities for
     ## each output class, so ensure we instead generate the response.
   
-    respcmd[[RPART]] <- gsub(")$", ', type="class")', predcmd[[RPART]])
+    respcmd[[.RPART]] <- gsub(")$", ', type="class")', predcmd[[.RPART]])
 
     ## For RPART the default predict command generates the probabilities
     ## for each class and we assume we are interested in the final class
     ## (i.e., for binary classification we are interested in the 1's).
     
-    probcmd[[RPART]] <- sprintf("%s[,2]", predcmd[[RPART]])
+    probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
   }
     
-  if (RF %in%  mtypes)
+  if (.RF %in%  mtypes)
   {
-    testset[[RF]] <- testset0
-    predcmd[[RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
-                             testset[[RF]])
+    testset[[.RF]] <- testset0
+    predcmd[[.RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
+                             testset[[.RF]])
 
-    ## The default for RF is to predict the class, so no
+    ## The default for .RF is to predict the class, so no
     ## modification of the predict command is required.
 
-    respcmd[[RF]] <- predcmd[[RF]]
+    respcmd[[.RF]] <- predcmd[[.RF]]
 
     ## For RF we request a probability with the type argument, and as
     ## with RPART we extract the column of interest (the last column).
   
-    probcmd[[RF]] <- sprintf("%s[,2]",
-                             gsub(")$", ', type="prob")', predcmd[[RF]]))
+    probcmd[[.RF]] <- sprintf("%s[,2]",
+                             gsub(")$", ', type="prob")', predcmd[[.RF]]))
 
   }
     
-  if (KSVM %in%  mtypes)
+  if (.KSVM %in%  mtypes)
   {
 
     ## For SVM and KSVM, we need to deal with NA's. The predict seems to
@@ -4778,15 +4779,15 @@ executeEvaluateTab <- function()
     ## hope this now solves the problem and we don't need the top
     ## solution for now.
 
-    testset[[KSVM]] <- sprintf("na.omit(%s)", testset0)
+    testset[[.KSVM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
-                               testset[[KSVM]])
+    predcmd[[.KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
+                               testset[[.KSVM]])
 
     ## The default for KSVM is to predict the class, so no
     ## modification of the predict command is required.
 
-    respcmd[[KSVM]] <- predcmd[[KSVM]]
+    respcmd[[.KSVM]] <- predcmd[[.KSVM]]
 
     ## For KSVM we request a probability with the type argument set to
     ## probability (but need prob.model=TRUE in model building). For SVM
@@ -4794,10 +4795,10 @@ executeEvaluateTab <- function()
     ## need the second column stuff (and in building the model we needed
     ## probability=TRUE).
 
-    probcmd[[KSVM]] <- sprintf("%s[,2]",
+    probcmd[[.KSVM]] <- sprintf("%s[,2]",
                                gsub(")$",
                                     ', type="probabilities")',
-                                    predcmd[[KSVM]]))
+                                    predcmd[[.KSVM]]))
     ## For SVM: 
     ## probability.cmd <- sprintf("%s",
     ##                             gsub(")$",
@@ -4805,15 +4806,15 @@ executeEvaluateTab <- function()
     ##                                  probability.cmd))
   }
     
-  if (GLM %in%  mtypes)
+  if (.GLM %in%  mtypes)
   {
     ## GLM's predict removes rows with missing values, so we also need
     ## to ensure we remove rows with missing values here.
     
-    testset[[GLM]] <- sprintf("na.omit(%s)", testset0)
+    testset[[.GLM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
-                              testset[[GLM]])
+    predcmd[[.GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+                              testset[[.GLM]])
 
     ## For GLM, a response is a figure close to the class, either close
     ## to 1 or close to 0, so threshold it to be either 1 or 0. TODO
@@ -4821,13 +4822,13 @@ executeEvaluateTab <- function()
     ##    response.cmd <- gsub("predict", "(predict",
     ##                         gsub(")$", ")>0.5)*1", response.cmd))
 
-    respcmd[[GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
+    respcmd[[.GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
                            gsub(")$", ', type="response") > 0.5, 1, 0)))',
-                                predcmd[[GLM]]))
+                                predcmd[[.GLM]]))
 
     ## For GLM, the response is a probability of the class.
   
-    probcmd[[GLM]] <- gsub(")$", ', type="response")', predcmd[[GLM]])
+    probcmd[[.GLM]] <- gsub(")$", ', type="response")', predcmd[[.GLM]])
   
   }
     
@@ -4908,7 +4909,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     ## Log the R commands and execute them.
 
     addToLog(sprintf("%sGenerate a confusion table for the %s model.",
-                     START.LOG.COMMENT, mtype), no.start=TRUE)
+                     .START.LOG.COMMENT, mtype), no.start=TRUE)
     addToLog(sprintf("Obtain the response from the %s model.", mtype),
              gsub("<<-", "<-", respcmd[[mtype]]))
   
@@ -5990,7 +5991,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
 
     ## If no comma in scoreset, leave as is, else find first comma,
     ## remove everything after, and replace with "]". PROBLEM TODO If
-    ## the testset[[MODEL]] includes na.omit, we need to do something
+    ## the testset[[.MODEL]] includes na.omit, we need to do something
     ## different because after the following step of replacing the
     ## column list with nothing, it is very likely that new columns
     ## are included that have NAs, and hence the na.omit will remove
@@ -6116,50 +6117,50 @@ on_notebook_switch_page <- function(notebook, window, page)
 
 on_tools_data_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.DATA.NAME))
-  switchToPage(NOTEBOOK.DATA.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.DATA.NAME))
+  switchToPage(.NOTEBOOK.DATA.NAME)
 }
 
 on_tools_variables_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.VARIABLES.NAME))
-  switchToPage(NOTEBOOK.VARIABLES.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.VARIABLES.NAME))
+  switchToPage(.NOTEBOOK.VARIABLES.NAME)
 }
 
 on_tools_transform_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.TRANSFORM.NAME))
-  switchToPage(NOTEBOOK.TRANSFORM.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME))
+  switchToPage(.NOTEBOOK.TRANSFORM.NAME)
 }
 
 on_tools_explore_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.EXPLORE.NAME))
-  switchToPage(NOTEBOOK.EXPLORE.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.EXPLORE.NAME))
+  switchToPage(.NOTEBOOK.EXPLORE.NAME)
 }
 
 on_tools_cluster_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.CLUSTER.NAME))
-  switchToPage(NOTEBOOK.CLUSTER.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
+  switchToPage(.NOTEBOOK.CLUSTER.NAME)
 }
 
 on_tools_model_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.MODEL.NAME))
-  switchToPage(NOTEBOOK.MODEL.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.MODEL.NAME))
+  switchToPage(.NOTEBOOK.MODEL.NAME)
 }
 
 on_tools_evaluate_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.EVALUATE.NAME))
-  switchToPage(NOTEBOOK.EVALUATE.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.EVALUATE.NAME))
+  switchToPage(.NOTEBOOK.EVALUATE.NAME)
 }
 
 on_tools_log_activate <- function(action, window)
 {
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.LOG.NAME))
-  switchToPage(NOTEBOOK.LOG.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.LOG.NAME))
+  switchToPage(.NOTEBOOK.LOG.NAME)
 }
 
 switchToPage <- function(page)
@@ -6174,9 +6175,9 @@ switchToPage <- function(page)
   ## (page numbers used to be fixed).
   
   if (is.numeric(page))
-    page <- NOTEBOOK$getTabLabelText(NOTEBOOK$getNthPage(page))
+    page <- .NOTEBOOK$getTabLabelText(.NOTEBOOK$getNthPage(page))
   
-  if (page == NOTEBOOK.EVALUATE.NAME)
+  if (page == .NOTEBOOK.EVALUATE.NAME)
   {
     
     ## On moving to the EVALUATE page, ensure each built model's
@@ -6194,7 +6195,7 @@ switchToPage <- function(page)
              function(x) theWidget(paste(x, "_evaluate_checkbutton",
                                             sep=""))$setSensitive(TRUE))
       
-      if (is.null(crs$page) || crs$page == NOTEBOOK.MODEL.NAME)
+      if (is.null(crs$page) || crs$page == .NOTEBOOK.MODEL.NAME)
       {
         ## By default check the current model's check button if we
         ## have just come from the MODEL page. This makes it easy when
@@ -6214,7 +6215,7 @@ switchToPage <- function(page)
   ## this is just better to result in an errorDialog rather than extra
   ## logic here to greyt out the button?
   
-  if (page == NOTEBOOK.LOG.NAME)
+  if (page == .NOTEBOOK.LOG.NAME)
   {
     theWidget("execute_button")$setSensitive(FALSE)
     theWidget("execute_menu")$setSensitive(FALSE)

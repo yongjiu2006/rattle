@@ -22,17 +22,17 @@ dispatchExportButton <- function()
   
   ## Check which tab of notebook and dispatch to appropriate execute action
 
-  ct <- getCurrentPageLabel(NOTEBOOK)
+  ct <- getCurrentPageLabel(.NOTEBOOK)
   
-  if (ct == NOTEBOOK.CLUSTER.NAME)
+  if (ct == .NOTEBOOK.CLUSTER.NAME)
   {  
     exportClusterTab()
   }
-  else if (ct == NOTEBOOK.MODEL.NAME)
+  else if (ct == .NOTEBOOK.MODEL.NAME)
   {
     exportModelTab()
   }
-  else  if (ct == NOTEBOOK.LOG.NAME) 
+  else  if (ct == .NOTEBOOK.LOG.NAME) 
   {
     exportLogTab()
   }

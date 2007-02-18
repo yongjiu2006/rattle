@@ -89,7 +89,7 @@ addLogSeparator <- function(msg=NULL)
                 "\n## Rattle timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
   if (not.null(msg))
-    addToLog(paste(sep="", START.LOG.COMMENT, msg), no.start=TRUE)
+    addToLog(paste(sep="", .START.LOG.COMMENT, msg), no.start=TRUE)
 }
 
 addToLog <- function(start, ..., sep=" ", no.start=FALSE)
@@ -97,7 +97,7 @@ addToLog <- function(start, ..., sep=" ", no.start=FALSE)
   if (no.start)
     msg <- paste(sep=sep, start, ...)
   else
-    msg <- paste(sep="", START.LOG.COMMENT, start, END.LOG.COMMENT, ...)
+    msg <- paste(sep="", .START.LOG.COMMENT, start, .END.LOG.COMMENT, ...)
   if (length(msg) == 0) msg <-""
 
   ## Always place text at the end, irrespective of where the cursor is.

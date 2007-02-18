@@ -96,11 +96,11 @@ executeModelRF <- function()
   ## Retrieve options and set up parms.
 
   ntree <- theWidget("rf_ntree_spinbutton")$getValue()
-  if (ntree != RF.NTREE.DEFAULT)
+  if (ntree != .RF.NTREE.DEFAULT)
     parms <- sprintf("%s, ntree=%d", parms, ntree)
   
   mtry <- theWidget("rf_mtry_spinbutton")$getValue()
-  if (mtry != RF.MTRY.DEFAULT)
+  if (mtry != .RF.MTRY.DEFAULT)
     parms <- sprintf("%s, mtry=%d", parms, mtry)
 
   sampsize <- theWidget("rf_sampsize_entry")$getText()
@@ -251,7 +251,7 @@ executeModelRF <- function()
               "\nin the R console. Generating all 500 models takes ",
               "quite some time.\n")
 
-  if (sampling) crs$smodel <<- union(crs$smodel, RF)
+  if (sampling) crs$smodel <<- union(crs$smodel, .RF)
 
   ## Now that we have a model, make sure the buttons are sensitive.
 

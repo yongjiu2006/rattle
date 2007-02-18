@@ -17,7 +17,7 @@ on_regression_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.GLM.TAB)
+    .MODEL$setCurrentPage(.MODEL.GLM.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -27,7 +27,7 @@ on_dtree_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.RPART.TAB)
+    .MODEL$setCurrentPage(.MODEL.RPART.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -37,8 +37,8 @@ on_boost_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    ## MODEL$setCurrentPage(MODEL.GBM.TAB)
-    MODEL$setCurrentPage(MODEL.ADA.TAB)
+    ## .MODEL$setCurrentPage(.MODEL.GBM.TAB)
+    .MODEL$setCurrentPage(.MODEL.ADA.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -48,7 +48,7 @@ on_nnet_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.NNET.TAB)
+    .MODEL$setCurrentPage(.MODEL.NNET.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -58,7 +58,7 @@ on_rf_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.RF.TAB)
+    .MODEL$setCurrentPage(.MODEL.RF.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -68,7 +68,7 @@ on_svm_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    MODEL$setCurrentPage(MODEL.SVM.TAB)
+    .MODEL$setCurrentPage(.MODEL.SVM.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -78,7 +78,7 @@ on_e1071_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    SVMNB$setCurrentPage(SVMNB.ESVM.TAB)
+    .SVMNB$setCurrentPage(.SVMNB.ESVM.TAB)
   }
   setStatusBar()
 }
@@ -87,7 +87,7 @@ on_kernlab_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    SVMNB$setCurrentPage(SVMNB.KSVM.TAB)
+    .SVMNB$setCurrentPage(.SVMNB.KSVM.TAB)
   }
   setStatusBar()
 }
@@ -99,9 +99,9 @@ on_kernlab_radiobutton_toggled <- function(button)
 
 currentModelTab <- function()
 {
-  lb <- getCurrentPageLabel(MODEL)
-  if (lb == SVM && theWidget("kernlab_radiobutton")$getActive())
-    lb <- KSVM
+  lb <- getCurrentPageLabel(.MODEL)
+  if (lb == .SVM && theWidget("kernlab_radiobutton")$getActive())
+    lb <- .KSVM
   return(lb)
 }
 
@@ -222,17 +222,17 @@ executeModelTab <- function()
 
     setStatusBar("All models have been generated.")
   }
-  else if (currentModelTab() == GLM)
+  else if (currentModelTab() == .GLM)
     executeModelGLM()
-  else if (currentModelTab() == RPART)
+  else if (currentModelTab() == .RPART)
     executeModelRPart()
 ##   else if (currentModelTab() == GBM)
 ##     executeModelGBM()
-  else if (currentModelTab() == ADA)
+  else if (currentModelTab() == .ADA)
     executeModelAda()
-  else if (currentModelTab() == RF)
+  else if (currentModelTab() == .RF)
     executeModelRF()
-  else if (currentModelTab() %in% c(SVM, KSVM))
+  else if (currentModelTab() %in% c(.SVM, .KSVM))
     executeModelSVM()
 ##   else if (currentModelTab() == NNET)
 ##     executeModelNNet()
@@ -308,7 +308,7 @@ executeModelGLM <- function()
   setTextview(TV, "Summary of the model built using glm.\n",
               collectOutput(summary.cmd, TRUE))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, GLM)
+  if (sampling) crs$smodel <<- union(crs$smodel, .GLM)
   
   ## Finish up.
   
@@ -439,9 +439,9 @@ executeModelSVM <- function()
 
   if (sampling)
     if (useKernlab)
-      crs$smodel <<- union(crs$smodel, KSVM)
+      crs$smodel <<- union(crs$smodel, .KSVM)
     else
-      crs$smodel <<- union(crs$smodel, SVM)
+      crs$smodel <<- union(crs$smodel, .SVM)
 
   ## Finish up.
 
@@ -450,7 +450,7 @@ executeModelSVM <- function()
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",
-                       ifelse(useKernlab, KSVM, SVM)), time.msg)
+                       ifelse(useKernlab, .KSVM, .SVM)), time.msg)
   return(TRUE)
 }
 

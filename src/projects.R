@@ -31,8 +31,8 @@ newProject <- function()
   }
   resetRattle()
   ## TODO Plenty of other things that should be reset as well.
-  NOTEBOOK$setCurrentPage(getNotebookPage(NOTEBOOK, NOTEBOOK.DATA.NAME))
-  switchToPage(NOTEBOOK.DATA.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.DATA.NAME))
+  switchToPage(.NOTEBOOK.DATA.NAME)
   
 }
   
@@ -218,7 +218,7 @@ loadProject <- function()
 
   set.cursor("watch")
 
-  NOTEBOOK$setCurrentPage(0)
+  .NOTEBOOK$setCurrentPage(0)
   load(load.name)
   setDefaultPath(load.name)
   
