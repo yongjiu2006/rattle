@@ -6,7 +6,9 @@
     changes on each version control check-in.</p>
 
 <pre>
+129 Add support for saving most graphics.
 128 Introduce pmml as an S3 function (Tobias Verbeke)
+128 Implement export for Explore->Distr and Eval->Risk.
 127 Ensure global variables are hidden (begin with ".") (Tobias Verbeke)
 126 Bug fix non-sample ROCR plots (Tobias Verbeke)
 125 Include randomSurvivalForest export of pmml (Udaya Kogalur)
@@ -172,6 +174,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Feb 19 06:13:51 EST 2007
+Last modified: Tue Feb 20 22:54:33 EST 2007
 <!-- hhmts end -->
   </p>
