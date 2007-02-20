@@ -10,8 +10,8 @@
 
 }
 \usage{
-pmml.rsf(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
-           description="Random Survival Forest Tree Model", copyright)
+\method{pmml}{rsf}(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
+     description="Random Survival Forest Tree Model", copyright, ...)
 }
 \arguments{
   
@@ -28,8 +28,10 @@ pmml.rsf(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
   
   \item{copyright}{the copyright notice for the model.}
 
+  \item{\dots}{further arguments passed to or from other methods.}
 }
 \details{
+
   The Predictive Model Markup Language is an XML based language which
   provides a way for applications to define statistical and data mining
   models and to share models between PMML compliant applications.  More
@@ -42,13 +44,12 @@ pmml.rsf(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
   achieving interoperability, is not an efficient data storage mechanism
   in this case.
 
-  It is anticipated that \code{pmml.rsf} will be used to export the
-  geometry of the forest to other PMML compliant applications, including
-  graphics packages that are capable of printing binary trees.  In
-  addition, the user may wish to save the geometry of the forest for
-  later retrieval and prediction on new data sets using \code{pmml.rsf}
-  together with \code{pmml_to_rsf}.
-  
+  This function is used to export the geometry of the forest to other
+  PMML compliant applications, including graphics packages that are
+  capable of printing binary trees.  In addition, the user may wish to
+  save the geometry of the forest for later retrieval and prediction on
+  new data sets using \code{pmml.rsf} together with \code{pmml_to_rsf}.
+
 }    
 \value{
   
@@ -69,6 +70,13 @@ pmml.rsf(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
   warrant release in this version of the product.
 
 }
+\references{
+
+  H. Ishwaran and Udaya B. Kogalur (2006).  Random Survival Forests.
+  \emph{Cleveland Clinic Technical Report}.
+
+  PMML home page: \url{http://www.dmg.org}
+}	
 \author{
 
   Hemant Ishwaran \email{hemant.ishwaran@gmail.com} and Udaya B. Kogalur
@@ -76,21 +84,13 @@ pmml.rsf(model, model.name="rsfForest_Model", app.name="Rattle/PMML",
   by \email{Graham.Williams@togaware.com}
 
 }
-\references{
-
-  H. Ishwaran and Udaya B. Kogalur (2006).  Random Survival Forests.
-  \emph{Cleveland Clinic Technical Report}.
-
-    http://www.dmg.org
-}	
-
 \seealso{
-  \code{xmlTreeParse},
-  \code{xmlRoot},
-  \code{saveXML},
-  \code{rsf},
-  \code{predict.rsf},
-  \code{pmml_to_rsf}.
+  \code{\link{pmml}},
+  \code{\link{saveXML}},
+  \code{\link{rsf}},
+  \code{\link{predict.rsf}},
+  \code{\link{pmml_to_rsf}},
+  \code{\link{rattle}}.
 }
 \examples{
 library(randomSurvivalForest)
@@ -100,7 +100,7 @@ veteran.out <- rsf(Survrsf(time, status)~.,
         ntree = 5,
         forest = TRUE)
 veteran.forest <- veteran.out$forest
-pmml.rsf(veteran.forest)
+pmml(veteran.forest)
 }
 \keyword{interface}
 \keyword{survival}
