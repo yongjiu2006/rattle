@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-02-17 14:37:45 Graham Williams>
+## Time-stamp: <2007-02-19 22:13:53 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -10,6 +10,13 @@
 ##
 ##	Extract the DataDictionary stuff to a separate function to
 ##	share between pmml.rpat and pmml.kmeans.
+
+pmml <- function(model,
+                 model.name="Rattle_Model",
+                 app.name="Rattle/PMML",
+                 description=NULL,
+                 copyright=NULL, ...)
+  UseMethod("pmml")
 
 pmmlRootNode <- function()
 {
@@ -26,7 +33,7 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   ## Header
   
-  VERSION <- "1.0.3"
+  VERSION <- "1.0.6"
 
   if (is.null(copyright))
     header <- xmlNode("Header", attrs=c(description=description))
@@ -131,7 +138,7 @@ pmml.rpart <- function(model,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
                        description="RPart decision tree model",
-                       copyright=NULL)
+                       copyright=NULL, ...)
 {
   if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
 
@@ -165,6 +172,8 @@ pmml.rpart <- function(model,
 
   ## PMML -> Header
 
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   ## PMML -> DataDictionary
@@ -328,6 +337,8 @@ pmml.rpart.as.rules <- function(model,
 
   ## PMML -> Header
 
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   ## PMML -> DataDictionary
@@ -405,7 +416,7 @@ pmml.kmeans <- function(model,
                         model.name="KMeans_Model",
                         app.name="Rattle/PMML",
                         description="KMeans cluster model",
-                        copyright=NULL)
+                        copyright=NULL, ...)
 {
   require(XML, quietly=TRUE)
   
@@ -429,6 +440,8 @@ pmml.kmeans <- function(model,
 
   ## PMML -> Header
 
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
@@ -478,7 +491,7 @@ pmml.rsf <- function(model,
                      model.name="rsfForest_Model",
                      app.name="Rattle/PMML",
                      description="Random Survival Forest Tree Model",
-                     copyright=NULL)
+                     copyright=NULL, ...)
 {
   ## Based on RANDOM SURVIVAL FOREST 2.0.0, Copyright 2006, Cleveland Clinic
   ## Original by Hemant Ishwaran and Udaya B. Kogalur

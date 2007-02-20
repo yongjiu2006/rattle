@@ -12,8 +12,8 @@
   
 }
 \usage{
-pmml.kmeans(model, model.name="KMeans_Model", app.name="Rattle/PMML",
-            description="KMeans cluster model", copyright)
+\method{pmml}{kmeans}(model, model.name="KMeans_Model", app.name="Rattle/PMML",
+     description="KMeans cluster model", copyright=NULL, \dots)
 }
 \arguments{
   
@@ -26,14 +26,28 @@ pmml.kmeans(model, model.name="KMeans_Model", app.name="Rattle/PMML",
   \item{description}{a descriptive text for the header of the PMML.}
   
   \item{copyright}{the copyright notice for the model.}
+
+  \item{\dots}{further arguments passed to or from other methods.}
 }
-\references{Package home page: \url{http://rattle.togaware.com}}
+\references{
+
+  Package home page: \url{http://rattle.togaware.com}
+
+  PMML home page: \url{http://www.dmg.org}
+
+}
 \author{\email{Graham.Williams@togaware.com}}
+\seealso{
+  \code{\link{pmml}},
+  \code{\link{saveXML}},
+  \code{\link{kmeans}},
+  \code{\link{rattle}}.
+}
 \examples{
 ds <- rbind(matrix(rnorm(100, sd = 0.3), ncol = 2),
                 matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2))
 colnames(ds) <- c("Dimension1", "Dimension2")
 cl <- kmeans(ds, 2)
-pmml.kmeans(cl)
+pmml(cl)
 }
 \keyword{interface}

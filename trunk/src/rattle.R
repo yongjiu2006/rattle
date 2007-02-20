@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-11 09:44:15 Graham>
+## Time-stamp: <2007-02-20 17:35:27 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -531,6 +531,13 @@ infoDialog <- function(...)
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
+warnDialog <- function(...)
+{
+  dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "warn", "close",
+                                ...)
+  connectSignal(dialog, "response", gtkWidgetDestroy)
+}
+
 errorDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
@@ -943,7 +950,7 @@ update_comboboxentry_with_dataframes <- function(action, window)
 
 quit_rattle <- function(action, window)
 {
-  for (i in dev.list()) dev.off(i)
+  graphics.off() # for (i in dev.list()) dev.off(i)
   theWidget("rattle_window")$destroy()
   
   ## Communicate to R that Rattle has finished. This is used by the
