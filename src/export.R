@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-20 18:46:27 Graham>
+## Time-stamp: <2007-02-20 22:49:11 Graham>
 ##
 ## Implement functionality associated with the Export button and Menu.
 ##
@@ -52,78 +52,16 @@ dispatchExportButton <- function()
 exportExploreTab <- function()
 {
   if (theWidget("explot_radiobutton")$getActive())
-    exportExplotOption()
+    exportPlot("dist")
+  else if (theWidget("correlation_radiobutton")$getActive())
+    exportPlot("corr")
+  else if (theWidget("hiercor_radiobutton")$getActive())
+    exportPlot("hiercorr")
+  else if (theWidget("prcomp_radiobutton")$getActive())
+    exportPlot("prcomp")
   else
     infoDialog("No export functionality is available for the",
                "selected option.")
-}
-
-exportExplotOption <- function()
-{
-  if (is.null(dev.list()))
-  {
-    warnDialog("There are currently no active graphics devices.",
-               "So there is nothing to export!",
-               "Please select some plot options in the interface",
-               "and then Execute (F5).")
-    return()
-  }
-
-  # Obtain a filename to save to. Ideally, this would also prompt for
-  # the device to export, and the fontsize, etc.
-
-  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg)",
-                                 NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
-
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_plot.pdf", sep=""))
-
-  ff <- gtkFileFilterNew()
-  ff$setName("Graphics Files")
-  ff$addPattern("*.pdf")
-  ff$addPattern("*.png")
-  ff$addPattern("*.jpg")
-  dialog$addFilter(ff)
-
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
-  
-  if (dialog$run() == GtkResponseType["accept"])
-  {
-    save.name <- dialog$getFilename()
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return()
-  }
-
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
-    
-  if (file.exists(save.name))
-    if (is.null(questionDialog("A Graphics file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
-      return()
-  
-  cur <- dev.cur()
-  ext <- get.extension(save.name)
-  if (ext == "pdf")
-    dev.copy(pdf, file=save.name, pointsize=10)
-  else if (ext == "png")
-    dev.copy(png, file=save.name, width=700, height=700)
-  else if (ext == "jpg")
-    dev.copy(jpeg, file=save.name, width=700, height=700)
-  dev.off()
-  dev.set(cur)
-  
-  infoDialog(sprintf("R Graphics: Device %d (ACTIVE)", cur),
-             "has been exported to", save.name)
 }
 
 ########################################################################
@@ -131,19 +69,27 @@ exportExplotOption <- function()
 exportEvaluateTab <- function()
 {
   if (theWidget("risk_radiobutton")$getActive())
-    exportRiskOption()
+    exportPlot("risk")
+  else if (theWidget("lift_radiobutton")$getActive())
+    exportPlot("lift")
+  else if (theWidget("roc_radiobutton")$getActive())
+    exportPlot("roc")
+  else if (theWidget("precision_radiobutton")$getActive())
+    exportPlot("precision")
+  else if (theWidget("sensitivity_radiobutton")$getActive())
+    exportPlot("sensitivity")
   else
     infoDialog("No export functionality from the Evaluate tab for",
                "the selected option is yet available.")
 }
 
-exportRiskOption <- function()
+exportPlot <- function(type="plot", devices=NULL)
 {
   if (is.null(dev.list()))
   {
     warnDialog("There are currently no active graphics devices.",
                "So there is nothing to export!",
-               "Please Execute (F5) to obtain a Risk plot to export.")
+               "Please Execute (F5) to obtain a plot to export.")
     return()
   }
 
@@ -157,7 +103,7 @@ exportRiskOption <- function()
 
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname),
-                                "_riskplot.pdf", sep=""))
+                                "_plot_", type, ".pdf", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("Graphics Files")
@@ -204,3 +150,4 @@ exportRiskOption <- function()
   infoDialog(sprintf("R Graphics: Device %d (ACTIVE)", cur),
              "has been exported to", save.name)
 }
+  

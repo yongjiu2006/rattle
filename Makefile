@@ -59,12 +59,16 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 default: local
 
-install: build zip check
+install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
 	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
+			rattle.html.in;\
+	 perl -pi -e "s|pmml__[0-9\.]*zip|pmml_$(PVERSION).zip|g" \
+			rattle.html.in;\
+	 perl -pi -e "s|pmml_[0-9\.]*tar.gz|pmml_$(PVERSION).tar.gz|g" \
 			rattle.html.in;\
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
@@ -73,6 +77,7 @@ install: build zip check
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			rattle_overview.tex)
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
+	mv pmml_$(PVERSION).tar.gz pmml_$(PVERSION).zip $(REPOSITORY)
 	R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
@@ -121,9 +126,11 @@ package/rattle/data/audit.RData: support/audit.R
 	mv survey.data survey.csv archive
 	chmod go+r $@
 
-zip: local
+zip: local plocal
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) >| \
 	rattle_$(VERSION).zip
+	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) >| \
+	pmml_$(PVERSION).zip
 
 txt:
 	R CMD Rd2txt package/rattle/man/rattle.Rd
