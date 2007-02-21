@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-17 03:33:48 Graham>
+## Time-stamp: <2007-02-21 17:53:17 Graham>
 ##
 ## RPART TAB
 ##
@@ -108,7 +108,7 @@ on_rpart_rules_button_clicked <- function(button)
     return()
   }
 
-  rules.cmd <- "list.rules.rpart(crs$rpart)"
+  rules.cmd <- "listRPartRules(crs$rpart)"
   addToLog("List the rules from the tree using a Rattle support function.",
           rules.cmd)
   addTextview(TV, "Tree as rules:\n\n", collectOutput(rules.cmd, TRUE),
@@ -378,7 +378,7 @@ makeRPartSensitive <- function(state=TRUE)
 #
 # Print out RPart Rules
 #
-list.rules.rpart <- function(model, compact=FALSE)
+listRPartRules <- function(model, compact=FALSE)
 {
   if (!inherits(model, "rpart")) stop("Not a legitimate rpart tree")
   # if (model$method != "class")) stop("Model method needs to be class")

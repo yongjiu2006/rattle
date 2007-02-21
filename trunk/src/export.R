@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-20 22:49:11 Graham>
+## Time-stamp: <2007-02-21 21:51:32 Graham>
 ##
 ## Implement functionality associated with the Export button and Menu.
 ##
@@ -23,12 +23,14 @@ dispatchExportButton <- function()
   ## Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(.NOTEBOOK)
-  
-  if (ct == .NOTEBOOK.EXPLORE.NAME)
-  {  
-    exportExploreTab()
-  }
-  else if (ct == .NOTEBOOK.CLUSTER.NAME)
+
+## Am now using the Cairo device with a Save button
+##   if (ct == .NOTEBOOK.EXPLORE.NAME)
+##   {  
+##     exportExploreTab()
+##   }
+##   else
+  if (ct == .NOTEBOOK.CLUSTER.NAME)
   {  
     exportClusterTab()
   }
@@ -36,10 +38,10 @@ dispatchExportButton <- function()
   {
     exportModelTab()
   }
-  else if (ct == .NOTEBOOK.EVALUATE.NAME)
-  {
-    exportEvaluateTab()
-  }
+##   else if (ct == .NOTEBOOK.EVALUATE.NAME)
+##   {
+##     exportEvaluateTab()
+##   }
   else  if (ct == .NOTEBOOK.LOG.NAME) 
   {
     exportLogTab()
@@ -49,105 +51,108 @@ dispatchExportButton <- function()
                ct, "tab. Nothing done.")
 }
 
-exportExploreTab <- function()
-{
-  if (theWidget("explot_radiobutton")$getActive())
-    exportPlot("dist")
-  else if (theWidget("correlation_radiobutton")$getActive())
-    exportPlot("corr")
-  else if (theWidget("hiercor_radiobutton")$getActive())
-    exportPlot("hiercorr")
-  else if (theWidget("prcomp_radiobutton")$getActive())
-    exportPlot("prcomp")
-  else
-    infoDialog("No export functionality is available for the",
-               "selected option.")
-}
+## This is handled by the Cairo device save button now. Might want to
+## interpret Export differently for these now.
 
-########################################################################
+## exportExploreTab <- function()
+## {
+##   if (theWidget("explot_radiobutton")$getActive())
+##     exportPlot("dist")
+##   else if (theWidget("correlation_radiobutton")$getActive())
+##     exportPlot("corr")
+##   else if (theWidget("hiercor_radiobutton")$getActive())
+##     exportPlot("hiercorr")
+##   else if (theWidget("prcomp_radiobutton")$getActive())
+##     exportPlot("prcomp")
+##   else
+##     infoDialog("No export functionality is available for the",
+##                "selected option.")
+## }
 
-exportEvaluateTab <- function()
-{
-  if (theWidget("risk_radiobutton")$getActive())
-    exportPlot("risk")
-  else if (theWidget("lift_radiobutton")$getActive())
-    exportPlot("lift")
-  else if (theWidget("roc_radiobutton")$getActive())
-    exportPlot("roc")
-  else if (theWidget("precision_radiobutton")$getActive())
-    exportPlot("precision")
-  else if (theWidget("sensitivity_radiobutton")$getActive())
-    exportPlot("sensitivity")
-  else
-    infoDialog("No export functionality from the Evaluate tab for",
-               "the selected option is yet available.")
-}
+## ########################################################################
 
-exportPlot <- function(type="plot", devices=NULL)
-{
-  if (is.null(dev.list()))
-  {
-    warnDialog("There are currently no active graphics devices.",
-               "So there is nothing to export!",
-               "Please Execute (F5) to obtain a plot to export.")
-    return()
-  }
+## exportEvaluateTab <- function()
+## {
+##   if (theWidget("risk_radiobutton")$getActive())
+##     exportPlot("risk")
+##   else if (theWidget("lift_radiobutton")$getActive())
+##     exportPlot("lift")
+##   else if (theWidget("roc_radiobutton")$getActive())
+##     exportPlot("roc")
+##   else if (theWidget("precision_radiobutton")$getActive())
+##     exportPlot("precision")
+##   else if (theWidget("sensitivity_radiobutton")$getActive())
+##     exportPlot("sensitivity")
+##   else
+##     infoDialog("No export functionality from the Evaluate tab for",
+##                "the selected option is yet available.")
+## }
 
-  # Obtain a filename to save to. Ideally, this would also prompt for
-  # the device to export, and the fontsize, etc.
+## exportPlot <- function(type="plot", devices=NULL)
+## {
+##   if (is.null(dev.list()))
+##   {
+##     warnDialog("There are currently no active graphics devices.",
+##                "So there is nothing to export!",
+##                "Please Execute (F5) to obtain a plot to export.")
+##     return()
+##   }
 
-  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg)",
-                                 NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
+##   # Obtain a filename to save to. Ideally, this would also prompt for
+##   # the device to export, and the fontsize, etc.
 
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname),
-                                "_plot_", type, ".pdf", sep=""))
+##   dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg)",
+##                                  NULL, "save",
+##                                  "gtk-cancel", GtkResponseType["cancel"],
+##                                  "gtk-save", GtkResponseType["accept"])
 
-  ff <- gtkFileFilterNew()
-  ff$setName("Graphics Files")
-  ff$addPattern("*.pdf")
-  ff$addPattern("*.png")
-  ff$addPattern("*.jpg")
-  dialog$addFilter(ff)
+##   if(not.null(crs$dataname))
+##     dialog$setCurrentName(paste(get.stem(crs$dataname),
+##                                 "_", type, ".pdf", sep=""))
 
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
+##   ff <- gtkFileFilterNew()
+##   ff$setName("Graphics Files")
+##   ff$addPattern("*.pdf")
+##   ff$addPattern("*.png")
+##   ff$addPattern("*.jpg")
+##   dialog$addFilter(ff)
+
+##   ff <- gtkFileFilterNew()
+##   ff$setName("All Files")
+##   ff$addPattern("*")
+##   dialog$addFilter(ff)
   
-  if (dialog$run() == GtkResponseType["accept"])
-  {
-    save.name <- dialog$getFilename()
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return()
-  }
+##   if (dialog$run() == GtkResponseType["accept"])
+##   {
+##     save.name <- dialog$getFilename()
+##     dialog$destroy()
+##   }
+##   else
+##   {
+##     dialog$destroy()
+##     return()
+##   }
 
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
+##   if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
     
-  if (file.exists(save.name))
-    if (is.null(questionDialog("A Graphics file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
-      return()
+##   if (file.exists(save.name))
+##     if (is.null(questionDialog("A Graphics file of the name", save.name,
+##                                 "already exists. Do you want to overwrite",
+##                                 "this file?")))
+##       return()
   
-  cur <- dev.cur()
-  ext <- get.extension(save.name)
-  if (ext == "pdf")
-    dev.copy(pdf, file=save.name, width=7, height=7)
-  else if (ext == "png")
-    dev.copy(png, file=save.name, width=700, height=700)
-  else if (ext == "jpg")
-    dev.copy(jpeg, file=save.name, width=700, height=700)
-  dev.off()
-  dev.set(cur)
+##   cur <- dev.cur()
+##   ext <- get.extension(save.name)
+##   if (ext == "pdf")
+##     dev.copy(pdf, file=save.name, width=7, height=7)
+##   else if (ext == "png")
+##     dev.copy(png, file=save.name, width=700, height=700)
+##   else if (ext == "jpg")
+##     dev.copy(jpeg, file=save.name, width=700, height=700)
+##   dev.off()
+##   dev.set(cur)
   
-  infoDialog(sprintf("R Graphics: Device %d (ACTIVE)", cur),
-             "has been exported to", save.name)
-}
+##   infoDialog(sprintf("R Graphics: Device %d (ACTIVE)", cur),
+##              "has been exported to", save.name)
+## }
   

@@ -6,6 +6,9 @@
     changes on each version control check-in.</p>
 
 <pre>
+130 Export listRPartRules (Frank Lu).
+130 Move to using the Cairo device, with save/close support.
+130 No longer save graphics with the use of the Export button.
 129 Add support for saving most graphics.
 128 Introduce pmml as an S3 function (Tobias Verbeke)
 128 Implement export for Explore->Distr and Eval->Risk.
@@ -174,6 +177,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue Feb 20 22:54:33 EST 2007
+Last modified: Wed Feb 21 22:09:43 EST 2007
 <!-- hhmts end -->
   </p>
