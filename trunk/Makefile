@@ -19,10 +19,13 @@ REPOSITORY=repository
 # Canonical version information from rattle.R
 MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
+REVIS:=$(shell egrep '^REVIS <-' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
-VERSION=$(MAJOR).$(MINOR).$(REVISION)
-PVERSION="1.0.6"
+VERSION=$(MAJOR).$(MINOR).$(REVIS)
+
+PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
+
 DATE:=$(shell date +%F)
 
 R_SOURCE = \
@@ -52,7 +55,7 @@ GLADE_SOURCE = src/rattle.glade
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 #temp:
-#	echo $(VERSION)
+#	@echo rattle_$(VERSION).tar.gz $(VERSION) $(REVISION) $(PVERSION)
 #temp:
 #	grep REVISION src/rattle.R
 
@@ -102,7 +105,6 @@ build: data rattle_$(VERSION).tar.gz
 pbuild: data pmml_$(PVERSION).tar.gz
 
 rattle_$(VERSION).tar.gz: $(SOURCE)
-	svn update
 	rm -f package/rattle/R/*
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
@@ -112,7 +114,6 @@ rattle_$(VERSION).tar.gz: $(SOURCE)
 	chmod -R go+rX $(PACKAGE)
 
 pmml_$(PVERSION).tar.gz: $(PSOURCE)
-	svn update
 	cp $(PSOURCE) package/pmml/R/
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)

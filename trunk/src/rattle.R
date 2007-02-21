@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-21 22:30:10 Graham>
+## Time-stamp: <2007-02-22 07:46:06 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -11,9 +11,10 @@
 ##
 
 MAJOR <- "2"
-MINOR <- "1"
+MINOR <- "2"
+REVIS <- "0"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
-VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
+VERSION <- paste(MAJOR, MINOR, REVIS, sep=".")
 COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -119,9 +120,9 @@ rattle <- function()
   #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
   id.string <- paste('<span foreground="blue">',
                      '<i>Rattle</i> ',
-                     '<i>Version ', VERSION, '</i> ',
+                     '<i>Version ', VERSION, ' (rev ', REVISION, ')</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
-                     '</span>')
+                     '</span>', sep="")
   rattle.menu <- theWidget("rattle_menu")
   rattle.menu$SetRightJustified(TRUE)
   #rattle.menu$getChild()$setText(id.string)
@@ -4603,14 +4604,17 @@ executeEvaluateTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  ## Obtain some background information
+  ## Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
+
+  ## Ensure we have at least one model to evluate, otherwise warn the
+  ## user and do nothing.
   
   if (is.null(mtypes))
   {
-    errorDialog("No model has been specified.",
-                 "Please slect one or more from the list of models available.")
+    warnDialog("No model has been specified.",
+               "Please select one or more from the list of models available.")
     return()
   }
 
@@ -4703,10 +4707,10 @@ executeEvaluateTab <- function()
     if (is.null(filename))
     {
       errorDialog("You have requested that a CSV file be used",
-                   "as your testing dataset, but you have not",
-                   "identified which file. Please use the file",
-                   "chooser button to select the CSV file you wish",
-                   "to use as your testset for evaluation.")
+                  "as your testing dataset, but you have not",
+                  "identified which file. Please use the file",
+                  "chooser button to select the CSV file you wish",
+                  "to use as your testset for evaluation.")
       return()
     }
                    
@@ -4726,21 +4730,17 @@ executeEvaluateTab <- function()
               gsub("<<-", "<-", read.cmd))
       eval(parse(text=read.cmd))
 
-      ## TODO The following case for included assumes the same column
-      ## orders. Should really check this to make sure.
-      
-      if (is.null(included))
-        testset0 <- "crs$testset"
-      else
-        testset0 <- sprintf("crs$testset[,%s]", included)
       testname <- basename(filename)
       crs$testname <<- testname
     }
-    else
-    {
+    
+    ## TODO The following case for included assumes the same column
+    ## orders. Should really check this to make sure.
+      
+    if (is.null(included))
       testset0 <- "crs$testset"
-      testname <- crs$testname
-    }
+    else
+      testset0 <- sprintf("crs$testset[,%s]", included)
   }
   else if (theWidget("evaluate_rdataset_radiobutton")$getActive())
   {
@@ -5000,6 +5000,9 @@ executeEvaluateTab <- function()
   }
 
   ## DISPATCH
+
+  print(respcmd)
+  print(probcmd)
   
   if (theWidget("confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)
@@ -5045,7 +5048,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
 
     ## Log the R commands and execute them.
 
-    addToLog(sprintf("%sGenerate a confusion table for the %s model.",
+    addToLog(sprintf("%sGenerate a Confusion Table for the %s model.",
                      .START.LOG.COMMENT, mtype), no.start=TRUE)
     addToLog(sprintf("Obtain the response from the %s model.", mtype),
              gsub("<<-", "<-", respcmd[[mtype]]))
@@ -6221,7 +6224,7 @@ on_about_menu_activate <-  function(action, window)
   else
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
-  about$getWidget("aboutdialog")$setVersion(VERSION)
+  about$getWidget("aboutdialog")$setVersion(paste(VERSION, "rev", REVISION))
   about$getWidget("aboutdialog")$
     setCopyright(COPYRIGHT)
 }
