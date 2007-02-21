@@ -76,6 +76,9 @@
 \alias{on_open_activate}
 \alias{on_open_button_clicked}
 \alias{on_paste1_activate}
+\alias{on_plot_close_button_clicked}
+\alias{on_plot_print_button_clicked}
+\alias{on_plot_save_button_clicked}
 \alias{on_prcomp_radiobutton_toggled}
 \alias{on_precision_radiobutton_toggled}
 \alias{on_priors_entry_changed}

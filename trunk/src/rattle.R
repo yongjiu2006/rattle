@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-21 22:04:15 Graham>
+## Time-stamp: <2007-02-21 22:30:10 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -773,7 +773,12 @@ newPlot <- function(pcnt=1)
 
   if (require("cairoDevice", quietly=TRUE))
   {
-    plotGUI <- gladeXMLNew("rattle.glade", root="plot_window")
+    result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                  silent=TRUE)
+    if (inherits(result, "try-error"))
+      plotGUI <- gladeXMLNew("rattle.glade", root="plot_window")
+    else
+      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="plot_window")
     gladeXMLSignalAutoconnect(plotGUI)
     da <- plotGUI$getWidget("drawingarea")
     asCairoDevice(da)
