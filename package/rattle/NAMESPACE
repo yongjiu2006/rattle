@@ -6,6 +6,7 @@ export(
        evaluateRisk,
        genPlotTitleCmd,
        listAdaTrees,
+       listRPartRules,
        plotBenfordsLaw,
        plotNetwork,
        plotOptimalLine,

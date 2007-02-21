@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-20 17:35:27 Graham>
+## Time-stamp: <2007-02-21 22:04:15 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -767,11 +767,25 @@ setDefaultPath <- function(filename)
 
 newPlot <- function(pcnt=1)
 {
-  ## Add "unknown" to handle the case with the littler script
-  ## interface which runs with an "unknown" GUI.
+  ## Trial the use of the Cairo device. This was the only place I
+  ## needed to change to switch over to the Cairo device. As backup,
+  ## revert to the x11() or windows() device.
 
-  if (.Platform$GUI %in% c("X11", "unknown"))
+  if (require("cairoDevice", quietly=TRUE))
+  {
+    plotGUI <- gladeXMLNew("rattle.glade", root="plot_window")
+    gladeXMLSignalAutoconnect(plotGUI)
+    da <- plotGUI$getWidget("drawingarea")
+    asCairoDevice(da)
+    plotGUI$getWidget("plot_window")$setTitle(paste("Rattle: Plot", dev.cur()))
+  }
+  else if (.Platform$GUI %in% c("X11", "unknown"))
+  {
+    ## Add "unknown" to handle the case with the littler script
+    ## interface which runs with an "unknown" GUI.
+
     x11()
+  }
   else if (isWindows())
     windows()
 
@@ -794,6 +808,111 @@ newPlot <- function(pcnt=1)
   else if (pcnt==9)
     layout(matrix(c(1,2,3,4,5,6,7,8,9), 3, 3, byrow=TRUE))
 }
+
+########################################################################
+
+on_plot_save_button_clicked <- function(action)
+{
+  ## To know which window we are called from we extract the plot
+  ## number from the window title!!!. This then ensures we save the
+  ## right device.
+  ##
+  ## Also, export to pdf (from Cairo) is not too good it seems. Gets a
+  ## grey rather than white background. PNG and JPEG look just fine.
+  
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  savePlot(devnum)
+}
+
+on_plot_print_button_clicked <- function(action)
+{
+  infoDialog("The Print button is not yet implemented.")
+}
+
+
+on_plot_close_button_clicked <- function(action)
+{
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  dev.off(devnum)
+  pw <- action$getParentWindow()
+  pw$destroy()
+}
+
+savePlot <- function(device=NULL, name="plot")
+{
+  if (is.null(dev.list()))
+  {
+    warnDialog("There are currently no active graphics devices.",
+               "So there is nothing to export!",
+               "Please Execute (F5) to obtain a plot to export.")
+    return()
+  }
+
+  # Obtain a filename to save to. Ideally, this would also prompt for
+  # the device to export, and the fontsize, etc.
+
+  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg)",
+                                 NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname),
+                                "_", name, ".pdf", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("Graphics Files")
+  ff$addPattern("*.pdf")
+  ff$addPattern("*.png")
+  ff$addPattern("*.jpg")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+  
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
+    
+  if (file.exists(save.name))
+    if (is.null(questionDialog("A Graphics file of the name", save.name,
+                                "already exists. Do you want to overwrite",
+                                "this file?")))
+      return()
+  
+  cur <- dev.cur()
+  if (! is.null(device)) dev.set(device)
+  ext <- get.extension(save.name)
+  if (ext == "pdf")
+    ## Set version to 1.4 since dev.copy from a Cairo device needs
+    ## this.  It is done automatically with a warning anyhow, but
+    ## might as well avoid the warning so as not to worry anyone.
+    dev.copy(pdf, file=save.name, width=7, height=7, version="1.4")
+  else if (ext == "png")
+    dev.copy(png, file=save.name, width=700, height=700)
+  else if (ext == "jpg")
+    dev.copy(jpeg, file=save.name, width=700, height=700)
+  dev.off()
+  dev.set(cur)
+  
+  infoDialog(sprintf("Rattle: Plot %d", ifelse(is.null(device), cur, device)),
+             "has been exported to", save.name)
+}
+  
+########################################################################
 
 genPlotTitleCmd <- function(..., vector=FALSE)
 {
@@ -950,7 +1069,13 @@ update_comboboxentry_with_dataframes <- function(action, window)
 
 quit_rattle <- function(action, window)
 {
-  graphics.off() # for (i in dev.list()) dev.off(i)
+  ## Don't remove the graphics for now. In moving to the Cairo device,
+  ## this blanks the device, but does not destroy the containing
+  ## window. I wonder if there is some way to get a list of the plot
+  ## windows, and destroy each one?
+
+  ## graphics.off() # for (i in dev.list()) dev.off(i)
+
   theWidget("rattle_window")$destroy()
   
   ## Communicate to R that Rattle has finished. This is used by the

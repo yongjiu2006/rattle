@@ -11,7 +11,7 @@ DESCRIPTION=$(PACKAGE)/DESCRIPTION
 DESCRIPTIN=support/DESCRIPTION.in
 NAMESPACE=$(PACKAGE)/NAMESPACE
 
-P_PACKAGE=package/pmml
+PPACKAGE=package/pmml
 
 
 REPOSITORY=repository
@@ -22,7 +22,7 @@ MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
-P_VERSION="1.0.6"
+PVERSION="1.0.6"
 DATE:=$(shell date +%F)
 
 R_SOURCE = \
@@ -44,7 +44,7 @@ R_SOURCE = \
 
 # Eventually remove pmml.R from above and put into own package.
 
-P_SOURCE = \
+PSOURCE = \
 	src/pmml.R
 
 GLADE_SOURCE = src/rattle.glade
@@ -66,16 +66,16 @@ install: build pbuild zip check pcheck
 			rattle.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			rattle.html.in;\
-	 perl -pi -e "s|pmml__[0-9\.]*zip|pmml_$(PVERSION).zip|g" \
+	 perl -pi -e "s|pmml_[0-9\.]*zip|pmml_$(PVERSION).zip|g" \
 			rattle.html.in;\
 	 perl -pi -e "s|pmml_[0-9\.]*tar.gz|pmml_$(PVERSION).tar.gz|g" \
 			rattle.html.in;\
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
 	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
-			rattle_overview.tex;\
+			dmsurvivor.tex;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			rattle_overview.tex)
+			dmsurvivor.tex)
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
 	mv pmml_$(PVERSION).tar.gz pmml_$(PVERSION).zip $(REPOSITORY)
 	R --no-save < support/repository.R
@@ -86,7 +86,7 @@ check: build
 	R CMD check $(PACKAGE)
 
 pcheck: pbuild
-	R CMD check $(P_PACKAGE)
+	R CMD check $(PPACKAGE)
 
 # For development, temporarily remove the NAMESPACE so all is exposed.
 
@@ -99,7 +99,7 @@ devbuild:
 
 build: data rattle_$(VERSION).tar.gz
 
-pbuild: data pmml_$(P_VERSION).tar.gz
+pbuild: data pmml_$(PVERSION).tar.gz
 
 rattle_$(VERSION).tar.gz: $(SOURCE)
 	svn update
@@ -111,11 +111,11 @@ rattle_$(VERSION).tar.gz: $(SOURCE)
 	R CMD build $(PACKAGE)
 	chmod -R go+rX $(PACKAGE)
 
-pmml_$(P_VERSION).tar.gz: $(P_SOURCE)
+pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	svn update
-	cp $(P_SOURCE) package/pmml/R/
-	R CMD build $(P_PACKAGE)
-	chmod -R go+rX $(P_PACKAGE)
+	cp $(PSOURCE) package/pmml/R/
+	R CMD build $(PPACKAGE)
+	chmod -R go+rX $(PPACKAGE)
 
 data: package/rattle/data/audit.RData
 
@@ -145,7 +145,7 @@ html:
 local: rattle_$(VERSION).tar.gz
 	R CMD INSTALL $^
 
-plocal: pmml_$(P_VERSION).tar.gz
+plocal: pmml_$(PVERSION).tar.gz
 	R CMD INSTALL $^
 
 access:
