@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-22 19:02:27 Graham>
+## Time-stamp: <2007-02-22 19:20:52 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -873,6 +873,7 @@ savePlot <- function(device=NULL, name="plot")
   ff$addPattern("*.pdf")
   ff$addPattern("*.png")
   ff$addPattern("*.jpg")
+  if (isWindows()) ff$addPattern(*.wmf)
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
@@ -911,6 +912,8 @@ savePlot <- function(device=NULL, name="plot")
     dev.copy(png, file=save.name, width=700, height=700)
   else if (ext == "jpg")
     dev.copy(jpeg, file=save.name, width=700, height=700)
+  else if (ext == "wmf")
+    dev.copy(win.metafile, file=save.name, width=7, height=7)
   dev.off()
   dev.set(cur)
   
@@ -3636,6 +3639,10 @@ executeExplorePlot <- function(dataset)
     ## varPrefix  : mean 
     ## newNames   : mean.dat 
 
+    ## Only use summaryBy if there is a target, because it fails if
+    ## there is actually only one group in the data. Might be a new
+    ## bug in the doBy package.
+    
     if (length(targets) > 1)
       mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
                         "summaryBy(dat ~ grp, data=ds, FUN=mean)$dat.mean,",
