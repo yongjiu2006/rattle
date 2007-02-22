@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-22 07:46:06 Graham>
+## Time-stamp: <2007-02-22 19:02:27 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -12,7 +12,7 @@
 
 MAJOR <- "2"
 MINOR <- "2"
-REVIS <- "0"
+REVIS <- "1"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVIS, sep=".")
 COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
@@ -3636,9 +3636,14 @@ executeExplorePlot <- function(dataset)
     ## varPrefix  : mean 
     ## newNames   : mean.dat 
 
-    mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
-                     "summaryBy(dat ~ grp, data=ds, FUN=mean)$mean.dat,",
-                     "pch=8)")
+    if (length(targets) > 1)
+      mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
+                        "summaryBy(dat ~ grp, data=ds, FUN=mean)$dat.mean,",
+                        "pch=8)")
+    else
+      mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
+                        "mean(ds$dat),",
+                        "pch=8)")
     
     for (s in 1:nboxplots)
     {
