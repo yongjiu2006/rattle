@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-22 19:20:52 Graham>
+## Time-stamp: <2007-02-24 08:46:54 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -366,6 +366,9 @@ rattle <- function()
 
   while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
+  #gtkMain() # Tooltips work but the console is blocked and need gtkMainQuit
+  ## TODO Add a console into Rattle to interact with R.
+  
 }
 
 resetRattle <- function()
@@ -481,6 +484,7 @@ variable in combination with the other variables."))
   ## Update EXPLORE, MODEL and EVALUATE targets
 
   theWidget("explot_target_label")$setText("No target selected")
+  theWidget("summary_find_entry")$setText("")
 
   theWidget("glm_target_label")$setText("No target selected")
   theWidget("rpart_target_label")$setText("No target selected")
@@ -869,11 +873,14 @@ savePlot <- function(device=NULL, name="plot")
                                 "_", name, ".pdf", sep=""))
 
   ff <- gtkFileFilterNew()
-  ff$setName("Graphics Files")
+  if (isWindows())
+    ff$setName("Graphics Files (pdf png jpg wmf)")
+  else
+    ff$setName("Graphics Files (pdf png jpg)")
   ff$addPattern("*.pdf")
   ff$addPattern("*.png")
   ff$addPattern("*.jpg")
-  if (isWindows()) ff$addPattern(*.wmf)
+  if (isWindows()) ff$addPattern("*.wmf")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
@@ -1095,6 +1102,8 @@ quit_rattle <- function(action, window)
   ## is NULL, and when it is we finish! Seems to work.
 
   rattleGUI <<- NULL
+
+  #gtkMainQuit() # Only needed if gtkMain is run.
 }
 
 ########################################################################
@@ -3106,6 +3115,8 @@ on_prcomp_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+########################################################################
+
 cat_toggled <- function(cell, path.str, model)
 {
   ## A categorical variable's radio button has been toggled in the
@@ -3192,6 +3203,49 @@ on_continuous_clear_button_clicked <- function(action, window)
   })
 
   set.cursor()
+}
+
+on_summary_find_button_clicked <- function(window)
+{
+  search.str <- theWidget("summary_find_entry")$getText()
+  tv <- theWidget("summary_textview")
+  start.iter <- tv$getBuffer()$getStartIter()
+  summarySearch(tv, search.str, start.iter)
+}
+
+on_summary_next_button_clicked <- function(window)
+{
+  search.str <- theWidget("summary_find_entry")$getText()
+  tv <- theWidget("summary_textview")
+  last.search.pos <- tv$getBuffer()$getMark('last.search.pos')
+  if (is.null(last.search.pos)) return()
+  last.search.iter <- tv$getBuffer()$getIterAtMark(last.search.pos)
+  summarySearch(tv, search.str, last.search.iter)
+}
+
+summarySearch <- function(tv, search.str, start.iter)
+{
+  ## TODO MAKE THE SEARCH CASE INSENSITIVE
+  
+  found <- start.iter$iter$forwardSearch(search.str, 0)
+  tvb <- tv$getBuffer()
+  if (found$retval)
+  {
+    tvb$selectRange(found$match_start, found$match_end)
+    last.search.pos <-tvb$createMark('last.search.pos', found$match_end)
+
+    ## TODO This scroll does not seem to be working. The
+    ## gtkMainIteration does not seem to help - this was suggested by
+    ## Michael Lawrence
+    
+    while(gtkEventsPending()) gtkMainIteration()
+    tv$scrollMarkOnscreen(last.search.pos)
+    while(gtkEventsPending()) gtkMainIteration()
+
+    setStatusBar(sprintf('The string "%s" was found.', search.str))
+  }
+  else
+    setStatusBar(sprintf('The string "%s" was not found.', search.str))
 }
 
 ##----------------------------------------------------------------------

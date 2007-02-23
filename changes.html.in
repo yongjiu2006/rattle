@@ -6,6 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
+135 Add Search to Summary textview (Michael Fogliani)
+134 Support Save of plot to wmf on MS/Windows.
 133 Bug fix for Explore Dist Box plot - don't use summaryBy if no target
 132 Release Version 2.2.0
 132 Bug fix for eval of csv files - second time did not use "included"
@@ -181,6 +183,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Thu Feb 22 19:14:14 EST 2007
+Last modified: Fri Feb 23 22:27:47 EST 2007
 <!-- hhmts end -->
   </p>
