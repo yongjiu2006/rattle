@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-06 19:34:43 Graham>
+## Time-stamp: <2007-02-25 21:32:15 Graham>
 ##
 ## Implement associations functionality.
 ##
@@ -102,7 +102,7 @@ executeAssociateTab <- function()
                 "from amongst those having an input role.",
                 "If you wanted a basket analysis with the Target variable",
                 "listing the items, and the Ident variable identifying",
-                "the baskets, then lease check the Baskets button.")
+                "the baskets, then please check the Baskets button.")
     return()
   }
 
@@ -128,7 +128,6 @@ executeAssociateTab <- function()
   ## Transform data into a transactions dataset for arules.
 
   if (baskets)
-
     transaction.cmd <- paste("crs$transactions <<- as(split(",
                              sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
                                      ifelse(sampling, "[crs$sample,]", ""),
@@ -187,14 +186,37 @@ plotAssociateFrequencies <- function()
 
   if (sampleNeedsExecute()) return()
     
-  ## Check that we have only categorical attributes.
+  baskets <- theWidget("associate_baskets_checkbutton")$getActive()
+  if (baskets && length(crs$ident) != 1)
+  {
+    errorDialog("Exactly one variable must be identified as an Ident",
+                "in the Variables tab to be used as",
+                "the identifier of the transactions.",
+                "I found", length(crs$ident), "variables.",
+                "The entities need to be aggregated by the Ident to",
+                "create the baskets for association analysis.")
+    return()
+  }
+  if (baskets && length(crs$target) != 1)
+  {
+    errorDialog("You need to specify a Target variable in the Variables tab.",
+                "This vairable then identifies the items associated with each",
+                "basket or transaction in the analysis. Each basket or",
+                "transaction is uniquely identified using the Ident variable.")
+    return()
+  }
+
+  ## Check that we have categorical attributes.
 
   include <- getCategoricalVariables()
-  if (length(include) == 0)
+  if (! baskets && length(include) == 0)
   {
     errorDialog("Associations are calculated only for categorical data.",
                 "No categorical variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+                "from amongst those having an input role.",
+                "If you wanted a basket analysis with the Target variable",
+                "listing the items, and the Ident variable identifying",
+                "the baskets, then please check the Baskets button.")
     return()
   }
 
@@ -213,10 +235,19 @@ plotAssociateFrequencies <- function()
 
   ## Transform data into a transactions dataset for arules.
   
-  transaction.cmd <- paste("crs$transactions <<- as(",
-                           sprintf('crs$dataset[%s,%s], "transactions")',
-                                   ifelse(sampling, "crs$sample", ""),
-                                   include), sep="")
+  if (baskets)
+    transaction.cmd <- paste("crs$transactions <<- as(split(",
+                             sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
+                                     ifelse(sampling, "[crs$sample,]", ""),
+                                     crs$target,
+                                     ifelse(sampling, "[crs$sample,]", ""),
+                                     crs$ident),
+                             '), "transactions")', sep="")
+  else
+    transaction.cmd <- paste("crs$transactions <<- as(",
+                             sprintf('crs$dataset[%s,%s], "transactions")',
+                                     ifelse(sampling, "crs$sample", ""),
+                                     include), sep="")
   addToLog("Generate a transactions dataset.",
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
