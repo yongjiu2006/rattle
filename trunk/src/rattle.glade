@@ -1221,16 +1221,142 @@
 		      <property name="enable_popup">False</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox23">
-			  <property name="border_width">5</property>
+			<widget class="GtkVBox" id="vbox40">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
-			  <property name="spacing">5</property>
+			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkLabel" id="filename_label">
+			    <widget class="GtkHBox" id="hbox23">
+			      <property name="border_width">5</property>
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Filename:</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">5</property>
+
+			      <child>
+				<widget class="GtkLabel" id="filename_label">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Filename:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkFileChooserButton" id="csv_filechooserbutton">
+				  <property name="width_request">150</property>
+				  <property name="height_request">17</property>
+				  <property name="visible">True</property>
+				  <property name="title" translatable="yes">Select A CSV File</property>
+				  <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
+				  <property name="local_only">True</property>
+				  <property name="show_hidden">False</property>
+				  <property name="do_overwrite_confirmation">False</property>
+				  <property name="width_chars">-1</property>
+				  <signal name="selection_changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:48:59 GMT"/>
+				  <signal name="update_preview" handler="on_csv_filechooserbutton_update_preview" last_modification_time="Mon, 20 Mar 2006 07:56:47 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkLabel" id="label116">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Separator: </property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkEntry" id="csv_separator_entry">
+				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">The default column separator is a comma, but tabs (\t) are also common, often in .txt files..</property>
+				  <property name="can_focus">True</property>
+				  <property name="editable">True</property>
+				  <property name="visibility">True</property>
+				  <property name="max_length">0</property>
+				  <property name="text" translatable="yes">,</property>
+				  <property name="has_frame">True</property>
+				  <property name="invisible_char">*</property>
+				  <property name="activates_default">False</property>
+				  <property name="width_chars">5</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">True</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkCheckButton" id="csv_header_checkbutton">
+				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Indicates whether the first row of the datafile is the names of the columns. Otherwise, random names will be made up.</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Header</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <property name="active">True</property>
+				  <property name="inconsistent">False</property>
+				  <property name="draw_indicator">True</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label167">
+			      <property name="height_request">37</property>
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes"></property>
 			      <property name="use_underline">False</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1244,92 +1370,6 @@
 			      <property name="width_chars">-1</property>
 			      <property name="single_line_mode">False</property>
 			      <property name="angle">0</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkFileChooserButton" id="csv_filechooserbutton">
-			      <property name="width_request">150</property>
-			      <property name="visible">True</property>
-			      <property name="title" translatable="yes">Select A CSV File</property>
-			      <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
-			      <property name="local_only">True</property>
-			      <property name="show_hidden">False</property>
-			      <property name="do_overwrite_confirmation">False</property>
-			      <property name="width_chars">-1</property>
-			      <signal name="selection_changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:48:59 GMT"/>
-			      <signal name="update_preview" handler="on_csv_filechooserbutton_update_preview" last_modification_time="Mon, 20 Mar 2006 07:56:47 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">True</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkLabel" id="label116">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Separator: </property>
-			      <property name="use_underline">False</property>
-			      <property name="use_markup">False</property>
-			      <property name="justify">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap">False</property>
-			      <property name="selectable">False</property>
-			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.5</property>
-			      <property name="xpad">0</property>
-			      <property name="ypad">0</property>
-			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			      <property name="width_chars">-1</property>
-			      <property name="single_line_mode">False</property>
-			      <property name="angle">0</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkEntry" id="csv_separator_entry">
-			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">The default column separator is a comma, but tabs (\t) are also common, often in .txt files..</property>
-			      <property name="can_focus">True</property>
-			      <property name="editable">True</property>
-			      <property name="visibility">True</property>
-			      <property name="max_length">0</property>
-			      <property name="text" translatable="yes">,</property>
-			      <property name="has_frame">True</property>
-			      <property name="invisible_char">*</property>
-			      <property name="activates_default">False</property>
-			      <property name="width_chars">5</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">True</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkCheckButton" id="csv_header_checkbutton">
-			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">Indicates whether the first row of the datafile is the names of the columns. Otherwise, random names will be made up.</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Header</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <property name="active">True</property>
-			      <property name="inconsistent">False</property>
-			      <property name="draw_indicator">True</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -1368,16 +1408,116 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox25">
-			  <property name="border_width">5</property>
+			<widget class="GtkVBox" id="vbox41">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
-			  <property name="spacing">5</property>
+			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkLabel" id="label114">
+			    <widget class="GtkHBox" id="hbox25">
+			      <property name="border_width">5</property>
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Filename:</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">5</property>
+
+			      <child>
+				<widget class="GtkLabel" id="label114">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Filename:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkFileChooserButton" id="rdata_filechooserbutton">
+				  <property name="width_request">150</property>
+				  <property name="visible">True</property>
+				  <property name="title" translatable="yes">Select A Rdata File</property>
+				  <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
+				  <property name="local_only">True</property>
+				  <property name="show_hidden">False</property>
+				  <property name="do_overwrite_confirmation">False</property>
+				  <property name="width_chars">-1</property>
+				  <signal name="selection_changed" handler="load_rdata_set_combo" last_modification_time="Sat, 20 May 2006 06:20:20 GMT"/>
+				  <signal name="update_preview" handler="on_rdata_filechooserbutton_update_preview" last_modification_time="Sat, 20 May 2006 06:20:30 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">True</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkLabel" id="label115">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Data Name: </property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkComboBox" id="rdata_combobox">
+				  <property name="width_request">180</property>
+				  <property name="visible">True</property>
+				  <property name="items" translatable="yes">No data frames yet loaded.</property>
+				  <property name="add_tearoffs">False</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">True</property>
+				</packing>
+			      </child>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label168">
+			      <property name="height_request">37</property>
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes"></property>
 			      <property name="use_underline">False</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1396,67 +1536,6 @@
 			      <property name="padding">0</property>
 			      <property name="expand">False</property>
 			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkFileChooserButton" id="rdata_filechooserbutton">
-			      <property name="width_request">150</property>
-			      <property name="visible">True</property>
-			      <property name="title" translatable="yes">Select A Rdata File</property>
-			      <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
-			      <property name="local_only">True</property>
-			      <property name="show_hidden">False</property>
-			      <property name="do_overwrite_confirmation">False</property>
-			      <property name="width_chars">-1</property>
-			      <signal name="selection_changed" handler="load_rdata_set_combo" last_modification_time="Sat, 20 May 2006 06:20:20 GMT"/>
-			      <signal name="update_preview" handler="on_rdata_filechooserbutton_update_preview" last_modification_time="Sat, 20 May 2006 06:20:30 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">True</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkLabel" id="label115">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Data Name: </property>
-			      <property name="use_underline">False</property>
-			      <property name="use_markup">False</property>
-			      <property name="justify">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap">False</property>
-			      <property name="selectable">False</property>
-			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.5</property>
-			      <property name="xpad">0</property>
-			      <property name="ypad">0</property>
-			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			      <property name="width_chars">-1</property>
-			      <property name="single_line_mode">False</property>
-			      <property name="angle">0</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkComboBox" id="rdata_combobox">
-			      <property name="width_request">180</property>
-			      <property name="visible">True</property>
-			      <property name="items" translatable="yes">No data frames yet loaded.</property>
-			      <property name="add_tearoffs">False</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">True</property>
 			    </packing>
 			  </child>
 			</widget>
@@ -1490,23 +1569,80 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox22">
+			<widget class="GtkVBox" id="vbox42">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkLabel" id="rdataset_label">
+			    <widget class="GtkHBox" id="hbox22">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Data Name:</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">0</property>
+
+			      <child>
+				<widget class="GtkLabel" id="rdataset_label">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Data Name:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.490000009537</property>
+				  <property name="xpad">4</property>
+				  <property name="ypad">5</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkComboBox" id="rdataset_combobox">
+				  <property name="width_request">180</property>
+				  <property name="height_request">17</property>
+				  <property name="visible">True</property>
+				  <property name="items" translatable="yes">No data frames found.</property>
+				  <property name="add_tearoffs">False</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="set_focus_child" handler="update_comboboxentry_with_dataframes" last_modification_time="Sat, 04 Mar 2006 00:19:17 GMT"/>
+				  <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+			    </widget>
+			    <packing>
+			      <property name="padding">5</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label166">
+			      <property name="height_request">47</property>
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes"></property>
 			      <property name="use_underline">False</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
 			      <property name="wrap">False</property>
 			      <property name="selectable">False</property>
 			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.490000009537</property>
-			      <property name="xpad">4</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
 			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
 			      <property name="width_chars">-1</property>
@@ -1517,23 +1653,6 @@
 			      <property name="padding">0</property>
 			      <property name="expand">False</property>
 			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkComboBox" id="rdataset_combobox">
-			      <property name="width_request">180</property>
-			      <property name="visible">True</property>
-			      <property name="items" translatable="yes">No data frames found.</property>
-			      <property name="add_tearoffs">False</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="set_focus_child" handler="update_comboboxentry_with_dataframes" last_modification_time="Sat, 04 Mar 2006 00:19:17 GMT"/>
-			      <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">True</property>
 			    </packing>
 			  </child>
 			</widget>
@@ -1567,160 +1686,232 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox24">
-			  <property name="border_width">5</property>
+			<widget class="GtkVBox" id="vbox38">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
-			  <property name="spacing">5</property>
+			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkLabel" id="label112">
+			    <widget class="GtkHBox" id="hbox24">
+			      <property name="border_width">5</property>
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">DSN:</property>
-			      <property name="use_underline">False</property>
-			      <property name="use_markup">False</property>
-			      <property name="justify">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap">False</property>
-			      <property name="selectable">False</property>
-			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.5</property>
-			      <property name="xpad">0</property>
-			      <property name="ypad">0</property>
-			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			      <property name="width_chars">-1</property>
-			      <property name="single_line_mode">False</property>
-			      <property name="angle">0</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">5</property>
+
+			      <child>
+				<widget class="GtkLabel" id="label112">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">DSN:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkEntry" id="odbc_dsn_entry">
+				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Enter the name of a known ODBC sata source.</property>
+				  <property name="can_focus">True</property>
+				  <property name="editable">True</property>
+				  <property name="visibility">True</property>
+				  <property name="max_length">0</property>
+				  <property name="text" translatable="yes"></property>
+				  <property name="has_frame">True</property>
+				  <property name="invisible_char">*</property>
+				  <property name="activates_default">False</property>
+				  <signal name="activate" handler="open_odbc_set_combo" last_modification_time="Wed, 14 Jun 2006 02:37:43 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkLabel" id="label111">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Table:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.490000009537</property>
+				  <property name="xpad">4</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkComboBox" id="odbc_combobox">
+				  <property name="width_request">180</property>
+				  <property name="height_request">15</property>
+				  <property name="visible">True</property>
+				  <property name="items" translatable="yes">No tables found.</property>
+				  <property name="add_tearoffs">False</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkLabel" id="label162">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Row Limit:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkSpinButton" id="odbc_limit_spinbutton">
+				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Number of rows to retrieve from the table.</property>
+				  <property name="can_focus">True</property>
+				  <property name="climb_rate">1</property>
+				  <property name="digits">0</property>
+				  <property name="numeric">False</property>
+				  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
+				  <property name="snap_to_ticks">False</property>
+				  <property name="wrap">False</property>
+				  <property name="adjustment">0 0 10000 1 100 100</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">True</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkCheckButton" id="odbc_believeNRows_checkbutton">
+				  <property name="visible">True</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Believe Num Rows</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <property name="active">True</property>
+				  <property name="inconsistent">False</property>
+				  <property name="draw_indicator">True</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkEntry" id="odbc_dsn_entry">
-			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">Enter the name of a known ODBC sata source.</property>
-			      <property name="can_focus">True</property>
-			      <property name="editable">True</property>
-			      <property name="visibility">True</property>
-			      <property name="max_length">0</property>
-			      <property name="text" translatable="yes"></property>
-			      <property name="has_frame">True</property>
-			      <property name="invisible_char">*</property>
-			      <property name="activates_default">False</property>
-			      <signal name="activate" handler="open_odbc_set_combo" last_modification_time="Wed, 14 Jun 2006 02:37:43 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkLabel" id="label111">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Table:</property>
-			      <property name="use_underline">False</property>
-			      <property name="use_markup">False</property>
-			      <property name="justify">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap">False</property>
-			      <property name="selectable">False</property>
-			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.490000009537</property>
-			      <property name="xpad">4</property>
-			      <property name="ypad">0</property>
-			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			      <property name="width_chars">-1</property>
-			      <property name="single_line_mode">False</property>
-			      <property name="angle">0</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkComboBox" id="odbc_combobox">
-			      <property name="width_request">180</property>
-			      <property name="visible">True</property>
-			      <property name="items" translatable="yes">No tables found.</property>
-			      <property name="add_tearoffs">False</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:52:54 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkLabel" id="label162">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Row Limit:</property>
-			      <property name="use_underline">False</property>
-			      <property name="use_markup">False</property>
-			      <property name="justify">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap">False</property>
-			      <property name="selectable">False</property>
-			      <property name="xalign">0.5</property>
-			      <property name="yalign">0.5</property>
-			      <property name="xpad">0</property>
-			      <property name="ypad">0</property>
-			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-			      <property name="width_chars">-1</property>
-			      <property name="single_line_mode">False</property>
-			      <property name="angle">0</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkSpinButton" id="odbc_limit_spinbutton">
-			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">Number of rows to retrieve from the table.</property>
-			      <property name="can_focus">True</property>
-			      <property name="climb_rate">1</property>
-			      <property name="digits">0</property>
-			      <property name="numeric">False</property>
-			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
-			      <property name="snap_to_ticks">False</property>
-			      <property name="wrap">False</property>
-			      <property name="adjustment">0 0 10000 1 100 100</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">False</property>
+			      <property name="expand">True</property>
 			      <property name="fill">True</property>
 			    </packing>
 			  </child>
 
 			  <child>
-			    <widget class="GtkCheckButton" id="odbc_believeNRows_checkbutton">
+			    <widget class="GtkHBox" id="hbox38">
 			      <property name="visible">True</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Believe Num Rows</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <property name="active">True</property>
-			      <property name="inconsistent">False</property>
-			      <property name="draw_indicator">True</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">0</property>
+
+			      <child>
+				<widget class="GtkLabel" id="label163">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Query:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">5</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkEntry" id="odbc_sql_entry">
+				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">An optional SQL query that is expected to return a table as a dataset for Rattle.</property>
+				  <property name="can_focus">True</property>
+				  <property name="editable">True</property>
+				  <property name="visibility">True</property>
+				  <property name="max_length">0</property>
+				  <property name="text" translatable="yes"></property>
+				  <property name="has_frame">True</property>
+				  <property name="invisible_char">*</property>
+				  <property name="activates_default">False</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">True</property>
+				  <property name="fill">True</property>
+				</packing>
+			      </child>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
-			      <property name="expand">False</property>
-			      <property name="fill">False</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
 			    </packing>
 			  </child>
 			</widget>
@@ -1777,22 +1968,33 @@
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkTextView" id="data_textview">
-		      <property name="border_width">5</property>
+		    <widget class="GtkViewport" id="viewport3">
 		      <property name="visible">True</property>
-		      <property name="editable">False</property>
-		      <property name="overwrite">False</property>
-		      <property name="accepts_tab">False</property>
-		      <property name="justification">GTK_JUSTIFY_LEFT</property>
-		      <property name="wrap_mode">GTK_WRAP_WORD</property>
-		      <property name="cursor_visible">False</property>
-		      <property name="pixels_above_lines">0</property>
-		      <property name="pixels_below_lines">0</property>
-		      <property name="pixels_inside_wrap">0</property>
-		      <property name="left_margin">5</property>
-		      <property name="right_margin">0</property>
-		      <property name="indent">0</property>
-		      <property name="text" translatable="yes">Welcome to Rattle
+		      <property name="shadow_type">GTK_SHADOW_IN</property>
+
+		      <child>
+			<widget class="GtkVBox" id="vbox39">
+			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+			  <property name="spacing">0</property>
+
+			  <child>
+			    <widget class="GtkTextView" id="data_textview">
+			      <property name="border_width">5</property>
+			      <property name="visible">True</property>
+			      <property name="editable">False</property>
+			      <property name="overwrite">False</property>
+			      <property name="accepts_tab">False</property>
+			      <property name="justification">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap_mode">GTK_WRAP_WORD</property>
+			      <property name="cursor_visible">False</property>
+			      <property name="pixels_above_lines">0</property>
+			      <property name="pixels_below_lines">0</property>
+			      <property name="pixels_inside_wrap">0</property>
+			      <property name="left_margin">5</property>
+			      <property name="right_margin">6</property>
+			      <property name="indent">0</property>
+			      <property name="text" translatable="yes">Welcome to Rattle
 
 Rattle is an Open Source project to develop a GNOME Data Mining suite of applications built on top of the statistical and data mining package R, licensed under the GNU General Public License, and Copyright (c) Graham J Williams.
 
@@ -1805,6 +2007,15 @@ Togaware's Desktop Data Mining Survival Guide (under development) includes exten
 Rattle is Copyright (c) 2006, Graham.Williams@togaware.com.
 Rattle is licensed under the GNU General Public License, Version 2.
 See Help-&gt;About for details.</property>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+			</widget>
+		      </child>
 		    </widget>
 		  </child>
 		</widget>
