@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+136 Add Limit and beleiveNRows to ODBC interface.
 135 Add Search to Summary textview (Michael Fogliani)
 134 Support Save of plot to wmf on MS/Windows.
 133 Bug fix for Explore Dist Box plot - don't use summaryBy if no target
@@ -183,6 +184,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Feb 23 22:27:47 EST 2007
+Last modified: Sun Feb 25 21:04:30 EST 2007
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-24 08:46:54 Graham>
+## Time-stamp: <2007-02-25 16:01:52 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -453,6 +453,13 @@ variable in combination with the other variables."))
   .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
 
+  ## Reset the DATA tab.
+
+  theWidget("odbc_dsn_entry")$setText("")
+  theWidget("odbc_combobox")$setActive(-1)
+  theWidget("odbc_limit_spinbutton")$setValue(0)
+  theWidget("odbc_believeNRows_checkbutton")$setActive(FALSE)
+  
   ## Reset the VARIABLES tab.
   
   theWidget("variables_treeview")$getModel()$clear()
@@ -1251,7 +1258,7 @@ on_odbc_radiobutton_toggled <- function(button)
 open_odbc_set_combo <- function(a, b)
 {
   ## DESCRIPTION
-  ## A callback for when the ODBC DNS name has changed.
+  ## A callback for when the ODBC DSN name has changed.
   ##
   ## DETAIL Load the corresponding tables from the specified ODBC
   ## database.
@@ -1261,14 +1268,14 @@ open_odbc_set_combo <- function(a, b)
 
   if (not.null(crs$odbc)) close(crs$odbc)
   
-  ## Obtain name of the DNS.
+  ## Obtain name of the DSN.
 
-  DNSname <- theWidget("odbc_dns_entry")$getText()
+  DSNname <- theWidget("odbc_dsn_entry")$getText()
   
   ## Generate commands to connect to the database and retrieve the tables.
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
-  connect.cmd <- sprintf('crs$odbc <<- odbcConnect("%s")', DNSname)
+  connect.cmd <- sprintf('crs$odbc <<- odbcConnect("%s")', DSNname)
   tables.cmd  <- sprintf('sqlTables(crs$odbc)$TABLE_NAME')
   
   ## Start logging and executing the R code.
@@ -1286,7 +1293,7 @@ open_odbc_set_combo <- function(a, b)
   if (inherits(result, "try-error"))
   {
     errorDialog("The attempt to open the ODBC connection failed.",
-                "Please check that the DNS is correct.",
+                "Please check that the DSN is correct.",
                 "See the R Console for further details.")
     return()
   }
@@ -1298,7 +1305,7 @@ open_odbc_set_combo <- function(a, b)
   if (inherits(result, "try-error"))
   {
     errorDialog("The attempt to query the ODBC connection failed.",
-                "Please check that the DNS is correct.",
+                "Please check that the DSN is correct.",
                 "See the R Console for further details.")
     return()
   }
@@ -1458,8 +1465,15 @@ executeDataODBC <- function()
 {
   TV <- "data_textview"
 
+  ## Retrieve information. Note that there is no standard LIMIT option
+  ## in SQL, but it is LIMIT in Teradata, so perhaps we go with that
+  ## for now?
+  
+  dsn.name <- theWidget("odbc_dsn_entry")$getText()
   table <- theWidget("odbc_combobox")$getActiveText()
-
+  row.limit <- theWidget("odbc_limit_spinbutton")$getValue()
+  believe.nrows <- theWidget("odbc_believeNRows_checkbutton")$getActive()
+  
   ## Error if no table from the database has been chosen.
   
   if (is.null(table))
@@ -1486,20 +1500,30 @@ executeDataODBC <- function()
       return()
   }
 
-  assign.cmd <- "crs$dataset <<- sqlFetch(crs$odbc, table)"
+  sql <- sprintf("SELECT * FROM %s", table)
+  
+  if (row.limit > 0) sql <- paste(sql, "LIMIT", row.limit)
+  
+  #assign.cmd <- "crs$dataset <<- sqlFetch(crs$odbc, table)"
+  assign.cmd <- paste("crs$dataset <<- sqlQuery(crs$odbc, ", '"', sql, '"',
+                      ifelse(belive.nrows, "", ", believeNRows=FALSE"),
+                      ")", sep="")
   str.cmd  <- "str(crs$dataset)"
 
-  numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
-
-  DNSname <- theWidget("odbc_dns_entry")$getText()
-  if (numRows > 50000)
-    if (is.null(questionDialog("You are about to extract", numRows,
-                               "rows from the table", table,
-                               "of the", DNSname, "ODBC connection.",
-                               "That's quite a few for R to load into memory.",
-                               "Do you wish to continue?")))
-        
-      return()
+  if (row.limit == 0)
+  {
+    ## Double check with the user if we are abuot to extract a large
+    ## number of rows.
+    
+    numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
+    if (numRows > 50000)
+      if (is.null(questionDialog("You are about to extract", numRows,
+                                 "rows from the table", table,
+                                 "of the", dsn.name, "ODBC connection.",
+                                 "That's quite a few to load into memory.",
+                                 "Do you wish to continue?")))
+        return()
+  }
   
   ## Start logging and executing the R code.
 
@@ -1508,7 +1532,7 @@ executeDataODBC <- function()
   clearTextview(TV)
   
   addToLog("LOAD FROM DATABASE TABLE",
-          gsub('<<-', '<-', assign.cmd))
+           gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- table
@@ -1516,13 +1540,13 @@ executeDataODBC <- function()
 
   addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV,
-                  sprintf("Structure of %s from %s.\n\n", table, DNSname),
-                  collectOutput(str.cmd))
+                 sprintf("Structure of %s from %s.\n\n", table, dsn.name),
+                 collectOutput(str.cmd))
   
   ## Update the variables treeview and samples.
-
+  
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-
+  
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
 }
@@ -3236,7 +3260,7 @@ summarySearch <- function(tv, search.str, start.iter)
 
     ## TODO This scroll does not seem to be working. The
     ## gtkMainIteration does not seem to help - this was suggested by
-    ## Michael Lawrence
+    ## Michael Lawrence, but does not work either.
     
     while(gtkEventsPending()) gtkMainIteration()
     tv$scrollMarkOnscreen(last.search.pos)
