@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-25 16:01:52 Graham>
+## Time-stamp: <2007-02-26 06:06:33 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -1473,18 +1473,34 @@ executeDataODBC <- function()
   table <- theWidget("odbc_combobox")$getActiveText()
   row.limit <- theWidget("odbc_limit_spinbutton")$getValue()
   believe.nrows <- theWidget("odbc_believeNRows_checkbutton")$getActive()
+  sql.query <- theWidget("odbc_sql_entry")$getText()
   
-  ## Error if no table from the database has been chosen.
-  
-  if (is.null(table))
+  ## If the ODBC channel has not been openned, then tell the user how
+  ## to do so.
+
+  if (class(crs$adbc) != "RODBC")
   {
-    errorDialog("No table has been specified.",
-                 "Please identify the name of the table you wish to load.",
-                 "All tables in the connected database are listed",
-                 "once a connection is made.")
+    errorDialog("A connection to an ODBC data source name (DSN) has not been",
+                "established.",
+                "Please enter the DSN and press Enter.",
+                "This will also populate the list of tables to choose from.",
+                "After establishing the connection you can choose a table",
+                "or else enter a specific SQL query to retrieve a dataset.")
     return()
   }
   
+  ## Error if no table from the database has been chosen.
+  
+  if (sql.query == "" && is.null(table))
+  {
+    errorDialog("No table nor SQL query has been specified.",
+                "Please identify the name of the table you wish to load.",
+                "All tables in the connected database are listed",
+                "once a connection is made.",
+                "Alternatively, enter a query to retrieve a dataset.)
+    return()
+  }
+
   ## If there is a model warn about losing it.
 
   if ( not.null(listBuiltModels()) )
@@ -1500,13 +1516,17 @@ executeDataODBC <- function()
       return()
   }
 
-  sql <- sprintf("SELECT * FROM %s", table)
-  
-  if (row.limit > 0) sql <- paste(sql, "LIMIT", row.limit)
+  if (sql.query != "")
+    sql <- sql.query
+  else
+  {
+    sql <- sprintf("SELECT * FROM %s", table)
+    if (row.limit > 0) sql <- paste(sql, "LIMIT", row.limit)
+  }
   
   #assign.cmd <- "crs$dataset <<- sqlFetch(crs$odbc, table)"
   assign.cmd <- paste("crs$dataset <<- sqlQuery(crs$odbc, ", '"', sql, '"',
-                      ifelse(belive.nrows, "", ", believeNRows=FALSE"),
+                      ifelse(believe.nrows, "", ", believeNRows=FALSE"),
                       ")", sep="")
   str.cmd  <- "str(crs$dataset)"
 
