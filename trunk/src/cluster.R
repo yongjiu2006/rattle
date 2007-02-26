@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-17 03:48:10 Graham>
+## Time-stamp: <2007-02-26 21:32:35 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -287,7 +287,7 @@ executeClusterHClust <- function(include)
                    "to running out of memory",
                    "as hclust is rather memory hungry.",
                    "A quick solution is to sample the dataset, through the",
-                   "Sample tab. On 32 bit machines you may be limited to",
+                   "Transform tab. On 32 bit machines you may be limited to",
                    "less than 2000 entities.")
       setTextview(TV)
     }

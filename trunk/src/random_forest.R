@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-26 17:21:34 Graham>
+## Time-stamp: <2007-02-26 21:29:44 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -217,7 +217,7 @@ executeModelRF <- function()
                    "to running out of memory",
                    "as randomForest is rather memory hungry.",
                    "A quick solution is to sample the dataset, through the",
-                   "Sample tab. On 32 bit machines you may be limited to",
+                   "Transform tab. On 32 bit machines you may be limited to",
                    "less than 2000 entities.")
       setTextview(TV)
     }

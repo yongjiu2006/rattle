@@ -6,9 +6,10 @@
     changes on each version control check-in.</p>
 
 <pre>
+139 Bug fix for ODBC. Catch memory error for svm (Michael Fogliani)
 138 Add ability for user to enter an SQL query thru ODBC (Frank Lu)
 137 Bug fix for Basket Associations Freq Plot (Tom Arnold).
-136 Add Limit and beleiveNRows to ODBC interface.
+136 Add Limit and believeNRows to ODBC interface.
 135 Add Find to Summary textview (Michael Fogliani)
 134 Support Save of plot to wmf on MS/Windows.
 133 Bug fix for Explore Dist Box plot - don't use summaryBy if no target
@@ -186,6 +187,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Feb 26 06:05:12 EST 2007
+Last modified: Mon Feb 26 21:21:26 EST 2007
 <!-- hhmts end -->
   </p>
