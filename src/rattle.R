@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-26 21:33:33 Graham>
+## Time-stamp: <2007-02-27 05:30:28 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -12,9 +12,8 @@
 
 MAJOR <- "2"
 MINOR <- "2"
-REVIS <- "1"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
-VERSION <- paste(MAJOR, MINOR, REVIS, sep=".")
+VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -120,7 +119,7 @@ rattle <- function()
   #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
   id.string <- paste('<span foreground="blue">',
                      '<i>Rattle</i> ',
-                     '<i>Version ', VERSION, ' (rev ', REVISION, ')</i> ',
+                     '<i>Version ', VERSION, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
   rattle.menu <- theWidget("rattle_menu")
@@ -6339,7 +6338,7 @@ on_about_menu_activate <-  function(action, window)
   else
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
-  about$getWidget("aboutdialog")$setVersion(paste(VERSION, "rev", REVISION))
+  about$getWidget("aboutdialog")$setVersion(VERSION)
   about$getWidget("aboutdialog")$
     setCopyright(COPYRIGHT)
 }

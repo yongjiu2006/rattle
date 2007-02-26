@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_summary_find_button_clicked}
+\alias{on_summary_next_button_clicked}
 \alias{cat_toggled}
 \alias{con_toggled}
 \alias{display_click_execute_message}
