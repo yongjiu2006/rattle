@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-22 07:47:24 Graham>
+## Time-stamp: <2007-02-27 05:30:55 Graham>
 ##
 ## Implement LOG functionality.
 ##
@@ -8,7 +8,7 @@
 
 addInitialLogMessage <- function()
 {
-  addToLog(sprintf("Rattle version %s revision %s", VERSION, REVISION),
+  addToLog(sprintf("Rattle version %s", VERSION),
            sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
           "## We can export the contents of this log textview to file using
 ## the export button or menu. This will save a log of what we have done,

@@ -17,16 +17,16 @@ PPACKAGE=package/pmml
 REPOSITORY=repository
 
 # Canonical version information from rattle.R
-MAJOR:=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
-MINOR:=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
-REVIS:=$(shell egrep '^REVIS <-' src/rattle.R | cut -d\" -f 2)
-REVISION:=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
-FIX:=$(shell perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R)
-VERSION=$(MAJOR).$(MINOR).$(REVIS)
+MAJOR=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
+MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
+#REVIS=$(shell egrep '^REVIS <-' src/rattle.R | cut -d\" -f 2)
+REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
+            | awk '{print $$1-137}')
+VERSION=$(MAJOR).$(MINOR).$(REVISION)
 
 PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
-DATE:=$(shell date +%F)
+DATE=$(shell date +%F)
 
 R_SOURCE = \
 	src/rattle.R \
@@ -59,8 +59,10 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 #temp:
 #	grep REVISION src/rattle.R
 
-
 default: local
+
+revision:
+	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R
 
 install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
@@ -104,7 +106,7 @@ build: data rattle_$(VERSION).tar.gz
 
 pbuild: data pmml_$(PVERSION).tar.gz
 
-rattle_$(VERSION).tar.gz: $(SOURCE)
+rattle_$(VERSION).tar.gz: revision $(SOURCE)
 	rm -f package/rattle/R/*
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/

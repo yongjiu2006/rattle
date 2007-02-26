@@ -5,9 +5,9 @@
   ## correctly? Maybe not....
   
   cat(sprintf(paste("Rattle, Graphical interface for data mining using R, ",
-                    "Version %s (rev %s).\n", COPYRIGHT,
+                    "Version %s.\n", COPYRIGHT,
                     "\nType \"rattle()\" to shake, rattle, and roll ",
                     "your data.\n", sep=""),
-              VERSION, REVISION))
+              VERSION))
 }
 
