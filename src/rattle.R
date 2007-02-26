@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-26 06:06:33 Graham>
+## Time-stamp: <2007-02-26 21:33:33 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -342,6 +342,11 @@ rattle <- function()
   ## Set glm_family_comboboxentry to default value.
   
   theWidget("glm_family_comboboxentry")$setActive(0)
+
+  ## Check if some external applications are available and if not
+  ## de-sensitise their functionality.
+
+  ## How to test ig ggobi is actually available?
   
   ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   
@@ -651,8 +656,8 @@ sampleNeedsExecute <- function()
   {
     errorDialog("Sampling is active but has not been Executed.",
                     "Either ensure you Execute the sampling by clicking",
-                    "the Execute button on the Sample tab,",
-                    "or else de-activate Sampling on the Sample tab.")
+                    "the Execute button on the Transform tab,",
+                    "or else de-activate Sampling on the Transform tab.")
     return(TRUE)
   }
 
@@ -663,8 +668,8 @@ sampleNeedsExecute <- function()
   {
     errorDialog("Sampling is inactive but has not been Executed",
                  "since being made inactive.",
-                 "Please ensure you Execute the Sample tab",
-                 "after de-activating the Sampling.")
+                 "Please ensure you Execute the Transform tab",
+                 "after de-activating the Sampling on the Transform tab.")
         return(TRUE)
   }
 
@@ -1478,7 +1483,7 @@ executeDataODBC <- function()
   ## If the ODBC channel has not been openned, then tell the user how
   ## to do so.
 
-  if (class(crs$adbc) != "RODBC")
+  if (class(crs$odbc) != "RODBC")
   {
     errorDialog("A connection to an ODBC data source name (DSN) has not been",
                 "established.",
@@ -1497,7 +1502,7 @@ executeDataODBC <- function()
                 "Please identify the name of the table you wish to load.",
                 "All tables in the connected database are listed",
                 "once a connection is made.",
-                "Alternatively, enter a query to retrieve a dataset.)
+                "Alternatively, enter a query to retrieve a dataset.")
     return()
   }
 

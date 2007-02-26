@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-07 12:00:33 Graham>
+## Time-stamp: <2007-02-26 21:20:11 Graham>
 ##
 ## MODEL TAB
 ##
@@ -418,11 +418,23 @@ executeModelSVM <- function()
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
-    errorDialog("The call to svm appears to have failed.",
-                 "The error message was:", result,
-                 "I am not familiar with this error, and you may",
-                 "want to report it to the Rattle author",
-                 "at Graham.Williams@togaware.com")
+    if (any(grep("cannot allocate vector", result)))
+    {
+      errorDialog("The call to svm appears to have failed.",
+                  "This is often due, as in this case,",
+                  "to running out of memory",
+                  "as svm is rather memory hungry.",
+                  "A quick solution is to sample the dataset, through the",
+                  "Transform tab. On 32 bit machines you may be limited to",
+                   "less than 10000 entities.")
+      setTextview(TV)
+    }
+    else
+      errorDialog("The call to svm appears to have failed.",
+                  "The error message was:", result,
+                  "I am not familiar with this error, and you may",
+                  "want to report it to the Rattle author",
+                  "at Graham.Williams@togaware.com")
     return(FALSE)
   }
 

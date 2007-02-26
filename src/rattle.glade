@@ -3160,6 +3160,7 @@ A random sample is taken each time this tab is Executed. The Seed can be changed
 		  <child>
 		    <widget class="GtkRadioButton" id="ggobi_radiobutton">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Run the external GGobi data visualisation application, if available.</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">GGobi</property>
 		      <property name="use_underline">True</property>
