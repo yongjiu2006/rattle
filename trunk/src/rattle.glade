@@ -1822,7 +1822,7 @@
 				  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 				  <property name="snap_to_ticks">False</property>
 				  <property name="wrap">False</property>
-				  <property name="adjustment">0 0 10000 1 100 100</property>
+				  <property name="adjustment">0 0 1000000000 1 100 100</property>
 				</widget>
 				<packing>
 				  <property name="padding">0</property>
@@ -1890,6 +1890,7 @@
 
 			      <child>
 				<widget class="GtkEntry" id="odbc_sql_entry">
+				  <property name="width_request">600</property>
 				  <property name="visible">True</property>
 				  <property name="tooltip" translatable="yes">An optional SQL query that is expected to return a table as a dataset for Rattle.</property>
 				  <property name="can_focus">True</property>
@@ -1903,7 +1904,7 @@
 				</widget>
 				<packing>
 				  <property name="padding">0</property>
-				  <property name="expand">True</property>
+				  <property name="expand">False</property>
 				  <property name="fill">True</property>
 				</packing>
 			      </child>
