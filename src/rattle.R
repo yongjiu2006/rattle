@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-27 05:30:28 Graham>
+## Time-stamp: <2007-02-28 07:00:31 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -1168,6 +1168,12 @@ on_csv_filechooserbutton_update_preview <- function(button)
     ff$addPattern("*")
     button$addFilter(ff)
   }
+
+  ## Kick the GTK event loop otherwise you end up waiting until the
+  ## mouse is moved, for example.
+  
+  while (gtkEventsPending()) gtkMainIteration()
+
   # CAN'T GO HERE - NEED ANOTHER CALLBACK button$setCurrentFolder(crs$cwd)
 }
 

@@ -6,6 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
+141 Call gtkMainIteration() on file browser to update it immediately.
+140 Fix on a version scheme - 2.1.1 rather than 2.1.139 or 2.1.1-139.
 139 Bug fix for ODBC. Catch memory error for svm (Michael Fogliani)
 138 Add ability for user to enter an SQL query thru ODBC (Frank Lu)
 137 Bug fix for Basket Associations Freq Plot (Tom Arnold).
@@ -187,6 +189,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Feb 26 21:21:26 EST 2007
+Last modified: Wed Feb 28 07:42:33 EST 2007
 <!-- hhmts end -->
   </p>
