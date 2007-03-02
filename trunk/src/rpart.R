@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-21 17:53:17 Graham>
+## Time-stamp: <2007-03-02 19:31:01 Graham>
 ##
 ## RPART TAB
 ##
@@ -331,6 +331,7 @@ executeModelRPart <- function()
   addToLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
   start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
+  time.taken <- Sys.time()-start.time
   if (inherits(result, "try-error"))
   {
     if (any(grep("syntax error.*weights", result)))
@@ -360,7 +361,6 @@ executeModelRPart <- function()
 
   ## Finish up.
   
-  time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   addToLog(time.msg)
