@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-02 15:53:01 Graham>
+## Time-stamp: <2007-03-02 20:00:48 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -96,17 +96,20 @@ executeClusterKMeans <- function(include)
                         ifelse(sampling, "crs$sample", ""), include, nclust)
   addToLog("Generate a kmeans cluster of size 10.",
            gsub("<<-", "<-", kmeans.cmd))
+  start.time <- Sys.time()
   eval(parse(text=kmeans.cmd))
+  time.taken <- Sys.time()-start.time
 
   ## Show the resulting model.
 
   clearTextview(TV)
-  appendTextview(TV, "Cluster Sizes\n\n",
-                 collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
-                 "\n\nCluster centroids.\n\n",
-                 collectOutput("crs$kmeans$centers", TRUE),
-                 "\n\nWithin cluster sum of squares.\n\n",
-                 collectOutput("crs$kmeans$withinss", TRUE))
+  setTextview(TV, "Cluster Sizes\n\n",
+              collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
+              "\n\nCluster centroids.\n\n",
+              collectOutput("crs$kmeans$centers", TRUE),
+              "\n\nWithin cluster sum of squares.\n\n",
+              collectOutput("crs$kmeans$withinss", TRUE),
+              "\n")
 
   ## Ensure the kmeans buttons are now active
 
@@ -114,9 +117,11 @@ executeClusterKMeans <- function(include)
   theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
   theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
   
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
   setStatusBar("The K Means cluster has been generated.",
-               "You may need to scroll the textview to see the cluster",
-               "information." )
+               time.msg )
   
 }
 
@@ -231,8 +236,7 @@ on_kmeans_data_plot_button_clicked <- function(button)
 
   plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
                             "col=crs$kmeans$cluster)\n",
-                            genPlotTitleCmd("Data Plot",
-                                            crs$dataname), sep=""),
+                            genPlotTitleCmd(""), sep=""),
                       ifelse(sampling, "crs$sample", ""), include)
   addToLog("Generate a data plot.", plot.cmd)
   newPlot()
@@ -316,17 +320,62 @@ executeClusterHClust <- function(include)
   ## TODO : If data is large put up a question about wanting to
   ## continue?
   
-  lib.cmd <- "require(cba, quietly=TRUE)"
-
   sampling  <- not.null(crs$sample)
 
-  hclust.cmd <- paste("crs$hclust <<- ",
-                      sprintf('hclust(dist(crs$dataset[%s,%s]), "%s")',
-                              ifelse(sampling, "crs$sample", ""),
-                              include, "ave"),
-                      sep="")
+  ## The amap library needs to be loaded for hcluster. Also note that
+  ## hcluster takes about 0.33 seconds, compared to hclust taking 11
+  ## seconds!
 
-  ## Log the R command
+  lib.cmd <- "require(amap, quietly=TRUE)"
+  if (packageIsAvailable("amap", "parallel and more efficient hclust"))
+  {
+    amap.available <- TRUE
+    addToLog("The hcluster function is provided by the amap package.", lib.cmd)
+    eval(parse(text=lib.cmd))
+  }
+  else
+    amap.available <- FALSE
+  
+  ## Obtain interface information.
+
+  dist <- theWidget("hclust_distance_combobox")$getActiveText()
+  link <- theWidget("hclust_link_combobox")$getActiveText()
+  nbproc <- theWidget("hclust_nbproc_spinbutton")$getValue()
+
+  if (nbproc != 1 && ! amap.available)
+  {
+    errorDialog("The amap package is not available and so the efficient",
+                "and parallel version of hclust is not available.",
+                "Please set the number of processors to 1 to proceed",
+                "with using hclust instead.",
+                "Be aware that the amap version is over 10 times faster.")
+    return(FALSE)
+  }
+  
+  ## Use the default hclust for clustering.
+
+  if (amap.available)
+
+    ## Use the more efficient hcluster for clustering.
+  
+    hclust.cmd <- paste("crs$hclust <<- ",
+                        sprintf(paste('hclusterpar(crs$dataset[%s,%s],',
+                                      'method="%s", link="%s",',
+                                      'nbproc=%d)'),
+                                ifelse(sampling, "crs$sample", ""),
+                                include, dist, link, nbproc),
+                        sep="")
+  else
+
+    hclust.cmd <- paste("crs$hclust <<- ",
+                        sprintf(paste('hclust(dist(crs$dataset[%s,%s],',
+                                      'method="%s"),',
+                                      'method="%s")'),
+                                ifelse(sampling, "crs$sample", ""),
+                                include, dist, link),
+                        sep="")
+
+  ## Log the R command.
 
   addLogSeparator("HIERARCHICAL CLUSTER")
   addToLog("Generate a hierarchical cluster of the data.",
@@ -334,7 +383,9 @@ executeClusterHClust <- function(include)
   
   ## Perform the commands.
 
+  start.time <- Sys.time()
   result <- try(eval(parse(text=hclust.cmd)), silent=TRUE)
+  time.taken <- Sys.time()-start.time
   if (inherits(result, "try-error"))
   {
     if (any(grep("cannot allocate vector", result)))
@@ -357,17 +408,19 @@ executeClusterHClust <- function(include)
     return()
   }
 
-  clearTextview(TV)
-  appendTextview(TV, "Hiearchical Cluster\n",
-                 collectOutput("crs$hclust", TRUE))
+  setTextview(TV, "Hiearchical Cluster\n", collectOutput("crs$hclust", TRUE))
 
   theWidget("hclust_dendrogram_button")$setSensitive(TRUE)
   theWidget("hclust_clusters_label")$setSensitive(TRUE)
   theWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
   theWidget("hclust_stats_button")$setSensitive(TRUE)
-  theWidget("hclust_plot_button")$setSensitive(TRUE)
+  theWidget("hclust_data_plot_button")$setSensitive(TRUE)
+  theWidget("hclust_discriminant_plot_button")$setSensitive(TRUE)
 
-  setStatusBar("Hierarchical cluster has been generated.")
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addToLog(time.msg)
+  setStatusBar("A hierarchical cluster has been generated.", time.msg)
   
 }
 
@@ -459,7 +512,63 @@ on_hclust_stats_button_clicked <- function(button)
   setStatusBar("HClust cluster statistics have been generated.")
 }
 
-on_hclust_plot_button_clicked <- function(button)
+on_hclust_data_plot_button_clicked <- function(button)
+{
+
+  ## Make sure there is a cluster first.
+
+  if (is.null(crs$hclust))
+  {
+    errorDialog("E133: Should not be here. Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  sampling  <- not.null(crs$sample)
+  num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A data plot can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  ## PLOT: Log the R command and execute.
+
+  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+                            "col=cutree(crs$hclust, %d))\n",
+                            genPlotTitleCmd(""), sep=""),
+                      ifelse(sampling, "crs$sample", ""), include,
+                      num.clusters)
+  addToLog("Generate a data plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Data plot has been generated.")
+}
+
+on_hclust_discriminant_plot_button_clicked <- function(button)
 {
 
   ## Make sure there is a cluster first.

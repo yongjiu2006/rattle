@@ -1,4 +1,8 @@
 \name{rattle_gui}
+\alias{on_hclust_data_plot_button_clicked}
+\alias{on_hclust_discriminant_plot_button_clicked}
+\alias{on_kmeans_data_plot_button_clicked}
+\alias{on_kmeans_discriminant_plot_button_clicked}
 \alias{on_summary_find_button_clicked}
 \alias{on_summary_next_button_clicked}
 \alias{cat_toggled}

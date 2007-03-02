@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+143 Use much more efficient hcluster with parallel processing.
 142 Add a Data Plot to KMeans clustering. Improve ODBC handling.
 141 Call gtkMainIteration() on file browser to update it immediately.
 140 Fix on a version scheme - 2.1.1 rather than 2.1.139 or 2.1.1-139.
@@ -190,6 +191,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Mar  2 18:02:53 EST 2007
+Last modified: Fri Mar  2 18:46:32 EST 2007
 <!-- hhmts end -->
   </p>

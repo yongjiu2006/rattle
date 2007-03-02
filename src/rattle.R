@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-02 11:18:30 Graham>
+## Time-stamp: <2007-03-02 19:45:46 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -526,6 +526,17 @@ variable in combination with the other variables."))
   ## theWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
   theWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
 
+  ## Update CLUSTER tab
+
+  theWidget("hclust_distance_combobox")$setActive(0)
+  theWidget("hclust_link_combobox")$setActive(0)
+  theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
+  theWidget("hclust_clusters_label")$setSensitive(FALSE)
+  theWidget("hclust_clusters_spinbutton")$setSensitive(FALSE)
+  theWidget("hclust_stats_button")$setSensitive(FALSE)
+  theWidget("hclust_data_plot_button")$setSensitive(FALSE)
+  theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
+  
 }
 
 ## UTILITIES
