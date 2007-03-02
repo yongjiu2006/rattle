@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-26 21:32:35 Graham>
+## Time-stamp: <2007-03-02 15:53:01 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -111,10 +111,12 @@ executeClusterKMeans <- function(include)
   ## Ensure the kmeans buttons are now active
 
   theWidget("kmeans_stats_button")$setSensitive(TRUE)
-  theWidget("kmeans_plot_button")$setSensitive(TRUE)
+  theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
+  theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
   
-  setStatusBar("K Means cluster has been generated.",
-               "You may need to scroll the textview to see them." )
+  setStatusBar("The K Means cluster has been generated.",
+               "You may need to scroll the textview to see the cluster",
+               "information." )
   
 }
 
@@ -184,7 +186,62 @@ on_kmeans_stats_button_clicked <- function(button)
   setStatusBar("K Means cluster statistics have been generated.")
 }
 
-on_kmeans_plot_button_clicked <- function(button)
+on_kmeans_data_plot_button_clicked <- function(button)
+{
+
+  ## Make sure there is a cluster first.
+
+  if (is.null(crs$kmeans))
+  {
+    errorDialog("E132: Should not be here. Please report to",
+                "Graham.Williams@togaware.com")
+    return()
+  }
+
+  ## Some background information.  Assume we have already built the
+  ## cluster, and so we don't need to check so many conditions.
+
+  sampling  <- not.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  ## We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A data plot of the clusters can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  ## PLOT: Log the R command and execute.
+
+  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+                            "col=crs$kmeans$cluster)\n",
+                            genPlotTitleCmd("Data Plot",
+                                            crs$dataname), sep=""),
+                      ifelse(sampling, "crs$sample", ""), include)
+  addToLog("Generate a data plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Data plot has been generated.")
+}
+
+on_kmeans_discriminant_plot_button_clicked <- function(button)
 {
 
   ## Make sure there is a cluster first.

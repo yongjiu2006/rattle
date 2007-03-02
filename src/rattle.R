@@ -1,11 +1,12 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-28 07:00:31 Graham>
+## Time-stamp: <2007-03-02 11:18:30 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
 ## The Rattle package is made of of the following R source files:
 ##
+## cluster.R	KMeans and Hierachical Clustering.
 ## execute.R	The Execute functionality.
 ## paradigm.R	Display and hide tabs depending on paradigm radio buttons
 ##
@@ -457,12 +458,14 @@ variable in combination with the other variables."))
   .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
 
-  ## Reset the DATA tab.
+  ## Reset the DATA tab. But we don't want to do this because
+  ## resetRattle is called on loading a database table, and this ends
+  ## up clearing all the widgets!
 
-  theWidget("odbc_dsn_entry")$setText("")
-  theWidget("odbc_combobox")$setActive(-1)
-  theWidget("odbc_limit_spinbutton")$setValue(0)
-  theWidget("odbc_believeNRows_checkbutton")$setActive(FALSE)
+##   theWidget("odbc_dsn_entry")$setText("")
+##   theWidget("odbc_combobox")$setActive(-1)
+##   theWidget("odbc_limit_spinbutton")$setValue(0)
+##   theWidget("odbc_believeNRows_checkbutton")$setActive(FALSE)
   
   ## Reset the VARIABLES tab.
   
@@ -1104,7 +1107,7 @@ quit_rattle <- function(action, window)
   ## graphics.off() # for (i in dev.list()) dev.off(i)
 
   theWidget("rattle_window")$destroy()
-  
+
   ## Communicate to R that Rattle has finished. This is used by the
   ## rattle script on GNU/Linux using the littler package which allows
   ## one to use R as a scripting language. But rattle dispatches
@@ -1131,11 +1134,19 @@ display_click_execute_message <- function(button)
   #cat("XXX Display Click Execute message XXX\n")
   theWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
-               "Now click the Execute button to load the dataset.",
-               "\n\nAny R errors will be displayed in the R Console. ",
-               "Check the R Console if nothing seems to happen ",
-               "after clicking the Execute button. ",
-               "Be aware that large datasets do take some time to load.")
+              "Now click the Execute button to load the dataset.",
+              "\n\nYou can limit the number of rows you load from ",
+              "the table using the Row Limit entry.",
+              "\n\nYou can specify a SQL SELECT query to the database to ",
+              "retrieve the data you want.",
+              "\n\nIf you find that you don't get all the rows you expect ",
+              "from the database, then try un-checking the Believe Num Rows ",
+              "checkbox. This is an issue with some database ODBC drivers ",
+              "such as Netezza and Oracle.",
+              "\n\nAny R errors will be displayed in the R Console. ",
+              "Check the R Console if nothing seems to happen ",
+              "after clicking the Execute button. ",
+              "Be aware that large datasets do take some time to load.")
   setStatusBar()
 }
 
@@ -1265,18 +1276,12 @@ on_odbc_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-open_odbc_set_combo <- function(a, b)
+open_odbc_set_combo <- function(button)
 {
-  ## DESCRIPTION
-  ## A callback for when the ODBC DSN name has changed.
-  ##
-  ## DETAIL Load the corresponding tables from the specified ODBC
-  ## database.
+  ## This is a callback for when the ODBC DSN name has changed.  Load
+  ## the corresponding tables from the specified ODBC database.
 
   TV <- "data_textview"
-  ## Close previous channel
-
-  if (not.null(crs$odbc)) close(crs$odbc)
   
   ## Obtain name of the DSN.
 
@@ -1297,6 +1302,12 @@ open_odbc_set_combo <- function(a, b)
   addToLog("Require the RODBC library", lib.cmd)
   eval(parse(text=lib.cmd))
        
+  ## Close all currently open channels. This assumes that the user is
+  ## not openning channelse themselves. Could be a bad choice, but
+  ## assume we are addressing the usual Rattle user.
+
+  odbcCloseAll()
+  
   addToLog("Open the connection to the ODBC service.",
           gsub('<<-', '<-', connect.cmd))
   result <- try(eval(parse(text=connect.cmd)))
@@ -1331,7 +1342,7 @@ open_odbc_set_combo <- function(a, b)
   
   theWidget(TV)$setWrapMode("word")
   clearTextview(TV)
-  appendTextview(TV, "Now select a table from those available.")
+  setTextview(TV, "Now select a table from those available.")
   setStatusBar()
 
 }
@@ -1558,7 +1569,7 @@ executeDataODBC <- function()
   ## Start logging and executing the R code.
 
   addLogSeparator()
-  theWidget("data_textview")$setWrapMode("none") # On for welcome msg
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
   clearTextview(TV)
   
   addToLog("LOAD FROM DATABASE TABLE",
