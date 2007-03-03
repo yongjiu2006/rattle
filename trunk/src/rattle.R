@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-03 19:45:56 Graham>
+## Time-stamp: <2007-03-03 21:44:05 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -1147,6 +1147,19 @@ display_click_execute_message <- function(button)
   theWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
               "Now click the Execute button to load the dataset.",
+              "\n\nAny R errors will be displayed in the R Console. ",
+              "Check the R Console if nothing seems to happen ",
+              "after clicking the Execute button. ",
+              "Be aware that large datasets do take some time to load.")
+  setStatusBar()
+}
+
+display_click_odbc_execute_message <- function(button)
+{
+  #cat("XXX Display Click Execute message XXX\n")
+  theWidget("data_textview")$setWrapMode("word")
+  setTextview("data_textview",
+              "Now click the Execute button to load the dataset.",
               "\n\nYou can limit the number of rows you load from ",
               "the table using the Row Limit entry.",
               "\n\nYou can specify a SQL SELECT query to the database to ",
@@ -1160,6 +1173,11 @@ display_click_execute_message <- function(button)
               "after clicking the Execute button. ",
               "Be aware that large datasets do take some time to load.")
   setStatusBar()
+}
+
+on_viewdata_button_clicked <- function(button)
+{
+  viewData()
 }
 
 on_csv_radiobutton_toggled <- function(button)
@@ -1494,6 +1512,10 @@ executeDataCSV <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
+  ## Enable the Data View button.
+
+  theWidget("csv_viewdata_button")$setSensitive(TRUE)
+  
   setStatusBar("The CSV data has been loaded:", crs$dataname)
 }
 
@@ -1603,6 +1625,10 @@ executeDataODBC <- function()
   
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
   
+  ## Enable the Data View button.
+
+  theWidget("odbc_viewdata_button")$setSensitive(TRUE)
+  
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
 }
@@ -1683,6 +1709,10 @@ executeDataRdata <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
+  ## Enable the Data View button.
+
+  theWidget("rdata_viewdata_button")$setSensitive(TRUE)
+  
   setStatusBar("The data has been loaded:", crs$dataname)
 }
 
@@ -1745,8 +1775,30 @@ executeDataRdataset <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
+  ## Enable the Data View button.
+
+  theWidget("rdataset_viewdata_button")$setSensitive(TRUE)
+  
   setStatusBar("The data has been assigned into Rattle.")
 }
+
+viewData <- function()
+{
+    result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                  silent=TRUE)
+    if (inherits(result, "try-error"))
+      viewdataGUI <- gladeXMLNew("rattle.glade", root="viewdata_window")
+    else
+      viewdataGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+                             root="viewdata_window")
+    gladeXMLSignalAutoconnect(viewdataGUI)
+    tv <- viewdataGUI$getWidget("viewdata_textview")
+    tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+    op <- options(width=10000)
+    tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
+    options(op)
+  }
+    
 
 ########################################################################
 ##
@@ -3297,6 +3349,29 @@ on_summary_next_button_clicked <- function(window)
 {
   search.str <- theWidget("summary_find_entry")$getText()
   tv <- theWidget("summary_textview")
+  last.search.pos <- tv$getBuffer()$getMark('last.search.pos')
+  if (is.null(last.search.pos)) return()
+  last.search.iter <- tv$getBuffer()$getIterAtMark(last.search.pos)
+  summarySearch(tv, search.str, last.search.iter)
+}
+
+on_viewdata_find_button_clicked <- function(window)
+{
+  ## Need to get the root window of the button, and all rest is in
+  ## terms of that.
+
+  root <- window$getRootWindow()
+  search.str <- root$getWidget("viewdata_find_entry")$getText()
+  print(search.str)
+  tv <- viewdataGUI$getWidget("viewdata_textview")
+  start.iter <- tv$getBuffer()$getStartIter()
+  summarySearch(tv, search.str, start.iter)
+}
+
+on_viewdata_next_button_clicked <- function(window)
+{
+  search.str <- viewdataGUI$getWidget("viewdata_find_entry")$getText()
+  tv <- viewdataGUI$getWidget("viewdata_textview")
   last.search.pos <- tv$getBuffer()$getMark('last.search.pos')
   if (is.null(last.search.pos)) return()
   last.search.iter <- tv$getBuffer()$getIterAtMark(last.search.pos)
