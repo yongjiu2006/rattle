@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+146 Add a View Data button to view the loaded dataset.
 145 Add extra options for ada model (Frank Lu).
 144 Bug Fix - search in summary_textview now scrolls to selection.
 143 Use much more efficient hcluster with parallel processing.
@@ -193,6 +194,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar  3 19:55:46 EST 2007
+Last modified: Sat Mar  3 21:51:05 EST 2007
 <!-- hhmts end -->
   </p>

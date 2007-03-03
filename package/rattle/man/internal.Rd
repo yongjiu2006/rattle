@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_ada_defaults_button_clicked}
+\alias{on_ada_stumps_button_clicked}
 \alias{on_hclust_data_plot_button_clicked}
 \alias{on_hclust_discriminant_plot_button_clicked}
 \alias{on_kmeans_data_plot_button_clicked}
