@@ -3458,42 +3458,31 @@ A random sample is taken each time this tab is Executed. The Seed can be changed
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkScrolledWindow" id="scrolledwindow3">
+			    <widget class="GtkScrolledWindow" id="scrolledwindow36">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
 			      <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
-			      <property name="shadow_type">GTK_SHADOW_NONE</property>
+			      <property name="shadow_type">GTK_SHADOW_IN</property>
 			      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			      <child>
-				<widget class="GtkViewport" id="viewport2">
+				<widget class="GtkTextView" id="summary_textview">
 				  <property name="visible">True</property>
-				  <property name="shadow_type">GTK_SHADOW_IN</property>
-
-				  <child>
-				    <widget class="GtkVBox" id="vbox37">
-				      <property name="visible">True</property>
-				      <property name="homogeneous">False</property>
-				      <property name="spacing">0</property>
-
-				      <child>
-					<widget class="GtkTextView" id="summary_textview">
-					  <property name="visible">True</property>
-					  <property name="can_focus">True</property>
-					  <property name="editable">False</property>
-					  <property name="overwrite">False</property>
-					  <property name="accepts_tab">True</property>
-					  <property name="justification">GTK_JUSTIFY_LEFT</property>
-					  <property name="wrap_mode">GTK_WRAP_WORD</property>
-					  <property name="cursor_visible">True</property>
-					  <property name="pixels_above_lines">0</property>
-					  <property name="pixels_below_lines">0</property>
-					  <property name="pixels_inside_wrap">0</property>
-					  <property name="left_margin">0</property>
-					  <property name="right_margin">0</property>
-					  <property name="indent">0</property>
-					  <property name="text" translatable="yes">This textview will include a summary of each of the variables in the dataset once you click the Execute button (or the F5 shortcut). 
+				  <property name="can_focus">True</property>
+				  <property name="editable">False</property>
+				  <property name="overwrite">False</property>
+				  <property name="accepts_tab">True</property>
+				  <property name="justification">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap_mode">GTK_WRAP_WORD</property>
+				  <property name="cursor_visible">True</property>
+				  <property name="pixels_above_lines">0</property>
+				  <property name="pixels_below_lines">0</property>
+				  <property name="pixels_inside_wrap">0</property>
+				  <property name="left_margin">0</property>
+				  <property name="right_margin">0</property>
+				  <property name="indent">0</property>
+				  <property name="text" translatable="yes">This textview will include a summary of each of the variables in the dataset once you click the Execute button (or the F5 shortcut). 
 
 The summary will include more details depending on which check buttons you choose. 
 
@@ -3502,15 +3491,6 @@ The Summary option provides a very brief summary.
 The Describe option provides comprehensive summaries of each variable.
 
 Kurtosis and Skewness allow these measure to be compared across the available numeric variables.</property>
-					</widget>
-					<packing>
-					  <property name="padding">0</property>
-					  <property name="expand">True</property>
-					  <property name="fill">True</property>
-					</packing>
-				      </child>
-				    </widget>
-				  </child>
 				</widget>
 			      </child>
 			    </widget>
