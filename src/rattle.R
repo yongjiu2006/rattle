@@ -1,8 +1,8 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-03 09:52:20 Graham>
+## Time-stamp: <2007-03-03 19:45:56 Graham>
 ##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
 ## The Rattle package is made of of the following R source files:
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-COPYRIGHT <- "Copyright (C) 2006 Graham.Williams@togaware.com, GPL"
+COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
 ## extensively tested the application. Many colleagues at the
@@ -490,7 +490,8 @@ variable in combination with the other variables."))
   ## Reset MODEL:ADA
   
   makeAdaSensitive(FALSE)
-
+  setAdaDefaults()
+  
   ## Reset MODEL:RF
   
   makeRandomForestSensitive(FALSE)
@@ -1406,6 +1407,9 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
     executeTransformSample()
   }
 
+  ## Set the risk label appropraitely.
+  
+  theWidget("evaluate_risk_label")$setText(crs$risk)
 }
 
 executeDataCSV <- function()
@@ -5138,8 +5142,8 @@ executeEvaluateTab <- function()
 
   ## DISPATCH
 
-  print(respcmd)
-  print(probcmd)
+  ##print(respcmd)
+  ##print(probcmd)
   
   if (theWidget("confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)

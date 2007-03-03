@@ -1960,42 +1960,31 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow1">
+		<widget class="GtkScrolledWindow" id="scrolledwindow37">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
 		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
-		  <property name="shadow_type">GTK_SHADOW_NONE</property>
+		  <property name="shadow_type">GTK_SHADOW_IN</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkViewport" id="viewport3">
+		    <widget class="GtkTextView" id="data_textview">
+		      <property name="border_width">5</property>
 		      <property name="visible">True</property>
-		      <property name="shadow_type">GTK_SHADOW_IN</property>
-
-		      <child>
-			<widget class="GtkVBox" id="vbox39">
-			  <property name="visible">True</property>
-			  <property name="homogeneous">False</property>
-			  <property name="spacing">0</property>
-
-			  <child>
-			    <widget class="GtkTextView" id="data_textview">
-			      <property name="border_width">5</property>
-			      <property name="visible">True</property>
-			      <property name="editable">False</property>
-			      <property name="overwrite">False</property>
-			      <property name="accepts_tab">False</property>
-			      <property name="justification">GTK_JUSTIFY_LEFT</property>
-			      <property name="wrap_mode">GTK_WRAP_WORD</property>
-			      <property name="cursor_visible">False</property>
-			      <property name="pixels_above_lines">0</property>
-			      <property name="pixels_below_lines">0</property>
-			      <property name="pixels_inside_wrap">0</property>
-			      <property name="left_margin">5</property>
-			      <property name="right_margin">6</property>
-			      <property name="indent">0</property>
-			      <property name="text" translatable="yes">Welcome to Rattle
+		      <property name="editable">False</property>
+		      <property name="overwrite">False</property>
+		      <property name="accepts_tab">False</property>
+		      <property name="justification">GTK_JUSTIFY_LEFT</property>
+		      <property name="wrap_mode">GTK_WRAP_WORD</property>
+		      <property name="cursor_visible">False</property>
+		      <property name="pixels_above_lines">0</property>
+		      <property name="pixels_below_lines">0</property>
+		      <property name="pixels_inside_wrap">0</property>
+		      <property name="left_margin">5</property>
+		      <property name="right_margin">6</property>
+		      <property name="indent">0</property>
+		      <property name="text" translatable="yes">Welcome to Rattle
 
 Rattle is an Open Source project to develop a GNOME Data Mining suite of applications built on top of the statistical and data mining package R, licensed under the GNU General Public License, and Copyright (c) Graham J Williams.
 
@@ -2005,18 +1994,9 @@ Togaware's Desktop Data Mining Survival Guide (under development) includes exten
 
     http://datamining.togaware.com/survivor/Rattle.html 
 
-Rattle is Copyright (c) 2006, Graham.Williams@togaware.com.
+Rattle is Copyright (c) 2007, Graham.Williams@togaware.com.
 Rattle is licensed under the GNU General Public License, Version 2.
 See Help-&gt;About for details.</property>
-			    </widget>
-			    <packing>
-			      <property name="padding">0</property>
-			      <property name="expand">True</property>
-			      <property name="fill">True</property>
-			    </packing>
-			  </child>
-			</widget>
-		      </child>
 		    </widget>
 		  </child>
 		</widget>
@@ -4836,7 +4816,7 @@ centroid</property>
 			  </child>
 
 			  <child>
-			    <widget class="GtkScrolledWindow" id="scrolledwindow22">
+			    <widget class="GtkScrolledWindow" id="scrolledwindow38">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
@@ -4845,42 +4825,22 @@ centroid</property>
 			      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			      <child>
-				<widget class="GtkViewport" id="viewport1">
+				<widget class="GtkTextView" id="hclust_textview">
 				  <property name="visible">True</property>
-				  <property name="shadow_type">GTK_SHADOW_IN</property>
-
-				  <child>
-				    <widget class="GtkVBox" id="vbox28">
-				      <property name="visible">True</property>
-				      <property name="homogeneous">False</property>
-				      <property name="spacing">0</property>
-
-				      <child>
-					<widget class="GtkTextView" id="hclust_textview">
-					  <property name="visible">True</property>
-					  <property name="can_focus">True</property>
-					  <property name="editable">True</property>
-					  <property name="overwrite">False</property>
-					  <property name="accepts_tab">True</property>
-					  <property name="justification">GTK_JUSTIFY_LEFT</property>
-					  <property name="wrap_mode">GTK_WRAP_NONE</property>
-					  <property name="cursor_visible">True</property>
-					  <property name="pixels_above_lines">0</property>
-					  <property name="pixels_below_lines">0</property>
-					  <property name="pixels_inside_wrap">0</property>
-					  <property name="left_margin">0</property>
-					  <property name="right_margin">0</property>
-					  <property name="indent">0</property>
-					  <property name="text" translatable="yes"></property>
-					</widget>
-					<packing>
-					  <property name="padding">0</property>
-					  <property name="expand">True</property>
-					  <property name="fill">True</property>
-					</packing>
-				      </child>
-				    </widget>
-				  </child>
+				  <property name="can_focus">True</property>
+				  <property name="editable">True</property>
+				  <property name="overwrite">False</property>
+				  <property name="accepts_tab">True</property>
+				  <property name="justification">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap_mode">GTK_WRAP_NONE</property>
+				  <property name="cursor_visible">True</property>
+				  <property name="pixels_above_lines">0</property>
+				  <property name="pixels_below_lines">0</property>
+				  <property name="pixels_inside_wrap">0</property>
+				  <property name="left_margin">0</property>
+				  <property name="right_margin">0</property>
+				  <property name="indent">0</property>
+				  <property name="text" translatable="yes"></property>
 				</widget>
 			      </child>
 			    </widget>
@@ -7257,77 +7217,10 @@ poisson(log)</property>
 			  <property name="border_width">5</property>
 			  <property name="visible">True</property>
 			  <property name="n_rows">3</property>
-			  <property name="n_columns">8</property>
+			  <property name="n_columns">9</property>
 			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">5</property>
 			  <property name="column_spacing">11</property>
-
-			  <child>
-			    <widget class="GtkCheckButton" id="ada_stumps_checkbutton">
-			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">Check this button to build stumps rather than trees.</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Stumps</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <property name="active">False</property>
-			      <property name="inconsistent">False</property>
-			      <property name="draw_indicator">True</property>
-			    </widget>
-			    <packing>
-			      <property name="left_attach">2</property>
-			      <property name="right_attach">3</property>
-			      <property name="top_attach">1</property>
-			      <property name="bottom_attach">2</property>
-			      <property name="x_options">fill</property>
-			      <property name="y_options"></property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkButton" id="ada_importance_button">
-			      <property name="visible">True</property>
-			      <property name="sensitive">False</property>
-			      <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles in the model.</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Importance</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="clicked" handler="on_ada_importance_button_clicked" last_modification_time="Fri, 22 Dec 2006 01:53:36 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="left_attach">3</property>
-			      <property name="right_attach">4</property>
-			      <property name="top_attach">1</property>
-			      <property name="bottom_attach">2</property>
-			      <property name="x_options">fill</property>
-			      <property name="y_options"></property>
-			    </packing>
-			  </child>
-
-			  <child>
-			    <widget class="GtkButton" id="ada_errors_button">
-			      <property name="visible">True</property>
-			      <property name="sensitive">False</property>
-			      <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Errors</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="clicked" handler="on_ada_errors_button_clicked" last_modification_time="Fri, 22 Dec 2006 06:30:19 GMT"/>
-			    </widget>
-			    <packing>
-			      <property name="left_attach">4</property>
-			      <property name="right_attach">5</property>
-			      <property name="top_attach">1</property>
-			      <property name="bottom_attach">2</property>
-			      <property name="x_options">fill</property>
-			      <property name="y_options"></property>
-			    </packing>
-			  </child>
 
 			  <child>
 			    <widget class="GtkLabel" id="label149">
@@ -7465,41 +7358,224 @@ poisson(log)</property>
 			  </child>
 
 			  <child>
-			    <widget class="GtkButton" id="ada_list_button">
+			    <widget class="GtkLabel" id="label172">
 			      <property name="visible">True</property>
-			      <property name="sensitive">False</property>
-			      <property name="tooltip" translatable="yes">List the decision trees in the textview.</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">List</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="clicked" handler="on_ada_list_button_clicked" last_modification_time="Fri, 22 Dec 2006 08:13:50 GMT"/>
+			      <property name="label" translatable="yes">Max Depth:</property>
+			      <property name="use_underline">False</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
 			    </widget>
 			    <packing>
-			      <property name="left_attach">5</property>
-			      <property name="right_attach">6</property>
-			      <property name="top_attach">1</property>
-			      <property name="bottom_attach">2</property>
+			      <property name="left_attach">0</property>
+			      <property name="right_attach">1</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
 			      <property name="x_options">fill</property>
 			      <property name="y_options"></property>
 			    </packing>
 			  </child>
 
 			  <child>
-			    <widget class="GtkButton" id="ada_draw_button">
+			    <widget class="GtkSpinButton" id="ada_maxdepth_spinbutton">
 			      <property name="visible">True</property>
-			      <property name="sensitive">False</property>
+			      <property name="tooltip" translatable="yes">This is the maximum depth of any node of the final tree. The root node is considered to be depth 0. Note that a depth beyond 30 will give nonsense results on 32-bit machines. The default is 30.</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Draw</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="clicked" handler="on_ada_draw_button_clicked" last_modification_time="Fri, 22 Dec 2006 07:28:12 GMT"/>
+			      <property name="climb_rate">1</property>
+			      <property name="digits">0</property>
+			      <property name="numeric">True</property>
+			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
+			      <property name="snap_to_ticks">False</property>
+			      <property name="wrap">False</property>
+			      <property name="adjustment">30 1 30 1 10 10</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">1</property>
+			      <property name="right_attach">2</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label173">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">Min Split:</property>
+			      <property name="use_underline">False</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0.5</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">2</property>
+			      <property name="right_attach">3</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkSpinButton" id="ada_minsplit_spinbutton">
+			      <property name="visible">True</property>
+			      <property name="tooltip" translatable="yes">This is the minimum number of entities that must exist in a dataset at any node in order for a split of that node to be attempted. The default is 20.</property>
+			      <property name="can_focus">True</property>
+			      <property name="climb_rate">1</property>
+			      <property name="digits">0</property>
+			      <property name="numeric">False</property>
+			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
+			      <property name="snap_to_ticks">False</property>
+			      <property name="wrap">False</property>
+			      <property name="adjustment">20 0 1000000 1 10 10</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">3</property>
+			      <property name="right_attach">4</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label174">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">Complexity:</property>
+			      <property name="use_underline">False</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">4</property>
+			      <property name="right_attach">5</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkSpinButton" id="ada_cp_spinbutton">
+			      <property name="visible">True</property>
+			      <property name="tooltip" translatable="yes">The complexity parameter (cp) is used to control the size of the decision tree and to select the optimal tree size. If the cost of adding another variable to the decision tree from the current node is above the value of cp, then tree building does not continue. We could also say that  tree construction does not continue unless it would decrease the overall lack of fit by a factor of cp.
+
+Setting this to zero will build a tree to its maximum depth (and perhaps will build a very, very, large tree). This is useful if you want to look at the values for CP for various tree sizes. This information will be in the text view window. You will look for the number of splits where the sum of the xerror (cross validation error, relative to the root node error) and xstd is minimum. This is usually early in the list.</property>
+			      <property name="can_focus">True</property>
+			      <property name="climb_rate">1</property>
+			      <property name="digits">4</property>
+			      <property name="numeric">True</property>
+			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
+			      <property name="snap_to_ticks">False</property>
+			      <property name="wrap">False</property>
+			      <property name="adjustment">0.00999999977648 -1 1 9.99999974738e-05 0.0010000000475 0.0010000000475</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">5</property>
+			      <property name="right_attach">6</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkLabel" id="label175">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">X Val:</property>
+			      <property name="use_underline">False</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
 			    </widget>
 			    <packing>
 			      <property name="left_attach">6</property>
 			      <property name="right_attach">7</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkSpinButton" id="ada_xval_spinbutton">
+			      <property name="visible">True</property>
+			      <property name="can_focus">True</property>
+			      <property name="climb_rate">1</property>
+			      <property name="digits">0</property>
+			      <property name="numeric">False</property>
+			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
+			      <property name="snap_to_ticks">False</property>
+			      <property name="wrap">False</property>
+			      <property name="adjustment">10 0 100 1 10 10</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">7</property>
+			      <property name="right_attach">8</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_stumps_button">
+			      <property name="visible">True</property>
+			      <property name="tooltip" translatable="yes">Click this button to set the options below for Decision Stumps</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Stumps</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_stumps_button_clicked" last_modification_time="Sat, 03 Mar 2007 05:48:24 GMT"/>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">2</property>
+			      <property name="right_attach">3</property>
 			      <property name="top_attach">1</property>
 			      <property name="bottom_attach">2</property>
 			      <property name="x_options">fill</property>
@@ -7522,8 +7598,115 @@ poisson(log)</property>
 			      <property name="adjustment">1 0 1000 1 10 10</property>
 			    </widget>
 			    <packing>
+			      <property name="left_attach">8</property>
+			      <property name="right_attach">9</property>
+			      <property name="top_attach">1</property>
+			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_draw_button">
+			      <property name="visible">True</property>
+			      <property name="sensitive">False</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Draw</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_draw_button_clicked" last_modification_time="Fri, 22 Dec 2006 07:28:12 GMT"/>
+			    </widget>
+			    <packing>
 			      <property name="left_attach">7</property>
 			      <property name="right_attach">8</property>
+			      <property name="top_attach">1</property>
+			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_list_button">
+			      <property name="visible">True</property>
+			      <property name="sensitive">False</property>
+			      <property name="tooltip" translatable="yes">List the decision trees in the textview.</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">List</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_list_button_clicked" last_modification_time="Fri, 22 Dec 2006 08:13:50 GMT"/>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">6</property>
+			      <property name="right_attach">7</property>
+			      <property name="top_attach">1</property>
+			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_errors_button">
+			      <property name="visible">True</property>
+			      <property name="sensitive">False</property>
+			      <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Errors</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_errors_button_clicked" last_modification_time="Fri, 22 Dec 2006 06:30:19 GMT"/>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">5</property>
+			      <property name="right_attach">6</property>
+			      <property name="top_attach">1</property>
+			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_importance_button">
+			      <property name="visible">True</property>
+			      <property name="sensitive">False</property>
+			      <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles in the model.</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Importance</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_importance_button_clicked" last_modification_time="Fri, 22 Dec 2006 01:53:36 GMT"/>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">4</property>
+			      <property name="right_attach">5</property>
+			      <property name="top_attach">1</property>
+			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_defaults_button">
+			      <property name="visible">True</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Defaults</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_defaults_button_clicked" last_modification_time="Sat, 03 Mar 2007 08:33:40 GMT"/>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">3</property>
+			      <property name="right_attach">4</property>
 			      <property name="top_attach">1</property>
 			      <property name="bottom_attach">2</property>
 			      <property name="x_options">fill</property>
@@ -8997,7 +9180,7 @@ The default chart displays caseload versus performance.</property>
   <property name="visible">True</property>
   <property name="destroy_with_parent">True</property>
   <property name="name" translatable="yes">Rattle</property>
-  <property name="copyright" translatable="yes">Copyright (C) 2006 Graham.Williams@togaware.com</property>
+  <property name="copyright" translatable="yes">Copyright (C) 2007 Graham.Williams@togaware.com</property>
   <property name="comments" translatable="yes">A GNOME Data Miner Built on R.</property>
   <property name="license" translatable="yes">This program is copyright free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
