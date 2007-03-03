@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-02 19:45:46 Graham>
+## Time-stamp: <2007-03-03 09:52:20 Graham>
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -3310,11 +3310,6 @@ summarySearch <- function(tv, search.str, start.iter)
     tvb$selectRange(found$match_start, found$match_end)
     last.search.pos <-tvb$createMark('last.search.pos', found$match_end)
 
-    ## TODO This scroll does not seem to be working. The
-    ## gtkMainIteration does not seem to help - this was suggested by
-    ## Michael Lawrence, but does not work either.
-    
-    while(gtkEventsPending()) gtkMainIteration()
     tv$scrollMarkOnscreen(last.search.pos)
     while(gtkEventsPending()) gtkMainIteration()
 
