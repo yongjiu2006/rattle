@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+145 Add extra options for ada model (Frank Lu).
 144 Bug Fix - search in summary_textview now scrolls to selection.
 143 Use much more efficient hcluster with parallel processing.
 142 Add a Data Plot to KMeans clustering. Improve ODBC handling.
@@ -192,6 +193,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar  3 11:34:35 EST 2007
+Last modified: Sat Mar  3 19:55:46 EST 2007
 <!-- hhmts end -->
   </p>

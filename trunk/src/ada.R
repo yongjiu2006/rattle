@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-26 17:22:10 Graham>
+## Time-stamp: <2007-03-03 19:48:58 Graham>
 ##
 ## ADA TAB 061215
 ##
@@ -17,6 +17,16 @@
 ##
 ## CALLBACKS
 ##
+
+on_ada_stumps_button_clicked <- function(button)
+{
+  setAdaStumpsDefaults()
+}
+
+on_ada_defaults_button_clicked <- function(button)
+{
+  setAdaDefaults()
+}
 
 on_ada_importance_button_clicked <- function(button)
 {
@@ -68,10 +78,21 @@ executeModelAda <- function()
 
   ## Obtain user interface model options.
 
-  if (theWidget("ada_stumps_checkbutton")$getActive())
-    stumps <- ", control=rpart.control(maxdepth=1,cp=-1,minsplit=0,xval=0)"
-  else
-    stumps <- ""
+  ## Replace 070303 with settings for each option.
+  
+#  if (theWidget("ada_stumps_checkbutton")$getActive())
+#    stumps <- ", control=rpart.control(maxdepth=1,cp=-1,minsplit=0,xval=0)"
+#  else
+#    stumps <- ""
+
+  maxdepth <-  theWidget("ada_maxdepth_spinbutton")$getValue()
+  minsplit <- theWidget("ada_minsplit_spinbutton")$getValue()
+  cp <- theWidget("ada_cp_spinbutton")$getValue()
+  xval <- theWidget("ada_xval_spinbutton")$getValue()
+
+  control <- sprintf(paste(", control=rpart.control(maxdepth=%d,",
+                           "cp=%f, minsplit=%d, xval=%d)"),
+                     maxdepth, cp, minsplit, xval)
   
   ntree <- theWidget("ada_ntree_spinbutton")$getValue()
   if (ntree != .ADA.NTREE.DEFAULT)
@@ -125,7 +146,7 @@ executeModelAda <- function()
                      #', method="class"',
                      #ifelse(is.null(parms), "", parms),
                      #ifelse(is.null(control), "", control),
-                     stumps, ntree,
+                     control, ntree,
                      ")", sep="")
 
   addToLog("Build the adaboost model.", gsub("<<-", "<-", model.cmd))
@@ -166,6 +187,22 @@ makeAdaSensitive <- function(state=TRUE)
   theWidget("ada_list_button")$setSensitive(state)
   theWidget("ada_draw_button")$setSensitive(state)
   theWidget("ada_draw_spinbutton")$setSensitive(state)
+}
+
+setAdaStumpsDefaults <- function()
+{
+  theWidget("ada_maxdepth_spinbutton")$setValue(1)
+  theWidget("ada_minsplit_spinbutton")$setValue(0)
+  theWidget("ada_cp_spinbutton")$setValue(-1)
+  theWidget("ada_xval_spinbutton")$setValue(0)
+}
+
+setAdaDefaults <- function()
+{
+  theWidget("ada_maxdepth_spinbutton")$setValue(30)
+  theWidget("ada_minsplit_spinbutton")$setValue(20)
+  theWidget("ada_cp_spinbutton")$setValue(0.01)
+  theWidget("ada_xval_spinbutton")$setValue(10)
 }
 
 plotAdaImportance <- function()
