@@ -5,6 +5,7 @@ export(
        drawTreeNodes,
        evaluateRisk,
        genPlotTitleCmd,
+       hclustCenters,
        listAdaTrees,
        listRPartRules,
        plotBenfordsLaw,

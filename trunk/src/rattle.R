@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-03 21:44:05 Graham>
+## Time-stamp: <2007-03-05 20:39:28 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -154,7 +154,7 @@ rattle <- function()
   .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
 
-  .IMPUTE <<- c(number=0, variable=1, zero=2, comment=3)
+  .IMPUTE <<- c(number=0, variable=1, type=2, comment=3)
   
   .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
                     dotplot = 3, comment = 4)
@@ -282,6 +282,12 @@ rattle <- function()
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
   .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
+
+  .IMPUTATION              <<- theWidget("impute_notebook")
+  .IMPUTATION.SUMMARY.TAB  <<- getNotebookPage(.IMPUTATION,
+                                               "Missing Values Summary")
+  .IMPUTATION.PERFORM.TAB  <<- getNotebookPage(.IMPUTATION,
+                                               "Perform Imputation")
   
   .EXPLORE                 <<- theWidget("explore_notebook")
   .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
@@ -448,6 +454,8 @@ variable in combination with the other variables."))
   .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
+  .IMPUTATION$setCurrentPage(.IMPUTATION.SUMMARY.TAB)
+  
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
 
@@ -529,6 +537,7 @@ variable in combination with the other variables."))
 
   ## Update CLUSTER tab
 
+  theWidget("kmeans_hclust_centers_checkbutton")$setActive(FALSE)
   theWidget("hclust_distance_combobox")$setActive(0)
   theWidget("hclust_link_combobox")$setActive(0)
   theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
@@ -1395,7 +1404,7 @@ executeDataTab <- function()
 
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                risk=NULL, ident=NULL, ignore=NULL,
-                               zero=NULL,
+                               zero=NULL, mean=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
                                barplot=NULL, dotplot=NULL,
@@ -1404,7 +1413,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   ## Update the variables treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
-                       boxplot, hisplot, cumplot, benplot, barplot, dotplot)
+                       mean, boxplot, hisplot, cumplot, benplot, barplot, dotplot)
 
   if (resample)
   {
@@ -2130,11 +2139,13 @@ getSelectedVariables <- function(role, named=TRUE)
     rcol  <- .CATEGORICAL[[role]]
   }
 
-  else if (role %in% c("zero"))
-  {
-    model <- theWidget("impute_treeview")$getModel()
-    rcol  <- .IMPUTE[[role]]
-  }
+  ## Move to using a combobox
+  
+##   else if (role %in% c("zero", "mean"))
+##   {
+##     model <- theWidget("impute_treeview")$getModel()
+##     rcol  <- .IMPUTE[[role]]
+##   }
   
   else
     return(variables)
@@ -2162,7 +2173,8 @@ initialiseVariableViews <- function()
                            "gboolean", "gboolean", "gboolean", "gboolean",
                            "gboolean", "gchararray")
 
-  impute <- gtkListStoreNew("gchararray", "gchararray", "gboolean",
+  impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray",
+                            ## "boolean", "gboolean",
                             "gchararray")
   
   continuous <- gtkListStoreNew("gchararray", "gchararray",
@@ -2336,19 +2348,56 @@ initialiseVariableViews <- function()
                                         renderer,
                                         active = .COLUMN[["ignore"]]) 
 
-  ## Add the ZERO column to the IMPUTE view.
+  ## Add the ZERO and MEAN columns to the IMPUTE view.
 
-  renderer <- gtkCellRendererToggleNew()
+  renderer <- gtkCellRendererComboNew()
+  ##category <- gtkTreeStoreNew("gchararray")
+  model <- gtkListStore("gchararray")
+  combo <- gtkComboBoxNewWithModel(model, 0)
+  # NOT WORKING YET
+##  lapply(unlist(list(A="A", B="B", C="C")), combo$appendText)
+##  lapply(unlist(list(A="A", B="B", C="C")), model$append)
   renderer$set(xalign = 0.0)
-  renderer$set(radio = TRUE)
-  renderer$set(width = 60)
-  renderer$setData("column", .IMPUTE["zero"])
-  connectSignal(renderer, "toggled", imp_toggled, impute)
+##  renderer$set(model=model)
+  renderer$set(text_column=0)
+  renderer$set(editable=FALSE)
+  renderer$set(has_entry=FALSE)
+##  renderer$set(radio = TRUE)
+##  renderer$set(width = 60)
+##  renderer$setData("column", .IMPUTE["zero"])
+##  connectSignal(renderer, "toggled", imp_toggled, impute)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
-                                       "Zero/Missing",
+                                       "Imputation",
                                         renderer,
-                                        active = .IMPUTE[["zero"]]) 
+                                        text = .IMPUTE[["type"]])
+##                                        model = .IMPUTE[["type"]])
+
+  ## Move to using Combobox
+  
+##   renderer <- gtkCellRendererToggleNew()
+##   renderer$set(xalign = 0.0)
+##   renderer$set(radio = TRUE)
+##   renderer$set(width = 60)
+##   renderer$setData("column", .IMPUTE["zero"])
+##   connectSignal(renderer, "toggled", imp_toggled, impute)
+##   imp.offset <-
+##     impview$insertColumnWithAttributes(-1,
+##                                        "Zero/Missing",
+##                                         renderer,
+##                                         active = .IMPUTE[["zero"]]) 
+
+##   renderer <- gtkCellRendererToggleNew()
+##   renderer$set(xalign = 0.0)
+##   renderer$set(radio = TRUE)
+##   renderer$set(width = 60)
+##   renderer$setData("column", .IMPUTE["mean"])
+##   connectSignal(renderer, "toggled", imp_toggled, impute)
+##   imp.offset <-
+##     impview$insertColumnWithAttributes(-1,
+##                                        "Mean",
+##                                         renderer,
+##                                         active = .IMPUTE[["mean"]]) 
 
   ## Add the barplot and dotplot.
 
@@ -2466,7 +2515,7 @@ initialiseVariableViews <- function()
 
 createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  risk=NULL, ident=NULL, ignore=NULL,
-                                 zero=NULL,
+                                 zero=NULL, mean=NULL,
                                  boxplot=NULL,
                                  hisplot=NULL, cumplot=NULL, benplot=NULL,
                                  barplot=NULL, dotplot=NULL)
@@ -2655,11 +2704,19 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     if (missing.count > 0) # Ignore IGNOREd variables. But crs$ignore
                            # is not yet set. Need to remove later.
     {
+      #model <- gtkListStore("gchararray")
+      #combo <- gtkComboBoxNewWithModel(model, 0)
+      #lapply(unlist(list(A="A", B="B", C="C")), model$append)
       impiter <- impute$append()$iter
       impute$set(impiter,
                  .IMPUTE["number"], i,
                  .IMPUTE["variable"], variables[i],
-                 .IMPUTE["zero"], variables[i] %in% zero,
+##                 .IMPUTE["type"], combo,
+                 .IMPUTE["type"], "Zero/Missing",
+##                  .IMPUTE["type"], unlist(list(A="A", B="B", C="C")),
+##                  .IMPUTE["type"], c("A", "B", "C"),
+##                  .IMPUTE["zero"], variables[i] %in% zero,
+##                  .IMPUTE["mean"], variables[i] %in% mean,
                  .IMPUTE["comment"], sprintf("%s with %d missing.",
                                             cl, missing.count))
     }
