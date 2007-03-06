@@ -1,4 +1,8 @@
 \name{rattle_gui}
+\alias{display_click_odbc_execute_message}
+\alias{on_viewdata_button_clicked}
+\alias{on_viewdata_find_button_clicked}
+\alias{on_viewdata_next_button_clicked}
 \alias{on_ada_defaults_button_clicked}
 \alias{on_ada_stumps_button_clicked}
 \alias{on_hclust_data_plot_button_clicked}

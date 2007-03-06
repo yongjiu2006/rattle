@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-03 19:48:58 Graham>
+## Time-stamp: <2007-03-06 08:04:03 Graham>
 ##
 ## ADA TAB 061215
 ##
@@ -78,31 +78,27 @@ executeModelAda <- function()
 
   ## Obtain user interface model options.
 
-  ## Replace 070303 with settings for each option.
-  
-#  if (theWidget("ada_stumps_checkbutton")$getActive())
-#    stumps <- ", control=rpart.control(maxdepth=1,cp=-1,minsplit=0,xval=0)"
-#  else
-#    stumps <- ""
-
-  maxdepth <-  theWidget("ada_maxdepth_spinbutton")$getValue()
+  maxdepth <- theWidget("ada_maxdepth_spinbutton")$getValue()
   minsplit <- theWidget("ada_minsplit_spinbutton")$getValue()
-  cp <- theWidget("ada_cp_spinbutton")$getValue()
-  xval <- theWidget("ada_xval_spinbutton")$getValue()
+  cp       <- theWidget("ada_cp_spinbutton")$getValue()
+  xval     <- theWidget("ada_xval_spinbutton")$getValue()
+  ntree    <- theWidget("ada_ntree_spinbutton")$getValue()
 
-  control <- sprintf(paste(", control=rpart.control(maxdepth=%d,",
-                           "cp=%f, minsplit=%d, xval=%d)"),
-                     maxdepth, cp, minsplit, xval)
-  
-  ntree <- theWidget("ada_ntree_spinbutton")$getValue()
   if (ntree != .ADA.NTREE.DEFAULT)
     ntree <- sprintf(", iter=%d", ntree)
   else
     ntree <- ""
 
-  ## Load the package into the library
+  ## Construct the appropriate rpart control.
+  
+  control <- sprintf(paste(", control=rpart.control(maxdepth=%d,",
+                           "cp=%f, minsplit=%d, xval=%d)"),
+                     maxdepth, cp, minsplit, xval)
+  
+  ## Load the required package into the library
 
   addLogSeparator("ADA BOOST")
+
   lib.cmd <-  "require(ada, quietly=TRUE)"
   if (! packageIsAvailable("ada", "build an AdaBoost model")) return(FALSE)
   addToLog("Build an adaboost model using the ada package.", lib.cmd)
@@ -129,8 +125,7 @@ executeModelAda <- function()
   ## Build a model. Note that there seems to be some randomness in
   ## this implementation of AdaBoost, so set the seed to get the same
   ## result each time. Experiment, once I have the rule printing
-  ## working, to test this assumption. Also to test changes made by
-  ## selecting tree stumps.
+  ## working, to test this assumption.
 
   model.cmd <- paste("set.seed(123)\n",
                      "crs$ada <<- ada(", frml, ", data=crs$dataset",
@@ -139,13 +134,6 @@ executeModelAda <- function()
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",
-                     #ifelse(is.null(crs$weights), "",
-                     #       sprintf(", weights=(%s)%s",
-                     #               crs$weights,
-                     #               ifelse(sampling, "[crs$sample]", ""))),
-                     #', method="class"',
-                     #ifelse(is.null(parms), "", parms),
-                     #ifelse(is.null(control), "", control),
                      control, ntree,
                      ")", sep="")
 

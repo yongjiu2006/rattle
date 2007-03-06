@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-27 05:30:55 Graham>
+## Time-stamp: <2007-03-05 07:09:32 Graham>
 ##
 ## Implement LOG functionality.
 ##

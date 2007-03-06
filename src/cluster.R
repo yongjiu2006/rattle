@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-02 20:00:48 Graham>
+## Time-stamp: <2007-03-07 06:38:41 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -16,7 +16,13 @@
 on_kmeans_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
+  {
     .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
+    if (not.null(crs$hclust))
+      theWidget("kmeans_hclust_centers_checkbutton")$setSensitive(TRUE)
+    else
+      theWidget("kmeans_hclust_centers_checkbutton")$setSensitive(FALSE)
+  }
   setStatusBar()
 }
 
@@ -81,6 +87,7 @@ executeClusterKMeans <- function(include)
   
   nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
+  usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   
   addLogSeparator("KMEANS CLUSTER")
 
@@ -90,18 +97,30 @@ executeClusterKMeans <- function(include)
   addToLog("Set the seed to get the same clusters each time.", seed.cmd)
   eval(parse(text=seed.cmd))
 
-  ## KMEANS: Log the R command and execute.
+  ## Calculate the centers
 
-  kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %d)',
-                        ifelse(sampling, "crs$sample", ""), include, nclust)
-  addToLog("Generate a kmeans cluster of size 10.",
+  if (usehclust)
+    centers <- sprintf("hclustCenters(crs$dataset[%s,%s], crs$hclust, %d)",
+                       ifelse(sampling, "crs$sample", ""), include, nclust)
+  else
+    centers <- nclust
+  
+  ## KMEANS: Log the R command and execute.
+  
+  kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
+                        ifelse(sampling, "crs$sample", ""), include, centers)
+  addToLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
            gsub("<<-", "<-", kmeans.cmd))
   start.time <- Sys.time()
   eval(parse(text=kmeans.cmd))
   time.taken <- Sys.time()-start.time
 
-  ## Show the resulting model.
+  ## SUMMARY: Show the resulting model.
 
+  addToLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
+  addToLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
+  addToLog("Cluster centers:", "crs$kmeans$centers")
+  addToLog("Within cluster sum of squares:", "crs$kmeans$withinss")
   clearTextview(TV)
   setTextview(TV, "Cluster Sizes\n\n",
               collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
@@ -314,8 +333,12 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
 
 executeClusterHClust <- function(include)
 {
+  ## Initial setup. Ensure the textview is monospace for fixed width
+  ## output of the centers and other information (so the columns line
+  ## up).
 
   TV <- "hclust_textview"
+  theWidget(TV)$modifyFont(pangoFontDescriptionFromString("monospace 10"))
   
   ## TODO : If data is large put up a question about wanting to
   ## continue?
@@ -424,6 +447,19 @@ executeClusterHClust <- function(include)
   
 }
 
+hclustCenters <- function(x, h, nclust=10, use.median=TRUE)
+{
+  if(class(x)!="matrix") x <-as.matrix(x)
+  if(use.median)
+    centres <- round(tapply(x, list(rep(cutree(h, nclust), ncol(x)),
+                                    col(x)), median))
+  else
+    centres <- tapply(x, list(rep(cutree(h, nclust), ncol(x)),
+                              col(x)), mean)
+  dimnames(centres) <- list(NULL, dimnames(x)[[2]])
+  return(centres)
+}
+
 on_hclust_dendrogram_button_clicked <- function(button)
 {
 
@@ -462,6 +498,15 @@ on_hclust_dendrogram_button_clicked <- function(button)
 
 on_hclust_stats_button_clicked <- function(button)
 {
+  displayHClustStats()
+}
+
+displayHClustStats <- function()
+{
+  ## Initial setup.
+  
+  TV <- "hclust_textview"
+
   ## Make sure there is a cluster first.
   
   if (is.null(crs$hclust))
@@ -471,18 +516,19 @@ on_hclust_stats_button_clicked <- function(button)
     return()
   }
 
-  ## LIBRARY: Ensure the appropriate package is available for the
-  ## plot, and log the R command and execute.
+  ## Ensure the appropriate package is available for the plot, and log
+  ## the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
   addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
+  clearTextview(TV)
+
   ## Some background information.  Assume we have already built the
   ## cluster, and so we don't need to check so many conditions.
 
-  TV <- "hclust_textview"
-  num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
+  nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   sampling  <- not.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
@@ -499,12 +545,20 @@ on_hclust_stats_button_clicked <- function(button)
     return()
   }
 
+  ## Cluster centers.
+
+  centers.cmd <- sprintf("hclustCenters(crs$dataset[%s,%s], crs$hclust, %d)",
+                       ifelse(sampling, "crs$sample", ""), include, nclust)
+  addToLog("List the suggested cluster centers for each cluster", centers.cmd)
+  appendTextview(TV, "Cluster means:\n\n",
+                 collectOutput(centers.cmd, use.print=TRUE))
+  
   ## STATS: Log the R command and execute.
 
   stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
                              "cutree(crs$hclust, %d))\n"),
                        ifelse(sampling, "crs$sample", ""), include,
-                       num.clusters)
+                       nclust)
   addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
   appendTextview(TV, "General cluster statistics:\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
