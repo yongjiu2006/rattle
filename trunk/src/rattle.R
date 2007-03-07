@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-05 20:39:28 Graham>
+## Time-stamp: <2007-03-08 07:13:57 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -497,8 +497,8 @@ variable in combination with the other variables."))
 
   ## Reset MODEL:ADA
   
-  makeAdaSensitive(FALSE)
-  setAdaDefaults()
+  make.sensitive.ada(FALSE)
+  set.defaults.ada()
   
   ## Reset MODEL:RF
   
@@ -5084,11 +5084,9 @@ executeEvaluateTab <- function()
   {
     testset[[.ADA]] <- testset0
 
-    predcmd[[.ADA]] <- sprintf("crs$pr <<- predict(crs$ada, %s)",
-                              testset[[.ADA]])
-    respcmd[[.ADA]] <- predcmd[[.ADA]]
-    probcmd[[.ADA]] <- sprintf("%s[,2]",
-                              gsub(")$", ', type="prob")', predcmd[[.ADA]]))
+    predcmd[[.ADA]] <- gen.cmd.predict.ada(testset[[.ADA]])
+    respcmd[[.ADA]] <- gen.cmd.response.ada(testset[[.ADA]])
+    probcmd[[.ADA]] <- gen.cmd.probability.ada(testset[[.ADA]])
   }
 
 ##   if ( .NNET %in%  mtypes)

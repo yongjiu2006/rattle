@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-07 06:38:41 Graham>
+## Time-stamp: <2007-03-07 07:02:36 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -100,7 +100,7 @@ executeClusterKMeans <- function(include)
   ## Calculate the centers
 
   if (usehclust)
-    centers <- sprintf("hclustCenters(crs$dataset[%s,%s], crs$hclust, %d)",
+    centers <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
   else
     centers <- nclust
@@ -350,7 +350,7 @@ executeClusterHClust <- function(include)
   ## seconds!
 
   lib.cmd <- "require(amap, quietly=TRUE)"
-  if (packageIsAvailable("amap", "parallel and more efficient hclust"))
+  if (packageIsAvailable("amap"))
   {
     amap.available <- TRUE
     addToLog("The hcluster function is provided by the amap package.", lib.cmd)
@@ -365,17 +365,20 @@ executeClusterHClust <- function(include)
   link <- theWidget("hclust_link_combobox")$getActiveText()
   nbproc <- theWidget("hclust_nbproc_spinbutton")$getValue()
 
+  ## Check if user has requested more than a single processor, and if
+  ## so but amap is not available, inform the user and exit.
+  
   if (nbproc != 1 && ! amap.available)
   {
     errorDialog("The amap package is not available and so the efficient",
-                "and parallel version of hclust is not available.",
+                "and parallel hcluster is not available.",
                 "Please set the number of processors to 1 to proceed",
-                "with using hclust instead.",
+                "with using the single processor hclust instead.",
                 "Be aware that the amap version is over 10 times faster.")
     return(FALSE)
   }
   
-  ## Use the default hclust for clustering.
+  ## Determine which hclust to use for clustering.
 
   if (amap.available)
 
@@ -390,6 +393,8 @@ executeClusterHClust <- function(include)
                         sep="")
   else
 
+    ## Use the standard hclust for clustering.
+    
     hclust.cmd <- paste("crs$hclust <<- ",
                         sprintf(paste('hclust(dist(crs$dataset[%s,%s],',
                                       'method="%s"),',
@@ -418,7 +423,7 @@ executeClusterHClust <- function(include)
                    "to running out of memory",
                    "as hclust is rather memory hungry.",
                    "A quick solution is to sample the dataset, through the",
-                   "Transform tab. On 32 bit machines you may be limited to",
+                   "Transform tab. On 32bit machines you may be limited to",
                    "less than 2000 entities.")
       setTextview(TV)
     }
@@ -447,10 +452,12 @@ executeClusterHClust <- function(include)
   
 }
 
-hclustCenters <- function(x, h, nclust=10, use.median=TRUE)
+centers.hclust <- function(x, h, nclust=10, use.median=FALSE)
 {
-  if(class(x)!="matrix") x <-as.matrix(x)
-  if(use.median)
+  if (!inherits(h, "hclust")) stop("Not a legitimate hclust opbject")
+    
+  if (class(x) != "matrix") x <- as.matrix(x)
+  if (use.median)
     centres <- round(tapply(x, list(rep(cutree(h, nclust), ncol(x)),
                                     col(x)), median))
   else
@@ -547,7 +554,7 @@ displayHClustStats <- function()
 
   ## Cluster centers.
 
-  centers.cmd <- sprintf("hclustCenters(crs$dataset[%s,%s], crs$hclust, %d)",
+  centers.cmd <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
   addToLog("List the suggested cluster centers for each cluster", centers.cmd)
   appendTextview(TV, "Cluster means:\n\n",
