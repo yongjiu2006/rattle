@@ -345,7 +345,7 @@ loadProject <- function()
 
   ## Make buttons sensitive for MODEL:ADA if there is an ADA model
   
-  if (not.null(crs$ada)) makeAdaSensitive()
+  if (not.null(crs$ada)) make.sensitive.ada()
 
   if (not.null(crs$rf.opt$trees))
     theWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)

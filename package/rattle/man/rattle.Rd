@@ -1,6 +1,6 @@
 \name{rattle}
 \alias{rattle}
-\title{Display the Rattle user interface.}
+\title{Display the Rattle User Interface}
 \description{
 
   The Rattle user interface uses the RGtk2 package to present an

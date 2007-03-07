@@ -19,12 +19,12 @@
 
 ## on_ada_importance_button_clicked <- function(button)
 ## {
-##   plotAdaImportance()
+##   plot.importance.ada()
 ## }
 
 ## on_ada_errors_button_clicked <- function(button)
 ## {
-##   plotAdaErrors()
+##   plot.errors.ada()
 ## }
 
 ## on_ada_list_button_clicked <- function(button)
@@ -133,7 +133,7 @@ executeModelNNet <- function()
   return(TRUE)
 }
 
-## plotAdaImportance <- function()
+## plot.importance.ada <- function()
 ## {
 
 ##   ## Make sure there is a model object first.
@@ -157,7 +157,7 @@ executeModelNNet <- function()
 ##   setStatusBar("ADA Variable Importance has been plotted.")
 ## }
   
-## plotAdaErrors <- function()
+## plot.errors.ada <- function()
 ## {
 
 ##   ## Make sure there is a model object first.
@@ -181,7 +181,7 @@ executeModelNNet <- function()
 ##   setStatusBar("Ada errors has been plotted.")
 ## }
 
-## plotAdaImportance <- function()
+## plot.importance.ada <- function()
 ## {
 
 ##   ## Make sure there is a model object first.
@@ -217,7 +217,7 @@ executeModelNNet <- function()
 
 ##   ## Command to run.
 
-##   display.cmd <- sprintf("listAdaTrees(crs$ada, %d)", tree.num)
+##   display.cmd <- sprintf("list.trees.ada(crs$ada, %d)", tree.num)
 
 ##   ## Perform the action.
 
@@ -227,7 +227,7 @@ executeModelNNet <- function()
 ##                      "You may need to scroll the textview to see it."))
 ## }
 
-## listAdaTrees <- function(model, trees=0)
+## list.trees.ada <- function(model, trees=0)
 ## {
 ##   stopifnot(require(ada, quietly=TRUE))
 ##   ntrees <- length(model$model$trees)
@@ -247,7 +247,7 @@ executeModelNNet <- function()
 
 ##   ## Command to run.
 
-##   draw.cmd <- sprintf('drawAdaTrees(crs$ada, %d, ": %s")', tree.num,
+##   draw.cmd <- sprintf('draw.trees.ada(crs$ada, %d, ": %s")', tree.num,
 ##                       paste(crs$dataname, "$", crs$target))
 
 ##   ## Perform the action.
@@ -257,7 +257,7 @@ executeModelNNet <- function()
 ##   setStatusBar("Tree", tree.num, "has been drawn.")
 ## }
 
-## drawAdaTrees <- function(model,
+## draw.trees.ada <- function(model,
 ##                          trees=0,
 ##                          title="")
 ## {

@@ -1,11 +1,11 @@
 export(
        calcInitialDigitDistr,
        calculateAUC,
+       centers.hclust,
        drawAdaTrees,
        drawTreeNodes,
        evaluateRisk,
        genPlotTitleCmd,
-       hclustCenters,
        listAdaTrees,
        listRPartRules,
        plotBenfordsLaw,
