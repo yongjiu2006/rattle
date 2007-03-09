@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-26 21:20:11 Graham>
+## Time-stamp: <2007-03-10 08:29:48 Graham>
 ##
 ## MODEL TAB
 ##
@@ -183,7 +183,7 @@ executeModelTab <- function()
   {
     deactivateROCRPlots()
     theWidget("confusion_textview")$setWrapMode("word")
-    clearTextview("confusion_textview")
+    resetTextview("confusion_textview")
     appendTextview("confusion_textview",
                    "Note that the target you have chosen has more than",
                    "2 classes. Some functionality on the Evaluate tab",
@@ -200,41 +200,82 @@ executeModelTab <- function()
 
   ## DISPATCH
 
-  if (theWidget("all_models_radiobutton")$getActive())
-  {
-    ## This order of execution should correspond to the order in the
-    ## GUI as this makes most logical sense to the user.
+##   if (theWidget("all_models_radiobutton")$getActive())
+##   {
+##     ## This order of execution should correspond to the order in the
+##     ## GUI as this makes most logical sense to the user.
     
-    if (executeModelRPart())
-      theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-    if (execute.model.ada())
-      theWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
-    if (executeModelRF())
-      theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
-    if (executeModelSVM())
-      theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
-    if (executeModelGLM())
-      theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-##     if (executeModelGBM())
-##       theWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
-##     if (executeModelNNet())
-##       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
+##     if (executeModelRPart())
+##       theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+##     ## Eventually the following will be "crs$ada <<- ..."
+##     crs.ada <-
+##       build.model.ada(tv=theWidget("ada_textview"),
+##                       maxdepth=theWidget("ada_maxdepth_spinbutton")$getValue(),
+##                       minsplit=theWidget("ada_minsplit_spinbutton")$getValue(),
+##                       cp=theWidget("ada_cp_spinbutton")$getValue(),
+##                       xval=theWidget("ada_xval_spinbutton")$getValue(),
+##                       ntree=theWidget("ada_ntree_spinbutton")$getValue())
+##     if (crs.ada)
+##       theWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
+##     if (executeModelRF())
+##       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+##     if (executeModelSVM())
+##       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+##     if (executeModelGLM())
+##       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+## ##     if (executeModelGBM())
+## ##       theWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
+## ##     if (executeModelNNet())
+## ##       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
 
-    setStatusBar("All models have been generated.")
-  }
-  else if (currentModelTab() == .GLM)
-    executeModelGLM()
-  else if (currentModelTab() == .RPART)
+##     setStatusBar("All models have been generated.")
+##   }
+##   else
+
+  build.all <- theWidget("all_models_radiobutton")$getActive()
+  ## The following work for ada, do they work for the rest?
+  formula <- paste(crs$target, "~ .")
+  included <- getIncludedVariables()
+  sampling <- not.null(crs$sample)
+  including <- not.null(included)
+  subsetting <- sampling || including
+  dataset <- paste("crs$dataset",
+                   if (subsetting) "[",
+                   if (sampling) "crs$sample",
+                   if (subsetting) ",",
+                   if (including) included,
+                   if (subsetting) "]",
+                   sep="")
+
+  
+  ## This order of execution should correspond to the order in the
+  ## GUI as this makes most logical sense to the user.
+
+  if (build.all || currentModelTab() == .RPART)
     executeModelRPart()
-##   else if (currentModelTab() == GBM)
-##     executeModelGBM()
-  else if (currentModelTab() == .ADA)
-    execute.model.ada()
-  else if (currentModelTab() == .RF)
+
+  if (build.all || currentModelTab() == .ADA)
+  {
+    crs$ada <<-
+      buildModelAda(formula,
+                    dataset,
+                    tv=theWidget("ada_textview"),
+                    maxdepth=theWidget("ada_maxdepth_spinbutton")$getValue(),
+                    minsplit=theWidget("ada_minsplit_spinbutton")$getValue(),
+                    cp=theWidget("ada_cp_spinbutton")$getValue(),
+                    xval=theWidget("ada_xval_spinbutton")$getValue(),
+                    ntree=theWidget("ada_ntree_spinbutton")$getValue())
+    makeSensitiveAda()
+    theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
+}
+        
+  if (build.all || currentModelTab() == .RF)
     executeModelRF()
-  else if (currentModelTab() %in% c(.SVM, .KSVM))
+  if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
     executeModelSVM()
-##   else if (currentModelTab() == NNET)
+  if (build.all || currentModelTab() == .GLM)
+    executeModelGLM()
+##   if (build.all || currentModelTab() == NNET)
 ##     executeModelNNet()
 }
 
@@ -294,17 +335,17 @@ executeModelGLM <- function()
   
   ## Build the model.
 
-  addLogSeparator("LOGISTIC REGRESSION")
-  addToLog("Build a logistic regression model using glm.",
+  startLog("LOGISTIC REGRESSION")
+  appendLog("Build a logistic regression model using glm.",
           gsub("<<-", "<-", glm.cmd), sep="")
   start.time <- Sys.time()
   eval(parse(text=glm.cmd))
   
   ## Summarise the model.
 
-  addToLog("Summary of the resulting GLM model", summary.cmd)
+  appendLog("Summary of the resulting GLM model", summary.cmd)
           
-  clearTextview(TV)
+  resetTextview(TV)
   setTextview(TV, "Summary of the model built using glm.\n",
               collectOutput(summary.cmd, TRUE))
 
@@ -315,7 +356,7 @@ executeModelGLM <- function()
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("A glm model has been generated.", time.msg)
   return(TRUE)
 }
@@ -344,7 +385,7 @@ executeModelSVM <- function()
 
   TV <- ifelse(useKernlab, "ksvm_textview", "esvm_textview")
   
-  addLogSeparator("SUPPORT VECTOR MACHINE")
+  startLog("SUPPORT VECTOR MACHINE")
 
   ## Library.
 
@@ -353,7 +394,7 @@ executeModelSVM <- function()
     if (packageIsAvailable("kernlab", "build an SVM model using ksvm"))
     {
       libCmd <- "require(kernlab, quietly=TRUE)"
-      addToLog("The kernlab package supplies the ksvm function.", libCmd)
+      appendLog("The kernlab package supplies the ksvm function.", libCmd)
     }
     else
       return(FALSE)
@@ -363,7 +404,7 @@ executeModelSVM <- function()
     if (packageIsAvailable("e1071", "build an SVM model using svm"))
     {
       libCmd <- "require(e1071, quietly=TRUE)"
-      addToLog("The e1071 package supplies the svm function.", libCmd)
+      appendLog("The e1071 package supplies the svm function.", libCmd)
     }
     else
       return(FALSE)
@@ -414,7 +455,7 @@ executeModelSVM <- function()
     svmCmd <- paste(svmCmd, ", probability=TRUE", sep="")  # Probabilities
   svmCmd <- paste(svmCmd, ")", sep="")
   start.time <- Sys.time()
-  addToLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
+  appendLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -444,8 +485,8 @@ executeModelSVM <- function()
     summaryCmd <- "crs$ksvm"
   else
     summaryCmd <- "crs$svm"
-  addToLog("Generate textual output of the svm model.", summaryCmd)
-  clearTextview(TV)
+  appendLog("Generate textual output of the svm model.", summaryCmd)
+  resetTextview(TV)
   setTextview(TV, "Summary of the svm model:\n\n",
               collectOutput(summaryCmd, TRUE), "\n")
 
@@ -460,7 +501,7 @@ executeModelSVM <- function()
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",
                        ifelse(useKernlab, .KSVM, .SVM)), time.msg)
   return(TRUE)

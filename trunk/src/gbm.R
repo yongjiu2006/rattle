@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-11-07 22:28:03 Graham Williams>
+## Time-stamp: <2007-03-09 06:32:18 Graham>
 ##
 ## GBM TAB
 ##
@@ -82,7 +82,7 @@ executeModelGBM <- function()
  
   ## Log
 
-  addToLog(lib.cmd, "\n",
+  appendLog(lib.cmd, "\n",
           gsub("<<-", "<-", boost.cmd), "\n",
           summary.cmd, "\n",
           show.cmd, sep="")
@@ -91,7 +91,7 @@ executeModelGBM <- function()
 
   startTime <- Sys.time()
   eval(parse(text=lib.cmd))
-  clearTextview("gbm_textview")
+  resetTextview("gbm_textview")
   setTextview("gbm_textview",
                "Output from GBM model builder:\n\n",
                collectOutput(boost.cmd),
@@ -104,7 +104,7 @@ executeModelGBM <- function()
   if (sampling) crs$smodel <<- union(crs$smodel, GBM)
   
   timeTaken <- Sys.time()-startTime
-  addToLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  appendLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
   setStatusBar("Boosted model has been generated.")
   return(TRUE)
 }
@@ -163,7 +163,7 @@ plotGBMImportance <- function()
 
   if (is.null(crs$gbm))
   {
-    errorDialog("E129: Should not be here.",
+    errorDialog("E134: Should not be here.",
                 "There is no GBM and attempting to plot importance.",
                 "Please report to",
                 "Graham.Williams@togaware.com")
@@ -175,7 +175,7 @@ plotGBMImportance <- function()
                     genPlotTitleCmd("Relative Importance of Variables"),
                     sep="")
 
-  addToLog("Plot the relative importance of the variables.", plot.cmd)
+  appendLog("Plot the relative importance of the variables.", plot.cmd)
   eval(parse(text=plot.cmd))
 
   setStatusBar("GBM Importance has been plotted.")

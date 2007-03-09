@@ -109,15 +109,15 @@ executeAssociateTab <- function()
   ## Ensure the arules library is available and loaded.
 
   if (! packageIsAvailable("arules", "generate associations")) return()
-  addLogSeparator("ASSOCIATION RULES GENERATION")
+  startLog("ASSOCIATION RULES GENERATION")
   lib.cmd <- "require(arules, quietly=TRUE)"
-  addToLog("Association rules are implemented in the arules package.", lib.cmd)
+  appendLog("Association rules are implemented in the arules package.", lib.cmd)
   eval(parse(text=lib.cmd))
  
   ## Initialise the textview.
   
   TV <- "associate_textview"
-  clearTextview(TV)
+  resetTextview(TV)
   
   ## Required information
   
@@ -140,7 +140,7 @@ executeAssociateTab <- function()
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  addToLog("Generate a transactions dataset.",
+  appendLog("Generate a transactions dataset.",
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
 
@@ -151,14 +151,14 @@ executeAssociateTab <- function()
                        sprintf("support=%.3f, confidence=%.3f",
                                support, confidence),
                        "))", sep="")
-  addToLog("Generate the association rules.",
+  appendLog("Generate the association rules.",
            gsub("<<-", "<-", apriori.cmd))
   cmd.output <- collectOutput(apriori.cmd)
 
   ## Add a summary of the rules.
 
   mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
-  addToLog("Summarise the resulting rule set.", mysummary.cmd)
+  appendLog("Summarise the resulting rule set.", mysummary.cmd)
 
   summary.cmd <- "summary(crs$apriori@quality)"
   appendTextview(TV, "Summary of the Apriori Association Rules\n\n",
@@ -223,9 +223,9 @@ plotAssociateFrequencies <- function()
   ## Ensure the arules library is available and loaded.
 
   if (! packageIsAvailable("arules", "generate associations")) return()
-  addLogSeparator("RELATIVE FREQUENCIES PLOT")
+  startLog("RELATIVE FREQUENCIES PLOT")
   lib.cmd <- "require(arules, quietly=TRUE)"
-  addToLog("Association rules are implemented in the arules package.", lib.cmd)
+  appendLog("Association rules are implemented in the arules package.", lib.cmd)
   eval(parse(text=lib.cmd))
  
   ## Required information
@@ -248,7 +248,7 @@ plotAssociateFrequencies <- function()
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  addToLog("Generate a transactions dataset.",
+  appendLog("Generate a transactions dataset.",
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
 
@@ -257,7 +257,7 @@ plotAssociateFrequencies <- function()
   plot.cmd <- paste("itemFrequencyPlot(crs$transactions, support=",
                     support, ", cex=0.8)", sep="")
   newPlot()
-  addToLog("Plot the relative frequecies.", plot.cmd)
+  appendLog("Plot the relative frequecies.", plot.cmd)
   eval(parse(text=plot.cmd))
 
   setStatusBar("Generated the relative frequency plot.")
@@ -316,7 +316,7 @@ listAssociateRules <- function()
   
   ## This works but it lists all rules.
   summary.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
-  addToLog("List all rules.", summary.cmd)
+  appendLog("List all rules.", summary.cmd)
   appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
 
   setStatusBar("Finished listing the rules.")

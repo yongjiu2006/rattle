@@ -1,5 +1,5 @@
-\name{listAdaTrees}
-\alias{listAdaTrees}
+\name{listTreesAda}
+\alias{listTreesAda}
 \title{
   List trees from an Ada model
 }
@@ -9,7 +9,7 @@
   
 }
 \usage{
-listAdaTrees(model, trees=0)
+listTreesAda(model, trees=0)
 }
 \arguments{
   
@@ -27,6 +27,6 @@ listAdaTrees(model, trees=0)
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
 \examples{
-\dontrun{listAdaTrees(ds.ada)}
+\dontrun{listTreesAda(ds.ada)}
 }
 \keyword{hplot}

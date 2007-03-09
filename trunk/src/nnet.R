@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2006-12-30 17:20:26 Graham>
+## Time-stamp: <2007-03-09 06:28:43 Graham>
 ##
 ## NNET TAB 061230
 ##
@@ -24,7 +24,7 @@
 
 ## on_ada_errors_button_clicked <- function(button)
 ## {
-##   plot.errors.ada()
+##   plotErrorsAda()
 ## }
 
 ## on_ada_list_button_clicked <- function(button)
@@ -63,10 +63,10 @@ executeModelNNet <- function()
 
   ## Load the package into the library
 
-  addLogSeparator("NEURAL NETWORK")
+  startLog("NEURAL NETWORK")
   lib.cmd <-  "require(nnet, quietly=TRUE)"
   if (! packageIsAvailable("nnet", "build a neural network")) return(FALSE)
-  addToLog("Build a neural network model using the nnet package.", lib.cmd)
+  appendLog("Build a neural network model using the nnet package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## Build the formula for the model.
@@ -98,7 +98,7 @@ executeModelNNet <- function()
                      ", size=10", # How to choose a good value here.
                      ")", sep="")
 
-  addToLog("Build the nnet model.", gsub("<<-", "<-", model.cmd))
+  appendLog("Build the nnet model.", gsub("<<-", "<-", model.cmd))
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -110,8 +110,8 @@ executeModelNNet <- function()
   ## Print the results of the modelling.
 
   print.cmd <- paste("print(crs$nnet)", "summary(crs$nnet)", sep="\n")
-  addToLog("Print the results of the modelling.", print.cmd)
-  clearTextview(TV)
+  appendLog("Print the results of the modelling.", print.cmd)
+  resetTextview(TV)
   setTextview(TV, "Summary of the nnet modelling:\n\n",
               collectOutput(print.cmd))
 
@@ -128,147 +128,8 @@ executeModelNNet <- function()
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("A neural network model has been generated.", time.msg)
   return(TRUE)
 }
 
-## plot.importance.ada <- function()
-## {
-
-##   ## Make sure there is a model object first.
-
-##   if (is.null(crs$ada))
-##   {
-##     errorDialog("E131: Should not be here.",
-##                 "There is no ADA model and attempting to plot importance.",
-##                 "The button should not be active.",
-##                 "Please report this to Graham.Williams@togaware.com")
-##     return()
-##   }
-
-##   ## Plot the variable importance.
-  
-##   newPlot()
-##   plot.cmd <- "varplot(crs$ada)"
-##   addToLog("Plot the relative importance of the variables.", plot.cmd)
-##   eval(parse(text=plot.cmd))
-
-##   setStatusBar("ADA Variable Importance has been plotted.")
-## }
-  
-## plot.errors.ada <- function()
-## {
-
-##   ## Make sure there is a model object first.
-
-##   if (is.null(crs$ada))
-##   {
-##     errorDialog("E132: Should not be here.",
-##                 "There is no ADA model and attempting to plot error.",
-##                 "The button should not be active.",
-##                 "Please report this to Graham.Williams@togaware.com")
-##     return()
-##   }
-
-##   ## Plot the error rates.
-  
-##   newPlot()
-##   plot.cmd <- "plot(crs$ada)" #, kappa=TRUE)"
-##   addToLog("Plot the error rate as we increase the number of trees.", plot.cmd)
-##   eval(parse(text=plot.cmd))
-
-##   setStatusBar("Ada errors has been plotted.")
-## }
-
-## plot.importance.ada <- function()
-## {
-
-##   ## Make sure there is a model object first.
-
-##   if (is.null(crs$ada))
-##   {
-##     errorDialog("E131: Should not be here.",
-##                 "There is no ADA model and attempting to plot importance.",
-##                 "The button should not be active.",
-##                 "Please report this to Graham.Williams@togaware.com")
-##     return()
-##   }
-
-##   ## Plot the variable importance.
-  
-##   newPlot()
-##   plot.cmd <- "varplot(crs$ada)"
-##   addToLog("Plot the relative importance of the variables.", plot.cmd)
-##   eval(parse(text=plot.cmd))
-
-##   setStatusBar("ADA Variable Importance has been plotted.")
-## }  
-
-## doListAdaTrees <- function()
-## {
-##   ## Initial setup. 
-  
-##   TV <- "ada_textview"
-
-##   ## Obtain user interface options.
-
-##   tree.num <- theWidget("ada_draw_spinbutton")$getValue()
-
-##   ## Command to run.
-
-##   display.cmd <- sprintf("list.trees.ada(crs$ada, %d)", tree.num)
-
-##   ## Perform the action.
-
-##   addToLog(sprintf("Display tree number %d.", tree.num), display.cmd)
-##   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
-##   setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
-##                      "You may need to scroll the textview to see it."))
-## }
-
-## list.trees.ada <- function(model, trees=0)
-## {
-##   stopifnot(require(ada, quietly=TRUE))
-##   ntrees <- length(model$model$trees)
-##   if (trees == 0) trees=1:ntrees
-##   for (i in trees)
-##   {
-##     cat(sprintf("\nTree %d of %d: \n", i, ntrees))
-##     print(model$model$trees[[i]])
-##   }
-## }
-
-## doDrawAdaTrees <- function()
-## {
-##   ## Obtain user interface options.
-
-##   tree.num <- theWidget("ada_draw_spinbutton")$getValue()
-
-##   ## Command to run.
-
-##   draw.cmd <- sprintf('draw.trees.ada(crs$ada, %d, ": %s")', tree.num,
-##                       paste(crs$dataname, "$", crs$target))
-
-##   ## Perform the action.
-
-##   addToLog(sprintf("Display tree number %d.", tree.num), draw.cmd)
-##   eval(parse(text=draw.cmd))
-##   setStatusBar("Tree", tree.num, "has been drawn.")
-## }
-
-## draw.trees.ada <- function(model,
-##                          trees=0,
-##                          title="")
-## {
-##   stopifnot(require(ada, quietly=TRUE))
-##   ntrees <- length(model$model$trees)
-##   if (length(trees) == 1 && trees == 0) trees=1:ntrees
-##   for (i in trees)
-##   {
-##     newPlot()
-##     drawTreeNodes(model$model$trees[[i]])
-##     eval(parse(text=genPlotTitleCmd(sprintf("Tree %d of %d%s", i,
-##                  ntrees, title))))
-##   }
-## }

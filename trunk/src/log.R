@@ -1,23 +1,24 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-05 07:09:32 Graham>
+## Time-stamp: <2007-03-10 09:06:41 Graham>
 ##
 ## Implement LOG functionality.
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
-addInitialLogMessage <- function()
+initiateLog <- function()
 {
-  addToLog(sprintf("Rattle version %s", VERSION),
-           sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
-          "## We can export the contents of this log textview to file using
-## the export button or menu. This will save a log of what we have done,
+  startLog(paste(sprintf("Rattle version %s User %s",
+                         VERSION, Sys.info()["user"]),
+           #sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
+          "\n\n## We can export the contents of this log textview to file using
+## the export button or Tools menu. This will save a log of what we have done,
 ## potentially to repeat the process by sending the same commands directly
 ## to R. For example, if we export to the file \"model061205.R\" then in the
 ## R Console we can issue the command 'source(\"model061205.R\")' to run the
 ## commands in that file. We may want to edit the file to suit our needs.
-## We can also directly edit this actual log textview to record additional
-## information directly, before exporting.
+## We can also directly edit this current log textview to record additional
+## information about the work you have done, before exporting the log.
 ##
 ## Saving and loading projects also retains this log.
 
@@ -28,8 +29,37 @@ library(rattle)
 ## Simply type \"str(crs)\" in the R Console to see a summary of what is
 ## stored there!
 
-crs <- NULL")
+crs <- NULL"))
 
+}
+
+startLog <- function(msg=NULL)
+{
+  ## Output a suitable separator to the log textview, and if there is
+  ## an optional MSG, display that message, as an introduction to this
+  ## section.
+  
+  appendLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
+                "\n## Rattle timestamp: ", Sys.time(), sep=""),
+          no.start=TRUE)
+  if (not.null(msg))
+    appendLog(paste(sep="", .START.LOG.COMMENT, msg), no.start=TRUE)
+}
+
+appendLog <- function(start, ..., sep=" ", no.start=FALSE)
+{
+  if (no.start)
+    msg <- paste(sep=sep, start, ...)
+  else
+    msg <- paste(sep="", .START.LOG.COMMENT, start, .END.LOG.COMMENT, ...)
+  if (length(msg) == 0) msg <-""
+
+  ## Always place text at the end, irrespective of where the cursor is.
+
+  log.buf <- theWidget("log_textview")$getBuffer()
+  location <- log.buf$getEndIter()$iter
+
+  log.buf$insert(location, msg)
 }
 
 exportLogTab <- function()
@@ -77,34 +107,5 @@ exportLogTab <- function()
 
   infoDialog("The log has been exported to", save.name)
 
-}
-
-addLogSeparator <- function(msg=NULL)
-{
-  ## Output a suitable separator to the log textview, and if there is
-  ## an optional MSG, display that message, as an introduction to this
-  ## section.
-  
-  addToLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
-                "\n## Rattle timestamp: ", Sys.time(), sep=""),
-          no.start=TRUE)
-  if (not.null(msg))
-    addToLog(paste(sep="", .START.LOG.COMMENT, msg), no.start=TRUE)
-}
-
-addToLog <- function(start, ..., sep=" ", no.start=FALSE)
-{
-  if (no.start)
-    msg <- paste(sep=sep, start, ...)
-  else
-    msg <- paste(sep="", .START.LOG.COMMENT, start, .END.LOG.COMMENT, ...)
-  if (length(msg) == 0) msg <-""
-
-  ## Always place text at the end, irrespective of where the cursor is.
-
-  log.buf <- theWidget("log_textview")$getBuffer()
-  location <- log.buf$getEndIter()$iter
-
-  log.buf$insert(location, msg)
 }
 

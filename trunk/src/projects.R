@@ -148,8 +148,8 @@ saveProject <- function()
   crs$glm.opt$family   <<- theWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
-  addLogSeparator()
-  addToLog("Saved the project data (variable crs) to file.",
+  startLog()
+  appendLog("Saved the project data (variable crs) to file.",
            sprintf('save(crs, file="%s", compress=TRUE)', save.name))
   save(crs, file=save.name, compress=TRUE)
   set.cursor()
@@ -345,7 +345,7 @@ loadProject <- function()
 
   ## Make buttons sensitive for MODEL:ADA if there is an ADA model
   
-  if (not.null(crs$ada)) make.sensitive.ada()
+  if (not.null(crs$ada)) makeSensitiveAda()
 
   if (not.null(crs$rf.opt$trees))
     theWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
@@ -381,8 +381,8 @@ loadProject <- function()
   ## LOG
   
   setTextviewContents("log_textview", crs$text$log)
-  addLogSeparator()
-  addToLog("Reloaded the project data (variable crs) from file.",
+  startLog()
+  appendLog("Reloaded the project data (variable crs) from file.",
            sprintf('load("%s")', load.name))
   set.cursor()
   setStatusBar("Project loaded from", load.name)

@@ -182,13 +182,13 @@ executeModelRF <- function()
     
   ## Start the log
   
-  addLogSeparator("RANDOM FOREST")
+  startLog("RANDOM FOREST")
 
   ## Load the required library.
 
   library.cmd <- "require(randomForest, quietly=TRUE)"
 
-  addToLog("The randomForest package supplies the randomForest function.",
+  appendLog("The randomForest package supplies the randomForest function.",
           library.cmd)
   eval(parse(text=library.cmd))
 
@@ -204,7 +204,7 @@ executeModelRF <- function()
                   ", na.action=na.omit",
                   ")", sep="")
 
-  addToLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
+  appendLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
   start.time <- Sys.time()
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
 
@@ -233,12 +233,12 @@ executeModelRF <- function()
   ## Display the resulting model.
 
   summary.cmd <- "crs$rf"
-  addToLog("Generate textual output of randomForest model.", summary.cmd)
+  appendLog("Generate textual output of randomForest model.", summary.cmd)
 
   importance.cmd <- "round(importance(crs$rf), 2)"
-  addToLog("List the importance of the variables.", importance.cmd)
+  appendLog("List the importance of the variables.", importance.cmd)
 
-  clearTextview(TV)
+  resetTextview(TV)
   addTextview(TV, "Summary of the randomForest model:\n\n",
               collectOutput(summary.cmd, TRUE))
 
@@ -262,7 +262,7 @@ executeModelRF <- function()
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("A randomForest model has been generated.", time.msg)
   return(TRUE)
 }
@@ -293,7 +293,7 @@ plotRandomForestImportance <- function()
   plot.cmd <- paste('varImpPlot(crs$rf, main="")\n',
                     genPlotTitleCmd("Variable Importance rf", crs$dataname),
                     sep="")
-  addToLog("Plot the relative importance of the variables.", plot.cmd)
+  appendLog("Plot the relative importance of the variables.", plot.cmd)
   eval(parse(text=plot.cmd))
 
   setStatusBar("Random Forest Importance has been plotted.")
@@ -318,7 +318,7 @@ plotRandomForestError <- function()
                     genPlotTitleCmd("Error Rates rf", crs$dataname),
                     sep="")
 
-  addToLog("Plot error rate as we increase the number of trees.", plot.cmd)
+  appendLog("Plot error rate as we increase the number of trees.", plot.cmd)
   eval(parse(text=plot.cmd))
   
   setStatusBar("Random Forest Errors has been plotted.")
@@ -340,7 +340,7 @@ displayRandomForestTree <- function()
 
   ## Perform the action.
 
-  addToLog(sprintf("Display tree number %d.", tree.num), display.cmd)
+  appendLog(sprintf("Display tree number %d.", tree.num), display.cmd)
   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
   setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
                      "You may need to scroll the textview to see it."))

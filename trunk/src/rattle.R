@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-08 07:13:57 Graham>
+## Time-stamp: <2007-03-10 09:16:18 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -43,7 +43,7 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 ##
 ##    Use the "_" convention only for Glade variables and functions.
 ##    Use capitalised verbs for own functions: displayPlotAgain
-##    Use dot spearated words for variables: list.of.frames, lib.cmd
+##    Use dot separated words for variables: list.of.frames, lib.cmd
 ##    RGtk2 uses the capitalised word convention.
 ##    Use same names in R code as for the Glade objects.
 ##    Hide global variables, all capitalised, by beginning with "."
@@ -364,7 +364,7 @@ rattle <- function()
   
   ##
 
-  addInitialLogMessage()
+  initiateLog()
   
   ## By default the CLUSTER page is not showing.
 
@@ -497,8 +497,8 @@ variable in combination with the other variables."))
 
   ## Reset MODEL:ADA
   
-  make.sensitive.ada(FALSE)
-  set.defaults.ada()
+  makeSensitiveAda(FALSE)
+  setGuiDefaultsAda()
   
   ## Reset MODEL:RF
   
@@ -723,7 +723,7 @@ setStatusBar <- function(..., sep=" ")
 }
 
 collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
-                          width=getOption("width"))
+                          width=getOption("width"), envir=parent.frame())
 {
   ## TODO Should this use cat or print? Cat translates the \n to a
   ## newline and doesn't precede the output by [1].  For pretty output
@@ -739,7 +739,7 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
     command <- paste("cat(", command, ")", sep="")
   zz <- textConnection("commandsink", "w", TRUE)
   sink(zz)
-  result <- try(eval(parse(text=command)))
+  result <- try(eval(parse(text=command), envir=envir))
   sink()
   close(zz)
   if (inherits(result, "try-error"))
@@ -1172,7 +1172,8 @@ display_click_odbc_execute_message <- function(button)
               "\n\nYou can limit the number of rows you load from ",
               "the table using the Row Limit entry.",
               "\n\nYou can specify a SQL SELECT query to the database to ",
-              "retrieve the data you want.",
+              "retrieve the specific data you want, or else all data in",
+              "the specified table is retrieved.",
               "\n\nIf you find that you don't get all the rows you expect ",
               "from the database, then try un-checking the Believe Num Rows ",
               "checkbox. This is an issue with some database ODBC drivers ",
@@ -1276,9 +1277,9 @@ load_rdata_set_combo <- function(button)
 
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
 
-  addToLog("Load an Rdata file containing R objects.", load.cmd)
+  appendLog("Load an Rdata file containing R objects.", load.cmd)
   set.cursor("watch")
   eval(parse(text=paste("new.objects <- ", load.cmd)), baseenv())
   set.cursor()
@@ -1293,7 +1294,7 @@ load_rdata_set_combo <- function(button)
   }
   
   theWidget(TV)$setWrapMode("word")
-  clearTextview(TV)
+  resetTextview(TV)
   appendTextview(TV, "Now select a data frame from those available.")
   setStatusBar()
 
@@ -1336,9 +1337,9 @@ open_odbc_set_combo <- function(button)
 
   if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return()
       
-  addLogSeparator()
+  startLog("ODBC CONNECTION")
 
-  addToLog("Require the RODBC library", lib.cmd)
+  appendLog("Require the RODBC library", lib.cmd)
   eval(parse(text=lib.cmd))
        
   ## Close all currently open channels. This assumes that the user is
@@ -1347,7 +1348,7 @@ open_odbc_set_combo <- function(button)
 
   odbcCloseAll()
   
-  addToLog("Open the connection to the ODBC service.",
+  appendLog("Open the connection to the ODBC service.",
           gsub('<<-', '<-', connect.cmd))
   result <- try(eval(parse(text=connect.cmd)))
   if (inherits(result, "try-error"))
@@ -1358,7 +1359,7 @@ open_odbc_set_combo <- function(button)
     return()
   }
   
-  addToLog("Load the names of available tables.", tables.cmd)
+  appendLog("Load the names of available tables.", tables.cmd)
   set.cursor("watch")
   result <- try(eval(parse(text=paste("tables <<- ", tables.cmd))))
   set.cursor()
@@ -1380,7 +1381,7 @@ open_odbc_set_combo <- function(button)
   }
   
   theWidget(TV)$setWrapMode("word")
-  clearTextview(TV)
+  resetTextview(TV)
   setTextview(TV, "Now select a table from those available.")
   setStatusBar()
 
@@ -1503,17 +1504,17 @@ executeDataCSV <- function()
   
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
-  clearTextview(TV)
+  resetTextview(TV)
   
-  addToLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
+  appendLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
   resetRattle()
   eval(parse(text=read.cmd))
   crs$dataname <<- basename(filename)
   setRattleTitle(crs$dataname)
 
-  addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
                   collectOutput(str.cmd))
   
@@ -1614,18 +1615,18 @@ executeDataODBC <- function()
   
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
-  clearTextview(TV)
+  resetTextview(TV)
   
-  addToLog("LOAD FROM DATABASE TABLE",
+  appendLog("LOAD FROM DATABASE TABLE",
            gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- table
   setRattleTitle(crs$dataname)
 
-  addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV,
                  sprintf("Structure of %s from %s.\n\n", table, dsn.name),
                  collectOutput(str.cmd))
@@ -1698,18 +1699,18 @@ executeDataRdata <- function()
   
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
   theWidget("data_textview")$setWrapMode("none") # On for welcome msg
-  clearTextview(TV)
+  resetTextview(TV)
   
-  addToLog("LOAD RDATA FILE",
+  appendLog("LOAD RDATA FILE",
           gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
   setRattleTitle(crs$dataname)
 
-  addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   appendTextview(TV,
                   sprintf("Structure of %s from %s.\n\n", dataset, filename),
                   collectOutput(str.cmd))
@@ -1765,18 +1766,18 @@ executeDataRdataset <- function()
   
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
-  clearTextview(TV)
+  resetTextview(TV)
   
-  addToLog("LOAD R DATA FRAME",
+  appendLog("LOAD R DATA FRAME",
           gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
   setRattleTitle(crs$dataname)
   
-  addToLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
                collectOutput(str.cmd), sep="")
 
@@ -3051,7 +3052,7 @@ executeTransformSample <- function()
                         "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
                         ")", sep="")
 
-    addToLog("Build a random sample for modelling.",
+    appendLog("Build a random sample for modelling.",
             gsub("<<-", "<-", sample.cmd))
     eval(parse(text=sample.cmd))
 
@@ -3095,7 +3096,7 @@ executeTransformImputePerform <- function()
 {
   zero <- getSelectedVariables("zero")
 
-  if (length(zero) > 0) addLogSeparator("MISSING VALUE IMPUTATION")
+  if (length(zero) > 0) startLog("MISSING VALUE IMPUTATION")
 
   for (z in zero)
   {
@@ -3103,7 +3104,7 @@ executeTransformImputePerform <- function()
     
     vname <- paste("IMP_", z, sep="")
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]', vname, z)
-    addToLog(sprintf("IMPUTE %s.", z),
+    appendLog(sprintf("IMPUTE %s.", z),
              sub("<<-", "<-", copy.cmd))
     eval(parse(text=copy.cmd))
              
@@ -3118,7 +3119,7 @@ executeTransformImputePerform <- function()
         levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
                                     'c(levels(crs$dataset[["%s"]]),"Missing")'),
                               vname, vname)
-        addToLog("Add a new category to the variable",
+        appendLog("Add a new category to the variable",
                  sub("<<-", "<-", levels.cmd))
         eval(parse(text=levels.cmd))
       }
@@ -3129,7 +3130,7 @@ executeTransformImputePerform <- function()
                                    'crs$dataset[["%s"]])] <<- "Missing"',
                                    sep=""),
                              vname, z)
-      addToLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
+      appendLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
       eval(parse(text=missing.cmd))
     }
     else
@@ -3137,7 +3138,7 @@ executeTransformImputePerform <- function()
       zero.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                 '[is.na(crs$dataset[["%s"]])]',
                                 " <<- 0", sep=""), vname, z)
-      addToLog("Change all NAs to 0.", sub("<<-", "<-", zero.cmd))
+      appendLog("Change all NAs to 0.", sub("<<-", "<-", zero.cmd))
       eval(parse(text=zero.cmd))
     }
   }
@@ -3158,7 +3159,7 @@ executeTransformImputePerform <- function()
 
     ## Reset the original Data textview to output of new str.
 
-    clearTextview("data_textview")
+    resetTextview("data_textview")
     appendTextview("data_textview", collectOutput("str(crs$dataset)"))
 
     ## Update the status bar
@@ -3177,10 +3178,10 @@ executeTransformImputeSummary <- function()
 
   ## Load the mice package into the library
 
-  addLogSeparator("MISSING VALUE SUMMARY")
+  startLog("MISSING VALUE SUMMARY")
   lib.cmd <-  "require(mice, quietly=TRUE)"
   if (! packageIsAvailable("mice", "summarise missing values")) return(FALSE)
-  addToLog("Summarise missing values in the dataset using the mice package.",
+  appendLog("Summarise missing values in the dataset using the mice package.",
            lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -3193,13 +3194,13 @@ executeTransformImputeSummary <- function()
   
   ## Build the summary command
 
-  clearTextview(TV)
+  resetTextview(TV)
   theWidget(TV)$setWrapMode("none")
   summary.cmd <- paste("md.pattern(crs$dataset[,",
                        if (including) included,
                        "])", sep="")
 
-  addToLog("Generate a summary of the missing values in the dataset.",
+  appendLog("Generate a summary of the missing values in the dataset.",
            summary.cmd)
   ow <- options(width=300)
   setTextview(TV, collectOutput(summary.cmd, TRUE))
@@ -3566,8 +3567,8 @@ executeExploreSummary <- function(dataset)
 
   ## Start the trace to the log.
   
-  addLogSeparator()
-  clearTextview(TV)
+  startLog()
+  resetTextview(TV)
 
   ## Construct and execute the requested commands.
 
@@ -3583,7 +3584,7 @@ executeExploreSummary <- function(dataset)
     ## A basic summary.
 
     summary.cmd <- sprintf("summary(%s)", dataset)
-    addToLog("SUMMARY OF DATASET.", summary.cmd)
+    appendLog("SUMMARY OF DATASET.", summary.cmd)
     appendTextview(TV,
                    paste("Summary of the ",
                          ifelse(use.sample & sampling, "** sample **", "full"),
@@ -3601,11 +3602,11 @@ executeExploreSummary <- function(dataset)
     if (packageIsAvailable("Hmisc", "describe the data"))
     {
       lib.cmd <- "require(Hmisc, quietly=TRUE)"
-      addToLog("The describe command comes from Hmisc.", lib.cmd)
+      appendLog("The describe command comes from Hmisc.", lib.cmd)
       eval(parse(text=lib.cmd))
       
       describe.cmd <- sprintf("describe(%s)", dataset)
-      addToLog("Generate a description of the dataset.", describe.cmd)
+      appendLog("Generate a description of the dataset.", describe.cmd)
       appendTextview(TV,
                      paste("Description of the",
                            ifelse(use.sample & sampling,
@@ -3622,14 +3623,14 @@ executeExploreSummary <- function(dataset)
     if (packageIsAvailable("fBasics", "calculate basics, skew and kurtosis"))
     {
       lib.cmd <- "require(fBasics, quietly=TRUE)"
-      addToLog("Use functionality from the fBasics package.", lib.cmd)
+      appendLog("Use functionality from the fBasics package.", lib.cmd)
       eval(parse(text=lib.cmd))
       
       if (do.basics)
       {
         basics.cmd <- sprintf("lapply(%s[,%s], basicStats)", dataset,
                               ifelse(is.null(nvars), "", nvars))
-        addToLog("Generate a summary of the numeric data.", basics.cmd)
+        appendLog("Generate a summary of the numeric data.", basics.cmd)
         appendTextview(TV,
                        paste("Basic statistics for each numeric variable",
                              "of the",
@@ -3644,7 +3645,7 @@ executeExploreSummary <- function(dataset)
         kurtosis.cmd <- sprintf("kurtosis(%s[,%s], na.rm=TRUE)", dataset,
                                 ifelse(is.null(nvars), "", nvars))
 
-        addToLog("Summarise the kurtosis of the numeric data.", kurtosis.cmd)
+        appendLog("Summarise the kurtosis of the numeric data.", kurtosis.cmd)
         appendTextview(TV,
                        paste("Kurtosis for each numeric variable ",
                              "of the ",
@@ -3666,7 +3667,7 @@ executeExploreSummary <- function(dataset)
         skewness.cmd <- sprintf("skewness(%s[,%s], na.rm=TRUE)", dataset,
                                 ifelse(is.null(nvars), "", nvars))
 
-        addToLog("Summarise the skewness of the numeric data.", skewness.cmd)
+        appendLog("Summarise the skewness of the numeric data.", skewness.cmd)
         appendTextview(TV,
                        paste("Skewness for each numeric variable",
                              "of the",
@@ -3916,8 +3917,8 @@ executeExplorePlot <- function(dataset)
     for (s in 1:nboxplots)
     {
 
-      addLogSeparator()
-      addToLog("BOX PLOT")
+      startLog()
+      appendLog("BOX PLOT")
 
       cmd <- paste("sprintf(bind.cmd,",
                    paste(paste('"', rep(boxplots[s], length(targets)+1), '"',
@@ -3925,7 +3926,7 @@ executeExplorePlot <- function(dataset)
                          collapse=","),
                    ")")
       cmd <- eval(parse(text=cmd))
-      addToLog(paste("Generate just the data for a boxplot of ",
+      appendLog(paste("Generate just the data for a boxplot of ",
                     boxplots[s], ".", sep=""),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
@@ -3933,16 +3934,16 @@ executeExplorePlot <- function(dataset)
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
-      addToLog("Plot the data, grouped appropriately.", plot.cmd)
+      appendLog("Plot the data, grouped appropriately.", plot.cmd)
       eval(parse(text=plot.cmd))
 
       if (packageIsAvailable("doBy", "add means to box plots"))
       {
-        addToLog("Use the doBy package to group the data for means.",
+        appendLog("Use the doBy package to group the data for means.",
                  doByLibrary)
         eval(parse(text=doByLibrary))
 
-        addToLog("Calculate the group means.", mean.cmd)
+        appendLog("Calculate the group means.", mean.cmd)
         eval(parse(text=mean.cmd))
       }
         
@@ -3950,7 +3951,7 @@ executeExplorePlot <- function(dataset)
       title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
                                           boxplots[s],
                                           ifelse(sampling, " (sample)","")))
-      addToLog("Add a title to the plot.", title.cmd)
+      appendLog("Add a title to the plot.", title.cmd)
       eval(parse(text=title.cmd))
     }
   }
@@ -3971,8 +3972,8 @@ executeExplorePlot <- function(dataset)
 
     for (s in 1:nhisplots)
     {
-      addLogSeparator()
-      addToLog("HISTOGRAM")
+      startLog()
+      appendLog("HISTOGRAM")
       
       cmd <- paste("sprintf(bind.cmd,",
                    paste(paste('"', rep(hisplots[s], length(targets)+1), '"',
@@ -3980,7 +3981,7 @@ executeExplorePlot <- function(dataset)
                          collapse=","),
                    ")")
       cmd <- eval(parse(text=cmd))
-      addToLog(paste("Generate just the data for a histogram of ",
+      appendLog(paste("Generate just the data for a histogram of ",
                     hisplots[s], ".", sep=""),
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
@@ -3988,14 +3989,14 @@ executeExplorePlot <- function(dataset)
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
-      addToLog("Plot the data.", plot.cmd)
+      appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
-      addToLog("Add a rug to illustrate density.", rug.cmd)
+      appendLog("Add a rug to illustrate density.", rug.cmd)
       eval(parse(text=rug.cmd))
       title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
                                            hisplots[s],
                                            ifelse(sampling, " (sample)","")))
-      addToLog("Add a title to the plot.", title.cmd)
+      appendLog("Add a title to the plot.", title.cmd)
       eval(parse(text=title.cmd))
     }
   }
@@ -4012,7 +4013,7 @@ executeExplorePlot <- function(dataset)
     
     for (s in 1:nplots)
     {
-      addLogSeparator()
+      startLog()
 
       col <- rainbow(length(targets)+1)
       plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
@@ -4044,7 +4045,7 @@ executeExplorePlot <- function(dataset)
                          collapse=","),
                    ")")
       cmd <- eval(parse(text=cmd))
-      addToLog(paste("Generate just the data for an Ecdf plot of",
+      appendLog(paste("Generate just the data for an Ecdf plot of",
                     cumplots[s], "."),
               paste("ds <-", cmd))
        ds <- eval(parse(text=cmd))
@@ -4054,10 +4055,10 @@ executeExplorePlot <- function(dataset)
 
       if (! packageIsAvailable("Hmisc", "plot cumulative charts")) break()
 
-      addToLog("Use Ecdf from the Hmisc package.", lib.cmd)
+      appendLog("Use Ecdf from the Hmisc package.", lib.cmd)
       eval(parse(text=lib.cmd))
 
-      addToLog("Plot the data.", plot.cmd)
+      appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
       title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s",
                                            cumplots[s],
@@ -4065,11 +4066,11 @@ executeExplorePlot <- function(dataset)
 
       if (not.null(targets))
       {
-        addToLog("Add a legend to the plot.", legend.cmd)
+        appendLog("Add a legend to the plot.", legend.cmd)
         eval(parse(text=legend.cmd))
       }
 
-      addToLog("Add a title to the plot.", title.cmd)
+      appendLog("Add a title to the plot.", title.cmd)
       eval(parse(text=title.cmd))
     }
   }
@@ -4121,13 +4122,13 @@ executeExplorePlot <- function(dataset)
     }
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
     {
-      addLogSeparator()
-      addToLog("BENFORD'S LAW")
+      startLog()
+      appendLog("BENFORD'S LAW")
       
-      addToLog("Use barplot2 from gplots to plot Benford's Law.", lib.cmd)
+      appendLog("Use barplot2 from gplots to plot Benford's Law.", lib.cmd)
       eval(parse(text=lib.cmd))
       
-      addToLog("Generate the expected distribution for Benford's Law",
+      appendLog("Generate the expected distribution for Benford's Law",
                paste("expect <-", expect.cmd))
       expect <- eval(parse(text=expect.cmd))
 
@@ -4135,7 +4136,7 @@ executeExplorePlot <- function(dataset)
       {
         # Plot all Benford's plots on the one line graph
 
-        addLogSeparator()
+        startLog()
 
         bc <- sub("All", "%s", substr(bind.cmd, 7, nchar(bind.cmd)-1))
         new.bind.cmd <- substr(bind.cmd, 1, 6)
@@ -4175,11 +4176,11 @@ executeExplorePlot <- function(dataset)
                                    collapse=","),
                              nbenplots+1, "Variables")
 
-        addToLog("Generate the required data.",
+        appendLog("Generate the required data.",
                  paste("ds <-", new.bind.cmd))
         ds <- eval(parse(text=new.bind.cmd))
 
-        addToLog("Generate specific plot data.", paste("ds <-", data.cmd))
+        appendLog("Generate specific plot data.", paste("ds <-", data.cmd))
         ds <- eval(parse(text=data.cmd))
 
         if (pcnt %% pmax == 0) newPlot(pmax)
@@ -4187,10 +4188,10 @@ executeExplorePlot <- function(dataset)
 
         par(xpd=TRUE)
         
-        addToLog("Now do the actual plot.", plot.cmd)
+        appendLog("Now do the actual plot.", plot.cmd)
         eval(parse(text=plot.cmd))
 
-        addToLog("Add a legend to the plot.", legend.cmd)
+        appendLog("Add a legend to the plot.", legend.cmd)
         eval(parse(text=legend.cmd))
         
         if (sampling)
@@ -4198,7 +4199,7 @@ executeExplorePlot <- function(dataset)
         else
           title.cmd <- genPlotTitleCmd("Benford's Law")
 
-        addToLog("Add a title to the plot.", title.cmd)
+        appendLog("Add a title to the plot.", title.cmd)
         eval(parse(text=title.cmd))
         
 
@@ -4209,7 +4210,7 @@ executeExplorePlot <- function(dataset)
         
         for (s in 1:nbenplots)
         {
-          addLogSeparator()
+          startLog()
 
           data.cmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
                            'All=calcInitialDigitDistr(ds[ds$grp=="All", 1])')
@@ -4252,17 +4253,17 @@ executeExplorePlot <- function(dataset)
                        ")")
           cmd <- eval(parse(text=cmd))
           
-          addToLog(paste("Generate just the data for the plot of",
+          appendLog(paste("Generate just the data for the plot of",
                          benplots[s], "."),
                    paste("ds <-", cmd))
           ds <- eval(parse(text=cmd))
           
-          addToLog("Generate frequency of initial digit.",
+          appendLog("Generate frequency of initial digit.",
                    paste("ds <-", data.cmd))
           ds <- eval(parse(text=data.cmd))
 
           nan.cmd <- "ds[is.nan(ds)] <- 0"
-          addToLog("Ensure rows with no digits are treated as zeros.", nan.cmd)
+          appendLog("Ensure rows with no digits are treated as zeros.", nan.cmd)
           ds[is.nan(ds)] <- 0
           
           if (pcnt %% pmax == 0) newPlot(pmax)
@@ -4270,10 +4271,10 @@ executeExplorePlot <- function(dataset)
 
           par(xpd=TRUE)
           
-          addToLog("Now do the actual Benford plot.", plot.cmd)
+          appendLog("Now do the actual Benford plot.", plot.cmd)
           eval(parse(text=plot.cmd))
           
-          addToLog("Add a legend to the plot.", legend.cmd)
+          appendLog("Add a legend to the plot.", legend.cmd)
           eval(parse(text=legend.cmd))
           
           if (sampling)
@@ -4282,7 +4283,7 @@ executeExplorePlot <- function(dataset)
           else
             title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s",
                                                  benplots[s]))
-          addToLog("Add a title to the plot.", title.cmd)
+          appendLog("Add a title to the plot.", title.cmd)
           eval(parse(text=title.cmd))
         }
       }
@@ -4318,14 +4319,14 @@ executeExplorePlot <- function(dataset)
     
     if (packageIsAvailable("gplots", "plot a bar chart"))
     {
-      addLogSeparator()
-      addToLog("Use barplot2 from gplots for the barchart.", lib.cmd)
+      startLog()
+      appendLog("Use barplot2 from gplots for the barchart.", lib.cmd)
       eval(parse(text=lib.cmd))
 
       for (s in 1:nbarplots)
       {
 
-        addLogSeparator()
+        startLog()
 
         ## Construct and evaluate a command string to generate the
         ## data for the plot.
@@ -4334,7 +4335,7 @@ executeExplorePlot <- function(dataset)
                        paste(paste('"', rep(barplots[s], length(targets)+1),
                                  '"', sep=""), collapse=","), ")")
         ds.cmd <- eval(parse(text=ds.cmd))
-        addToLog("Generate the summary data for plotting.",
+        appendLog("Generate the summary data for plotting.",
                  paste("ds <-", ds.cmd))
         ds <- eval(parse(text=ds.cmd))
         
@@ -4350,14 +4351,14 @@ executeExplorePlot <- function(dataset)
         #  ord.cmd <- 'order(ds[1,])'
         #else
           ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
-        addToLog("Sort the entries.", paste("ord <-", ord.cmd))
+        appendLog("Sort the entries.", paste("ord <-", ord.cmd))
         ord <- eval(parse(text=ord.cmd))
 
         maxFreq <- max(ds)
         plot.cmd <- sprintf(paste('barplot2(ds[,ord], beside=TRUE,',
                                  'ylim=c(0, %d), col=rainbow(%d))'),
                            round(maxFreq+maxFreq*0.20), length(targets)+1)
-        addToLog("Plot the data.", paste("bp <- ", plot.cmd))
+        appendLog("Plot the data.", paste("bp <- ", plot.cmd))
         bp <- eval(parse(text=plot.cmd))
 
         ## Construct and evaluate a command to add text to the top of
@@ -4369,7 +4370,7 @@ executeExplorePlot <- function(dataset)
         {
           text.cmd <- sprintf("text(bp, ds[,ord]+%d, ds[,ord])",
                              round(maxFreq*0.040))
-          addToLog("Add the actual frequencies.", text.cmd)
+          appendLog("Add the actual frequencies.", text.cmd)
           eval(parse(text=text.cmd))
         }
 
@@ -4386,7 +4387,7 @@ executeExplorePlot <- function(dataset)
                                      collapse=","),
                                length(targets)+1,
                                target)
-          addToLog("Add a legend to the plot.", legend.cmd)
+          appendLog("Add a legend to the plot.", legend.cmd)
           eval(parse(text=legend.cmd))
         }
         
@@ -4396,7 +4397,7 @@ executeExplorePlot <- function(dataset)
         title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
                                             barplots[s],
                                             ifelse(sampling," (sample)","")))
-        addToLog("Add a title to the plot.", title.cmd)
+        appendLog("Add a title to the plot.", title.cmd)
         eval(parse(text=title.cmd))
       }
     }
@@ -4422,13 +4423,13 @@ executeExplorePlot <- function(dataset)
     generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
 
       
-    addToLog("Use dotplot from lattice for the plots.", lib.cmd)
+    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
     eval(parse(text=lib.cmd))
 
     for (s in 1:ndotplots)
     {
 
-      addLogSeparator()
+      startLog()
 
       ## Construct and evaluate a command string to generate the
       ## data for the plot.
@@ -4437,7 +4438,7 @@ executeExplorePlot <- function(dataset)
                      paste(paste('"', rep(dotplots[s], length(targets)+1),
                                  '"', sep=""), collapse=","), ")")
       ds.cmd <- eval(parse(text=ds.cmd))
-      addToLog("Generate the summary data for plotting.",
+      appendLog("Generate the summary data for plotting.",
                paste("ds <-", ds.cmd))
       ds <- eval(parse(text=ds.cmd))
 
@@ -4448,7 +4449,7 @@ executeExplorePlot <- function(dataset)
         ord.cmd <- 'order(ds[1,])'
       else
         ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
-      addToLog("Sort the entries.",
+      appendLog("Sort the entries.",
                paste("ord <-", ord.cmd))
       ord <- eval(parse(text=ord.cmd))
         
@@ -4468,7 +4469,7 @@ executeExplorePlot <- function(dataset)
                                'xlab="Frequency", pch=19)'),
                          "ds[,ord]", titles[1], titles[2], length(targets)+1,
                          ifelse(is.null(target), "", ' labels="",'))
-      addToLog("Plot the data.", plot.cmd)
+      appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
 
       if (not.null(target))
@@ -4477,7 +4478,7 @@ executeExplorePlot <- function(dataset)
                                    'c("All","0","1"), col=rainbow(%d),',
                                    'pch=19, title="%s")'),
                              length(targets)+1, target)
-        addToLog("Add a legend.", legend.cmd)
+        appendLog("Add a legend.", legend.cmd)
         eval(parse(text=legend.cmd))
       }
     }
@@ -4506,10 +4507,10 @@ executeExploreGGobi <- function(dataset)
   
   if (! packageIsAvailable("rggobi","explore the data using GGobi")) return()
 
-  addLogSeparator()
-  addToLog("GGobi is accessed using the rggobi package.", lib.cmd)
+  startLog()
+  appendLog("GGobi is accessed using the rggobi package.", lib.cmd)
   eval(parse(text=lib.cmd))
-  addToLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
+  appendLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
   eval(parse(text=ggobi.cmd))
   
   setStatusBar("GGobi executed.")
@@ -4584,16 +4585,16 @@ executeExploreCorrelation <- function(dataset)
 
   if (! packageIsAvailable("ellipse","display a correlation plot")) return()
      
-  addLogSeparator("Generate a correlation plot for the variables.")
-  clearTextview(TV)
+  startLog("Generate a correlation plot for the variables.")
+  resetTextview(TV)
 
-  addToLog("The correlation plot uses the ellipse package.", lib.cmd)
+  appendLog("The correlation plot uses the ellipse package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  addToLog("Correlations work for numeric variables only.", crscor.cmd)
-  addToLog("Order the correlations by their strength.", crsord.cmd)
-  addToLog("Display the actual correlations.", print.cmd)
-  addToLog("Graphically display the correlations.", plot.cmd)
+  appendLog("Correlations work for numeric variables only.", crscor.cmd)
+  appendLog("Order the correlations by their strength.", crsord.cmd)
+  appendLog("Display the actual correlations.", print.cmd)
+  appendLog("Graphically display the correlations.", plot.cmd)
 
   appendTextview(TV,
                ifelse(nas,
@@ -4661,18 +4662,18 @@ executeExploreHiercor <- function(dataset)
 
   ## Start logging and executing the R code.
 
-  addLogSeparator()
+  startLog()
 
-  addToLog("Generate the correlations (numerics only).", cor.cmd)
+  appendLog("Generate the correlations (numerics only).", cor.cmd)
   eval(parse(text=cor.cmd))
 
-  addToLog("Generate hierarchical cluster of variables.", hclust.cmd)
+  appendLog("Generate hierarchical cluster of variables.", hclust.cmd)
   eval(parse(text=hclust.cmd))
 
-  addToLog("Generate the dendrogram.", dend.cmd)
+  appendLog("Generate the dendrogram.", dend.cmd)
   eval(parse(text=dend.cmd))
 
-  addToLog("Now draw the dendrogram.", plot.cmd)
+  appendLog("Now draw the dendrogram.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -4711,10 +4712,10 @@ executeExplorePrcomp <- function(dataset)
 
   ## Start logging and executing the R code.
 
-  addLogSeparator()
-  clearTextview(TV)
+  startLog()
+  resetTextview(TV)
   
-  addToLog("Perform a principal components analysis (numerics only).",
+  appendLog("Perform a principal components analysis (numerics only).",
           gsub("<<-", "<-", prcomp.cmd))
   eval(parse(text=prcomp.cmd))
 
@@ -4727,19 +4728,19 @@ executeExplorePrcomp <- function(dataset)
                   "components are generally variables that you may wish\n",
                   "to include in the modelling.")
 
-  addToLog("Show the output of the analysis,", print.cmd)
+  appendLog("Show the output of the analysis,", print.cmd)
   appendTextview(TV, collectOutput(print.cmd, TRUE))
   
-  addToLog("Summarise the importance of the components found.", summary.cmd)
+  appendLog("Summarise the importance of the components found.", summary.cmd)
   appendTextview(TV, collectOutput(summary.cmd, TRUE))
 
   newPlot(1)
-  addToLog("Display a plot showing the relative importance of the components.",
+  appendLog("Display a plot showing the relative importance of the components.",
           plot.cmd)
   eval(parse(text=plot.cmd))
   
   newPlot(1)
-  addToLog("Display a plot showing the two most principal components.",
+  appendLog("Display a plot showing the two most principal components.",
           biplot.cmd)
   eval(parse(text=biplot.cmd))
   
@@ -4939,7 +4940,7 @@ executeEvaluateTab <- function()
   testname <- crs$dataname
   included <- getIncludedVariables() # Need all vars, including risk.
 
-  addLogSeparator()
+  startLog()
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
@@ -4999,7 +5000,7 @@ executeEvaluateTab <- function()
       nastring <- ', na.strings=c(".", "NA")'
       read.cmd <- sprintf('crs$testset <<- read.csv("%s"%s)',
                           filename, nastring)
-      addToLog("Read a file for evaluating the model",
+      appendLog("Read a file for evaluating the model",
               gsub("<<-", "<-", read.cmd))
       eval(parse(text=read.cmd))
 
@@ -5036,7 +5037,7 @@ executeEvaluateTab <- function()
     crs$testname <<- testname
     
     assign.cmd <- sprintf("crs$testset <<- %s", dataset)
-    addToLog("Assign the R dataset to be used as the test set.", assign.cmd)
+    appendLog("Assign the R dataset to be used as the test set.", assign.cmd)
     eval(parse(text=assign.cmd))
   }
 
@@ -5084,9 +5085,9 @@ executeEvaluateTab <- function()
   {
     testset[[.ADA]] <- testset0
 
-    predcmd[[.ADA]] <- gen.cmd.predict.ada(testset[[.ADA]])
-    respcmd[[.ADA]] <- gen.cmd.response.ada(testset[[.ADA]])
-    probcmd[[.ADA]] <- gen.cmd.probability.ada(testset[[.ADA]])
+    predcmd[[.ADA]] <- genPredictAda(testset[[.ADA]])
+    respcmd[[.ADA]] <- genResponseAda(testset[[.ADA]])
+    probcmd[[.ADA]] <- genProbabilityAda(testset[[.ADA]])
   }
 
 ##   if ( .NNET %in%  mtypes)
@@ -5300,7 +5301,7 @@ executeEvaluateTab <- function()
   
 executeEvaluateConfusion <- function(respcmd, testset, testname)
 {
-  clearTextview("confusion_textview")
+  resetTextview("confusion_textview")
 
   for (mtype in getEvaluateModels())
   {
@@ -5319,9 +5320,9 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
 
     ## Log the R commands and execute them.
 
-    addToLog(sprintf("%sGenerate a Confusion Table for the %s model.",
+    appendLog(sprintf("%sGenerate a Confusion Table for the %s model.",
                      .START.LOG.COMMENT, mtype), no.start=TRUE)
-    addToLog(sprintf("Obtain the response from the %s model.", mtype),
+    appendLog(sprintf("Obtain the response from the %s model.", mtype),
              gsub("<<-", "<-", respcmd[[mtype]]))
   
     result <- try(eval(parse(text=respcmd[[mtype]])), TRUE)
@@ -5348,11 +5349,11 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       next()
     }
     
-    addToLog("Now generate the confusion matrix.", confuse.cmd)
+    appendLog("Now generate the confusion matrix.", confuse.cmd)
 
     confuse.output <- collectOutput(confuse.cmd, TRUE)
   
-    addToLog("Generate confusion matrix showing percentages.", percentage.cmd)
+    appendLog("Generate confusion matrix showing percentages.", percentage.cmd)
 
     percentage.output <- collectOutput(percentage.cmd, TRUE)
   
@@ -5380,7 +5381,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   ## Initial setup. 
 
   TV <- "risk_textview"
-  clearTextview(TV)
+  resetTextview(TV)
   
   ## Ensure a risk variable has been specified.
   
@@ -5458,7 +5459,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                                       risk),
                       sep="")
 
-    addToLog("Generate a Risk Chart",
+    appendLog("Generate a Risk Chart",
              "## Rattle provides evaluateRisk and plotRisk.\n\n",
              gsub("<<-", "<-", probcmd[[mtype]]), "\n",
              gsub("<<-", "<-", evaluate.cmd), "\n",
@@ -5851,10 +5852,10 @@ executeEvaluateLift <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
     
-    addToLog("Display Lift Chart using the ROCR package.", lib.cmd)
+    appendLog("Display Lift Chart using the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
     
-    addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+    appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
 
@@ -5900,7 +5901,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
                       'col="#00CCCCFF", lty=2, ',
                       sprintf("add=%s)\n", addplot),
                       sep="")
-    addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+    appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
                                    predcmd[[mtype]])), "\n", plot.cmd)
@@ -5927,12 +5928,12 @@ executeEvaluateLift <- function(predcmd, testset, testname)
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
-  addToLog("Add a legend to the plot.", legendcmd)
+  appendLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
   decorcmd <- paste(genPlotTitleCmd("Lift Chart", "", title),
                     '\ngrid()', sep="")
-  addToLog("Add decorations to the plot.", decorcmd)
+  appendLog("Add decorations to the plot.", decorcmd)
   eval(parse(text=decorcmd))
   
   return("Generated Lift Charts.")
@@ -5946,7 +5947,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
 executeEvaluateROC <- function(predcmd, testset, testname)
 {
   TV <- "roc_textview"
-  clearTextview(TV)
+  resetTextview(TV)
   lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
@@ -5966,10 +5967,10 @@ executeEvaluateROC <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
 
-    addToLog("Plot an ROC curve using the ROCR package.", lib.cmd)
+    appendLog("Plot an ROC curve using the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
   
-    addToLog(sprintf("Generate an ROC Curve for the %s model on %s.",
+    appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
 
@@ -6004,7 +6005,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
     auc.cmd <- paste("performance(prediction(crs$pr, ",
                     sprintf("%s$%s),", testset[[mtype]], crs$target),
                     '"auc")', sep="")
-    addToLog("Calculate the area under the curve for the plot.", auc.cmd)
+    appendLog("Calculate the area under the curve for the plot.", auc.cmd)
     auc <- eval(parse(text=auc.cmd))
     appendTextview(TV, paste("Area under the ROC curve for the",
                              sprintf("%s model on %s is %0.4f",
@@ -6027,7 +6028,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
                       'col="#00CCCCFF", lty=2, ',
                       sprintf("add=%s)\n", addplot),
                       sep="")
-    addToLog(sprintf("Generate an ROC Curve for the %s model on %s.",
+    appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
                                    predcmd[[mtype]])), "\n", plot.cmd)
@@ -6054,12 +6055,12 @@ executeEvaluateROC <- function(predcmd, testset, testname)
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
-  addToLog("Add a legend to the plot.", legendcmd)
+  appendLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
   decor.cmd <- paste(genPlotTitleCmd("ROC Curve", "", title),
                     '\ngrid()', sep="")
-  addToLog("Add decorations to the plot.", decor.cmd)
+  appendLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
 
   return(sprintf("Generated ROC Curves on %s.", testname))
@@ -6092,10 +6093,10 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
                       sep="")
     addplot <- "TRUE"
   
-    addToLog("Precision/Recall Plot using the ROCR package", lib.cmd)
+    appendLog("Precision/Recall Plot using the ROCR package", lib.cmd)
     eval(parse(text=lib.cmd))
 
-    addToLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
+    appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
 
@@ -6140,7 +6141,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
                       'col="#00CCCCFF", lty=2, ',
                       sprintf("add=%s)\n", addplot),
                       sep="")
-    addToLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
+    appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
                                    predcmd[[mtype]])), "\n", plot.cmd)
@@ -6167,12 +6168,12 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
-  addToLog("Add a legend to the plot.", legendcmd)
+  appendLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
   decor.cmd <- paste(genPlotTitleCmd("Precision/Recall Chart", "", title),
                     '\ngrid()', sep="")
-  addToLog("Add decorations to the plot.", decor.cmd)
+  appendLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
   
   return(sprintf("Generated Precision/Recall Plot on %s.", title))
@@ -6204,11 +6205,11 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
                       sep="")
      addplot <- "TRUE"
  
-    addToLog("Display a Sensitivity/Specificity Plot using the ROCR package",
+    appendLog("Display a Sensitivity/Specificity Plot using the ROCR package",
              lib.cmd)
     eval(parse(text=lib.cmd))
 
-    addToLog(sprintf("Generate Sensitivity/Specificity Plot for %s model on %s.",
+    appendLog(sprintf("Generate Sensitivity/Specificity Plot for %s model on %s.",
                      mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
 
@@ -6252,7 +6253,7 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
                       'col="#00CCCCFF", lty=2, ',
                       sprintf("add=%s)\n", addplot),
                       sep="")
-    addToLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+    appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
                                    predcmd[[mtype]])), "\n", plot.cmd)
@@ -6279,13 +6280,13 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
                      sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
                              nummodels, nummodels),
                      sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
-  addToLog("Add a legend to the plot.", legendcmd)
+  appendLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
   decor.cmd <- paste(genPlotTitleCmd("Sensitivity/Specificity (tpr/tnr)", "",
                                     title),
                     '\ngrid()', sep="")
-  addToLog("Add decorations to the plot.", decor.cmd)
+  appendLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
 
   return(sprintf("Generated Sensitivity/Specificity Plot on %s.", testname))
@@ -6344,7 +6345,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
   for (mtype in getEvaluateModels())
   {
 
-    addToLog(sprintf("%s: Save probability scores to file for %s model on %s.",
+    appendLog(sprintf("%s: Save probability scores to file for %s model on %s.",
                      toupper(mtype), mtype, testname),
              gsub("<<-", "<-", predcmd[[mtype]]))
 
@@ -6430,7 +6431,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
     if (substr(scoreset, 1, 7) == "na.omit")
     {
       omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
-      addToLog("Record rows omitted from predict command.", omit.cmd)
+      appendLog("Record rows omitted from predict command.", omit.cmd)
       eval(parse(text=omit.cmd))
     }
     else
@@ -6452,12 +6453,12 @@ executeEvaluateScore <- function(predcmd, testset, testname)
                         scoreset,
                         ifelse(is.null(idents), "", 
                                sprintf('"%s"', paste(idents, collapse='", "'))))
-    addToLog("Extract the corresponding identifier fields from the dataset.",
+    appendLog("Extract the corresponding identifier fields from the dataset.",
              sprintf("scores <- %s", scoreset))
     
     scores <- eval(parse(text=scoreset))
     
-    addToLog("Write the scores to file.",
+    appendLog("Write the scores to file.",
              paste('write.csv(cbind(scores, predict=crs$pr), file="',
                    score.file, '", row.names=FALSE)', sep=""))
     
