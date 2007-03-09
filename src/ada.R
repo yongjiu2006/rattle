@@ -1,121 +1,43 @@
 ## Rattle TwoClass Ada
 ##
-## This is becoming the model "module" for rattle.
+## This is a model or template "module" for rattle.
 ##
-## TODO
-##   Split GUI stuff into ada_gui.R
-##   Remove all references to crs and gui stuff - use function parameters
-##
-## Time-stamp: <2007-03-08 07:24:03 Graham>
+## Time-stamp: <2007-03-10 08:55:07 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
-
-########################################################################
 ##
-## CALLBACKS - This is where we have a bunch of Rattle GUI specific
-## functions. Perhaps these need to be in a separate ada_gui.R
-##
+## This implements a generic interface for interacting with the ada
+## modeller and ada models. It can be used independent of the Rattle
+## GUI, but is designed for use by it.
 
-on_ada_stumps_button_clicked <- function(button)
+buildModelAda <- function(formula,
+                          dataset,
+                          tv=NULL,
+                          seed=123,
+                          maxdepth=30,
+                          minsplit=20,
+                          cp=0.01,
+                          xval=10,
+                          ntree=50)
 {
-  set.defaults.ada(stumps=TRUE)
-}
+  ## If tv is not null, then we will be updating the textview object
+  ## as we proceed, as well as sending information to the log. The aim
+  ## is for this function to run totally independent of the GUI, but
+  ## to also support it. A developer can use this function, supply
+  ## their own textview object and their own implementations of
+  ## resetTextview and appendTextview for the modelling output, and
+  ## startLog and appendLog for a log of the commands, and
+  ## setStatusBar for a summary of what has been done.
 
-on_ada_defaults_button_clicked <- function(button)
-{
-  set.defaults.ada()
-}
+  gui <- not.null(tv)
+  if (gui) startLog("ADA BOOST")
 
-on_ada_importance_button_clicked <- function(button)
-{
-  plot.importance.ada()
-}
+  ## Load the required package into the library.
 
-on_ada_errors_button_clicked <- function(button)
-{
-  plot.errors.ada()
-}
-
-on_ada_list_button_clicked <- function(button)
-{
-  list.trees.ada.gui()
-}
-
-on_ada_draw_button_clicked <- function(button)
-{
-  draw.trees.ada.gui()
-}
-
-on_help_ada_activate <- function(action, window)
-{
-  display.help.ada()
-}
-
-list.trees.ada.gui <- function()
-{
-  ## Initial setup. 
-  
-  TV <- "ada_textview"
-
-  ## Obtain user interface options.
-
-  tree.num <- theWidget("ada_draw_spinbutton")$getValue()
-
-  ## Command to run.
-
-  display.cmd <- sprintf("list.trees.ada(crs$ada, %d)", tree.num)
-
-  ## Perform the action.
-
-  addToLog(sprintf("Display tree number %d.", tree.num), display.cmd)
-  addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
-  setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
-                     "You may need to scroll the textview to see it."))
-}
-
-draw.trees.ada.gui <- function()
-{
-  ## Obtain user interface options.
-
-  tree.num <- theWidget("ada_draw_spinbutton")$getValue()
-
-  ## Command to run.
-
-  draw.cmd <- sprintf('draw.trees.ada(crs$ada, %d, ": %s")', tree.num,
-                      paste(crs$dataname, "$", crs$target))
-
-  ## Perform the action.
-
-  addToLog(sprintf("Display tree number %d.", tree.num), draw.cmd)
-  eval(parse(text=draw.cmd))
-  setStatusBar("Tree", tree.num, "has been drawn.")
-}
-
-########################################################################
-##
-## ADA - This implements a generic interface for interacting with the
-## ada modeller and ada models. Need to remove all reference to crs
-## and pass them through as parameters, where needed.
-##
-
-execute.model.ada <- function()
-{
-  ## Initial setup. 
-  
-  TV <- "ada_textview"
-
-  ## Obtain user interface model options.
-
-  maxdepth <- theWidget("ada_maxdepth_spinbutton")$getValue()
-  minsplit <- theWidget("ada_minsplit_spinbutton")$getValue()
-  cp       <- theWidget("ada_cp_spinbutton")$getValue()
-  xval     <- theWidget("ada_xval_spinbutton")$getValue()
-  ntree    <- theWidget("ada_ntree_spinbutton")$getValue()
-
-  if (ntree != .ADA.NTREE.DEFAULT)
-    ntree <- sprintf(", iter=%d", ntree)
-  else
-    ntree <- ""
+  lib.cmd <-  "require(ada, quietly=TRUE)"
+  if (! packageIsAvailable("ada", "build an AdaBoost model")) return(FALSE)
+  if (gui) appendLog("Require the ada package.", lib.cmd)
+  eval(parse(text=lib.cmd))
 
   ## Construct the appropriate rpart control.
   
@@ -123,130 +45,96 @@ execute.model.ada <- function()
                            "cp=%f, minsplit=%d, xval=%d)"),
                      maxdepth, cp, minsplit, xval)
   
-  ## Load the required package into the library
+  ## Build a model. Note that there is randomness in this
+  ## implementation of AdaBoost, so set the seed to get the same
+  ## result each time.
 
-  addLogSeparator("ADA BOOST")
+  model.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+                     "ada(", formula, ", data=", dataset,
+                     control, ", iter=", ntree, ")",
+                     sep="")
 
-  lib.cmd <-  "require(ada, quietly=TRUE)"
-  if (! packageIsAvailable("ada", "build an AdaBoost model")) return(FALSE)
-  addToLog("Build an adaboost model using the ada package.", lib.cmd)
-  eval(parse(text=lib.cmd))
+  if (gui) appendLog("Build the adaboost model.", "crs$ada <-", model.cmd)
 
-  ## Build the formula for the model.
-
-  frml <- paste(crs$target, "~ .")
-
-  ## Variables to be included --- a string of indicies.
-  
-  included <- getIncludedVariables()
-
-  ## Some convenience booleans
-
-  sampling <- not.null(crs$sample)
-  including <- not.null(included)
-  subsetting <- sampling
-
-  ## Time the model building.
+  ## Note that this crs$ada is not the global crs$ada! We use it here
+  ## to be consistent in terms of the commands that are reported to
+  ## the log, but we return this value and in the outer call we
+  ## globally assign to crs$ada, at least in the context of the Rattle
+  ## GUI.
   
   start.time <- Sys.time()
-  
-  ## Build a model. Note that there seems to be some randomness in
-  ## this implementation of AdaBoost, so set the seed to get the same
-  ## result each time. Experiment, once I have the rule printing
-  ## working, to test this assumption.
+  crs$ada <- try(eval(parse(text=model.cmd)), silent=TRUE)
+  time.taken <- Sys.time()-start.time
 
-  model.cmd <- paste("set.seed(123)\n",
-                     "crs$ada <<- ada(", frml, ", data=crs$dataset",
-                     if (subsetting) "[",
-                     if (sampling) "crs$sample",
-                     if (subsetting) ",",
-                     if (including) included,
-                     if (subsetting) "]",
-                     control, ntree,
-                     ")", sep="")
-
-  addToLog("Build the adaboost model.", gsub("<<-", "<-", model.cmd))
-  result <- try(eval(parse(text=model.cmd)), silent=TRUE)
-  if (inherits(result, "try-error"))
+  if (inherits(crs$ada, "try-error"))
   {
-    errorDialog("An error occured in the call to ada and modelling failed.",
-                "The error was:", result)
-    return(FALSE)
+    msg <- paste("An error occured in the call to ada and modelling failed.",
+                  "The error was:", crs$ada)
+    if (gui)
+    {
+      errorDialog(msg)
+      return(FALSE)
+    }
+    stop(msg)
   }
   
   ## Print the results of the modelling.
 
-  print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
-  addToLog("Print the results of the modelling.", print.cmd)
-  clearTextview(TV)
-  setTextview(TV, "Summary of the adaboost modelling:\n\n",
-              collectOutput(print.cmd))
+  if (gui)
+  {
+    print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
+    appendLog("Print the results of the modelling.", print.cmd)
+    resetTextview(tv, tvsep=FALSE,
+                  "Summary of the adaboost modelling:\n\n",
+                  collectOutput(print.cmd))
+  }
 
-  ## Now that we have a model, make sure appropriate actions are sensitive.
-
-  make.sensitive.ada()
-  
   ## Finish up.
   
-  time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
-  setStatusBar("An adaboost model has been generated.", time.msg)
-  return(TRUE)
+  if (gui)
+  {
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    appendTextview(tv, "\n", time.msg)
+    appendLog(time.msg)
+    setStatusBar("An adaboost model has been generated.", time.msg)
+  }
+  return(crs$ada)
 }
 
-gen.cmd.predict.ada <- function(dataset)
+genPredictAda <- function(dataset)
 {
+  ## Generate a command to obtain the prediction results when applying
+  ## the model to new data.
+  
   return(sprintf("crs$pr <<- predict(crs$ada, %s)", dataset))
 }
 
-gen.cmd.response.ada <- function(dataset)
+genResponseAda <- function(dataset)
 {
-  return(gen.cmd.predict.ada(dataset))
+  ## Generate a command to obtain the response when applying the model
+  ## to new data.
+  
+  return(genPredictAda(dataset))
 }
 
-gen.cmd.probability.ada <- function(dataset)
+genProbabilityAda <- function(dataset)
 {
+  ## Generate a command to obtain the probability when applying the
+  ## model to new data.
+  
   return(sprintf("%s[,2]", gsub(")$", ', type="prob")',
-                                gen.cmd.predict.ada(dataset))))
+                                genPredictAda(dataset))))
 }
 
-make.sensitive.ada <- function(state=TRUE)
+plotImportanceAda <- function()
 {
-  theWidget("ada_importance_button")$setSensitive(state)
-  theWidget("ada_errors_button")$setSensitive(state)
-  theWidget("ada_list_button")$setSensitive(state)
-  theWidget("ada_draw_button")$setSensitive(state)
-  theWidget("ada_draw_spinbutton")$setSensitive(state)
-}
-
-set.defaults.ada <- function(stumps=FALSE)
-{
-  if (stumps)
-  {
-    theWidget("ada_maxdepth_spinbutton")$setValue(1)
-    theWidget("ada_minsplit_spinbutton")$setValue(0)
-    theWidget("ada_cp_spinbutton")$setValue(-1)
-    theWidget("ada_xval_spinbutton")$setValue(0)
-  }
-  else
-  {
-    theWidget("ada_maxdepth_spinbutton")$setValue(30)
-    theWidget("ada_minsplit_spinbutton")$setValue(20)
-    theWidget("ada_cp_spinbutton")$setValue(0.01)
-    theWidget("ada_xval_spinbutton")$setValue(10)
-  }
-}
-
-plot.importance.ada <- function()
-{
-
+  ## Generate a plot of the variable importances.
+  
   ## Make sure there is a model object first.
 
   if (is.null(crs$ada))
   {
-    errorDialog("E131: Should not be here.",
+    errorDialog("E135: Should not be here.",
                 "There is no ADA model and attempting to plot importance.",
                 "The button should not be active.",
                 "Please report this to Graham.Williams@togaware.com")
@@ -257,20 +145,22 @@ plot.importance.ada <- function()
   
   newPlot()
   plot.cmd <- "varplot(crs$ada)"
-  addToLog("Plot the relative importance of the variables.", plot.cmd)
+  appendLog("Plot the relative importance of the variables.", plot.cmd)
   eval(parse(text=plot.cmd))
 
   setStatusBar("ADA Variable Importance has been plotted.")
 }
   
-plot.errors.ada <- function()
+plotErrorsAda <- function()
 {
-
+  ## Generate a plot of the error rate as we add more models to the
+  ## ensemble.
+  
   ## Make sure there is a model object first.
 
   if (is.null(crs$ada))
   {
-    errorDialog("E132: Should not be here.",
+    errorDialog("E136: Should not be here.",
                 "There is no ADA model and attempting to plot error.",
                 "The button should not be active.",
                 "Please report this to Graham.Williams@togaware.com")
@@ -281,37 +171,13 @@ plot.errors.ada <- function()
   
   newPlot()
   plot.cmd <- "plot(crs$ada)" #, kappa=TRUE)"
-  addToLog("Plot the error rate as we increase the number of trees.", plot.cmd)
+  appendLog("Plot the error rate as we increase the number of trees.", plot.cmd)
   eval(parse(text=plot.cmd))
 
   setStatusBar("Ada errors has been plotted.")
 }
 
-plot.importance.ada <- function()
-{
-
-  ## Make sure there is a model object first.
-
-  if (is.null(crs$ada))
-  {
-    errorDialog("E131: Should not be here.",
-                "There is no ADA model and attempting to plot importance.",
-                "The button should not be active.",
-                "Please report this to Graham.Williams@togaware.com")
-    return()
-  }
-
-  ## Plot the variable importance.
-  
-  newPlot()
-  plot.cmd <- "varplot(crs$ada)"
-  addToLog("Plot the relative importance of the variables.", plot.cmd)
-  eval(parse(text=plot.cmd))
-
-  setStatusBar("ADA Variable Importance has been plotted.")
-}  
-
-list.trees.ada <- function(model, trees=0)
+listTreesAda <- function(model, trees=0)
 {
   stopifnot(require(ada, quietly=TRUE))
   ntrees <- length(model$model$trees)
@@ -323,7 +189,7 @@ list.trees.ada <- function(model, trees=0)
   }
 }
 
-draw.trees.ada <- function(model,
+drawTreesAda <- function(model,
                          trees=0,
                          title="")
 {
@@ -339,7 +205,7 @@ draw.trees.ada <- function(model,
   }
 }
 
-display.help.ada <- function()
+displayHelpAda <- function()
 {
   if (showHelpPlus("Boosting builds multiple, but generally simple, models.
 The models might be decision trees that have just one split - these

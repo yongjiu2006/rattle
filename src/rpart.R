@@ -80,13 +80,13 @@ on_rpart_plot_button_clicked <- function(button)
   ##                           "plotcp(crs$rpart)\n",
   ##                           genPlotTitleCmd("Cross Validated Error",
   ##                                              crs$dataname, "$", crs$target))
-  addToLog(paste("Plot the resulting rpart tree using Rattle",
+  appendLog(paste("Plot the resulting rpart tree using Rattle",
                   "and maptools support functions."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
   
   ## newPlot()
-  ## addToLog(plotcp.command)
+  ## appendLog(plotcp.command)
   ## eval(parse(text=plotcp.command))
 
   setStatusBar("Decision tree has been plotted.")
@@ -109,7 +109,7 @@ on_rpart_rules_button_clicked <- function(button)
   }
 
   rules.cmd <- "listRPartRules(crs$rpart)"
-  addToLog("List the rules from the tree using a Rattle support function.",
+  appendLog("List the rules from the tree using a Rattle support function.",
           rules.cmd)
   addTextview(TV, "Tree as rules:\n\n", collectOutput(rules.cmd, TRUE),
               textviewSeparator())
@@ -322,13 +322,13 @@ executeModelRPart <- function()
                              
   ## Load the required library.
 
-  addLogSeparator("DECISION TREE")
-  addToLog("Build a decision tree using the rpart package.", lib.cmd)
+  startLog("DECISION TREE")
+  appendLog("Build a decision tree using the rpart package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## Build the model.
 
-  addToLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
+  appendLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
   start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
   time.taken <- Sys.time()-start.time
@@ -346,9 +346,9 @@ executeModelRPart <- function()
 
   ## Display the resulting model.
 
-  addToLog("Generate textual output of the rpart model.", print.cmd)
+  appendLog("Generate textual output of the rpart model.", print.cmd)
 
-  clearTextview(TV)
+  resetTextview(TV)
   setTextview(TV,
               "Summary of the rpart model:\n\n",
               collectOutput(print.cmd))
@@ -363,7 +363,7 @@ executeModelRPart <- function()
   
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("An rpart model has been generated.", time.msg)
   return(TRUE)
 }
@@ -725,7 +725,7 @@ exportRpartTab <- function()
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export decision trees")) return(FALSE)
-  addToLog("Load the PMML package to export a decision tree.", lib.cmd)
+  appendLog("Load the PMML package to export a decision tree.", lib.cmd)
   eval(parse(text=lib.cmd))
   
   ## Obtain filename to write the PMML to.
@@ -768,7 +768,7 @@ exportRpartTab <- function()
   
 
   pmml.cmd <- "pmml.rpart(crs$rpart)"
-  addToLog("Export a decision tree as PMML.", pmml.cmd)
+  appendLog("Export a decision tree as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
   infoDialog("The PMML file", save.name, "has been written.")

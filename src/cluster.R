@@ -89,12 +89,12 @@ executeClusterKMeans <- function(include)
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   
-  addLogSeparator("KMEANS CLUSTER")
+  startLog("KMEANS CLUSTER")
 
   ## SEED: Log the R command and execute.
 
   seed.cmd <- sprintf('set.seed(%d)', seed)
-  addToLog("Set the seed to get the same clusters each time.", seed.cmd)
+  appendLog("Set the seed to get the same clusters each time.", seed.cmd)
   eval(parse(text=seed.cmd))
 
   ## Calculate the centers
@@ -109,7 +109,7 @@ executeClusterKMeans <- function(include)
   
   kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
                         ifelse(sampling, "crs$sample", ""), include, centers)
-  addToLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
+  appendLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
            gsub("<<-", "<-", kmeans.cmd))
   start.time <- Sys.time()
   eval(parse(text=kmeans.cmd))
@@ -117,11 +117,11 @@ executeClusterKMeans <- function(include)
 
   ## SUMMARY: Show the resulting model.
 
-  addToLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
-  addToLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
-  addToLog("Cluster centers:", "crs$kmeans$centers")
-  addToLog("Within cluster sum of squares:", "crs$kmeans$withinss")
-  clearTextview(TV)
+  appendLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
+  appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
+  appendLog("Cluster centers:", "crs$kmeans$centers")
+  appendLog("Within cluster sum of squares:", "crs$kmeans$withinss")
+  resetTextview(TV)
   setTextview(TV, "Cluster Sizes\n\n",
               collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
               "\n\nCluster centroids.\n\n",
@@ -138,7 +138,7 @@ executeClusterKMeans <- function(include)
   
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("The K Means cluster has been generated.",
                time.msg )
   
@@ -180,7 +180,7 @@ on_kmeans_stats_button_clicked <- function(button)
   ## plot, and log the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## Some background information.  Assume we have already built the
@@ -203,7 +203,7 @@ on_kmeans_stats_button_clicked <- function(button)
   stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
                              "crs$kmeans$cluster)\n"),
                        ifelse(sampling, "crs$sample", ""), include)
-  addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
   appendTextview(TV, "General cluster statistics:\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
 
@@ -257,7 +257,7 @@ on_kmeans_data_plot_button_clicked <- function(button)
                             "col=crs$kmeans$cluster)\n",
                             genPlotTitleCmd(""), sep=""),
                       ifelse(sampling, "crs$sample", ""), include)
-  addToLog("Generate a data plot.", plot.cmd)
+  appendLog("Generate a data plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -280,7 +280,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
   ## plot, and log the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## Some background information.  Assume we have already built the
@@ -319,7 +319,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
                             genPlotTitleCmd("Discriminant Coordinates",
                                             crs$dataname), sep=""),
                       ifelse(sampling, "crs$sample", ""), include)
-  addToLog("Generate a discriminant coordinates plot.", plot.cmd)
+  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -353,7 +353,7 @@ executeClusterHClust <- function(include)
   if (packageIsAvailable("amap"))
   {
     amap.available <- TRUE
-    addToLog("The hcluster function is provided by the amap package.", lib.cmd)
+    appendLog("The hcluster function is provided by the amap package.", lib.cmd)
     eval(parse(text=lib.cmd))
   }
   else
@@ -405,8 +405,8 @@ executeClusterHClust <- function(include)
 
   ## Log the R command.
 
-  addLogSeparator("HIERARCHICAL CLUSTER")
-  addToLog("Generate a hierarchical cluster of the data.",
+  startLog("HIERARCHICAL CLUSTER")
+  appendLog("Generate a hierarchical cluster of the data.",
           gsub("<<-", "<-", hclust.cmd))
   
   ## Perform the commands.
@@ -447,7 +447,7 @@ executeClusterHClust <- function(include)
 
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
-  addToLog(time.msg)
+  appendLog(time.msg)
   setStatusBar("A hierarchical cluster has been generated.", time.msg)
   
 }
@@ -482,7 +482,7 @@ on_hclust_dendrogram_button_clicked <- function(button)
   ## The library, cba, should already be loaded. But check anyhow.
 
   lib.cmd <- "require(cba, quietly=TRUE)"
-  addToLog("The plot functionality is provided by the cba package.", lib.cmd)
+  appendLog("The plot functionality is provided by the cba package.", lib.cmd)
   eval(parse(text=lib.cmd))
   
   ## PLOT: Generate the plot command to not print the xaxis labels if
@@ -496,7 +496,7 @@ on_hclust_dendrogram_button_clicked <- function(button)
                             limit),
                     genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
                     sep="")
-  addToLog("Generate a dendrogram plot.", plot.cmd)
+  appendLog("Generate a dendrogram plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
   
@@ -527,10 +527,10 @@ displayHClustStats <- function()
   ## the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  clearTextview(TV)
+  resetTextview(TV)
 
   ## Some background information.  Assume we have already built the
   ## cluster, and so we don't need to check so many conditions.
@@ -556,7 +556,7 @@ displayHClustStats <- function()
 
   centers.cmd <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
-  addToLog("List the suggested cluster centers for each cluster", centers.cmd)
+  appendLog("List the suggested cluster centers for each cluster", centers.cmd)
   appendTextview(TV, "Cluster means:\n\n",
                  collectOutput(centers.cmd, use.print=TRUE))
   
@@ -566,7 +566,7 @@ displayHClustStats <- function()
                              "cutree(crs$hclust, %d))\n"),
                        ifelse(sampling, "crs$sample", ""), include,
                        nclust)
-  addToLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
   appendTextview(TV, "General cluster statistics:\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
 
@@ -622,7 +622,7 @@ on_hclust_data_plot_button_clicked <- function(button)
                             genPlotTitleCmd(""), sep=""),
                       ifelse(sampling, "crs$sample", ""), include,
                       num.clusters)
-  addToLog("Generate a data plot.", plot.cmd)
+  appendLog("Generate a data plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -645,7 +645,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   ## plot, and log the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  addToLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## Some background information.  Assume we have already built the
@@ -686,7 +686,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
                                             crs$dataname), sep=""),
                       ifelse(sampling, "crs$sample", ""), include,
                       num.clusters)
-  addToLog("Generate a discriminant coordinates plot.", plot.cmd)
+  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -712,7 +712,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
 ##   lib.cmd <- "require(cba, quietly=TRUE)"
 ##   if (! packageIsAvailable("cba", "generate a seriation plot")) return()
-##   addToLog("Seriation is provided by the cba package.", lib.cmd)
+##   appendLog("Seriation is provided by the cba package.", lib.cmd)
 ##   eval(parse(text=lib.cmd))
   
 ##   ## Some background information.
@@ -737,7 +737,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 ##                     'Seriation (Optimal Leaf ordering)", ',
 ##                     'col = terrain.colors(64)))', sep="")
 
-##   addToLog("Generate a seriation plot.", plot.cmd)
+##   appendLog("Generate a seriation plot.", plot.cmd)
 ##   newPlot()
 ##   eval(parse(text=plot.cmd))
   
@@ -781,7 +781,7 @@ exportKMeansTab <- function(file)
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export kmeans clusters")) return(FALSE)
-  addToLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
+  appendLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
   eval(parse(text=lib.cmd))
   
   ## Obtain filename to write the clusters to.
@@ -823,7 +823,7 @@ exportKMeansTab <- function(file)
       return()
 
   pmml.cmd <- "pmml.kmeans(crs$kmeans)"
-  addToLog("Export the cluster as PMML.", pmml.cmd)
+  appendLog("Export the cluster as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
   
   infoDialog("The PMML file", save.name, "has been written.")

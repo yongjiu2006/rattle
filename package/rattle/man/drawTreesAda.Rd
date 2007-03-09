@@ -1,5 +1,5 @@
-\name{drawAdaTrees}
-\alias{drawAdaTrees}
+\name{drawTreesAda}
+\alias{drawTreesAda}
 \title{
   Draw trees from an Ada model
 }
@@ -9,7 +9,7 @@
   
 }
 \usage{
-drawAdaTrees(model, trees=0, title="")
+drawTreesAda(model, trees=0, title="")
 }
 \arguments{
   
@@ -29,6 +29,6 @@ drawAdaTrees(model, trees=0, title="")
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
 \examples{
-\dontrun{drawAdaTrees(ds.ada)}
+\dontrun{drawTreesAda(ds.ada)}
 }
 \keyword{hplot}
