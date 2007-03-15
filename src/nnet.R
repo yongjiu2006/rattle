@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-09 06:28:43 Graham>
+## Time-stamp: <2007-03-15 06:10:31 Graham>
 ##
 ## NNET TAB 061230
 ##
@@ -17,26 +17,6 @@
 ## CALLBACKS
 ##
 
-## on_ada_importance_button_clicked <- function(button)
-## {
-##   plot.importance.ada()
-## }
-
-## on_ada_errors_button_clicked <- function(button)
-## {
-##   plotErrorsAda()
-## }
-
-## on_ada_list_button_clicked <- function(button)
-## {
-##   doListAdaTrees()
-## }
-
-## on_ada_draw_button_clicked <- function(button)
-## {
-##   doDrawAdaTrees()
-## }
-
 ########################################################################
 ##
 ## NNET
@@ -49,17 +29,6 @@ executeModelNNet <- function()
   TV <- "nnet_textview"
 
   ## Obtain user interface model options.
-
-##   if (theWidget("ada_stumps_checkbutton")$getActive())
-##     stumps <- ", control=rpart.control(maxdepth=1,cp=-1,minsplit=0,xval=0)"
-##   else
-##     stumps <- ""
-  
-##   ntree <- theWidget("ada_ntree_spinbutton")$getValue()
-##   if (ntree != ADA.NTREE.DEFAULT)
-##     ntree <- sprintf(", iter=%d", ntree)
-##   else
-##     ntree <- ""
 
   ## Load the package into the library
 
@@ -117,12 +86,6 @@ executeModelNNet <- function()
 
   ## Now that we have a model, make sure appropriate actions are sensitive.
   
-##   theWidget("ada_importance_button")$setSensitive(TRUE)
-##   theWidget("ada_errors_button")$setSensitive(TRUE)
-##   theWidget("ada_list_button")$setSensitive(TRUE)
-##   theWidget("ada_draw_button")$setSensitive(TRUE)
-##   theWidget("ada_draw_spinbutton")$setSensitive(TRUE)
-
   ## Finish up.
   
   time.taken <- Sys.time()-start.time

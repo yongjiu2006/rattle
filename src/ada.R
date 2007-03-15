@@ -2,7 +2,7 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2007-03-10 08:55:07 Graham>
+## Time-stamp: <2007-03-16 06:28:35 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -54,7 +54,8 @@ buildModelAda <- function(formula,
                      control, ", iter=", ntree, ")",
                      sep="")
 
-  if (gui) appendLog("Build the adaboost model.", "crs$ada <-", model.cmd)
+  if (gui) appendLog("Build the adaboost model.",
+                     gsub('ada\\(', 'crs$ada <- ada(', model.cmd))
 
   ## Note that this crs$ada is not the global crs$ada! We use it here
   ## to be consistent in terms of the commands that are reported to
@@ -100,6 +101,32 @@ buildModelAda <- function(formula,
   }
   return(crs$ada)
 }
+
+continueModelAda <- function(dataset, ntrees)
+{
+  ## The ada.update only works, it seems, when the model is built
+  ## using the x,y interface rather than the formula interface.
+
+  ## I.e., the following works
+
+  ## crs$ada <- ada(x,y)
+  ## crs$ada <- update(crs$ada, x, y, n.iter=100)
+  
+  ## but the following does not:
+  
+  ## crs$ada <- ada(Adjust ~ ., data=ds)
+  ## crs$ada <- update(crs$ada, x, y, n.iter=100)
+  
+  ## I haven't worked out how to get it to work yet, and have asked the
+  ## author. I may need to move to using the x,y interface to ada instead
+  ## of the formula interface. I think this update functionality is useful.
+
+  ## I probably want to make sure iter has increased, and all of the
+  ## other parameters are the same. If not thendon't proceed.
+  
+  return()
+}
+
 
 genPredictAda <- function(dataset)
 {

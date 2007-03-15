@@ -213,7 +213,6 @@
 		  <child>
 		    <widget class="GtkImageMenuItem" id="export_menu">
 		      <property name="visible">True</property>
-		      <property name="sensitive">True</property>
 		      <property name="label" translatable="yes">_Export</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 18:19:08 GMT"/>
@@ -1132,6 +1131,27 @@
 		  </child>
 
 		  <child>
+		    <widget class="GtkRadioButton" id="arff_radiobutton">
+		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">ARFF</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		      <property name="group">csv_radiobutton</property>
+		      <signal name="toggled" handler="on_arff_radiobutton_toggled" last_modification_time="Thu, 15 Mar 2007 11:27:07 GMT"/>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
 		    <widget class="GtkRadioButton" id="odbc_radiobutton">
 		      <property name="visible">True</property>
 		      <property name="tooltip" translatable="yes">Identify a data source through an ODBC connection.</property>
@@ -1381,6 +1401,120 @@
 			<widget class="GtkLabel" id="label101">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">csv</property>
+			  <property name="use_underline">False</property>
+			  <property name="use_markup">False</property>
+			  <property name="justify">GTK_JUSTIFY_LEFT</property>
+			  <property name="wrap">False</property>
+			  <property name="selectable">False</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			  <property name="width_chars">-1</property>
+			  <property name="single_line_mode">False</property>
+			  <property name="angle">0</property>
+			</widget>
+			<packing>
+			  <property name="type">tab</property>
+			</packing>
+		      </child>
+
+		      <child>
+			<widget class="GtkVBox" id="vbox44">
+			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+			  <property name="spacing">0</property>
+
+			  <child>
+			    <widget class="GtkHBox" id="hbox41">
+			      <property name="border_width">5</property>
+			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+			      <property name="spacing">5</property>
+
+			      <child>
+				<widget class="GtkLabel" id="label180">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Filename:</property>
+				  <property name="use_underline">False</property>
+				  <property name="use_markup">False</property>
+				  <property name="justify">GTK_JUSTIFY_LEFT</property>
+				  <property name="wrap">False</property>
+				  <property name="selectable">False</property>
+				  <property name="xalign">0.5</property>
+				  <property name="yalign">0.5</property>
+				  <property name="xpad">0</property>
+				  <property name="ypad">0</property>
+				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+				  <property name="width_chars">-1</property>
+				  <property name="single_line_mode">False</property>
+				  <property name="angle">0</property>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkFileChooserButton" id="arff_filechooserbutton">
+				  <property name="width_request">150</property>
+				  <property name="height_request">17</property>
+				  <property name="visible">True</property>
+				  <property name="title" translatable="yes">Select A ARFF File</property>
+				  <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
+				  <property name="local_only">True</property>
+				  <property name="show_hidden">False</property>
+				  <property name="do_overwrite_confirmation">False</property>
+				  <property name="width_chars">-1</property>
+				  <signal name="selection_changed" handler="display_click_execute_message" last_modification_time="Mon, 20 Mar 2006 07:48:59 GMT"/>
+				  <signal name="update_preview" handler="on_arff_filechooserbutton_update_preview" last_modification_time="Thu, 15 Mar 2007 11:28:31 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="arff_viewdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">View Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_viewdata_button_clicked" last_modification_time="Sat, 03 Mar 2007 09:50:26 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">False</property>
+			      <property name="fill">False</property>
+			    </packing>
+			  </child>
+			</widget>
+			<packing>
+			  <property name="tab_expand">False</property>
+			  <property name="tab_fill">True</property>
+			</packing>
+		      </child>
+
+		      <child>
+			<widget class="GtkLabel" id="label179">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">arff</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -3936,6 +4070,12 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 			  <property name="text" translatable="yes">GGobi is an open source visualization program for exploring high-dimensional data. 
 
 GGobi provides highly dynamic and interactive graphics such as tours, as well as familiar graphics such as the scatterplot, barchart and parallel coordinates plots. Plots are interactive and linked with brushing and identification.
+
+We can recreate the plots presented in GGobi by selecting the Save Display Description item of the Tools menu of GGobi. This will prompt for a file name to save to. We can then load the resulting R script file using the DescribeDisplay package in the R Console and generate the plot:
+
+    library(DescribeDisplay)
+    pd &lt;- dd_load(&quot;ggobi-saved-display-description.R&quot;)
+    plot(pd)
 
 Click the Execute button (or F5) to run GGobi.</property>
 			</widget>
@@ -7783,6 +7923,27 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
 			      <property name="right_attach">4</property>
 			      <property name="top_attach">1</property>
 			      <property name="bottom_attach">2</property>
+			      <property name="x_options">fill</property>
+			      <property name="y_options"></property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkButton" id="ada_continue_button">
+			      <property name="visible">True</property>
+			      <property name="sensitive">False</property>
+			      <property name="tooltip" translatable="yes">You can build further trees by increasing the number of trees to build then click here.</property>
+			      <property name="can_focus">True</property>
+			      <property name="label" translatable="yes">Continue</property>
+			      <property name="use_underline">True</property>
+			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
+			    </widget>
+			    <packing>
+			      <property name="left_attach">8</property>
+			      <property name="right_attach">9</property>
+			      <property name="top_attach">2</property>
+			      <property name="bottom_attach">3</property>
 			      <property name="x_options">fill</property>
 			      <property name="y_options"></property>
 			    </packing>

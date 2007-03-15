@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-10 07:46:15 Graham>
+## Time-stamp: <2007-03-15 06:05:44 Graham>
 ##
 ## Textview widget support
 ##
@@ -52,8 +52,14 @@ resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
   }
   wid$modifyFont(pangoFontDescriptionFromString("monospace 10"))
   msg <- paste(sep=sep, ...)
-  if (length(msg) > 0) wid$getBuffer()$setText(msg)
-  if (tvsep) appendTextview(tv)
+  if (length(msg) > 0)
+  {
+    wid$getBuffer()$setText(msg)
+    if (tvsep) appendTextview(tv)
+  }
+  else
+    wid$getBuffer()$setText("")
+
 }
 
 appendTextview <- function(tv, ..., sep="", tvsep=TRUE)
