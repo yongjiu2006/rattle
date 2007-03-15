@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-10 09:16:18 Graham>
+## Time-stamp: <2007-03-15 22:25:03 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -273,6 +273,7 @@ rattle <- function()
 
   .DATA              <<- theWidget("data_notebook")
   .DATA.CSV.TAB      <<- getNotebookPage(.DATA, "csv")
+  .DATA.ARFF.TAB     <<- getNotebookPage(.DATA, "arff")
   .DATA.RDATA.TAB    <<- getNotebookPage(.DATA, "rdata")
   .DATA.RDATASET.TAB <<- getNotebookPage(.DATA, "rdataset")
   .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
@@ -1228,6 +1229,37 @@ on_csv_filechooserbutton_update_preview <- function(button)
   # CAN'T GO HERE - NEED ANOTHER CALLBACK button$setCurrentFolder(crs$cwd)
 }
 
+on_arff_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    .DATA$setCurrentPage(.DATA.ARFF.TAB)
+  }
+  setStatusBar()
+}
+
+on_arff_filechooserbutton_update_preview <- function(button)
+{
+  if (length(button$listFilters()) == 0)
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("ARFF Files")
+    ff$addPattern("*.arff")
+    button$addFilter(ff)
+    
+    ff <- gtkFileFilterNew()
+    ff$setName("All Files")
+    ff$addPattern("*")
+    button$addFilter(ff)
+  }
+
+  ## Kick the GTK event loop otherwise you end up waiting until the
+  ## mouse is moved, for example.
+  
+  while (gtkEventsPending()) gtkMainIteration()
+
+}
+
 on_rdata_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
@@ -1340,7 +1372,9 @@ open_odbc_set_combo <- function(button)
   startLog("ODBC CONNECTION")
 
   appendLog("Require the RODBC library", lib.cmd)
+  set.cursor("watch")
   eval(parse(text=lib.cmd))
+  set.cursor("")
        
   ## Close all currently open channels. This assumes that the user is
   ## not openning channelse themselves. Could be a bad choice, but
@@ -1395,6 +1429,8 @@ executeDataTab <- function()
 {
   if (theWidget("csv_radiobutton")$getActive())
     executeDataCSV()
+  else if (theWidget("arff_radiobutton")$getActive())
+    executeDataARFF()
   else if (theWidget("odbc_radiobutton")$getActive())
     executeDataODBC()
   else if (theWidget("rdata_radiobutton")$getActive())
@@ -1527,6 +1563,77 @@ executeDataCSV <- function()
   theWidget("csv_viewdata_button")$setSensitive(TRUE)
   
   setStatusBar("The CSV data has been loaded:", crs$dataname)
+}
+
+executeDataARFF <- function()
+{
+  TV <- "data_textview"
+  
+  ## Collect relevant data
+
+  filename <- theWidget("arff_filechooserbutton")$getFilename()
+  setDefaultPath(filename)
+  
+  ## Error exit if no filename is given
+
+  if (is.null(filename))
+  {
+    errorDialog("No ARFF Filename has been chosen yet.",
+                 "You must choose one before execution.",
+                 "Change the radio button selection if you prefer to link",
+                 "to a dataset already loaded into the R Console.")
+    return()
+  }
+
+  ## If there is a model warn about losing it.
+
+  if ( not.null(listBuiltModels()) )
+  {
+    if (is.null(questionDialog("You have chosen to load a dataset.",
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "Do you wish to continue, and lose the old",
+                               "project? If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.")))
+        
+      return()
+  }
+
+  ## Fix filename for MS - otherwise eval/parse strip the \\.
+
+  if (isWindows()) filename <- gsub("\\\\", "/", filename)
+
+  ## Generate commands to read the data and then display the structure.
+
+  read.cmd <- sprintf('crs$dataset <<- read.arff("%s")', filename)
+  str.cmd  <- "str(crs$dataset)"
+  
+  ## Start logging and executing the R code.
+
+  startLog()
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
+  resetTextview(TV)
+  
+  appendLog("LOAD ARFF FILE", gsub('<<-', '<-', read.cmd))
+  resetRattle()
+  eval(parse(text=read.cmd))
+  crs$dataname <<- basename(filename)
+  setRattleTitle(crs$dataname)
+
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
+                  collectOutput(str.cmd))
+  
+  ## Update the variables treeview and samples.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+
+  ## Enable the Data View button.
+
+  theWidget("arff_viewdata_button")$setSensitive(TRUE)
+  
+  setStatusBar("The ARFF data has been loaded:", crs$dataname)
 }
 
 executeDataODBC <- function()

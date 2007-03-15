@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2007-03-10 07:34:08 Graham>
+## Time-stamp: <2007-03-16 06:38:46 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -43,6 +43,23 @@ on_ada_list_button_clicked <- function(button)
 on_ada_draw_button_clicked <- function(button)
 {
   drawTreesAdaGui()
+}
+
+on_ada_continue_button_clicked <- function(button)
+{
+  ## Extract the new iter from the GUI
+
+  niter <- theWidget("ada_ntree_spinbutton")$getValue()
+
+  ## If the number of iterations has not changed, or is smaller, do
+  ## nothing.
+
+  if (niter <= crs$ada$iter)
+    infoDialog(sprintf("The new number of trees, %d, is no larger", iter),
+               sprintf("than the old number of trees, %d.", crs$ada$iter),
+               "Thus there is nothing to do.")
+  else
+    continueModelAda(niter)
 }
 
 ## HELP
@@ -118,5 +135,7 @@ makeSensitiveAda <- function(state=TRUE)
   theWidget("ada_errors_button")$setSensitive(state)
   theWidget("ada_list_button")$setSensitive(state)
   theWidget("ada_draw_button")$setSensitive(state)
+  ## Until it works, but keep visible for now
+  ## theWidget("ada_continue_button")$setSensitive(state)
   theWidget("ada_draw_spinbutton")$setSensitive(state)
 }

@@ -32,6 +32,7 @@ R_SOURCE = \
 	src/rattle.R \
 	src/ada.R \
 	src/ada_gui.R \
+	src/arff.R \
 	src/associate.R \
 	src/cluster.R \
 	src/execute.R \
