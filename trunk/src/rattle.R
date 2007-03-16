@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-16 20:25:46 Graham>
+## Time-stamp: <2007-03-17 08:25:31 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -85,9 +85,19 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 ##
 ## INITIALISATIONS
 
-rattle <- function()
+rattle <- function(csvname=NULL)
 {
 
+  ## Ensure command line arguments look okay
+
+  if (not.null(csvname))
+  {
+    csvname <- path.expand(csvname)
+    if (substr(csvname, 1, 1) != "/") csvname <- file.path(getwd(), csvname)
+    if (! file.exists(csvname))
+      stop('The supplied CSV file "', csvname, '" does not exist.')
+  }
+  
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
   ## Keep the loading of Hmisc quiet.
@@ -380,6 +390,14 @@ rattle <- function()
 
   #gtkMain() # Tooltips work but the console is blocked and need gtkMainQuit
   ## TODO Add a console into Rattle to interact with R.
+
+  ## Now deal with any arguments to rattle.
+
+  if (not.null(csvname))
+  {
+    theWidget("csv_filechooserbutton")$setFilename(csvname)
+    executeDataCSV()
+  }
   
 }
 
@@ -2467,28 +2485,35 @@ initialiseVariableViews <- function()
 
   ## Add the ZERO and MEAN columns to the IMPUTE view.
 
+  options <- gtkListStoreNew("gchararray")
+
+  # Add the options
+  
+  oiter <- options$append()$iter
+  options$set(oiter, 0, "None")
+  oiter <- options$append()$iter
+  options$set(oiter, 0, "Zero/Missing")
+  oiter <- options$append()$iter
+  options$set(oiter, 0, "Mean")
+  oiter <- options$append()$iter
+  options$set(oiter, 0, "Median")
+
+  # Create the renderer
+
   renderer <- gtkCellRendererComboNew()
-  ##category <- gtkTreeStoreNew("gchararray")
-  model <- gtkListStore("gchararray")
-  combo <- gtkComboBoxNewWithModel(model, 0)
-  # NOT WORKING YET
-##  lapply(unlist(list(A="A", B="B", C="C")), combo$appendText)
-##  lapply(unlist(list(A="A", B="B", C="C")), model$append)
+
   renderer$set(xalign = 0.0)
-##  renderer$set(model=model)
+  renderer$set(model=options)
   renderer$set(text_column=0)
-  renderer$set(editable=FALSE)
+  renderer$set(editable=TRUE)
   renderer$set(has_entry=FALSE)
-##  renderer$set(radio = TRUE)
-##  renderer$set(width = 60)
-##  renderer$setData("column", .IMPUTE["zero"])
-##  connectSignal(renderer, "toggled", imp_toggled, impute)
+  connectSignal(renderer, "edited", imp_edited, impute)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
                                        "Imputation",
                                         renderer,
                                         text = .IMPUTE[["type"]])
-##                                        model = .IMPUTE[["type"]])
+#                                       model = .IMPUTE[["type"]])
 
   ## Move to using Combobox
   
@@ -2821,19 +2846,16 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     if (missing.count > 0) # Ignore IGNOREd variables. But crs$ignore
                            # is not yet set. Need to remove later.
     {
-      #model <- gtkListStore("gchararray")
-      #combo <- gtkComboBoxNewWithModel(model, 0)
-      #lapply(unlist(list(A="A", B="B", C="C")), model$append)
+      imp.options <- gtkListStoreNew("gchararray")
+      imp.options.iter <- imp.options$append()$iter
+      imp.options$set(imp.options.iter, 0, "xx")
+#      lapply(unlist(list(A="a", B="b", C="c")), model$append)
+      combo <- gtkComboBoxNewWithModel(imp.options, 0)
       impiter <- impute$append()$iter
       impute$set(impiter,
                  .IMPUTE["number"], i,
                  .IMPUTE["variable"], variables[i],
-##                 .IMPUTE["type"], combo,
-                 .IMPUTE["type"], "Zero/Missing",
-##                  .IMPUTE["type"], unlist(list(A="A", B="B", C="C")),
-##                  .IMPUTE["type"], c("A", "B", "C"),
-##                  .IMPUTE["zero"], variables[i] %in% zero,
-##                  .IMPUTE["mean"], variables[i] %in% mean,
+                 .IMPUTE["type"], "None",
                  .IMPUTE["comment"], sprintf("%s with %d missing.",
                                             cl, missing.count))
     }
@@ -3043,11 +3065,20 @@ on_impute_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-imp_toggled <- function(cell, path.str, model)
+imp_edited <- function(render, path.str, text, model)
 {
-  ## A impute variable's radio button has been toggled in the
+  ## A impute variable's ipmutation option has been changed in the
   ## TRANSFORM's tab IMPUTE option. Handle the choice.
 
+  print("ARG1")
+  print(cell)
+  print("ARG2")
+  print(path.str)
+  print("ARG3")
+  print(text)
+  print("ARG4")
+  print(model)
+  
   ## The data passed in is the model used in the treeview.
 
   checkPtrType(model, "GtkTreeModel")
