@@ -1,0 +1,42 @@
+  <p class="bigb">
+    Rattle: To-Do List
+  </p>
+
+  <p>This is a brief list of some of the things in the pipeline or
+    suggested by users. Feel free to email me with suggestions and
+    priorities and especially code.</p>
+
+<pre>
+070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
+070305 Add a "best k" finder using hclust (Daniele Medri)
+070311 Replace radio buttons with icons (Graham Williams)
+070109 Evaluate: add compare distributions radio button (Ray Lindsay)
+070131 Transform: Add binning code (Daniele Medri)
+070215 Transform: Use "recode" to bin variables.
+070121 Each textview have default explanatory text
+070130 Explore->Distr->Cat->Bars: Add mosaic plots (Rohan Baxter)
+070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
+070201 Transform: Use mix for impute - use as.matrix (Daniel Medri)
+070114 Add textmining.R to Rattle
+070215 Transform: Use some Rcmdr transforms
+061227 Eval->Save: All to one file.
+060821 Explore->Distributions: Clear = clear all radio buttons
+060723 Simplify RF rule sets
+070220 Explore: how to print? (Tony Nolan)
+070220 Auto update feature(Tony Nolan)
+070201 Investigate party for rattle (Daniel Medri)
+070201 Invetigate rmpi for rattle (Daniel Medri)
+070105 Implement knn model builder (Yale)
+061230 Implement nnet (Yale)
+060001 Implement bagged boosted stumps (Jeremy Barnes)
+070316 Provide a simple manual data entry mechanism (Tony Nolan)
+</pre>
+    
+  <p class="copyright">
+    
+    <COPYRIGHT>
+
+<!-- hhmts start -->
+Last modified: Fri Mar 16 20:05:56 EST 2007
+<!-- hhmts end -->
+  </p>

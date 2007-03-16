@@ -7,7 +7,7 @@
 
 <pre>
 151 Add Continue button to ada model (Peter Ricci).
-150 Support reading of ARFF data file (Denny).
+150 Support reading of ARFF data files (Denny).
 149 Finish ada cleanup.
 148 Clean up ada as a sample template module.
 147 Allow using hclust centers to prime kmeans (Daniele Medri).
@@ -199,6 +199,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Mar 16 06:39:01 EST 2007
+Last modified: Fri Mar 16 20:04:49 EST 2007
 <!-- hhmts end -->
   </p>

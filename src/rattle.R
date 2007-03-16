@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-15 22:25:03 Graham>
+## Time-stamp: <2007-03-16 20:25:46 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -899,7 +899,7 @@ savePlot <- function(device=NULL, name="plot")
   # Obtain a filename to save to. Ideally, this would also prompt for
   # the device to export, and the fontsize, etc.
 
-  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg)",
+  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg, svg)",
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
@@ -910,12 +910,13 @@ savePlot <- function(device=NULL, name="plot")
 
   ff <- gtkFileFilterNew()
   if (isWindows())
-    ff$setName("Graphics Files (pdf png jpg wmf)")
+    ff$setName("Graphics Files (pdf png jpg svg wmf)")
   else
-    ff$setName("Graphics Files (pdf png jpg)")
+    ff$setName("Graphics Files (pdf png jpg svg)")
   ff$addPattern("*.pdf")
   ff$addPattern("*.png")
   ff$addPattern("*.jpg")
+  ff$addPattern("*.svg")
   if (isWindows()) ff$addPattern("*.wmf")
   dialog$addFilter(ff)
 
@@ -955,6 +956,14 @@ savePlot <- function(device=NULL, name="plot")
     dev.copy(png, file=save.name, width=700, height=700)
   else if (ext == "jpg")
     dev.copy(jpeg, file=save.name, width=700, height=700)
+  else if (ext == "svg")
+    if (packageIsAvailable("RSvgDevice", "to save plot to SVG format"))
+    {
+      require("RSvgDevice")
+      dev.copy(devSVG, file=save.name, width=7, height=7)
+    }
+    else
+      return()
   else if (ext == "wmf")
     dev.copy(win.metafile, file=save.name, width=7, height=7)
   dev.off()

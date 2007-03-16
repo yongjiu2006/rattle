@@ -1,7 +1,3 @@
-Implement bagged boosted stumps
-Implement knn (Yale)
-Save all scores in one file
-
 ========================================================================
 Description: Implement nnet (Yale)
 Proposer: 
@@ -237,7 +233,6 @@ Write article for Newsletter
 prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
 Choice of Kernel for SVMs. 
 For each textview, add initial text to explain the point (c.f. prcomp)
-##   Mosaic plots (Rohan)
 ##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
 ##   Add t/z test and chi2 test in explore tab (Tony)
 ##   Some solution to the blotches in the hierarchical clusters (Linda)

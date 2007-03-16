@@ -68,6 +68,7 @@ revision:
 
 install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
+	cp todo.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
 	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\
