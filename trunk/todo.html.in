@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+070317 Split the Sample/Transform tabs, and put Explore in middle.
 070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
 070305 Add a "best k" finder using hclust (Daniele Medri)
 070311 Replace radio buttons with icons (Graham Williams)
@@ -37,6 +38,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Mar 16 20:05:56 EST 2007
+Last modified: Sat Mar 17 10:10:26 EST 2007
 <!-- hhmts end -->
   </p>
