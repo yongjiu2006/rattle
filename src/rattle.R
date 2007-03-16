@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 08:25:31 Graham>
+## Time-stamp: <2007-03-17 10:09:18 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -2255,6 +2255,7 @@ getSelectedVariables <- function(role, named=TRUE)
   ## same in each of .COLUMNS, .CATEGORICAL, and .CONTINUOUS.
 
   variables <- NULL
+  type <- "logical"
 
   if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
@@ -2274,13 +2275,14 @@ getSelectedVariables <- function(role, named=TRUE)
     rcol  <- .CATEGORICAL[[role]]
   }
 
-  ## Move to using a combobox
+  ## The imputation roles use a combobox to select.
   
-##   else if (role %in% c("zero", "mean"))
-##   {
-##     model <- theWidget("impute_treeview")$getModel()
-##     rcol  <- .IMPUTE[[role]]
-##   }
+  else if (role %in% c("zero", "mean", "median"))
+  {
+    type <- "character"
+    model <- theWidget("impute_treeview")$getModel()
+    rcol  <- .IMPUTE[["type"]]
+  }
   
   else
     return(variables)
@@ -2294,7 +2296,17 @@ getSelectedVariables <- function(role, named=TRUE)
                     variable <- model$get(iter, vcol)[[1]]
                   else
                     variable <- model$get(iter, ncol)[[1]]
-                  if (flag) variables <<- c(variables, variable)
+                  if (type=="character")
+                  {
+                    if (role == "zero" && flag == "Zero/Missing")
+                      variables <<- c(variables, variable)
+                    if (role == "mean" && flag == "Mean")
+                      variables <<- c(variables, variable)
+                    if (role == "median" && flag == "Median")
+                      variables <<- c(variables, variable)
+                  }
+                  else
+                    if (flag) variables <<- c(variables, variable)
                   return(FALSE) # Keep going through all rows
                 })
   return(variables)
@@ -2302,14 +2314,13 @@ getSelectedVariables <- function(role, named=TRUE)
 
 initialiseVariableViews <- function()
 {
-
   ## Define the models.
+
   model <- gtkListStoreNew("gchararray", "gchararray", "gchararray",
                            "gboolean", "gboolean", "gboolean", "gboolean",
                            "gboolean", "gchararray")
 
   impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray",
-                            ## "boolean", "gboolean",
                             "gchararray")
   
   continuous <- gtkListStoreNew("gchararray", "gchararray",
@@ -2323,6 +2334,7 @@ initialiseVariableViews <- function()
   
   
   ## View the model through the treeview in the VARIABLES tab
+
   treeview <- theWidget("variables_treeview")
   treeview$setModel(model)
 
@@ -3065,37 +3077,24 @@ on_impute_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-imp_edited <- function(render, path.str, text, model)
+imp_edited <- function(renderer, path.str, text, model)
 {
-  ## A impute variable's ipmutation option has been changed in the
-  ## TRANSFORM's tab IMPUTE option. Handle the choice.
+  ## An impute variable's imputation option has been changed in the
+  ## TRANSFORM's tab IMPUTE option. Handle the new choice.
 
-  print("ARG1")
-  print(cell)
-  print("ARG2")
-  print(path.str)
-  print("ARG3")
-  print(text)
-  print("ARG4")
-  print(model)
-  
   ## The data passed in is the model used in the treeview.
 
   checkPtrType(model, "GtkTreeModel")
 
-  ## Extract the column number of the model that has changed.
-
-  column <- cell$getData("column")
-
-  ## Get the current value of the corresponding flag
+  ## Get the correct pointer.
   
   path <- gtkTreePathNewFromString(path.str) # Current row
   iter <- model$getIter(path)$iter           # Iter for the row
-  current <- model$get(iter, column)[[1]]    # Get data from specific column
 
-  ## Always invert
-  
-  model$set(iter, column, !current)
+  ## Set the value appropriately.
+
+  column <- .IMPUTE[["type"]]
+  model$set(iter, column, text)
 
 }
 

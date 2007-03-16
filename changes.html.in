@@ -6,7 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
-152 Add Continue button to ada model (Peter Ricci).
+153 Use a combobox to select type of imputation to perform.
+152 Allow a csvname to be supplied to rattle on startup (Tony Nolan).
 151 Add support for cairoPlots saving to SVG if RSvgDevice is available.
 150 Support reading of ARFF data files (Denny).
 149 Finish ada cleanup.
@@ -200,6 +201,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Mar 16 20:33:14 EST 2007
+Last modified: Sat Mar 17 10:09:46 EST 2007
 <!-- hhmts end -->
   </p>
