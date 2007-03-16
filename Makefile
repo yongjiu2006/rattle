@@ -66,6 +66,9 @@ default: local
 revision:
 	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R
 
+update:
+	svn update
+
 install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	cp todo.html.in /home/gjw/projects/togaware/www/
