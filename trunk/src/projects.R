@@ -241,7 +241,7 @@ loadProject <- function()
                      crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
                      crs$barplot, crs$dotplot)
-  executeVariablesTab()
+   executeSelectTab()
   
   if (not.null(crs$risk))
     theWidget("evaluate_risk_label")$setText(crs$risk)

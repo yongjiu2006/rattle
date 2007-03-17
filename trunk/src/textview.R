@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-15 06:05:44 Graham>
+## Time-stamp: <2007-03-17 13:27:16 Graham>
 ##
 ## Textview widget support
 ##
@@ -107,6 +107,7 @@ getTextviewContent <- function(TV)
 setTextview <- function(tv, ..., sep="")
 {
   ## Stop using this - use resetTextview instead
+
   if (is.null(wid <- getTextview(tv)))
   {
     errorDialog("E137: Should not be here.",
