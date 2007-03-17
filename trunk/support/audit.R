@@ -70,7 +70,7 @@ levels(audit$Employment)[8] <- "Volunteer"
 ## Tidyup Marital
 
 levels(audit$Marital)[2] <- "Married"
-levels(audit$Marital)[3] <- "Civil"
+levels(audit$Marital)[3] <- "Married"
 levels(audit$Marital)[4] <- "Absent"
 levels(audit$Marital)[5] <- "Unmarried"
 
@@ -130,3 +130,24 @@ audit <- cbind(ID=idents, audit[cases,])
 write.table(audit, "audit.csv", sep=",", row.names=FALSE)
 audit <- read.csv("audit.csv")
 save(audit, file="audit.RData", compress=TRUE)
+
+library(rattle)
+write.arff(audit, "audit.arff")
+
+# Create a dataset with special variable names.
+
+colnames(audit)[11] <- "IGNORE_Accounts"
+colnames(audit)[12] <- "RISK_Adjustment"
+write.table(audit, "audit_auto.csv", sep=",", row.names=FALSE)
+
+# Create a dataset with many more missing values.
+
+mr <- sample(1:nrow(audit), nrow(audit)/4, replace=TRUE)
+mc <- sample(2:(ncol(audit)-1), nrow(audit)/4, replace=TRUE)
+
+for (i in 1:(nrow(audit)/4))
+{
+  audit[mr[i], mc[i]] <- NA
+}
+write.table(audit, "audit_missing.csv", sep=",", row.names=FALSE)
+

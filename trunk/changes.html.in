@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+155 Place found string in summary search function further into the view.
 154 Move Sample to Select tab. Place Transform tab after Explore tab.
 154 Rename Variables tab to Select tab.
 153 Use a combobox to select type of imputation to perform.
@@ -203,6 +204,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 17 14:01:36 EST 2007
+Last modified: Sat Mar 17 14:27:54 EST 2007
 <!-- hhmts end -->
   </p>

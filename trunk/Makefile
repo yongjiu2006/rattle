@@ -128,11 +128,13 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 
 data: package/rattle/data/audit.RData
 
-package/rattle/data/audit.RData: support/audit.R
+package/rattle/data/audit.RData: support/audit.R Makefile
 	R --no-save --quiet < support/audit.R
-	mv audit.RData package/rattle/data/
-	mv audit.csv package/rattle/inst/csv/audit.csv
-	mv survey.data survey.csv archive
+	cp audit.RData package/rattle/data/
+	cp audit.csv package/rattle/inst/csv/audit.csv
+	cp audit.arff package/rattle/inst/arff/audit.arff
+	cp audit.RData audit.csv audit.arff src/
+	cp audit_missing.csv audit_auto.csv src/
 	chmod go+r $@
 
 zip: local plocal

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 14:18:05 Graham>
+## Time-stamp: <2007-03-17 15:30:13 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -958,7 +958,7 @@ savePlot <- function(device=NULL, name="plot")
     
   if (file.exists(save.name))
     if (is.null(questionDialog("A Graphics file of the name", save.name,
-                                "already exists. Do you want to overwrite",
+                                "already exists. \n\nDo you want to overwrite",
                                 "this file?")))
       return()
   
@@ -1530,10 +1530,11 @@ executeDataCSV <- function()
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
-                               "Do you wish to continue, and lose the old",
-                               "project? If you choose not to continue",
+                               "If you choose not to continue",
                                "you can save the project, and then load",
-                               "the new dataset.")))
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
         
       return()
   }
@@ -1619,10 +1620,11 @@ executeDataARFF <- function()
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
-                               "Do you wish to continue, and lose the old",
-                               "project? If you choose not to continue",
+                               "If you choose not to continue",
                                "you can save the project, and then load",
-                               "the new dataset.")))
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
         
       return()
   }
@@ -1710,10 +1712,11 @@ executeDataODBC <- function()
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
-                               "Do you wish to continue, and lose the old",
-                               "project? If you choose not to continue",
+                               "If you choose not to continue",
                                "you can save the project, and then load",
-                               "the new dataset.")))
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
         
       return()
   }
@@ -1743,7 +1746,7 @@ executeDataODBC <- function()
                                  "rows from the table", table,
                                  "of the", dsn.name, "ODBC connection.",
                                  "That's quite a few to load into memory.",
-                                 "Do you wish to continue?")))
+                                 "\n\nDo you wish to continue?")))
         return()
   }
   
@@ -1818,10 +1821,11 @@ executeDataRdata <- function()
     if (is.null(questionDialog("You have chosen to load a dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
-                               "Do you wish to continue, and lose the old",
-                               "project? If you choose not to continue",
+                               "If you choose not to continue",
                                "you can save the project, and then load",
-                               "the new dataset.")))
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
         
       return()
   }
@@ -1885,10 +1889,11 @@ executeDataRdataset <- function()
                                "into Rattle.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
-                               "Do you wish to continue, and lose the old",
-                               "project? If you choose not to continue",
+                               "If you choose not to continue",
                                "you can save the project, and then load",
-                               "the new dataset.")))
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
         
       return()
   }
@@ -3965,7 +3970,7 @@ executeExplorePlot <- function(dataset)
                                "You could select fewer variables, or you",
                                "can change the number of plots per page,",
                                "but you can also proceed if you like.",
-                               "Would you like to proceed?")))
+                               "\n\nWould you like to proceed?")))
       return()
 
   ##---------------------------------------------------------------------
