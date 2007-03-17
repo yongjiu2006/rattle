@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+070317 Make the summary_find search case insensitive.
 070317 Implement mean and median imputation
 070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
 070305 Add a "best k" finder using hclust (Daniele Medri)
@@ -38,6 +39,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 17 13:57:31 EST 2007
+Last modified: Sat Mar 17 14:11:34 EST 2007
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-10 08:29:48 Graham>
+## Time-stamp: <2007-03-17 14:08:15 Graham>
 ##
 ## MODEL TAB
 ##
@@ -252,7 +252,8 @@ executeModelTab <- function()
   ## GUI as this makes most logical sense to the user.
 
   if (build.all || currentModelTab() == .RPART)
-    executeModelRPart()
+    if (executeModelRPart())
+      theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
 
   if (build.all || currentModelTab() == .ADA)
   {
@@ -265,18 +266,27 @@ executeModelTab <- function()
                     cp=theWidget("ada_cp_spinbutton")$getValue(),
                     xval=theWidget("ada_xval_spinbutton")$getValue(),
                     ntree=theWidget("ada_ntree_spinbutton")$getValue())
-    makeSensitiveAda()
-    theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
-}
+    if (not.null(crs$ada))
+    {
+      makeSensitiveAda()
+      theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
+    }
+  }
         
   if (build.all || currentModelTab() == .RF)
-    executeModelRF()
+    if (executeModelRF())
+      theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+  
   if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
-    executeModelSVM()
+    if (executeModelSVM())
+      theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+  
   if (build.all || currentModelTab() == .GLM)
-    executeModelGLM()
-##   if (build.all || currentModelTab() == NNET)
-##     executeModelNNet()
+    if (executeModelGLM())
+      theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+
+  ##   if (build.all || currentModelTab() == NNET)
+  ##     executeModelNNet()
 }
 
 ##----------------------------------------------------------------------

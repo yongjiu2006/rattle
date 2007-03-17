@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 13:56:53 Graham>
+## Time-stamp: <2007-03-17 14:18:05 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -3300,7 +3300,7 @@ on_summary_radiobutton_toggled <- function(button)
   basics.button   <- theWidget("basics_checkbutton")
   kurtosis.button <- theWidget("kurtosis_checkbutton")
   skewness.button <- theWidget("skewness_checkbutton")
-  missing.button   <- theWidget("show_missing_checkbutton")
+  missing.button   <- theWidget("missing_checkbutton")
   if (button$getActive())
   {
     .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
@@ -3512,8 +3512,6 @@ on_viewdata_next_button_clicked <- function(window)
 
 summarySearch <- function(tv, search.str, start.iter)
 {
-  ## TODO MAKE THE SEARCH CASE INSENSITIVE
-  
   found <- start.iter$iter$forwardSearch(search.str, 0)
   tvb <- tv$getBuffer()
   if (found$retval)
@@ -3521,7 +3519,7 @@ summarySearch <- function(tv, search.str, start.iter)
     tvb$selectRange(found$match_start, found$match_end)
     last.search.pos <-tvb$createMark('last.search.pos', found$match_end)
 
-    tv$scrollMarkOnscreen(last.search.pos)
+    tv$scrollToMark(last.search.pos, 0.2)
     while(gtkEventsPending()) gtkMainIteration()
 
     setStatusBar(sprintf('The string "%s" was found.', search.str))
