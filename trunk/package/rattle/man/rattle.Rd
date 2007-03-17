@@ -10,7 +10,10 @@
 
 }
 \usage{
-rattle()
+rattle(csvname=NULL)
+}
+\arguments{
+  \item{csvname}{the name of a CSV file to load into Rattle on startup.}
 }
 \details{
 
@@ -32,7 +35,7 @@ rattle()
 
 }
 \examples{
-## simply issue the command to run the GUI
-rattle()
+## simply issue the command to run the GUI, preloading the audit dataset
+rattle(system.file("csv", "audit.csv", package = "rattle"))
 }
 \keyword{environment}

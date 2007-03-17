@@ -1,4 +1,9 @@
 \name{rattle_gui}
+\alias{imp_edited}
+\alias{ISO_8601_to_POSIX_datetime_format}
+\alias{on_ada_continue_button_clicked}
+\alias{on_arff_filechooserbutton_update_preview}
+\alias{on_arff_radiobutton_toggled}
 \alias{display_click_odbc_execute_message}
 \alias{on_viewdata_button_clicked}
 \alias{on_viewdata_find_button_clicked}
