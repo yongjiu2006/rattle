@@ -32,11 +32,11 @@ dispatchExecuteButton <- function()
   {
     executeExploreTab()
   }
-  else if (ct == .NOTEBOOK.VARIABLES.NAME)
+  else if (ct == .NOTEBOOK.SELECT.NAME)
   {
-    executeVariablesTab()
+     executeSelectTab()
   }
-  else if (ct == .NOTEBOOK.SAMPLE.NAME)
+  else if (ct == .NOTEBOOK.TRANSFORM.NAME)
   {
     executeTransformTab()
   }

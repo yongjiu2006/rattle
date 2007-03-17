@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 10:09:18 Graham>
+## Time-stamp: <2007-03-17 13:56:53 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -244,15 +244,15 @@ rattle <- function(csvname=NULL)
   ## that are needed for removing and inserting tabs in the notebook,
   ## depending on the selected paradigm.
   
-  .NOTEBOOK               <<- theWidget("notebook")
+  .NOTEBOOK <<- theWidget("notebook")
 
-  .NOTEBOOK.DATA.NAME      <<- "Data"
+  .NOTEBOOK.DATA.NAME <<- "Data"
 
-  .NOTEBOOK.EXPLORE.NAME   <<- "Explore"
+  .NOTEBOOK.SELECT.NAME <<- "Select"
 
-  .NOTEBOOK.VARIABLES.NAME <<- "Variables"
+  .NOTEBOOK.EXPLORE.NAME <<- "Explore"
 
-  .NOTEBOOK.SAMPLE.NAME    <<- "Transform"
+  .NOTEBOOK.TRANSFORM.NAME <<- "Transform"
 
   .NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
   .NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
@@ -275,8 +275,8 @@ rattle <- function(csvname=NULL)
   ## Pages that are common to all paradigms.
 
   .NOTEBOOK.COMMON.NAMES <<- c(.NOTEBOOK.DATA.NAME,
-                              .NOTEBOOK.SAMPLE.NAME,
-                              .NOTEBOOK.VARIABLES.NAME,
+                              .NOTEBOOK.TRANSFORM.NAME,
+                              .NOTEBOOK.SELECT.NAME,
                               .NOTEBOOK.LOG.NAME)
   
   ## DATA tab pages.
@@ -289,16 +289,16 @@ rattle <- function(csvname=NULL)
   .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
 
   .TRANSFORM               <<- theWidget("transform_notebook")
-  .TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(.TRANSFORM, "sample")
+#  .TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(.TRANSFORM, "sample")
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
   .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
 
-  .IMPUTATION              <<- theWidget("impute_notebook")
-  .IMPUTATION.SUMMARY.TAB  <<- getNotebookPage(.IMPUTATION,
-                                               "Missing Values Summary")
-  .IMPUTATION.PERFORM.TAB  <<- getNotebookPage(.IMPUTATION,
-                                               "Perform Imputation")
+#  .IMPUTATION              <<- theWidget("impute_notebook")
+#  .IMPUTATION.SUMMARY.TAB  <<- getNotebookPage(.IMPUTATION,
+#                                               "Missing Values Summary")
+#  .IMPUTATION.PERFORM.TAB  <<- getNotebookPage(.IMPUTATION,
+#                                               "Perform Imputation")
   
   .EXPLORE                 <<- theWidget("explore_notebook")
   .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
@@ -350,8 +350,8 @@ rattle <- function(csvname=NULL)
   ## Turn off the sub-notebook tabs.
   
   .DATA$setShowTabs(FALSE)
-  .TRANSFORM$setShowTabs(FALSE)
   .EXPLORE$setShowTabs(FALSE)
+  .TRANSFORM$setShowTabs(FALSE)
   .CLUSTER$setShowTabs(FALSE)
   .MODEL$setShowTabs(FALSE)
   .EVALUATE$setShowTabs(FALSE)
@@ -438,7 +438,7 @@ resetRattle <- function()
 
   setTextview("data_textview")
   setTextview("summary_textview")
-  setTextview("impute_textview")
+#  setTextview("impute_textview")
   setTextview("correlation_textview")
   setTextview("prcomp_textview")
   setTextview("kmeans_textview")
@@ -455,25 +455,25 @@ resetRattle <- function()
 
   ## Reset some textviews back to standard text.
 
-  setTextview("impute_textview",
-  gsub("\n", " ",
-       "Click the Execute Button (or Menu or F5) to obtain a summary of the
-missing values in the data. In the resulting summary, we will see a
-matrix with headings corresponding to the variables in the data. The
-body of the matrix includes 1's and 0's, with a 0 indicating missing
-values. The rows of the matrix show the missing values for each
-variable in combination with the other variables."))
+##   setTextview("impute_textview",
+##   gsub("\n", " ",
+##        "Click the Execute Button (or Menu or F5) to obtain a summary of the
+## missing values in the data. In the resulting summary, we will see a
+## matrix with headings corresponding to the variables in the data. The
+## body of the matrix includes 1's and 0's, with a 0 indicating missing
+## values. The rows of the matrix show the missing values for each
+## variable in combination with the other variables."))
   
   ## Set all sub tabs back to the default tab page and reflect this in
   ## the appropriate radio button.
 
-  .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
-  theWidget("sample_radiobutton")$setActive(TRUE)
+  .TRANSFORM$setCurrentPage(.TRANSFORM.IMPUTE.TAB)
+  theWidget("impute_radiobutton")$setActive(TRUE)
   
   .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
-  .IMPUTATION$setCurrentPage(.IMPUTATION.SUMMARY.TAB)
+#  .IMPUTATION$setCurrentPage(.IMPUTATION.SUMMARY.TAB)
   
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
@@ -496,7 +496,7 @@ variable in combination with the other variables."))
   
   ## Reset the VARIABLES tab.
   
-  theWidget("variables_treeview")$getModel()$clear()
+  theWidget("select_treeview")$getModel()$clear()
   theWidget("impute_treeview")$getModel()$clear()
   theWidget("categorical_treeview")$getModel()$clear()
   theWidget("continuous_treeview")$getModel()$clear()
@@ -659,7 +659,7 @@ variablesHaveChanged <- function(action)
       length(crs$input) != length(getSelectedVariables("input")))
   {
     errorDialog("You have made changes to the selected variables in the",
-                 "Variables tab, but have not Executed the Variables tab.",
+                 "Select tab, but have not Executed the Select tab.",
                  "Please do so before", paste(action, ".", sep=""))
     return(TRUE)
   }
@@ -1474,7 +1474,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                barplot=NULL, dotplot=NULL,
                                resample=TRUE)
 {
-  ## Update the variables treeview with the dataset variables.
+  ## Update the select treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
                        mean, boxplot, hisplot, cumplot, benplot, barplot, dotplot)
@@ -1495,7 +1495,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
 
-    executeTransformSample()
+    executeSelectSample()
   }
 
   ## Set the risk label appropraitely.
@@ -1581,7 +1581,7 @@ executeDataCSV <- function()
   appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
                   collectOutput(str.cmd))
   
-  ## Update the variables treeview and samples.
+  ## Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
@@ -1652,7 +1652,7 @@ executeDataARFF <- function()
   appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
                   collectOutput(str.cmd))
   
-  ## Update the variables treeview and samples.
+  ## Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
@@ -1765,7 +1765,7 @@ executeDataODBC <- function()
                  sprintf("Structure of %s from %s.\n\n", table, dsn.name),
                  collectOutput(str.cmd))
   
-  ## Update the variables treeview and samples.
+  ## Update the select treeview and samples.
   
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
   
@@ -1849,7 +1849,7 @@ executeDataRdata <- function()
                   sprintf("Structure of %s from %s.\n\n", dataset, filename),
                   collectOutput(str.cmd))
   
-  ## Update the variables treeview and samples.
+  ## Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
@@ -1915,7 +1915,7 @@ executeDataRdataset <- function()
   setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
                collectOutput(str.cmd), sep="")
 
-  ## Update the variables treeview and samples.
+  ## Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
@@ -1946,19 +1946,75 @@ viewData <- function()
 
 ########################################################################
 ##
-## VARIABLES TAB
+## SELECT TAB
 ##
-## The VARIABLES Execute will build the list of variable roles and
-## stores these in crs$input, crs$ident, crs$ignore, crs$target, and
-## crs$risk. This is then used in MODEL to limit the dataset in the
-## call to rpart to just the crs$input variables.  In EVALUATE the
-## crs$risk is used for the Risk Chart.
+## The SELECT Execute will perform a sampling of the data and stores
+## the indicies in crs$sample. It will also build the list of variable
+## roles and stores these in crs$input, crs$ident, crs$ignore,
+## crs$target, and crs$risk. This is then used in MODEL to limit the
+## dataset in the call to rpart to just the crs$input variables.  In
+## EVALUATE the crs$risk is used for the Risk Chart.
 ##
 
 ##------------------------------------------------------------------------
 ##
 ## Interface
 ##
+
+on_sample_checkbutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    theWidget("sample_percentage_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_percentage_label")$setSensitive(TRUE)
+    theWidget("sample_count_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_count_label")$setSensitive(TRUE)
+    theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
+    theWidget("sample_seed_button")$setSensitive(TRUE)
+    theWidget("explore_sample_checkbutton")$setSensitive(TRUE)
+    crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
+  }
+  else
+  {
+    theWidget("sample_percentage_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_percentage_label")$setSensitive(FALSE)
+    theWidget("sample_count_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_count_label")$setSensitive(FALSE)
+    theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
+    theWidget("sample_seed_button")$setSensitive(FALSE)
+    theWidget("explore_sample_checkbutton")$setActive(FALSE)
+    theWidget("explore_sample_checkbutton")$setSensitive(FALSE)
+  }
+    setStatusBar()
+}
+
+on_sample_percentage_spinbutton_changed <- function(action, window)
+{
+  if (is.null(crs$dataset)) return()
+  per <- theWidget("sample_percentage_spinbutton")$getValue()
+  rows <- round(nrow(crs$dataset) * per / 100)
+  crows <- theWidget("sample_count_spinbutton")$getValue()
+  if (rows != crows)
+    theWidget("sample_count_spinbutton")$setValue(rows)
+  setStatusBar()
+}
+
+on_sample_count_spinbutton_changed <- function(action, window)
+{
+  if (is.null(crs$dataset)) return()
+  rows <- theWidget("sample_count_spinbutton")$getValue()
+  per <- round(100*rows/nrow(crs$dataset))
+  cper <- theWidget("sample_percentage_spinbutton")$getValue()
+  if (per != cper)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
+  setStatusBar()
+}
+
+on_sample_seed_button_clicked <- function(button)
+{
+  rseed <- as.integer(runif(1, 0, 1000000))
+  theWidget("sample_seed_spinbutton")$setValue(rseed)
+}
 
 item.toggled <- function(cell, path.str, model)
 {
@@ -2004,7 +2060,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
 
   ##ptm <- proc.time()
   set.cursor("watch")
-  tree.selection <- theWidget("variables_treeview")$getSelection()
+  tree.selection <- theWidget("select_treeview")$getSelection()
 
   ## Under MS/Windows with Terminal Services to the host we get very
   ## slow redraws? Tried fixing it with freezeUpdates and thawUpdates
@@ -2046,7 +2102,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   ##ptm <- proc.time()
   set.cursor("watch")
 
-  treeview <- theWidget("variables_treeview")
+  treeview <- theWidget("select_treeview")
   tree.selection <- treeview$getSelection()
   #theWidget("rattle_window")$getWindow()$freezeUpdates()
 
@@ -2074,12 +2130,14 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 ## Execution
 ##
 
-executeVariablesTab <- function()
+ executeSelectTab <- function()
 {
   
   ## Can not do any preparation if there is no dataset.
 
   if (noDatasetLoaded()) return()
+
+  executeSelectSample()
 
   input   <- getSelectedVariables("input")
   target  <- getSelectedVariables("target")
@@ -2235,6 +2293,62 @@ executeVariablesTab <- function()
                 "There are", length(crs$input), "input variables.")
 }
 
+executeSelectSample <- function()
+{
+  ## Record that a random sample of the dataset is desired.
+
+  if (theWidget("sample_checkbutton")$getActive())
+  {
+    #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
+    #ssize <- floor(nrow(crs$dataset)*ssize/100)
+    ssize <- theWidget("sample_count_spinbutton")$getValue()
+
+    seed <- theWidget("sample_seed_spinbutton")$getValue()
+    
+    sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+                        "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
+                        ")", sep="")
+
+    appendLog("Build a random sample for modelling.",
+            gsub("<<-", "<-", sample.cmd))
+    eval(parse(text=sample.cmd))
+
+    ## When we have sampling, assume the remainder is the test set and
+    ## so enable the Testing radio button in Evaluate.
+    
+    theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
+    theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
+  }
+  else
+  {
+    crs$sample <<- NULL
+
+    theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
+    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+  }
+  
+  crs$smodel <<- vector()
+
+  ## TODO For test/train, use sample,split from caTools?
+
+  ## Set some defaults that depend on sample size.
+  
+  #if (is.null(crs$sample))
+  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
+  #else
+  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
+  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
+  
+
+  setStatusBar()
+
+  if (theWidget("sample_checkbutton")$getActive())
+    setStatusBar("The sample has been generated.",
+                  "There are", length(crs$sample), "entities.")
+  else
+    setStatusBar("Sampling is inactive.")
+}
+
 getSelectedVariables <- function(role, named=TRUE)
 {
   ## DESCRIPTION
@@ -2244,11 +2358,11 @@ getSelectedVariables <- function(role, named=TRUE)
   ## role  = a string naming the role to query on
   ## named = if TRUE return variable names as strings, if FALSE, numbers
   ##
-  ## DETAILS The variables_treeview, categorical_treeview and
+  ## DETAILS The select_treeview, categorical_treeview and
   ## continuous_treeview are places where a variable can be identified
   ## as having a given role. Whilst the role of "ignore" is common
   ## across all three treeviews, only the ignore from the main
-  ## variables_treeview is considered. If a role is not found, simply
+  ## select_treeview is considered. If a role is not found, simply
   ## return NULL, rather than an error (for no particular reason).
   ##
   ## ASSUMPTIONS The variable and number columns are assumed to be the
@@ -2259,7 +2373,7 @@ getSelectedVariables <- function(role, named=TRUE)
 
   if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
-    model <- theWidget("variables_treeview")$getModel()
+    model <- theWidget("select_treeview")$getModel()
     rcol  <- .COLUMN[[role]]
   }
 
@@ -2335,7 +2449,7 @@ initialiseVariableViews <- function()
   
   ## View the model through the treeview in the VARIABLES tab
 
-  treeview <- theWidget("variables_treeview")
+  treeview <- theWidget("select_treeview")
   treeview$setModel(model)
 
   impview <- theWidget("impute_treeview")
@@ -2499,7 +2613,7 @@ initialiseVariableViews <- function()
 
   options <- gtkListStoreNew("gchararray")
 
-  # Add the options
+  ## Add the options.
   
   oiter <- options$append()$iter
   options$set(oiter, 0, "None")
@@ -2510,7 +2624,7 @@ initialiseVariableViews <- function()
   oiter <- options$append()$iter
   options$set(oiter, 0, "Median")
 
-  # Create the renderer
+  ## Create the renderer.
 
   renderer <- gtkCellRendererComboNew()
 
@@ -2525,33 +2639,6 @@ initialiseVariableViews <- function()
                                        "Imputation",
                                         renderer,
                                         text = .IMPUTE[["type"]])
-#                                       model = .IMPUTE[["type"]])
-
-  ## Move to using Combobox
-  
-##   renderer <- gtkCellRendererToggleNew()
-##   renderer$set(xalign = 0.0)
-##   renderer$set(radio = TRUE)
-##   renderer$set(width = 60)
-##   renderer$setData("column", .IMPUTE["zero"])
-##   connectSignal(renderer, "toggled", imp_toggled, impute)
-##   imp.offset <-
-##     impview$insertColumnWithAttributes(-1,
-##                                        "Zero/Missing",
-##                                         renderer,
-##                                         active = .IMPUTE[["zero"]]) 
-
-##   renderer <- gtkCellRendererToggleNew()
-##   renderer$set(xalign = 0.0)
-##   renderer$set(radio = TRUE)
-##   renderer$set(width = 60)
-##   renderer$setData("column", .IMPUTE["mean"])
-##   connectSignal(renderer, "toggled", imp_toggled, impute)
-##   imp.offset <-
-##     impview$insertColumnWithAttributes(-1,
-##                                        "Mean",
-##                                         renderer,
-##                                         active = .IMPUTE[["mean"]]) 
 
   ## Add the barplot and dotplot.
 
@@ -2686,7 +2773,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   ## Retrieve the models.
   
-  model <- theWidget("variables_treeview")$getModel()
+  model <- theWidget("select_treeview")$getModel()
   impute <- theWidget("impute_treeview")$getModel()
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
@@ -3059,14 +3146,14 @@ getNumericVariables <- function()
 
 ## When a radio button is selected, display the appropriate tab
 
-on_sample_radiobutton_toggled <- function(button)
-{
-  if (button$getActive()) 
-  {
-    .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
-  }
-  setStatusBar()
-}
+## on_sample_radiobutton_toggled <- function(button)
+## {
+##   if (button$getActive()) 
+##   {
+##     .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
+##   }
+##   setStatusBar()
+## }
 
 on_impute_radiobutton_toggled <- function(button)
 {
@@ -3098,61 +3185,6 @@ imp_edited <- function(renderer, path.str, text, model)
 
 }
 
-on_sample_checkbutton_toggled <- function(button)
-{
-  if (button$getActive())
-  {
-    theWidget("sample_percentage_spinbutton")$setSensitive(TRUE)
-    theWidget("sample_percentage_label")$setSensitive(TRUE)
-    theWidget("sample_count_spinbutton")$setSensitive(TRUE)
-    theWidget("sample_count_label")$setSensitive(TRUE)
-    theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
-    theWidget("sample_seed_button")$setSensitive(TRUE)
-    theWidget("explore_sample_checkbutton")$setSensitive(TRUE)
-    crs$sample <<- NULL ## Only reset when made active to ensure Execute needed
-  }
-  else
-  {
-    theWidget("sample_percentage_spinbutton")$setSensitive(FALSE)
-    theWidget("sample_percentage_label")$setSensitive(FALSE)
-    theWidget("sample_count_spinbutton")$setSensitive(FALSE)
-    theWidget("sample_count_label")$setSensitive(FALSE)
-    theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
-    theWidget("sample_seed_button")$setSensitive(FALSE)
-    theWidget("explore_sample_checkbutton")$setActive(FALSE)
-    theWidget("explore_sample_checkbutton")$setSensitive(FALSE)
-  }
-    setStatusBar()
-}
-
-on_sample_percentage_spinbutton_changed <- function(action, window)
-{
-  if (is.null(crs$dataset)) return()
-  per <- theWidget("sample_percentage_spinbutton")$getValue()
-  rows <- round(nrow(crs$dataset) * per / 100)
-  crows <- theWidget("sample_count_spinbutton")$getValue()
-  if (rows != crows)
-    theWidget("sample_count_spinbutton")$setValue(rows)
-  setStatusBar()
-}
-
-on_sample_count_spinbutton_changed <- function(action, window)
-{
-  if (is.null(crs$dataset)) return()
-  rows <- theWidget("sample_count_spinbutton")$getValue()
-  per <- round(100*rows/nrow(crs$dataset))
-  cper <- theWidget("sample_percentage_spinbutton")$getValue()
-  if (per != cper)
-    theWidget("sample_percentage_spinbutton")$setValue(per)
-  setStatusBar()
-}
-
-on_sample_seed_button_clicked <- function(button)
-{
-  rseed <- as.integer(runif(1, 0, 1000000))
-  theWidget("sample_seed_spinbutton")$setValue(rseed)
-}
-
 ##----------------------------------------------------------------------
 ##
 ## Execution
@@ -3166,76 +3198,8 @@ executeTransformTab <- function()
 
   ## DISPATCH
 
-  if (theWidget("sample_radiobutton")$getActive())
-  {
-    executeTransformSample()
-  }
-  
-  else if (theWidget("impute_radiobutton")$getActive())
-  {
-    if (getCurrentPageLabel(theWidget("impute_notebook")) ==
-        "Perform Imputation")
-      executeTransformImputePerform()
-    else
-      executeTransformImputeSummary()
-  }
-  
-}
-
-executeTransformSample <- function()
-{
-  ## Record that a random sample of the dataset is desired.
-
-  if (theWidget("sample_checkbutton")$getActive())
-  {
-    #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
-    #ssize <- floor(nrow(crs$dataset)*ssize/100)
-    ssize <- theWidget("sample_count_spinbutton")$getValue()
-
-    seed <- theWidget("sample_seed_spinbutton")$getValue()
-    
-    sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
-                        "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
-                        ")", sep="")
-
-    appendLog("Build a random sample for modelling.",
-            gsub("<<-", "<-", sample.cmd))
-    eval(parse(text=sample.cmd))
-
-    ## When we have sampling, assume the remainder is the test set and
-    ## so enable the Testing radio button in Evaluate.
-    
-    theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
-    theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
-  }
-  else
-  {
-    crs$sample <<- NULL
-
-    theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
-  }
-  
-  crs$smodel <<- vector()
-
-  ## TODO For test/train, use sample,split from caTools?
-
-  ## Set some defaults that depend on sample size.
-  
-  #if (is.null(crs$sample))
-  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
-  #else
-  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
-  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
-  
-
-  setStatusBar()
-
-  if (theWidget("sample_checkbutton")$getActive())
-    setStatusBar("The sample has been generated.",
-                  "There are", length(crs$sample), "entities.")
-  else
-    setStatusBar("Sampling is inactive.")
+  if (theWidget("impute_radiobutton")$getActive())
+    executeTransformImputePerform()
 }
 
 executeTransformImputePerform <- function()
@@ -3294,7 +3258,7 @@ executeTransformImputePerform <- function()
     
     ## Reset the treeviews.
 
-    theWidget("variables_treeview")$getModel()$clear()
+    theWidget("select_treeview")$getModel()$clear()
     theWidget("impute_treeview")$getModel()$clear()
     theWidget("categorical_treeview")$getModel()$clear()
     theWidget("continuous_treeview")$getModel()$clear()
@@ -3316,45 +3280,6 @@ executeTransformImputePerform <- function()
     setStatusBar("No variables selected to be imputed.")
 }  
 
-executeTransformImputeSummary <- function()
-{
-  ## Initial setup. 
-  
-  TV <- "impute_textview"
-
-  ## Load the mice package into the library
-
-  startLog("MISSING VALUE SUMMARY")
-  lib.cmd <-  "require(mice, quietly=TRUE)"
-  if (! packageIsAvailable("mice", "summarise missing values")) return(FALSE)
-  appendLog("Summarise missing values in the dataset using the mice package.",
-           lib.cmd)
-  eval(parse(text=lib.cmd))
-
-  ## Variables to be included, as a string of indicies.
-  
-  included <- getIncludedVariables()
-  including <- not.null(included)
-
-  ## Add radio buttons to choose: Full, Train, Test dataset to summarise.
-  
-  ## Build the summary command
-
-  resetTextview(TV)
-  theWidget(TV)$setWrapMode("none")
-  summary.cmd <- paste("md.pattern(crs$dataset[,",
-                       if (including) included,
-                       "])", sep="")
-
-  appendLog("Generate a summary of the missing values in the dataset.",
-           summary.cmd)
-  ow <- options(width=300)
-  setTextview(TV, collectOutput(summary.cmd, TRUE))
-  options(ow)
-
-  setStatusBar("Summary has been generated.")
-}
-
 ########################################################################
 ##
 ## EXPLORE TAB
@@ -3375,6 +3300,7 @@ on_summary_radiobutton_toggled <- function(button)
   basics.button   <- theWidget("basics_checkbutton")
   kurtosis.button <- theWidget("kurtosis_checkbutton")
   skewness.button <- theWidget("skewness_checkbutton")
+  missing.button   <- theWidget("show_missing_checkbutton")
   if (button$getActive())
   {
     .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
@@ -3384,6 +3310,7 @@ on_summary_radiobutton_toggled <- function(button)
     basics.button$show()
     kurtosis.button$show()
     skewness.button$show()
+    missing.button$show()
   }
   else
   {
@@ -3393,6 +3320,7 @@ on_summary_radiobutton_toggled <- function(button)
     basics.button$hide()
     kurtosis.button$hide()
     skewness.button$hide()
+    missing.button$hide()
   }
   setStatusBar()
 }
@@ -3689,11 +3617,12 @@ executeExploreSummary <- function(dataset)
   do.basics   <- theWidget("basics_checkbutton")$getActive()
   do.kurtosis <- theWidget("kurtosis_checkbutton")$getActive()
   do.skewness <- theWidget("skewness_checkbutton")$getActive()
+  do.missing  <- theWidget("missing_checkbutton")$getActive()
 
   ## Make sure something has been selected.
   
   if (! (do.summary || do.describe || do.basics ||
-         do.kurtosis || do.skewness))
+         do.kurtosis || do.skewness || do.missing))
   {
     infoDialog("No summary type has been selected.",
                "Please choose at least one to get some output.")
@@ -3826,6 +3755,39 @@ executeExploreSummary <- function(dataset)
     }
   }
       
+  if (do.missing)
+  {
+    ## Add in a summary of the missing values.
+  
+    if (packageIsAvailable("mice", "summarise missing values"))
+    {
+      ## Load the mice package into the library
+
+      lib.cmd <- "require(mice, quietly=TRUE)"
+      appendLog("Missing value summary is performed by mice.", lib.cmd)
+      eval(parse(text=lib.cmd))
+      
+      ## Variables to be included, as a string of indicies.
+  
+      included <- getIncludedVariables()
+      including <- not.null(included)
+
+      ## Add radio buttons to choose: Full, Train, Test dataset to summarise.
+  
+      ## Build the summary command
+
+      summary.cmd <- paste("md.pattern(crs$dataset[,",
+                           if (including) included,
+                           "])", sep="")
+
+      appendLog("Generate a summary of the missing values in the dataset.",
+                summary.cmd)
+      appendTextview(TV,
+                     "Missing Value Summary\n\n",
+                     collectOutput(summary.cmd, TRUE, width=300))
+    }
+  }
+
   ## Report completion to the user through the Status Bar.
   
   setStatusBar("Data summary generated.")
@@ -6681,8 +6643,8 @@ on_tools_data_activate <- function(action, window)
 
 on_tools_variables_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.VARIABLES.NAME))
-  switchToPage(.NOTEBOOK.VARIABLES.NAME)
+  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.SELECT.NAME))
+  switchToPage(.NOTEBOOK.SELECT.NAME)
 }
 
 on_tools_transform_activate <- function(action, window)

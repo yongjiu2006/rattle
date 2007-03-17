@@ -68,7 +68,7 @@ executeAssociateTab <- function()
   ## there is a single IDENT variable and a TARGET with multiple
   ## values. Perhaps we just see if the GUI checkbutton is set and if
   ## so, check that the variables meet these criteria, and if not the
-  ## return. Also, on executeVariablesTab, if there is one ID and the
+  ## return. Also, on  executeSelectTab, if there is one ID and the
   ## TARGET is factor or integer and there are no inputs then set the
   ## default to Baskets.
 
