@@ -19,7 +19,8 @@
 070317 Add arffname as a parameter to the rattle function call.
 070109 Evaluate: add compare distributions radio button (Ray Lindsay)
 070311 Replace radio buttons with icons (Graham Williams)
-070317 Make the summary_find search case insensitive.
+070319 Make the Explore:Summary:Find button do "Find Next" and remove Next.
+070317 Make the Explore:Summary:Find search case insensitive.
 070121 Each textview have default explanatory text
 061001 Choice of Kernel for SVMs. 
 070130 Explore->Distr->Cat->Bars: Add mosaic plots (Rohan Baxter)
@@ -45,6 +46,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Mar 19 08:08:59 EST 2007
+Last modified: Mon Mar 19 09:38:49 EST 2007
 <!-- hhmts end -->
   </p>

@@ -2357,7 +2357,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		      <property name="visible">True</property>
 		      <property name="tooltip" translatable="yes">To select multiple variables for input (perhaps you have previously set them to ignore), simply select the required variables in the list below and click this Input button.</property>
 		      <property name="can_focus">True</property>
-		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="relief">GTK_RELIEF_NONE</property>
 		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_variables_toggle_input_button_clicked" last_modification_time="Sun, 05 Mar 2006 10:13:41 GMT"/>
 
@@ -2437,7 +2437,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
 		      <property name="visible">True</property>
 		      <property name="tooltip" translatable="yes">To select multiple variables to ignore, simply select the required variables in the list below and click this Ignore button.</property>
 		      <property name="can_focus">True</property>
-		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="relief">GTK_RELIEF_NONE</property>
 		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_variables_toggle_ignore_button_clicked" last_modification_time="Sat, 04 Mar 2006 01:28:22 GMT"/>
 
@@ -3076,7 +3076,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 			      <child>
 				<widget class="GtkLabel" id="label161">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Find the string: </property>
+				  <property name="label" translatable="yes">Find: </property>
 				  <property name="use_underline">False</property>
 				  <property name="use_markup">False</property>
 				  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -3123,7 +3123,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 				  <property name="can_focus">True</property>
 				  <property name="label">gtk-find</property>
 				  <property name="use_stock">True</property>
-				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="relief">GTK_RELIEF_NONE</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_summary_find_button_clicked" last_modification_time="Fri, 23 Feb 2007 08:13:48 GMT"/>
 				</widget>
@@ -3140,7 +3140,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 				  <property name="can_focus">True</property>
 				  <property name="label">gtk-media-next</property>
 				  <property name="use_stock">True</property>
-				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="relief">GTK_RELIEF_NONE</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_summary_next_button_clicked" last_modification_time="Fri, 23 Feb 2007 08:13:41 GMT"/>
 				</widget>
@@ -3251,7 +3251,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 				  <property name="can_focus">True</property>
 				  <property name="label">gtk-clear</property>
 				  <property name="use_stock">True</property>
-				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="relief">GTK_RELIEF_NONE</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_continuous_clear_button_clicked" last_modification_time="Sat, 17 Jun 2006 06:28:12 GMT"/>
 				</widget>
@@ -3428,7 +3428,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
 				  <property name="can_focus">True</property>
 				  <property name="label">gtk-clear</property>
 				  <property name="use_stock">True</property>
-				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="relief">GTK_RELIEF_NONE</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_categorical_clear_button_clicked" last_modification_time="Sat, 17 Jun 2006 06:28:18 GMT"/>
 				</widget>
@@ -9392,7 +9392,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
 		  <property name="can_focus">True</property>
 		  <property name="label">gtk-save</property>
 		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="relief">GTK_RELIEF_NONE</property>
 		  <property name="focus_on_click">True</property>
 		  <signal name="clicked" handler="on_plot_save_button_clicked" last_modification_time="Wed, 21 Feb 2007 09:46:18 GMT"/>
 		</widget>
@@ -9417,7 +9417,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
 		  <property name="can_focus">True</property>
 		  <property name="label">gtk-print</property>
 		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="relief">GTK_RELIEF_NONE</property>
 		  <property name="focus_on_click">True</property>
 		  <signal name="clicked" handler="on_plot_print_button_clicked" last_modification_time="Wed, 21 Feb 2007 11:03:33 GMT"/>
 		</widget>
@@ -9442,7 +9442,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
 		  <property name="can_focus">True</property>
 		  <property name="label">gtk-close</property>
 		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="relief">GTK_RELIEF_NONE</property>
 		  <property name="focus_on_click">True</property>
 		  <signal name="clicked" handler="on_plot_close_button_clicked" last_modification_time="Wed, 21 Feb 2007 10:13:35 GMT"/>
 		</widget>
