@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 15:30:13 Graham>
+## Time-stamp: <2007-03-19 09:36:20 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -893,7 +893,6 @@ on_plot_print_button_clicked <- function(action)
 {
   infoDialog("The Print button is not yet implemented.")
 }
-
 
 on_plot_close_button_clicked <- function(action)
 {
@@ -2078,7 +2077,8 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   tree.selection$selectedForeach(function(model, path, iter)
   {
     model$set(iter, .COLUMN[["ignore"]], TRUE)
-    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]], .COLUMN[["ignore"]])
+    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
+                       .COLUMN[["ignore"]])
 
     ## Timing indicates the for loop is slower on GNU/Linux but faster
     ## on MS/Windows 500! But the extra test also slows things down,
@@ -2114,7 +2114,8 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   tree.selection$selectedForeach(function(model, path, iter)
   {
     model$set(iter, .COLUMN[["input"]], TRUE)
-    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]], .COLUMN[["input"]])
+    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
+                       .COLUMN[["input"]])
 
     #if (isWindows())
       for (c in columns)
@@ -2806,14 +2807,16 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         || (length(levels(as.factor(crs$dataset[,last.var]))) < 5
             && length(levels(as.factor(crs$dataset[,last.var]))) > 1))
       target <- last.var
-    else if ((is.factor(crs$dataset[,1]) && length(levels(crs$dataset[,1])) > 1)
+    else if ((is.factor(crs$dataset[,1]) &&
+              length(levels(crs$dataset[,1])) > 1)
              || (length(levels(as.factor(crs$dataset[,1]))) < 5
                  && length(levels(as.factor(crs$dataset[,1]))) > 1))
       target <- 1
     else
       for (i in 2:length(variables)-1)
       {
-        if ((is.factor(crs$dataset[,i]) && length(levels(crs$dataset[,i])) > 1)
+        if ((is.factor(crs$dataset[,i]) &&
+             length(levels(crs$dataset[,i])) > 1)
             || (length(levels(as.factor(crs$dataset[,i]))) < 5
                 && length(levels(as.factor(crs$dataset[,i]))) > 1))
         {
@@ -3218,7 +3221,8 @@ executeTransformImputePerform <- function()
     ## Take a copy of the variable to be imputed.
     
     vname <- paste("IMP_", z, sep="")
-    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]', vname, z)
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
+                        vname, z)
     appendLog(sprintf("IMPUTE %s.", z),
              sub("<<-", "<-", copy.cmd))
     eval(parse(text=copy.cmd))
@@ -3232,7 +3236,8 @@ executeTransformImputePerform <- function()
       if ("Missing" %notin% levels(crs$dataset[[vname]]))
       {
         levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
-                                    'c(levels(crs$dataset[["%s"]]),"Missing")'),
+                                    'c(levels(crs$dataset[["%s"]]),',
+                                    '"Missing")'),
                               vname, vname)
         appendLog("Add a new category to the variable",
                  sub("<<-", "<-", levels.cmd))
@@ -3270,7 +3275,8 @@ executeTransformImputePerform <- function()
 
     ## Recreate the treeviews.
 
-    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset), resample=FALSE)
+    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
+                       resample=FALSE)
 
     ## Reset the original Data textview to output of new str.
 
@@ -3494,8 +3500,8 @@ on_summary_next_button_clicked <- function(window)
 
 on_viewdata_find_button_clicked <- function(window)
 {
-  ## Need to get the root window of the button, and all rest is in
-  ## terms of that.
+  ## Need to get the root window of the button, and everything else is
+  ## in terms of that.
 
   root <- window$getRootWindow()
   search.str <- root$getWidget("viewdata_find_entry")$getText()
@@ -3646,6 +3652,7 @@ executeExploreSummary <- function(dataset)
   ## Start the trace to the log.
   
   startLog()
+  theWidget(TV)$setWrapMode("none")
   resetTextview(TV)
 
   ## Construct and execute the requested commands.
@@ -3667,7 +3674,8 @@ executeExploreSummary <- function(dataset)
                    paste("Summary of the ",
                          ifelse(use.sample & sampling, "** sample **", "full"),
                          " dataset.\n\n", sep=""),
-                   sprintf("The data contains %d entities with missing values.",
+                   sprintf(paste("The data contains %d entities",
+                                 "with missing values."),
                            missing),
                    "\n\n(Hint: 25% of values are below 1st Quartile.)\n\n",
                    collectOutput(summary.cmd, TRUE))
@@ -3787,7 +3795,7 @@ executeExploreSummary <- function(dataset)
                 summary.cmd)
       appendTextview(TV,
                      "Missing Value Summary\n\n",
-                     collectOutput(summary.cmd, TRUE, width=300))
+                     collectOutput(summary.cmd, TRUE))
     }
   }
 
@@ -3806,14 +3814,16 @@ getVariableIndicies <- function(variables)
 
 calcInitialDigitDistr <- function(l)
 {
-  ## DESCRIPTION
-  ## From a list of numbers return vector of first digit frequencies.
+  ## From a list of numbers return a vector of first digit frequencies.
   
   ds <- data.frame(digit=as.numeric(gsub("(.).*", "\\1", as.character(l))),
                    value=1)
-  # Ignore any zeros
+  ## Ignore any zeros
+  
   ds <- ds[ds$digit!=0,]
-  # Add in any mising digits as value=0
+
+  ## Add in any mising digits as value=0
+  
   missing <- setdiff(1:9, unique(ds[,1]))
   if (length(missing) >0)
     ds <- rbind(ds, data.frame(digit=missing, value=0))
@@ -4679,7 +4689,8 @@ executeExploreCorrelation <- function(dataset)
                        sprintf("print(apply(is.na(%s[naids]),2,sum))",
                                dataset),
                        "\ncat('\nPercent missing values:\n')\n",
-                       sprintf("print(100*apply(is.na(%s[naids]),2,sum)/nrow(%s))",
+                       sprintf(paste("print(100*apply(is.na(%s[naids]),",
+                                     "2,sum)/nrow(%s))"),
                                dataset, dataset),
                        sep="")
     
