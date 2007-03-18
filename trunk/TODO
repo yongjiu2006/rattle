@@ -231,12 +231,10 @@ Automatically identify bad boxplots (outliers) and do log.
 Graphs to compare distributions of the same variables between datasets 
 Write article for Newsletter
 prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
-Choice of Kernel for SVMs. 
 For each textview, add initial text to explain the point (c.f. prcomp)
 ##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
 ##   Add t/z test and chi2 test in explore tab (Tony)
 ##   Some solution to the blotches in the hierarchical clusters (Linda)
-##   Graphs compare distr between datasets (Rohan and Ray) 
 ##   Automatically add in an optimal line to risk plot?
 ##   Add a Cancel/Stop button (Michael)
 ##   Kernel optimisation ala KXEN.
@@ -264,15 +262,12 @@ For each textview, add initial text to explain the point (c.f. prcomp)
 ##   For multiple targets, choose a different logistic regression method.
 ##   Print any text view via a Print button.
 ##   Add MARS (mda package).
-##   CLUSTER KMEANS: If a target exists, generate a hot spots display.
 ##   CLUSTER HIERCOR: Set text size based on # of branches?
-##   MISC: set.statusbar clearing is not immediate?
 ##   EVALUATE: Give error if Variables changed but model not regenerated.
 ##   MISC: When changing tabs, warn if modified but not executed.
 ##   BUG: Sample 10% not noticed until ENTER????
 ##   MISC: Run quit.rattle() when root window destroyed.
 ##   DATA: Get header, rows, sep, and na.strings working
-##   VARIABLES: Bin and Log Transform
 ##   MODEL RPART: Use print.rules.cmd string for log and eval
 ##   MODEL: GBM: Implement and document new options
 ##   EVALUATE RISK: If VARIABLE empty, then just do no Risk curve.
@@ -280,7 +275,6 @@ For each textview, add initial text to explain the point (c.f. prcomp)
 ##   EVALUATE: Use the text areas to describe the charts.
 ##   EVALUATE: When Sampling, be sure to apply to only the sample.
 ##   EVALUATE: Add grids to all plots
-##   SAVE: save project (the crs variable) to a Rdata file name.rattle.
 ##   INIT: Make filename the first active widget. TAB then to Execute.
 ##   MODEL: Multiple models then optimise with best?
 ##   VARIABLES: Implement binning to bin wine$Type

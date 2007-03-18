@@ -9,22 +9,26 @@
 <pre>
 070317 Implement mean and median imputation
 070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
-070305 Add a "best k" finder using hclust (Daniele Medri)
-070317 Keep the cwd info local to Rattle rather than globally changing.
-070317 Add arffname as a parameter to the rattle function call.
-070311 Replace radio buttons with icons (Graham Williams)
-070317 Make the summary_find search case insensitive.
-070109 Evaluate: add compare distributions radio button (Ray Lindsay)
+060703 Kmeans: If a target exists, generate a hot spots display.
 070131 Transform: Add binning code (Daniele Medri)
 070215 Transform: Use "recode" to bin variables.
+060506 Transform: Add log transform.
+070305 Add a "best k" finder using hclust (Daniele Medri)
+060821 Explore->Distributions: Clear = clear all radio buttons
+070317 Keep the cwd info local to Rattle rather than globally changing.
+070317 Add arffname as a parameter to the rattle function call.
+070109 Evaluate: add compare distributions radio button (Ray Lindsay)
+070311 Replace radio buttons with icons (Graham Williams)
+070317 Make the summary_find search case insensitive.
 070121 Each textview have default explanatory text
+061001 Choice of Kernel for SVMs. 
 070130 Explore->Distr->Cat->Bars: Add mosaic plots (Rohan Baxter)
 070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
 070201 Transform: Use mix for impute - use as.matrix (Daniel Medri)
+070319 Introduce a progress bar for all activities (Tony Nolan)
 070114 Add textmining.R to Rattle
 070215 Transform: Use some Rcmdr transforms
 061227 Eval->Save: All to one file.
-060821 Explore->Distributions: Clear = clear all radio buttons
 060723 Simplify RF rule sets
 070220 Explore: how to print? (Tony Nolan)
 070220 Auto update feature(Tony Nolan)
@@ -41,6 +45,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 17 16:02:11 EST 2007
+Last modified: Mon Mar 19 08:08:59 EST 2007
 <!-- hhmts end -->
   </p>
