@@ -132,7 +132,9 @@ audit <- read.csv("audit.csv")
 save(audit, file="audit.RData", compress=TRUE)
 
 library(rattle)
-write.arff(audit, "audit.arff")
+arff <- audit
+arff$Adjusted <- as.factor(arff$Adjusted)
+write.arff(arff, "audit.arff")
 
 # Create a dataset with special variable names.
 

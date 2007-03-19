@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-17 21:35:09 Graham>
+## Time-stamp: <2007-03-19 14:09:15 Graham>
 ##
 ## Project functionality.
 ##
@@ -145,7 +145,9 @@ saveProject <- function()
     crs$rf.opt$proximity <<- theWidget("rf_proximity_checkbutton")$getActive()
   }
     
-  crs$glm.opt$family   <<- theWidget("glm_family_comboboxentry")$getActive()
+  crs$svm.opt$kernel <<- theWidget("svm_kernel_comboboxentry")$getActive()
+
+  crs$glm.opt$family <<- theWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
   startLog()
@@ -362,6 +364,9 @@ loadProject <- function()
   
   if (not.null(crs$svm))
     theWidget("e1071_radiobutton")$setActive(TRUE)
+
+  if (not.null(crs$svm.opt$kernel))
+    theWidget("svm_kernel_comboboxentry")$setActive(crs$svm.opt$kernel)
 
   if (not.null(crs$glm.opt$family))
     theWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
