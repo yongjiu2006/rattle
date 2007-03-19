@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-19 09:36:20 Graham>
+## Time-stamp: <2007-03-19 15:30:43 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -359,6 +359,7 @@ rattle <- function(csvname=NULL)
   ## Set glm_family_comboboxentry to default value.
   
   theWidget("glm_family_comboboxentry")$setActive(0)
+  theWidget("svm_kernel_comboboxentry")$setActive(0)
 
   ## Check if some external applications are available and if not
   ## de-sensitise their functionality.
@@ -522,7 +523,11 @@ resetRattle <- function()
   ## Reset MODEL:RF
   
   makeRandomForestSensitive(FALSE)
-  
+
+  ## Reset MODEL:SVM
+
+  setGuiDefaultsSVM()
+
   ## Update EXPLORE, MODEL and EVALUATE targets
 
   theWidget("explot_target_label")$setText("No target selected")

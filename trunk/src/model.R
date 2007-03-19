@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-17 14:08:15 Graham>
+## Time-stamp: <2007-03-19 15:32:22 Graham>
 ##
 ## MODEL TAB
 ##
@@ -376,6 +376,18 @@ executeModelGLM <- function()
 ## MODEL SVM - SUPPORT VECTOR MACHINE
 ##
 
+## Eventually the following will go into svm_gui.R, using the same
+## conventions as in ada.R.
+
+setGuiDefaultsSVM <- function()
+{
+  theWidget("svm_kernel_comboboxentry")$setActive(0)
+  theWidget("svm_classweights_entry")$setText("")
+}
+
+## Eventually the following will go into svm.R, using the same
+## conventions as in ada.R.
+
 executeModelSVM <- function()
 {
   ## DESCRIPTION
@@ -432,6 +444,13 @@ executeModelSVM <- function()
   else
     frml <- paste(crs$target, "~ .")
 
+  ## Interface options.
+
+  krnl <- theWidget("svm_kernel_comboboxentry")$getActiveText()
+  krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
+
+  cweights <- theWidget("svm_classweights_entry")$getText()
+  
   ## Included variables.
 
   included <- getIncludedVariables()
@@ -445,6 +464,10 @@ executeModelSVM <- function()
   ## Parameters.
 
   parms <- ""
+  if (krnl != "")
+    parms <- sprintf('%s, kernel="%s"', parms, krnl)
+  if (cweights != "")
+    parms <- sprintf('%s, class.weights=%s', parms, cweights)
   
   ## Build the model.
 
