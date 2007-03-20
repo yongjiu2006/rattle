@@ -6,6 +6,10 @@
     changes on each version control check-in.</p>
 
 <pre>
+161 Include release date in About (Tony Nolan).
+160 Add kernel and class weights to SVM.
+159 Some UI changes: buttons have no relief; summary textview does not wrap.
+158 Help menu reflect new tab arrangement.
 157 Ensure "make check" is working - add to and correct docs.
 156 Question dialog improvements. Audit dataset generation improvement. 
 155 Place found string in summary search function further into the view.
@@ -206,6 +210,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 17 16:03:52 EST 2007
+Last modified: Tue Mar 20 22:17:14 EST 2007
 <!-- hhmts end -->
   </p>

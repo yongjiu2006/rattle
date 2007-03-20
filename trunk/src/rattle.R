@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-19 15:30:43 Graham>
+## Time-stamp: <2007-03-20 22:14:43 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,6 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
+VERSION.DATE <- "Released 19 Mar 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -6625,7 +6626,7 @@ on_about_menu_activate <-  function(action, window)
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
   about$getWidget("aboutdialog")$
-    setCopyright(COPYRIGHT)
+    setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT))
 }
 
 on_paste1_activate <- notImplemented
