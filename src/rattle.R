@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-21 05:17:47 Graham>
+## Time-stamp: <2007-03-21 06:11:51 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -1611,6 +1611,7 @@ executeDataCSV <- function()
   ## Enable the Data View button.
 
   theWidget("csv_viewdata_button")$setSensitive(TRUE)
+  theWidget("csv_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The CSV data has been loaded:", crs$dataname)
 }
@@ -1683,6 +1684,7 @@ executeDataARFF <- function()
   ## Enable the Data View button.
 
   theWidget("arff_viewdata_button")$setSensitive(TRUE)
+  theWidget("arff_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The ARFF data has been loaded:", crs$dataname)
 }
@@ -1797,6 +1799,7 @@ executeDataODBC <- function()
   ## Enable the Data View button.
 
   theWidget("odbc_viewdata_button")$setSensitive(TRUE)
+  theWidget("odbc_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
@@ -1882,6 +1885,7 @@ executeDataRdata <- function()
   ## Enable the Data View button.
 
   theWidget("rdata_viewdata_button")$setSensitive(TRUE)
+  theWidget("rdata_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The data has been loaded:", crs$dataname)
 }
@@ -1949,6 +1953,7 @@ executeDataRdataset <- function()
   ## Enable the Data View button.
 
   theWidget("rdataset_viewdata_button")$setSensitive(TRUE)
+  theWidget("rdataset_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The data has been assigned into Rattle.")
 }
@@ -2003,7 +2008,8 @@ executeDataEntry <- function()
 
   ## Enable the Data View button.
 
-  theWidget("data_entry_viewdata_button")$setSensitive(TRUE)
+  theWidget("dataentry_viewdata_button")$setSensitive(TRUE)
+  theWidget("dataentry_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The data has been assigned into Rattle.")
 }
@@ -2027,7 +2033,58 @@ viewData <- function()
     
 editData <- function()
 {
-  crs$dataset <<- edit(crs$dataset)
+  TV <- "data_textview"
+  
+  ## Check if there is a model first and then warn about losing it.
+
+  if ( not.null(listBuiltModels()) )
+  {
+    if (is.null(questionDialog("You have chosen to edit the Ratte dataset.",
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "If you choose not to continue",
+                               "you can save the project, and then edit",
+                               "the dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
+        
+      return()
+  }
+
+  ## Generate commands.
+
+  assign.cmd <- 'crs$dataset <<- edit(crs$dataset)'
+  str.cmd <- "str(crs$dataset)"
+  
+  ## Start logging and executing the R code.
+
+  startLog()
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
+  resetTextview(TV)
+  
+  appendLog("EDIT A DATA SET MANUALLY", gsub('<<-', '<-', assign.cmd))
+  ds <- crs$dataset # This is needed because resetRattle clears crs$dataset
+  resetRattle()
+  crs$dataset <<- ds
+  eval(parse(text=assign.cmd))
+  crs$dataname <<- "dataset"
+  setRattleTitle(crs$dataname)
+  
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
+               collectOutput(str.cmd), sep="")
+
+  ## Update the select treeview and samples.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+
+  ## Enable the Data View button.
+
+  theWidget("dataentry_viewdata_button")$setSensitive(TRUE)
+  theWidget("dataentry_editdata_button")$setSensitive(TRUE)
+  
+  setStatusBar("The data has been assigned into Rattle.")
+
 }
     
 

@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+163 Add a Edit button to each of the Data options.
 162 Add a Data Entry option for manual data entry (Tony Nolan). 
 161 Include release date in About (Tony Nolan).
 160 Add kernel and class weights to SVM.
@@ -211,6 +212,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Mar 21 05:19:54 EST 2007
+Last modified: Wed Mar 21 06:18:53 EST 2007
 <!-- hhmts end -->
   </p>
