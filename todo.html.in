@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+070316 Implement "expert" settings for each model (Liyin Xue).
 070317 Implement mean and median imputation
 070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
 060703 Kmeans: If a target exists, generate a hot spots display.
@@ -46,6 +47,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Mar 19 09:38:49 EST 2007
+Last modified: Wed Mar 21 05:21:06 EST 2007
 <!-- hhmts end -->
   </p>
