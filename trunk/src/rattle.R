@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-20 22:14:43 Graham>
+## Time-stamp: <2007-03-21 05:17:47 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -288,6 +288,7 @@ rattle <- function(csvname=NULL)
   .DATA.RDATA.TAB    <<- getNotebookPage(.DATA, "rdata")
   .DATA.RDATASET.TAB <<- getNotebookPage(.DATA, "rdataset")
   .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
+  .DATA.DATAENTRY.TAB  <<- getNotebookPage(.DATA, "dataentry")
 
   .TRANSFORM               <<- theWidget("transform_notebook")
 #  .TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(.TRANSFORM, "sample")
@@ -1223,6 +1224,11 @@ on_viewdata_button_clicked <- function(button)
   viewData()
 }
 
+on_editdata_button_clicked <- function(button)
+{
+  editData()
+}
+
 on_csv_radiobutton_toggled <- function(button)
 {
   #cat("XXX CSV Radio Toggle XXX\n")
@@ -1374,6 +1380,15 @@ on_rdataset_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+on_data_entry_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    .DATA$setCurrentPage(.DATA.DATAENTRY.TAB)
+  }
+  setStatusBar()
+}
+
 on_odbc_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) .DATA$setCurrentPage(.DATA.ODBC.TAB)
@@ -1469,6 +1484,8 @@ executeDataTab <- function()
     executeDataRdata()
   else if (theWidget("rdataset_radiobutton")$getActive())
     executeDataRdataset()
+  else if (theWidget("data_entry_radiobutton")$getActive())
+    executeDataEntry()
 }
 
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
@@ -1936,22 +1953,82 @@ executeDataRdataset <- function()
   setStatusBar("The data has been assigned into Rattle.")
 }
 
+executeDataEntry <- function()
+{
+  TV <- "data_textview"
+  
+  ## Check if there is a model first and then warn about losing it.
+
+  if ( not.null(listBuiltModels()) )
+  {
+    if (is.null(questionDialog("You have chosen to load a new dataset",
+                               "into Rattle.",
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
+        
+      return()
+  }
+
+  ## Generate commands.
+
+  assign.cmd <- paste('crs$dataset <<- data.frame()',
+                      'crs$dataset <<- edit(crs$dataset)', sep="\n")
+  str.cmd <- "str(crs$dataset)"
+  
+  ## Start logging and executing the R code.
+
+  startLog()
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
+  resetTextview(TV)
+  
+  appendLog("ENTER A DATA SET MANUALLY",
+          gsub('<<-', '<-', assign.cmd))
+  resetRattle()
+  eval(parse(text=assign.cmd))
+  crs$dataname <<- "dataset"
+  setRattleTitle(crs$dataname)
+  
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
+               collectOutput(str.cmd), sep="")
+
+  ## Update the select treeview and samples.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+
+  ## Enable the Data View button.
+
+  theWidget("data_entry_viewdata_button")$setSensitive(TRUE)
+  
+  setStatusBar("The data has been assigned into Rattle.")
+}
+
 viewData <- function()
 {
-    result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
-                  silent=TRUE)
-    if (inherits(result, "try-error"))
-      viewdataGUI <- gladeXMLNew("rattle.glade", root="viewdata_window")
-    else
-      viewdataGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
-                             root="viewdata_window")
-    gladeXMLSignalAutoconnect(viewdataGUI)
-    tv <- viewdataGUI$getWidget("viewdata_textview")
-    tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
-    op <- options(width=10000)
-    tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
-    options(op)
-  }
+  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                silent=TRUE)
+  if (inherits(result, "try-error"))
+    viewdataGUI <- gladeXMLNew("rattle.glade", root="viewdata_window")
+  else
+    viewdataGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+                               root="viewdata_window")
+  gladeXMLSignalAutoconnect(viewdataGUI)
+  tv <- viewdataGUI$getWidget("viewdata_textview")
+  tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+  op <- options(width=10000)
+  tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
+  options(op)
+}
+    
+editData <- function()
+{
+  crs$dataset <<- edit(crs$dataset)
+}
     
 
 ########################################################################

@@ -6,6 +6,7 @@
     changes on each version control check-in.</p>
 
 <pre>
+162 Add a Data Entry option for manual data entry (Tony Nolan). 
 161 Include release date in About (Tony Nolan).
 160 Add kernel and class weights to SVM.
 159 Some UI changes: buttons have no relief; summary textview does not wrap.
@@ -210,6 +211,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue Mar 20 22:17:14 EST 2007
+Last modified: Wed Mar 21 05:19:54 EST 2007
 <!-- hhmts end -->
   </p>
