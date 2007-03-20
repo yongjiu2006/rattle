@@ -23,6 +23,8 @@ MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
             | awk '{print $$1-137}')
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
+VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
+	   | sed 's|^.*, ||')
 
 PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
@@ -56,6 +58,8 @@ GLADE_SOURCE = src/rattle.glade
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
+#temp:
+#	@echo  $(VDATE)
 #temp:
 #	@echo rattle_$(VERSION).tar.gz $(VERSION) $(REVISION) $(PVERSION)
 #temp:
@@ -114,6 +118,8 @@ pbuild: data pmml_$(PVERSION).tar.gz
 
 rattle_$(VERSION).tar.gz: revision $(SOURCE)
 	rm -f package/rattle/R/*
+	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
+             src/rattle.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
