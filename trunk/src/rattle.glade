@@ -1405,6 +1405,25 @@
 				  <property name="fill">False</property>
 				</packing>
 			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="csv_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -1512,6 +1531,25 @@
 				  <property name="relief">GTK_RELIEF_NORMAL</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_viewdata_button_clicked" last_modification_time="Sat, 03 Mar 2007 09:50:26 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="arff_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
 				</widget>
 				<packing>
 				  <property name="padding">0</property>
@@ -1673,6 +1711,25 @@
 				  <property name="fill">False</property>
 				</packing>
 			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="rdata_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -1776,6 +1833,25 @@
 				  <property name="relief">GTK_RELIEF_NORMAL</property>
 				  <property name="focus_on_click">True</property>
 				  <signal name="clicked" handler="on_viewdata_button_clicked" last_modification_time="Sat, 03 Mar 2007 09:50:26 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="rdataset_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
 				</widget>
 				<packing>
 				  <property name="padding">0</property>
@@ -2062,6 +2138,25 @@
 				  <property name="fill">False</property>
 				</packing>
 			      </child>
+
+			      <child>
+				<widget class="GtkButton" id="odbc_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
+			      </child>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -2112,7 +2207,7 @@
 			      <property name="spacing">0</property>
 
 			      <child>
-				<widget class="GtkButton" id="data_entry_viewdata_button">
+				<widget class="GtkButton" id="dataentry_viewdata_button">
 				  <property name="border_width">5</property>
 				  <property name="visible">True</property>
 				  <property name="sensitive">False</property>
@@ -2131,7 +2226,22 @@
 			      </child>
 
 			      <child>
-				<placeholder/>
+				<widget class="GtkButton" id="dataentry_editdata_button">
+				  <property name="border_width">5</property>
+				  <property name="visible">True</property>
+				  <property name="sensitive">False</property>
+				  <property name="can_focus">True</property>
+				  <property name="label" translatable="yes">Edit Data</property>
+				  <property name="use_underline">True</property>
+				  <property name="relief">GTK_RELIEF_NORMAL</property>
+				  <property name="focus_on_click">True</property>
+				  <signal name="clicked" handler="on_editdata_button_clicked" last_modification_time="Tue, 20 Mar 2007 18:23:00 GMT"/>
+				</widget>
+				<packing>
+				  <property name="padding">0</property>
+				  <property name="expand">False</property>
+				  <property name="fill">False</property>
+				</packing>
 			      </child>
 			    </widget>
 			    <packing>
