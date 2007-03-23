@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-21 06:11:51 Graham>
+## Time-stamp: <2007-03-23 18:33:10 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Mar 2007"
+VERSION.DATE <- "Released 21 Mar 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -94,7 +94,12 @@ rattle <- function(csvname=NULL)
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
-    if (substr(csvname, 1, 1) != "/") csvname <- file.path(getwd(), csvname)
+
+    ## If it does not look like an absolute path then add in the
+    ## current location to make it absolute.
+    
+    if (substr(csvname, 1, 1) %notin% c("\\", "/"))
+      csvname <- file.path(getwd(), csvname)
     if (! file.exists(csvname))
       stop('The supplied CSV file "', csvname, '" does not exist.')
   }
@@ -4024,6 +4029,9 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
+  totalPlots <- nboxplots + nhisplots + length(cumplots) +
+    nbenplots + nbarplots + ndotplots
+  
   pmax <- theWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
   
@@ -4111,9 +4119,6 @@ executeExplorePlot <- function(dataset)
   ## Generate a plot for each variable. If there are too many
   ## variables, ask the user if we want to continue.
 
-  totalPlots <- nboxplots + nhisplots + length(cumplots) +
-    nbenplots + nbarplots + ndotplots
-  
   if (totalPlots > 10 && pmax == 1)
     if (is.null(questionDialog("Rattle is about to generate", totalPlots,
                                "individual plots. That's quite a few.",
