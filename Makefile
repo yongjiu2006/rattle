@@ -19,7 +19,7 @@ REPOSITORY=repository
 # Canonical version information from rattle.R
 MAJOR=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
-#REVIS=$(shell egrep '^REVIS <-' src/rattle.R | cut -d\" -f 2)
+SVNREVIS=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
             | awk '{print $$1-137}')
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
@@ -73,10 +73,19 @@ revision:
 update:
 	svn update
 
+status:
+	svn status -q
+
 install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	cp todo.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
+	 perl -pi -e "s|Latest version [0-9\.]* |Latest version $(VERSION) |" \
+			rattle.html.in;\
+	 perl -pi -e "s|released [^\.]*\.|released $(VDATE).|" \
+			rattle.html.in;\
+	 perl -pi -e "s|\(revision [0-9]*\)|(revision $(SVNREVIS))|" \
+			rattle.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
 			rattle.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \

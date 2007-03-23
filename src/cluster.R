@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-07 07:02:36 Graham>
+## Time-stamp: <2007-03-24 09:38:01 Graham>
 ##
 ## Implement cluster functionality.
 ##
@@ -469,24 +469,33 @@ centers.hclust <- function(x, h, nclust=10, use.median=FALSE)
 
 on_hclust_dendrogram_button_clicked <- function(button)
 {
+  plotDendrogram()
+}
+
+plotDendrogram <- function()
+{
 
   ## Make sure there is a hclust object first.
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E126: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+    errorDialog("E126: Should not be here.",
+                "There is no Hierarchical Cluster yet we are",
+                "trying to plot it.",
+                "Please report to Graham.Williams@togaware.com")
     return()
   }
 
-  ## The library, cba, should already be loaded. But check anyhow.
+  ## Load the required package into the library.  The library, cba,
+  ## should already be loaded. But check anyhow.
 
   lib.cmd <- "require(cba, quietly=TRUE)"
+  if (! packageIsAvailable("cba", "plot a dendrogram")) return(FALSE)
   appendLog("The plot functionality is provided by the cba package.", lib.cmd)
   eval(parse(text=lib.cmd))
-  
-  ## PLOT: Generate the plot command to not print the xaxis labels if
-  ## there are too many entities, the log the R command and execute.
+
+  ## Generate the plot command to not print the xaxis labels if there
+  ## are too many entities.
 
   if (length(crs$hclust$order) > 100)
     limit <- ", labels=FALSE, hang=0"
@@ -496,9 +505,22 @@ on_hclust_dendrogram_button_clicked <- function(button)
                             limit),
                     genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
                     sep="")
+
+  ## Log the R command and execute.
+  
   appendLog("Generate a dendrogram plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
+
+  ## Identify the clusters in the plot, if specified.
+
+  nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
+  if (nclust > 1 && nclust <= length(crs$hclust$height))
+  {
+    rect.cmd <- sprintf("rect.hclust(crs$hclust, k=%d)", nclust)
+    appendLog("Add in rectangles to show the clusters.", rect.cmd)
+    eval(parse(text=rect.cmd))
+  }
   
   setStatusBar("Dendrogram plot completed.")
 }
