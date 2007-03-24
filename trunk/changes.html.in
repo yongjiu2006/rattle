@@ -6,6 +6,8 @@
     changes on each version control check-in.</p>
 
 <pre>
+166 Add Degree option to Polynomial kernel for SVM.
+165 Inform ggobi of the name of the dataset.
 164 Add rectangles to show clusters in dendrogram.
 163 Add an Edit button to each of the Data options.
 162 Add a Data Entry option for manual data entry (Tony Nolan). 
@@ -213,6 +215,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 24 09:46:30 EST 2007
+Last modified: Sat Mar 24 16:35:51 EST 2007
 <!-- hhmts end -->
   </p>

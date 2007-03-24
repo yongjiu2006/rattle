@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-19 15:32:22 Graham>
+## Time-stamp: <2007-03-24 17:34:34 Graham>
 ##
 ## MODEL TAB
 ##
@@ -379,10 +379,35 @@ executeModelGLM <- function()
 ## Eventually the following will go into svm_gui.R, using the same
 ## conventions as in ada.R.
 
-setGuiDefaultsSVM <- function()
+on_svm_kernel_comboboxentry_changed <- function(action, window)
 {
-  theWidget("svm_kernel_comboboxentry")$setActive(0)
-  theWidget("svm_classweights_entry")$setText("")
+  krnl <- theWidget("svm_kernel_comboboxentry")$getActiveText()
+  krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
+  setGuiDefaultsSVM(krnl)
+}
+
+
+setGuiDefaultsSVM <- function(kernel=NULL)
+{
+  if (is.null(kernel))
+  {
+    theWidget("svm_kernel_comboboxentry")$setActive(0)
+    theWidget("svm_classweights_entry")$setText("")
+    theWidget("svm_poly_degree_spinbutton")$setValue(1)
+  }
+  else
+  {
+    if (kernel=="polydot")
+    {
+      theWidget("svm_poly_degree_label")$show()
+      theWidget("svm_poly_degree_spinbutton")$show()
+    }
+    else
+    {
+      theWidget("svm_poly_degree_label")$hide()
+      theWidget("svm_poly_degree_spinbutton")$hide()
+    }
+  }
 }
 
 ## Eventually the following will go into svm.R, using the same
@@ -449,6 +474,9 @@ executeModelSVM <- function()
   krnl <- theWidget("svm_kernel_comboboxentry")$getActiveText()
   krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
 
+  if (krnl == "polydot")
+    degree <- theWidget("svm_poly_degree_spinbutton")$getValue()
+  
   cweights <- theWidget("svm_classweights_entry")$getText()
   
   ## Included variables.
@@ -468,6 +496,8 @@ executeModelSVM <- function()
     parms <- sprintf('%s, kernel="%s"', parms, krnl)
   if (cweights != "")
     parms <- sprintf('%s, class.weights=%s', parms, cweights)
+  if (krnl == "polydot")
+    parms <- sprintf('%s, kpar=list("degree"=%s)', parms, degree)
   
   ## Build the model.
 
