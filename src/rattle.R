@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-23 18:33:10 Graham>
+## Time-stamp: <2007-03-24 10:45:43 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Mar 2007"
+VERSION.DATE <- "Released 24 Mar 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -3745,7 +3745,7 @@ executeExploreTab <- function()
   else if (theWidget("explot_radiobutton")$getActive())
     executeExplorePlot(avdataset)
   else if (theWidget("ggobi_radiobutton")$getActive())
-    executeExploreGGobi(dataset)
+    executeExploreGGobi(dataset, crs$dataname)
   else if (theWidget("correlation_radiobutton")$getActive())
   {
     if (theWidget("correlation_na_checkbutton")$getActive())
@@ -4760,14 +4760,16 @@ executeExplorePlot <- function(dataset)
     setStatusBar("No plots selected.")
 }
   
-executeExploreGGobi <- function(dataset)
+executeExploreGGobi <- function(dataset, name=NULL)
 {
   ## Based on code from Marco Lo
   
   ## Construct the commands.
 
   lib.cmd <- "require(rggobi, quietly=TRUE)"
-  ggobi.cmd <- sprintf('gg <<- ggobi(%s)', dataset)
+  ggobi.cmd <- paste('gg <<- ggobi(', dataset,
+                     ifelse(not.null(name), sprintf(', name="%s"', name), ""),
+                     ')')
               
   ## Start logging and executing the R code.
   
