@@ -76,6 +76,11 @@ update:
 status:
 	svn status -q
 
+meld:
+	@for i in $(shell svn status -q | awk '{print $$2}'); do\
+	  meld $$i;\
+	done
+
 install: build pbuild zip check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	cp todo.html.in /home/gjw/projects/togaware/www/
