@@ -2,10 +2,76 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2007-03-16 06:28:35 Graham>
+## Time-stamp: <2007-03-25 20:45:19 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
+
+## BUG FIX TO ALLOW ada.update TO WORK....
+
+## From: Mark Vere Culp <culpm@umich.edu>
+## Date: Thu, 22 Mar 2007 21:00:36 -0400 (EDT)
+## To: Graham Williams <Graham.Williams@togaware.com>
+## X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00 autolearn=ham
+##         version=3.1.7-deb
+
+## Hello Graham,
+##   Well it is going to be a while before I get the next update of ada on
+## the web, there are some errors that I have to trace through.  Anyways, the
+## reason, I'm sending this, is that I was thinking in the meantime you could
+## just have this formula function avialable (like a wrapper to ada).  It
+## should default to this one.  Also, I think I will go with the random
+## forest tree engine for ada.
+
+## Thanks,
+## Mark
+
+## TO TEST:
+##
+## library(ada)
+## audit <- read.csv("audit.csv")
+## set.seed(123)
+## mysample <- sample(nrow(audit), 1400)
+## myada <- ada(Adjusted ~ ., data=audit[mysample,c(2:4,6:10,13)],
+##              control=rpart.control(maxdepth=30, cp=0.010000,
+##                                    minsplit=20, xval=10),
+##              iter=5)
+## myada <- update(myada, audit[mysample,c(2:4,6:10)],
+##                 audit[mysample,c(13)], n.iter=10)
+
+## WITHOUT THE FIX WE GET
+
+## Error in table(sign(fits), y) : all arguments must have the same length
+
+
+"ada.formula" <-
+function(formula, data,...,subset,na.action=na.rpart){
+ ## m = match.call(expand.dots = FALSE)
+  ##m[[1]] = as.name("model.frame")
+  ##m$...=NULL
+  ##m =eval(m,parent.frame())
+
+  m <- match.call(expand = FALSE)
+  m$model <- m$method <- m$control <- NULL
+  m$x <- m$y <- m$parms <- m$... <- NULL
+  m$cost <- NULL
+  m$na.action <- na.action
+  m[[1]] <- as.name("model.frame")
+  m <- eval(m, parent.frame())
+
+  Terms = attr(m, "terms")
+  y = as.vector(model.extract(m,"response"))
+  preds<-attr(attributes(m)$terms,"term.labels")
+  x<-as.data.frame(m[,!is.na(match(names(m),preds))])
+  res = ada:::ada.default(x,y,...,na.action=na.action)
+  res$terms = Terms
+  cl = match.call()
+  cl[[1]] = as.name("ada")
+  res$call = cl
+  res
+}
+
+
 ## This implements a generic interface for interacting with the ada
 ## modeller and ada models. It can be used independent of the Rattle
 ## GUI, but is designed for use by it.
@@ -102,10 +168,12 @@ buildModelAda <- function(formula,
   return(crs$ada)
 }
 
-continueModelAda <- function(dataset, ntrees)
+continueModelAda <- function(niter)
 {
-  ## The ada.update only works, it seems, when the model is built
-  ## using the x,y interface rather than the formula interface.
+  ## The current ada.update only works when the model is built using
+  ## the x, y interface rather than the formula interface. Mark Culp,
+  ## the author of ada, sent a fixed ada.formula wrapper which I've
+  ## included above until he gets to release a new version of ada.
 
   ## I.e., the following works
 
@@ -117,13 +185,77 @@ continueModelAda <- function(dataset, ntrees)
   ## crs$ada <- ada(Adjust ~ ., data=ds)
   ## crs$ada <- update(crs$ada, x, y, n.iter=100)
   
-  ## I haven't worked out how to get it to work yet, and have asked the
-  ## author. I may need to move to using the x,y interface to ada instead
-  ## of the formula interface. I think this update functionality is useful.
-
-  ## I probably want to make sure iter has increased, and all of the
-  ## other parameters are the same. If not thendon't proceed.
+  tv <- theWidget("ada_textview")
+  gui <- not.null(tv)
+  if (gui) startLog("ADA BOOST UPDATE")
   
+  ## Load the required package into the library.
+
+  lib.cmd <-  "require(ada, quietly=TRUE)"
+  if (! packageIsAvailable("ada", "update an AdaBoost model")) return(FALSE)
+  if (gui) appendLog("Require the ada package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  ## We use the gdata funtion remove.vars to simply remove
+  ## variables. Seems a bit much needing it here, but makes it
+  ## simpler.
+
+  lib.cmd <-  "require(gdata, quietly=TRUE)"
+  if (! packageIsAvailable("gdata", "update the AdaBoost model")) return(FALSE)
+  if (gui) appendLog("Require the gdata package for remove.vars.", lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  ## Build up the update command, which needs the data rather than
+  ## formula interface. 
+
+  vname <- strsplit(deparse(parse(text=myada$call)[2][[1]]), " ")[[1]][1]
+  dname <- deparse(parse(text=myada$call)[3][[1]], width=500)
+  update.cmd <- sprintf(paste("update(crs$ada,",
+                              'remove.vars(%s, c("%s"), info=FALSE),',
+                              '%s$%s, n.iter=%s)'),
+                        dname, vname, dname, vname, niter)
+
+  if (gui) appendLog("Update the adaboost model.",
+                     gsub('update\\(', 'crs$ada <- update(', update.cmd))
+
+  start.time <- Sys.time()
+  crs$ada <- try(eval(parse(text=update.cmd)), silent=TRUE)
+  time.taken <- Sys.time()-start.time
+  
+  if (inherits(crs$ada, "try-error"))
+  {
+    msg <- paste("An error occured in the call to ada and modelling failed.",
+                  "The error was:", crs$ada)
+    if (gui)
+    {
+      errorDialog(msg)
+      return(FALSE)
+    }
+    stop(msg)
+  }
+
+  ## Print the results of the modelling.
+
+  if (gui)
+  {
+    print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
+    appendLog("Print the results of the modelling.", print.cmd)
+    resetTextview(tv, tvsep=FALSE,
+                  "Summary of the updated adaboost modelling:\n\n",
+                  collectOutput(print.cmd))
+  }
+
+  ## Finish up.
+  
+  if (gui)
+  {
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    appendTextview(tv, "\n", time.msg)
+    appendLog(time.msg)
+    setStatusBar("An adaboost model has been updated.", time.msg)
+  }
+
+  crs$ada <<- crs$ada
   return()
 }
 

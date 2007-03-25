@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-02 19:31:01 Graham>
+## Time-stamp: <2007-03-25 14:00:07 Graham>
 ##
 ## RPART TAB
 ##
@@ -134,7 +134,16 @@ explore the alternatives, copy the relevant code from the Log and
 paste it into the R Console and change any of the options.
 <<>>
 Common options that a user may change from their default values are
-available. Tooltips with each of them provide further details. Other
+available.
+<<>>
+Priors: used to boost a particularly important class, by giving it a
+higher prior probability. Expects a list of numbers that sum up to 1,
+and of the same length as the number of classes in the training dataset: e.g.,
+0.5,0.5.
+<<>>
+Loss Matrix: used to weight the outcome classes differently: e.g., 0,10,1,0.
+<<>>
+Other
 options exist, but are not usually required. For example, 10-fold
 cross validation, used in deciding how to prune to the best deicision
 tree, is generally regarded as the right number. Transfering the

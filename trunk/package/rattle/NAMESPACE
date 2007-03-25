@@ -16,7 +16,8 @@ export(
        randomForest2Rules,
        rattle,
        read.arff,
-       write.arff
+       write.arff,
+       ada.formula
        )
 
 exportPattern("_") # Needed for the Glade interface
