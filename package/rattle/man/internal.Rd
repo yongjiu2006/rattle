@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{on_data_entry_radiobutton_toggled}
+\alias{on_editdata_button_clicked}
+\alias{on_svm_kernel_comboboxentry_changed}
 \alias{imp_edited}
 \alias{ISO_8601_to_POSIX_datetime_format}
 \alias{on_ada_continue_button_clicked}

@@ -7,10 +7,15 @@
     priorities and especially code.</p>
 
 <pre>
+070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
+070325 Implement Print callback for Plot windows using dev.print
+070325 Expose the Save and Print of plots to the Log tab.
+070325 At beginning of model building up date status bar "Building ...."
+070325 Transform resets all Variable roles and it should not.
 070317 Implement mean and median imputation (Michael Fogliani)
+070325 Add a Defaults button to each model builder.
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
-070313 Add a Continue button to Ada to add trees to the model (Peter Ricci)
 070321 For the View textview, keep first row (headers) static as "edit()" does
 070321 Implement own Edit textview to edit dataset, instead of ugly "edit()"
 060703 Kmeans: If a target exists, generate a hot spots display.
@@ -50,6 +55,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 24 07:18:09 EST 2007
+Last modified: Sun Mar 25 20:47:55 EST 2007
 <!-- hhmts end -->
   </p>

@@ -6001,13 +6001,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
 			  <child>
 			    <widget class="GtkEntry" id="rpart_priors_entry">
 			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">Sometimes the proportions of classes in a training set do not reflect their true proportions in the population. You can inform Rattle of the population proportions and the resulting model will reflect these.
-
-The priors can be used to &quot;boost&quot; a particularly important class, by giving it a higher prior probability, although this might best be done through the Loss Matrix.
-
-The priors are expressed as a list of numbers that sum up to 1, and of the same length as the number of classes in the training dataset. An example for binary classification is 0.5,0.5.
-
-The default priors are set to be the class proprtions as found in the training dataset.</property>
+			      <property name="tooltip" translatable="yes">Set the prior probabilities for each class. E.g. 0.5,0.5.</property>
 			      <property name="can_focus">True</property>
 			      <property name="editable">True</property>
 			      <property name="visibility">True</property>
@@ -6032,11 +6026,7 @@ The default priors are set to be the class proprtions as found in the training d
 			  <child>
 			    <widget class="GtkEntry" id="rpart_loss_entry">
 			      <property name="visible">True</property>
-			      <property name="tooltip" translatable="yes">The loss matrix is used to weight the outcome classes differently (the default is that all outcomes have the same loss of 1). The matrix will be constructed row-wise from the list of numbers you supply, and is of the same dimensions as the number of classes in the training dataset. Thus, for binary classification, four numbers must be supplied. The diagonal should be all zeros. 
-
-An example is: 0,10,1,0, which might be interpreted as saying that an actual 1, predicted as 0 (i.e., a false negative) is 10 times more unwelcome that a false positive!
-
-RPart will use the loss matrix to alter the priors which will affect the choice of variable to split the dataset on at each node, giving more weight where appropriate.</property>
+			      <property name="tooltip" translatable="yes">Weight the outcome classes differently. E.g., 0,10,1,0.</property>
 			      <property name="can_focus">True</property>
 			      <property name="editable">True</property>
 			      <property name="visibility">True</property>
@@ -6802,6 +6792,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_ada_continue_button_clicked" last_modification_time="Sun, 25 Mar 2007 07:38:18 GMT"/>
 			    </widget>
 			    <packing>
 			      <property name="left_attach">8</property>

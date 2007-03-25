@@ -21,7 +21,7 @@ rattle(csvname=NULL)
   manual for using Rattle.
 
   Whilst the underlying functionality of Rattle is built upon a vast
-  collection of other R packages, Rattle itself provide a collection of
+  collection of other R packages, Rattle itself provides a collection of
   utility functions used within Rattle. These are made available through
   loading the rattle package into your R library. The See Also section
   lists these utility functions that may be useful outside of Rattle.
@@ -35,7 +35,9 @@ rattle(csvname=NULL)
 
 }
 \examples{
-## simply issue the command to run the GUI, preloading the audit dataset
+## simply issue the command to run the GUI
 rattle(system.file("csv", "audit.csv", package = "rattle"))
+## Include a CSV filename to preload the dataset
+\dontrun{rattle(system.file("csv", "audit.csv", package = "rattle"))}
 }
 \keyword{environment}

@@ -3,12 +3,14 @@
   </p>
 
   <p>This is a brief <b>Rattle</b> change log, recording the major
-    changes on each version control check-in.</p>
+    changes on each revision check-in. The current Rattle version
+    number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-166 Add Degree option to Polynomial kernel for SVM.
-165 Inform ggobi of the name of the dataset.
-164 Add rectangles to show clusters in dendrogram.
+167 070325 Add Continue button to Ada to add trees to model (Peter Ricci)
+166 070324 Add Degree option to Polynomial kernel for SVM.
+165 070324 Inform ggobi of the name of the dataset.
+164 070224 Add rectangles to show clusters in dendrogram.
 163 Add an Edit button to each of the Data options.
 162 Add a Data Entry option for manual data entry (Tony Nolan). 
 161 Include release date in About (Tony Nolan).
@@ -215,6 +217,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 24 16:35:51 EST 2007
+Last modified: Sun Mar 25 20:48:37 EST 2007
 <!-- hhmts end -->
   </p>
