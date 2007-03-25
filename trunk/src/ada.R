@@ -2,7 +2,7 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2007-03-25 20:45:19 Graham>
+## Time-stamp: <2007-03-25 20:56:04 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -38,9 +38,9 @@
 ##              iter=5)
 ## myada <- update(myada, audit[mysample,c(2:4,6:10)],
 ##                 audit[mysample,c(13)], n.iter=10)
-
+##
 ## WITHOUT THE FIX WE GET
-
+##
 ## Error in table(sign(fits), y) : all arguments must have the same length
 
 
@@ -208,8 +208,8 @@ continueModelAda <- function(niter)
   ## Build up the update command, which needs the data rather than
   ## formula interface. 
 
-  vname <- strsplit(deparse(parse(text=myada$call)[2][[1]]), " ")[[1]][1]
-  dname <- deparse(parse(text=myada$call)[3][[1]], width=500)
+  vname <- strsplit(deparse(parse(text=crs$ada$call)[2][[1]]), " ")[[1]][1]
+  dname <- deparse(parse(text=crs$ada$call)[3][[1]], width=500)
   update.cmd <- sprintf(paste("update(crs$ada,",
                               'remove.vars(%s, c("%s"), info=FALSE),',
                               '%s$%s, n.iter=%s)'),

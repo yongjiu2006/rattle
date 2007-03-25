@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{ada.formula}
 \alias{on_data_entry_radiobutton_toggled}
 \alias{on_editdata_button_clicked}
 \alias{on_svm_kernel_comboboxentry_changed}
