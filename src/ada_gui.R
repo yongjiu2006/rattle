@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2007-03-25 19:54:02 Graham>
+## Time-stamp: <2007-03-25 21:16:43 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -69,9 +69,21 @@ listTreesAdaGui <- function()
 
   tree.num <- theWidget("ada_draw_spinbutton")$getValue()
 
+  ## Make sure we have that many trees.
+
+  if (tree.num > length(crs$ada$model$trees))
+  {
+    errorDialog(sprintf("You have requested tree number %d,", tree.num),
+                "but there are only", length(crs$ada$model$trees),
+                "trees in the model.",
+                "Choose a tree number between 1",
+                sprintf("and %d.", length(crs$ada$model$trees)))
+    return(FALSE)
+  }
+  
   ## Command to run.
 
-  display.cmd <- sprintf("list.trees.ada(crs$ada, %d)", tree.num)
+  display.cmd <- sprintf("listTreesAda(crs$ada, %d)", tree.num)
 
   ## Perform the action.
 
@@ -87,6 +99,18 @@ drawTreesAdaGui <- function()
 
   tree.num <- theWidget("ada_draw_spinbutton")$getValue()
 
+  ## Make sure we have that many trees.
+
+  if (tree.num > length(crs$ada$model$trees))
+  {
+    errorDialog(sprintf("You have requested tree number %d,", tree.num),
+                "but there are only", length(crs$ada$model$trees),
+                "trees in the model.",
+                "Choose a tree number between 1",
+                sprintf("and %d.", length(crs$ada$model$trees)))
+    return(FALSE)
+  }
+  
   ## Command to run.
 
   draw.cmd <- sprintf('drawTreesAda(crs$ada, %d, ": %s")', tree.num,
@@ -139,8 +163,8 @@ continueModelAdaGui <- function()
 
   if (niter <= crs$ada$iter)
   {
-    infoDialog(sprintf("The new number of trees, %d, is no larger", niter),
-               sprintf("than the old number of trees, %d.", crs$ada$iter),
+    infoDialog(sprintf("The new Number of Trees, %d, is no larger", niter),
+               sprintf("than the old Number of Trees, %d.", crs$ada$iter),
                "Thus there is nothing to do.")
     return()
   }
@@ -149,6 +173,9 @@ continueModelAdaGui <- function()
   ## changed. If so, inform the user of the original value (as in
   ## crs$ada) and do not proceed.
   
+  set.cursor("watch")
   continueModelAda(niter)
+  set.cursor()
+  
 }
 
