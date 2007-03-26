@@ -35,9 +35,7 @@ rattle(csvname=NULL)
 
 }
 \examples{
-## simply issue the command to run the GUI
+## You can start rattle with a path to a csv file to preload the dataset
 rattle(system.file("csv", "audit.csv", package = "rattle"))
-## Include a CSV filename to preload the dataset
-\dontrun{rattle(system.file("csv", "audit.csv", package = "rattle"))}
 }
 \keyword{environment}

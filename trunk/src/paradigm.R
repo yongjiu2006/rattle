@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-01-07 12:10:31 Graham>
+## Time-stamp: <2007-03-26 19:21:46 Graham>
 ##
 ## Paradigm control.
 ##
@@ -15,9 +15,9 @@ on_twoclass_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
 
-    ## Add the new tab after the explore tab.
+    ## Add the new tab after the transform tab.
     
-    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.EXPLORE.NAME)
+    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME)
     
     .NOTEBOOK$insertPage(.NOTEBOOK.MODEL.WIDGET, .NOTEBOOK.MODEL.LABEL, ep+1)
     .NOTEBOOK$insertPage(.NOTEBOOK.EVALUATE.WIDGET,.NOTEBOOK.EVALUATE.LABEL,ep+2)
@@ -49,14 +49,14 @@ on_unsupervised_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
 
-    ## Add the new tab after the explore tab.
+    ## Add the new tab after the transform tab.
     
-    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.EXPLORE.NAME)
+    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME)
     
-    .NOTEBOOK$insertPage(.NOTEBOOK.CLUSTER.WIDGET, .NOTEBOOK.CLUSTER.LABEL, ep+1)
-    .NOTEBOOK$insertPage(.NOTEBOOK.ASSOCIATE.WIDGET,
-                        .NOTEBOOK.ASSOCIATE.LABEL,
-                        ep+2)
+    .NOTEBOOK$insertPage(.NOTEBOOK.CLUSTER.WIDGET, .NOTEBOOK.CLUSTER.LABEL,
+                         ep+1)
+    .NOTEBOOK$insertPage(.NOTEBOOK.ASSOCIATE.WIDGET, .NOTEBOOK.ASSOCIATE.LABEL,
+                         ep+2)
 
     ## If the previous current page is not one of the common pages,
     ## then make the newly inserted page the current page.
