@@ -7,13 +7,18 @@
     priorities and especially code.</p>
 
 <pre>
+070401 Add a File Type combo box to graphics save.
+070401 Fix grey background problem on Cairo device save.
+070401 Add save graphics to clipboard.
 070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
 070325 Implement Print callback for Plot windows using dev.print
 070325 Expose the Save and Print of plots to the Log tab.
 070325 At beginning of model building up date status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
-070317 Implement mean and median imputation (Michael Fogliani)
+061230 Implement nnet with linout=TRUE? (Yale)
+070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070325 Add a Defaults button to each model builder.
+070330 Add selection of clustering: diana, agnus, fanny, etc.
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
 070321 For the View textview, keep first row (headers) static as "edit()" does
@@ -45,7 +50,6 @@
 070201 Investigate party for rattle (Daniel Medri)
 070201 Invetigate rmpi for rattle (Daniel Medri)
 070105 Implement knn model builder (Yale)
-061230 Implement nnet (Yale)
 060001 Implement bagged boosted stumps (Jeremy Barnes)
 070316 Provide a simple manual data entry mechanism (Tony Nolan)
 </pre>
@@ -55,6 +59,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Mar 25 20:47:55 EST 2007
+Last modified: Sun Apr  1 07:56:39 EST 2007
 <!-- hhmts end -->
   </p>
