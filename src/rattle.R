@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-24 10:45:43 Graham>
+## Time-stamp: <2007-04-01 08:26:17 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Mar 2007"
+VERSION.DATE <- "Released 26 Mar 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -98,7 +98,8 @@ rattle <- function(csvname=NULL)
     ## If it does not look like an absolute path then add in the
     ## current location to make it absolute.
     
-    if (substr(csvname, 1, 1) %notin% c("\\", "/"))
+    if (substr(csvname, 1, 1) %notin% c("\\", "/")
+        && substr(csvname, 2, 2) != ":")
       csvname <- file.path(getwd(), csvname)
     if (! file.exists(csvname))
       stop('The supplied CSV file "', csvname, '" does not exist.')
@@ -4931,7 +4932,7 @@ executeExploreHiercor <- function(dataset)
 
   ## Start logging and executing the R code.
 
-  startLog()
+  startLog("HIERARCHICAL VARIABLE CORRELATION")
 
   appendLog("Generate the correlations (numerics only).", cor.cmd)
   eval(parse(text=cor.cmd))
@@ -5695,7 +5696,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   opar <- par(cex=cex)
 
   model.list <- getEvaluateModels()
-  
+
   for (mtype in model.list)
   {
 
