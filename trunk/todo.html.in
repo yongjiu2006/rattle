@@ -7,9 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
-070401 Add a File Type combo box to graphics save.
 070401 Fix grey background problem on Cairo device save.
-070401 Add save graphics to clipboard.
 070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
 070325 Implement Print callback for Plot windows using dev.print
 070325 Expose the Save and Print of plots to the Log tab.
@@ -18,6 +16,7 @@
 061230 Implement nnet with linout=TRUE? (Yale)
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070325 Add a Defaults button to each model builder.
+070401 Add a File Type combo box to graphics save.
 070330 Add selection of clustering: diana, agnus, fanny, etc.
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
@@ -59,6 +58,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  1 07:56:39 EST 2007
+Last modified: Wed Apr  4 06:45:19 EST 2007
 <!-- hhmts end -->
   </p>

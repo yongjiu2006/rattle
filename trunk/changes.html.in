@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+170 070404 Add Copy button to Plot to save graphics to clipboard.
 169 070326 Ensure paradigms go after Transform tab, not Explore tab.
 168 070325 Error check and bug fix ada Continue and List/Draw buttons.
 167 070325 Add Continue button to Ada to add trees to model (Peter Ricci)
@@ -219,6 +220,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Mar 26 19:25:56 EST 2007
+Last modified: Wed Apr  4 06:45:51 EST 2007
 <!-- hhmts end -->
   </p>
