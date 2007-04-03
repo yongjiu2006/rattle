@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-01 08:26:17 Graham>
+## Time-stamp: <2007-04-04 06:49:33 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 26 Mar 2007"
+VERSION.DATE <- "Released 01 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -899,7 +899,14 @@ on_plot_save_button_clicked <- function(action)
   
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
-  savePlot(devnum)
+  savePlotGui(devnum)
+}
+
+on_plot_copy_button_clicked <- function(action)
+{
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  copyPlot(devnum)
 }
 
 on_plot_print_button_clicked <- function(action)
@@ -916,7 +923,34 @@ on_plot_close_button_clicked <- function(action)
   pw$destroy()
 }
 
-savePlot <- function(device=NULL, name="plot")
+copyPlot <- function(device=NULL)
+{
+  # Is there a way to grab the image from the Cairo device as a
+  # GdkPixbuf, and then store it as im. Currently I simply save to
+  # file then load that file as a GdkPixmap then copy that to the
+  # clipboard.
+
+  # Note that in oodraw, for example, you can select an object, then
+  # grab the selection:
+  #
+  # im <- gtkClipboardGet("CLIPBOARD")$waitForImage()
+  # im <- gdkPixbufNewFromFile("audit_auto_plot3.png")$retval
+  #
+  # Once we have the image:
+  #
+  # gtkClipboardGet("CLIPBOARD")$setImage(im)
+  #
+  # Which can then be pasted into oowriter, for example.
+
+  temp.name <- paste(tempfile(), ".png", sep="")
+  savePlot(temp.name, device)
+  im <- gdkPixbufNewFromFile(temp.name)$retval
+  gtkClipboardGet("CLIPBOARD")$setImage(im)
+  file.remove(temp.name)
+  infoDialog("The plot has been copied to the clipboard as a PNG.")
+}
+
+savePlotGui <- function(device=NULL, name="plot")
 {
   if (is.null(dev.list()))
   {
@@ -933,11 +967,11 @@ savePlot <- function(device=NULL, name="plot")
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
-
+  
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname),
                                 "_", name, ".pdf", sep=""))
-
+  
   ff <- gtkFileFilterNew()
   if (isWindows())
     ff$setName("Graphics Files (pdf png jpg svg wmf)")
@@ -949,7 +983,7 @@ savePlot <- function(device=NULL, name="plot")
   ff$addPattern("*.svg")
   if (isWindows()) ff$addPattern("*.wmf")
   dialog$addFilter(ff)
-
+  
   ff <- gtkFileFilterNew()
   ff$setName("All Files")
   ff$addPattern("*")
@@ -965,44 +999,52 @@ savePlot <- function(device=NULL, name="plot")
     dialog$destroy()
     return()
   }
-
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
-    
+  
+  if (get.extension(save.name) == "")
+    save.name <- sprintf("%s.pdf", save.name)
+  
   if (file.exists(save.name))
     if (is.null(questionDialog("A Graphics file of the name", save.name,
-                                "already exists. \n\nDo you want to overwrite",
-                                "this file?")))
+                               "already exists. \n\nDo you want to",
+                               "overwrite this file?")))
       return()
-  
+
+  savePlot(save.name, device)
+
+  infoDialog(sprintf("Rattle: Plot %d",
+                     ifelse(is.null(device), cur, device)),
+             "has been exported to", save.name)
+}
+
+savePlot <- function(file.name, device=NULL)
+{
   cur <- dev.cur()
   if (! is.null(device)) dev.set(device)
-  ext <- get.extension(save.name)
+  ext <- get.extension(file.name)
   if (ext == "pdf")
     ## Set version to 1.4 since dev.copy from a Cairo device needs
     ## this.  It is done automatically with a warning anyhow, but
     ## might as well avoid the warning so as not to worry anyone.
-    dev.copy(pdf, file=save.name, width=7, height=7, version="1.4")
+    dev.copy(pdf, file=file.name, width=7, height=7, version="1.4")
   else if (ext == "png")
-    dev.copy(png, file=save.name, width=700, height=700)
+    dev.copy(png, file=file.name, width=700, height=700)
   else if (ext == "jpg")
-    dev.copy(jpeg, file=save.name, width=700, height=700)
+    dev.copy(jpeg, file=file.name, width=700, height=700)
   else if (ext == "svg")
     if (packageIsAvailable("RSvgDevice", "to save plot to SVG format"))
     {
       require("RSvgDevice")
-      dev.copy(devSVG, file=save.name, width=7, height=7)
+      dev.copy(devSVG, file=file.name, width=7, height=7)
     }
     else
       return()
   else if (ext == "wmf")
-    dev.copy(win.metafile, file=save.name, width=7, height=7)
+    dev.copy(win.metafile, file=file.name, width=7, height=7)
   dev.off()
   dev.set(cur)
-  
-  infoDialog(sprintf("Rattle: Plot %d", ifelse(is.null(device), cur, device)),
-             "has been exported to", save.name)
 }
-  
+
+
 ########################################################################
 
 genPlotTitleCmd <- function(..., vector=FALSE)
@@ -5210,7 +5252,7 @@ executeEvaluateTab <- function()
   testname <- crs$dataname
   included <- getIncludedVariables() # Need all vars, including risk.
 
-  startLog()
+  startLog("EVALUATE MODEL PERFORMANCE")
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {

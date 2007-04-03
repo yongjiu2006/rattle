@@ -9757,6 +9757,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
 	  </child>
 
 	  <child>
+	    <widget class="GtkToolItem" id="toolitem9">
+	      <property name="visible">True</property>
+	      <property name="visible_horizontal">True</property>
+	      <property name="visible_vertical">True</property>
+	      <property name="is_important">False</property>
+
+	      <child>
+		<widget class="GtkButton" id="plot_copy_button">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="label">gtk-copy</property>
+		  <property name="use_stock">True</property>
+		  <property name="relief">GTK_RELIEF_NONE</property>
+		  <property name="focus_on_click">True</property>
+		  <signal name="clicked" handler="on_plot_copy_button_clicked" last_modification_time="Tue, 03 Apr 2007 19:32:01 GMT"/>
+		</widget>
+	      </child>
+	    </widget>
+	    <packing>
+	      <property name="expand">False</property>
+	      <property name="homogeneous">False</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <widget class="GtkToolItem" id="toolitem3">
 	      <property name="visible">True</property>
 	      <property name="visible_horizontal">True</property>
