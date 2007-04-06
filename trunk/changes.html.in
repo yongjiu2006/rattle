@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+173 070406 Trial dev.copy to clipboard for Plot window for MS/Windows.
 172 070406 Implement Print for Plot windows using modified dev.print.
 171 070404 Add Copy button to Plot to save graphics to clipboard.
 170 070401 For MS/Windows check if supplied csvname begins with "d:".
@@ -222,6 +223,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Apr  6 11:18:26 EST 2007
+Last modified: Fri Apr  6 13:36:53 EST 2007
 <!-- hhmts end -->
   </p>
