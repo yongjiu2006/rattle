@@ -7,10 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
-070401 Fix grey background problem on Cairo device save.
+070404 Expose the plot Save/Copy/Print commands to the log.
 070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
-070325 Implement Print callback for Plot windows using dev.print
-070325 Expose the Save and Print of plots to the Log tab.
 070325 At beginning of model building up date status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
 061230 Implement nnet with linout=TRUE? (Yale)
@@ -58,6 +56,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Apr  4 06:45:19 EST 2007
+Last modified: Fri Apr  6 11:19:50 EST 2007
 <!-- hhmts end -->
   </p>
