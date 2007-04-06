@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-04 06:49:33 Graham>
+## Time-stamp: <2007-04-06 10:59:37 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 Apr 2007"
+VERSION.DATE <- "Released 04 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -896,7 +896,8 @@ on_plot_save_button_clicked <- function(action)
   ##
   ## Also, export to pdf (from Cairo) is not too good it seems. Gets a
   ## grey rather than white background. PNG and JPEG look just fine.
-  
+  ## This is being fixed by Michael Lawrence.  
+
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
   savePlotGui(devnum)
@@ -911,7 +912,15 @@ on_plot_copy_button_clicked <- function(action)
 
 on_plot_print_button_clicked <- function(action)
 {
-  infoDialog("The Print button is not yet implemented.")
+  ## To know which window we are called from we extract the plot
+  ## number from the window title!!!. This then ensures we save the
+  ## right device.
+    
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  device <- as.integer(sub("Rattle: Plot ", "", ttl))
+  printPlot(device)
+  
+  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", device))
 }
 
 on_plot_close_button_clicked <- function(action)
@@ -1042,6 +1051,108 @@ savePlot <- function(file.name, device=NULL)
     dev.copy(win.metafile, file=file.name, width=7, height=7)
   dev.off()
   dev.set(cur)
+}
+
+printPlot <- function(device=NULL) 
+{
+  cur <- dev.cur()
+  if (! is.null(device)) dev.set(device)
+  my.dev.print()
+  dev.set(cur)
+}
+  
+  ## The following is from dev.print, but dev.print does not list
+  ## "Cairo" as a screen device. So just use their code until they
+  ## change this.
+
+my.dev.print <- function (device = postscript, ...) 
+{
+    current.device <- dev.cur()
+    nm <- names(current.device)[1]
+    if (nm == "null device") 
+        stop("no device to print from")
+    if (!(nm %in% c("Cairo", "X11", "GTK", "gnome", "windows", "quartz"))) 
+        stop("can only print from screen device")
+    oc <- match.call()
+    oc[[1]] <- as.name("dev.copy")
+    oc$device <- device
+    din <- graphics::par("din")
+    w <- din[1]
+    h <- din[2]
+    if (missing(device)) {
+        if (is.null(oc$file)) 
+            oc$file <- ""
+        hz0 <- oc$horizontal
+        hz <- if (is.null(hz0)) 
+            ps.options()$horizontal
+        else eval.parent(hz0)
+        paper <- oc$paper
+        if (is.null(paper)) 
+            paper <- ps.options()$paper
+        if (paper == "default") 
+            paper <- getOption("papersize")
+        paper <- tolower(paper)
+        switch(paper, a4 = {
+            wp <- 8.27
+            hp <- 11.69
+        }, legal = {
+            wp <- 8.5
+            hp <- 14
+        }, executive = {
+            wp <- 7.25
+            hp <- 10.5
+        }, {
+            wp <- 8.5
+            hp <- 11
+        })
+        wp <- wp - 0.5
+        hp <- hp - 0.5
+        if (!hz && is.null(hz0) && h < wp && wp < w && w < hp) {
+            hz <- TRUE
+        }
+        else if (hz && is.null(hz0) && w < wp && wp < h && h < 
+            hp) {
+            hz <- FALSE
+        }
+        else {
+            h0 <- ifelse(hz, wp, hp)
+            if (h > h0) {
+                w <- w * h0/h
+                h <- h0
+            }
+            w0 <- ifelse(hz, hp, wp)
+            if (w > w0) {
+                h <- h * w0/w
+                w <- w0
+            }
+        }
+        if (is.null(oc$pointsize)) {
+            pt <- ps.options()$pointsize
+            oc$pointsize <- pt * w/din[1]
+        }
+        if (is.null(hz0)) 
+            oc$horizontal <- hz
+        if (is.null(oc$width)) 
+            oc$width <- w
+        if (is.null(oc$height)) 
+            oc$height <- h
+    }
+    else {
+        devname <- deparse(substitute(device))
+        if (devname %in% c("png", "jpeg", "bmp") && is.null(oc$width) && 
+            is.null(oc$height)) 
+            warning("need to specify one of 'width' and 'height'")
+        if (is.null(oc$width)) 
+            oc$width <- if (!is.null(oc$height)) 
+                w/h * eval.parent(oc$height)
+            else w
+        if (is.null(oc$height)) 
+            oc$height <- if (!is.null(oc$width)) 
+                h/w * eval.parent(oc$width)
+            else h
+    }
+    dev.off(eval.parent(oc))
+    dev.set(current.device)
 }
 
 
@@ -4731,9 +4842,11 @@ executeExplorePlot <- function(dataset)
                             collapse=",\n    ")
     generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
 
-      
-    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
-    eval(parse(text=lib.cmd))
+    # This should have been removed at some stage! We seem to be using
+    # dotchart from grpahics now.
+    #
+    #    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
+    #    eval(parse(text=lib.cmd))
 
     for (s in 1:ndotplots)
     {
