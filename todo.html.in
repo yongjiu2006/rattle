@@ -9,9 +9,10 @@
 <pre>
 070404 Expose the plot Save/Copy/Print commands to the log.
 070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
-070325 At beginning of model building up date status bar "Building ...."
+070325 At beginning of model building update status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
 061230 Implement nnet with linout=TRUE? (Yale)
+070406 For the cairo plot window, introduce keyboard shortcuts.
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070325 Add a Defaults button to each model builder.
 070401 Add a File Type combo box to graphics save.
@@ -56,6 +57,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Apr  6 11:19:50 EST 2007
+Last modified: Fri Apr  6 13:36:13 EST 2007
 <!-- hhmts end -->
   </p>

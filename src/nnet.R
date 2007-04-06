@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-15 06:10:31 Graham>
+## Time-stamp: <2007-04-06 13:28:52 Graham>
 ##
 ## NNET TAB 061230
 ##
@@ -65,6 +65,7 @@ executeModelNNet <- function()
                      if (including) included,
                      if (subsetting) "]",
                      ", size=10", # How to choose a good value here.
+                     ", linout=TRUE", # How to get prob output?
                      ")", sep="")
 
   appendLog("Build the nnet model.", gsub("<<-", "<-", model.cmd))

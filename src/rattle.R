@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-06 10:59:37 Graham>
+## Time-stamp: <2007-04-06 13:07:39 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -951,11 +951,31 @@ copyPlot <- function(device=NULL)
   #
   # Which can then be pasted into oowriter, for example.
 
-  temp.name <- paste(tempfile(), ".png", sep="")
-  savePlot(temp.name, device)
-  im <- gdkPixbufNewFromFile(temp.name)$retval
-  gtkClipboardGet("CLIPBOARD")$setImage(im)
-  file.remove(temp.name)
+  if (.Platform$OS == "windows")
+  {
+    ## Does this work under Windows to get the graphics into the
+    ## clipboard? And if so, does a "pdf" or "wmf" work also? It does
+    ## not work under GNU/Linux.
+    cur <- dev.cur()
+    if (! is.null(device)) dev.set(device)
+    dev.off(dev.copy(png, file=file("clipboard")))
+    dev.set(cur)
+  }
+  else
+  {
+    ## This works for GNU/Linux but not MS/Windows. Has not been
+    ## tested on Mac/OSX. Perhaps it is a bug to be reported to
+    ## Michael Lawrence. I also suspect there to be a way to do this
+    ## direct from teh Cairo device without saving to file! Michael
+    ## Lawrence has also mentioned a new version of cairoDevice
+    ## supporting cairo backends for PDF, PS, SVG, and PNG to output
+    ## in those formats directly (070406).
+    temp.name <- paste(tempfile(), ".png", sep="")
+    savePlot(temp.name, device)
+    im <- gdkPixbufNewFromFile(temp.name)$retval
+    gtkClipboardGet("CLIPBOARD")$setImage(im)
+    file.remove(temp.name)
+  }
   infoDialog("The plot has been copied to the clipboard as a PNG.")
 }
 
