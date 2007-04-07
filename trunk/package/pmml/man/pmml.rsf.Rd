@@ -85,12 +85,7 @@
 
 }
 \seealso{
-  \code{\link{pmml}},
-  \code{\link{saveXML}},
-  \code{\link{rsf}},
-  \code{\link{predict.rsf}},
-  \code{\link{pmml_to_rsf}},
-  \code{\link{rattle}}.
+  \code{\link{pmml}}.
 }
 \examples{
 library(randomSurvivalForest)

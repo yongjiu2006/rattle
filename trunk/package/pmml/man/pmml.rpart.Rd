@@ -121,9 +121,7 @@
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{
   \code{\link{pmml}},
-  \code{\link{saveXML}},
-  \code{\link{rpart}},
-  \code{\link{rattle}}.
+  \code{\link{rpart}}.
 }
 \examples{
 library(rpart)

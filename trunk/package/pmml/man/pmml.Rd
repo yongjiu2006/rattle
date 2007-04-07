@@ -45,10 +45,8 @@ pmml(model, model.name="Rattle_Model", app.name="Rattle/PMML",
 }
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{
-  \code{\link{saveXML}},
   \code{\link{pmml.kmeans}},
   \code{\link{pmml.rpart}},
-  \code{\link{pmml.rsf}},
-  \code{\link{rattle}}.
+  \code{\link{pmml.rsf}}.
 }
 \keyword{interface}
