@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-06 13:07:39 Graham>
+## Time-stamp: <2007-04-07 13:47:16 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Apr 2007"
+VERSION.DATE <- "Released 06 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -837,14 +837,70 @@ setDefaultPath <- function(filename)
   }
 }
 
+########################################################################
+##
+## PLOTTING
+##
+## Callbacks
+
+on_plot_save_button_clicked <- function(action)
+{
+  ## To know which window we are called from we extract the plot
+  ## number from the window title!!!. This then ensures we save the
+  ## right device.
+  ##
+  ## Also, export to pdf (from Cairo) is not too good it seems. Gets a
+  ## grey rather than white background. PNG and JPEG look just fine.
+  ## This is being fixed by Michael Lawrence.  
+
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  savePlotToFileGui(dev.num)
+}
+
+on_plot_copy_button_clicked <- function(action)
+{
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  copyPlotToClipboard(devnum)
+  infoDialog("The plot has been copied to the clipboard as a PNG.")
+}
+
+on_plot_print_button_clicked <- function(action)
+{
+  ## To know which window we are called from we extract the plot
+  ## number from the window title!!!. This then ensures we save the
+  ## right device.
+    
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  device <- as.integer(sub("Rattle: Plot ", "", ttl))
+  printPlot(device)
+  
+  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", device))
+}
+
+on_plot_close_button_clicked <- function(action)
+{
+  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
+  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  dev.off(devnum)
+  pw <- action$getParentWindow()
+  pw$destroy()
+}
+
+########################################################################
+
 newPlot <- function(pcnt=1)
 {
+  ## Create a new device into which the plot is to go.
+  
   ## Trial the use of the Cairo device. This was the only place I
   ## needed to change to switch over to the Cairo device. As backup,
   ## revert to the x11() or windows() device.
 
-  if (require("cairoDevice", quietly=TRUE))
+  if (packageIsAvailable("cairoDevice"))
   {
+    require("cairoDevice", quietly=TRUE)
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                   silent=TRUE)
     if (inherits(result, "try-error"))
@@ -888,61 +944,32 @@ newPlot <- function(pcnt=1)
 
 ########################################################################
 
-on_plot_save_button_clicked <- function(action)
+copyPlotToClipboard <- function(dev.num=dev.cur())
 {
-  ## To know which window we are called from we extract the plot
-  ## number from the window title!!!. This then ensures we save the
-  ## right device.
-  ##
-  ## Also, export to pdf (from Cairo) is not too good it seems. Gets a
-  ## grey rather than white background. PNG and JPEG look just fine.
-  ## This is being fixed by Michael Lawrence.  
-
-  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
-  savePlotGui(devnum)
-}
-
-on_plot_copy_button_clicked <- function(action)
-{
-  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
-  copyPlot(devnum)
-}
-
-on_plot_print_button_clicked <- function(action)
-{
-  ## To know which window we are called from we extract the plot
-  ## number from the window title!!!. This then ensures we save the
-  ## right device.
-    
-  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  device <- as.integer(sub("Rattle: Plot ", "", ttl))
-  printPlot(device)
-  
-  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", device))
-}
-
-on_plot_close_button_clicked <- function(action)
-{
-  ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
-  dev.off(devnum)
-  pw <- action$getParentWindow()
-  pw$destroy()
-}
-
-copyPlot <- function(device=NULL)
-{
-  # Is there a way to grab the image from the Cairo device as a
-  # GdkPixbuf, and then store it as im. Currently I simply save to
-  # file then load that file as a GdkPixmap then copy that to the
-  # clipboard.
-
+  # This is designed to be called from the Gtk window that displays
+  # the Cairo device, to copy the plot displayed there into the
+  # Clipboard. It has not been tested on non-Cairo devices.
+  #
+  # We can place a GdkPixbuf image into the CLIPBOARD using
+  # GtkClipboardSetImage. I've not figure out yet how to get the image
+  # directly from the Cairo device as a GdkPixbuf. So instead I save
+  # to PNG file then load that file as a GdkPixmap then copy that to
+  # the clipboard.
+  #
+  # This works for GNU/Linux and more recent MS/Windows (e.g., on my
+  # recent Dell laptop but not on ATOnet computers). It has not been
+  # tested on Mac/OSX. Perhaps it is a bug and needs to be reported to
+  # Michael Lawrence. Michael has also mentioned a new version of
+  # cairoDevice supporting cairo backends for PDF, PS, SVG, and PNG to
+  # output in those formats directly (070406).
+  #
   # Note that in oodraw, for example, you can select an object, then
-  # grab the selection:
+  # grab the selection and have it available in R:
   #
   # im <- gtkClipboardGet("CLIPBOARD")$waitForImage()
+  #
+  # Of course you can also load the image from file:
+  #
   # im <- gdkPixbufNewFromFile("audit_auto_plot3.png")$retval
   #
   # Once we have the image:
@@ -951,35 +978,21 @@ copyPlot <- function(device=NULL)
   #
   # Which can then be pasted into oowriter, for example.
 
-  if (.Platform$OS == "windows")
-  {
-    ## Does this work under Windows to get the graphics into the
-    ## clipboard? And if so, does a "pdf" or "wmf" work also? It does
-    ## not work under GNU/Linux.
-    cur <- dev.cur()
-    if (! is.null(device)) dev.set(device)
-    dev.off(dev.copy(png, file=file("clipboard")))
-    dev.set(cur)
-  }
-  else
-  {
-    ## This works for GNU/Linux but not MS/Windows. Has not been
-    ## tested on Mac/OSX. Perhaps it is a bug to be reported to
-    ## Michael Lawrence. I also suspect there to be a way to do this
-    ## direct from teh Cairo device without saving to file! Michael
-    ## Lawrence has also mentioned a new version of cairoDevice
-    ## supporting cairo backends for PDF, PS, SVG, and PNG to output
-    ## in those formats directly (070406).
-    temp.name <- paste(tempfile(), ".png", sep="")
-    savePlot(temp.name, device)
-    im <- gdkPixbufNewFromFile(temp.name)$retval
-    gtkClipboardGet("CLIPBOARD")$setImage(im)
-    file.remove(temp.name)
-  }
-  infoDialog("The plot has been copied to the clipboard as a PNG.")
+  # On Windows I sometimes needed this:
+  #
+  # if (isWindows())
+  # {cur <- dev.cur(); dev.set(dev.num);
+  #  my.savePlot("clipboard"); dev.set(cur)} else {
+
+  require("RGtk2")
+  temp.name <- paste(tempfile(), ".png", sep="")
+  savePlotToFile(temp.name, dev.num)
+  im <- gdkPixbufNewFromFile(temp.name)$retval
+  gtkClipboardGet("CLIPBOARD")$setImage(im)
+  file.remove(temp.name)
 }
 
-savePlotGui <- function(device=NULL, name="plot")
+savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 {
   if (is.null(dev.list()))
   {
@@ -992,7 +1005,9 @@ savePlotGui <- function(device=NULL, name="plot")
   # Obtain a filename to save to. Ideally, this would also prompt for
   # the device to export, and the fontsize, etc.
 
-  dialog <- gtkFileChooserDialog("Export Graphics (pdf, png, jpg, svg)",
+  dialog <- gtkFileChooserDialog(paste("Export Graphics (pdf, png, jpg, svg",
+                                       ifelse(isWindows(), ", wmf", ""),
+                                       ")", sep=""),
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
@@ -1038,52 +1053,54 @@ savePlotGui <- function(device=NULL, name="plot")
                                "overwrite this file?")))
       return()
 
-  savePlot(save.name, device)
-
-  infoDialog(sprintf("Rattle: Plot %d",
-                     ifelse(is.null(device), cur, device)),
-             "has been exported to", save.name)
+  if (savePlotToFile(save.name, dev.num))
+    infoDialog("Rattle: Plot", dev.num, "has been exported to", save.name)
 }
 
-savePlot <- function(file.name, device=NULL)
+savePlotToFile <- function(file.name, dev.num=dev.cur())
 {
   cur <- dev.cur()
-  if (! is.null(device)) dev.set(device)
+  dev.set(dev.num)
   ext <- get.extension(file.name)
   if (ext == "pdf")
     ## Set version to 1.4 since dev.copy from a Cairo device needs
     ## this.  It is done automatically with a warning anyhow, but
     ## might as well avoid the warning so as not to worry anyone.
-    dev.copy(pdf, file=file.name, width=7, height=7, version="1.4")
+    dev.copy(pdf, file=file.name, width=10, height=10, version="1.4")
   else if (ext == "png")
-    dev.copy(png, file=file.name, width=700, height=700)
+    dev.copy(png, file=file.name, width=1000, height=1000)
   else if (ext == "jpg")
-    dev.copy(jpeg, file=file.name, width=700, height=700)
+    dev.copy(jpeg, file=file.name, width=1000, height=1000)
   else if (ext == "svg")
     if (packageIsAvailable("RSvgDevice", "to save plot to SVG format"))
     {
       require("RSvgDevice")
-      dev.copy(devSVG, file=file.name, width=7, height=7)
+      dev.copy(devSVG, file=file.name, width=10, height=10)
     }
     else
       return()
   else if (ext == "wmf")
-    dev.copy(win.metafile, file=file.name, width=7, height=7)
+    dev.copy(win.metafile, file=file.name, width=10, height=10)
+  else
+  {
+    infoDialog(sprintf("The specified extension '%s' is not supported.", ext))
+    return(FALSE)
+  }
   dev.off()
   dev.set(cur)
+  return(TRUE)
 }
 
-printPlot <- function(device=NULL) 
+printPlot <- function(dev.num=dev.cur()) 
 {
   cur <- dev.cur()
-  if (! is.null(device)) dev.set(device)
+  dev.set(dev.num)
   my.dev.print()
   dev.set(cur)
 }
   
-  ## The following is from dev.print, but dev.print does not list
-  ## "Cairo" as a screen device. So just use their code until they
-  ## change this.
+# The following is from dev.print, but dev.print does not list "Cairo"
+# as a screen device. So just use their code until they change this.
 
 my.dev.print <- function (device = postscript, ...) 
 {
@@ -1173,6 +1190,31 @@ my.dev.print <- function (device = postscript, ...)
     }
     dev.off(eval.parent(oc))
     dev.set(current.device)
+}
+
+# This one seems to have some assumption about the device it is saving
+# from and causes a memory fault if it is Cairo! Best not to use it
+# for now, and the Gtk clipboard stuff does work under Windows.
+
+my.savePlot <- function (filename = "Rplot",
+                         type = c("wmf", "emf", "png", "jpeg",
+                           "jpg", "bmp", "ps", "eps", "pdf"),
+                         device = dev.cur(), restoreConsole = TRUE)
+{
+  type <- match.arg(type)
+  devlist <- dev.list()
+  devcur <- match(device, devlist, NA)
+  if (is.na(devcur))
+    stop("no such device")
+  devname <- names(devlist)[devcur]
+  #if (devname != "windows")
+  #  stop("can only copy from 'windows' devices")
+  if (filename == "clipboard" && type == "wmf")
+    filename <- ""
+  if (nchar(filename) > 0)
+    filename <- paste(filename, type, sep = ".")
+  invisible(.External("savePlot", device, filename, type, restoreConsole,
+                      PACKAGE = "grDevices"))
 }
 
 

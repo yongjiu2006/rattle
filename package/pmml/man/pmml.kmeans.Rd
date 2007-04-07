@@ -39,9 +39,7 @@
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{
   \code{\link{pmml}},
-  \code{\link{saveXML}},
-  \code{\link{kmeans}},
-  \code{\link{rattle}}.
+  \code{\link{kmeans}}.
 }
 \examples{
 ds <- rbind(matrix(rnorm(100, sd = 0.3), ncol = 2),

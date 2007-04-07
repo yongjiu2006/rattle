@@ -12,8 +12,8 @@
 070325 At beginning of model building update status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
 061230 Implement nnet with linout=TRUE? (Yale)
-070406 For the cairo plot window, introduce keyboard shortcuts.
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
+070406 For the cairo plot window, introduce keyboard shortcuts.
 070325 Add a Defaults button to each model builder.
 070401 Add a File Type combo box to graphics save.
 070330 Add selection of clustering: diana, agnus, fanny, etc.
@@ -57,6 +57,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Fri Apr  6 13:36:13 EST 2007
+Last modified: Fri Apr  6 13:53:08 EST 2007
 <!-- hhmts end -->
   </p>
