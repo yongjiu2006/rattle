@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-08 20:00:31 Graham>
+# Time-stamp: <2007-04-08 21:26:26 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -4377,7 +4377,9 @@ executeExplorePlot <- function(dataset)
     ## Based on an example from Jim Holtman on r-help 070406.
     
     annotate.cmd <- paste("for (i in seq(ncol(bp$stats)))",
-                          "{text(i, bp$stats[,i], labels=bp$stats[,i])}")
+                          "{text(i,",
+                          "bp$stats[,i]-0.02*(max(ds$dat)-min(ds$dat)),",
+                          "labels=bp$stats[,i])}")
     
     lib.cmd <- "require(doBy, quietly=TRUE)"
     
@@ -5816,6 +5818,9 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
 
   for (mtype in getEvaluateModels())
   {
+
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a confusion table...")
     
     ## Generate the command to show the confusion matrix.
     
@@ -5941,6 +5946,9 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   for (mtype in model.list)
   {
 
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a risk chart ...")
+    
     ## We need the base testset name here to get the risk variable, which
     ## is not usually in the list of included columns.
   
@@ -6354,6 +6362,9 @@ executeEvaluateLift <- function(predcmd, testset, testname)
   
   for (mtype in getEvaluateModels())
   {
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a lift chart ...")
+    
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),", testset[[mtype]], crs$target),
@@ -6452,7 +6463,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
 
 ##----------------------------------------------------------------------
 ##
-## EVALUATE ROC CHART
+## EVALUATE ROC PLOT
 ##
 
 executeEvaluateROC <- function(predcmd, testset, testname)
@@ -6469,6 +6480,9 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   
   for (mtype in getEvaluateModels())
   {
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a ROC plot ...")
+
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),", testset[[mtype]], crs$target),
@@ -6594,6 +6608,9 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
   
   for (mtype in getEvaluateModels())
   {
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a Precision/Recall plot ...")
+
     mcount <- mcount + 1
 
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
@@ -6682,7 +6699,7 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
   appendLog("Add a legend to the plot.", legendcmd)
   eval(parse(text=legendcmd))
   
-  decor.cmd <- paste(genPlotTitleCmd("Precision/Recall Chart", "", title),
+  decor.cmd <- paste(genPlotTitleCmd("Precision/Recall Plot", "", title),
                     '\ngrid()', sep="")
   appendLog("Add decorations to the plot.", decor.cmd)
   eval(parse(text=decor.cmd))
@@ -6707,6 +6724,9 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
   
   for (mtype in getEvaluateModels())
   {
+    setStatusBar("Applying", mtype, "model to the dataset to generate",
+                 "a Sensitivity plot ...")
+
     mcount <- mcount + 1
     plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),", testset[[mtype]], crs$target),
