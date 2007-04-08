@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-08 20:10:47 Graham>
+## Time-stamp: <2007-04-08 21:22:36 Graham>
 ##
 ## MODEL TAB
 ##
@@ -228,15 +228,17 @@ executeModelTab <- function()
   ## This order of execution should correspond to the order in the
   ## GUI as this makes most logical sense to the user.
 
+  start.time <- Sys.time()
+
   if (build.all || currentModelTab() == .RPART)
   {
-    setStatusBar("Building rpart model ...")
+    setStatusBar("Building", .RPART, "model ...")
     if (executeModelRPart())
       theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
   }
   if (build.all || currentModelTab() == .ADA)
   {
-    setStatusBar("Building adaboost model ...")
+    setStatusBar("Building", .ADA, "model ...")
     crs$ada <<-
       buildModelAda(formula,
                     dataset,
@@ -254,25 +256,33 @@ executeModelTab <- function()
   }
   if (build.all || currentModelTab() == .RF)
   {
-    setStatusBar("Building randomForest model ...")
+    setStatusBar("Building", .RF, "model ...")
     if (executeModelRF())
       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
   }
   if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
   {
-    setStatusBar("Building support vector machine model ...")
+    setStatusBar("Building", .KSVM, "model ...")
     if (executeModelSVM())
       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
   }
   if (build.all || currentModelTab() == .GLM)
   {
-    setStatusBar("Building logistic regression model ...")
+    setStatusBar("Building", .GLM, "model ...")
     if (executeModelGLM())
       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
   }
   
   ##   if (build.all || currentModelTab() == NNET)
   ##     executeModelNNet()
+
+  if (build.all)
+  {
+    time.taken <- Sys.time()-start.time
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    setStatusBar("All models have been generated.", time.msg)
+  }
+  
 }
 
 ##----------------------------------------------------------------------

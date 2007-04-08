@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+178 070325 Update status bar while "Applying model to data ..."
 177 070325 Update status bar while "Building a model ..."
 176 070325 When Build model uncheck other evaluate buttons (Michael Fogliani).
 175 070408 Expose the commands to Save/Copy/Print in the Log tab.
@@ -21,35 +22,35 @@
 167 070325 Add Continue button to Ada to add trees to model (Peter Ricci)
 166 070324 Add Degree option to Polynomial kernel for SVM.
 165 070324 Inform ggobi of the name of the dataset.
-164 070224 Add rectangles to show clusters in dendrogram.
-163 Add an Edit button to each of the Data options.
-162 Add a Data Entry option for manual data entry (Tony Nolan). 
-161 Include release date in About (Tony Nolan).
-160 Add kernel and class weights to SVM.
-159 Some UI changes: buttons have no relief; summary textview does not wrap.
-158 Help menu reflect new tab arrangement.
-157 Ensure "make check" is working - add to and correct docs.
-156 Question dialog improvements. Audit dataset generation improvement. 
-155 Place found string in summary search function further into the view.
-154 Move Sample to Select tab. Place Transform tab after Explore tab.
-154 Rename Variables tab to Select tab.
-153 Use a combobox to select type of imputation to perform.
-152 Allow a csvname to be supplied to rattle on startup (Tony Nolan).
-151 Add support for cairoPlots saving to SVG if RSvgDevice is available.
-150 Support reading of ARFF data files (Denny).
-149 Finish ada cleanup.
-148 Clean up ada as a sample template module.
-147 Allow using hclust centers to prime kmeans (Daniele Medri).
-146 Add a View Data button to view the loaded dataset.
-145 Add extra options for ada model (Frank Lu).
-144 Bug Fix - search in summary_textview now scrolls to selection.
-143 Use much more efficient hcluster with parallel processing.
-142 Add a Data Plot to KMeans clustering. Improve ODBC handling.
-141 Call gtkMainIteration() on file browser to update it immediately.
-140 Fix on a version scheme - 2.1.1 rather than 2.1.139 or 2.1.1-139.
-139 Bug fix for ODBC. Catch memory error for svm (Michael Fogliani)
-138 Add ability for user to enter an SQL query thru ODBC (Frank Lu)
-137 Bug fix for Basket Associations Freq Plot (Tom Arnold).
+164 070324 Add rectangles to show clusters in dendrogram.
+163 070321 Add an Edit button to each of the Data options.
+162 070321 Add a Data Entry option for manual data entry (Tony Nolan). 
+161 070320 Include release date in About (Tony Nolan).
+160 070319 Add kernel and class weights to SVM.
+159 070319 UI changes: buttons have no relief; summary textview does not wrap.
+158 070319 Help menu reflect new tab arrangement.
+157 070317 Ensure "make check" is working - add to and correct docs.
+156 070317 Question dialog improvements. Audit dataset generation improvement. 
+155 070317 Place found string in summary search function further into the view.
+154 070317 Move Sample to Select tab. Place Transform tab after Explore tab.
+154 070317 Rename Variables tab to Select tab.
+153 070317 Use a combobox to select type of imputation to perform.
+152 070317 Allow a csvname to be supplied to rattle on startup (Tony Nolan).
+151 070316 Add support for cairoPlots saving to SVG if RSvgDevice is available.
+150 070316 Support reading of ARFF data files (Denny).
+149 070310 Finish ada cleanup.
+148 070308 Clean up ada as a sample template module.
+147 070307 Allow using hclust centers to prime kmeans (Daniele Medri).
+146 070303 Add a View Data button to view the loaded dataset.
+145 070303 Add extra options for ada model (Frank Lu).
+144 070303 Bug Fix - search in summary_textview now scrolls to selection.
+143 070303 Use much more efficient hcluster with parallel processing.
+142 070302 Add a Data Plot to KMeans clustering. Improve ODBC handling.
+141 070228 Call gtkMainIteration() on file browser to update it immediately.
+140 070227 Fix on a version scheme - 2.1.1 rather than 2.1.139 or 2.1.1-139.
+139 070226 Bug fix for ODBC. Catch memory error for svm (Michael Fogliani)
+138 070226 Add ability for user to enter an SQL query thru ODBC (Frank Lu)
+137 070225 Bug fix for Basket Associations Freq Plot (Tom Arnold).
 136 Add Limit and believeNRows to ODBC interface.
 135 Add Find to Summary textview (Michael Fogliani)
 134 Support Save of plot to wmf on MS/Windows.
@@ -228,6 +229,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 20:12:29 EST 2007
+Last modified: Sun Apr  8 21:28:15 EST 2007
 <!-- hhmts end -->
   </p>
