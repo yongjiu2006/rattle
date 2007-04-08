@@ -7,9 +7,10 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-178 070325 Update status bar while "Applying model to data ..."
-177 070325 Update status bar while "Building a model ..."
-176 070325 When Build model uncheck other evaluate buttons (Michael Fogliani).
+179 070409 Clean up PMML and bump version to 1.1.0.
+178 070408 Update status bar while "Applying model to data ..."
+177 070408 Update status bar while "Building a model ..."
+176 070408 When Build model uncheck other evaluate buttons (Michael Fogliani).
 175 070408 Expose the commands to Save/Copy/Print in the Log tab.
 175 070408 Implement plot annotations for boxplots.
 174 070407 Clean up Cut/Save/Plot code and get working on MS/Windows.
@@ -229,6 +230,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 21:28:15 EST 2007
+Last modified: Mon Apr  9 09:48:32 EST 2007
 <!-- hhmts end -->
   </p>

@@ -12,7 +12,7 @@ DESCRIPTIN=support/DESCRIPTION.in
 NAMESPACE=$(PACKAGE)/NAMESPACE
 
 PPACKAGE=package/pmml
-
+PDESCRIPTION=$(PPACKAGE)/DESCRIPTION
 
 REPOSITORY=repository
 
@@ -143,6 +143,8 @@ rattle_$(VERSION).tar.gz: revision $(SOURCE)
 
 pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	cp $(PSOURCE) package/pmml/R/
+	perl -pi -e "s|^Version: .*$$|Version: $(PVERSION)|" $(PDESCRIPTION)
+	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
 
@@ -195,7 +197,8 @@ clean:
 	rm -f rattle_*.tar.gz rattle_*.zip
 	rm -f package/rattle/R/rattle.R package/rattle/inst/etc/rattle.glade
 	rm -f package/rattle/DESCRIPTION
+	rm -f pmml_*.tar.gz pmml_*.zip
 
-realclean:
+realclean: clean
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
 	rm -rf rattle.Rcheck rattle_$(VERSION).tar.gz
