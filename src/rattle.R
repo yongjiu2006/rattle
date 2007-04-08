@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-07 13:47:16 Graham>
+## Time-stamp: <2007-04-08 11:13:55 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Apr 2007"
+VERSION.DATE <- "Released 07 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 ## Acknowledgements: Frank Lu has provided much feedback and has
@@ -207,7 +207,7 @@ rattle <- function(csvname=NULL)
   
   ## MISC
   
-  .START.LOG.COMMENT <<- "\n\n## "	# Assume paste with sep=""
+  .START.LOG.COMMENT <<- "\n\n# "	# Assume paste with sep=""
   .LOG.COMMENT       <<- "\n## "	# Assume paste with sep=""
   .END.LOG.COMMENT   <<- "\n\n"	# Assume paste with sep=""
   
@@ -539,6 +539,7 @@ resetRattle <- function()
   ## Update EXPLORE, MODEL and EVALUATE targets
 
   theWidget("explot_target_label")$setText("No target selected")
+  theWidget("explot_annotate_checkbutton")$setActive(FALSE)
   theWidget("summary_find_entry")$setText("")
 
   theWidget("glm_target_label")$setText("No target selected")
@@ -861,8 +862,11 @@ on_plot_save_button_clicked <- function(action)
 on_plot_copy_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
-  copyPlotToClipboard(devnum)
+  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  startLog("COPY PLOT TO CLIPBOARD")
+  appendLog(paste("Copy the plot on device", dev.num, "to the clipboard."),
+            sprintf('copyPlotToClipboard(%s)', dev.num))
+  copyPlotToClipboard(dev.num)
   infoDialog("The plot has been copied to the clipboard as a PNG.")
 }
 
@@ -873,10 +877,12 @@ on_plot_print_button_clicked <- function(action)
   ## right device.
     
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  device <- as.integer(sub("Rattle: Plot ", "", ttl))
-  printPlot(device)
-  
-  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", device))
+  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  startLog("PRINT PLOT")
+  appendLog(paste("Print the plot on device", dev.num),
+            sprintf('printPlot(%s)', dev.num))
+  printPlot(dev.num)
+  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", dev.num))
 }
 
 on_plot_close_button_clicked <- function(action)
@@ -1053,6 +1059,10 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
                                "overwrite this file?")))
       return()
 
+  startLog("SAVE PLOT")
+  appendLog(paste("Save the plot on device", dev.num, "to file."),
+            sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
+  
   if (savePlotToFile(save.name, dev.num))
     infoDialog("Rattle: Plot", dev.num, "has been exported to", save.name)
 }
@@ -4212,20 +4222,11 @@ plotBenfordsLaw <- function(l)
 
 executeExplorePlot <- function(dataset)
 {
-  ## DESCRIPTION
-  ## Plot the data
-  ##
-  ## ARGUMENTS
-  ## dataset = A string that defines the dataset to use.
-  ##
-  ## RETURNS
-  ## ignored
-  ##
-  ## DETAILS Information about what variables to plot and the kind of
+  ## Plot the data. The dataset is a string that defines the dataset
+  ## to use. Information about what variables to plot and the kind of
   ## plots is obtained from the continuous_treeview and the
   ## categorical_treeview which are displayed in the Explore tab's
   ## Distribution option. The appropriate plots are displayed.
-  ##
 
   ## Obtain the selection of variables.
 
@@ -4245,11 +4246,16 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
-  totalPlots <- nboxplots + nhisplots + length(cumplots) +
+  total.plots <- nboxplots + nhisplots + length(cumplots) +
     nbenplots + nbarplots + ndotplots
   
   pmax <- theWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
+
+  # Don't waste real estate if we are plotting less than number
+  # allowed per page.
+  
+  if (total.plots < pmax) pmax <- total.plots
   
   ## Iterate over all target values if a target is defined and has
   ## less than 10 values. The plots will then also display the
@@ -4273,6 +4279,10 @@ executeExplorePlot <- function(dataset)
   use.sample <- theWidget("explore_sample_checkbutton")$getActive()
   sampling  <- use.sample & not.null(crs$sample)
 
+  ## Record other options.
+
+  annotate <- theWidget("explot_annotate_checkbutton")$getActive()
+  
   ## Split the data, first for all values.
 
   bind.cmd <- sprintf('rbind(data.frame(dat=%s[,"%%s"], grp="All")', dataset)
@@ -4335,8 +4345,8 @@ executeExplorePlot <- function(dataset)
   ## Generate a plot for each variable. If there are too many
   ## variables, ask the user if we want to continue.
 
-  if (totalPlots > 10 && pmax == 1)
-    if (is.null(questionDialog("Rattle is about to generate", totalPlots,
+  if (total.plots > 10 && pmax == 1)
+    if (is.null(questionDialog("Rattle is about to generate", total.plots,
                                "individual plots. That's quite a few.",
                                "You could select fewer variables, or you",
                                "can change the number of plots per page,",
@@ -4348,26 +4358,28 @@ executeExplorePlot <- function(dataset)
 
   if (nboxplots > 0)
   {
-    ## DESCRIPTION
-    ## Box plots for numeric data.
-    ##
-    ## DETAIL A box plot shows the distribution of numeric data
-    ## graphically. The box iteself extends from the lower to the
-    ## upper quartiles with the median drawn in the box. The lines
-    ## then extend to the maximum and minimum points that are no more
-    ## than 1.5 times the interquartile range from the
-    ## median. Outliers are then also plotted as points. The notches
-    ## indicate significant differences, in that if nocthes do not
-    ## overlap, then the distribution medians are significantly
-    ## different.")
+    # Show a box plot for numeric data. A box plot shows the
+    # distribution of numeric data graphically. The box iteself
+    # extends from the lower to the upper quartiles with the median
+    # drawn in the box. The lines then extend to the maximum and
+    # minimum points that are no more than 1.5 times the interquartile
+    # range from the median. Outliers are then also plotted as
+    # points. The notches indicate significant differences, in that if
+    # nocthes do not overlap, then the distribution medians are
+    # significantly different.")
 
-    plot.cmd <- paste('boxplot(dat ~ grp, ds,',
+    plot.cmd <- paste('bp <<- boxplot(dat ~ grp, ds,',
                      sprintf('col=rainbow(%d),', length(targets)+1),
                      ifelse(is.null(targets), "",
                             sprintf('xlab="%s",', target)),
                      'notch=TRUE)')
 
-    doByLibrary <- "require(doBy, quietly=TRUE)"
+    ## Based on an example from Jim Holtman on r-help 070406.
+    
+    annotate.cmd <- paste("for (i in seq(ncol(bp$stats)))",
+                          "{text(i, bp$stats[,i], labels=bp$stats[,i])}")
+    
+    lib.cmd <- "require(doBy, quietly=TRUE)"
     
     ## TODO: Try using "by" instead of needing another package to
     ## provide summaryBy. Also, the new version of doBy (061006) seems
@@ -4416,20 +4428,32 @@ executeExplorePlot <- function(dataset)
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
-      appendLog("Plot the data, grouped appropriately.", plot.cmd)
+      appendLog("Plot the data, grouped appropriately.",
+                gsub("<<", "<", plot.cmd))
       eval(parse(text=plot.cmd))
 
+      # Add a value for the mean to each boxplot.
+      
       if (packageIsAvailable("doBy", "add means to box plots"))
       {
         appendLog("Use the doBy package to group the data for means.",
-                 doByLibrary)
-        eval(parse(text=doByLibrary))
+                 lib.cmd)
+        eval(parse(text=lib.cmd))
 
         appendLog("Calculate the group means.", mean.cmd)
         eval(parse(text=mean.cmd))
       }
         
-      ## Add a value for the mean to each, as in DMSurvivorP196.
+      # Optionally include annotations.
+
+      if (annotate)
+      {
+        appendLog("Add annotations to the plot.", annotate.cmd)
+        eval(parse(text=annotate.cmd))
+      }        
+      
+      # Add a title to the plot.
+      
       title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
                                           boxplots[s],
                                           ifelse(sampling, " (sample)","")))
@@ -4970,9 +4994,9 @@ executeExplorePlot <- function(dataset)
 
   ## Update the status bar.
   
-  if (totalPlots > 1)
-    setStatusBar("All", totalPlots, "plots generated.")
-  else if (totalPlots ==  1)
+  if (total.plots > 1)
+    setStatusBar("All", total.plots, "plots generated.")
+  else if (total.plots ==  1)
     setStatusBar("One plot generated.")
   else
     setStatusBar("No plots selected.")

@@ -20,4 +20,9 @@ plotBenfordsLaw(l)
 }
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
+\examples{
+# A simple example using the audit data from Rattle.
+data(audit)
+plotBenfordsLaw(audit$Income)
+}
 \keyword{hplot}
