@@ -1,6 +1,6 @@
 ### This comes from RWeka, but to use it in RWeka you need all of
 ### RWeka installed, so borrow this directly from there for use in
-### Rattle.
+### Rattle. It is included in 2.5.0 release of the foreign package.
 
 ### Functions for reading and writing files in Weka ARFF format (see
 ### README and example data sets of version 3-4-7)

@@ -120,8 +120,7 @@
 }
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{
-  \code{\link{pmml}},
-  \code{\link{rpart}}.
+  \code{\link{pmml}}.
 }
 \examples{
 library(rpart)
