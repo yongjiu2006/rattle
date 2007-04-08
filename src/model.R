@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-08 11:48:17 Graham>
+## Time-stamp: <2007-04-08 20:10:47 Graham>
 ##
 ## MODEL TAB
 ##
@@ -229,11 +229,14 @@ executeModelTab <- function()
   ## GUI as this makes most logical sense to the user.
 
   if (build.all || currentModelTab() == .RPART)
+  {
+    setStatusBar("Building rpart model ...")
     if (executeModelRPart())
       theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-
+  }
   if (build.all || currentModelTab() == .ADA)
   {
+    setStatusBar("Building adaboost model ...")
     crs$ada <<-
       buildModelAda(formula,
                     dataset,
@@ -249,19 +252,25 @@ executeModelTab <- function()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
     }
   }
-        
   if (build.all || currentModelTab() == .RF)
+  {
+    setStatusBar("Building randomForest model ...")
     if (executeModelRF())
       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
-  
+  }
   if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
+  {
+    setStatusBar("Building support vector machine model ...")
     if (executeModelSVM())
       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
-  
+  }
   if (build.all || currentModelTab() == .GLM)
+  {
+    setStatusBar("Building logistic regression model ...")
     if (executeModelGLM())
       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-
+  }
+  
   ##   if (build.all || currentModelTab() == NNET)
   ##     executeModelNNet()
 }

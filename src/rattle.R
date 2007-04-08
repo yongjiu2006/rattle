@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-08 11:51:00 Graham>
+# Time-stamp: <2007-04-08 20:00:31 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -558,14 +558,12 @@ resetRattle <- function()
   theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  ## theWidget("gbm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
 
   theWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
   theWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
   theWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
   theWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
-  ## theWidget("gbm_evaluate_checkbutton")$setSensitive(FALSE)
   theWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
 
   ## Update CLUSTER tab
@@ -1110,7 +1108,9 @@ printPlot <- function(dev.num=dev.cur())
 }
   
 # The following is from dev.print, but dev.print does not list "Cairo"
-# as a screen device. So just use their code until they change this.
+# as a screen device. So just use their code until they change
+# this. Ripley has implemented (070408) a fix for this and it is in
+# 2.5.0 version of dev.print.
 
 my.dev.print <- function (device = postscript, ...) 
 {

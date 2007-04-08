@@ -7,12 +7,13 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+177 070325 Update status bar while "Building a model ..."
 176 070325 When Build model uncheck other evaluate buttons (Michael Fogliani).
 175 070408 Expose the commands to Save/Copy/Print in the Log tab.
 175 070408 Implement plot annotations for boxplots.
 174 070407 Clean up Cut/Save/Plot code and get working on MS/Windows.
 173 070406 Trial dev.copy to clipboard for Plot window for MS/Windows.
-172 070406 Implement Print for Plot windows using modified dev.print.
+172 070406 Print for Plot windows using modified dev.print (Tony Nolan).
 171 070404 Add Copy button to Plot to save graphics to clipboard.
 170 070401 For MS/Windows check if supplied csvname begins with "d:".
 169 070326 Ensure paradigms go after Transform tab, not Explore tab.
@@ -227,6 +228,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 11:49:28 EST 2007
+Last modified: Sun Apr  8 20:12:29 EST 2007
 <!-- hhmts end -->
   </p>

@@ -7,15 +7,14 @@
     priorities and especially code.</p>
 
 <pre>
-070325 At beginning of model building update status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
-061230 Implement nnet with linout=TRUE? (Yale)
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070406 For the cairo plot window, introduce keyboard shortcuts.
 070325 Add a Defaults button to each model builder.
-070401 Add a File Type combo box to graphics save.
 070330 Add selection of clustering: diana, agnus, fanny, etc.
+061230 Implement nnet with linout=TRUE? (Yale)
+070401 Add a File Type combo box to graphics save.
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
 070321 For the View textview, keep first row (headers) static as "edit()" does
@@ -42,7 +41,6 @@
 070215 Transform: Use some Rcmdr transforms
 061227 Eval->Save: All to one file.
 060723 Simplify RF rule sets
-070220 Explore: how to print? (Tony Nolan)
 070220 Auto update feature(Tony Nolan)
 070201 Investigate party for rattle (Daniel Medri)
 070201 Invetigate rmpi for rattle (Daniel Medri)
@@ -56,6 +54,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 11:48:55 EST 2007
+Last modified: Sun Apr  8 20:12:04 EST 2007
 <!-- hhmts end -->
   </p>
