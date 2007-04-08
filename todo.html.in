@@ -7,7 +7,6 @@
     priorities and especially code.</p>
 
 <pre>
-070325 For new model uncheck other evaluate check buttons (Michael Fogliani)
 070325 At beginning of model building update status bar "Building ...."
 070325 Transform resets all Variable roles and it should not.
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
@@ -57,6 +56,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 11:20:17 EST 2007
+Last modified: Sun Apr  8 11:48:55 EST 2007
 <!-- hhmts end -->
   </p>

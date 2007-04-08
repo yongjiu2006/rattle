@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-24 17:34:34 Graham>
+## Time-stamp: <2007-04-08 11:48:17 Graham>
 ##
 ## MODEL TAB
 ##
@@ -200,39 +200,16 @@ executeModelTab <- function()
 
   ## DISPATCH
 
-##   if (theWidget("all_models_radiobutton")$getActive())
-##   {
-##     ## This order of execution should correspond to the order in the
-##     ## GUI as this makes most logical sense to the user.
-    
-##     if (executeModelRPart())
-##       theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-##     ## Eventually the following will be "crs$ada <<- ..."
-##     crs.ada <-
-##       build.model.ada(tv=theWidget("ada_textview"),
-##                       maxdepth=theWidget("ada_maxdepth_spinbutton")$getValue(),
-##                       minsplit=theWidget("ada_minsplit_spinbutton")$getValue(),
-##                       cp=theWidget("ada_cp_spinbutton")$getValue(),
-##                       xval=theWidget("ada_xval_spinbutton")$getValue(),
-##                       ntree=theWidget("ada_ntree_spinbutton")$getValue())
-##     if (crs.ada)
-##       theWidget("ada_evaluate_checkbutton")$setActive(TRUE) 
-##     if (executeModelRF())
-##       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
-##     if (executeModelSVM())
-##       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
-##     if (executeModelGLM())
-##       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
-## ##     if (executeModelGBM())
-## ##       theWidget("gbm_evaluate_checkbutton")$setActive(TRUE) 
-## ##     if (executeModelNNet())
-## ##       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
-
-##     setStatusBar("All models have been generated.")
-##   }
-##   else
-
   build.all <- theWidget("all_models_radiobutton")$getActive()
+
+  # Reset all Evaluate options to unchecked.
+  
+  theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
+  
   ## The following work for ada, do they work for the rest?
   formula <- paste(crs$target, "~ .")
   included <- getIncludedVariables()
