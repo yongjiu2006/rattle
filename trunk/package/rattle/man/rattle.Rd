@@ -36,7 +36,7 @@ rattle(csvname=NULL)
 }
 \examples{
 ## You can start rattle with a path to a csv file to preload the
-## dataset. There are issues under Windows, but Linux is just fine.
+## dataset. There are issues with the csvname option under Windows.
 
 if (.Platform$OS.type == "windows")
   rattle()
