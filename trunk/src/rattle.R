@@ -1,86 +1,86 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2007-04-08 11:13:55 Graham>
-##
-## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
-##
-## The Rattle package is made of of the following R source files:
-##
-## cluster.R	KMeans and Hierachical Clustering.
-## execute.R	The Execute functionality.
-## paradigm.R	Display and hide tabs depending on paradigm radio buttons
-##
+#
+# Time-stamp: <2007-04-08 11:51:00 Graham>
+#
+# Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+#
+# The Rattle package is made of of the following R source files:
+#
+# cluster.R	KMeans and Hierachical Clustering.
+# execute.R	The Execute functionality.
+# paradigm.R	Display and hide tabs depending on paradigm radio buttons
+#
 
 MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 07 Apr 2007"
+VERSION.DATE <- "Released 08 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
-## Acknowledgements: Frank Lu has provided much feedback and has
-## extensively tested the application. Many colleagues at the
-## Australian Taxation Office have used Rattle and made many and
-## varied suggestions. These include Anthony Nolan, Stuart Hamilton,
-## Liyin Zue, Weiqiang Lin, Robert Williams, Shawn Wicks, Ray Lindsay.
+# Acknowledgements: Frank Lu has provided much feedback and has
+# extensively tested the application. Many colleagues at the
+# Australian Taxation Office have used Rattle and made many and
+# varied suggestions. These include Anthony Nolan, Stuart Hamilton,
+# Liyin Zue, Weiqiang Lin, Robert Williams, Shawn Wicks, Ray Lindsay.
 
-## LICENSE
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version. See the file gpl-license.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# LICENSE
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version. See the file gpl-license.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-## STYLE GUIDE
-##
-##    Use the "_" convention only for Glade variables and functions.
-##    Use capitalised verbs for own functions: displayPlotAgain
-##    Use dot separated words for variables: list.of.frames, lib.cmd
-##    RGtk2 uses the capitalised word convention.
-##    Use same names in R code as for the Glade objects.
-##    Hide global variables, all capitalised, by beginning with "."
+# STYLE GUIDE
+#
+#    Use the "_" convention only for Glade variables and functions.
+#    Use capitalised verbs for own functions: displayPlotAgain
+#    Use dot separated words for variables: list.of.frames, lib.cmd
+#    RGtk2 uses the capitalised word convention.
+#    Use same names in R code as for the Glade objects.
+#    Hide global variables, all capitalised, by beginning with "."
 
-## INTERFACE STYLE
-##
-##    Should the philosophy be to have them active, and check
-##    conditions on execute, rather than messing around turning things
-##    on and off?
-##
-##    If the functionality is not yet implemented, full stop, then
-##    have the interface item(s) greyed out, as an indication that the
-##    functionality is to come. Probably not a good idea. The
-##    expectation is that perhaps there is some way within the
-##    interface of getting it not to be greyed out! But doing this
-##    also encourages those with an interest in the greyed out bits to
-##    either complain (i.e., I get to know what is wanted) or else
-##    help implement them!
-##
-##    If the functionality is not appropriate in a particular
-##    circumstance then don't grey it out. Simply check, in the one
-##    place in the code (e.g., when the button is pushed) and pop up
-##    an error dialogue.
-##
-##    This doesn't always work, as in the case of sample where you do
-##    want greyed out functionality, but you don't want it to mean not
-##    yet implemented.
+# INTERFACE STYLE
+#
+#    Should the philosophy be to have them active, and check
+#    conditions on execute, rather than messing around turning things
+#    on and off?
+#
+#    If the functionality is not yet implemented, full stop, then
+#    have the interface item(s) greyed out, as an indication that the
+#    functionality is to come. Probably not a good idea. The
+#    expectation is that perhaps there is some way within the
+#    interface of getting it not to be greyed out! But doing this
+#    also encourages those with an interest in the greyed out bits to
+#    either complain (i.e., I get to know what is wanted) or else
+#    help implement them!
+#
+#    If the functionality is not appropriate in a particular
+#    circumstance then don't grey it out. Simply check, in the one
+#    place in the code (e.g., when the button is pushed) and pop up
+#    an error dialogue.
+#
+#    This doesn't always work, as in the case of sample where you do
+#    want greyed out functionality, but you don't want it to mean not
+#    yet implemented.
 
 ## BUGS
-##
-##   Tooltips are not working on GNU/Linux. Just fine on MS/Windows.
-##
-##   The RGtk2 author, Michael Lawrence, notes that most of the GUI
-##   functionality in Gnome (i.e., libgnome and libgnomeui) will soon
-##   be merged into GTK. At that time, that functionality will be part
-##   of RGtk2.
+#
+#   Tooltips are not working on GNU/Linux. Just fine on MS/Windows.
+#
+#   The RGtk2 author, Michael Lawrence, notes that most of the GUI
+#   functionality in Gnome (i.e., libgnome and libgnomeui) will soon
+#   be merged into GTK. At that time, that functionality will be part
+#   of RGtk2.
 
 ########################################################################
 ##
