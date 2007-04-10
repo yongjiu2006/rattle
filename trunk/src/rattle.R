@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-08 21:26:26 Graham>
+# Time-stamp: <2007-04-10 21:53:13 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 08 Apr 2007"
+VERSION.DATE <- "Released 09 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1103,7 +1103,10 @@ printPlot <- function(dev.num=dev.cur())
 {
   cur <- dev.cur()
   dev.set(dev.num)
-  my.dev.print()
+  if (isWindows())
+    my.dev.print(win.print)
+  else
+    my.dev.print()
   dev.set(cur)
 }
   
