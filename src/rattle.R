@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-10 21:53:13 Graham>
+# Time-stamp: <2007-04-11 06:39:17 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 09 Apr 2007"
+VERSION.DATE <- "Released 10 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -85,6 +85,13 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 ########################################################################
 ##
 ## INITIALISATIONS
+
+# Zefeng Dong (An ANU student) found in R 2.3.1 that seq_len is not
+# defined, but is used in read.arff. So temporarily define it here.
+
+result <- try(seq_len, silent=TRUE)
+if (inherits(result, "try-error"))
+  seq_len <- function(length.out){seq(length.out=length.out)}
 
 rattle <- function(csvname=NULL)
 {

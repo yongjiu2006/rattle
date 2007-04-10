@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+180 070910 Use dev.print(win.print) under MS/Windows for printer selection.
 179 070409 Clean up PMML and bump version to 1.1.0.
 178 070408 Update status bar while "Applying model to data ..."
 177 070408 Update status bar while "Building a model ..."
@@ -230,6 +231,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon Apr  9 09:48:32 EST 2007
+Last modified: Tue Apr 10 21:55:48 EST 2007
 <!-- hhmts end -->
   </p>
