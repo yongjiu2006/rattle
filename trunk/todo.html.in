@@ -7,7 +7,6 @@
     priorities and especially code.</p>
 
 <pre>
-070325 Transform resets all Variable roles and it should not.
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070406 For the cairo plot window, introduce keyboard shortcuts.
@@ -54,6 +53,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr  8 20:12:04 EST 2007
+Last modified: Sat Apr 14 15:18:22 EST 2007
 <!-- hhmts end -->
   </p>

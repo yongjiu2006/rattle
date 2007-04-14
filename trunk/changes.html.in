@@ -7,6 +7,8 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+182 070914 After a transform, keep variable roles primarily as they were.
+181 070911 Define seq_len for pre 2.4.0 users of read.arff (Zefeng Dong).
 180 070910 Use dev.print(win.print) under MS/Windows for printer selection.
 179 070409 Clean up PMML and bump version to 1.1.0.
 178 070408 Update status bar while "Applying model to data ..."
@@ -231,6 +233,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue Apr 10 21:55:48 EST 2007
+Last modified: Sat Apr 14 15:18:15 EST 2007
 <!-- hhmts end -->
   </p>
