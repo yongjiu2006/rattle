@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-11 06:39:17 Graham>
+# Time-stamp: <2007-04-14 15:04:19 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 10 Apr 2007"
+VERSION.DATE <- "Released 11 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -89,8 +89,7 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 # Zefeng Dong (An ANU student) found in R 2.3.1 that seq_len is not
 # defined, but is used in read.arff. So temporarily define it here.
 
-result <- try(seq_len, silent=TRUE)
-if (inherits(result, "try-error"))
+if (R.version$minor < "4.0")
   seq_len <- function(length.out){seq(length.out=length.out)}
 
 rattle <- function(csvname=NULL)
@@ -819,6 +818,8 @@ getCurrentPageLabel <- function(nb)
 
 isWindows <- function()
 {
+  # The use of .Platform$OS.type is as recommended in the R.version
+  # manual page.
   return(.Platform$OS.type == "windows")
 }
 
@@ -1735,12 +1736,13 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
                                barplot=NULL, dotplot=NULL,
-                               resample=TRUE)
+                               resample=TRUE, autoroles=TRUE)
 {
   ## Update the select treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
-                       mean, boxplot, hisplot, cumplot, benplot, barplot, dotplot)
+                       mean, boxplot, hisplot, cumplot, benplot, barplot,
+                       dotplot, autoroles=autoroles)
 
   if (resample)
   {
@@ -3146,9 +3148,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  zero=NULL, mean=NULL,
                                  boxplot=NULL,
                                  hisplot=NULL, cumplot=NULL, benplot=NULL,
-                                 barplot=NULL, dotplot=NULL)
+                                 barplot=NULL, dotplot=NULL,
+                                 autoroles=TRUE)
 {
-  
+
   ## Set up initial information about variables throughout Rattle,
   ## including the Variable tab's variable model, the Explore tab's
   ## categorical and continuous models, and the Modelling tab defaults
@@ -3170,7 +3173,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   ## this choice, and we set the appropriate labels with this, and
   ## record it in crs.
 
-  if (is.null(target))
+  if (autoroles && is.null(target))
   {
     ## Find the last variable that is not an IMP (imputed). This is
     ## jsut a general heuristic, and works particularly for imputation
@@ -3243,23 +3246,27 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   for (i in 1:length(variables))
   {
+    #used <- union(target, union(risk, union(ident, ignore)))
+    
     iter <- model$append()$iter
 
     cl <- class(crs$dataset[[variables[i]]])
 
-    ## First check for special variable names. Want to also do this
-    ## for TARGET_, eventually
+    # First check for special variable names. Want to also do this for
+    # TARGET_, eventually
     
+    if (autoroles)
+    {
     if (paste("IMP_", variables[i], sep="") %in% variables)
     {
-      ## This works with SAS/EM IMPutations and Rattle's imputations,
-      ## which add the IMP_ at the beginning of the name of any
-      ## imputed variables.
+      # This works with SAS/EM IMPutations and Rattle's imputations,
+      # which add the IMP_ at the beginning of the name of any imputed
+      # variables.
       
       ignore <- c(ignore, variables[i])
       
-      ## Be sure to also remove any other role for the original
-      ## variable?
+      # Be sure to also remove any other role for the original
+      # variable?
     }
     else if (substr(variables[i], 1, 2) == "ID")
     {
@@ -3309,6 +3316,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         ignore <- c(ignore, variables[i])
       }
     }
+    }
+    
     input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
 
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
@@ -3595,6 +3604,16 @@ executeTransformImputePerform <- function()
 {
   zero <- getSelectedVariables("zero")
 
+  # Record current variable roles so we can maintain these, but modify
+  # by ignore'ing the imputed variables, and input'ing the new
+  # imputes.
+  
+  input <- getSelectedVariables("input")
+  target <- getSelectedVariables("target")
+  risk <- getSelectedVariables("risk")
+  ident <- getSelectedVariables("ident")
+  ignore <- getSelectedVariables("ignore")
+
   if (length(zero) > 0) startLog("MISSING VALUE IMPUTATION")
 
   for (z in zero)
@@ -3642,6 +3661,33 @@ executeTransformImputePerform <- function()
       appendLog("Change all NAs to 0.", sub("<<-", "<-", zero.cmd))
       eval(parse(text=zero.cmd))
     }
+    if (z %in% input)
+    {
+      input <- setdiff(input, z)
+      input <- union(input, vname)
+    }
+    else if (z %in% target)
+    {
+      target <- setdiff(target, z)
+      target <- union(target, vname)
+    }
+    else if (z %in% risk)
+    {
+      risk <- setdiff(risk, z)
+      risk <- union(risk, vname)
+    }
+    else if (z %in% ident)
+    {
+      ident <- setdiff(ident, z)
+      ident <- union(ident, vname)
+    }
+    else
+    {
+      # If the source variable was ignore, then leave it as such, and
+      # put the new variable in as input.
+      input <- union(input, vname)
+    }
+    ignore <- union(ignore, z)
   }
   
   if (length(zero) > 0)
@@ -3654,10 +3700,13 @@ executeTransformImputePerform <- function()
     theWidget("categorical_treeview")$getModel()$clear()
     theWidget("continuous_treeview")$getModel()$clear()
 
-    ## Recreate the treeviews.
+    ## Recreate the treeviews, keeping the roles unchanged except for
+    ## those that have been imputed.
 
     resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
-                       resample=FALSE)
+                       input=input, target=target, risk=risk,
+                       ident=ident, ignore=ignore,
+                       resample=FALSE, autoroles=FALSE)
 
     ## Reset the original Data textview to output of new str.
 
