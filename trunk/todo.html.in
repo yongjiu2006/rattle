@@ -7,11 +7,13 @@
     priorities and especially code.</p>
 
 <pre>
+070417 Settings->Cairo Device, on for GNU/Linux, off for MS/Windows.
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070406 For the cairo plot window, introduce keyboard shortcuts.
 070325 Add a Defaults button to each model builder.
 070330 Add selection of clustering: diana, agnus, fanny, etc.
+070421 Ensure the Help menu is complete.
 061230 Implement nnet with linout=TRUE? (Yale)
 070401 Add a File Type combo box to graphics save.
 070316 Implement "expert" settings for each model (Liyin Xue)
@@ -53,6 +55,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Apr 14 15:18:22 EST 2007
+Last modified: Sat Apr 21 07:47:08 EST 2007
 <!-- hhmts end -->
   </p>

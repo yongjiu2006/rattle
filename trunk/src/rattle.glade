@@ -170,7 +170,7 @@
 		      <accelerator key="F5" modifiers="0" signal="activate"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image272">
+			<widget class="GtkImage" id="image296">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-execute</property>
 			  <property name="icon_size">1</property>
@@ -197,7 +197,7 @@
 		      <property name="use_underline">True</property>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image273">
+			<widget class="GtkImage" id="image297">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-print</property>
 			  <property name="icon_size">1</property>
@@ -218,7 +218,7 @@
 		      <signal name="activate" handler="on_export_button_clicked" last_modification_time="Wed, 18 Oct 2006 18:19:08 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image274">
+			<widget class="GtkImage" id="image298">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-save-as</property>
 			  <property name="icon_size">1</property>
@@ -245,7 +245,7 @@
 		      <signal name="activate" handler="on_tools_data_activate" last_modification_time="Fri, 13 Oct 2006 09:18:41 GMT"/>
 
 		      <child internal-child="image">
-			<widget class="GtkImage" id="image275">
+			<widget class="GtkImage" id="image299">
 			  <property name="visible">True</property>
 			  <property name="stock">gtk-file</property>
 			  <property name="icon_size">1</property>
@@ -376,28 +376,6 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkMenuItem" id="nomenclature1">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Terminology</property>
-		      <property name="use_underline">True</property>
-
-		      <child>
-			<widget class="GtkMenu" id="nomenclature1_menu">
-
-			  <child>
-			    <widget class="GtkMenuItem" id="data2">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">_Data</property>
-			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_help_nomenclature_data_activate" last_modification_time="Mon, 20 Mar 2006 03:09:22 GMT"/>
-			    </widget>
-			  </child>
-			</widget>
-		      </child>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkMenuItem" id="data1">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">_Data</property>
@@ -407,11 +385,29 @@
 			<widget class="GtkMenu" id="data1_menu">
 
 			  <child>
+			    <widget class="GtkMenuItem" id="data2">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">_Nomenclature</property>
+			      <property name="use_underline">True</property>
+			      <signal name="activate" handler="on_help_nomenclature_data_activate" last_modification_time="Mon, 20 Mar 2006 03:09:22 GMT"/>
+			    </widget>
+			  </child>
+
+			  <child>
 			    <widget class="GtkMenuItem" id="csv1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">CSV</property>
+			      <property name="label" translatable="yes">_CSV</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_csv_activate" last_modification_time="Tue, 14 Mar 2006 19:14:20 GMT"/>
+			    </widget>
+			  </child>
+
+			  <child>
+			    <widget class="GtkMenuItem" id="arff1">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">_ARFF</property>
+			      <property name="use_underline">True</property>
+			      <signal name="activate" handler="on_help_arff_activate" last_modification_time="Fri, 20 Apr 2007 21:34:17 GMT"/>
 			    </widget>
 			  </child>
 
@@ -465,15 +461,6 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkMenuItem" id="roles1">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">_Roles</property>
-			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_help_roles_activate" last_modification_time="Fri, 26 May 2006 21:30:45 GMT"/>
-			    </widget>
-			  </child>
-
-			  <child>
 			    <widget class="GtkMenuItem" id="weight_calculator1">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">_Weight Calculator</property>
@@ -481,26 +468,13 @@
 			      <signal name="activate" handler="on_help_weight_calculator_activate" last_modification_time="Fri, 24 Mar 2006 08:41:41 GMT"/>
 			    </widget>
 			  </child>
-			</widget>
-		      </child>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="transform1">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Transform</property>
-		      <property name="use_underline">True</property>
-
-		      <child>
-			<widget class="GtkMenu" id="transform1_menu">
 
 			  <child>
-			    <widget class="GtkMenuItem" id="impute1">
+			    <widget class="GtkMenuItem" id="roles1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">_Impute</property>
+			      <property name="label" translatable="yes">_Roles</property>
 			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_help_impute_activate" last_modification_time="Fri, 26 Jan 2007 06:18:16 GMT"/>
+			      <signal name="activate" handler="on_help_roles_activate" last_modification_time="Fri, 26 May 2006 21:30:45 GMT"/>
 			    </widget>
 			  </child>
 			</widget>
@@ -523,6 +497,34 @@
 			      <property name="label" translatable="yes">_Summary</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_summary_activate" last_modification_time="Wed, 15 Mar 2006 19:21:49 GMT"/>
+
+			      <child>
+				<widget class="GtkMenu" id="summary1_menu">
+
+				  <child>
+				    <widget class="GtkMenuItem" id="distributions1">
+				      <property name="visible">True</property>
+				      <property name="label" translatable="yes">_Distributions</property>
+				      <property name="use_underline">True</property>
+				      <signal name="activate" handler="on_help_distributions_activate" last_modification_time="Fri, 20 Apr 2007 21:34:17 GMT"/>
+
+				      <child>
+					<widget class="GtkMenu" id="distributions1_menu">
+
+					  <child>
+					    <widget class="GtkMenuItem" id="ggobi1">
+					      <property name="visible">True</property>
+					      <property name="label" translatable="yes">_GGobi</property>
+					      <property name="use_underline">True</property>
+					      <signal name="activate" handler="on_help_ggobi_activate" last_modification_time="Fri, 20 Apr 2007 21:37:29 GMT"/>
+					    </widget>
+					  </child>
+					</widget>
+				      </child>
+				    </widget>
+				  </child>
+				</widget>
+			      </child>
 			    </widget>
 			  </child>
 
@@ -558,20 +560,20 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkMenuItem" id="cluster1">
+		    <widget class="GtkMenuItem" id="transform1">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Cluster</property>
+		      <property name="label" translatable="yes">Transform</property>
 		      <property name="use_underline">True</property>
 
 		      <child>
-			<widget class="GtkMenu" id="cluster1_menu">
+			<widget class="GtkMenu" id="transform1_menu">
 
 			  <child>
-			    <widget class="GtkMenuItem" id="kmeans1">
+			    <widget class="GtkMenuItem" id="impute1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">_KMeans</property>
+			      <property name="label" translatable="yes">_Impute</property>
 			      <property name="use_underline">True</property>
-			      <signal name="activate" handler="on_help_kmeans_activate" last_modification_time="Tue, 21 Mar 2006 12:04:45 GMT"/>
+			      <signal name="activate" handler="on_help_impute_activate" last_modification_time="Fri, 26 Jan 2007 06:18:16 GMT"/>
 			    </widget>
 			  </child>
 			</widget>
@@ -591,7 +593,7 @@
 			  <child>
 			    <widget class="GtkMenuItem" id="decision_tree1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Decision Tree</property>
+			      <property name="label" translatable="yes">_Tree</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_rpart_activate" last_modification_time="Tue, 14 Mar 2006 19:50:27 GMT"/>
 			    </widget>
@@ -600,7 +602,7 @@
 			  <child>
 			    <widget class="GtkMenuItem" id="boosting1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Boosting</property>
+			      <property name="label" translatable="yes">_Boost</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_ada_activate" last_modification_time="Sat, 09 Dec 2006 03:51:00 GMT"/>
 			    </widget>
@@ -609,7 +611,7 @@
 			  <child>
 			    <widget class="GtkMenuItem" id="random_forest1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Random Forest</property>
+			      <property name="label" translatable="yes">_Forest</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_randomForest_activate" last_modification_time="Tue, 14 Mar 2006 19:53:37 GMT"/>
 			    </widget>
@@ -618,7 +620,7 @@
 			  <child>
 			    <widget class="GtkMenuItem" id="support_vector_machine1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Support Vector Machine</property>
+			      <property name="label" translatable="yes">_SVM</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_support_vector_machine_activate" last_modification_time="Wed, 22 Mar 2006 19:33:17 GMT"/>
 			    </widget>
@@ -627,7 +629,7 @@
 			  <child>
 			    <widget class="GtkMenuItem" id="regression1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Regression</property>
+			      <property name="label" translatable="yes">_Regression</property>
 			      <property name="use_underline">True</property>
 			      <signal name="activate" handler="on_help_glm_activate" last_modification_time="Tue, 14 Mar 2006 19:50:36 GMT"/>
 			    </widget>
@@ -669,6 +671,45 @@
 		  </child>
 
 		  <child>
+		    <widget class="GtkMenuItem" id="cluster1">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Cluster</property>
+		      <property name="use_underline">True</property>
+
+		      <child>
+			<widget class="GtkMenu" id="cluster1_menu">
+
+			  <child>
+			    <widget class="GtkMenuItem" id="kmeans1">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">_KMeans</property>
+			      <property name="use_underline">True</property>
+			      <signal name="activate" handler="on_help_kmeans_activate" last_modification_time="Tue, 21 Mar 2006 12:04:45 GMT"/>
+			    </widget>
+			  </child>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkMenuItem" id="associate2">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Ass_ociate</property>
+		      <property name="use_underline">True</property>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkMenuItem" id="log2">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Log</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="on_help_log_activate" last_modification_time="Fri, 20 Apr 2007 21:43:45 GMT"/>
+		    </widget>
+		  </child>
+
+		  <child>
 		    <widget class="GtkSeparatorMenuItem" id="separator1">
 		      <property name="visible">True</property>
 		    </widget>
@@ -696,7 +737,7 @@
 	      <signal name="activate" handler="on_rattle_menu_activate" last_modification_time="Sat, 11 Nov 2006 21:37:00 GMT"/>
 
 	      <child internal-child="image">
-		<widget class="GtkImage" id="image276">
+		<widget class="GtkImage" id="image300">
 		  <property name="visible">True</property>
 		  <property name="stock">gtk-info</property>
 		  <property name="icon_size">1</property>

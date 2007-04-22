@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-14 15:04:19 Graham>
+# Time-stamp: <2007-04-21 07:45:34 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 11 Apr 2007"
+VERSION.DATE <- "Released 14 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7353,6 +7353,19 @@ any white space act as a separator.
 The corresponding R code uses the simple read.csv() function."))
     popupTextviewHelpWindow("read.csv") }
 
+on_help_arff_activate <- function(action, window)
+{
+  if (showHelpPlus("Rattle can load data from
+a Attribute-Relation File Format (ARFF) file.
+This is an ASCII text file format
+that is essentially a CSV file with a header that describes the
+meta-data. ARFF was developed for use in the Weka machine learning
+software and there are quite a few datasets in this format now.
+<<>>
+The corresponding R code uses the read.arff() function from the
+foreign package."))
+    popupTextviewHelpWindow("read.arff") }
+
 on_help_rdata_file_activate <- function(action, window)
 {
   showHelp("Choose this if you have data stored in an R dataset
@@ -7505,6 +7518,22 @@ the kurtosis and skewness."))
     }
 }
 
+on_help_distributions_activate <- function(action, window)
+{
+  if (showHelpPlus( "Choose from various plot types to display
+information about the distributions of data."))
+    popupTextviewHelpWindow("boxplot")
+}
+
+on_help_ggobi_activate <- function(action, window)
+{
+  if (showHelpPlus( "Run the GGobi application to visually explore
+your data. GGobi is a very powerful interactive visualiser.
+You will need to have the separate GGobi application installed,
+as well as the rggobi R package."))
+    popupTextviewHelpWindow("ggobi")
+}
+
 on_help_correlation_activate <- function(action, window)
 {
   if (showHelpPlus( "A pairwise correlation between each numeric variable
@@ -7623,3 +7652,11 @@ is simply the count of false positives divided by the number of negatives
   }
 }
 
+on_help_log_activate <- function(action, window)
+{
+  showHelp("The Log tab records the underlying commands that
+Rattle generates and passes over to R to execute.
+You can save the Log commands to file to run at a later stage,
+or you can paste the commands into the current R console to do
+more than Rattle can support.")
+}

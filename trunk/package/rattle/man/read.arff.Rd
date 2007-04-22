@@ -12,6 +12,15 @@ read.arff(file)
     from, or a \code{\link{connection}} which will be opened if
     necessary, and if so closed at the end of the function call.}
 }
+\details{
+  
+  Data is loaded from a Attribute-Relation File Format (ARFF) file.
+  This is an ASCII text file format that is essentially a CSV file with
+  a header that describes the meta-data. ARFF was developed for use in
+  the Weka machine learning software and there are quite a few datasets
+  in this format now.
+
+}
 \value{
   A data frame containing the data from the ARFF file.
 }
