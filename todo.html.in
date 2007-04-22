@@ -8,6 +8,7 @@
 
 <pre>
 070417 Settings->Cairo Device, on for GNU/Linux, off for MS/Windows.
+070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070406 For the cairo plot window, introduce keyboard shortcuts.
@@ -55,6 +56,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Apr 21 07:47:08 EST 2007
+Last modified: Sun Apr 22 13:01:31 EST 2007
 <!-- hhmts end -->
   </p>

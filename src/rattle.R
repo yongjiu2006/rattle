@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-21 07:45:34 Graham>
+# Time-stamp: <2007-04-22 13:57:34 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Apr 2007"
+VERSION.DATE <- "Released 22 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5446,16 +5446,18 @@ current.evaluate.tab <- function()
 executeEvaluateTab <- function()
 {
 
-  ## Ensure a dataset exists.
+  ## CECK PRE-CONDITIONS.
+  
+  # Ensure a dataset exists.
 
   if (noDatasetLoaded()) return()
 
-  ## Obtain some background information.
+  # Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
 
-  ## Ensure we have at least one model to evluate, otherwise warn the
-  ## user and do nothing.
+  # Ensure we have at least one model to evaluate, otherwise warn the
+  # user and do nothing.
   
   if (is.null(mtypes))
   {
@@ -5464,7 +5466,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  ## Ensure we recognise the model type.
+  # Ensure we recognise the model type.
   
   if (length(setdiff(mtypes, .MODELLERS)) > 0)
   {
@@ -5476,7 +5478,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  ## Ensure there is a model for each that is selected.
+  # Ensure there is a model for each that is selected.
 
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
@@ -5489,9 +5491,9 @@ executeEvaluateTab <- function()
     return()
   }
 
-  ## Ensure the appropriate package is loaded (in the case, for
-  ## example, when loading a project and going straight to Evaluate,
-  ## and wanting to run predict.svm on new data).
+  # Ensure the appropriate package is loaded (in the case, for
+  # example, when loading a project and going straight to Evaluate,
+  # and wanting to run predict.svm on new data).
 
   if (.ADA %in%  mtypes &&
       ! packageIsAvailable("ada", "evaluate an adaboost model"))
@@ -5506,16 +5508,18 @@ executeEvaluateTab <- function()
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
 
-  ## Identify the data on which evaluation is to be performed.
+  startLog("EVALUATE MODEL PERFORMANCE")
+
+  # Identify the data on which evaluation is to be performed.
 
   testset0 <- "crs$dataset"
   testname <- crs$dataname
   included <- getIncludedVariables() # Need all vars, including risk.
 
-  startLog("EVALUATE MODEL PERFORMANCE")
-
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
+    # EVALUATE ON TRAINING DATA
+    
     infoDialog("You are using the same dataset to evaluate your model as you",
                 "did to build it. This will give you an optimistic estimate",
                 "of the performance of your model. You may want to choose",
@@ -5539,6 +5543,8 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_testing_radiobutton")$getActive())
   {
+    # EVALAUTE ON TEST DATA
+    
     if (is.null(included))
       testset0 <- "crs$dataset[-crs$sample,]"
     else
@@ -5547,6 +5553,14 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_csv_radiobutton")$getActive())
   {
+    # EVALUATE ON CSV DATA
+
+    # We need to allow for the case where the loaded csv data does not
+    # have the risk and target columns when we are scoring the data
+    # (i.e., not when we are generating confusion charts and other
+    # evaluations. For scoring, it is only natural that we do not have
+    # the risk and target variables.
+    
     filename <- theWidget("evaluate_filechooserbutton")$getFilename()
     setDefaultPath(filename)
 
@@ -5560,10 +5574,10 @@ executeEvaluateTab <- function()
       return()
     }
                    
-    ## Only load the test dataset if it is not already loaded.
+    # Load the testset from file, but only load it if it is not
+    # already loaded.
     
-    if (not.null(filename) &&
-        (is.null(crs$testname) || (basename(filename) != crs$testname)))
+    if (is.null(crs$testname) || (basename(filename) != crs$testname))
     {
       ## Fix filename for MS/Windows - otherwise eval/parse strips the \\.
 
@@ -5580,10 +5594,15 @@ executeEvaluateTab <- function()
       crs$testname <<- testname
     }
     
-    ## TODO The following case for included assumes the same column
-    ## orders. Should really check this to make sure.
+    # TODO The following case for included assumes the same column
+    # orders. Should really check this to make sure.  For scoring a
+    # dataset we do not include the target or the risk in the
+    # variables, since they may not be present in the csv file that is
+    # being loaded (if that option is active). Thus, in this case it
+    # is best to simply use the whole dataset for scoring. Does this
+    # always work?
       
-    if (is.null(included))
+    if (is.null(included) || theWidget("score_radiobutton")$getActive())
       testset0 <- "crs$testset"
     else
       testset0 <- sprintf("crs$testset[,%s]", included)
@@ -6409,13 +6428,13 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 ## EVALUATE LIFT CHART
 ##
 
-executeEvaluateLift <- function(predcmd, testset, testname)
+executeEvaluateLift <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
-  nummodels <- length(predcmd)
+  nummodels <- length(probcmd)
   mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
@@ -6438,9 +6457,9 @@ executeEvaluateLift <- function(predcmd, testset, testname)
     
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
+             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
 
-    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     ## Check for errors - in particular, new levels in the test dataset.
     
@@ -6485,10 +6504,10 @@ executeEvaluateLift <- function(predcmd, testset, testname)
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   predcmd[[mtype]])), "\n", plot.cmd)
+                                   probcmd[[mtype]])), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
-                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+                               "crs$sample", probcmd[[mtype]]))), silent=TRUE)
     eval(parse(text=plot.cmd))
     models <- c("Test", "Train")
     nummodels <- 2
@@ -6525,7 +6544,7 @@ executeEvaluateLift <- function(predcmd, testset, testname)
 ## EVALUATE ROC PLOT
 ##
 
-executeEvaluateROC <- function(predcmd, testset, testname)
+executeEvaluateROC <- function(probcmd, testset, testname)
 {
   TV <- "roc_textview"
   resetTextview(TV)
@@ -6533,7 +6552,7 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   newPlot()
   addplot <- "FALSE"
 
-  nummodels <- length(predcmd)
+  nummodels <- length(probcmd)
   mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
@@ -6556,9 +6575,9 @@ executeEvaluateROC <- function(predcmd, testset, testname)
   
     appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
+             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
 
-    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     ## Check for errors - in particular, new levels in the test dataset.
     
@@ -6615,10 +6634,10 @@ executeEvaluateROC <- function(predcmd, testset, testname)
     appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   predcmd[[mtype]])), "\n", plot.cmd)
+                                   probcmd[[mtype]])), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
-                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+                               "crs$sample", probcmd[[mtype]]))), silent=TRUE)
     eval(parse(text=plot.cmd))
     models <- c("Test", "Train")
     nummodels <- 2
@@ -6655,13 +6674,13 @@ executeEvaluateROC <- function(predcmd, testset, testname)
 ## EVALUATE PRECISION PLOT
 ##
 
-executeEvaluatePrecision <- function(predcmd, testset, testname)
+executeEvaluatePrecision <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
-  nummodels <- length(predcmd)
+  nummodels <- length(probcmd)
   mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
@@ -6685,9 +6704,9 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
 
     appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
+             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
 
-    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     ## Check for errors - in particular, new levels in the test dataset.
     
@@ -6731,10 +6750,10 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
     appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   predcmd[[mtype]])), "\n", plot.cmd)
+                                   probcmd[[mtype]])), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
-                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+                               "crs$sample", probcmd[[mtype]]))), silent=TRUE)
     eval(parse(text=plot.cmd))
     models <- c("Test", "Train")
     nummodels <- 2
@@ -6771,13 +6790,13 @@ executeEvaluatePrecision <- function(predcmd, testset, testname)
 ## EVALUATE SENSITIVITY PLOT
 ##
 
-executeEvaluateSensitivity <- function(predcmd, testset, testname)
+executeEvaluateSensitivity <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
   newPlot()
   addplot <- "FALSE"
 
-  nummodels <- length(predcmd)
+  nummodels <- length(probcmd)
   mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
@@ -6801,9 +6820,9 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
 
     appendLog(sprintf("Generate Sensitivity/Specificity Plot for %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", predcmd[[mtype]]), "\n", plot.cmd)
+             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
 
-    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     ## Check for errors - in particular, new levels in the test dataset.
     
@@ -6846,10 +6865,10 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
              gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   predcmd[[mtype]])), "\n", plot.cmd)
+                                   probcmd[[mtype]])), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
-                               "crs$sample", predcmd[[mtype]]))), silent=TRUE)
+                               "crs$sample", probcmd[[mtype]]))), silent=TRUE)
     eval(parse(text=plot.cmd))
     models <- c("Test", "Train")
     nummodels <- 2
@@ -6882,7 +6901,7 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
   return(sprintf("Generated Sensitivity/Specificity Plot on %s.", testname))
 }
 
-##----------------------------------------------------------------------
+#----------------------------------------------------------------------
 ##
 ## SCORE - Save the probability scores for each selected model to a file
 ## Would be best into one file but testset may be different for each.
@@ -6891,13 +6910,13 @@ executeEvaluateSensitivity <- function(predcmd, testset, testname)
 ## Evaluate tab?
 ##
 
-executeEvaluateScore <- function(predcmd, testset, testname)
+executeEvaluateScore <- function(probcmd, testset, testname)
 {
 
-  ## Obtain filename to write the scores to. TODO Wait until we get
-  ## all scores into a single file, then this will be the filename we
-  ## obtain here (since currently need to add the mtyp to each file
-  ## name.
+  # Obtain filename to write the scores to. TODO Wait until we get all
+  # scores into a single file, then this will be the filename we
+  # obtain here (since currently need to add the mtyp to each file
+  # name.
   
 ##   dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
 ##                                  "gtk-cancel", GtkResponseType["cancel"],
@@ -6935,11 +6954,12 @@ executeEvaluateScore <- function(predcmd, testset, testname)
   for (mtype in getEvaluateModels())
   {
 
-    appendLog(sprintf("%s: Save probability scores to file for %s model on %s.",
-                     toupper(mtype), mtype, testname),
-             gsub("<<-", "<-", predcmd[[mtype]]))
-
-    result <- try(eval(parse(text=predcmd[[mtype]])), silent=TRUE)
+    appendLog(sprintf(paste("%s: Save probability scores to file",
+                            "for %s model on %s."),
+                      toupper(mtype), mtype, testname),
+              gsub("<<-", "<-", probcmd[[mtype]]))
+    
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     ## Check for errors - in particular, new levels in the test dataset.
     
@@ -7055,7 +7075,7 @@ executeEvaluateScore <- function(predcmd, testset, testname)
     write.csv(cbind(scores, predict=crs$pr), file=score.file, row.names=FALSE)
 
     infoDialog("The scores for", mtype, "have been saved into the file",
-               score.file, "in the folder", getwd())
+               paste(getwd(), score.file, sep="/"))
 
   }
   return(sprintf("Scores saved.", getwd(), score.file))

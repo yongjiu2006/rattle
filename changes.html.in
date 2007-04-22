@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+184 070422 Fix scoring where target/risk columns are not in the CSV file.
 183 090422 Update various help texts.
 182 070914 After a transform, keep variable roles primarily as they were.
 181 070911 Define seq_len for pre 2.4.0 users of read.arff (Zefeng Dong).
@@ -234,6 +235,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Apr 22 12:39:11 EST 2007
+Last modified: Sun Apr 22 14:18:20 EST 2007
 <!-- hhmts end -->
   </p>
