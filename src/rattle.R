@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-22 13:57:34 Graham>
+# Time-stamp: <2007-04-22 14:39:04 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -5936,8 +5936,23 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    "Alternatively, do not include that variable in the",
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
+      else if (any(grep("undefined columns", result)))
+        infoDialog("It seems that the dataset on which the predictions",
+                   "from the", mtype, "model are required has some columns",
+                   "missing. This is often the case when your CSV",
+                   "dataset does not have the target",
+                   "column included (e.g., when your test dataset",
+                   "is meant to be used as a scoring dataset, in which case",
+                   "we can't perform an evaluation).",
+                   "For producing a confusion table we need",
+                   "to include the target variable.",
+                   "Please load a CSV file which has",
+                   "the risk and target variables included.",
+                   "\n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
       else
-        errorDialog("Some error occured with", respcmd, "Best to let",
+        errorDialog("E141: Some error occured with the following command:",
+                    "\n\n", respcmd, "\n\nBest to let",
                     "Graham.Williams@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
@@ -6078,6 +6093,20 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                    "or else remove them from the testing dataset.",
                    "Alternatively, do not include that variable in the",
                    "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else if (any(grep("undefined columns", result)))
+        infoDialog("It seems that the dataset on which the predictions",
+                   "from the", mtype, "model are required has some columns",
+                   "missing. This is often the case when your CSV",
+                   "dataset does not have the risk or target",
+                   "columns included (e.g., when your test dataset",
+                   "is meant to be used as a scoring dataset, in which case",
+                   "we can't perform an evaluation).",
+                   "For producing a risk chart we need",
+                   "to include the risk and target variables.",
+                   "Please load a CSV file which has",
+                   "the risk and target variables included.",
+                   "\n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
