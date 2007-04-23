@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-22 20:49:53 Graham>
+# Time-stamp: <2007-04-23 06:29:13 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -1823,7 +1823,7 @@ executeDataCSV <- function()
   else
     hdr <- ", header=FALSE"
   
-  nastring <- ', na.strings=c(".", "NA", "")'
+  nastring <- ', na.strings=c(".", "NA", "", "?")'
   
   ## Generate commands to read the data and then display the structure.
 
@@ -5583,7 +5583,7 @@ executeEvaluateTab <- function()
 
       if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
-      nastring <- ', na.strings=c(".", "NA", "")'
+      nastring <- ', na.strings=c(".", "NA", "", "?")'
       read.cmd <- sprintf('crs$testset <<- read.csv("%s"%s)',
                           filename, nastring)
       appendLog("Read a file for evaluating the model",
