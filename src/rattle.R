@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-23 06:29:13 Graham>
+# Time-stamp: <2007-04-25 17:22:46 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Apr 2007"
+VERSION.DATE <- "Released 24 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -378,7 +378,15 @@ rattle <- function(csvname=NULL)
   ## Check if some external applications are available and if not
   ## de-sensitise their functionality.
 
-  ## How to test ig ggobi is actually available?
+  ## How to test if ggobi is actually available?
+
+  # If the cairoDevice package is not available then turn off the
+  # option in the settingts menu and make it insensitive.
+  if (! packageIsAvailable("cairoDevice"))
+  {
+    theWidget("use_cairo_graphics_device")$setActive(FALSE)
+    theWidget("use_cairo_graphics_device")$setSensitive(FALSE)
+  }
   
   ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   
@@ -910,7 +918,8 @@ newPlot <- function(pcnt=1)
   ## needed to change to switch over to the Cairo device. As backup,
   ## revert to the x11() or windows() device.
 
-  if (packageIsAvailable("cairoDevice"))
+  if (theWidget("use_cairo_graphics_device")$getActive() &&
+      packageIsAvailable("cairoDevice"))
   {
     require("cairoDevice", quietly=TRUE)
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
