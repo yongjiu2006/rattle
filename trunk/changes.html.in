@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+188 070417 Settings->Use Cairo Device.
 187 070424 Add "?" as a missing value marker when reading CSV (Jason Ma).
 186 070422 Ensure read.csv reads ",," as NA (Jason Ma).
 185 070422 Check for undefined columns in evaluate and give message.
@@ -238,6 +239,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue Apr 24 07:01:17 EST 2007
+Last modified: Wed Apr 25 17:28:58 EST 2007
 <!-- hhmts end -->
   </p>
