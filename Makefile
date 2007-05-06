@@ -34,7 +34,6 @@ R_SOURCE = \
 	src/rattle.R \
 	src/ada.R \
 	src/ada_gui.R \
-	src/arff.R \
 	src/associate.R \
 	src/cluster.R \
 	src/execute.R \
@@ -66,6 +65,16 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 #	grep REVISION src/rattle.R
 
 default: local
+
+# This one checks the R installations for overlap of packages
+# installed. If they are in both local and lib, should remove the
+# local one.
+
+checkR:
+	ls /usr/local/lib/R/site-library/ > TMPlocal
+	ls /usr/lib/R/site-library/ > TMPlib
+	meld TMPlocal TMPlib
+	rm -f TMPloca TMPlib
 
 revision:
 	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R

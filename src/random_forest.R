@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-26 21:29:44 Graham>
+## Time-stamp: <2007-05-03 19:20:07 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -68,6 +68,9 @@ The R package for building Random Forests is called randomForest."))
 
 executeModelRF <- function()
 {
+  if (! packageIsAvailable("randomForest", "build a random forest model"))
+      return(FALSE)
+  
   ## Initial setup 
   
   TV <- "rf_textview"

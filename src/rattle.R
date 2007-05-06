@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-04-25 17:22:46 Graham>
+# Time-stamp: <2007-05-03 19:10:10 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Apr 2007"
+VERSION.DATE <- "Released 25 Apr 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -111,6 +111,9 @@ rattle <- function(csvname=NULL)
       stop('The supplied CSV file "', csvname, '" does not exist.')
   }
   
+  if (! packageIsAvailable("RGtk2"))
+    stop("RGtk2 package is not available but is required for the GUI.")
+
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
   ## Keep the loading of Hmisc quiet.
@@ -703,7 +706,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
                  "It does not appear to be installed.",
                  "Please consider installing it, perhaps with the",
                  "R command",
-                 sprintf('install.packages("%s")', pkg),
+                 sprintf('install.packages("%s"),', pkg),
                  "to use the full",
                  "functionality of Rattle.")
     return(FALSE)
@@ -1871,6 +1874,11 @@ executeDataCSV <- function()
 executeDataARFF <- function()
 {
   TV <- "data_textview"
+
+  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return()
+  lib.cmd <- "require(foreign, quietly=TRUE)"
+  appendLog("The foreign package provides a function to read arff.", lib.cmd)
+  eval(parse(text=lib.cmd))
   
   ## Collect relevant data
 
@@ -6469,6 +6477,8 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 executeEvaluateLift <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
+  if (! packageIsAvailable("ROCR", "plot a lift chart")) return()
+
   newPlot()
   addplot <- "FALSE"
 
@@ -6587,6 +6597,8 @@ executeEvaluateROC <- function(probcmd, testset, testname)
   TV <- "roc_textview"
   resetTextview(TV)
   lib.cmd <- "require(ROCR, quietly=TRUE)"
+  if (! packageIsAvailable("ROCR", "plot a ROC curve")) return()
+
   newPlot()
   addplot <- "FALSE"
 
@@ -6715,6 +6727,8 @@ executeEvaluateROC <- function(probcmd, testset, testname)
 executeEvaluatePrecision <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
+  if (! packageIsAvailable("ROCR", "plot a precision chart")) return()
+
   newPlot()
   addplot <- "FALSE"
 
@@ -6831,6 +6845,8 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
 executeEvaluateSensitivity <- function(probcmd, testset, testname)
 {
   lib.cmd <- "require(ROCR, quietly=TRUE)"
+  if (! packageIsAvailable("ROCR", "plot a sensitivity chart")) return()
+
   newPlot()
   addplot <- "FALSE"
 

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-08 21:22:36 Graham>
+## Time-stamp: <2007-05-03 19:27:14 Graham>
 ##
 ## MODEL TAB
 ##
@@ -235,6 +235,8 @@ executeModelTab <- function()
     setStatusBar("Building", .RPART, "model ...")
     if (executeModelRPart())
       theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+    else
+      setStatusBar("Building", .RPART, "model ... failed.")
   }
   if (build.all || currentModelTab() == .ADA)
   {
@@ -248,29 +250,39 @@ executeModelTab <- function()
                     cp=theWidget("ada_cp_spinbutton")$getValue(),
                     xval=theWidget("ada_xval_spinbutton")$getValue(),
                     ntree=theWidget("ada_ntree_spinbutton")$getValue())
-    if (not.null(crs$ada))
+    if (not.null(crs$ada) && crs$ada)
     {
       makeSensitiveAda()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
     }
+    else
+      setStatusBar("Building", .ADA, "model ... failed.")
+
   }
   if (build.all || currentModelTab() == .RF)
   {
     setStatusBar("Building", .RF, "model ...")
     if (executeModelRF())
       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+    else
+      setStatusBar("Building", .RF, "model ... failed.")
   }
   if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
   {
     setStatusBar("Building", .KSVM, "model ...")
     if (executeModelSVM())
       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+    else
+      setStatusBar("Building", .KSVM, "model ... failed.")
+
   }
   if (build.all || currentModelTab() == .GLM)
   {
     setStatusBar("Building", .GLM, "model ...")
     if (executeModelGLM())
       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+    else
+      setStatusBar("Building", .GLM, "model ... failed.")
   }
   
   ##   if (build.all || currentModelTab() == NNET)
