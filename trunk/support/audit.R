@@ -39,6 +39,7 @@ a <- length(adj)
 m <- length(audit[audit$Adjusted==1 & audit$Adjustment==0,'Adjusted'])
 r <- m%/%a*a
 
+set.seed(12345)
 audit[audit$Adjusted==1 & audit$Adjustment==0, 'Adjustment'][sample(m, r)] <- as.integer(adj*(rnorm(r) + 2))
 
 ## Make sure no nonproductive case has an adjustment
@@ -110,6 +111,7 @@ levels(audit$Education)[16] <- "College"
 
 ## Turn Relationship into Income
 
+set.seed(12345)
 audit$Income <- round(abs(as.numeric(audit$Income)*rnorm(length(audit$Income),
                                                          35000, 15000)), 2)
 
@@ -131,7 +133,7 @@ write.table(audit, "audit.csv", sep=",", row.names=FALSE)
 audit <- read.csv("audit.csv")
 save(audit, file="audit.RData", compress=TRUE)
 
-library(rattle)
+library(foreign)
 arff <- audit
 arff$Adjusted <- as.factor(arff$Adjusted)
 write.arff(arff, "audit.arff")

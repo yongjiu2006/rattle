@@ -11,6 +11,9 @@
 ### Escaped single quotes inside single quotes may also occur.
 ### </NOTE>
 
+# Once I remove this, have a test to de-sensitise the ARFF radio
+# button if the foreign is not available or is too old.
+
 read.arff <-
 function(file)
 {

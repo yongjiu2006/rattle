@@ -15,6 +15,7 @@
 070330 Add selection of clustering: diana, agnus, fanny, etc.
 070421 Ensure the Help menu is complete.
 061230 Implement nnet with linout=TRUE? (Yale)
+061019 Numerous graphics extensions (Geir Nilsen)
 070401 Add a File Type combo box to graphics save.
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
@@ -55,6 +56,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Wed Apr 25 17:29:12 EST 2007
+Last modified: Sat May  5 02:00:25 EST 2007
 <!-- hhmts end -->
   </p>
