@@ -35,12 +35,9 @@ rattle(csvname=NULL)
 
 }
 \examples{
-## You can start rattle with a path to a csv file to preload the
-## dataset. There are issues with the csvname option under Windows.
+## You can start rattle with a path to a csv file to pre-specify the
+## dataset. You then need to click Execute to load the data.
 
-if (.Platform$OS.type == "windows")
-  rattle()
-if (.Platform$OS.type == "unix")
-  rattle(system.file("csv", "audit.csv", package = "rattle"))
+rattle(system.file("csv", "audit.csv", package = "rattle"))
 }
 \keyword{environment}

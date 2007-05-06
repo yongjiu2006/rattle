@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-05-03 19:10:10 Graham>
+# Time-stamp: <2007-05-06 20:26:31 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Apr 2007"
+VERSION.DATE <- "Released 06 May 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -85,12 +85,6 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 ########################################################################
 ##
 ## INITIALISATIONS
-
-# Zefeng Dong (An ANU student) found in R 2.3.1 that seq_len is not
-# defined, but is used in read.arff. So temporarily define it here.
-
-if (R.version$minor < "4.0")
-  seq_len <- function(length.out){seq(length.out=length.out)}
 
 rattle <- function(csvname=NULL)
 {
@@ -373,7 +367,13 @@ rattle <- function(csvname=NULL)
   .MODEL$setShowTabs(FALSE)
   .EVALUATE$setShowTabs(FALSE)
   
-  ## Set glm_family_comboboxentry to default value.
+  # Do not enable ARFF option for versions before 2.5.0 where it was
+  # not included in the foreign package.
+
+  if (R.version$minor < "4.0")
+    theWidget("arff_radiobutton")$setSensitive(FALSE)
+  
+  # Set glm_family_comboboxentry to default value.
   
   theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
@@ -422,9 +422,9 @@ rattle <- function(csvname=NULL)
   if (not.null(csvname))
   {
     theWidget("csv_filechooserbutton")$setFilename(csvname)
-    executeDataCSV()
   }
-  
+
+  invisible()
 }
 
 resetRattle <- function()
@@ -1784,12 +1784,12 @@ executeDataCSV <- function()
 {
   TV <- "data_textview"
   
-  ## Collect relevant data
+  # Collect relevant data
 
   filename <- theWidget("csv_filechooserbutton")$getFilename()
   setDefaultPath(filename)
   
-  ## Error exit if no filename is given
+  # Error exit if no filename is given
 
   if (is.null(filename))
   {
@@ -1875,6 +1875,12 @@ executeDataARFF <- function()
 {
   TV <- "data_textview"
 
+  if (R.version$minor < "4.0")
+  {
+    infoDialog("Support for ARFF is only available in R 2.5.0 and beyond.")
+    return()
+  }
+  
   if (! packageIsAvailable("foreign", "read an ARFF dataset")) return()
   lib.cmd <- "require(foreign, quietly=TRUE)"
   appendLog("The foreign package provides a function to read arff.", lib.cmd)
@@ -7430,15 +7436,20 @@ The corresponding R code uses the simple read.csv() function."))
 on_help_arff_activate <- function(action, window)
 {
   if (showHelpPlus("Rattle can load data from
-a Attribute-Relation File Format (ARFF) file.
-This is an ASCII text file format
+an Attribute-Relation File Format, or ARFF, file
+(beginning with version 2.5.0 of R).
+ARFF is an ASCII text file format
 that is essentially a CSV file with a header that describes the
 meta-data. ARFF was developed for use in the Weka machine learning
 software and there are quite a few datasets in this format now.
 <<>>
 The corresponding R code uses the read.arff() function from the
 foreign package."))
-    popupTextviewHelpWindow("read.arff") }
+  {
+    require(foreign, quietly=TRUE)
+    popupTextviewHelpWindow("read.arff")
+  }
+}
 
 on_help_rdata_file_activate <- function(action, window)
 {

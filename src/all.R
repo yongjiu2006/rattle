@@ -1,7 +1,6 @@
 redo <- function() {source("all.R"); rattle()}
 source("rattle.R")
 source("zzz.R")
-source("arff.R")
 source("associate.R")
 source("cluster.R")
 source("execute.R")
