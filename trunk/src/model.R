@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-05-03 19:27:14 Graham>
+## Time-stamp: <2007-05-06 17:34:40 Graham>
 ##
 ## MODEL TAB
 ##
@@ -250,7 +250,7 @@ executeModelTab <- function()
                     cp=theWidget("ada_cp_spinbutton")$getValue(),
                     xval=theWidget("ada_xval_spinbutton")$getValue(),
                     ntree=theWidget("ada_ntree_spinbutton")$getValue())
-    if (not.null(crs$ada) && crs$ada)
+    if (not.null(crs$ada))
     {
       makeSensitiveAda()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)

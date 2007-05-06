@@ -2,7 +2,7 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2007-03-25 20:56:04 Graham>
+## Time-stamp: <2007-05-06 17:34:26 Graham>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -140,7 +140,7 @@ buildModelAda <- function(formula,
     if (gui)
     {
       errorDialog(msg)
-      return(FALSE)
+      return(NULL)
     }
     stop(msg)
   }
