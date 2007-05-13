@@ -1,4 +1,8 @@
 \name{rattle_gui}
+\alias{on_help_arff_activate}
+\alias{on_help_distributions_activate}
+\alias{on_help_ggobi_activate}
+\alias{on_help_log_activate}
 \alias{on_plot_copy_button_clicked}
 \alias{ada.formula}
 \alias{on_data_entry_radiobutton_toggled}

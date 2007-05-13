@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-05-03 19:20:07 Graham>
+## Time-stamp: <2007-05-13 10:28:19 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -197,7 +197,8 @@ executeModelRF <- function()
 
   ## Build the model.
 
-  rf.cmd <- paste("crs$rf <<- randomForest(", frml, ", data=crs$dataset",
+  rf.cmd <- paste("set.seed(123)\n",
+                  "crs$rf <<- randomForest(", frml, ", data=crs$dataset",
                   if (subsetting) "[",
                   if (sampling) "crs$sample",
                   if (subsetting) ",",
@@ -344,13 +345,19 @@ displayRandomForestTree <- function()
   ## Perform the action.
 
   appendLog(sprintf("Display tree number %d.", tree.num), display.cmd)
+  set.cursor("watch")
   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
+  set.cursor()
   setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
                      "You may need to scroll the textview to see it."))
 }
 
-printRandomForests <- function(model, models=NULL)
+printRandomForests <- function(model, models=NULL, include.class=NULL,
+                               format="")
 {
+  # format=
+  #    "VB"	Generate code that looks like VisualBasic
+  
   if (! packageIsAvailable("randomForest", "print the rule sets"))
     return()
 
@@ -358,51 +365,148 @@ printRandomForests <- function(model, models=NULL)
 
   if (is.null(models)) models <- 1:model$ntree
 
-  strings <- c()
-  
   for (i in models)
-    printRandomForest(model, i)
-  
-  return(strings)
+    printRandomForest(model, i, include.class, format)
 }
 
-printRandomForest <- function(model, n)
+## Move to using the more generic functions
+
+treeset.randomForest <- function(model, n=1, root=1, format="R")
 {
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
-    return()
+  ## Return a string listing the decision tree form of the chosen tree
+  ## from the random forest.
+  
+  tree <- getTree(model, n)
+  if (format == "R")
+  {
+    cassign <- "<-"
+    cif <- "if"
+    cthen <- ""
+    celse <- "else"
+  }
+  else if (format == "VB")
+  {
+    cassign <- "="
+    cif <- "IF"
+    cthen <- "THEN"
+    celse <- "ELSE"
+  }
+
+  ## Traverse the tree
+
+  tr.vars <- attr(model$terms, "dataClasses")[-1]
+  var.names <- names(tr.vars)
+  
+  result <- ""
+  if (tree[root, 'status'] == -1) # Terminal node
+  {
+    result <- sprintf("Result %s %s", cassign,
+                      levels(model$y)[tree[root,'prediction']])
+  }
+  else
+  {
+    var.class <- tr.vars[tree[root, 'split var']]
+    node.var <- var.names[tree[root,'split var']]
+    if(var.class == "character" | var.class == "factor")
+    {
+      ## Convert the binary split point to a 0/1 list for the levels.
+      
+      var.levels <- levels(eval(model$call$data)[[tree[root,'split var']]])
+      bins <- sdecimal2binary(tree[root, 'split point'])
+      bins <- c(bins, rep(0, length(var.levels)-length(bins)))
+      node.value <- var.levels[bins==1]
+      node.value <- sprintf('("%s")', paste(node.value, collapse='", "'))
+      condition <- sprintf("%s %%in%% c%s", node.var, node.value)
+    }
+    else if (var.class == "integer" | var.class == "numeric")
+    {
+      ## Assume spliting to the left means "<=", and right ">",
+      ## which is not what the man page for getTree claims!
+
+      node.value <- tree[root, 'split point']
+      condition <- sprintf("%s <= %s", node.var, node.value)
+
+    }
+    else
+    {
+      stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+                   var.class))
+    }
+    
+
+    condition <- sprintf("%s (%s)", cif, condition)
+    
+    lresult <- treeset.randomForest(model, n, tree[root,'left daughter'],
+                                    format=format)
+    if (cthen == "")
+      lresult <- c(condition, lresult)
+    else
+      lresult <- c(condition, cthen, lresult)
+    rresult <- treeset.randomForest(model, n, tree[root,'right daughter'],
+                                    format=format)
+    rresult <- c(celse, rresult)
+    result <- c(lresult, rresult)
+  }
+  return(result)
+}
+
+ruleset.randomForest <- function(model, n=1, include.class=NULL)
+{
+
+  ## NOT YET WORKING
+  
+  ## Same as printRandomForest, for now, but returns the string rather
+  ## than printing it. Perhaps it is a list of vectors of strings,
+  ## each in the list is one rule, and each string in the vector
+  ## represents a single test. I HAVE SINCE FINISHED
+  ## treeset.randomForest AND PERHAPS CAN USE THAT AS A TEMPLATE.
+  
+  # include.class	Vector of predictions to include
+  
+  if (! packageIsAvailable("randomForest"))
+    stop("randomForest package is required to generate rule sets")
 
   require(randomForest, quietly=TRUE)
 
+  if (!inherits(model, "randomForest"))
+    stop("model not of class randomForest")
+
   tr <- getTree(model, n)
-  tr.paths <- getRFPathNodes(tr)
+  tr.paths <- getRFPathNodesTraverse(tr)
   tr.vars <- attr(model$terms, "dataClasses")[-1]
+
+  ruleset <- list()
+  nameset <- c()
   
-  ## Initialise the output
+  ## Generate a simple form for each rule.
 
-  cat(sprintf("Random Forest Model %d\n\n", n))
-
-  ## Generate rpart form for each rule.
-
-  cat("-----------------------------------------------------------------\n")
-  
   for (i in 1:length(tr.paths))
   {
-    cat(sprintf("Rule Number %d of Forest %d\n\n", i, n))
-    
     tr.path <- tr.paths[[i]]
+    nodenum <- as.integer(names(tr.paths[i]))
+    target <- levels(model$y)[tr[nodenum,'prediction']]
 
+    if (! is.null(include.class) && target %notin% include.class) next()
+
+    rule <- c()
+    
+    #cat(sprintf("%sTree %d Rule %d Node %d Decision %s\n\n",
+    #            comment, n, i, nodenum, target))
+
+    #nrules <- nrules + 1
+    
     ## Indicies of variables in the path
     
     var.index <- tr[,3][abs(tr.path)] # 3rd col is "split var"
     var.names <- names(tr.vars)[var.index]
     var.values <- tr[,4][abs(tr.path)] # 4th col is "split point"
     
-    for (j in 1:length(tr.path))
+    for (j in 1:(length(tr.path)-1))
     {
       var.class <- tr.vars[var.index[j]]
       if (var.class == "character" | var.class == "factor")
       {
-        node.op <- "="
+        node.op <- "IN"
 
         ## Convert the binary to a 0/1 list for the levels.
         
@@ -413,25 +517,131 @@ printRandomForest <- function(model, n)
           node.value <- var.levels[bins==1]
         else
           node.value <- var.levels[bins==0]
-        node.value <- paste(node.value, collapse=",")
+        node.value <- sprintf('%s', paste(node.value, collapse=', '))
       }
       else if (var.class == "integer" | var.class == "numeric")
       {
-        ## Assume spliting to the left means "<", and right ">="
+        ## Assume spliting to the left means "<=", and right ">",
+        ## which is not what the man page for getTree claims!
         if (tr.path[j]>0)
-          node.op <- "<"
+          node.op <- "<="
         else
-          node.op <- ">="
+          node.op <- ">"
         node.value <- var.values[j]
       }
       else
         stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
                      var.class))
 
-      cat(sprintf("%s %s %s\n", var.names[j], node.op, node.value))
+      rule <- c(rule, sprintf("%s %s %s\n", var.names[j], node.op, node.value))
     }
+    ruleset <- c(ruleset, rule)
+    nameset <- c(nameset, nodenum)
+    break()
+  }
+  names(ruleset) <- nameset
+  return(ruleset)
+}
+
+
+printRandomForest <- function(model, n=1, include.class=NULL,
+                              format="", comment="")
+{
+  # include.class	Vector of predictions to include
+  
+  if (! packageIsAvailable("randomForest", "generate the rule sets"))
+    return()
+
+  require(randomForest, quietly=TRUE)
+
+  if (!inherits(model, "randomForest")) stop("model not of class randomForest")
+
+  if (format=="VB") comment="'"
+  
+  tr <- getTree(model, n)
+  tr.paths <- getRFPathNodesTraverse(tr)
+  tr.vars <- attr(model$terms, "dataClasses")[-1]
+  
+  ## Initialise the output
+
+  cat(sprintf("%sRandom Forest Model %d\n\n", comment, n))
+
+  ## Generate a simple form for each rule.
+
+  cat(paste(comment,
+            "-------------------------------------------------------------\n",
+            sep=""))
+
+  if (format=="VB")
+    cat("IF FALSE THEN\n' This is a No Op to simplify the code\n\n")
+  
+  ## Number of rules generated
+
+  nrules <- 0
+  
+  for (i in 1:length(tr.paths))
+  {
+    tr.path <- tr.paths[[i]]
+    nodenum <- as.integer(names(tr.paths[i]))
+    target <- levels(model$y)[tr[nodenum,'prediction']]
+
+    if (! is.null(include.class) && target %notin% include.class) next()
+    
+    cat(sprintf("%sTree %d Rule %d Node %d Decision %s\n\n",
+                comment, n, i, nodenum, target))
+
+    if (format=="VB") cat("ELSE IF TRUE\n")
+
+    nrules <- nrules + 1
+    
+    ## Indicies of variables in the path
+    
+    var.index <- tr[,3][abs(tr.path)] # 3rd col is "split var"
+    var.names <- names(tr.vars)[var.index]
+    var.values <- tr[,4][abs(tr.path)] # 4th col is "split point"
+    
+    for (j in 1:(length(tr.path)-1))
+    {
+      var.class <- tr.vars[var.index[j]]
+      if (var.class == "character" | var.class == "factor")
+      {
+        node.op <- "IN"
+
+        ## Convert the binary to a 0/1 list for the levels.
+        
+        var.levels <- levels(eval(model$call$data)[[var.names[j]]])
+        bins <- sdecimal2binary(var.values[j])
+        bins <- c(bins, rep(0, length(var.levels)-length(bins)))
+        if (tr.path[j] > 0)
+          node.value <- var.levels[bins==1]
+        else
+          node.value <- var.levels[bins==0]
+        node.value <- sprintf('("%s")', paste(node.value, collapse='", "'))
+      }
+      else if (var.class == "integer" | var.class == "numeric")
+      {
+        ## Assume spliting to the left means "<", and right ">=",
+        ## which is not what the man page for getTree claims!
+        if (tr.path[j]>0)
+          node.op <- "<="
+        else
+          node.op <- ">"
+        node.value <- var.values[j]
+      }
+      else
+        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+                     var.class))
+
+      if (format=="VB")
+        cat(sprintf("AND\n%s %s %s\n", var.names[j], node.op, node.value))
+      else
+        cat(sprintf("%d: %s %s %s\n", j, var.names[j], node.op, node.value))
+    }
+    if (format=="VB") cat("THEN Count = Count + 1\n")
     cat("-----------------------------------------------------------------\n")
   }
+  if (format=="VB") cat("END IF\n\n")
+  cat(sprintf("%sNumber of rules in Tree %d: %d\n\n", comment, n, nrules))
 }
 
 randomForest2Rules <- function(model, models=NULL)
@@ -508,11 +718,12 @@ getRFRuleSet <- function(model, n)
       }
       else if (var.class == "integer" | var.class == "numeric")
       {
-        ## Assume spliting to the left means "<", and right ">="
+        ## Assume spliting to the left means "<", and right ">=",
+        ## which is not what the man page for getTree claims!
         if (tr.path[j]>0)
-          node.op <- "<"
+          node.op <- "<="
         else
-          node.op <- ">="
+          node.op <- ">"
         node.value <- var.values[j]
       }
       else
@@ -522,46 +733,91 @@ getRFRuleSet <- function(model, n)
       tr.rule <- c(tr.rule, paste(var.names[j], node.op, node.value))
     }
     
-    ## TODO Walk through tr.rule and remove all but the last "VAR<"
-    ## and "VAR>=" conditions.
+    ## TODO Walk through tr.rule and remove all but the last "VAR<="
+    ## and "VAR>" conditions.
     
     rules[[i]] <- list(rule=tr.rule)
   }
   return(rules)
 }
 
-getRFPathNodes <- function(treeMat)
+getRFPathNodesTraverse <- function(tree, root=1)
 {
-  ## The columns in the RF tree matrix are:
-  ##   1. left daughter;
-  ##   2. right daughter;
-  ##   3. split var;
-  ##   4. split point;
-  ##   5. status;
-  ##   6. prediction
-
-  ## Number of nodes in the tree
+  # Traverse the paths through the binary decision tree represented as
+  # a matrix.
+  #
+  # The columns in the RF tree matrix are:
+  #   1. left daughter;
+  #   2. right daughter;
+  #   3. split var;
+  #   4. split point;
+  #   5. status;
+  #   6. prediction
   
-  nnodes <- dim(treeMat)[1] 
-
-  ## Leaf node indices
-
-  leafIndex <- 1:nnodes * as.integer(treeMat[,5]== -1) # Non-leaf index is 0
-  leafIndex <- leafIndex[leafIndex!=0] # Remove non-zeros (non-leafs)
-	  
-  paths <- list() # A list, each element a vector of the indices of a path
-
-  ## Process each leaf's path
-  
-  for (i in 1:length(leafIndex))
+  paths <- list()
+  if (tree[root,'status'] == -1) # Terminal node
   {
-    ## Initialise the node to the leaf index
+    paths <- list(root)
+    names(paths) <- root
+  }
+  else
+  {
+    lpaths <- getRFPathNodesTraverse(tree, tree[root,'left daughter'])
+    lpaths <- lapply(lpaths, append, root, 0)
+    rpaths <- getRFPathNodesTraverse(tree, tree[root,'right daughter'])
+    rpaths <- lapply(rpaths, append, -root, 0)
+    paths <- c(lpaths, rpaths)
+  }
+  return(paths)
+}
+
+getRFPathNodes <- function(tree.matrix)
+{
+
+  ## I am now using Traverse as above, as it is a more logical
+  ## ordering of the rules. This function can disappear some day.
+  
+  # The columns in the RF tree matrix are:
+  #   1. left daughter;
+  #   2. right daughter;
+  #   3. split var;
+  #   4. split point;
+  #   5. status;
+  #   6. prediction
+  #
+  # The traversal is essentially from the shortest paths to the longer
+  # paths, since we simply list the leaf nodes in the order they
+  # appear in the matrix, and then list the rules in this same
+  # order. For each rule we work backwards to build the path. An
+  # alternative might be to order the rules in a recursive left
+  # traversal manner, in which case we get a more logical ordering to
+  # the rules.
+
+  # Number of nodes in the tree
+  
+  nnodes <- dim(tree.matrix)[1] 
+
+  # Leaf node indices: leaf (or terminal) nodes have a value of -1 for
+  # the fifth column (status) of the tree matrix. 
+
+  lnodes <- which(tree.matrix[,5] == -1)
+  
+  # Initial the paths, being a list, each element is a vector of the
+  # indices of a path from the root to the leaf.
+  
+  paths <- list() 
+
+  # Process each leaf's path back to the root node.
+  
+  for (i in 1:length(lnodes))
+  {
+    # Initialise the node to the leaf index
     
-    node <- leafIndex[i] # e.g. i=1, node=3
-    pathI <- c()
+    node <- lnodes[[i]]
+    pathI <- node
     repeat
     {
-      leftV <- 1:nnodes * as.integer(treeMat[,1]==abs(node))
+      leftV <- 1:nnodes * as.integer(tree.matrix[,1]==abs(node))
       leftNode <- leftV[leftV!=0]
       if (length(leftNode)!= 0)
       {
@@ -569,7 +825,7 @@ getRFPathNodes <- function(treeMat)
       }
       else # else must not be in the next line
       {
-        rightV <- 1:nnodes * as.integer(treeMat[,2]==abs(node))
+        rightV <- 1:nnodes * as.integer(tree.matrix[,2]==abs(node))
         node <- -rightV[rightV!=0] # rhs node identified with negative index
       }
 
@@ -585,7 +841,7 @@ getRFPathNodes <- function(treeMat)
 
   ## Each path is named after its leaf index number
   
-  names(paths) <- as.character(leafIndex)
+  names(paths) <- as.character(lnodes)
 
   return(paths)
 }
