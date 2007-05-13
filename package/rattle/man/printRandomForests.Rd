@@ -15,7 +15,7 @@
 
 }
 \usage{
-printRandomForests(model, models=NULL)
+printRandomForests(model, models=NULL, include.class=NULL, format="")
 }
 \arguments{
   
@@ -24,6 +24,10 @@ printRandomForests(model, models=NULL)
   \item{models}{a list of integers limiting the models in MODEL that are
   displayed.}
   
+  \item{include.class}{limit the output to the specific class.}
+
+  \item{format}{possible values are "VB".}
+
 }
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}
