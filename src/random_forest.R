@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-05-13 10:28:19 Graham>
+## Time-stamp: <2007-05-14 21:23:05 Graham>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -383,13 +383,17 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
     cif <- "if"
     cthen <- ""
     celse <- "else"
+    cendif <- ""
+    cin <- "%in%"
   }
   else if (format == "VB")
   {
     cassign <- "="
-    cif <- "IF"
-    cthen <- "THEN"
-    celse <- "ELSE"
+    cif <- "If"
+    cthen <- "Then"
+    celse <- "Else"
+    cendif <- "End If"
+    cin <- "In"
   }
 
   ## Traverse the tree
@@ -416,7 +420,8 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
       bins <- c(bins, rep(0, length(var.levels)-length(bins)))
       node.value <- var.levels[bins==1]
       node.value <- sprintf('("%s")', paste(node.value, collapse='", "'))
-      condition <- sprintf("%s %%in%% c%s", node.var, node.value)
+      condition <- sprintf("%s %s %s%s", node.var, cin,
+                           ifelse(format=="R", "c", ""), node.value)
     }
     else if (var.class == "integer" | var.class == "numeric")
     {
@@ -446,6 +451,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
                                     format=format)
     rresult <- c(celse, rresult)
     result <- c(lresult, rresult)
+    if (cendif != "") result <- c(result, cendif)
   }
   return(result)
 }

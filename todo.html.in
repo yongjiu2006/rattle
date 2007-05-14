@@ -20,6 +20,7 @@
 070426 Fix error when scoring using regression (Wei Lin)
 061019 Numerous graphics extensions (Geir Nilsen)
 070401 Add a File Type combo box to graphics save.
+070514 FileChooser to also show file sizes (Tony Nolan)
 070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
 070321 For the View textview, keep first row (headers) static as "edit()" does
@@ -59,6 +60,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Tue May  8 21:32:07 EST 2007
+Last modified: Mon May 14 18:59:46 EST 2007
 <!-- hhmts end -->
   </p>
