@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-04-09 09:30:57 Graham>
+## Time-stamp: <2007-07-08 16:05:59 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -33,7 +33,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   ## Header
   
-  VERSION <- "1.1.0"
+  VERSION <- "1.1.2" # Expose pmml.lm in NAMESPACE - woops.
+  # "1.1.1" Add pmml.lm
 
   if (is.null(copyright))
     header <- xmlNode("Header", attrs=c(description=description))
@@ -131,6 +132,114 @@ pmmlMiningSchema <- function(field, target=NULL)
   return(mining.schema)
 }
 
+########################################################################
+## LM
+##
+## Author: rguha@indiana.edu
+## Date: 28 May 2007
+##
+
+pmml.lm <- function(model,
+                    model.name="lm_model",
+                    app.name="Rattle/PMML",
+                    description="Linear Regression Model",
+                    copyright=NULL, ...)
+{
+  if (! inherits(model, "lm")) stop("Not a legitimate lm object")
+
+  require(XML, quietly=TRUE)
+
+  ## Collect the required information. We list all variables,
+  ## irrespective of whether they appear in the final model. This
+  ## seems to be the standard thing to do with PMML. It also adds
+  ## extra information - i.e., the model did not need these extra
+  ## variables!
+
+  terms <- attributes(model$terms)
+  field <- NULL
+  field$name <- names(terms$dataClasses)
+  number.of.fields <- length(field$name)
+  field$class <- terms$dataClasses
+  target <- field$name[1]
+
+  for (i in 1:number.of.fields)
+    {
+      ## We don't need to bother with ylevels since lm doesn't do
+      ## factor predictions
+      if (field$class[[field$name[i]]] == "factor")
+        field$levels[[field$name[i]]] <- model$xlevels[[field$name[i]]]
+    }
+  
+  ## PMML
+
+  pmml <- pmmlRootNode()
+
+  ## PMML -> Header
+
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2007 rguha@indiana.edu"
+  pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
+  
+  ## PMML -> DataDictionary
+
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+
+  ## PMML -> RegressionModel
+
+  lm.model <- xmlNode("RegressionModel",
+                      attrs=c(modelName=model.name,
+                        functionName="regression",
+                        algorithmName="least squares",
+                        targetFieldName=target))
+  
+  ## PMML -> RegressionModel -> MiningSchema
+  
+  lm.model <- append.XMLNode(lm.model, pmmlMiningSchema(field, target))
+
+  ## PMML -> RegressionModel -> RegressionTable
+  
+  coeff <- coefficients(model)
+  coeffnames <- names(coeff)
+  
+  regTable <- xmlNode("RegressionTable",
+                      attrs=c(intercept=as.numeric(coeff[1])))
+
+  for (i in 1:length(field$name))
+  {
+    name <- field$name[[i]]
+    if (name == target) next
+    klass <- field$class[[name]]
+    if (klass == 'numeric')
+    {
+      predictorNode <- xmlNode("NumericPredictor",
+                               attrs=c(name=name,
+                                 exponent="1",
+                                 coefficient=as.numeric(coeff[which(coeffnames == name)])))
+      regTable <- append.XMLNode(regTable, predictorNode)              
+    }
+    else if (klass == 'factor')
+    {
+      levs <- model$xlevels[[name]]
+      for (l in levs[-1])
+      {
+        tmp <- paste(name, l, sep='')
+        predictorNode <- xmlNode("CategoricalPredictor",
+                                 attrs=c(name=name,
+                                   value=l,
+                                   coefficient=as.numeric(coeff[ which(coeffnames == tmp) ])))
+        regTable <- append.XMLNode(regTable, predictorNode)
+      }
+    }
+  }
+  
+  lm.model <- append.XMLNode(lm.model, regTable)
+
+  ## Add to the top level structure.
+  
+  pmml <- append.XMLNode(pmml, lm.model)
+
+  return(pmml)
+}
 
 ########################################################################
 
@@ -226,12 +335,10 @@ pmml.rpart <- function(model,
   
   node <- genBinaryTreeNodes(depth, count, score, field, operator, value)
 
-  ## tree.model[[2]] <- node
   tree.model <- append.XMLNode(tree.model, node)
 
   ## Add to the top level structure.
   
-  ## pmml$children[[3]] <- tree.model
   pmml <- append.XMLNode(pmml, tree.model)
 
   return(pmml)
@@ -300,6 +407,200 @@ genBinaryTreeNodes <- function(depths, counts, scores, fields, ops, values)
   }
   return(node)
 }
+
+########################################################################
+
+pmml.randomForest <- function(model,
+                              model.name="randomForest_Model",
+                              app.name="Rattle/PMML",
+                              description="randomForest model",
+                              copyright=NULL, ...)
+
+{
+  if (! inherits(model, "randomForest"))
+    stop("Not a legitimate randomForest object")
+
+  require(XML, quietly=TRUE)
+  require(randomForest, quietly=TRUE)
+
+  ## Collect the required information. We list all variables,
+  ## irrespective of whether they appear in the final model. This
+  ## seems to be the standard thing to do with PMML. It also adds
+  ## extra information - i.e., the model did not need these extra
+  ## variables!
+  ##
+  ## For a randomForest formula as currently used in Rattle, the
+  ## target is, for example, as.factor(Adjusted). Here, I need to
+  ## remove the as.factor(...). I wonder if I need to identify a
+  ## transformation in the PMML.
+
+  field <- NULL
+  tr.vars <- attr(model$terms, "dataClasses")
+  var.names <- unlist(lapply(names(tr.vars),
+                             function(x) gsub("as.factor\\((\\w*)\\)",
+                                              "\\1", x, perl=TRUE)))
+
+  field$name <- var.names
+  number.of.fields <- length(field$name)
+  target <- var.names[1]
+
+  # The following is a bit sus and does not really get the corect type
+  # of the as.factor modified fields!
+  
+  field$class <- attr(model$terms, "dataClasses")
+  names(field$class) <- var.names
+  
+  for (i in 1:number.of.fields)
+  {
+    if (field$class[[field$name[i]]] == "factor")
+      if (field$name[i] == target)
+        field$levels[[field$name[i]]] <- model$classes
+      else
+        # How to get the levels for these variables. We don't have the
+        # actual data available, and have not found the information in
+        # the randomForest object yet. Should be able to get it from
+        # the trees, but is there another way?
+        field$levels[[field$name[i]]] <- c("NotYetAvailable")
+        # model@xlevels[[field$name[i]]]
+  }
+  
+  ## PMML
+
+  pmml <- pmmlRootNode()
+
+  ## PMML -> Header
+
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
+  pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
+  
+  ## PMML -> DataDictionary
+
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+
+  ## PMML -> TreeModel
+
+  # For now, get one tree and print that out. Then put this into a
+  # loop over all of the trees in the forest.
+  
+  tree.model <- xmlNode("TreeModel",
+                        attrs=c(modelName=model.name,
+                          functionName="classification",
+                          algorithmName="randomForest",
+                          splitCharacteristic="binarySplit"))
+  
+  ## PMML -> TreeModel -> MiningSchema
+  
+  tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
+
+  ## PMML -> TreeModel -> Node
+
+##   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
+##   count <- model$frame$n
+##   score <- model@ylevels[model$frame$yval]
+##   label <- labels(model, pretty=0)
+
+##   field <- label[1]
+##   operator <- ""
+##   value <- "" #list("")
+##   for (i in 2:length(label))
+##   {
+##     field <-  c(field, strsplit(label[i], '>|<|=')[[1]][1])
+##     op <- substr(label[i], nchar(field[i])+1, nchar(field[i])+2)
+##     if (op == ">=")
+##     {
+##       operator <- c(operator, "greaterOrEqual")
+##       value <- c(value, substr(label[i], nchar(field[i])+3, nchar(label[i])))
+##     }
+##     else if (op == "< ")
+##     {
+##       operator <- c(operator, "lessThan")
+##       value <- c(value, substr(label[i], nchar(field[i])+3, nchar(label[i])))
+##     }
+##     else if (substr(op, 1, 1) == "=")
+##     {
+##       operator <- c(operator, "isIn")
+##       value <- c(value, substr(label[i], nchar(field[i])+2, nchar(label[i])))
+##     }
+##   }
+  
+  node <- genBinaryRFTreeNodes(model)
+
+  tree.model <- append.XMLNode(tree.model, node)
+
+  ## Add to the top level structure.
+  
+  pmml <- append.XMLNode(pmml, tree.model)
+
+  return(pmml)
+}
+
+genBinaryRFTreeNodes <- function(model, n=1, root=1)
+{
+  # Model this on treeset.randomForest in Rattle.
+  
+  tree <- getTree(model, n)
+  tr.vars <- attr(model$terms, "dataClasses")[-1]
+  var.names <- names(tr.vars)
+
+  node <- xmlNode("Node")
+  result <- ""
+
+  return(xmlNode("True"))
+  
+  if (tree[root, 'status'] == -1) # Terminal node
+  {
+    result <- sprintf("Result %s %s", cassign,
+                      levels(model$y)[tree[root,'prediction']])
+  }
+  else
+  {
+    var.class <- tr.vars[tree[root, 'split var']]
+    node.var <- var.names[tree[root,'split var']]
+    if(var.class == "character" | var.class == "factor")
+    {
+      ## Convert the binary split point to a 0/1 list for the levels.
+      
+      var.levels <- levels(eval(model$call$data)[[tree[root,'split var']]])
+      bins <- sdecimal2binary(tree[root, 'split point'])
+      bins <- c(bins, rep(0, length(var.levels)-length(bins)))
+      node.value <- var.levels[bins==1]
+      node.value <- sprintf('("%s")', paste(node.value, collapse='", "'))
+      condition <- sprintf("%s %s %s%s", node.var, cin,
+                           ifelse(format=="R", "c", ""), node.value)
+    }
+    else if (var.class == "integer" | var.class == "numeric")
+    {
+      ## Assume spliting to the left means "<=", and right ">",
+      ## which is not what the man page for getTree claims!
+
+      node.value <- tree[root, 'split point']
+      condition <- sprintf("%s <= %s", node.var, node.value)
+
+    }
+    else
+    {
+      stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+                   var.class))
+    }
+    
+
+    condition <- sprintf("%s (%s)", cif, condition)
+    
+    lresult <- treeset.randomForest(model, n, tree[root,'left daughter'],
+                                    format=format)
+    if (cthen == "")
+      lresult <- c(condition, lresult)
+    else
+      lresult <- c(condition, cthen, lresult)
+    rresult <- treeset.randomForest(model, n, tree[root,'right daughter'],
+                                    format=format)
+    rresult <- c(celse, rresult)
+    result <- c(lresult, rresult)
+    if (cendif != "") result <- c(result, cendif)
+  }
+  return(result)
+}  
 
 ########################################################################
 

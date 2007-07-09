@@ -1,6 +1,8 @@
 export(
        pmml,
        pmml.kmeans,
+       pmml.lm,
+	   pmml.randomForest,
        pmml.rpart,
        pmml.rsf
        )
