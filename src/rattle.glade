@@ -776,6 +776,7 @@
                             <property name="tooltip" translatable="yes">Select this option for data that has no target variable or you wish to ignore the target for now.</property>
                             <property name="label" translatable="yes">Unsupervised</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">twoclass_radiobutton</property>
                             <signal name="toggled" handler="on_unsupervised_radiobutton_toggled"/>
@@ -794,6 +795,7 @@
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Regression</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">twoclass_radiobutton</property>
                           </widget>
@@ -813,6 +815,7 @@
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Multi Class</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">twoclass_radiobutton</property>
                           </widget>
@@ -830,6 +833,7 @@
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Time Series</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">twoclass_radiobutton</property>
                           </widget>
@@ -847,6 +851,7 @@
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Text Miner</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">twoclass_radiobutton</property>
                           </widget>
@@ -866,6 +871,7 @@
                             <property name="tooltip" translatable="yes">Select this option for data that has a target variable with just two outcomes.</property>
                             <property name="label" translatable="yes">Two Class</property>
                             <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_twoclass_radiobutton_toggled"/>
                           </widget>
@@ -921,6 +927,7 @@
                         <property name="tooltip" translatable="yes">Load data from a comma separated value (CSV) file.</property>
                         <property name="label" translatable="yes">CSV File</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_csv_radiobutton_toggled"/>
                       </widget>
@@ -936,6 +943,7 @@
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">ARFF</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">csv_radiobutton</property>
                         <signal name="toggled" handler="on_arff_radiobutton_toggled"/>
@@ -953,6 +961,7 @@
                         <property name="tooltip" translatable="yes">Identify a data source through an ODBC connection.</property>
                         <property name="label" translatable="yes">ODBC</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">csv_radiobutton</property>
                         <signal name="toggled" handler="on_odbc_radiobutton_toggled"/>
@@ -970,6 +979,7 @@
                         <property name="tooltip" translatable="yes">Load data from a R datafile (usually binary).</property>
                         <property name="label" translatable="yes">RData File</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">csv_radiobutton</property>
                         <signal name="toggled" handler="on_rdata_radiobutton_toggled"/>
@@ -987,6 +997,7 @@
                         <property name="tooltip" translatable="yes">Associate a pre-existing R dataset for use in Rattle.</property>
                         <property name="label" translatable="yes">R Dataset</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">csv_radiobutton</property>
                         <signal name="toggled" handler="on_rdataset_radiobutton_toggled"/>
@@ -1004,6 +1015,7 @@
                         <property name="tooltip" translatable="yes">Create a dataset manually.</property>
                         <property name="label" translatable="yes">Data Entry</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">csv_radiobutton</property>
                         <signal name="toggled" handler="on_data_entry_radiobutton_toggled"/>
@@ -1093,6 +1105,7 @@
                                     <property name="tooltip" translatable="yes">Indicates whether the first row of the datafile is the names of the columns. Otherwise, random names will be made up.</property>
                                     <property name="label" translatable="yes">Header</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1110,6 +1123,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1126,6 +1140,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1197,6 +1212,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1213,6 +1229,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1307,6 +1324,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1323,6 +1341,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1397,6 +1416,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1413,6 +1433,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1535,6 +1556,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">Believe Num Rows</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1584,6 +1606,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1600,6 +1623,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1647,6 +1671,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">View Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_viewdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1662,6 +1687,7 @@
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Edit Data</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_editdata_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -1772,6 +1798,7 @@ See Help-&gt;About for details.</property>
 If sampling is enabled, then any clustering and modelling is performed over the sample. In the Evaluation tab the default dataset for evaluation will be the data not used for sampling. We note that evaluating a model on the training set gives an optimistic estimate of the performance of the model.</property>
                         <property name="label" translatable="yes">Sample</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_sample_checkbutton_toggled"/>
                       </widget>
@@ -1845,6 +1872,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Update the seed with a random number.</property>
                         <property name="label" translatable="yes">Seed:</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_sample_seed_button_clicked"/>
                       </widget>
                       <packing>
@@ -1885,6 +1913,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">To select multiple variables for input (perhaps you have previously set them to ignore), simply select the required variables in the list below and click this Input button.</property>
                         <property name="relief">GTK_RELIEF_NONE</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_variables_toggle_input_button_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment2">
@@ -1933,6 +1962,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">To select multiple variables to ignore, simply select the required variables in the list below and click this Ignore button.</property>
                         <property name="relief">GTK_RELIEF_NONE</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_variables_toggle_ignore_button_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment3">
@@ -2064,6 +2094,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Summarise the dataset.</property>
                         <property name="label" translatable="yes">Summary</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_summary_radiobutton_toggled"/>
@@ -2081,6 +2112,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Display various distribution plots.</property>
                         <property name="label" translatable="yes">Distributions</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
                         <signal name="toggled" handler="on_explot_radiobutton_toggled"/>
@@ -2098,6 +2130,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Run the external GGobi data visualisation application, if available.</property>
                         <property name="label" translatable="yes">GGobi</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
                         <signal name="toggled" handler="on_ggobi_radiobutton_toggled"/>
@@ -2115,6 +2148,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Show the pairwise correlations between each numeric variable.</property>
                         <property name="label" translatable="yes">Correlation</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
                         <signal name="toggled" handler="on_correlation_radiobutton_toggled"/>
@@ -2132,6 +2166,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">A correlation between the numeric data is calculated, then a hierarchical cluster is generated based on this correlation. The hierarchical cluster is then visualised through a dendrogram to give an idea of the groupings of the numeric variables.</property>
                         <property name="label" translatable="yes">Hierarchical</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
                         <signal name="toggled" handler="on_hiercor_radiobutton_toggled"/>
@@ -2149,6 +2184,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Perform a principal components analysis of the numeric data in the daatset.</property>
                         <property name="label" translatable="yes">Principal Components</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
                         <signal name="toggled" handler="on_prcomp_radiobutton_toggled"/>
@@ -2177,6 +2213,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Check this box to restrict explorations to selected sample.</property>
                         <property name="label" translatable="yes">Use Sample</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2201,6 +2238,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Summary, including Min, Quartiles, Mean, Max for numerics and top levels for factors.</property>
                         <property name="label" translatable="yes">Summary</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </widget>
@@ -2217,6 +2255,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Concise description including missing, unique, sum, mean, and the lowest and highest values. </property>
                         <property name="label" translatable="yes">Describe</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2232,6 +2271,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Various basic measures of numeric data, including missing, min, max, quartiles, mean, sum, skewness, kurtosis. </property>
                         <property name="label" translatable="yes">Basics</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2247,6 +2287,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Summarise just the kurtosis - useful for comparing between all numeric variables at once.</property>
                         <property name="label" translatable="yes">Kurtosis</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2262,6 +2303,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Summarise just the skewness - useful for comparing between all numeric variables at once.</property>
                         <property name="label" translatable="yes">Skewness</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2276,6 +2318,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="tooltip" translatable="yes">Whether we should display the correlation between missing values.</property>
                         <property name="label" translatable="yes">Explore Missing</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2289,6 +2332,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Benford Bars</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2303,6 +2347,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Show Missing</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -2383,6 +2428,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                     <property name="label">gtk-find</property>
                                     <property name="relief">GTK_RELIEF_NONE</property>
                                     <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_summary_find_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -2398,6 +2444,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                     <property name="label">gtk-media-next</property>
                                     <property name="relief">GTK_RELIEF_NONE</property>
                                     <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_summary_next_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -2468,6 +2515,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                     <property name="label">gtk-clear</property>
                                     <property name="relief">GTK_RELIEF_NONE</property>
                                     <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_continuous_clear_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -2508,6 +2556,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                     <property name="tooltip" translatable="yes">Include numeric values within the plots.</property>
                                     <property name="label" translatable="yes">Annotate</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -2588,6 +2637,7 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                     <property name="label">gtk-clear</property>
                                     <property name="relief">GTK_RELIEF_NONE</property>
                                     <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_categorical_clear_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -2806,6 +2856,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Impute</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_impute_radiobutton_toggled"/>
                       </widget>
@@ -2821,6 +2872,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Factorise</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">impute_radiobutton</property>
                       </widget>
@@ -2837,6 +2889,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Outliers</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">impute_radiobutton</property>
                       </widget>
@@ -3049,6 +3102,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="tooltip" translatable="yes">Generate clusters using a kmeans algorithm.</property>
                         <property name="label" translatable="yes">K Means</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_kmeans_radiobutton_toggled"/>
                       </widget>
@@ -3065,6 +3119,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="tooltip" translatable="yes">Build an agglomerative hierarchical cluster.</property>
                         <property name="label" translatable="yes">Hierarchical</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">kmeans_radiobutton</property>
                         <signal name="toggled" handler="on_hclust_radiobutton_toggled"/>
@@ -3125,6 +3180,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="border_width">5</property>
                                 <property name="label" translatable="yes">Seed:</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_kmeans_seed_button_clicked"/>
                               </widget>
                               <packing>
@@ -3156,6 +3212,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="border_width">5</property>
                                 <property name="label" translatable="yes">Stats</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_kmeans_stats_button_clicked"/>
                               </widget>
                               <packing>
@@ -3172,6 +3229,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="border_width">5</property>
                                 <property name="label" translatable="yes">Data Plot</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_kmeans_data_plot_button_clicked"/>
                               </widget>
                               <packing>
@@ -3188,6 +3246,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="border_width">5</property>
                                 <property name="label" translatable="yes">Discriminant Plot</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_kmeans_discriminant_plot_button_clicked"/>
                               </widget>
                               <packing>
@@ -3223,6 +3282,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="tooltip" translatable="yes">If you have performed a hierarchical cluster you can use it to provide initial centers for your kmeans cluster.</property>
                                 <property name="label" translatable="yes">HClust Centers</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <property name="draw_indicator">True</property>
                               </widget>
                               <packing>
@@ -3390,6 +3450,7 @@ centroid</property>
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Dendrogram</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_hclust_dendrogram_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -3431,6 +3492,7 @@ centroid</property>
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Stats</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_hclust_stats_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -3447,6 +3509,7 @@ centroid</property>
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Data Plot</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_hclust_data_plot_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -3463,6 +3526,7 @@ centroid</property>
                                     <property name="border_width">5</property>
                                     <property name="label" translatable="yes">Disciminant Plot</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_hclust_discriminant_plot_button_clicked"/>
                                   </widget>
                                   <packing>
@@ -3551,6 +3615,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Baskets are identified by the ident variable and items in the basket by the target variable.</property>
                         <property name="label" translatable="yes">Baskets</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -3565,6 +3630,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Plot the frequency of the more common items. The support value is used. This is also the items that have enough support to appear in the association rules.</property>
                         <property name="label" translatable="yes">Freq Plot</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_associate_plot_frequency_button_clicked"/>
                       </widget>
                       <packing>
@@ -3652,6 +3718,7 @@ centroid</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Show Rules</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_associate_rules_button_clicked"/>
                       </widget>
                       <packing>
@@ -3741,6 +3808,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build multiple simple models, boosting entities hard to classify, combined into an ensemble.</property>
                         <property name="label" translatable="yes">Boost</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                         <signal name="toggled" handler="on_boost_radiobutton_toggled"/>
@@ -3759,6 +3827,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build one model of each type using the specified parameters.</property>
                         <property name="label" translatable="yes">All</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                       </widget>
@@ -3775,6 +3844,7 @@ centroid</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">MARS</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                       </widget>
@@ -3791,6 +3861,7 @@ centroid</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Neural Net</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                         <signal name="toggled" handler="on_nnet_radiobutton_toggled"/>
@@ -3809,6 +3880,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build a logistic, linear or poisson model with glm.</property>
                         <property name="label" translatable="yes">Regression</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                         <signal name="toggled" handler="on_regression_radiobutton_toggled"/>
@@ -3827,6 +3899,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build a support vector machine model.</property>
                         <property name="label" translatable="yes">SVM</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                         <signal name="toggled" handler="on_svm_radiobutton_toggled"/>
@@ -3845,6 +3918,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build many decision trees using random subsets of data and variables.</property>
                         <property name="label" translatable="yes">Forest</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
                         <signal name="toggled" handler="on_rf_radiobutton_toggled"/>
@@ -3863,6 +3937,7 @@ centroid</property>
                         <property name="tooltip" translatable="yes">Build a model using the popular decision tree algorithm.</property>
                         <property name="label" translatable="yes">Tree</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_dtree_radiobutton_toggled"/>
@@ -3916,6 +3991,7 @@ centroid</property>
                                 <property name="can_focus">True</property>
                                 <property name="label" translatable="yes">Rules</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_rpart_rules_button_clicked"/>
                               </widget>
                               <packing>
@@ -3935,6 +4011,7 @@ centroid</property>
                                 <property name="tooltip" translatable="yes">Draw the decision tree as a plot.</property>
                                 <property name="label" translatable="yes">Draw</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_rpart_plot_button_clicked"/>
                               </widget>
                               <packing>
@@ -4263,6 +4340,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">You can build further trees by increasing the number of trees to build then click here.</property>
                                 <property name="label" translatable="yes">Continue</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_continue_button_clicked"/>
                               </widget>
                               <packing>
@@ -4278,8 +4356,10 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               <widget class="GtkButton" id="ada_defaults_button">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Reset the options to correspond to the default values.</property>
                                 <property name="label" translatable="yes">Defaults</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_defaults_button_clicked"/>
                               </widget>
                               <packing>
@@ -4299,6 +4379,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles in the model.</property>
                                 <property name="label" translatable="yes">Importance</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_importance_button_clicked"/>
                               </widget>
                               <packing>
@@ -4318,6 +4399,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
                                 <property name="label" translatable="yes">Errors</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_errors_button_clicked"/>
                               </widget>
                               <packing>
@@ -4337,6 +4419,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">List the decision trees in the textview.</property>
                                 <property name="label" translatable="yes">List</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_list_button_clicked"/>
                               </widget>
                               <packing>
@@ -4355,6 +4438,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="can_focus">True</property>
                                 <property name="label" translatable="yes">Draw</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_ada_draw_button_clicked"/>
                               </widget>
                               <packing>
@@ -4386,24 +4470,6 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkButton" id="ada_stumps_button">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">Click this button to set the options below for Decision Stumps</property>
-                                <property name="label" translatable="yes">Stumps</property>
-                                <property name="use_underline">True</property>
-                                <signal name="clicked" handler="on_ada_stumps_button_clicked"/>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="ada_xval_spinbutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -4420,7 +4486,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label175">
+                              <widget class="GtkLabel" id="ada_xval_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">X Val:</property>
@@ -4456,7 +4522,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label174">
+                              <widget class="GtkLabel" id="ada_complexity_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Complexity:</property>
@@ -4488,7 +4554,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label173">
+                              <widget class="GtkLabel" id="ada_min_split_label">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Min Split:</property>
                               </widget>
@@ -4520,7 +4586,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label172">
+                              <widget class="GtkLabel" id="ada_max_depth_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Max Depth:</property>
@@ -4599,6 +4665,24 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="ada_stumps_checkbutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="tooltip" translatable="yes">When active, build stumps. Deactivating results in default values.</property>
+                                <property name="label" translatable="yes">Stumps</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_ada_stumps_checkbutton_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
                               </packing>
                             </child>
                           </widget>
@@ -4697,6 +4781,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">Display a specific tree.</property>
                                 <property name="label" translatable="yes">Rules</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_rf_print_tree_button_clicked"/>
                               </widget>
                               <packing>
@@ -4716,6 +4801,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
                                 <property name="label" translatable="yes">Errors</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_rf_errors_button_clicked"/>
                               </widget>
                               <packing>
@@ -4735,6 +4821,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles.</property>
                                 <property name="label" translatable="yes">Importance</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_rf_importance_button_clicked"/>
                               </widget>
                               <packing>
@@ -4758,6 +4845,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
 THIS IS BEING REPLACED BY A Importance Button</property>
                                     <property name="label" translatable="yes">Plot Results</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -4774,6 +4862,7 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                                     <property name="tooltip" translatable="yes">THIS IS BEING REMOVE - IS IT NEEDED?</property>
                                     <property name="label" translatable="yes">Proximity Measure</property>
                                     <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -5016,6 +5105,7 @@ ANOVA RBF (anovadot)</property>
                                 <property name="tooltip" translatable="yes">Use svm from the e1071 package (recommended).</property>
                                 <property name="label" translatable="yes">svm</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">kernlab_radiobutton</property>
                                 <signal name="toggled" handler="on_e1071_radiobutton_toggled"/>
@@ -5033,6 +5123,7 @@ ANOVA RBF (anovadot)</property>
                                 <property name="tooltip" translatable="yes">Use ksvm from the kernlab package.</property>
                                 <property name="label" translatable="yes">ksvm</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_kernlab_radiobutton_toggled"/>
@@ -5509,6 +5600,7 @@ poisson(log)</property>
                                 <property name="border_width">5</property>
                                 <property name="label" translatable="yes">Importance</property>
                                 <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
                               </widget>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -5645,6 +5737,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">A confusion table simply lists in tabular form the number of predicted cases that are correct (true positives and true negatives) and incorrect (false positives and false negatives). Both the raw numbers and the proporations will be displayed in two tables.</property>
                         <property name="label" translatable="yes">Confusion</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_confusion_radiobutton_toggled"/>
                       </widget>
@@ -5661,6 +5754,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">A risk chart is used in Analytics to plot caseload versus performance data. While traditional plots (e.g., ROC Curves) plot false positives against true positives, this Risk Chart plots additional information, replacing the x-axis with Caseload (the number of cases predicted as hits by the model) and the y-axis with Performance. A Risk Variable is idetified from the dataset. This is a measure of the amount of risk associated with each case (e.g., dollars recovered from a fraudulent claim) and the plot shows how much of the total risk is recevered for any particular caseload. The number of cases recovered (the precision) and the strike rate are also shown.</property>
                         <property name="label" translatable="yes">Risk</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_risk_radiobutton_toggled"/>
@@ -5678,6 +5772,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">A lift chart plots the lift against the rate of positive predictions (TP+FP)/TOTAL.</property>
                         <property name="label" translatable="yes">Lift</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_lift_radiobutton_toggled"/>
@@ -5695,6 +5790,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">An ROC curve plots the true positive rate against the false positive rate. A better model is one with largeer area under the curve (better AUC).</property>
                         <property name="label" translatable="yes">ROC</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_roc_radiobutton_toggled"/>
@@ -5712,6 +5808,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Plot precision (the positive predictive value) against recall (the true positive rate).</property>
                         <property name="label" translatable="yes">Precision</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_precision_radiobutton_toggled"/>
@@ -5729,6 +5826,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">This plots sensitivity (the true positive rate, also called recall) against the specificity (the true negative rate</property>
                         <property name="label" translatable="yes">Sensitivity</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_sensitivity_radiobutton_toggled"/>
@@ -5746,6 +5844,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Score the data and save to file.</property>
                         <property name="label" translatable="yes">Score</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
                         <signal name="toggled" handler="on_score_radiobutton_toggled"/>
@@ -5784,6 +5883,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Tree</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5799,6 +5899,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Boost</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5814,6 +5915,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Forest</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5829,6 +5931,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">SVM</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5844,6 +5947,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Regression</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5858,6 +5962,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Neural Net</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5872,6 +5977,7 @@ poisson(log)</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">MARS</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5908,6 +6014,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Evaluate the model using the training dataset. This will give an optimistic estimate of the performance of the model.</property>
                         <property name="label" translatable="yes">Training</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
@@ -5924,6 +6031,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Evaluate the performance of the model over the testing dataset, which is the remainder of the dataset not used for training. This option is only available if sampling is enabled in the Sample tab.</property>
                         <property name="label" translatable="yes">Testing</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">evaluate_training_radiobutton</property>
                       </widget>
@@ -5940,6 +6048,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Load a new dataset from a CSV file and evaluate the model on this dataset. The dataset must have the same columns in the same order as the training dataset.</property>
                         <property name="label" translatable="yes">CSV File</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">evaluate_training_radiobutton</property>
                         <signal name="toggled" handler="on_evaluate_csv_radiobutton_toggled"/>
@@ -5970,6 +6079,7 @@ poisson(log)</property>
                         <property name="tooltip" translatable="yes">Use a pre-existing R dataset (defined in the R Console) to evaluate the model. The dataset must have the same columns in the same order as the training dataset.</property>
                         <property name="label" translatable="yes">R Dataset</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">evaluate_training_radiobutton</property>
                         <signal name="toggled" handler="on_evaluate_rdataset_radiobutton_toggled"/>
@@ -6444,6 +6554,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="label">gtk-save</property>
                     <property name="relief">GTK_RELIEF_NONE</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_plot_save_button_clicked"/>
                   </widget>
                 </child>
@@ -6463,6 +6574,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="label">gtk-copy</property>
                     <property name="relief">GTK_RELIEF_NONE</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_plot_copy_button_clicked"/>
                   </widget>
                 </child>
@@ -6482,6 +6594,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="label">gtk-print</property>
                     <property name="relief">GTK_RELIEF_NONE</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_plot_print_button_clicked"/>
                   </widget>
                 </child>
@@ -6501,6 +6614,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="label">gtk-close</property>
                     <property name="relief">GTK_RELIEF_NONE</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_plot_close_button_clicked"/>
                   </widget>
                 </child>
@@ -6586,6 +6700,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="can_focus">True</property>
                     <property name="label">gtk-find</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_viewdata_find_button_clicked"/>
                   </widget>
                 </child>
@@ -6604,6 +6719,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                     <property name="can_focus">True</property>
                     <property name="label">gtk-media-next</property>
                     <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_viewdata_next_button_clicked"/>
                   </widget>
                 </child>

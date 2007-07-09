@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2007-03-25 21:16:43 Graham>
+## Time-stamp: <2007-07-09 19:40:28 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -16,8 +16,20 @@
 ## BUTTONS
 
 on_ada_stumps_button_clicked <- function(button)
+# Used to have this as a button, but Frank suggested a checkbutton
+# which, when selected, greys out the options that it affects! Seems
+# like a good idea. I have changed the interface from a button to a
+# checkbutton.
 {
   setGuiDefaultsAda(stumps=TRUE)
+}
+
+on_ada_stumps_checkbutton_toggled <- function(button)
+{
+  if (theWidget("ada_stumps_checkbutton")$getActive())
+    setGuiDefaultsAda(stumps=TRUE)
+  else
+    setGuiDefaultsAda()
 }
 
 on_ada_defaults_button_clicked <- function(button)
@@ -131,6 +143,18 @@ setGuiDefaultsAda <- function(stumps=FALSE)
     theWidget("ada_minsplit_spinbutton")$setValue(0)
     theWidget("ada_cp_spinbutton")$setValue(-1)
     theWidget("ada_xval_spinbutton")$setValue(0)
+    # If we have chosen stumps, then stick with stumps and don't allow
+    # the user to change the values. This makes sense from a GUI point
+    # of view, where we have changed from a button to a checkbutton in
+    # the GUI.
+    theWidget("ada_max_depth_label")$setSensitive(FALSE)
+    theWidget("ada_min_split_label")$setSensitive(FALSE)
+    theWidget("ada_complexity_label")$setSensitive(FALSE)
+    theWidget("ada_xval_label")$setSensitive(FALSE)
+    theWidget("ada_maxdepth_spinbutton")$setSensitive(FALSE)
+    theWidget("ada_minsplit_spinbutton")$setSensitive(FALSE)
+    theWidget("ada_cp_spinbutton")$setSensitive(FALSE)
+    theWidget("ada_xval_spinbutton")$setSensitive(FALSE)
   }
   else
   {
@@ -138,6 +162,16 @@ setGuiDefaultsAda <- function(stumps=FALSE)
     theWidget("ada_minsplit_spinbutton")$setValue(20)
     theWidget("ada_cp_spinbutton")$setValue(0.01)
     theWidget("ada_xval_spinbutton")$setValue(10)
+    # These may have been made not sensitive through choosing the
+    # Stumps option.
+    theWidget("ada_max_depth_label")$setSensitive(TRUE)
+    theWidget("ada_min_split_label")$setSensitive(TRUE)
+    theWidget("ada_complexity_label")$setSensitive(TRUE)
+    theWidget("ada_xval_label")$setSensitive(TRUE)
+    theWidget("ada_maxdepth_spinbutton")$setSensitive(TRUE)
+    theWidget("ada_minsplit_spinbutton")$setSensitive(TRUE)
+    theWidget("ada_cp_spinbutton")$setSensitive(TRUE)
+    theWidget("ada_xval_spinbutton")$setSensitive(TRUE)
   }
 }
 
