@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-05-06 20:26:31 Graham>
+# Time-stamp: <2007-07-21 16:31:38 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 May 2007"
+VERSION.DATE <- "Released 09 Jul 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -391,15 +391,20 @@ rattle <- function(csvname=NULL)
     theWidget("use_cairo_graphics_device")$setSensitive(FALSE)
   }
   
-  ## Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
-  
-  if (isWindows())
-  {
-    require(utils) # In case rattle is loaded in .Rprofile, before utils.
-    memory.limit(2073)
-  }
-  
-  ##
+  # Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
+  #
+  # Brian D. Ripley 15 Jul 2007 07:57:49 +0100 requested the momry mod
+  # be removed.
+  #
+  # First, because you should not be setting the limit high
+  # if the user has only limited memory: the defaults are chosen with a lot of
+  # care.  Second, because the default can be as high as 2.5Gb on a machine
+  # with 4Gb RAM and the /3GB switch set (the case here).
+  #
+  # The correct way to refer to things in packages on which you have not
+  # declared a dependence is utils::memory.limit.
+
+  # if (isWindows()) utils::memory.limit(2073)
 
   initiateLog()
   

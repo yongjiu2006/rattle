@@ -7,6 +7,9 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+194 070721 Brian Ripley suggestion re MS/Windows memory problem.
+193 070709 Change ada stumps button to a checkbutton. Add pmml.lm.
+192 070514 Fix generation of trees for rf.
 191 070513 Improve RF rule generation, including R and VB code.
 190 070506 Remove ARFF read/write and use from foreign if available.
 189 070506 Cleanup: test missing packages, error messages, start removing arff
@@ -242,6 +245,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun May 13 10:31:36 EST 2007
+Last modified: Sat Jul 21 16:32:30 EST 2007
 <!-- hhmts end -->
   </p>
