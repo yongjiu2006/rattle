@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-09-02 15:27:42 Graham Williams>
+## Time-stamp: <2007-09-02 20:50:30 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -139,18 +139,18 @@ executeClusterKMeans <- function(include)
     theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
     theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
   }
-  else
+  else # Iterate over the clusters.
   {
     start.time <- Sys.time()
-    css <<- vector() # GLOBAL for now whilst testing so I can access gloablly
-    css[1] <<- 0
+    css <- vector()
+    css[1] <- 0
     for (i in 2:nclust)
     {
       kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
                             ifelse(sampling, "crs$sample", ""), include, i)
       eval(parse(text=seed.cmd))
       eval(parse(text=kmeans.cmd))
-      css[i] <<- sum(crs$kmeans$withinss)
+      css[i] <- sum(crs$kmeans$withinss)
     }
     time.taken <- Sys.time()-start.time
     resetTextview(TV)
@@ -833,57 +833,122 @@ exportKMeansTab <- function(file)
     return()
   }
 
-  ## Require the pmml package
-  
-  lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export kmeans clusters")) return(FALSE)
-  appendLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
-  eval(parse(text=lib.cmd))
-  
-  ## Obtain filename to write the clusters to.
-  
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
+  exportModel <- theWidget("kmeans_export_model_radiobutton")$getActive()
 
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
-
-  ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
-  ff$addPattern("*.xml")
-  dialog$addFilter(ff)
-
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
-  
-  if (dialog$run() == GtkResponseType["accept"])
+  if (exportModel)
   {
-    save.name <- dialog$getFilename()
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return()
-  }
-
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+    ## Require the pmml package
+  
+    lib.cmd <- "require(pmml, quietly=TRUE)"
+    if (! packageIsAvailable("pmml", "export kmeans clusters")) return(FALSE)
+    appendLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
+    eval(parse(text=lib.cmd))
+  
+    ## Obtain filename to write the clusters to.
+  
+    dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+                                   "gtk-cancel", GtkResponseType["cancel"],
+                                   "gtk-save", GtkResponseType["accept"])
     
-  if (file.exists(save.name))
-    if (is.null(questionDialog("A file of the same name as", save.name,
-                               "already exists. Do you want to overwrite",
-                               "this file?")))
+    if(not.null(crs$dataname))
+      dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
+
+    ff <- gtkFileFilterNew()
+    ff$setName("PMML Files")
+    ff$addPattern("*.xml")
+    dialog$addFilter(ff)
+
+    ff <- gtkFileFilterNew()
+    ff$setName("All Files")
+    ff$addPattern("*")
+    dialog$addFilter(ff)
+    
+    if (dialog$run() == GtkResponseType["accept"])
+    {
+      save.name <- dialog$getFilename()
+      dialog$destroy()
+    }
+    else
+    {
+      dialog$destroy()
       return()
+    }
 
-  pmml.cmd <- "pmml.kmeans(crs$kmeans)"
-  appendLog("Export the cluster as PMML.", pmml.cmd)
-  saveXML(eval(parse(text=pmml.cmd)), save.name)
+    if (get.extension(save.name) == "")
+      save.name <- sprintf("%s.xml", save.name)
+    
+    if (file.exists(save.name))
+      if (is.null(questionDialog("A file of the same name as", save.name,
+                                 "already exists. Do you want to overwrite",
+                                 "this file?")))
+        return()
+
+    pmml.cmd <- "pmml.kmeans(crs$kmeans)"
+    appendLog("Export the cluster as PMML.", pmml.cmd)
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
   
-  infoDialog("The PMML file", save.name, "has been written.")
+    infoDialog("The PMML file", save.name, "has been written.")
 
-  setStatusBar("The PMML file", save.name, "has been written.")
+    setStatusBar("The PMML file", save.name, "has been written.")
+  }
+  else # Export clusters to CSV
+  {
+    
+    ## Obtain filename to write the clusters to.
+  
+    dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
+                                   "gtk-cancel", GtkResponseType["cancel"],
+                                   "gtk-save", GtkResponseType["accept"])
+    
+    if(not.null(crs$dataname))
+      dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
+
+    ff <- gtkFileFilterNew()
+    ff$setName("CSV Files")
+    ff$addPattern("*.csv")
+    dialog$addFilter(ff)
+
+    ff <- gtkFileFilterNew()
+    ff$setName("All Files")
+    ff$addPattern("*")
+    dialog$addFilter(ff)
+    
+    if (dialog$run() == GtkResponseType["accept"])
+    {
+      save.name <- dialog$getFilename()
+      dialog$destroy()
+    }
+    else
+    {
+      dialog$destroy()
+      return()
+    }
+
+    if (get.extension(save.name) == "")
+      save.name <- sprintf("%s.csv", save.name)
+    
+    if (file.exists(save.name))
+      if (is.null(questionDialog("A file of the same name as", save.name,
+                                 "already exists. Do you want to overwrite",
+                                 "this file?")))
+        return()
+
+    idents <- getSelectedVariables("ident")
+
+    csv.cmd <-  sprintf("cbind(crs$dataset[%s, c(%s)], crs$kmeans$cluster)",
+                        ifelse(theWidget("sample_checkbutton")$getActive(),
+                               "crs$sample", ""),
+                        sprintf('"%s"', paste(idents, collapse='", "')))
+                          
+    appendLog("Export the clusters to CSV.", csv.cmd)
+    write.table(eval(parse(text=csv.cmd)), file=save.name, sep=",",
+                qmethod = "double", row.names=FALSE,
+                col.names=c(idents, "cluster"))
+  
+    infoDialog("The CSV file", save.name, "has been written.")
+
+    setStatusBar("TheCSV file", save.name, "has been written.")
+    
+  }
 
 }
