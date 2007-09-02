@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+195 070902 Iterate kmeans clusters (Enrico Vera-Cruz).
 194 070721 Brian Ripley suggestion re MS/Windows memory problem.
 193 070709 Change ada stumps button to a checkbutton. Add pmml.lm.
 192 070514 Fix generation of trees for rf.
@@ -245,6 +246,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Jul 21 16:32:30 EST 2007
+Last modified: Sun Sep  2 15:30:36 EST 2007
 <!-- hhmts end -->
   </p>

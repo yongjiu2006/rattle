@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+070902 Export Kmeans: Ask PMML (means) or CSV (clusters) (Enrico Vera-Crux).
 070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
@@ -60,6 +61,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Mon May 14 18:59:46 EST 2007
+Last modified: Sun Sep  2 15:30:20 EST 2007
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-24 09:38:01 Graham>
+## Time-stamp: <2007-09-02 15:27:42 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -88,6 +88,7 @@ executeClusterKMeans <- function(include)
   nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
+  useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
   
   startLog("KMEANS CLUSTER")
 
@@ -106,36 +107,69 @@ executeClusterKMeans <- function(include)
     centers <- nclust
   
   ## KMEANS: Log the R command and execute.
-  
-  kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
-                        ifelse(sampling, "crs$sample", ""), include, centers)
-  appendLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
-           gsub("<<-", "<-", kmeans.cmd))
-  start.time <- Sys.time()
-  eval(parse(text=kmeans.cmd))
-  time.taken <- Sys.time()-start.time
 
-  ## SUMMARY: Show the resulting model.
+  if (! useIterate)
+  {
+    kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
+                          ifelse(sampling, "crs$sample", ""), include, centers)
+    appendLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
+              gsub("<<-", "<-", kmeans.cmd))
+    start.time <- Sys.time()
+    eval(parse(text=kmeans.cmd))
+    time.taken <- Sys.time()-start.time
 
-  appendLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
-  appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
-  appendLog("Cluster centers:", "crs$kmeans$centers")
-  appendLog("Within cluster sum of squares:", "crs$kmeans$withinss")
-  resetTextview(TV)
-  setTextview(TV, "Cluster Sizes\n\n",
-              collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
-              "\n\nCluster centroids.\n\n",
-              collectOutput("crs$kmeans$centers", TRUE),
-              "\n\nWithin cluster sum of squares.\n\n",
-              collectOutput("crs$kmeans$withinss", TRUE),
-              "\n")
+    ## SUMMARY: Show the resulting model.
 
-  ## Ensure the kmeans buttons are now active
+    appendLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
+    appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
+    appendLog("Cluster centers:", "crs$kmeans$centers")
+    appendLog("Within cluster sum of squares:", "crs$kmeans$withinss")
+    resetTextview(TV)
+    setTextview(TV, "Cluster Sizes\n\n",
+                collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
+                "\n\nCluster centroids.\n\n",
+                collectOutput("crs$kmeans$centers", TRUE),
+                "\n\nWithin cluster sum of squares.\n\n",
+                collectOutput("crs$kmeans$withinss", TRUE),
+                "\n")
 
-  theWidget("kmeans_stats_button")$setSensitive(TRUE)
-  theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
-  theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
-  
+    ## Ensure the kmeans buttons are now active
+
+    theWidget("kmeans_stats_button")$setSensitive(TRUE)
+    theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
+    theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
+  }
+  else
+  {
+    start.time <- Sys.time()
+    css <<- vector() # GLOBAL for now whilst testing so I can access gloablly
+    css[1] <<- 0
+    for (i in 2:nclust)
+    {
+      kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
+                            ifelse(sampling, "crs$sample", ""), include, i)
+      eval(parse(text=seed.cmd))
+      eval(parse(text=kmeans.cmd))
+      css[i] <<- sum(crs$kmeans$withinss)
+    }
+    time.taken <- Sys.time()-start.time
+    resetTextview(TV)
+    setTextview(TV, "We have iterated over multiple cluster sizes ",
+                "from 2 to ", nclust, " clusters.\n\n",
+                "The plot displays the sum(withinss) for each clustering\n",
+                "and the change of this from the previous clustering\n",
+                "with the plot starting with 3 clusters\n")
+    newPlot()
+    plot(3:nclust, c(css[3:nclust]), ylim=c(0, max(css[3:nclust])),
+         type="b", lty=1, col="blue",
+         xlab="Number of Clusters", ylab="Sum of WithinSS",
+         main="Sum of WithinSS Over Number of Clusters")
+    points(3:nclust, css[2:(nclust-1)]-css[3:nclust],
+           type="b", pch=4, lty=2, col="red")
+    legend("topright", c("Sum(WithinSS)", "Diff previous Sum(WithinSS)"),
+           col=c("blue", "red"), lty=c(1, 2), pch=c(1,4), inset=0.05)
+  }
+
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)

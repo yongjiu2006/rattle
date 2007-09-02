@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_ada_stumps_checkbutton_toggled}
 \alias{on_help_arff_activate}
 \alias{on_help_distributions_activate}
 \alias{on_help_ggobi_activate}
