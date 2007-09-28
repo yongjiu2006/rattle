@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-07-08 16:05:59 Graham Williams>
+## Time-stamp: <2007-09-29 06:57:48 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -10,6 +10,127 @@
 ##
 ##	Extract the DataDictionary stuff to a separate function to
 ##	share between pmml.rpat and pmml.kmeans.
+
+########################################################################
+#
+# 070929 these are potentially unintialised! Why? Where are they meant
+# to gloablly come from? They are defined in random_forest.R but that
+# is not part of the pmml package. Is this old code that should be 
+# removed?
+cassign <- "<-"
+cif <- "if"
+cthen <- ""
+celse <- "else"
+cendif <- ""
+cin <- "%in%"
+sdecimal2binary <- function(x)
+{
+  return(rev(sdecimal2binary.smallEndian(x)))
+}
+sdecimal2binary.smallEndian <- function(x)
+{
+  if (x==0) return(0)
+  if (x<0) stop("Sorry, the input must be positive")
+  dec <- x
+	 
+  n <- floor(log(x)/log(2))
+  bin <- c(1)
+  dec <- dec - 2 ^ n
+	  
+  while(n > 0)
+  {
+    if (dec >= 2 ^ (n-1)) {bin <- c(bin,1); dec <- dec - 2 ^ (n-1)}
+    else bin <- c(bin,0)
+    n <- n - 1
+  }
+  return(bin)
+}
+treeset.randomForest <- function(model, n=1, root=1, format="R")
+{
+  ## Return a string listing the decision tree form of the chosen tree
+  ## from the random forest.
+  
+  tree <- getTree(model, n)
+  if (format == "R")
+  {
+    cassign <- "<-"
+    cif <- "if"
+    cthen <- ""
+    celse <- "else"
+    cendif <- ""
+    cin <- "%in%"
+  }
+  else if (format == "VB")
+  {
+    cassign <- "="
+    cif <- "If"
+    cthen <- "Then"
+    celse <- "Else"
+    cendif <- "End If"
+    cin <- "In"
+  }
+
+  ## Traverse the tree
+
+  tr.vars <- attr(model$terms, "dataClasses")[-1]
+  var.names <- names(tr.vars)
+  
+  result <- ""
+  if (tree[root, 'status'] == -1) # Terminal node
+  {
+    result <- sprintf("Result %s %s", cassign,
+                      levels(model$y)[tree[root,'prediction']])
+  }
+  else
+  {
+    var.class <- tr.vars[tree[root, 'split var']]
+    node.var <- var.names[tree[root,'split var']]
+    if(var.class == "character" | var.class == "factor")
+    {
+      ## Convert the binary split point to a 0/1 list for the levels.
+      
+      var.levels <- levels(eval(model$call$data)[[tree[root,'split var']]])
+      bins <- sdecimal2binary(tree[root, 'split point'])
+      bins <- c(bins, rep(0, length(var.levels)-length(bins)))
+      node.value <- var.levels[bins==1]
+      node.value <- sprintf('("%s")', paste(node.value, collapse='", "'))
+      condition <- sprintf("%s %s %s%s", node.var, cin,
+                           ifelse(format=="R", "c", ""), node.value)
+    }
+    else if (var.class == "integer" | var.class == "numeric")
+    {
+      ## Assume spliting to the left means "<=", and right ">",
+      ## which is not what the man page for getTree claims!
+
+      node.value <- tree[root, 'split point']
+      condition <- sprintf("%s <= %s", node.var, node.value)
+
+    }
+    else
+    {
+      stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+                   var.class))
+    }
+    
+
+    condition <- sprintf("%s (%s)", cif, condition)
+    
+    lresult <- treeset.randomForest(model, n, tree[root,'left daughter'],
+                                    format=format)
+    if (cthen == "")
+      lresult <- c(condition, lresult)
+    else
+      lresult <- c(condition, cthen, lresult)
+    rresult <- treeset.randomForest(model, n, tree[root,'right daughter'],
+                                    format=format)
+    rresult <- c(celse, rresult)
+    result <- c(lresult, rresult)
+    if (cendif != "") result <- c(result, cendif)
+  }
+  return(result)
+}
+
+########################################################################
 
 pmml <- function(model,
                  model.name="Rattle_Model",
@@ -33,7 +154,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   ## Header
   
-  VERSION <- "1.1.2" # Expose pmml.lm in NAMESPACE - woops.
+  VERSION <- "1.1.3" # Fixes for new version of randomSurvivalForest.
+  # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
   # "1.1.1" Add pmml.lm
 
   if (is.null(copyright))
@@ -830,9 +952,9 @@ pmml.rsf <- function(model,
   if (is.null(formula))
     stop("RSF formula is NULL.  Please ensure the object is valid.")
 
-  bootstrapSeed = model$bootstrapSeed
-  if (is.null(bootstrapSeed))
-    stop("RSF bootstrapSeed content is NULL.  Please ensure object is valid.")
+  forestSeed = model$seed
+  if (is.null(forestSeed))
+    stop("RSF forestSeed content is NULL.  Please ensure object is valid.")
 
   ## PMML
 
@@ -861,12 +983,8 @@ pmml.rsf <- function(model,
   ## PMML -> MiningBuildTask -> Extension -> X-RSF-BootstrapSeeds -> Array
     
   extensionNode <- append.XMLNode(extensionNode, 
-                                  xmlNode("X-RSF-BootstrapSeeds", 
-                                          xmlNode("Array", 
-                                                  attrs=c(type="integer",
-                                                    n=length(bootstrapSeed)), 
-                                                  paste(bootstrapSeed,
-                                                        collapse="  \n  "))))
+                                  xmlNode("X-RSF-ForestSeed", 
+                                          attrs=c(value=forestSeed)))
 
   ## PMML -> MiningBuildTask -> Extension -> TimesOfInterest
 

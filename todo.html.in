@@ -7,7 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
-070902 Export Kmeans: Ask PMML (means) or CSV (clusters) (Enrico Vera-Crux).
+070902 Redesign Transform - add "Normalise" to remap to 0-1.
 070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
