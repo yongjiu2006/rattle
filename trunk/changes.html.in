@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+198 071112 Move to glade-3. Add basic tune functionality to rpart.
 197 070929 Fix pmml.rsf to match new randomSurvivalForest version
 196 070902 Export Kmeans as PMML (means) or CSV (clusters) (Enrico Vera-Cruz).
 195 070902 Iterate kmeans clusters (Enrico Vera-Cruz).
@@ -248,6 +249,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Sep  2 15:30:36 EST 2007
+Last modified: Sat Oct  6 14:55:14 EST 2007
 <!-- hhmts end -->
   </p>

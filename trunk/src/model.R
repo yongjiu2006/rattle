@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-05-06 17:34:40 Graham>
+## Time-stamp: <2007-11-10 07:37:13 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -232,11 +232,34 @@ executeModelTab <- function()
 
   if (build.all || currentModelTab() == .RPART)
   {
-    setStatusBar("Building", .RPART, "model ...")
-    if (executeModelRPart())
-      theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
-    else
-      setStatusBar("Building", .RPART, "model ... failed.")
+    if (theWidget("rpart_build_radiobutton")$getActive())
+    {
+      setStatusBar("Building", .RPART, "model ...")
+      if (executeModelRPart())
+        theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+      else
+        setStatusBar("Building", .RPART, "model ... failed.")
+    }
+    else if (theWidget("rpart_tune_radiobutton")$getActive())
+    {
+      setStatusBar("Tuning", .RPART, "model ...")
+      if (! executeModelRPart("tune"))
+        setStatusBar("Tuning", .RPART, "model ... failed.")
+    }
+    else if (theWidget("rpart_best_radiobutton")$getActive())
+    {
+      setStatusBar("Building best", .RPART, "model ...")
+      if (! executeModelRPart("best"))
+        setStatusBar("Building best", .RPART, "model ... failed.")
+    }
+    else # That's all the radio buttons - we should not be here.
+    {
+      errorDialog("Rattle tried building an rpart model with option not",
+                  "one of build/tune/best. This should not be possible.",
+                  "Let Graham.Williams@togaware.com know.")
+      return(FALSE)
+      
+    }
   }
   if (build.all || currentModelTab() == .ADA)
   {
