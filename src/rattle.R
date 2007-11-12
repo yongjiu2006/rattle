@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-07-21 16:31:38 Graham Williams>
+# Time-stamp: <2007-11-12 11:11:35 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -7252,31 +7252,30 @@ on_tools_log_activate <- function(action, window)
 
 switchToPage <- function(page)
 {
-
-  ## Blank the status bar whenever we change pages
+  # Blank the status bar whenever we change pages
   
   setStatusBar()
 
-  ## This function used to accept numeric pages, so check for that and
-  ## convert to the page name rather than the now changing page number
-  ## (page numbers used to be fixed).
+  # This function used to accept numeric pages, so check for that and
+  # convert to the page name rather than the now changing page number
+  # (page numbers used to be fixed).
   
   if (is.numeric(page))
     page <- .NOTEBOOK$getTabLabelText(.NOTEBOOK$getNthPage(page))
-  
+
   if (page == .NOTEBOOK.EVALUATE.NAME)
   {
     
-    ## On moving to the EVALUATE page, ensure each built model's
-    ## checkbox is active, and check the active model's checkbox, but
-    ## leave all the other as they are.
+    # On moving to the EVALUATE page, ensure each built model's
+    # checkbox is active, and check the active model's checkbox, but
+    # leave all the other as they are.
 
     mtypes <- listBuiltModels()
-    
-    if (not.null(mtypes) )
+
+    if (not.null(mtypes))
     {
-      ## We have some models, so make sure their checkboxes are
-      ## sensitive.
+      # We have some models, so make sure their checkboxes are
+      # sensitive.
 
       lapply(mtypes,
              function(x) theWidget(paste(x, "_evaluate_checkbutton",
@@ -7313,7 +7312,7 @@ switchToPage <- function(page)
     theWidget("execute_menu")$setSensitive(TRUE)
   }
     
-  ## Record the current page so when we change we know which was last.
+  # Record the current page so when we change we know which was last.
 
   crs$page <<- page
 

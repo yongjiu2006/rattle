@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-25 14:00:07 Graham>
+## Time-stamp: <2007-11-10 07:28:34 Graham Williams>
 ##
 ## RPART TAB
 ##
@@ -164,18 +164,22 @@ The rpart package is used to build the decision tree."))
 ## MODEL RPART
 ##
 
-executeModelRPart <- function()
+executeModelRPart <- function(action="build")
 {
-  ## Initial setup 
+  # Initial setup 
 
   TV <- "rpart_textview"
 
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   control <- NULL
   parms <- NULL
+
+  # Scrape the value of the tuning controls
+
+  tune.controls <- theWidget("rpart_tune_entry")$getText()
   
-  ## Retrieve the Priors, and check there is the right number and that
-  ## they add up to 1.
+  # Retrieve the Priors, and check there is the right number and that
+  # they add up to 1.
   
   priors <- theWidget("rpart_priors_entry")$getText()
   if (nchar(priors) > 0)
@@ -202,8 +206,8 @@ executeModelRPart <- function()
       parms <- gsub(")$", sprintf(", prior=c(%s)", priors), parms)
   }
 
-  ## Retrieve the Min Split and check if it is different from the
-  ## default, and if so then use it.
+  # Retrieve the Min Split and check if it is different from the
+  # default, and if so then use it.
 
   minsplit <- theWidget("rpart_minsplit_spinbutton")$getValue()
   if (minsplit != .RPART.MINSPLIT.DEFAULT)
@@ -214,8 +218,8 @@ executeModelRPart <- function()
       control <- gsub(")$", sprintf(", minsplit=%d)", minsplit), control)
   }
 
-  ## Retrieve the Min Bucket and check if it is different from the
-  ## default, and if so then use it.
+  # Retrieve the Min Bucket and check if it is different from the
+  # default, and if so then use it.
 
   minbucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
   if (minbucket != .RPART.MINBUCKET.DEFAULT)
@@ -226,8 +230,8 @@ executeModelRPart <- function()
       control <- gsub(")$", sprintf(", minbucket=%d)", minbucket), control)
   }
 
-  ## Retrieve the Max Depth and check if it is different from the
-  ## default, and if so then use it.
+  # Retrieve the Max Depth and check if it is different from the
+  # default, and if so then use it.
 
   maxdepth <- theWidget("rpart_maxdepth_spinbutton")$getValue()
   if (maxdepth != .RPART.MAXDEPTH.DEFAULT)
@@ -238,8 +242,8 @@ executeModelRPart <- function()
       control <- gsub(")$", sprintf(", maxdepth=%d)", maxdepth), control)
   }
 
-  ## Retrieve the Complexity and check if it is different from the
-  ## default, and if so then use it.
+  # Retrieve the Complexity and check if it is different from the
+  # default, and if so then use it.
 
   cp <- theWidget("rpart_cp_spinbutton")$getValue()
 
@@ -251,21 +255,21 @@ executeModelRPart <- function()
       control <- gsub(")$", sprintf(", cp=%f)", cp), control)
   }
 
-  ## Retrieve the Cross Validation value and if different from
-  ## default, use it. No longer. Common wisdom is that 10 is right, so
-  ## in Rattle just go with that.
+  # Retrieve the Cross Validation value and if different from
+  # default, use it. No longer. Common wisdom is that 10 is right, so
+  # in Rattle just go with that.
   
-  ## xval <- theWidget("rpart_xval_spinbutton")$getValue()
-  ## if (xval != .RPART.XVAL.DEFAULT)
-  ## {
-  ##  if (is.null(control))
-  ##    control <- sprintf(", control=rpart.control(xval=%d)", xval)
-  ##  else
-  ##    control <- gsub(")$", sprintf(", xval=%d)", xval), control)
-  ## }
+  # xval <- theWidget("rpart_xval_spinbutton")$getValue()
+  # if (xval != .RPART.XVAL.DEFAULT)
+  # {
+  #  if (is.null(control))
+  #    control <- sprintf(", control=rpart.control(xval=%d)", xval)
+  #  else
+  #    control <- gsub(")$", sprintf(", xval=%d)", xval), control)
+  # }
 
-  ## Retrieve the loss matrix and ensure it matches the shape of the
-  ## data.
+  # Retrieve the loss matrix and ensure it matches the shape of the
+  # data.
 
   loss <- theWidget("rpart_loss_entry")$getText()
   if (nchar(loss) > 0)
@@ -279,10 +283,10 @@ executeModelRPart <- function()
       return(FALSE)
     }
       
-    ## TODO: Perform other checks on the matrix here.  The loss matrix
-    ## must have zeros on the diagonal and positive numbers
-    ## elsewhere. It must be the same dimensions as the number of
-    ## classes.
+    # TODO: Perform other checks on the matrix here.  The loss matrix
+    # must have zeros on the diagonal and positive numbers
+    # elsewhere. It must be the same dimensions as the number of
+    # classes.
 
     lo <- sprintf("matrix(c(%s), byrow=TRUE, nrow=%d)", loss, num.classes) 
     
@@ -292,27 +296,39 @@ executeModelRPart <- function()
       parms <- gsub(")$", sprintf(", loss=%s)", lo), parms)
   }
 
-  ## Build the formula for the model. Rpart has only a formula
-  ## interface.
+  # Build the formula for the model. Rpart has only a formula
+  # interface.
 
   frml <- paste(crs$target, "~ .")
 
-  ## Variables to be included --- a string of indicies.
+  # Variables to be included --- a string of indicies.
   
   included <- getIncludedVariables()
   
-  ## Some convenience booleans
+  # Some convenience booleans
 
   sampling  <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
 
-  ## Commands.
+  # Commands.
   
   lib.cmd <- "require(rpart, quietly=TRUE)"
   if (! packageIsAvailable("rpart", "build decision trees")) return(FALSE)
-    
-  rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
+
+  if (action %in%  c("tune", "best"))
+  {
+    lib.cmd <- paste(lib.cmd, "require(rpart, quietly=TRUE)", sep="\n")
+    if (! packageIsAvailable("e1071", "tune decision trees")) return(FALSE)
+  }
+
+  # For now, don't use any of the other parameter settings if tune or
+  # best. Eventually I want to use the other parameter setting sand
+  # override them with the tune options.
+
+  if (action == "build")
+  {
+    rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
@@ -327,7 +343,36 @@ executeModelRPart <- function()
                      ifelse(is.null(control), "", control),
                      ")", sep="")
 
-  print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+    print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+  }
+  else if (action == "tune")
+  {
+    rpart.cmd <- paste("crs$tune.rpart <<- tune.rpart(", frml, ", data=crs$dataset",
+                     if (subsetting) "[",
+                     if (sampling) "crs$sample",
+                     if (subsetting) ",",
+                     if (including) included,
+                     if (subsetting) "]",
+                     sprintf(", %s", tune.controls),
+                     ")", sep="")
+
+    print.cmd <- paste("print(crs$tune.rpart)", "plot(crs$tune.rpart)", sep="\n")
+  }
+  else if (action == "best")
+  {
+    # This won't work - best.rpart usese the tune.control() structure
+    rpart.cmd <- paste("crs$rpart <<- best.rpart(", frml, ", data=crs$dataset",
+                     if (subsetting) "[",
+                     if (sampling) "crs$sample",
+                     if (subsetting) ",",
+                     if (including) included,
+                     if (subsetting) "]",
+                     sprintf(", %s", tune.controls),
+                     ")", sep="")
+
+    print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+  }
+  
                              
   ## Load the required library.
 
