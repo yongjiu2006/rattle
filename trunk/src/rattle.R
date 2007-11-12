@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-12 11:11:35 Graham Williams>
+# Time-stamp: <2007-11-13 05:47:13 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Sep 2007"
+VERSION.DATE <- "Released 29 Sep 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2470,30 +2470,33 @@ item.toggled <- function(cell, path.str, model)
 
 on_variables_toggle_ignore_button_clicked <- function(action, window)
 {
-  ## Set the ignore flag for all selected variables, and ensure all
-  ## other roles are unchecked.
+  # Set the ignore flag for all selected variables, and ensure all
+  # other roles are unchecked.
 
-  ##ptm <- proc.time()
+  #ptm <- proc.time()
   set.cursor("watch")
   tree.selection <- theWidget("select_treeview")$getSelection()
 
-  ## Under MS/Windows with Terminal Services to the host we get very
-  ## slow redraws? Tried fixing it with freezeUpdates and thawUpdates
-  ## but it had no impact. Changing 500 variables takes 5
-  ## seconds. When connected over terminal services the elapsed time
-  ## is 16 seconds, still with 5 seconds user time.
+  # Under MS/Windows with Terminal Services to the host we get very
+  # slow redraws? Tried fixing it with freezeUpdates and thawUpdates
+  # but it had no impact. Changing 500 variables takes 5
+  # seconds. When connected over terminal services the elapsed time
+  # is 16 seconds, still with 5 seconds user time.
   
-  ## theWidget("rattle_window")$getWindow()$freezeUpdates()
+  # theWidget("rattle_window")$getWindow()$freezeUpdates()
 
-  tree.selection$selectedForeach(function(model, path, iter)
+  # Use the data parameter to avoid an RGtk2 bug in 2.12.1, fixed in
+  # next release. 071113
+  tree.selection$selectedForeach(function(model, path, iter, data)
   {
     model$set(iter, .COLUMN[["ignore"]], TRUE)
+
     columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
                        .COLUMN[["ignore"]])
 
-    ## Timing indicates the for loop is slower on GNU/Linux but faster
-    ## on MS/Windows 500! But the extra test also slows things down,
-    ## so best not to conditionalise for now.
+    # Timing indicates the for loop is slower on GNU/Linux but faster
+    # on MS/Windows 500! But the extra test also slows things down,
+    # so best not to conditionalise for now.
 
     #if (isWindows())
       for (c in columns)
@@ -2502,27 +2505,29 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
     #  lapply(columns, function(x) model$set(iter, x, FALSE))
 
     return(FALSE) # Keep going through all rows
-  })
+  }, data=TRUE)
 
-  ##cat("->Ig", proc.time() - ptm, "\n")
+  #cat("->Ig", proc.time() - ptm, "\n")
   set.cursor()
 
-  ## theWidget("rattle_window")$getWindow()$thawUpdates()
+  # theWidget("rattle_window")$getWindow()$thawUpdates()
 }
 
 on_variables_toggle_input_button_clicked <- function(action, window)
 {
-  ## Set the input flag for all selected variables, and ensure all
-  ## other roles are unchecked.
+  # Set the input flag for all selected variables, and ensure all
+  # other roles are unchecked.
 
-  ##ptm <- proc.time()
+  #ptm <- proc.time()
   set.cursor("watch")
 
   treeview <- theWidget("select_treeview")
   tree.selection <- treeview$getSelection()
   #theWidget("rattle_window")$getWindow()$freezeUpdates()
 
-  tree.selection$selectedForeach(function(model, path, iter)
+  # Use the data parameter to avoid an RGtk2 bug in 2.12.1, fixed in
+  # next release. 071113
+  tree.selection$selectedForeach(function(model, path, iter, data)
   {
     model$set(iter, .COLUMN[["input"]], TRUE)
     columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
@@ -2535,17 +2540,17 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     #  lapply(columns, function(x) model$set(iter, x, FALSE))
 
     return(FALSE) # Keep going through all rows
-  })
+  }, data=TRUE)
 
-  ##cat("->In", proc.time() - ptm, "\n")
+  #cat("->In", proc.time() - ptm, "\n")
   set.cursor()
   #theWidget("rattle_window")$getWindow()$thawUpdates()
 }
 
-##----------------------------------------------------------------------
-##
-## Execution
-##
+#----------------------------------------------------------------------
+#
+# Execution
+#
 
  executeSelectTab <- function()
 {

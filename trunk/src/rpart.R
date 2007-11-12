@@ -1,21 +1,21 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2007-11-10 07:28:34 Graham Williams>
-##
-## RPART TAB
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2007-11-12 20:52:35 Graham Williams>
+#
+# RPART TAB
+#
+# Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
 ########################################################################
-##
-## TODO
-##
-## Add a Rules button to  print the rules.
+#
+# TODO
+#
+# Add a Rules button to  print the rules.
 
 ########################################################################
-##
-## CALLBACKS
-##
+#
+# CALLBACKS
+#
 
 on_priors_entry_changed <- function(action, window)
 {
@@ -157,6 +157,21 @@ The rpart package is used to build the decision tree."))
     require(rpart, quietly=TRUE)
     popupTextviewHelpWindow("rpart")
   }
+}
+
+on_rpart_build_radiobutton_toggled <- function(button)
+{
+  theWidget("rpart_tune_entry")$setSensitive(!button$getActive())
+}
+
+on_rpart_tune_radiobutton_toggled <- function(button)
+{
+  theWidget("rpart_tune_entry")$setSensitive(button$getActive())
+}
+
+on_rpart_best_radiobutton_toggled <- function(button)
+{
+  theWidget("rpart_tune_entry")$setSensitive(button$getActive())
 }
 
 ########################################################################
@@ -318,7 +333,7 @@ executeModelRPart <- function(action="build")
 
   if (action %in%  c("tune", "best"))
   {
-    lib.cmd <- paste(lib.cmd, "require(rpart, quietly=TRUE)", sep="\n")
+    lib.cmd <- paste(lib.cmd, "require(e1071, quietly=TRUE)", sep="\n")
     if (! packageIsAvailable("e1071", "tune decision trees")) return(FALSE)
   }
 
@@ -378,6 +393,7 @@ executeModelRPart <- function(action="build")
 
   startLog("DECISION TREE")
   appendLog("Build a decision tree using the rpart package.", lib.cmd)
+
   eval(parse(text=lib.cmd))
 
   ## Build the model.
