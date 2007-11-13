@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-13 05:47:13 Graham Williams>
+# Time-stamp: <2007-11-13 21:07:21 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Sep 2007"
+VERSION.DATE <- "Released 13 Nov 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -4279,7 +4279,8 @@ calcInitialDigitDistr <- function(l)
 {
   ## From a list of numbers return a vector of first digit frequencies.
   
-  ds <- data.frame(digit=as.numeric(gsub("(.).*", "\\1", as.character(l))),
+  ds <- data.frame(digit=as.numeric(gsub("(.).*", "\\1",
+                     as.character(abs(l)))),
                    value=1)
   ## Ignore any zeros
   

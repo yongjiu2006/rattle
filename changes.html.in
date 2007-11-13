@@ -7,7 +7,8 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-199 071113 shade rpart tune options. Bug fix selectedForeach (Ignore/Input)
+200 071113 Bug fix Benfords - didn't count negatives.
+199 071113 Shade rpart tune options. Bug fix selectedForeach (Ignore/Input)
 198 071112 Move to glade-3. Add basic tune functionality to rpart.
 197 070929 Fix pmml.rsf to match new randomSurvivalForest version
 196 070902 Export Kmeans as PMML (means) or CSV (clusters) (Enrico Vera-Cruz).
