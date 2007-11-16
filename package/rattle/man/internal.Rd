@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{on_rpart_best_radiobutton_toggled}
+\alias{on_rpart_build_radiobutton_toggled}
+\alias{on_rpart_tune_radiobutton_toggled}
 \alias{on_ada_stumps_checkbutton_toggled}
 \alias{on_help_arff_activate}
 \alias{on_help_distributions_activate}

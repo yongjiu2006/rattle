@@ -2844,7 +2844,10 @@ getSelectedVariables <- function(role, named=TRUE)
                   else
                     if (flag) variables <<- c(variables, variable)
                   return(FALSE) # Keep going through all rows
-                })
+                }, TRUE)
+  # Set the data parameter to TRUE to avoid an RGtk2 bug in 2.12.1, fixed in
+  # next release. 071117
+
   return(variables)
 }
 
@@ -3635,8 +3638,12 @@ executeTransformTab <- function()
 
 executeTransformImputePerform <- function()
 {
-  zero <- getSelectedVariables("zero")
+  zero   <- getSelectedVariables("zero")
+  mean   <- getSelectedVariables("mean")
+  median <- getSelectedVariables("median")
 
+  imputed <- union(zero, union(mean, median))
+  
   # Record current variable roles so we can maintain these, but modify
   # by ignore'ing the imputed variables, and input'ing the new
   # imputes.
@@ -3647,9 +3654,9 @@ executeTransformImputePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  if (length(zero) > 0) startLog("MISSING VALUE IMPUTATION")
+  if (length(imputed) > 0) startLog("MISSING VALUE IMPUTATION")
 
-  for (z in zero)
+  for (z in imputed)
   {
     ## Take a copy of the variable to be imputed.
     
@@ -3663,36 +3670,65 @@ executeTransformImputePerform <- function()
     cl <- class(crs$dataset[[vname]])
     if (cl == "factor")
     {
-      ## If Missing is not currently a category for this variable, add
-      ## it in.
-      
-      if ("Missing" %notin% levels(crs$dataset[[vname]]))
+      # Only do Mising for factors for now 071117.
+      if (z %in% zero)
       {
-        levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
-                                    'c(levels(crs$dataset[["%s"]]),',
-                                    '"Missing")'),
-                              vname, vname)
-        appendLog("Add a new category to the variable",
-                 sub("<<-", "<-", levels.cmd))
-        eval(parse(text=levels.cmd))
-      }
-        
-      ## Change all NAs to Missing.
+        # If Missing is not currently a category for this variable,
+        # add it in.
       
-      missing.cmd <- sprintf(paste('crs$dataset[["%s"]][is.na(',
-                                   'crs$dataset[["%s"]])] <<- "Missing"',
-                                   sep=""),
-                             vname, z)
-      appendLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
-      eval(parse(text=missing.cmd))
+        if ("Missing" %notin% levels(crs$dataset[[vname]]))
+        {
+          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
+                                      'c(levels(crs$dataset[["%s"]]),',
+                                      '"Missing")'),
+                                vname, vname)
+          appendLog("Add a new category to the variable",
+                    sub("<<-", "<-", levels.cmd))
+          eval(parse(text=levels.cmd))
+        }
+      
+        # Change all NAs to Missing.
+      
+        missing.cmd <- sprintf(paste('crs$dataset[["%s"]][is.na(',
+                                     'crs$dataset[["%s"]])] <<- "Missing"',
+                                     sep=""),
+                               vname, z)
+        appendLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
+        eval(parse(text=missing.cmd))
+      }
     }
     else
     {
-      zero.cmd <- sprintf(paste('crs$dataset[["%s"]]',
-                                '[is.na(crs$dataset[["%s"]])]',
-                                " <<- 0", sep=""), vname, z)
-      appendLog("Change all NAs to 0.", sub("<<-", "<-", zero.cmd))
-      eval(parse(text=zero.cmd))
+      # determine what action to perform
+      if (z %in% zero)
+      {
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 " <<- 0", sep=""), vname, z)
+        imp.comment <- "Change all NAs to 0."
+      }
+      else if (z %in% mean)
+      {
+        # Note that if z is an integer (e.g. audit$Age) then the
+        # imputed column will be numeric.
+        
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- mean(crs$dataset[["%s"]], ',
+                                 "na.rm=TRUE)", sep=""), vname, z, z)
+        imp.comment <- "Change all NAs to the mean value (not advisable)."
+      }
+      else if (z %in% median)
+      {
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- median(crs$dataset[["%s"]], ',
+                                 "na.rm=TRUE)", sep=""), vname, z, z)
+        imp.comment <- "Change all NAs to the median (not advisable)."
+      }
+        
+      appendLog(imp.comment, sub("<<-", "<-", imp.cmd))
+      eval(parse(text=imp.cmd))
     }
     if (z %in% input)
     {
@@ -3723,7 +3759,7 @@ executeTransformImputePerform <- function()
     ignore <- union(ignore, z)
   }
   
-  if (length(zero) > 0)
+  if (length(imputed) > 0)
   {
     
     ## Reset the treeviews.
@@ -3748,7 +3784,7 @@ executeTransformImputePerform <- function()
 
     ## Update the status bar
 
-    setStatusBar("Imputed variables added to the dataset.")
+    setStatusBar("Imputed variables added to the dataset with 'IMP_' prefix.")
   }
   else
     setStatusBar("No variables selected to be imputed.")
@@ -3913,32 +3949,36 @@ on_categorical_clear_button_clicked <- function(action, window)
 
   tree.selection <- theWidget("categorical_treeview")$getSelection()
 
-  tree.selection$selectedForeach(function(model, path, iter)
+  # Use the data parameter to avoid an RGtk2 bug in 2.12.1, fixed in
+  # next release. 071117
+  tree.selection$selectedForeach(function(model, path, iter, data)
   {
     columns <- .CATEGORICAL[["barplot"]]:.CATEGORICAL[["dotplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
-  })
+  }, TRUE)
 
   set.cursor()
 }
 
 on_continuous_clear_button_clicked <- function(action, window)
 {
-  ## Ensure all continuous check boxes are unchecked.
+  # Ensure all continuous check boxes are unchecked.
 
   set.cursor("watch")
 
-  ## Only clear selected rows.
+  # Only clear selected rows.
 
   tree.selection <- theWidget("continuous_treeview")$getSelection()
 
-  tree.selection$selectedForeach(function(model, path, iter)
+  # Use the data parameter to avoid an RGtk2 bug in 2.12.1, fixed in
+  # next release. 071117
+  tree.selection$selectedForeach(function(model, path, iter, data)
   {
     columns <- .CONTINUOUS[["boxplot"]]:.CONTINUOUS[["benplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
-  })
+  }, TRUE)
 
   set.cursor()
 }
