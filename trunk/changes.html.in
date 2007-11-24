@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+203 071124 Transform->Normalise implemented: scale, normalise, rank. (Ed Cox)
 202 071124 Redesign transform tab; complete imputations (add mode + constant).
 201 071117 Bug fix for RGtk2 (foreach). Implement mean and median imputation.
 200 071113 Bug fix Benfords - didn't count negatives.

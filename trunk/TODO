@@ -78,19 +78,21 @@ plotcluster in fpc can plot many different plots. Perhaps plot several
 in the one plot. Need to determine which ones would be useful.
 
 ========================================================================
-Description: Implement IMPUTATION
-Proposer: Michael.
-DateProposed: 
-Status: 
-Effort: 
-Required: 
-Completed: 
+IMPUTATION
 
-Impute NA as 0, Mean, or KNN (Michael)
+Proposer: Michael.
+
+Impute using KNN
 
 http://www.napier.ac.uk/depts/fhls/peas/imputation.asp
 
-Packages: norm, pan, "mix" knn
+------------------------------------------------------------------------
+
+mix has mi.inference but did not look like it did what I was wanting.
+
+------------------------------------------------------------------------
+
+EMV has knn for imputation from knn. Works only on numeric matrix.
 
 ------------------------------------------------------------------------
 
@@ -283,8 +285,6 @@ For each textview, add initial text to explain the point (c.f. prcomp)
 ##   DATA: In the file chooser replace Open with Select?
 ##   Seriation plot: set point size to tiny (at least can save as PDF to zoom).
 ##   VARIABLES: Could colour the text in Variable column according to role.
-##   VARIABLES: Standardise (convert to -1 to 1) a variable (Ed Cox)
-##   VARIABLES: Normalise (subtract mean and divide by the stddev) (Ed Cox)
 ##   MODEL note when sample has changed, model not updated and we eveluate
 ##	SAMPLE: Use sample.split of caTools to partition test/train on
 ##	target to maintain outcome ratio (and thus more likely to

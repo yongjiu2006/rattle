@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-24 10:50:47 Graham Williams>
+# Time-stamp: <2007-11-24 14:47:59 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Nov 2007"
+VERSION.DATE <- "Released 24 Nov 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -302,6 +302,7 @@ rattle <- function(csvname=NULL)
   # Define the TRANSFORM tab pages
   
   .TRANSFORM               <<- theWidget("transform_notebook")
+  .TRANSFORM.NORMALISE.TAB <<- getNotebookPage(.TRANSFORM, "normalise")
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
   .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
@@ -483,7 +484,8 @@ resetRattle <- function()
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.
 
-  .TRANSFORM$setCurrentPage(.TRANSFORM.IMPUTE.TAB)
+  .TRANSFORM$setCurrentPage(.TRANSFORM.NORMALISE.TAB)
+  theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
   theWidget("impute_constant_entry")$setText("")
   
@@ -2795,21 +2797,6 @@ getSelectedVariables <- function(role, named=TRUE)
     rcol  <- .CATEGORICAL[[role]]
   }
 
-  #else if (role %in% c("impute"))
-  #{
-  #  model <- theWidget("impute_treeview")$getModel()
-  #  rcol <- .IMPUTE[["type"]]
-  #}
-  
-  # The imputation roles use a combobox to select.
-  
-##   else if (role %in% c("zero", "mean", "median"))
-##   {
-##     type <- "character"
-##     model <- theWidget("impute_treeview")$getModel()
-##     rcol  <- .IMPUTE[["type"]]
-##   }
-  
   else
     return(variables)
 
@@ -3022,37 +3009,6 @@ initialiseVariableViews <- function()
                                         "Ignore",
                                         renderer,
                                         active = .COLUMN[["ignore"]]) 
-
-##   ## Add the ZERO and MEAN columns to the IMPUTE view.
-
-##   options <- gtkListStoreNew("gchararray")
-
-##   ## Add the options.
-  
-##   oiter <- options$append()$iter
-##   options$set(oiter, 0, "None")
-##   oiter <- options$append()$iter
-##   options$set(oiter, 0, "Zero/Missing")
-##   oiter <- options$append()$iter
-##   options$set(oiter, 0, "Mean")
-##   oiter <- options$append()$iter
-##   options$set(oiter, 0, "Median")
-
-##   ## Create the renderer.
-
-##   renderer <- gtkCellRendererComboNew()
-
-##   renderer$set(xalign = 0.0)
-##   renderer$set(model=options)
-##   renderer$set(text_column=0)
-##   renderer$set(editable=TRUE)
-##   renderer$set(has_entry=FALSE)
-##   connectSignal(renderer, "edited", imp_edited, impute)
-##   imp.offset <-
-##     impview$insertColumnWithAttributes(-1,
-##                                        "Imputation",
-##                                         renderer,
-##                                         text = .IMPUTE[["type"]])
 
   ## Add the barplot and dotplot.
 
@@ -3365,21 +3321,47 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     # Selected variables go into the other treeviews.
 
-    if (missing.count > 0) # Ignore IGNOREd variables. But crs$ignore
-                           # is not yet set. Need to remove later.
+    if (missing.count > -1)# Ignore IGNOREd variables. But crs$ignore
+                           # is not yet set. Need to remove
+                           # later. Also, this treeview has become
+                           # used for all TRANSFORM operations, so
+                           # must include all variables, not just ones
+                           # with missing values.
     {
+      # Generate correct Rattle terminology for the variable class.
+      
+      dtype <- paste("A ", cl, " variable")
+      if (cl == "integer")
+        dtype <- sprintf("An integer variable (min=%d, max=%d, mean=%d)",
+                         min(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         max(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         as.integer(mean(crs$dataset[[variables[i]]], na.rm=TRUE)))
+      else if (cl == "numeric")
+        dtype <- sprintf("An integer variable (min=%.2f, max=%.2f, mean=%.2f)",
+                         min(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         max(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         mean(crs$dataset[[variables[i]]], na.rm=TRUE))
+      else if (substr(cl, 1, 6) == "factor")
+        dtype <- sprintf("A categorical variable (%s levels)",
+                         substr(cl, 8, 1000))
+
+      # Generate text for the missing values bit.
+
+      if (missing.count > 0)
+        mtext <- sprintf(" with %d missing values", missing.count)
+      else
+        mtext <- ""
+      
       imp.options <- gtkListStoreNew("gchararray")
       imp.options.iter <- imp.options$append()$iter
       imp.options$set(imp.options.iter, 0, "xx")
-#      lapply(unlist(list(A="a", B="b", C="c")), model$append)
       combo <- gtkComboBoxNewWithModel(imp.options, 0)
       impiter <- impute$append()$iter
       impute$set(impiter,
                  .IMPUTE["number"], i,
                  .IMPUTE["variable"], variables[i],
-#                 .IMPUTE["type"], "None",
-                 .IMPUTE["comment"], sprintf("%s with %d missing.",
-                                            cl, missing.count))
+                 .IMPUTE["comment"], sprintf("%s%s.",
+                                            dtype, mtext))
     }
         
     if (strsplit(cl, " ")[[1]][1] == "factor")
@@ -3587,42 +3569,25 @@ on_impute_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-#on_impute_none_radiobutton_toggled 
-#on_impute_zero_radiobutton_toggled
-#on_impute_mean_radiobutton_toggled
-#on_impute_median_radiobutton_toggled
-#on_impute_mode_radiobutton_toggled
+on_normalise_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) 
+  {
+    .TRANSFORM$setCurrentPage(.TRANSFORM.NORMALISE.TAB)
+  }
+  setStatusBar()
+}
 
 on_impute_constant_radiobutton_toggled <- function(button)
 {
   theWidget("impute_constant_entry")$setSensitive(button$getActive())
 }
 
-## imp_edited <- function(renderer, path.str, text, model)
-## {
-##   ## An impute variable's imputation option has been changed in the
-##   ## TRANSFORM's tab IMPUTE option. Handle the new choice.
 
-##   ## The data passed in is the model used in the treeview.
-
-##   checkPtrType(model, "GtkTreeModel")
-
-##   ## Get the correct pointer.
-  
-##   path <- gtkTreePathNewFromString(path.str) # Current row
-##   iter <- model$getIter(path)$iter           # Iter for the row
-
-##   ## Set the value appropriately.
-
-##   column <- .IMPUTE[["type"]]
-##   model$set(iter, column, text)
-
-## }
-
-##----------------------------------------------------------------------
-##
-## Execution
-##
+#----------------------------------------------------------------------
+#
+# Execution
+#
 
 executeTransformTab <- function()
 {
@@ -3631,11 +3596,11 @@ executeTransformTab <- function()
   if (noDatasetLoaded()) return()
 
   # Dispatch to the appropriate sub option. Currently [071124] only
-  # Impute is implemented so this is trivial. In fact, currently we
-  # can not even select the other radio buttons, so the test is always
-  # TRUE.
+  # Normalise and Impute are implemented so this is siple.
 
-  if (theWidget("impute_radiobutton")$getActive())
+  if (theWidget("normalise_radiobutton")$getActive())
+    executeTransformNormalisePerform()
+  else if (theWidget("impute_radiobutton")$getActive())
     executeTransformImputePerform()
 }
 
@@ -3658,6 +3623,186 @@ modalvalue <- function(x, na.rm=FALSE)
     }
     u[which.max(frequencies)]
 }
+
+executeTransformNormalisePerform <- function()
+{
+  # First determine which normalisation option has been chosen and the
+  # prefix of the new variable that will be introduced.  Default to
+  # NULL in the hope of picking up an error if something has gone wrong.
+
+  # [TODO 071124] The radio buttons could be checkbuttons, and we do
+  # multiple imputations for the selected variables, but for now, stay
+  # with radio buttons as it is simply, without loss of functionality.
+  
+  action <- NULL
+  vprefix <- NULL
+  if (theWidget("normalise_recenter_radiobutton")$getActive())
+  {
+    action <- "recenter"
+    vprefix <- "NORM_RECENTER_"
+  }
+  else if (theWidget("normalise_scale01_radiobutton")$getActive())
+  {
+    action <- "scale01"
+    vprefix <- "NORM_SCALE01_"
+  }
+  else if (theWidget("normalise_rank_radiobutton")$getActive())
+  {
+    action <- "rank"
+    vprefix <- "NORM_RANK_"
+  }
+  else if (theWidget("normalise_medianad_radiobutton")$getActive())
+  {
+    action <- "medianad"
+    vprefix <- "NORM_MEDIANAD_"
+  }
+  
+  # Obtain the list of selected variables from the treeview.
+
+  variables <- NULL
+  selected <- theWidget("impute_treeview")$getSelection()
+  selected$selectedForeach(function(model, path, iter, data)
+  {
+    variables <<- c(variables, model$get(iter, 1)[[1]])
+  }, TRUE)
+
+  # We check here if the action is rescale, and we have any
+  # categorical variables to be normalised. If so put up an info
+  # dialogue and remove the categoricals from the list of variables to
+  # be normalised.
+
+  classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
+  if (action %in% c("recenter", "scale01", "rank", "medianad")
+      && "factor" %in% classes)
+  {
+    infoDialog(sprintf(paste("We can not %s a categorical variable.",
+                             "Ignoring: %s."),
+                       action, paste(variables[which(classes == "factor")], collapse=", ")))
+    variables <- variables[-which(classes == "factor")] # Remove the factors.
+  }
+  
+  # Record the current variable roles so that we can maintain these,
+  # modified appropriately by ignore'ing the imputed variables, and
+  # input'ing the newly imputed variables.
+  
+  input <- getSelectedVariables("input")
+  target <- getSelectedVariables("target")
+  risk <- getSelectedVariables("risk")
+  ident <- getSelectedVariables("ident")
+  ignore <- getSelectedVariables("ignore")
+
+  if (length(variables) > 0) startLog("NORMALISATION")
+
+  for (v in variables)
+  {
+    # Generate the command to copy the current variable into a new
+    # variable, prefixed appropraitely.
+    
+    vname <- paste(vprefix, v, sep="")
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]', vname, v)
+    cl <- class(crs$dataset[[v]])
+
+    # Take a copy of the variable to be imputed.
+    
+    appendLog(sprintf("NORMALISE %s.", v), sub("<<-", "<-", copy.cmd))
+    eval(parse(text=copy.cmd))
+    
+    # Determine what action to perform.
+    
+    if (action == "recenter")
+    {
+      norm.cmd <- sprintf('crs$dataset[["%s"]] <<- scale(crs$dataset[["%s"]])[,1]', vname, v)
+      norm.comment <- "Recenter and rescale the data around 0."
+    }
+    else if (action == "scale01")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+                                'rescaler((crs$dataset[["%s"]]), "scale")'), vname, v)
+      norm.comment <- "Rescale to [0,1]."
+    }
+    else if (action == "rank")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+                                'rescaler((crs$dataset[["%s"]]), "rank")'), vname, v)
+      norm.comment <- "Convert values to ranks."
+    }
+    else if (action == "medianad")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+                                'rescaler((crs$dataset[["%s"]]), "robust")'), vname, v)
+      norm.comment <- "Rescale by subtracting median and dividing by median abs deviation."
+    }
+        
+    appendLog(norm.comment, sub("<<-", "<-", norm.cmd))
+    eval(parse(text=norm.cmd))
+
+    # Now update the variable roles.
+    
+    if (v %in% input)
+    {
+      input <- setdiff(input, v)
+      input <- union(input, vname)
+    }
+    else if (v %in% target)
+    {
+      target <- setdiff(target, v)
+      target <- union(target, vname)
+    }
+    else if (v %in% risk)
+    {
+      risk <- setdiff(risk, v)
+      risk <- union(risk, vname)
+    }
+    else if (v %in% ident)
+    {
+      ident <- setdiff(ident, v)
+      ident <- union(ident, vname)
+    }
+    else
+    {
+      # If the source variable was ignore, then leave it as such, and
+      # put the new variable in as input.
+
+      input <- union(input, vname)
+    }
+    ignore <- union(ignore, v)
+  }
+  
+  if (length(variables) > 0)
+  {
+    
+    # Reset the treeviews.
+
+    theWidget("select_treeview")$getModel()$clear()
+    theWidget("impute_treeview")$getModel()$clear()
+    theWidget("categorical_treeview")$getModel()$clear()
+    theWidget("continuous_treeview")$getModel()$clear()
+
+    # Recreate the treeviews, keeping the roles unchanged except for
+    # those that have been normalised.
+
+    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
+                       input=input, target=target, risk=risk,
+                       ident=ident, ignore=ignore,
+                       resample=FALSE, autoroles=FALSE)
+
+    # Reset the original Data textview to output of new str.
+
+    resetTextview("data_textview")
+    appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+
+    # Update the status bar
+
+    setStatusBar(sprintf(paste("Normalised variables added to the dataset",
+                               "with '%s' prefix."), vprefix))
+  }
+  else
+  {
+    warnDialog(paste("No variables have been selected for normalisation.",
+                     "Please select some variables and Execute again."))
+    setStatusBar("No variables selected to be normalised.")
+  }
+}  
 
 executeTransformImputePerform <- function()
 {
@@ -4782,7 +4927,7 @@ executeExplorePlot <- function(dataset)
 
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
                       'col=rainbow(10))\n',
-                      'dens <- density(ds[ds$grp=="All",1])\n',
+                      'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
                       'rs <- max(hs$counts)/max(dens$y)\n',
                       'lines(dens$x, dens$y*rs, type="l")',
                       sep="")
