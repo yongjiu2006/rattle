@@ -116,7 +116,7 @@ install: build pbuild zip check pcheck
 			dmsurvivor.tex)
 	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
 	mv pmml_$(PVERSION).tar.gz pmml_$(PVERSION).zip $(REPOSITORY)
-	R --no-save < support/repository.R
+	#R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
 

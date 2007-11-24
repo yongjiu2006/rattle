@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-13 21:07:21 Graham Williams>
+# Time-stamp: <2007-11-24 10:50:47 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Nov 2007"
+VERSION.DATE <- "Released 17 Nov 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -162,19 +162,19 @@ rattle <- function(csvname=NULL)
   ## .GlobalEnv because the package scope will be found before the top
   ## level.
   
-########################################################################
-
-  ## PACKAGE GLOBAL CONSTANTS
-
-  ## These are double arrow assigned here to place them in .GlobalEnv. I
-  ## couldn't figure out an easy way to keep them scoped locally.
-  
-  ## Various Treeview Columns
+  ########################################################################
+  # PACKAGE GLOBAL CONSTANTS
+  #
+  # These are double arrow assigned here to place them in
+  # .GlobalEnv. I couldn't figure out an easy way to keep them scoped
+  # locally. TODO Needs cleaning up.
+  #
+  # Various Treeview Columns
 
   .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
 
-  .IMPUTE <<- c(number=0, variable=1, type=2, comment=3)
+  .IMPUTE <<- c(number=0, variable=1, comment=2)
   
   .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
                     dotplot = 3, comment = 4)
@@ -182,11 +182,11 @@ rattle <- function(csvname=NULL)
   .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
-  ## MODELLERS
+  # Create constants naming the MODELLERS (i.e., the model builders)
 
   .GLM   <<- "glm"
   .RPART <<- "rpart"
-  ##GBM <<- "gbm"
+  #GBM <<- "gbm"
   .ADA   <<- "ada"
   .RF    <<- "rf"
   .SVM   <<- "svm"
@@ -195,7 +195,7 @@ rattle <- function(csvname=NULL)
 
   .MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, .GLM, .NNET)
   
-  ## RPART
+  # RPART
   
   .RPART.CP.DEFAULT        <<- 0.010
   .RPART.MINSPLIT.DEFAULT  <<- 20
@@ -299,18 +299,13 @@ rattle <- function(csvname=NULL)
   .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
   .DATA.DATAENTRY.TAB  <<- getNotebookPage(.DATA, "dataentry")
 
+  # Define the TRANSFORM tab pages
+  
   .TRANSFORM               <<- theWidget("transform_notebook")
-#  .TRANSFORM.SAMPLE.TAB    <<- getNotebookPage(.TRANSFORM, "sample")
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
   .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
 
-#  .IMPUTATION              <<- theWidget("impute_notebook")
-#  .IMPUTATION.SUMMARY.TAB  <<- getNotebookPage(.IMPUTATION,
-#                                               "Missing Values Summary")
-#  .IMPUTATION.PERFORM.TAB  <<- getNotebookPage(.IMPUTATION,
-#                                               "Perform Imputation")
-  
   .EXPLORE                 <<- theWidget("explore_notebook")
   .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
   .EXPLORE.PLOT.TAB        <<- getNotebookPage(.EXPLORE, "explot")
@@ -469,14 +464,13 @@ resetRattle <- function()
 
   setTextview("data_textview")
   setTextview("summary_textview")
-#  setTextview("impute_textview")
   setTextview("correlation_textview")
   setTextview("prcomp_textview")
   setTextview("kmeans_textview")
   setTextview("hclust_textview")
   setTextview("rpart_textview")
   setTextview("glm_textview")
-  ##setTextview("gbm_textview")
+  #setTextview("gbm_textview")
   setTextview("ada_textview")
   setTextview("rf_textview")
   setTextview("esvm_textview")
@@ -484,28 +478,18 @@ resetRattle <- function()
   setTextview("confusion_textview")
   setTextview("roc_textview")
 
-  ## Reset some textviews back to standard text.
+  # Reset some textviews back to standard text.
 
-##   setTextview("impute_textview",
-##   gsub("\n", " ",
-##        "Click the Execute Button (or Menu or F5) to obtain a summary of the
-## missing values in the data. In the resulting summary, we will see a
-## matrix with headings corresponding to the variables in the data. The
-## body of the matrix includes 1's and 0's, with a 0 indicating missing
-## values. The rows of the matrix show the missing values for each
-## variable in combination with the other variables."))
-  
-  ## Set all sub tabs back to the default tab page and reflect this in
-  ## the appropriate radio button.
+  # Set all sub tabs back to the default tab page and reflect this in
+  # the appropriate radio button.
 
   .TRANSFORM$setCurrentPage(.TRANSFORM.IMPUTE.TAB)
-  theWidget("impute_radiobutton")$setActive(TRUE)
+  theWidget("impute_zero_radiobutton")$setActive(TRUE)
+  theWidget("impute_constant_entry")$setText("")
   
   .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
-#  .IMPUTATION$setCurrentPage(.IMPUTATION.SUMMARY.TAB)
-  
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
 
@@ -2515,8 +2499,8 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
 
 on_variables_toggle_input_button_clicked <- function(action, window)
 {
-  # Set the input flag for all selected variables, and ensure all
-  # other roles are unchecked.
+  # Set the input flag for all selected variables within the Select
+  # tab, and ensure all other roles for these variables are unchecked.
 
   #ptm <- proc.time()
   set.cursor("watch")
@@ -2773,22 +2757,22 @@ executeSelectSample <- function()
 
 getSelectedVariables <- function(role, named=TRUE)
 {
-  ## DESCRIPTION
-  ## Generate a list of variables marked with the specified role.
-  ##
-  ## ARGUMENTS
-  ## role  = a string naming the role to query on
-  ## named = if TRUE return variable names as strings, if FALSE, numbers
-  ##
-  ## DETAILS The select_treeview, categorical_treeview and
-  ## continuous_treeview are places where a variable can be identified
-  ## as having a given role. Whilst the role of "ignore" is common
-  ## across all three treeviews, only the ignore from the main
-  ## select_treeview is considered. If a role is not found, simply
-  ## return NULL, rather than an error (for no particular reason).
-  ##
-  ## ASSUMPTIONS The variable and number columns are assumed to be the
-  ## same in each of .COLUMNS, .CATEGORICAL, and .CONTINUOUS.
+  # DESCRIPTION
+  # Generate a list of variables marked with the specified role.
+  #
+  # ARGUMENTS
+  # role  = a string naming the role to query on
+  # named = if TRUE return variable names as strings, if FALSE, numbers
+  #
+  # DETAILS The select_treeview, categorical_treeview and
+  # continuous_treeview are places where a variable can be identified
+  # as having a given role. Whilst the role of "ignore" is common
+  # across all three treeviews, only the ignore from the main
+  # select_treeview is considered. If a role is not found, simply
+  # return NULL, rather than an error (for no particular reason).
+  #
+  # ASSUMPTIONS The variable and number columns are assumed to be the
+  # same in each of .COLUMNS, .CATEGORICAL, and .CONTINUOUS.
 
   variables <- NULL
   type <- "logical"
@@ -2811,14 +2795,20 @@ getSelectedVariables <- function(role, named=TRUE)
     rcol  <- .CATEGORICAL[[role]]
   }
 
-  ## The imputation roles use a combobox to select.
+  #else if (role %in% c("impute"))
+  #{
+  #  model <- theWidget("impute_treeview")$getModel()
+  #  rcol <- .IMPUTE[["type"]]
+  #}
   
-  else if (role %in% c("zero", "mean", "median"))
-  {
-    type <- "character"
-    model <- theWidget("impute_treeview")$getModel()
-    rcol  <- .IMPUTE[["type"]]
-  }
+  # The imputation roles use a combobox to select.
+  
+##   else if (role %in% c("zero", "mean", "median"))
+##   {
+##     type <- "character"
+##     model <- theWidget("impute_treeview")$getModel()
+##     rcol  <- .IMPUTE[["type"]]
+##   }
   
   else
     return(variables)
@@ -2832,16 +2822,16 @@ getSelectedVariables <- function(role, named=TRUE)
                     variable <- model$get(iter, vcol)[[1]]
                   else
                     variable <- model$get(iter, ncol)[[1]]
-                  if (type=="character")
-                  {
-                    if (role == "zero" && flag == "Zero/Missing")
-                      variables <<- c(variables, variable)
-                    if (role == "mean" && flag == "Mean")
-                      variables <<- c(variables, variable)
-                    if (role == "median" && flag == "Median")
-                      variables <<- c(variables, variable)
-                  }
-                  else
+#                  if (type=="character")
+#                  {
+#                    if (role == "zero" && flag == "Zero/Missing")
+#                      variables <<- c(variables, variable)
+#                    if (role == "mean" && flag == "Mean")
+#                      variables <<- c(variables, variable)
+#                    if (role == "median" && flag == "Median")
+#                      variables <<- c(variables, variable)
+#                  }
+#                  else
                     if (flag) variables <<- c(variables, variable)
                   return(FALSE) # Keep going through all rows
                 }, TRUE)
@@ -2859,8 +2849,7 @@ initialiseVariableViews <- function()
                            "gboolean", "gboolean", "gboolean", "gboolean",
                            "gboolean", "gchararray")
 
-  impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray",
-                            "gchararray")
+  impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray")
   
   continuous <- gtkListStoreNew("gchararray", "gchararray",
                                 "gboolean", "gboolean",
@@ -3034,36 +3023,36 @@ initialiseVariableViews <- function()
                                         renderer,
                                         active = .COLUMN[["ignore"]]) 
 
-  ## Add the ZERO and MEAN columns to the IMPUTE view.
+##   ## Add the ZERO and MEAN columns to the IMPUTE view.
 
-  options <- gtkListStoreNew("gchararray")
+##   options <- gtkListStoreNew("gchararray")
 
-  ## Add the options.
+##   ## Add the options.
   
-  oiter <- options$append()$iter
-  options$set(oiter, 0, "None")
-  oiter <- options$append()$iter
-  options$set(oiter, 0, "Zero/Missing")
-  oiter <- options$append()$iter
-  options$set(oiter, 0, "Mean")
-  oiter <- options$append()$iter
-  options$set(oiter, 0, "Median")
+##   oiter <- options$append()$iter
+##   options$set(oiter, 0, "None")
+##   oiter <- options$append()$iter
+##   options$set(oiter, 0, "Zero/Missing")
+##   oiter <- options$append()$iter
+##   options$set(oiter, 0, "Mean")
+##   oiter <- options$append()$iter
+##   options$set(oiter, 0, "Median")
 
-  ## Create the renderer.
+##   ## Create the renderer.
 
-  renderer <- gtkCellRendererComboNew()
+##   renderer <- gtkCellRendererComboNew()
 
-  renderer$set(xalign = 0.0)
-  renderer$set(model=options)
-  renderer$set(text_column=0)
-  renderer$set(editable=TRUE)
-  renderer$set(has_entry=FALSE)
-  connectSignal(renderer, "edited", imp_edited, impute)
-  imp.offset <-
-    impview$insertColumnWithAttributes(-1,
-                                       "Imputation",
-                                        renderer,
-                                        text = .IMPUTE[["type"]])
+##   renderer$set(xalign = 0.0)
+##   renderer$set(model=options)
+##   renderer$set(text_column=0)
+##   renderer$set(editable=TRUE)
+##   renderer$set(has_entry=FALSE)
+##   connectSignal(renderer, "edited", imp_edited, impute)
+##   imp.offset <-
+##     impview$insertColumnWithAttributes(-1,
+##                                        "Imputation",
+##                                         renderer,
+##                                         text = .IMPUTE[["type"]])
 
   ## Add the barplot and dotplot.
 
@@ -3374,7 +3363,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                                 missing.count),
                                         ""))
 
-    ## Selected variables go into the other treeviews.
+    # Selected variables go into the other treeviews.
 
     if (missing.count > 0) # Ignore IGNOREd variables. But crs$ignore
                            # is not yet set. Need to remove later.
@@ -3388,7 +3377,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       impute$set(impiter,
                  .IMPUTE["number"], i,
                  .IMPUTE["variable"], variables[i],
-                 .IMPUTE["type"], "None",
+#                 .IMPUTE["type"], "None",
                  .IMPUTE["comment"], sprintf("%s with %d missing.",
                                             cl, missing.count))
     }
@@ -3598,26 +3587,37 @@ on_impute_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-imp_edited <- function(renderer, path.str, text, model)
+#on_impute_none_radiobutton_toggled 
+#on_impute_zero_radiobutton_toggled
+#on_impute_mean_radiobutton_toggled
+#on_impute_median_radiobutton_toggled
+#on_impute_mode_radiobutton_toggled
+
+on_impute_constant_radiobutton_toggled <- function(button)
 {
-  ## An impute variable's imputation option has been changed in the
-  ## TRANSFORM's tab IMPUTE option. Handle the new choice.
-
-  ## The data passed in is the model used in the treeview.
-
-  checkPtrType(model, "GtkTreeModel")
-
-  ## Get the correct pointer.
-  
-  path <- gtkTreePathNewFromString(path.str) # Current row
-  iter <- model$getIter(path)$iter           # Iter for the row
-
-  ## Set the value appropriately.
-
-  column <- .IMPUTE[["type"]]
-  model$set(iter, column, text)
-
+  theWidget("impute_constant_entry")$setSensitive(button$getActive())
 }
+
+## imp_edited <- function(renderer, path.str, text, model)
+## {
+##   ## An impute variable's imputation option has been changed in the
+##   ## TRANSFORM's tab IMPUTE option. Handle the new choice.
+
+##   ## The data passed in is the model used in the treeview.
+
+##   checkPtrType(model, "GtkTreeModel")
+
+##   ## Get the correct pointer.
+  
+##   path <- gtkTreePathNewFromString(path.str) # Current row
+##   iter <- model$getIter(path)$iter           # Iter for the row
+
+##   ## Set the value appropriately.
+
+##   column <- .IMPUTE[["type"]]
+##   model$set(iter, column, text)
+
+## }
 
 ##----------------------------------------------------------------------
 ##
@@ -3626,27 +3626,112 @@ imp_edited <- function(renderer, path.str, text, model)
 
 executeTransformTab <- function()
 {
-  ## Can not do any transforms if there is no dataset.
+  # We can not do any transforms if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
-  ## DISPATCH
+  # Dispatch to the appropriate sub option. Currently [071124] only
+  # Impute is implemented so this is trivial. In fact, currently we
+  # can not even select the other radio buttons, so the test is always
+  # TRUE.
 
   if (theWidget("impute_radiobutton")$getActive())
     executeTransformImputePerform()
 }
 
+modalvalue <- function(x, na.rm=FALSE)
+{
+    x = unlist(x);
+    if(na.rm) x = x[!is.na(x)]
+    u = unique(x);
+    n = length(u);
+    frequencies = rep(0, n);
+    for(i in 1:n)
+    {
+        if(is.na(u[i]))
+        {
+            frequencies[i] = sum(is.na(x))
+        } else
+        {
+            frequencies[i] = sum(x==u[i], na.rm=TRUE)
+        }
+    }
+    u[which.max(frequencies)]
+}
+
 executeTransformImputePerform <- function()
 {
-  zero   <- getSelectedVariables("zero")
-  mean   <- getSelectedVariables("mean")
-  median <- getSelectedVariables("median")
+  # First determine which imputation option has been chosen and the
+  # prefix of the new variable that will be introduced.  Default to
+  # NULL so that if the value is not changed, we may get error (it
+  # should be an error if the value is not changed).
 
-  imputed <- union(zero, union(mean, median))
+  # [TODO 071124] The rdaio buttons could be checkbuttons, and we do
+  # multiple imputations for the selected variables, but for now, stay
+  # with radio buttons as it is simply, without loss of functionality.
   
-  # Record current variable roles so we can maintain these, but modify
-  # by ignore'ing the imputed variables, and input'ing the new
-  # imputes.
+  action <- NULL
+  vprefix <- NULL
+  if (theWidget("impute_zero_radiobutton")$getActive())
+  {
+    action <- "zero"
+    vprefix <- "IMP_ZERO_" # May want to distinguish ZERO and MISSING
+  }
+  else if (theWidget("impute_mean_radiobutton")$getActive())
+  {
+    action <- "mean"
+    vprefix <- "IMP_MEAN_"
+  }
+  else if (theWidget("impute_median_radiobutton")$getActive())
+  {
+    action <- "median"
+    vprefix <- "IMP_MEDIAN_"
+  }
+  else if (theWidget("impute_mode_radiobutton")$getActive())
+  {
+    action <- "mode"
+    vprefix <- "IMP_MODE_"
+  }
+  else if (theWidget("impute_constant_radiobutton")$getActive())
+  {
+    action <- "constant"
+    vprefix <- "IMP_CONSTANT_"
+  }
+  
+  # Obtain the list of selected variables from the treeview.
+
+  imputed <- NULL
+  selected <- theWidget("impute_treeview")$getSelection()
+  selected$selectedForeach(function(model, path, iter, data)
+  {
+    imputed <<- c(imputed, model$get(iter, 1)[[1]])
+  }, TRUE)
+
+  # We check here if the action is mean or median, and we have any
+  # categorical variables to be imputed. If so put up an info dialogue
+  # and remove the cateorigcals from the list of variables to be
+  # imputed.
+
+  classes <- unlist(lapply(imputed, function(x) class(crs$dataset[[x]])))
+  if (action %in% c("mean", "median") && "factor" %in% classes)
+  {
+    infoDialog(sprintf(paste("We can not impute the %s for a categorical variable.",
+                             "Ignoring: %s."),
+                       action, paste(imputed[which(classes == "factor")], collapse=", ")))
+    imputed <- imputed[-which(classes == "factor")] # Remove the factors.
+  }
+  
+  # OLD CODE
+  
+  #zero   <- getSelectedVariables("zero")
+  #mean   <- getSelectedVariables("mean")
+  #median <- getSelectedVariables("median")
+
+  #imputed <- union(zero, union(mean, median))
+  
+  # Record the current variable roles so that we can maintain these,
+  # modified appropriately by ignore'ing the imputed variables, and
+  # input'ing the newly imputed variables.
   
   input <- getSelectedVariables("input")
   target <- getSelectedVariables("target")
@@ -3656,33 +3741,42 @@ executeTransformImputePerform <- function()
 
   if (length(imputed) > 0) startLog("MISSING VALUE IMPUTATION")
 
+  # [TODO 071124] The following code could be tidied up quite a
+  # bit. It has evolved. Bits of the code handling the categoricals
+  # were copied from the numeric parts and vice versa, and they do it
+  # different ways. Should try to do it the same way. Works for now!
+      
   for (z in imputed)
   {
-    ## Take a copy of the variable to be imputed.
+    # Generate the command to copy the current variable into a new
+    # variable, prefixed appropraitely.
     
-    vname <- paste("IMP_", z, sep="")
+    vname <- paste(vprefix, z, sep="")
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
-                        vname, z)
-    appendLog(sprintf("IMPUTE %s.", z),
-             sub("<<-", "<-", copy.cmd))
-    eval(parse(text=copy.cmd))
-             
-    cl <- class(crs$dataset[[vname]])
+                            vname, z)
+    cl <- class(crs$dataset[[z]])
     if (cl == "factor")
     {
-      # Only do Mising for factors for now 071117.
-      if (z %in% zero)
+      # Mean and median are not supported for categoricals!
+
+      if (action == "zero")
       {
-        # If Missing is not currently a category for this variable,
+
+        # Take a copy of the variable to be imputed.
+    
+        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        eval(parse(text=copy.cmd))
+             
+        # If "Missing" is not currently a category for this variable,
         # add it in.
-      
+
         if ("Missing" %notin% levels(crs$dataset[[vname]]))
         {
           levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
                                       'c(levels(crs$dataset[["%s"]]),',
                                       '"Missing")'),
                                 vname, vname)
-          appendLog("Add a new category to the variable",
+          appendLog('Add a new category "Missing" to the variable',
                     sub("<<-", "<-", levels.cmd))
           eval(parse(text=levels.cmd))
         }
@@ -3693,21 +3787,76 @@ executeTransformImputePerform <- function()
                                      'crs$dataset[["%s"]])] <<- "Missing"',
                                      sep=""),
                                vname, z)
-        appendLog("Change all NAs to Missing.", sub("<<-", "<-", missing.cmd))
+        appendLog('Change all NAs to "Missing"', sub("<<-", "<-", missing.cmd))
         eval(parse(text=missing.cmd))
       }
+      else if (action == "mode")
+      {
+        # Take a copy of the variable to be imputed.
+    
+        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        eval(parse(text=copy.cmd))
+             
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- modalvalue(crs$dataset[["%s"]], ',
+                                 "na.rm=TRUE)", sep=""), vname, z, z)
+        appendLog("Change all NAs to the modal value (not advisable).",
+                  sub("<<-", "<-", imp.cmd))
+        eval(parse(text=imp.cmd))
+      }
+      else if (action == "constant")
+      {
+        # Take a copy of the variable to be imputed.
+    
+        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        eval(parse(text=copy.cmd))
+             
+        val <- theWidget("impute_constant_entry")$getText()
+
+        # If val is not currently a category for this variable, add it
+        # in.
+
+        if (val %notin% levels(crs$dataset[[vname]]))
+        {
+          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
+                                      'c(levels(crs$dataset[["%s"]]),',
+                                      sprintf('"%s")', val)),
+                                vname, vname)
+          appendLog(sprintf('Add a new category "%s" to the variable', val), 
+                    sub("<<-", "<-", levels.cmd))
+          eval(parse(text=levels.cmd))
+        }
+
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- "%s"', sep=""), vname, z, val)
+        appendLog(sprintf("Change all NAs to the constant value: %s", val),
+                  sub("<<-", "<-", imp.cmd))
+        eval(parse(text=imp.cmd))
+      }
+      else
+        infoDialog(sprintf(paste("The option to impute the %s for the",
+                                 "categorical variable (%s) is not (yet)",
+                                 "available."), action, z))
     }
     else
     {
-      # determine what action to perform
-      if (z %in% zero)
+      # Take a copy of the variable to be imputed.
+    
+      appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+      eval(parse(text=copy.cmd))
+      
+      # Determine what action to perform.
+
+      if (action == "zero")
       {
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
                                  " <<- 0", sep=""), vname, z)
         imp.comment <- "Change all NAs to 0."
       }
-      else if (z %in% mean)
+      else if (action == "mean")
       {
         # Note that if z is an integer (e.g. audit$Age) then the
         # imputed column will be numeric.
@@ -3718,13 +3867,36 @@ executeTransformImputePerform <- function()
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the mean value (not advisable)."
       }
-      else if (z %in% median)
+      else if (action == "median")
       {
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <<- median(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the median (not advisable)."
+      }
+      else if (action == "mode")
+      {
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- modalvalue(crs$dataset[["%s"]], ',
+                                 "na.rm=TRUE)", sep=""), vname, z, z)
+        imp.comment <- "Change all NAs to the modal value (not advisable)."
+      }
+      else if (action == "constant")
+      {
+        val <- theWidget("impute_constant_entry")$getText()
+        if (is.na(as.numeric(val)))
+        {
+          errorDialog(sprintf(paste('The supplied value of "%s" for the variable "%s"',
+                                    'is not numeric. Please supply a numeric value.'),
+                              val, z))
+          next
+        }
+        imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
+                                 '[is.na(crs$dataset[["%s"]])]',
+                                 ' <<- %s ', sep=""), vname, z, val)
+        imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
       }
         
       appendLog(imp.comment, sub("<<-", "<-", imp.cmd))
@@ -3762,32 +3934,37 @@ executeTransformImputePerform <- function()
   if (length(imputed) > 0)
   {
     
-    ## Reset the treeviews.
+    # Reset the treeviews.
 
     theWidget("select_treeview")$getModel()$clear()
     theWidget("impute_treeview")$getModel()$clear()
     theWidget("categorical_treeview")$getModel()$clear()
     theWidget("continuous_treeview")$getModel()$clear()
 
-    ## Recreate the treeviews, keeping the roles unchanged except for
-    ## those that have been imputed.
+    # Recreate the treeviews, keeping the roles unchanged except for
+    # those that have been imputed.
 
     resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                        input=input, target=target, risk=risk,
                        ident=ident, ignore=ignore,
                        resample=FALSE, autoroles=FALSE)
 
-    ## Reset the original Data textview to output of new str.
+    # Reset the original Data textview to output of new str.
 
     resetTextview("data_textview")
     appendTextview("data_textview", collectOutput("str(crs$dataset)"))
 
-    ## Update the status bar
+    # Update the status bar
 
-    setStatusBar("Imputed variables added to the dataset with 'IMP_' prefix.")
+    setStatusBar(sprintf(paste("Imputed variables added to the dataset",
+                               "with '%s' prefix."), vprefix))
   }
   else
+  {
+    warnDialog(paste("No variables have been selected for imputation.",
+                     "Please select some variables and Execute again."))
     setStatusBar("No variables selected to be imputed.")
+  }
 }  
 
 ########################################################################
@@ -7601,7 +7778,8 @@ on_help_impute_activate <- function(action, window)
   showHelp("Imputation is used to fill in the missing values in the data.
 The Zero/Missing imputation is a very simple method. Any missing numeric data
 is simply assigned 0 and any missing categorical data is put into a new
-category, Missing.")
+category, Missing. Mean, Median and Mode replace missing values with the population
+mean, median, or mode. This is not recommended.")
 }
 
 on_help_summary_activate <- function(action, window)

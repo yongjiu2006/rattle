@@ -9,6 +9,7 @@ export(
        genPlotTitleCmd,
        listTreesAda,
        listRPartRules,
+       modalvalue,
        plotBenfordsLaw,
        plotNetwork,
        plotOptimalLine,
