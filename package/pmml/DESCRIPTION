@@ -2,7 +2,7 @@ Package: pmml
 Type: Package
 Title: Generate PMML for various models
 Version: 1.1.3
-Date: 2007-11-23
+Date: 2007-11-24
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: XML

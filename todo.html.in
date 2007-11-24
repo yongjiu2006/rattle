@@ -7,7 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
-070902 Transform - add "Normalise" to remap a numeric to the 0-1 range.
+071124 Add Cleanup to Transform to delete columns (including Delete Ignored).
 071124 Export of the Select tab should export CSV file.
 071124 Add Transform option to delete columns (and rows - NAs?) from dataset
 070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
