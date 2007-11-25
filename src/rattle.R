@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-24 14:47:59 Graham Williams>
+# Time-stamp: <2007-11-25 12:22:42 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -306,6 +306,7 @@ rattle <- function(csvname=NULL)
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
   .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
+  .TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(.TRANSFORM, "cleanup")
 
   .EXPLORE                 <<- theWidget("explore_notebook")
   .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
@@ -488,6 +489,7 @@ resetRattle <- function()
   theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
   theWidget("impute_constant_entry")$setText("")
+  theWidget("delete_ignored_radiobutton")$setActive(TRUE)
   
   .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
@@ -678,8 +680,8 @@ variablesHaveChanged <- function(action)
       length(crs$ident) != length(getSelectedVariables("ident")) ||
       length(crs$input) != length(getSelectedVariables("input")))
   {
-    errorDialog("You have made changes to the selected variables in the",
-                 "Select tab, but have not Executed the Select tab.",
+    errorDialog("I have detected changes to the selected variables in the",
+                 "Select tab that have not been Executed.",
                  "Please do so before", paste(action, ".", sep=""))
     return(TRUE)
   }
@@ -1741,7 +1743,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                barplot=NULL, dotplot=NULL,
                                resample=TRUE, autoroles=TRUE)
 {
-  ## Update the select treeview with the dataset variables.
+  # Update the SELECT treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
                        mean, boxplot, hisplot, cumplot, benplot, barplot,
@@ -1766,7 +1768,14 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
     executeSelectSample()
   }
 
-  ## Set the risk label appropraitely.
+  # Execute the SELECT tab. Changes have bene made and we need to
+  # ensure the cached role variables are updated, or else we might see
+  # unexpected warnings about changes having been made but not
+  # EXECTUEd. [071125]
+  
+  executeSelectTab()
+
+  # Set the risk label appropriately.
   
   theWidget("evaluate_risk_label")$setText(crs$risk)
 }
@@ -2343,7 +2352,54 @@ editData <- function()
   setStatusBar("The data has been assigned into Rattle.")
 
 }
+
+exportDataTab <- function()
+{
+  # Obtain filename to write the dataaset to.
+  
+  dialog <- gtkFileChooserDialog("Export Dataset", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_updated", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("CSV Files")
+  ff$addPattern("*.csv")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+  
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) != "csv")
+    save.name <- sprintf("%s.csv", save.name)
     
+  if (file.exists(save.name))
+    if (is.null(questionDialog("The data file", save.name,
+                                "already exists. Are you sure you want to overwrite",
+                                "this file?")))
+      return()
+  write.csv(crs$dataset, save.name, row.names=FALSE)
+
+  setStatusBar("The dataset has been exported to", save.name)
+
+  infoDialog("The dataset has been exported to", save.name)
+
+}  
 
 ########################################################################
 ##
@@ -3343,7 +3399,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE))
       else if (substr(cl, 1, 6) == "factor")
         dtype <- sprintf("A categorical variable (%s levels)",
-                         substr(cl, 8, 1000))
+                         length(levels(crs$dataset[[variables[i]]])))
 
       # Generate text for the missing values bit.
 
@@ -3578,6 +3634,15 @@ on_normalise_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+on_cleanup_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) 
+  {
+    .TRANSFORM$setCurrentPage(.TRANSFORM.CLEANUP.TAB)
+  }
+  setStatusBar()
+}
+
 on_impute_constant_radiobutton_toggled <- function(button)
 {
   theWidget("impute_constant_entry")$setSensitive(button$getActive())
@@ -3602,6 +3667,8 @@ executeTransformTab <- function()
     executeTransformNormalisePerform()
   else if (theWidget("impute_radiobutton")$getActive())
     executeTransformImputePerform()
+  else if (theWidget("cleanup_radiobutton")$getActive())
+    executeTransformCleanupPerform()
 }
 
 modalvalue <- function(x, na.rm=FALSE)
@@ -3679,8 +3746,20 @@ executeTransformNormalisePerform <- function()
                              "Ignoring: %s."),
                        action, paste(variables[which(classes == "factor")], collapse=", ")))
     variables <- variables[-which(classes == "factor")] # Remove the factors.
+    if (length(variables) == 0) return()
   }
+
+  # Make sure we have the reshape library from where the rescaler
+  # function comes.
   
+  if (action %in% c("scale01", "rank", "medianad"))
+  {
+    if (! packageIsAvailable("reshape", "normalise data")) return()
+    lib.cmd <- "require(reshape, quietly=TRUE)"
+    appendLog("The reshape package provides the rescaler function.", lib.cmd)
+    eval(parse(text=lib.cmd))
+  }
+
   # Record the current variable roles so that we can maintain these,
   # modified appropriately by ignore'ing the imputed variables, and
   # input'ing the newly imputed variables.
@@ -3717,7 +3796,7 @@ executeTransformNormalisePerform <- function()
     else if (action == "scale01")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
-                                'rescaler((crs$dataset[["%s"]]), "scale")'), vname, v)
+                                'rescaler((crs$dataset[["%s"]]), "range")'), vname, v)
       norm.comment <- "Rescale to [0,1]."
     }
     else if (action == "rank")
@@ -4111,6 +4190,133 @@ executeTransformImputePerform <- function()
     setStatusBar("No variables selected to be imputed.")
   }
 }  
+
+executeTransformCleanupPerform <- function()
+{
+  # First, record the current variable roles so that we can maintain
+  # these, modified appropriately.
+  
+  input <- getSelectedVariables("input")
+  target <- getSelectedVariables("target")
+  risk <- getSelectedVariables("risk")
+  ident <- getSelectedVariables("ident")
+  ignore <- getSelectedVariables("ignore")
+
+  if (theWidget("delete_ignored_radiobutton")$getActive())
+  {
+    if (variablesHaveChanged("deleting the selected ignored variables")) return()
+    to.delete <- getSelectedVariables("ignore")
+  }    
+  else if (theWidget("delete_selected_radiobutton")$getActive())
+  {
+
+    # Obtain the list of selected variables from the treeview.
+
+    to.delete <- NULL
+    selected <- theWidget("impute_treeview")$getSelection()
+    selected$selectedForeach(function(model, path, iter, data)
+    {
+      to.delete <<- c(to.delete, model$get(iter, 1)[[1]])
+    }, TRUE)
+
+    if (length(to.delete) == 0)
+    {
+      infoDialog("Please select some variables to delete first. Then Execute.")
+      return()
+    }
+  }
+  else if (theWidget("delete_navars_radiobutton")$getActive())
+  {
+    # Get a list of all variables. For now (and perhaps always),
+    # ignore the role.
+    
+    to.delete <- names(crs$dataset)
+
+    # Remove from the list any variables that do not have missing
+    # values.
+    
+    for (v in to.delete)
+      if (sum(is.na(crs$dataset[[v]])) == 0)
+        to.delete <- setdiff(to.delete, v)
+  }
+  else if (theWidget("delete_naents_radiobutton")$getActive())
+  {
+    # Here, ignore the variables that have a role of Ignore, so we
+    # only delete entities that have missing values for non-ignored
+    # variables.
+
+    if (is.null(ignore))
+    {
+      cases <- complete.cases(crs$dataset)
+      del.cmd <- "crs$dataset <<- crs$dataset[complete.cases(crs$dataset),]"
+    }
+    else
+    {
+      cases <- complete.cases(crs$dataset[,-getVariableIndicies(ignore)])
+      del.cmd <- sprintf(paste("crs$dataset <<- crs$dataset[complete.cases(",
+                               "crs$dataset[,-%s]),]", sep=""),
+                         simplifyNumberList(getVariableIndicies(ignore)))
+    }
+    
+    if (is.null(questionDialog(sprintf("We are about to delete %d entites from the dataset.",
+                                       sum(!cases)),
+                               "These have missing values for some of the non-Ignore",
+                               "variables.",
+                               "\n\nAre you sure you want to delete these entites?")))
+      return()
+
+    # Perform the deletions.
+  
+    appendLog("Remove rows with missing values", sub("<<-", "<-", del.cmd))
+    eval(parse(text=del.cmd))
+
+  }
+
+  if (!theWidget("delete_naents_radiobutton")$getActive())
+  {
+    
+    if (is.null(questionDialog("We are about to delete the following variables.",
+                               "This will permanently remove them from the memory copy",
+                               "of the data, but will not affect any file system copy.\n\n",
+                               "Delete:",
+                               paste(to.delete, collapse=", "),
+                               "\n\nAre you sure you want to delete these variables?")))
+      return()
+
+    del.cmd <- paste(sprintf('crs$dataset$%s <<- NULL', to.delete), collapse="\n")
+    del.comment <- "Remove specific columns from the dataset."
+
+    # Perform the deletions.
+  
+    appendLog(del.comment, sub("<<-", "<-", del.cmd))
+    eval(parse(text=del.cmd))
+  }
+  
+  # Reset the treeviews.
+
+  theWidget("select_treeview")$getModel()$clear()
+  theWidget("impute_treeview")$getModel()$clear()
+  theWidget("categorical_treeview")$getModel()$clear()
+  theWidget("continuous_treeview")$getModel()$clear()
+
+  # Recreate the treeviews, keeping the roles unchanged except for
+  # those that have been imputed.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
+                     input=input, target=target, risk=risk,
+                     ident=ident, ignore=ignore,
+                     resample=FALSE, autoroles=FALSE)
+  
+  # Reset the original Data textview to output of new str.
+
+  resetTextview("data_textview")
+  appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+
+  # Update the status bar
+
+  setStatusBar("The deletions from the dataset have been copmleted.")
+}
+
 
 ########################################################################
 ##

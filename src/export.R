@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-21 21:51:32 Graham>
+## Time-stamp: <2007-11-24 22:59:58 Graham Williams>
 ##
 ## Implement functionality associated with the Export button and Menu.
 ##
@@ -37,6 +37,10 @@ dispatchExportButton <- function()
   else if (ct == .NOTEBOOK.MODEL.NAME)
   {
     exportModelTab()
+  }
+  else if (ct == .NOTEBOOK.DATA.NAME || ct == .NOTEBOOK.SELECT.NAME)
+  {
+    exportDataTab()
   }
 ##   else if (ct == .NOTEBOOK.EVALUATE.NAME)
 ##   {

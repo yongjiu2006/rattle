@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-10 09:06:41 Graham>
+## Time-stamp: <2007-11-24 22:48:23 Graham Williams>
 ##
 ## Implement LOG functionality.
 ##
@@ -64,7 +64,7 @@ appendLog <- function(start, ..., sep=" ", no.start=FALSE)
 
 exportLogTab <- function()
 {
-  ## Obtain filename to the LOG textview to.
+  # Obtain filename to the LOG textview to.
   
   dialog <- gtkFileChooserDialog("Export Log", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
