@@ -7,7 +7,11 @@
     priorities and especially code.</p>
 
 <pre>
-071124 Transform: turn categorical into indicator variables.
+070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
+
+071125 Use relaimpo  to calculate relative importance of variables:
+       calc.relimp(Adjusted ~ ., audit[,c(2,7,9:10,13)], 
+       type = c("lmg", "last", "first", "betasq", "pratt") )
 070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
 070408 Add numeric annotations to other Explore plots (c.f. boxplot).
 070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
@@ -27,9 +31,6 @@
 070321 For the View textview, keep first row (headers) static as "edit()" does
 070321 Implement own Edit textview to edit dataset, instead of ugly "edit()"
 060703 Kmeans: If a target exists, generate a hot spots display.
-070131 Transform: Add binning code (Daniele Medri)
-070215 Transform: Use "recode" to bin variables.
-060506 Transform: Add log transform.
 070305 Add a "best k" finder using hclust (Daniele Medri)
 060821 Explore->Distributions: Clear = clear all radio buttons
 070317 Keep the cwd info local to Rattle rather than globally changing.
@@ -41,11 +42,8 @@
 070121 Each textview have default explanatory text
 061001 Choice of Kernel for SVMs. 
 070130 Explore->Distr->Cat->Bars: Add mosaic plots (Rohan Baxter)
-070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
-070201 Transform: Use mix for impute - use as.matrix (Daniel Medri)
 070319 Introduce a progress bar for all activities (Tony Nolan)
 070114 Add textmining.R to Rattle
-070215 Transform: Use some Rcmdr transforms
 061227 Eval->Save: All to one file.
 060723 Simplify RF rule sets
 070220 Auto update feature(Tony Nolan)
@@ -60,6 +58,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Sep 30 18:40:23 EST 2007
+Last modified: Sun Nov 25 20:15:31 EST 2007
 <!-- hhmts end -->
   </p>

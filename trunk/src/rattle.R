@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-25 12:22:42 Graham Williams>
+# Time-stamp: <2007-11-26 21:38:04 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Nov 2007"
+VERSION.DATE <- "Released 25 Nov 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -304,7 +304,7 @@ rattle <- function(csvname=NULL)
   .TRANSFORM               <<- theWidget("transform_notebook")
   .TRANSFORM.NORMALISE.TAB <<- getNotebookPage(.TRANSFORM, "normalise")
   .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
-  .TRANSFORM.FACTORISE.TAB <<- getNotebookPage(.TRANSFORM, "factorise")
+  .TRANSFORM.REMAP.TAB     <<- getNotebookPage(.TRANSFORM, "remap")
   .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
   .TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(.TRANSFORM, "cleanup")
 
@@ -489,6 +489,7 @@ resetRattle <- function()
   theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
   theWidget("impute_constant_entry")$setText("")
+  theWidget("remap_quantiles_radiobutton")$setActive(TRUE)
   theWidget("delete_ignored_radiobutton")$setActive(TRUE)
   
   .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
@@ -1780,6 +1781,30 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   theWidget("evaluate_risk_label")$setText(crs$risk)
 }
 
+resetDatasetViews <- function(input, target, risk, ident, ignore)
+{
+  
+  # Reset the treeviews.
+
+  theWidget("select_treeview")$getModel()$clear()
+  theWidget("impute_treeview")$getModel()$clear()
+  theWidget("categorical_treeview")$getModel()$clear()
+  theWidget("continuous_treeview")$getModel()$clear()
+
+  # Recreate the treeviews, setting the roles as provided.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
+                     input=input, target=target, risk=risk,
+                     ident=ident, ignore=ignore,
+                     resample=FALSE, autoroles=FALSE)
+
+  # Reset the original Data textview to output of new str.
+
+  resetTextview("data_textview")
+  appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+}
+
+
 executeDataCSV <- function()
 {
   TV <- "data_textview"
@@ -2362,7 +2387,7 @@ exportDataTab <- function()
                                  "gtk-save", GtkResponseType["accept"])
 
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_updated", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_saved", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("CSV Files")
@@ -3288,78 +3313,89 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     iter <- model$append()$iter
 
     cl <- class(crs$dataset[[variables[i]]])
+    if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
+    {
+      cl <- "factor"
+    }
 
     # First check for special variable names. Want to also do this for
     # TARGET_, eventually
     
     if (autoroles)
     {
-    if (paste("IMP_", variables[i], sep="") %in% variables)
-    {
-      # This works with SAS/EM IMPutations and Rattle's imputations,
-      # which add the IMP_ at the beginning of the name of any imputed
-      # variables.
-      
-      ignore <- c(ignore, variables[i])
-      
-      # Be sure to also remove any other role for the original
-      # variable?
-    }
-    else if (substr(variables[i], 1, 2) == "ID")
-    {
-      ident <- c(ident, variables[i])
-    }
-    else if (substr(variables[i], 1, 6) == "IGNORE")
-    {
-      ignore <- c(ignore, variables[i])
-    }
-    else if (substr(variables[i], 1, 4) == "RISK")
-    {
-      risk <- c(risk, variables[i])
-    }
-    else if (cl == "factor")
-    {
-      lv <- length(levels(crs$dataset[[variables[i]]]))
-      if (lv == nrow(crs$dataset))
+      if (paste("IMP_", variables[i], sep="") %in% variables)
       {
-        cl <- "ident"
+        # This works with SAS/EM IMPutations and Rattle's imputations,
+        # which add the IMP_ at the beginning of the name of any imputed
+        # variables.
+        
+        ignore <- c(ignore, variables[i])
+        
+        # Be sure to also remove any other role for the original
+        # variable?
+      }
+      else if (substr(variables[i], 1, 2) == "ID")
+      {
         ident <- c(ident, variables[i])
       }
-      else if (lv > 1)
-        cl <- paste(cl, lv)
+      else if (substr(variables[i], 1, 6) == "IGNORE")
+      {
+        ignore <- c(ignore, variables[i])
+      }
+      else if (substr(variables[i], 1, 4) == "RISK")
+      {
+        risk <- c(risk, variables[i])
+      }
+      else if ("factor" %in% cl)
+      {
+        lv <- length(levels(crs$dataset[[variables[i]]]))
+        if (lv == nrow(crs$dataset))
+        {
+          cl <- "ident"
+          ident <- c(ident, variables[i])
+        }
+        else if (lv == 1)
+        {
+          cl <- "constant"
+          ignore <- c(ignore, variables[i])
+        }
+      }
       else
       {
-        cl <- "constant"
-        ignore <- c(ignore, variables[i])
+        lv <- length(levels(as.factor(crs$dataset[[variables[i]]])))
+        if ("integer" %in% cl && lv == nrow(crs$dataset))
+        {
+          cl <- "ident"
+          ident <- c(ident, variables[i])
+        }
+        else if (all(is.na(crs$dataset[[variables[i]]])))
+        {
+          cl <- "missing"
+          ignore <- c(ignore, variables[i])
+        }
+        else if (sd(crs$dataset[[variables[i]]], na.rm=TRUE) %in% c(NA, 0))
+        {
+          ## sd is NA if all data items  are NA.
+          cl <- "constant"
+          ignore <- c(ignore, variables[i])
+        }
       }
     }
-    else
+
+    # Always change a "factor" to "factor lvls"
+    
+    if ("factor" %in% cl)
     {
-      lv <- length(levels(as.factor(crs$dataset[[variables[i]]])))
-      if (cl == "integer" & lv == nrow(crs$dataset))
-      {
-        cl <- "ident"
-        ident <- c(ident, variables[i])
-      }
-      else if (all(is.na(crs$dataset[[variables[i]]])))
-      {
-        cl <- "missing"
-        ignore <- c(ignore, variables[i])
-      }
-      else if (sd(crs$dataset[[variables[i]]], na.rm=TRUE) %in% c(NA, 0))
-      {
-        ## sd is NA if all data items  are NA.
-        cl <- "constant"
-        ignore <- c(ignore, variables[i])
-      }
-    }
+      lv <- length(levels(crs$dataset[[variables[i]]]))
+      if (lv > 1)
+        cl <- paste(cl, lv)
     }
     
     input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
 
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
 
-    ## Every variable goes into the VARIABLES treeview.
+    # Every variable goes into the VARIABLES treeview.
     
     model$set(iter,
               .COLUMN["number"], i,
@@ -3596,25 +3632,16 @@ getNumericVariables <- function()
 }
 
 ########################################################################
-##
-## TRANSFORM TAB
-##
+#
+# TRANSFORM TAB
+#
 
-##----------------------------------------------------------------------
-##
-## Interface Actions
-##
+#----------------------------------------------------------------------
+#
+# Interface Actions
+#
 
-## When a radio button is selected, display the appropriate tab
-
-## on_sample_radiobutton_toggled <- function(button)
-## {
-##   if (button$getActive()) 
-##   {
-##     .TRANSFORM$setCurrentPage(.TRANSFORM.SAMPLE.TAB)
-##   }
-##   setStatusBar()
-## }
+# When a radio button is selected, display the appropriate tab
 
 on_impute_radiobutton_toggled <- function(button)
 {
@@ -3634,6 +3661,15 @@ on_normalise_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+on_remap_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) 
+  {
+    .TRANSFORM$setCurrentPage(.TRANSFORM.REMAP.TAB)
+  }
+  setStatusBar()
+}
+
 on_cleanup_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
@@ -3647,7 +3683,6 @@ on_impute_constant_radiobutton_toggled <- function(button)
 {
   theWidget("impute_constant_entry")$setSensitive(button$getActive())
 }
-
 
 #----------------------------------------------------------------------
 #
@@ -3667,6 +3702,8 @@ executeTransformTab <- function()
     executeTransformNormalisePerform()
   else if (theWidget("impute_radiobutton")$getActive())
     executeTransformImputePerform()
+  else if (theWidget("remap_radiobutton")$getActive())
+    executeTransformRemapPerform()
   else if (theWidget("cleanup_radiobutton")$getActive())
     executeTransformCleanupPerform()
 }
@@ -3749,6 +3786,8 @@ executeTransformNormalisePerform <- function()
     if (length(variables) == 0) return()
   }
 
+  startLog("NORMALSIE Variables")
+  
   # Make sure we have the reshape library from where the rescaler
   # function comes.
   
@@ -3783,7 +3822,7 @@ executeTransformNormalisePerform <- function()
 
     # Take a copy of the variable to be imputed.
     
-    appendLog(sprintf("NORMALISE %s.", v), sub("<<-", "<-", copy.cmd))
+    appendLog(sprintf("NORMALISE %s.", v), gsub("<<-", "<-", copy.cmd))
     eval(parse(text=copy.cmd))
     
     # Determine what action to perform.
@@ -3796,23 +3835,26 @@ executeTransformNormalisePerform <- function()
     else if (action == "scale01")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
-                                'rescaler((crs$dataset[["%s"]]), "range")'), vname, v)
+                                'rescaler((crs$dataset[["%s"]]), "range")'),
+                          vname, v)
       norm.comment <- "Rescale to [0,1]."
     }
     else if (action == "rank")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
-                                'rescaler((crs$dataset[["%s"]]), "rank")'), vname, v)
+                                'rescaler((crs$dataset[["%s"]]), "rank")'),
+                          vname, v)
       norm.comment <- "Convert values to ranks."
     }
     else if (action == "medianad")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
-                                'rescaler((crs$dataset[["%s"]]), "robust")'), vname, v)
+                                'rescaler((crs$dataset[["%s"]]), "robust")'),
+                          vname, v)
       norm.comment <- "Rescale by subtracting median and dividing by median abs deviation."
     }
         
-    appendLog(norm.comment, sub("<<-", "<-", norm.cmd))
+    appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
     eval(parse(text=norm.cmd))
 
     # Now update the variable roles.
@@ -3850,25 +3892,11 @@ executeTransformNormalisePerform <- function()
   if (length(variables) > 0)
   {
     
-    # Reset the treeviews.
+    # Reset the dataset views keeping the roles unchanged except for
+    # those that have been normalised, wich have just been added as
+    # inputs, with the originals now ignored.
 
-    theWidget("select_treeview")$getModel()$clear()
-    theWidget("impute_treeview")$getModel()$clear()
-    theWidget("categorical_treeview")$getModel()$clear()
-    theWidget("continuous_treeview")$getModel()$clear()
-
-    # Recreate the treeviews, keeping the roles unchanged except for
-    # those that have been normalised.
-
-    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
-                       input=input, target=target, risk=risk,
-                       ident=ident, ignore=ignore,
-                       resample=FALSE, autoroles=FALSE)
-
-    # Reset the original Data textview to output of new str.
-
-    resetTextview("data_textview")
-    appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+    resetDatasetViews(input, target, risk, ident, ignore)
 
     # Update the status bar
 
@@ -3939,9 +3967,10 @@ executeTransformImputePerform <- function()
   classes <- unlist(lapply(imputed, function(x) class(crs$dataset[[x]])))
   if (action %in% c("mean", "median") && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste("We can not impute the %s for a categorical variable.",
-                             "Ignoring: %s."),
-                       action, paste(imputed[which(classes == "factor")], collapse=", ")))
+    infoDialog(sprintf(paste("We can not impute the %s for a",
+                             "categorical variable. Ignoring: %s."),
+                       action, paste(imputed[which(classes == "factor")],
+                                     collapse=", ")))
     imputed <- imputed[-which(classes == "factor")] # Remove the factors.
   }
   
@@ -3970,6 +3999,7 @@ executeTransformImputePerform <- function()
   # were copied from the numeric parts and vice versa, and they do it
   # different ways. Should try to do it the same way. Works for now!
       
+  startLog("IMPUTE Missing Values")
   for (z in imputed)
   {
     # Generate the command to copy the current variable into a new
@@ -3988,7 +4018,7 @@ executeTransformImputePerform <- function()
 
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
         eval(parse(text=copy.cmd))
              
         # If "Missing" is not currently a category for this variable,
@@ -4001,7 +4031,7 @@ executeTransformImputePerform <- function()
                                       '"Missing")'),
                                 vname, vname)
           appendLog('Add a new category "Missing" to the variable',
-                    sub("<<-", "<-", levels.cmd))
+                    gsub("<<-", "<-", levels.cmd))
           eval(parse(text=levels.cmd))
         }
       
@@ -4011,14 +4041,14 @@ executeTransformImputePerform <- function()
                                      'crs$dataset[["%s"]])] <<- "Missing"',
                                      sep=""),
                                vname, z)
-        appendLog('Change all NAs to "Missing"', sub("<<-", "<-", missing.cmd))
+        appendLog('Change all NAs to "Missing"',gsub("<<-", "<-", missing.cmd))
         eval(parse(text=missing.cmd))
       }
       else if (action == "mode")
       {
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
         eval(parse(text=copy.cmd))
              
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
@@ -4026,14 +4056,14 @@ executeTransformImputePerform <- function()
                                  ' <<- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         appendLog("Change all NAs to the modal value (not advisable).",
-                  sub("<<-", "<-", imp.cmd))
+                  gsub("<<-", "<-", imp.cmd))
         eval(parse(text=imp.cmd))
       }
       else if (action == "constant")
       {
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
         eval(parse(text=copy.cmd))
              
         val <- theWidget("impute_constant_entry")$getText()
@@ -4048,7 +4078,7 @@ executeTransformImputePerform <- function()
                                       sprintf('"%s")', val)),
                                 vname, vname)
           appendLog(sprintf('Add a new category "%s" to the variable', val), 
-                    sub("<<-", "<-", levels.cmd))
+                    gsub("<<-", "<-", levels.cmd))
           eval(parse(text=levels.cmd))
         }
 
@@ -4056,7 +4086,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <<- "%s"', sep=""), vname, z, val)
         appendLog(sprintf("Change all NAs to the constant value: %s", val),
-                  sub("<<-", "<-", imp.cmd))
+                  gsub("<<-", "<-", imp.cmd))
         eval(parse(text=imp.cmd))
       }
       else
@@ -4068,7 +4098,7 @@ executeTransformImputePerform <- function()
     {
       # Take a copy of the variable to be imputed.
     
-      appendLog(sprintf("IMPUTE %s.", z), sub("<<-", "<-", copy.cmd))
+      appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
       eval(parse(text=copy.cmd))
       
       # Determine what action to perform.
@@ -4123,7 +4153,7 @@ executeTransformImputePerform <- function()
         imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
       }
         
-      appendLog(imp.comment, sub("<<-", "<-", imp.cmd))
+      appendLog(imp.comment, gsub("<<-", "<-", imp.cmd))
       eval(parse(text=imp.cmd))
     }
     if (z %in% input)
@@ -4157,26 +4187,11 @@ executeTransformImputePerform <- function()
   
   if (length(imputed) > 0)
   {
-    
-    # Reset the treeviews.
+    # Reset the dataset views keeping the roles unchanged except for
+    # those that have been imputed, wich have just been added as
+    # inputs, with the originals now ignored.
 
-    theWidget("select_treeview")$getModel()$clear()
-    theWidget("impute_treeview")$getModel()$clear()
-    theWidget("categorical_treeview")$getModel()$clear()
-    theWidget("continuous_treeview")$getModel()$clear()
-
-    # Recreate the treeviews, keeping the roles unchanged except for
-    # those that have been imputed.
-
-    resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
-                       input=input, target=target, risk=risk,
-                       ident=ident, ignore=ignore,
-                       resample=FALSE, autoroles=FALSE)
-
-    # Reset the original Data textview to output of new str.
-
-    resetTextview("data_textview")
-    appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+    resetDatasetViews(input, target, risk, ident, ignore)
 
     # Update the status bar
 
@@ -4191,6 +4206,257 @@ executeTransformImputePerform <- function()
   }
 }  
 
+#-----------------------------------------------------------------------
+
+binning <- function (x, bins=4, method=c("quantile", "kmeans"),
+                     labels=NULL, ordered=TRUE)
+{
+  # From Daniele Medri 31 Jan 2007.
+  
+  # Best k for natural breaks
+
+  varkmeans <- function (x, centers, iter.max=10, num.seeds=bins)
+  {
+    if (mode(x) == "numeric")
+    {
+      x <- data.frame(new.x=x)
+    }
+    KM <- kmeans(x=x, centers=centers, iter.max=iter.max)
+    for (i in 1:num.seeds)
+    {
+      newKM <- kmeans(x=x, centers=centers, iter.max=iter.max)
+      if (sum(newKM$withinss) < sum(KM$withinss))
+      {
+        KM <- newKM
+      }
+    }
+    KM$tot.withinss <- sum(KM$withinss)
+    xmean <- apply(x, 2, mean)
+    centers <- rbind(KM$centers, xmean)
+    bss1 <- as.matrix(dist(centers)^2)
+    KM$betweenss <- sum(as.vector(bss1[nrow(bss1), ]) * c(KM$size, 0))
+    return(KM)
+  }
+
+  method <- match.arg(method)
+  if(is.factor(x)) stop("this var is already a factor")
+  if (is.data.frame(x)) stop("is needed an object of class data.frame")
+  if (length(x) < bins) stop("more classes than obs")
+  
+  # Binning
+
+  x <- if (method == "quantile")
+  {
+    breaks <- c(quantile(x, probs = seq(0, 1, 1/bins), na.rm = TRUE, type=8))
+    breaks <- unique(breaks)
+    breaks[1] <- min(x)
+    breaks[length(breaks)] <- max(x)
+    if(length(breaks) >= 2)
+    {
+      cut(x, breaks , include.lowest = TRUE, labels = labels)
+    }
+    else
+    {
+      cat("Warning: var not considered\n")
+      return(NULL)
+    }
+  }
+  else if(method == "kmeans")
+  {
+    xx <- na.omit(x)
+    maxbins <-nlevels(as.factor(xx))
+    if(maxbins < bins)
+    { 
+      bins <-maxbins
+    }
+    breaks <- c(min(xx), tapply(xx, varkmeans(xx, bins)$cluster, max))
+    if (length(unique(breaks)) >= 2)
+    {
+      cut(x, unique(breaks), include.lowest = TRUE, labels = labels)	
+    }
+    else
+    {
+      cat("Warning: var not considered\n")
+      return(NULL)	
+    }
+  }
+  if(ordered == TRUE)
+  {
+    ordered(factor(x))
+  }
+  else
+  {
+    factor(x)
+  }
+}
+
+executeTransformRemapPerform <- function()
+{
+  # Obtain the list of selected variables from the treeview.
+
+  vars <- NULL
+  selected <- theWidget("impute_treeview")$getSelection()
+  selected$selectedForeach(function(model, path, iter, data)
+  {
+    vars <<- c(vars, model$get(iter, 1)[[1]])
+  }, TRUE)
+
+  if (length(vars) == 0)
+  {
+    infoDialog("Please select some variables to remap first. Then Execute.")
+    return()
+  }
+
+  # Record the current variable roles so that we can maintain
+  # these, modified appropriately.
+  
+  input <- getSelectedVariables("input")
+  target <- getSelectedVariables("target")
+  risk <- getSelectedVariables("risk")
+  ident <- getSelectedVariables("ident")
+  ignore <- getSelectedVariables("ignore")
+
+  # Determine the action requested.
+
+  if (theWidget("remap_quantiles_radiobutton")$getActive())
+  {
+    action <- "quantiles"
+    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+    remap.prefix <- sprintf("BIN_QU%d_", num.bins)
+    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+                                   "using quantiles."), num.bins)
+  }
+  else if (theWidget("remap_kmeans_radiobutton")$getActive())
+  {
+    action <- "kmeans"
+    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+    remap.prefix <- sprintf("BIN_KM%d_", num.bins)
+    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+                                   "using kmeans."), num.bins)
+  }
+  else if (theWidget("remap_eqwidth_radiobutton")$getActive())
+  {
+    action <- "eqwidth"
+    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+    remap.prefix <- sprintf("BIN_EW%d_", num.bins)
+    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+                                   "using equal widths."), num.bins)
+  }
+  else if (theWidget("remap_indicator_radiobutton")$getActive())
+  {
+    action <- "indicator"
+    remap.prefix <- "INDI_"
+    remap.comment <- "Turn a factor into indicator variables"
+  }
+  else if (theWidget("remap_log_radiobutton")$getActive())
+  {
+    action <- "log"
+    remap.prefix <- "REMAP_LOG_"
+    remap.comment <- "Log transform."
+  }
+  
+  # Check if the action is one that only works on numeric data, and we
+  # have any categorical variables selected. If so put up an info
+  # dialogue and remove the cateorigcals from the list of variables to
+  # be imputed.
+
+  classes <- unlist(lapply(vars, function(x) class(crs$dataset[[x]])))
+  if (action %in% c("quantiles", "kmeans", "eqwidth", "log")
+      && "factor" %in% classes)
+  {
+    infoDialog(sprintf(paste("We can only handle numeric data for %s.",
+                             "Ignoring: %s."), action,
+                       paste(vars[which(classes == "factor")], collapse=", ")))
+    vars <- vars[-which(classes == "factor")] # Remove the factors.
+  }
+  if (action %in% c("indicator")
+      && ("numeric" %in% classes || "integer" %in% classes))
+  {
+    infoDialog(sprintf(paste("We can only handle non numeric data for %s.",
+                             "Ignoring: %s."), action,
+                       paste(vars[which(classes == "numeric" ||
+                                        classes == "integer")],
+                             collapse=", ")))
+    vars <- vars[-which(classes == "numeric" || classes == "integer")]
+  }
+
+  # If, as a result of removing variables from consideration we end up
+  # with no variables left, silenty exit as we have already popped up
+  # a meassage about removing the categorical variables.
+  
+  if (length(vars) == 0) return()
+
+  # Now that we know which variables we are remapping, we can specify
+  # the actions.
+  
+  if (action == "quantiles")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- binning(crs$',
+                                     'dataset[["%s"]], %d, method="quantile")',
+                                     sep=""),
+                               remap.prefix, vars, vars, num.bins),
+                       collapse="\n")
+  }
+  else if (action == "kmeans")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- binning(crs$',
+                                     'dataset[["%s"]], %d, method="kmeans")',
+                                     sep=""),
+                               remap.prefix, vars, vars, num.bins),
+                       collapse="\n")
+  }
+  else if (action == "eqwidth")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- cut(crs$',
+                                     'dataset[["%s"]], %d)',
+                                     sep=""),
+                               remap.prefix, vars, vars, num.bins),
+                       collapse="\n")
+  }
+  else if (action == "indicator")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[, paste("%s%s_", levels(',
+                                     'crs$dataset[["%s"]]), sep="")] ',
+                                     '<<- diag(nlevels(',
+                                     'crs$dataset[["%s"]]))[crs$dataset',
+                                     '[["%s"]],]',
+                                     sep=""),
+                               remap.prefix, vars, vars, vars, vars),
+                       collapse="\n")
+  }
+  else if (action == "log")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- log(crs$',
+                                     'dataset[["%s"]])', sep=""),
+                               remap.prefix, vars, vars),
+                       collapse="\n")
+  }
+  
+  # Perform the remapping.
+
+  startLog("REMAP Variables")
+  appendLog(remap.comment, gsub("<<-", "<-", remap.cmd))
+  eval(parse(text=remap.cmd))
+
+  # Record the new variables as having an INPUT role. No other changes
+  # as the original variables are probably still required for
+  # modelling.
+  
+  input <- union(input, paste(remap.prefix, vars, sep=""))
+
+  # Reset the dataset views keeping the roles unchanged except for
+  # those that have been created, wich have just been added as inputs.
+
+  resetDatasetViews(input, target, risk, ident, ignore)
+  
+  # Update the status bar
+  
+  setStatusBar(sprintf(paste("Remapped variables added to the dataset",
+                             "with '%s' prefix."), remap.prefix))
+}
+
+#-----------------------------------------------------------------------
+
 executeTransformCleanupPerform <- function()
 {
   # First, record the current variable roles so that we can maintain
@@ -4201,6 +4467,8 @@ executeTransformCleanupPerform <- function()
   risk <- getSelectedVariables("risk")
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
+
+  startLog("CLEANUP the Dataset")
 
   if (theWidget("delete_ignored_radiobutton")$getActive())
   {
@@ -4258,16 +4526,17 @@ executeTransformCleanupPerform <- function()
                          simplifyNumberList(getVariableIndicies(ignore)))
     }
     
-    if (is.null(questionDialog(sprintf("We are about to delete %d entites from the dataset.",
+    if (is.null(questionDialog(sprintf(paste("We are about to delete %d",
+                                             "entites from the dataset."),
                                        sum(!cases)),
-                               "These have missing values for some of the non-Ignore",
-                               "variables.",
-                               "\n\nAre you sure you want to delete these entites?")))
+                               "These have missing values for some of the",
+                               "non-Ignore variables.\n\nAre you sure you",
+                               "want to delete these entites?")))
       return()
 
     # Perform the deletions.
   
-    appendLog("Remove rows with missing values", sub("<<-", "<-", del.cmd))
+    appendLog("Remove rows with missing values", gsub("<<-", "<-", del.cmd))
     eval(parse(text=del.cmd))
 
   }
@@ -4288,29 +4557,14 @@ executeTransformCleanupPerform <- function()
 
     # Perform the deletions.
   
-    appendLog(del.comment, sub("<<-", "<-", del.cmd))
+    appendLog(del.comment, gsub("<<-", "<-", del.cmd))
     eval(parse(text=del.cmd))
   }
   
-  # Reset the treeviews.
+  # Reset the dataset views keeping the roles unchanged except for
+  # those that have been delete.
 
-  theWidget("select_treeview")$getModel()$clear()
-  theWidget("impute_treeview")$getModel()$clear()
-  theWidget("categorical_treeview")$getModel()$clear()
-  theWidget("continuous_treeview")$getModel()$clear()
-
-  # Recreate the treeviews, keeping the roles unchanged except for
-  # those that have been imputed.
-
-  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
-                     input=input, target=target, risk=risk,
-                     ident=ident, ignore=ignore,
-                     resample=FALSE, autoroles=FALSE)
-  
-  # Reset the original Data textview to output of new str.
-
-  resetTextview("data_textview")
-  appendTextview("data_textview", collectOutput("str(crs$dataset)"))
+  resetDatasetViews(input, target, risk, ident, ignore)
 
   # Update the status bar
 
