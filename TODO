@@ -146,17 +146,6 @@ output <- amelia(data=ds[,c(1,2,7,9,10,12,13)], m=1)
 OLD
 
 Implement Marco's Transform/Cut/Factorise code?
-Export on the Data Tab should save to a CSV file.
-
-
-
-
-Move these to issue tracking in Google Code
-
-Version 2.1
-
-  Explore Tab Distribution:
-    Continuous  -> Histograms with target classes shown
 
 Version 2.2
 
@@ -279,7 +268,6 @@ For each textview, add initial text to explain the point (c.f. prcomp)
 ##   EVALUATE: Add grids to all plots
 ##   INIT: Make filename the first active widget. TAB then to Execute.
 ##   MODEL: Multiple models then optimise with best?
-##   VARIABLES: Implement binning to bin wine$Type
 ##   Help -> Search ... brings up a text entry box
 ##   Help -> Function ... brings up a text entry box
 ##   DATA: In the file chooser replace Open with Select?

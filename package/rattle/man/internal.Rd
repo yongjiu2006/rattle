@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{on_cleanup_radiobutton_toggled}
+\alias{on_impute_constant_radiobutton_toggled}
+\alias{on_normalise_radiobutton_toggled}
 \alias{on_rpart_best_radiobutton_toggled}
 \alias{on_rpart_build_radiobutton_toggled}
 \alias{on_rpart_tune_radiobutton_toggled}

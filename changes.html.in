@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+205 071126 Add binning (Daniele Medri), log, indicators to Transform->Remap.
 204 071125 Implement Transform->Cleanup to delete variables from the dataset.
            Export dataset from Data/Select tab. Depend on reshape. 
 203 071124 Transform->Normalise implemented: scale, normalise, rank. (Ed Cox)
