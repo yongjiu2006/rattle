@@ -1,25 +1,34 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2007-03-17 13:27:16 Graham>
-##
-## Textview widget support
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
-##
-## TODO
-##
-##	We are in the middle of migrating from using a string to
-##	identify the widget, and assuming theWidget will get the
-##	actual widget (which only works for the main rattleGUI window)
-##	to passing the actual widget itself, which is much more
-##	general. For now, allow both, through the use of getTextview.
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2007-11-28 05:00:15 Graham Williams>
+#
+# Textview widget support
+#
+# Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+#
+# TODO
+#
+#	We are in the middle of migrating from using a string to
+#	identify the widget, and assuming theWidget will get the
+#	actual widget (which only works for the main rattleGUI window)
+#	to passing the actual widget itself, which is much more
+#	general. For now, allow both, through the use of getTextview.
+#
+#       [071128] New version of R (since about 6.2.0) have a default
+#       value for useFancyFonts that does not work with textviews in
+#       RGtk2 (and probably other things in RGtk2). This affect only
+#       MSWindows. A quick fix is to wrap textvie displays with:
+#
+#         oldopt <- options(useFancyQuotes="utf8")
+#         ...
+#         options(oldopt)
 
 getTextview <- function(tv)
 {
-  ## From either a string or the actual object, return the textview
-  ## object. This is usful internally in this file whilst we migrate
-  ## to not using the string to name the textview, but passing the
-  ## object itself.
+  # From either a string or the actual object, return the textview
+  # object. This is usful internally in this file whilst we migrate
+  # to not using the string to name the textview, but passing the
+  # object itself.
   
   wid <- FALSE
   if (inherits(tv, "GtkTextView"))
@@ -31,15 +40,15 @@ getTextview <- function(tv)
 
 resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
 {
-  ## We call this if we simply want to blank the textview, and
-  ## optionally, add new text to the textview. We use a default
-  ## separator of nothing, rather than a single space, since this
-  ## suits the usual list of strings being passed into the textview,
-  ## where I have a string introducing what follows, then there is the
-  ## output of some command. By default we also add a Rattle separator
-  ## line, as the usual usage of resetTexview will be to clear the
-  ## textview and add a message, in one go. There are times when we
-  ## don't want the separator though.
+  # We call this if we simply want to blank the textview, and
+  # optionally, add new text to the textview. We use a default
+  # separator of nothing, rather than a single space, since this
+  # suits the usual list of strings being passed into the textview,
+  # where I have a string introducing what follows, then there is the
+  # output of some command. By default we also add a Rattle separator
+  # line, as the usual usage of resetTexview will be to clear the
+  # textview and add a message, in one go. There are times when we
+  # don't want the separator though.
   
   if (is.null(wid <- getTextview(tv)))
   {
@@ -64,9 +73,9 @@ resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
 
 appendTextview <- function(tv, ..., sep="", tvsep=TRUE)
 {
-  ## Append a message to the given textview. Optionally add a Rattle
-  ## separator to the textview. By default, paste the strings of the
-  ## message together without a speartor.
+  # Append a message to the given textview. Optionally add a Rattle
+  # separator to the textview. By default, paste the strings of the
+  # message together without a speartor.
   
   if (is.null(wid <- getTextview(tv)))
   {
@@ -93,8 +102,8 @@ textviewSeparator <- function()
 
 getTextviewContent <- function(TV)
 {
-  ## Extract text contents of specified textview and return
-  ## it. Designed for use in saveProject.
+  # Extract text contents of specified textview and return
+  # it. Designed for use in saveProject.
   
   log.buf <- theWidget(TV)$getBuffer()
   start <- log.buf$getStartIter()$iter
@@ -102,11 +111,11 @@ getTextviewContent <- function(TV)
   return(log.buf$getText(start, end))
 }
 
-## STOP USING THE FOLLOWING
+# STOP USING THE FOLLOWING
 
 setTextview <- function(tv, ..., sep="")
 {
-  ## Stop using this - use resetTextview instead
+  # Stop using this - use resetTextview instead
 
   if (is.null(wid <- getTextview(tv)))
   {
@@ -117,9 +126,11 @@ setTextview <- function(tv, ..., sep="")
                 "Please report this to Graham.Williams@togaware.com")
     return(FALSE)
   }
+  oldopt <- options(useFancyQuotes="utf8") # Bug fix for MSWindows [071128]
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0) msg <-""
   wid$getBuffer()$setText(msg)
+  options(oldopt) # Bug fix for MSWindows [071128]
 }
 
 addTextview <- function(tv, ..., sep="")
@@ -142,8 +153,8 @@ addTextview <- function(tv, ..., sep="")
   
 setTextviewContents <- function(TV, text)
 {
-  ## Set the text contents of the specified textview to the supplied
-  ## text. Designed for use in loadProject.
+  # Set the text contents of the specified textview to the supplied
+  # text. Designed for use in loadProject.
 
   resetTextview(TV)
   theWidget(TV)$setWrapMode("none")
