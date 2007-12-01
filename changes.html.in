@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+208 071201 Transform Remap join categoricals for stratification.
 207 071201 Benford: Add "digit/+/-" options (Eugene Dubossarsky)
 206 071128 Bug fix: MSWindows useFancyQuotes=TRUE fails in textview (RGtk2)
 205 071126 Add binning (Daniele Medri), log, indicators to Transform->Remap.
