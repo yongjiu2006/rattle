@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-28 05:00:15 Graham Williams>
+# Time-stamp: <2007-11-28 05:02:20 Graham Williams>
 #
 # Textview widget support
 #
@@ -17,11 +17,13 @@
 #       [071128] New version of R (since about 6.2.0) have a default
 #       value for useFancyFonts that does not work with textviews in
 #       RGtk2 (and probably other things in RGtk2). This affect only
-#       MSWindows. A quick fix is to wrap textvie displays with:
+#       MSWindows. A quick fix, which has been done for setTextview,
+#       but not the rest yet, is to wrap textview displays with:
 #
 #         oldopt <- options(useFancyQuotes="utf8")
 #         ...
 #         options(oldopt)
+#
 
 getTextview <- function(tv)
 {

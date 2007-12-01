@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-26 21:38:04 Graham Williams>
+# Time-stamp: <2007-12-01 11:38:44 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Nov 2007"
+VERSION.DATE <- "Released 28 Nov 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -552,6 +552,9 @@ resetRattle <- function()
   theWidget("explot_target_label")$setText("No target selected")
   theWidget("explot_annotate_checkbutton")$setActive(FALSE)
   theWidget("summary_find_entry")$setText("")
+  theWidget("benford_bars_checkbutton")$setActive(FALSE)
+  theWidget("benford_abs_radiobutton")$setActive(TRUE)
+  theWidget("benford_digits_spinbutton")$setValue(1)
 
   theWidget("glm_target_label")$setText("No target selected")
   theWidget("rpart_target_label")$setText("No target selected")
@@ -4621,16 +4624,32 @@ on_explot_radiobutton_toggled <- function(button)
 {
   separator <- theWidget("explore_vseparator")
   barbutton <- theWidget("benford_bars_checkbutton")
+  absbutton <- theWidget("benford_abs_radiobutton")
+  posbutton <- theWidget("benford_pos_radiobutton")
+  negbutton <- theWidget("benford_neg_radiobutton")
+  diglabel <- theWidget("benford_digits_label")
+  digspin <- theWidget("benford_digits_spinbutton")
+
   if (button$getActive()) 
   {
     .EXPLORE$setCurrentPage(.EXPLORE.PLOT.TAB)
     separator$show()
     barbutton$show()
+    absbutton$show()
+    posbutton$show()
+    negbutton$show()
+    diglabel$show()
+    digspin$show()
   }
   else
   {
     separator$hide()
     barbutton$hide()
+    absbutton$hide()
+    posbutton$hide()
+    negbutton$hide()
+    diglabel$hide()
+    digspin$hide()
   }
   setStatusBar()
 }
@@ -5097,21 +5116,63 @@ getVariableIndicies <- function(variables)
   return(indicies)
 }
 
-calcInitialDigitDistr <- function(l)
+calcInitialDigitDistr <- function(l, digit=1,
+                                  split=c("none", "positive", "negative"))
 {
-  ## From a list of numbers return a vector of first digit frequencies.
-  
-  ds <- data.frame(digit=as.numeric(gsub("(.).*", "\\1",
-                     as.character(abs(l)))),
-                   value=1)
-  ## Ignore any zeros
-  
-  ds <- ds[ds$digit!=0,]
 
-  ## Add in any mising digits as value=0
+  # From a list of numbers return a vector of first digit
+  # frequencies. If DIGIT is given, then return the distribution for
+  # that digit, rather than the default first digit. The default SPLIT
+  # is none, meaning that both positive and negative numbers are
+  # considered (ignoring the sign). Otherwise we return the
+  # distribution for either only the positive numbers in the list or
+  # for only the negative numbers in the list.
+
+  if (split == "positive")
+    l <- l[l>0]
+  else if (split == "negative")
+    l <- l[l<0]
+
+  # Ignore all zeros.
+
+  l <- l[l!=0]
   
-  missing <- setdiff(1:9, unique(ds[,1]))
-  if (length(missing) >0)
+  # If we don't have any numbers in the distrbution, return a list of
+  # zeros.
+  
+  if (length(l) == 0)
+  {
+    if (digit == 1)
+    {
+      result <- rep(0, 9)
+      names(result) <- 1:9
+    }
+    else
+    {
+      result <- rep(0, 10)
+      names(result) <- 0:9
+    }
+    return(result)
+  }
+
+  # Note that we remove decimal points (i.e., the decimal dot itself,
+  # not any digits) from real numbers.
+  
+  ds <- data.frame(digit=as.numeric(substr(gsub("\\.", "",
+                     as.character(abs(l))), digit, digit)),
+                   value=1)
+#[071201  ds <- data.frame(digit=as.numeric(gsub("(.).*", "\\1",
+#                     as.character(abs(l)))),
+#                   value=1)
+  
+  # Ignore any zeros
+  
+  if (digit == 1) ds <- ds[ds$digit!=0,]
+
+  # Add in any mising digits as value=0
+  
+  missing <- setdiff(ifelse(digit>1,0,1):9, unique(ds[,1]))
+  if (length(missing) > 0)
     ds <- rbind(ds, data.frame(digit=missing, value=0))
   dsb <- by(ds, as.factor(ds$digit), function(x) sum(x$value))
   return(as.matrix(dsb)[,1]/sum(as.matrix(dsb)[,1]))
@@ -5505,29 +5566,59 @@ executeExplorePlot <- function(dataset)
     ## Plot Benford's Law for numeric data.
 
     barbutton <- theWidget("benford_bars_checkbutton")$getActive()
+    absbutton <- theWidget("benford_abs_radiobutton")$getActive()
+    posbutton <- theWidget("benford_pos_radiobutton")$getActive()
+    negbutton <- theWidget("benford_neg_radiobutton")$getActive()
+    digspin <- theWidget("benford_digits_spinbutton")$getValue()
+
+    benopts <- sprintf(', split="%s", digit=%d',
+                       ifelse(absbutton, "none",
+                              ifelse(posbutton, "positive", "negative")),
+                       digspin)
     
     ## Using barplot2 from gplots
     
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
     ## Calculate the expected distribution according to Benford's Law
-    
-    expect.cmd <- paste('unlist(lapply(1:9, function(x) log10(1 + 1/x)))')
+
+    if (digspin == 1)
+      expect.cmd <- paste('unlist(lapply(1:9, function(x) log10(1 + 1/x)))')
+    # see http://www.mathpages.com/home/kmath302/kmath302.htm
+    else if (digspin > 1) 
+      expect.cmd <- sprintf(paste('unlist(lapply(0:9, function(x) {sum(log10',
+                                  '(1 + 1/(10*(seq(10^(%d-2), ',
+                                  '(10^(%d-1))-1)) + x)))}))'),
+                            digspin, digspin)
 
     ## Construct the command to plot the distribution.
 
     if (barbutton)
     {
       plot.cmd <- paste('barplot2(ds, beside=TRUE,',
-                       'xlab="Initial Digit", ylab="Probability")')
+                       'xlab="Dsitribution of the ',
+                        paste(digspin, c("st", "nd",
+                                         "rd", "th")[min(4, digspin)],
+                              sep = ""),
+                        'Digit", ylab="Probability")')
     }
     else
     {
-      plot.cmd <- paste('plot(1:9, ds[1,], type="b", pch=19, col=rainbow(1), ',
+      plot.cmd <- paste('plot(', ifelse(digspin==1, "1", "0"),
+                        ':9, ds[1,], type="b", pch=19, col=rainbow(1), ',
                        'ylim=c(0,max(ds)), axes=FALSE, ',
-                       'xlab="Initial Digit", ylab="Probability")\n',
-                       'axis(1, at=1:9)\n', 'axis(2)\n',
-                       sprintf('points(1:9, ds[2,], col=%s, pch=19, type="b")\n',
+                       'xlab="Distribtuion of the ',
+                        paste(digspin, c("st", "nd",
+                                         "rd", "th")[min(4, digspin)],
+                              sep = ""),
+                        ' Digit',
+                        '", ylab="Probability")\n',
+                        'axis(1, at=',
+                        ifelse(digspin==1, "1", "0"),
+                        ':9)\n', 'axis(2)\n',
+                       sprintf(paste('points(%d:9, ds[2,],',
+                                     'col=%s, pch=19, type="b")\n'),
+                               ifelse(digspin==1, 1, 0),
                                ifelse(is.null(target), "rainbow(2)[2]",
                                       sprintf("rainbow(%d)[2]",
                                               length(targets)+2))),
@@ -5535,9 +5626,9 @@ executeExplorePlot <- function(dataset)
       if (not.null(targets))
         for (i in 1:length(targets))
         {
-          plot.cmd <- sprintf(paste('%s\npoints(1:9, ds[%d,],',
+          plot.cmd <- sprintf(paste('%s\npoints(%d:9, ds[%d,],',
                                    'col=%s, pch=%d, type="b")'),
-                             plot.cmd, i+2,
+                             plot.cmd, ifelse(digspin==1, 1, 0), i+2,
                              sprintf("rainbow(%d)[%d]",
                                      length(targets)+2, i+2),
                              19)
@@ -5578,8 +5669,8 @@ executeExplorePlot <- function(dataset)
                            sep="")
           data.cmd <- paste(data.cmd, ",\n     ",
                            sprintf(paste('"%s"=calcInitialDigitDistr',
-                                         '(ds[ds$grp=="%s", 1])', sep=""),
-                                   benplots[s], benplots[s]),
+                                         '(ds[ds$grp=="%s", 1]%s)', sep=""),
+                                   benplots[s], benplots[s], benopts),
                            sep="")
           plot.cmd <- paste(plot.cmd,
                            sprintf(paste('points(1:9, ds[%d,],',
@@ -5588,16 +5679,18 @@ executeExplorePlot <- function(dataset)
                                                 nbenplots+1, s+1)),
                            sep="")
         }
-        new.bind.cmd <- paste(substr(new.bind.cmd, 1, nchar(new.bind.cmd)-7), ")",
+        new.bind.cmd <- paste(substr(new.bind.cmd, 1,
+                                     nchar(new.bind.cmd)-7), ")",
                             sep="")
         data.cmd <- paste(data.cmd, ")))", sep="")
 
-        legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
+        legend.cmd <- sprintf(paste('legend("%s", c(%s), ',
                                    'fill=rainbow(%d), title="%s")'),
-                             paste(sprintf('"%s"',
-                                           c("Benford", benplots)),
-                                   collapse=","),
-                             nbenplots+1, "Variables")
+                              ifelse(digspin>2, "botright", "topright"),
+                              paste(sprintf('"%s"',
+                                            c("Benford", benplots)),
+                                    collapse=","),
+                              nbenplots+1, "Variables")
 
         appendLog("Generate the required data.",
                  paste("ds <-", new.bind.cmd))
@@ -5629,21 +5722,24 @@ executeExplorePlot <- function(dataset)
       }
       else
       {
-        # Plot multiple graphs.
+        # Plot multiple graphs since we have a target, and will split
+        # each graph according to the targeet values.
         
         for (s in 1:nbenplots)
         {
           startLog()
 
           data.cmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
-                           'All=calcInitialDigitDistr(ds[ds$grp=="All", 1])')
+                           'All=calcInitialDigitDistr(ds[ds$grp=="All", 1]',
+                            benopts, ')')
         
           if (not.null(targets))
             for (t in 1:length(targets))
               data.cmd <- paste(data.cmd, ",\n     ",
                                sprintf('"%s"=', targets[t]),
                                'calcInitialDigitDistr(ds[ds$grp==',
-                               sprintf('"%s", ', targets[t]), '1])',
+                               sprintf('"%s", ', targets[t]), '1]',
+                                benopts, ')',
                                sep="")
           data.cmd <- paste(data.cmd, ")))", sep="")
 
@@ -5656,8 +5752,10 @@ executeExplorePlot <- function(dataset)
                                          collapse=","),
                                    length(targets)+2, target)
             else
-              legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
+              legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05,',
                                          'fill=rainbow(%d), title="%s")'),
+                                    ifelse(digspin>2, "bottomright",
+                                           "topright"),
                                    paste(sprintf('"%s"',
                                                  c("Benford", "All", targets)),
                                          collapse=","),
@@ -5701,11 +5799,16 @@ executeExplorePlot <- function(dataset)
           eval(parse(text=legend.cmd))
           
           if (sampling)
-            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s (sample)",
-                                                 benplots[s]))
+            title.cmd <- genPlotTitleCmd(sprintf(paste("Benford's Law:",
+                                                       "%s (sample)%s"),
+                                                 benplots[s],
+                ifelse(posbutton, " (positive values)",
+                       ifelse(negbutton, " (negative values)", ""))))
           else
-            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s",
-                                                 benplots[s]))
+            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s%s",
+                                                 benplots[s],
+                ifelse(posbutton, " (positive values)",
+                       ifelse(negbutton, " (negative values)", ""))))
           appendLog("Add a title to the plot.", title.cmd)
           eval(parse(text=title.cmd))
         }
