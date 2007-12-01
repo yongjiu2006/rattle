@@ -10,7 +10,7 @@ survey <- read.csv("survey.data", header=F, strip.white=TRUE,
                    na.strings="?",
                    col.names=c("Age", "Workclass", "fnlwgt", 
                      "Education", "Education.Num", "Marital.Status", 
-                     "Occupation", "Relationship", "Race", "Sex", 
+                     "Occupation", "Relationship", "Race", "Gender", 
                      "Capital.Gain", "Capital.Loss", 
                      "Hours.Per.Week", "Native.Country", 
                      "Salary.Group"))

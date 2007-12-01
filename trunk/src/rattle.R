@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-01 11:38:44 Graham Williams>
+# Time-stamp: <2007-12-01 15:18:08 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Nov 2007"
+VERSION.DATE <- "Released 01 Dec 2007"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -3427,23 +3427,23 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("An integer variable (min=%d, max=%d, mean=%d)",
+        dtype <- sprintf("Integer [%d to %d; mean=%d]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          as.integer(mean(crs$dataset[[variables[i]]], na.rm=TRUE)))
       else if (cl == "numeric")
-        dtype <- sprintf("An integer variable (min=%.2f, max=%.2f, mean=%.2f)",
+        dtype <- sprintf("Numeric [%.2f to %.2f; mean=%.2f]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE))
       else if (substr(cl, 1, 6) == "factor")
-        dtype <- sprintf("A categorical variable (%s levels)",
+        dtype <- sprintf("Categorical [%s levels]",
                          length(levels(crs$dataset[[variables[i]]])))
 
       # Generate text for the missing values bit.
 
       if (missing.count > 0)
-        mtext <- sprintf(" with %d missing values", missing.count)
+        mtext <- sprintf(" %d missing values", missing.count)
       else
         mtext <- ""
       
@@ -4351,6 +4351,12 @@ executeTransformRemapPerform <- function()
     remap.prefix <- "INDI_"
     remap.comment <- "Turn a factor into indicator variables"
   }
+  else if (theWidget("remap_joincat_radiobutton")$getActive())
+  {
+    action <- "joincat"
+    remap.prefix <- "JOIN_"
+    remap.comment <- "Turn two factors into one factor"
+  }
   else if (theWidget("remap_log_radiobutton")$getActive())
   {
     action <- "log"
@@ -4372,7 +4378,7 @@ executeTransformRemapPerform <- function()
                        paste(vars[which(classes == "factor")], collapse=", ")))
     vars <- vars[-which(classes == "factor")] # Remove the factors.
   }
-  if (action %in% c("indicator")
+  if (action %in% c("indicator", "joincat")
       && ("numeric" %in% classes || "integer" %in% classes))
   {
     infoDialog(sprintf(paste("We can only handle non numeric data for %s.",
@@ -4427,6 +4433,22 @@ executeTransformRemapPerform <- function()
                                remap.prefix, vars, vars, vars, vars),
                        collapse="\n")
   }
+  else if (action == "joincat")
+  {
+    if (length(vars) != 2)
+    {
+      infoDialog("We only join two categoricals at a time.",
+                 "Please select just two.")
+      return()
+    }
+      
+    remap.cmd <- sprintf(paste('crs$dataset[, "%s%s_%s"] <<- ',
+                               'as.factor(paste(crs$dataset[["%s"]], "_",',
+                               'crs$dataset[["%s"]], sep=""))',
+                               sep=""),
+                         remap.prefix, vars[1], vars[2],
+                         vars[1], vars[2])
+  }
   else if (action == "log")
   {
     remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- log(crs$',
@@ -4445,7 +4467,10 @@ executeTransformRemapPerform <- function()
   # as the original variables are probably still required for
   # modelling.
   
-  input <- union(input, paste(remap.prefix, vars, sep=""))
+  if (action == "joincat")
+    input <- union(input, paste(remap.prefix, vars[1], "_", vars[2], sep=""))
+  else
+    input <- union(input, paste(remap.prefix, vars, sep=""))
 
   # Reset the dataset views keeping the roles unchanged except for
   # those that have been created, wich have just been added as inputs.
@@ -5233,9 +5258,9 @@ executeExplorePlot <- function(dataset)
   
   if (total.plots < pmax) pmax <- total.plots
   
-  ## Iterate over all target values if a target is defined and has
-  ## less than 10 values. The plots will then also display the
-  ## distributions per target value.
+  # Iterate over all target values if a target is defined and has
+  # less than 10 values. The plots will then also display the
+  # distributions per target value.
 
   target <- getSelectedVariables("target")
 
@@ -5244,11 +5269,14 @@ executeExplorePlot <- function(dataset)
   else
     targets <- levels(as.factor(crs$dataset[[crs$target]]))
 
-  if (length(targets) > 10)
-  {
-    target <- NULL
-    targets <- NULL
-  }
+  # For now, let's plot always, since I was wondering why the Benford
+  # plot was not showing all the targets!
+  
+##   if (length(targets) > 10)
+##   {
+##     target <- NULL
+##     targets <- NULL
+##   }
   
   ## Check for sampling.
   
@@ -5723,7 +5751,7 @@ executeExplorePlot <- function(dataset)
       else
       {
         # Plot multiple graphs since we have a target, and will split
-        # each graph according to the targeet values.
+        # each graph according to the target values.
         
         for (s in 1:nbenplots)
         {
