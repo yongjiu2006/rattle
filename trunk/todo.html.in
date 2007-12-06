@@ -7,26 +7,23 @@
     priorities and especially code.</p>
 
 <pre>
+060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)
 070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
 
+071205 Add in Randy Goebel's association rule visualisation (AI07)
 071125 Use relaimpo  to calculate relative importance of variables:
        calc.relimp(Adjusted ~ ., audit[,c(2,7,9:10,13)], 
        type = c("lmg", "last", "first", "betasq", "pratt") )
 070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
-070408 Add numeric annotations to other Explore plots (c.f. boxplot).
-070317 Mean/median (numeric) and mode (categorical) impute (Michael Fogliani)
 070406 For the cairo plot window, introduce keyboard shortcuts.
 070325 Add a Defaults button to each model builder.
 070130 Explore->Distr check buttons train/test/csv (csv from Evaluate tab)
 070330 Add selection of clustering: diana, agnus, fanny, etc.
 070421 Ensure the Help menu is complete.
 061230 Implement nnet with linout=TRUE? (Yale)
-060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)
-070426 Fix error when scoring using regression (Wei Lin)
 061019 Numerous graphics extensions (Geir Nilsen)
 070401 Add a File Type combo box to graphics save.
 070514 FileChooser to also show file sizes (Tony Nolan)
-070316 Implement "expert" settings for each model (Liyin Xue)
 070324 Implement dendrogram zoom using rgl (see plot3d example)?
 070321 For the View textview, keep first row (headers) static as "edit()" does
 070321 Implement own Edit textview to edit dataset, instead of ugly "edit()"
@@ -41,7 +38,6 @@
 070317 Make the Explore:Summary:Find search case insensitive.
 070121 Each textview have default explanatory text
 061001 Choice of Kernel for SVMs. 
-070130 Explore->Distr->Cat->Bars: Add mosaic plots (Rohan Baxter)
 070319 Introduce a progress bar for all activities (Tony Nolan)
 070114 Add textmining.R to Rattle
 061227 Eval->Save: All to one file.
@@ -51,6 +47,7 @@
 070201 Invetigate rmpi for rattle (Daniel Medri)
 070105 Implement knn model builder (Yale)
 060001 Implement bagged boosted stumps (Jeremy Barnes)
+070316 Implement "expert" settings for each model (Liyin Xue)
 </pre>
     
   <p class="copyright">
