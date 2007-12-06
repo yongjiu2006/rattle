@@ -2352,7 +2352,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="width_request">30</property>
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="tooltip_text">The digit to plot - 1st to 5th are allowed.</property>
+                        <property name="tooltip_text">The digit to plot - 1st to 9th are allowed.</property>
                         <property name="adjustment">1 1 9 1 1 1</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>

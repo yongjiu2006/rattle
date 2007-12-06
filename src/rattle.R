@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-01 15:18:08 Graham Williams>
+# Time-stamp: <2007-12-05 13:07:03 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -177,7 +177,7 @@ rattle <- function(csvname=NULL)
   .IMPUTE <<- c(number=0, variable=1, comment=2)
   
   .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
-                    dotplot = 3, comment = 4)
+                    dotplot = 3, mosplot = 4, comment = 5)
 
   .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
@@ -1744,14 +1744,14 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                zero=NULL, mean=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
-                               barplot=NULL, dotplot=NULL,
+                               barplot=NULL, dotplot=NULL, mosplot=NULL,
                                resample=TRUE, autoroles=TRUE)
 {
   # Update the SELECT treeview with the dataset variables.
 
   createVariablesModel(variables, input, target, risk, ident, ignore, zero,
                        mean, boxplot, hisplot, cumplot, benplot, barplot,
-                       dotplot, autoroles=autoroles)
+                       dotplot, mosplot, autoroles=autoroles)
 
   if (resample)
   {
@@ -2875,7 +2875,7 @@ getSelectedVariables <- function(role, named=TRUE)
     rcol  <- .CONTINUOUS[[role]]
   }
 
-  else if (role %in% c("barplot", "dotplot"))
+  else if (role %in% c("barplot", "dotplot", "mosplot"))
   {
     model <- theWidget("categorical_treeview")$getModel()
     rcol  <- .CATEGORICAL[[role]]
@@ -2928,7 +2928,7 @@ initialiseVariableViews <- function()
   
   
   categorical <- gtkListStoreNew("gchararray", "gchararray",
-                                 "gboolean", "gboolean",
+                                 "gboolean", "gboolean", "gboolean",
                                  "gchararray")
   
   
@@ -3094,7 +3094,7 @@ initialiseVariableViews <- function()
                                         renderer,
                                         active = .COLUMN[["ignore"]]) 
 
-  ## Add the barplot and dotplot.
+  ## Add the barplot and dotplot and mosplot.
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
@@ -3118,6 +3118,17 @@ initialiseVariableViews <- function()
                                        "Dot Plot",
                                        renderer,
                                        active = .CATEGORICAL[["dotplot"]])
+  
+  renderer <- gtkCellRendererToggleNew()
+  renderer$set(xalign = 0.0)
+  renderer$set(width = 60)
+  renderer$setData("column", .CATEGORICAL["mosplot"])
+  connectSignal(renderer, "toggled", cat_toggled, categorical)
+  cat.offset <-
+    catview$insertColumnWithAttributes(-1,
+                                       "Mosaic",
+                                       renderer,
+                                       active = .CATEGORICAL[["mosplot"]])
   
   ## Add the boxplot, hisplot, cumplot, benplot buttons
 
@@ -3213,7 +3224,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  zero=NULL, mean=NULL,
                                  boxplot=NULL,
                                  hisplot=NULL, cumplot=NULL, benplot=NULL,
-                                 barplot=NULL, dotplot=NULL,
+                                 barplot=NULL, dotplot=NULL, mosplot=NULL,
                                  autoroles=TRUE)
 {
 
@@ -3222,9 +3233,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   ## categorical and continuous models, and the Modelling tab defaults
   ## where they depend on the dataset sizes.
   ##
-  ## Any values supplied for input, target, risk, ident, ignore, boxplot,
-  ## hisplot, cumplot, benplot, barplot, and dotplot arguments should be lists
-  ## of variable names (list of strings).
+  ## Any values supplied for input, target, risk, ident, ignore,
+  ## boxplot, hisplot, cumplot, benplot, barplot, dotplot, and
+  ## mosplot, arguments should be lists of variable names (list of
+  ## strings).
 
   ## Retrieve the models.
   
@@ -3301,7 +3313,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   plots <- union(boxplot,
                  union(hisplot,
                        union(cumplot,
-                             union(benplot, union(barplot, dotplot)))))
+                             union(benplot,
+                                   union(barplot,
+                                         union(dotplot, mosplot))))))
   
   ## Build the Variables treeview model with each variable's INPUT set
   ## to TRUE and all else FALSE. If the variable has only a single
@@ -3473,6 +3487,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                       .CATEGORICAL["variable"], variables[i],
                       .CATEGORICAL["barplot"], variables[i] %in% barplot,
                       .CATEGORICAL["dotplot"], variables[i] %in% dotplot,
+                      .CATEGORICAL["mosplot"], variables[i] %in% mosplot,
                       .CATEGORICAL["comment"],
                       sprintf("%s", strsplit(cl, " ")[[1]][2]))
     }
@@ -3962,6 +3977,9 @@ executeTransformImputePerform <- function()
     imputed <<- c(imputed, model$get(iter, 1)[[1]])
   }, TRUE)
 
+  if (is.null(imputed)) 
+    warnDialog(paste("No variables have been selected for imputation.",
+                     "Please select some variables and Execute again."))
   # We check here if the action is mean or median, and we have any
   # categorical variables to be imputed. If so put up an info dialogue
   # and remove the cateorigcals from the list of variables to be
@@ -4203,8 +4221,6 @@ executeTransformImputePerform <- function()
   }
   else
   {
-    warnDialog(paste("No variables have been selected for imputation.",
-                     "Please select some variables and Execute again."))
     setStatusBar("No variables selected to be imputed.")
   }
 }  
@@ -4779,7 +4795,7 @@ on_categorical_clear_button_clicked <- function(action, window)
   # next release. 071117
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
-    columns <- .CATEGORICAL[["barplot"]]:.CATEGORICAL[["dotplot"]]
+    columns <- .CATEGORICAL[["barplot"]]:.CATEGORICAL[["mosplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
   }, TRUE)
@@ -5247,8 +5263,11 @@ executeExplorePlot <- function(dataset)
   dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
+  mosplots  <- getSelectedVariables("mosplot")
+  nmosplots <- length(mosplots)
+
   total.plots <- nboxplots + nhisplots + length(cumplots) +
-    nbenplots + nbarplots + ndotplots
+    nbenplots + nbarplots + ndotplots + nmosplots
   
   pmax <- theWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
@@ -6040,7 +6059,57 @@ executeExplorePlot <- function(dataset)
     }
   }
 
-  ## Update the status bar.
+  ##---------------------------------------------------------------------
+
+  if (nmosplots > 0)
+  {
+
+    for (s in 1:nmosplots)
+    {
+
+      startLog()
+
+      # Construct and evaluate a command string to generate the
+      # data for the plot.
+
+      if (is.null(target))
+        ds.cmd <- sprintf("table(crs$dataset$%s)", mosplots[s])
+      else
+        ds.cmd <- paste(sprintf(paste("table(crs$dataset$%s,",
+                                      "crs$dataset$%s)"), mosplots[s], target))
+      appendLog("Generate the table data for plotting.",
+                paste("ds <-", ds.cmd))
+      ds <- eval(parse(text=ds.cmd))
+
+      # Construct and evaluate the command to determin the order in
+      # which to print the catgories, from larges to smallest.
+
+      # Construct and evaluate the command to plot the
+      # distribution.
+    
+      if (pcnt %% pmax == 0) newPlot(pmax)
+      pcnt <- pcnt + 1
+
+      if (is.null(target))
+        titles <- genPlotTitleCmd(sprintf("Mosaic of %s",
+                                          mosplots[s],
+                                          ifelse(sampling," (sample)","")),
+                                  vector=TRUE)
+      else
+        titles <- genPlotTitleCmd(sprintf("%s by %s%s",
+                                          mosplots[s], target,
+                                          ifelse(sampling," (sample)","")),
+                                  vector=TRUE)
+
+      plot.cmd <- sprintf(paste('mosaicplot(ds, main="%s", sub="%s",',
+                                ' color=rainbow(%d), cex=0.7)'),
+                          titles[1], titles[2], length(targets)+1)
+      appendLog("Plot the data.", plot.cmd)
+      eval(parse(text=plot.cmd))
+    }
+  }
+  
+  # Update the status bar.
   
   if (total.plots > 1)
     setStatusBar("All", total.plots, "plots generated.")
