@@ -7,6 +7,8 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+211 071212 Robust kmeans using multiple runs for clustering.
+210 071212 Add subset sizes to Benfords legend.
 209 071205 Explore->Distr->Cat: Add mosaic plots (Rohan Baxter)
 208 071201 Transform Remap join categoricals for stratification.
 207 071201 Benford: Add "digit/+/-" options (Eugene Dubossarsky)

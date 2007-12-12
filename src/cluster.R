@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-10-06 14:55:00 Graham Williams>
+## Time-stamp: <2007-12-12 19:15:39 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -32,6 +32,44 @@ on_hclust_radiobutton_toggled <- function(button)
     .CLUSTER$setCurrentPage(.CLUSTER.HCLUST.TAB)
   setStatusBar()
 }
+
+on_kmeans_hclust_centers_checkbutton_toggled <- function(button)
+{
+  #
+  # When the hclust centers checkbutton is on, we should not allow any
+  # use of the runs spin button because it does not make sens to do
+  # both, nor does kmeansruns support starting points for clusters.
+  #
+  if (button$getActive())
+  {
+    theWidget("kmeans_runs_spinbutton")$setSensitive(FALSE)
+    theWidget("kmeans_runs_label")$setSensitive(FALSE)
+  }
+  else
+  {
+    theWidget("kmeans_runs_spinbutton")$setSensitive(TRUE)
+    theWidget("kmeans_runs_label")$setSensitive(TRUE)
+  }
+}    
+
+on_kmeans_iterate_checkbutton_toggled <- function(button)
+{
+  #
+  # When the iterate checkbutton is on, we should not allow any use of
+  # the runs spin button because it does not make sense to do both.
+  #
+  if (button$getActive())
+  {
+    theWidget("kmeans_runs_spinbutton")$setSensitive(FALSE)
+    theWidget("kmeans_runs_label")$setSensitive(FALSE)
+  }
+  else
+  {
+    theWidget("kmeans_runs_spinbutton")$setSensitive(TRUE)
+    theWidget("kmeans_runs_label")$setSensitive(TRUE)
+  }
+}    
+
 
 ########################################################################
 ##
@@ -87,6 +125,7 @@ executeClusterKMeans <- function(include)
   
   nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
+  nruns <- theWidget("kmeans_runs_spinbutton")$getValue()
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
   
@@ -110,9 +149,30 @@ executeClusterKMeans <- function(include)
 
   if (! useIterate)
   {
-    kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
-                          ifelse(sampling, "crs$sample", ""), include, centers)
-    appendLog(sprintf("Generate a kmeans cluster of size %s.", nclust),
+    if (nruns > 1)
+    {
+      lib.cmd <- "require(fpc, quietly=TRUE)"
+      if (! packageIsAvailable("fpc", "kmeans runs")) return()
+      appendLog("The kmeansruns functionality is provided by the fpc package.",
+                lib.cmd)
+      eval(parse(text=lib.cmd))
+
+      kmeans.cmd <- sprintf(paste('crs$kmeans <<-',
+                                  'kmeansruns(crs$dataset[%s,%s],',
+                                  '%s, runs=%s)'),
+                            ifelse(sampling, "crs$sample", ""),
+                            include, centers, nruns)
+    }
+    else
+    {
+      kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
+                            ifelse(sampling, "crs$sample", ""),
+                            include, centers)
+    }
+    
+    appendLog(sprintf("Generate a kmeans cluster of size %s%s%s.", nclust,
+                      ifelse(nruns>1, " choosing the best from ", ""),
+                      ifelse(nruns>1, nruns, "")),
               gsub("<<-", "<-", kmeans.cmd))
     start.time <- Sys.time()
     eval(parse(text=kmeans.cmd))
