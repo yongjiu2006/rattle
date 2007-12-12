@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-05 13:07:03 Graham>
+# Time-stamp: <2007-12-12 17:44:22 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -5775,7 +5775,12 @@ executeExplorePlot <- function(dataset)
         for (s in 1:nbenplots)
         {
           startLog()
-
+          #
+          # Record the sizes of the subsets for the legend
+          #
+          sizes.cmd <- paste('sizes <<- (function(x)(paste(names(x), " (",',
+                             ' x, ")", sep="")))(by(ds, ds$grp, nrow))')
+          
           data.cmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
                            'All=calcInitialDigitDistr(ds[ds$grp=="All", 1]',
                             benopts, ')')
@@ -5803,9 +5808,10 @@ executeExplorePlot <- function(dataset)
                                          'fill=rainbow(%d), title="%s")'),
                                     ifelse(digspin>2, "bottomright",
                                            "topright"),
-                                   paste(sprintf('"%s"',
-                                                 c("Benford", "All", targets)),
-                                         collapse=","),
+                                    '"Benfords", sizes',
+#                                   paste(sprintf('"%s"',
+#                                                c("Benford", "All", targets)),
+#                                         collapse=","),
                                    length(targets)+2, target)
           else
             if (barbutton)
@@ -5825,6 +5831,10 @@ executeExplorePlot <- function(dataset)
                          benplots[s], "."),
                    paste("ds <-", cmd))
           ds <- eval(parse(text=cmd))
+
+          appendLog("Generate legend entries with subset sizes.",
+                    gsub("<<-", "<-", sizes.cmd))
+          eval(parse(text=sizes.cmd))
           
           appendLog("Generate frequency of initial digit.",
                    paste("ds <-", data.cmd))
