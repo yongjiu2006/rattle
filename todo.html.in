@@ -9,6 +9,9 @@
 <pre>
 060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)
 070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
+071215 Display rsq.rpart - the r squared fit by splits.
+071216 Add date conversion to Remap: as.Date(COLUMN, format="%d-%m-%Y")
+071216 Rename binning to not conflict with sm's binning.
 
 071205 Add in Randy Goebel's association rule visualisation (AI07)
 071125 Use relaimpo  to calculate relative importance of variables:
