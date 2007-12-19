@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-12 17:44:22 Graham Williams>
+# Time-stamp: <2007-12-16 09:12:08 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -4270,9 +4270,13 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
     breaks <- unique(breaks)
     breaks[1] <- min(x)
     breaks[length(breaks)] <- max(x)
+    # quantiles from quantile() can be non-unique, which cut() doesn't
+    # like. This is handled above through unique(). The function
+    # cut2() in Hmisc handles this situation gracefully and it could
+    # be used, but it is not necessary.
     if(length(breaks) >= 2)
     {
-      cut(x, breaks , include.lowest = TRUE, labels = labels)
+      cut(x, breaks, include.lowest = TRUE, labels = labels)
     }
     else
     {
