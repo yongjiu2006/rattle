@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-16 09:12:08 Graham Williams>
+# Time-stamp: <2007-12-20 11:32:07 Graham>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
