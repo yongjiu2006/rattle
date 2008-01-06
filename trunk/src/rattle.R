@@ -297,6 +297,7 @@ rattle <- function(csvname=NULL)
   .DATA.RDATA.TAB    <<- getNotebookPage(.DATA, "rdata")
   .DATA.RDATASET.TAB <<- getNotebookPage(.DATA, "rdataset")
   .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
+  .DATA.LIB.TAB      <<- getNotebookPage(.DATA, "libdata")
   .DATA.DATAENTRY.TAB  <<- getNotebookPage(.DATA, "dataentry")
 
   # Define the TRANSFORM tab pages
@@ -1372,11 +1373,11 @@ plotNetwork <- function(flow)
 }
 
 ########################################################################
-##
-## Shared callbacks
-##
+#
+# Shared callbacks
+#
 
-## Update a combo box with just the available data frames
+# Update a combo box with just the available data frames
 
 update_comboboxentry_with_dataframes <- function(action, window)
 {
@@ -1631,6 +1632,70 @@ on_rdataset_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+#-----------------------------------------------------------------------
+# DATA LIBRAY
+#
+on_libdata_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    .DATA$setCurrentPage(.DATA.LIB.TAB)
+  }
+  setStatusBar()
+}
+
+# Update the library combo box with all of the available datasets. Can
+# take a little time the first time to generate the list. I've
+# associated this with the focus callback, but then it is called also
+# when it loses focus!!!
+
+update_libdata_combobox_entry <- function(action, window)
+{
+  # TODO How to tell that this is a "gain focus" action and not a
+  # "lose focus" action, since we only want to build the list on
+  # gaining focus.
+  
+  # Record the current selection so that we can keep it as the default.
+  
+  current <- theWidget("libdata_combobox")$getActiveText()
+
+  if (! is.null(current)) return()
+  cat("XXX Update Library Combobox XXX\n")
+
+  # This could take a little while, so use to watch cursor to indicate
+  # we are busy.
+  
+  set.cursor("watch")
+  da <- data(package = .packages(all.available = TRUE))
+  dl <- sort(paste(da$results[,'Item'], ":", da$results[,'Package'], 
+                   ":", da$results[,'Title'], sep=""))
+  set.cursor()
+
+  # Add the entries to the combo box.
+  
+  if (not.null(dl))
+  {
+    action$getModel()$clear()
+    lapply(dl, action$appendText)
+    
+    # Set the selection to that which was already selected, if possible.
+
+    if (not.null(current) && current %in% dl)
+      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
+  }
+}
+
+on_libdata_combobox_changed <- function(widget)
+{
+  TV <- "data_textview"
+  theWidget(TV)$setWrapMode("word")
+  resetTextview(TV)
+  setTextview(TV, "Please Execute to now load the dataset.")
+  setStatusBar()
+}
+
+#-----------------------------------------------------------------------
+
 on_data_entry_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
@@ -1735,6 +1800,8 @@ executeDataTab <- function()
     executeDataRdata()
   else if (theWidget("rdataset_radiobutton")$getActive())
     executeDataRdataset()
+  else if (theWidget("libdata_radiobutton")$getActive())
+    executeDataLibrary()
   else if (theWidget("data_entry_radiobutton")$getActive())
     executeDataEntry()
 }
@@ -2248,6 +2315,91 @@ executeDataRdataset <- function()
 
   theWidget("rdataset_viewdata_button")$setSensitive(TRUE)
   theWidget("rdataset_editdata_button")$setSensitive(TRUE)
+  
+  setStatusBar("The data has been assigned into Rattle.")
+}
+
+executeDataLibrary <- function()
+{
+  TV <- "data_textview"
+  
+  # Collect relevant data.
+  
+  dataset <- theWidget("libdata_combobox")$getActiveText()
+
+  # Actual dataset name as known when loaded.
+  
+  adsname <- gsub('([^ :]*).*$', '\\1', 
+                  unlist(strsplit(dataset, ":"))[1])
+
+  # Some datasets are loaded through loading another name (which
+  # appears in parentheses. Extract the actual name of the dataset
+  # that has to be named to be loaded.
+  
+  dsname <- gsub('.* \\((.*)\\)$', '\\1', 
+                  unlist(strsplit(dataset, ":"))[1])
+
+  # Extract the name of the package from which the dataset is loaded.
+
+  dspkg <- unlist(strsplit(dataset, ":"))[2]
+
+  if (is.null(dataset))
+  {
+    errorDialog("No dataset from the R libraries has been specified.",
+                 "Please identify the name of the dataset",
+                 "you wish to load using the combobox.")
+    return()
+  }
+
+  # Check if there is a model first and then warn about losing it.
+
+  if ( not.null(listBuiltModels()) )
+  {
+    if (is.null(questionDialog("You have chosen to load a new dataset",
+                               "into Rattle.",
+                               "This will clear the old project (dataset and",
+                               "models) which has not been saved.",
+                               "If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.",
+                               "\n\nDo you wish to continue, and lose the old",
+                               "project?")))
+        
+      return()
+  }
+
+  # Generate commands.
+
+  assign.cmd <- sprintf(paste('data(list = "%s", package = "%s")\n',
+                              'crs$dataset <<- %s', sep=""),
+                        dsname, dspkg, adsname)
+  str.cmd <- "str(crs$dataset)"
+  
+  ## Start logging and executing the R code.
+
+  startLog()
+  theWidget(TV)$setWrapMode("none") # On for welcome msg
+  resetTextview(TV)
+  
+  appendLog("LOAD R DATASET",
+          gsub('<<-', '<-', assign.cmd))
+  resetRattle()
+  eval(parse(text=assign.cmd))
+  crs$dataname <<- adsname
+  setRattleTitle(crs$dataname)
+  
+  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  setTextview(TV, sprintf("Structure of %s.\n\n", adsname),
+               collectOutput(str.cmd), sep="")
+
+  ## Update the select treeview and samples.
+
+  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+
+  ## Enable the Data View button.
+
+  theWidget("libdata_viewdata_button")$setSensitive(TRUE)
+  theWidget("libdata_editdata_button")$setSensitive(TRUE)
   
   setStatusBar("The data has been assigned into Rattle.")
 }
