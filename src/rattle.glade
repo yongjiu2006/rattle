@@ -1003,6 +1003,24 @@
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkRadioButton" id="libdata_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Choose one of the supplied R datasets.</property>
+                        <property name="label" translatable="yes">Library</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">csv_radiobutton</property>
+                        <signal name="toggled" handler="on_libdata_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="GtkRadioButton" id="data_entry_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -1017,8 +1035,11 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">6</property>
+                        <property name="position">7</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </widget>
                   <packing>
@@ -1641,6 +1662,93 @@
                           </packing>
                         </child>
                         <child>
+                          <widget class="GtkVBox" id="vbox16">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkHBox" id="hbox11">
+                                <property name="visible">True</property>
+                                <child>
+                                  <widget class="GtkLabel" id="libdata_label">
+                                    <property name="visible">True</property>
+                                    <property name="yalign">0.49000000953674316</property>
+                                    <property name="xpad">4</property>
+                                    <property name="ypad">5</property>
+                                    <property name="label" translatable="yes">Data Name:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkComboBox" id="libdata_combobox">
+                                    <property name="width_request">180</property>
+                                    <property name="height_request">17</property>
+                                    <property name="visible">True</property>
+                                    <property name="items" translatable="yes">No datasets.</property>
+                                    <signal name="changed" handler="on_libdata_combobox_changed"/>
+                                    <signal name="set_focus_child" handler="update_libdata_combobox_entry"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="libdata_viewdata_button">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="border_width">5</property>
+                                    <property name="label" translatable="yes">View Data</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="libdata_editdata_button">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="border_width">5</property>
+                                    <property name="label" translatable="yes">Edit Data</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="padding">5</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label183">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">libdata</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">6</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
                           <widget class="GtkVBox" id="vbox45">
                             <property name="visible">True</property>
                             <child>
@@ -1690,17 +1798,18 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="position">5</property>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label183">
+                          <widget class="GtkLabel" id="label16">
                             <property name="visible">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">dataentry</property>
                           </widget>
                           <packing>
                             <property name="type">tab</property>
-                            <property name="position">5</property>
+                            <property name="position">6</property>
                             <property name="tab_fill">False</property>
                           </packing>
                         </child>

@@ -52,6 +52,20 @@
 060001 Implement bagged boosted stumps (Jeremy Barnes)
 070316 Implement "expert" settings for each model (Liyin Xue)
 </pre>
+
+  <p class="bigb">
+    Notes
+  </p>
+
+<ol>
+ <li> Use of the package <i>caret</i> has been considered. If it had
+ appeared early, it might have formed the basis for Rattle. It
+ provides a unifying interface to the model builders. Still, Rattle
+ teaches the use of the model builders, and as the data miner moves
+ into R they may like to consider the use of the <i>caret</i>
+ package. This provides a tuning facility also, and is highly
+ recommended.</li>
+</ol>
     
   <p class="copyright">
     
