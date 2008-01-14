@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-12-20 11:32:07 Graham>
+# Time-stamp: <2008-01-15 06:56:39 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Jan 2008"
+VERSION.DATE <- "Released 14 Jan 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -8743,6 +8743,21 @@ seed allows different random samples to be extracted. This could be useful in
 testing the sensitivity of modelling with different training sets.")
 }
 
+on_help_normalise_activate <- function(action, window)
+{
+  if (showHelpPlus("Normalisation transforms a variable by remapping its
+values to another set of values, such as a set that has a mean of 0 and
+standard deviation of 1. Often we do this so that all of our variables
+have a very similar spread, and perhaps distribution. This can then avoid
+biases in various algorithms, such as in clustering where a distance measure
+is often used.
+<<>>
+The rescaler function from the reshape package is used to normalise data."))
+  {
+    if (packageIsAvailable("reshape"))
+      popupTextviewHelpWindow("rescaler")
+  }
+}
 
 on_help_impute_activate <- function(action, window)
 {
