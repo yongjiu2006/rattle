@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-11-10 07:37:13 Graham Williams>
+## Time-stamp: <2008-01-14 21:18:12 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -402,6 +402,75 @@ executeModelGLM <- function()
   return(TRUE)
 }
 
+exportRegressionTab <- function()
+{
+  # Make sure we have a model first!
+  
+  if (is.null(crs$glm))
+  {
+    errorDialog("No regression model is available. Be sure to build",
+                "the model before trying to export it! You will need",
+                "to press the Execute button (F5) in order to build the",
+                "model.")
+    return()
+  }
+
+  # Require the pmml package
+  
+  lib.cmd <- "require(pmml, quietly=TRUE)"
+  if (! packageIsAvailable("pmml", "export regression model")) return(FALSE)
+  appendLog("Load the PMML package to export a regression model.", lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  # Obtain filename to write the PMML to.
+  
+  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_glm", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("PMML Files")
+  ff$addPattern("*.xml")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+  
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+    
+  if (file.exists(save.name))
+    if (is.null(questionDialog("An XML file of the name", save.name,
+                                "already exists. Do you want to overwrite",
+                                "this file?")))
+      return()
+  
+
+  pmml.cmd <- "pmml.lm(crs$glm)"
+  appendLog("Export a regression model as PMML.", pmml.cmd)
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
+
+  infoDialog("The PMML file", save.name, "has been written.")
+
+  setStatusBar("The PMML file", save.name, "has been written.")
+  
+}
+
 ##------------------------------------------------------------------------
 ##
 ## MODEL SVM - SUPPORT VECTOR MACHINE
@@ -667,6 +736,10 @@ exportModelTab <- function()
   if (theWidget("rpart_radiobutton")$getActive())
   {
     exportRpartTab()
+  }
+  else if (theWidget("regression_radiobutton")$getActive())
+  {
+    exportRegressionTab()
   }
   else
   {

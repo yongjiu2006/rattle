@@ -194,7 +194,7 @@ pmmlDataDictionary <- function(field)
   ## DataDictionary
   
   data.dictionary <- xmlNode("DataDictionary",
-                             attrs=c(numderOfFields=number.of.fields))
+                             attrs=c(numberOfFields=number.of.fields))
   data.fields <- list()
   for (i in 1:number.of.fields)
   {
