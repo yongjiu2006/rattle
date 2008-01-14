@@ -7,7 +7,10 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-212 080106 Add new data source "Library" which lists all available R datasets
+215 080114 Export crs$glm using pmml.lm. Spelling fix in pmml.lm.
+214 080106 Add new data source "Library" which lists all available R datasets
+213 071220 Resync
+212 071220 Update note on quantiles for binning
 211 071212 Robust kmeans using multiple runs for clustering.
 210 071212 Add subset sizes to Benfords legend.
 209 071205 Explore->Distr->Cat: Add mosaic plots (Rohan Baxter)
