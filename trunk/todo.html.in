@@ -58,13 +58,17 @@
   </p>
 
 <ol>
- <li> Use of the package <i>caret</i> has been considered. If it had
- appeared early, it might have formed the basis for Rattle. It
- provides a unifying interface to the model builders. Still, Rattle
- teaches the use of the model builders, and as the data miner moves
- into R they may like to consider the use of the <i>caret</i>
- package. This provides a tuning facility also, and is highly
- recommended.</li>
+ <li> The <i>caret</i> package provides a unifying interface to the
+ model builders and cold be used underneath in Rattle. It isn't at
+ present - Rattle uses the source packages to ensure we teach the use
+ of the underlying model builders. As a data miner moves into R they
+ may like to consider the use of the <i>caret</i> package for command
+ line usage. The package also provides a tuning facility.</li>
+ <li>080118: Considered moving to using the VGAM package for
+ regression. Decide not to move now - VGAM is hijacking S4 classes for
+ predict and other functions. The author is now aware of this.
+ library(VGAM) results in all other models no longer working - no
+ "predict" and pmml.lm fails with no coefficients!</li>
 </ol>
     
   <p class="copyright">

@@ -169,10 +169,10 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	chmod go+r $@
 
 zip: local plocal
-	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) >| \
-	rattle_$(VERSION).zip
-	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) >| \
-	pmml_$(PVERSION).zip
+	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.6; zip -r9 - rattle) \
+	>| rattle_$(VERSION).zip
+	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.6; zip -r9 - pmml) \
+	>| pmml_$(PVERSION).zip
 
 txt:
 	R CMD Rd2txt package/rattle/man/rattle.Rd
