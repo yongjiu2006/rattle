@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2007-09-29 06:57:48 Graham Williams>
+## Time-stamp: <2008-01-30 21:21:42 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -150,7 +150,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   ## Header
   
-  VERSION <- "1.1.3" # Fixes for new version of randomSurvivalForest.
+  VERSION <- "1.1.4" # Add pmml.ksvm. Fix extensions. 
+  # "1.1.3" # Fixes for new version of randomSurvivalForest.
   # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
   # "1.1.1" Add pmml.lm
 
@@ -390,7 +391,7 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
 {
   ## Header
 
-  VERSION <- "1.1.4" # Add pmml.ksvm. Fix extensions. 
+  #VERSION <- "1.1.4" # Add pmml.ksvm. Fix extensions. 
   # "1.1.3" Fixes for new version of randomSurvivalForest.
   # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
   # "1.1.1" Add pmml.lm
@@ -418,7 +419,7 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
 
   header <- append.XMLNode(header, xmlNode("Application",
                                            attrs=c(name=app.name,
-                                             version=VERSION)))
+                                             version="1.1.4")))
 
   return(header)
 }
