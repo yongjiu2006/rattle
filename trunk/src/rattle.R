@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-01-30 18:45:15 Graham Williams>
+# Time-stamp: <2008-01-30 21:39:55 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -1660,7 +1660,6 @@ update_libdata_combobox_entry <- function(action, window)
   current <- theWidget("libdata_combobox")$getActiveText()
 
   if (! is.null(current)) return()
-  cat("XXX Update Library Combobox XXX\n")
 
   # This could take a little while, so use to watch cursor to indicate
   # we are busy.
