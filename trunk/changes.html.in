@@ -7,7 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-216 080139 Ed Cox fix to hier cor plot labels. Fix generation of zip pkg.
+217 080139 Ed Cox fix to hier cor plot labels. Fix generation of zip pkg.
 216 080115 Add Help for Normalise.
 215 080114 Export crs$glm using pmml.lm. Spelling fix in pmml.lm.
 214 080106 Add new data source "Library" which lists all available R datasets
