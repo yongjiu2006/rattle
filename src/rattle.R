@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-01-15 06:56:39 Graham Williams>
+# Time-stamp: <2008-01-30 18:45:15 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Jan 2008"
+VERSION.DATE <- "Released 15 Jan 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -6425,7 +6425,7 @@ executeExploreHiercor <- function(dataset)
     return()
   }
 
-  ## Check that we have sufficient data
+  # Check that we have sufficient data
 
   ncols <- eval(parse(text=sprintf("NCOL(%s)", dataset)))
   if ( ncols < 2 )
@@ -6439,22 +6439,44 @@ executeExploreHiercor <- function(dataset)
     return()
   }
     
-  ## Construct the commands.
+  # Construct the commands.
   
   cor.cmd    <- sprintf('cc <- cor(%s, use="pairwise")', dataset)
   hclust.cmd <- 'hc <- hclust(dist(cc), "ave")'
   dend.cmd   <- "dn <- as.dendrogram(hc)"
-  plot.cmd   <- paste('plot(dn, horiz=TRUE, ',
-                      'nodePar=list(col=3:2, cex=c(2.0, 0.75), pch= 21:22, ',
-                      'bg= c("light blue", "pink"), ',
-                      'lab.cex = 0.75, lab.col = "tomato"), ',
-                      'edgePar=list(col="gray", lwd=2)',
+
+  # Modification by Ed Cox 080130 to increase margin for long variable names
+
+  fontsize <- .75
+  if (ncols>45) {fontsize <- .60}
+  
+  labwidth <- eval(parse(text = paste('max(unlist(lapply(colnames(',
+                           dataset, '), "nchar"))) + 2', sep="")))
+  plot.cmd   <- paste('op <- par(mar = c(3, 4, 3, ',
+                      round(labwidth/3.5, 2), '))\n',
+                      'plot(dn, horiz = TRUE, ',
+                      'nodePar = list(col = 3:2, ',
+                      'cex = c(2.0, 0.75), pch = 21:22, ',
+                      'bg=  c("light blue", "pink"), ',
+                      'lab.cex = ', fontsize, ', lab.col = "tomato"), ',
+                      'edgePar = list(col = "gray", lwd = 2)',
                       ')\n',
                       genPlotTitleCmd("Variable Correlation Clusters",
-                                     crs$dataname),
+                                     crs$dataname),'\n',
+                      'par(op)\n',
                       sep="")
 
-  ## Start logging and executing the R code.
+ # plot.cmd   <- paste('plot(dn, horiz=TRUE, ',
+ #                     'nodePar=list(col=3:2, cex=c(2.0, 0.75), pch= 21:22, ',
+ #                     'bg= c("light blue", "pink"), ',
+ #                     'lab.cex = 0.75, lab.col = "tomato"), ',
+ #                     'edgePar=list(col="gray", lwd=2)',
+ #                     ')\n',
+ #                     genPlotTitleCmd("Variable Correlation Clusters",
+ #                                    crs$dataname),
+ #                     sep="")
+
+  # Start logging and executing the R code.
 
   startLog("HIERARCHICAL VARIABLE CORRELATION")
 
