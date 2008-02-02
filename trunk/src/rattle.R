@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-01-30 21:39:55 Graham Williams>
+# Time-stamp: <2008-02-02 10:50:02 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -913,11 +913,11 @@ on_plot_close_button_clicked <- function(action)
 
 newPlot <- function(pcnt=1)
 {
-  ## Create a new device into which the plot is to go.
+  # Create a new device into which the plot is to go.
   
-  ## Trial the use of the Cairo device. This was the only place I
-  ## needed to change to switch over to the Cairo device. As backup,
-  ## revert to the x11() or windows() device.
+  # Trial the use of the Cairo device. This was the only place I
+  # needed to change to switch over to the Cairo device. As backup,
+  # revert to the x11() or windows() device.
 
   if (theWidget("use_cairo_graphics_device")$getActive() &&
       packageIsAvailable("cairoDevice"))
@@ -936,8 +936,8 @@ newPlot <- function(pcnt=1)
   }
   else if (.Platform$GUI %in% c("X11", "unknown"))
   {
-    ## Add "unknown" to handle the case with the littler script
-    ## interface which runs with an "unknown" GUI.
+    # Add "unknown" to handle the case with the littler script
+    # interface which runs with an "unknown" GUI.
 
     x11()
   }
@@ -7122,6 +7122,8 @@ executeEvaluateTab <- function()
     msg <- executeEvaluatePrecision(probcmd, testset, testname)
   else if (theWidget("sensitivity_radiobutton")$getActive())
     msg <- executeEvaluateSensitivity(probcmd, testset, testname)
+  else if (theWidget("pvo_radiobutton")$getActive())
+    msg <- executeEvaluatePvOplot(probcmd, testset, testname)
   else if (theWidget("score_radiobutton")$getActive())
     msg <- executeEvaluateScore(probcmd, testset, testname)
 
@@ -7254,9 +7256,9 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     return()
   }
 
-  ## Put 1 or 2 charts onto their own plots. Otherwise, put the
-  ## multiple charts onto one plot, keeping them all the same size
-  ## (thus if numplots is odd, leave a cell of the plot empty.
+  # Put 1 or 2 charts onto their own plots. Otherwise, put the
+  # multiple charts onto one plot, keeping them all the same size
+  # (thus if numplots is odd, leave a cell of the plot empty.
   
   numplots <- length(getEvaluateModels())
   if (numplots == 1)
@@ -7413,8 +7415,8 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     
     ## Display the Risk Chart itself now.
 
-    ## For 2 plots, so as not to overwrite the first plot, if we are
-    ## about to plot the second plot, initiate a new plot.
+    # For 2 plots, so as not to overwrite the first plot, if we are
+    # about to plot the second plot, initiate a new plot.
     
     if (numplots == 2 && mtype == model.list[length(model.list)]) newPlot(1)
 
@@ -7761,8 +7763,8 @@ executeEvaluateLift <- function(probcmd, testset, testname)
     
   }
 
-  ## If just one model, and we are plotting the test dataset, then
-  ## also plot the training dataset.
+  # If just one model, and we are plotting the test dataset, then
+  # also plot the training dataset.
 
   if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
@@ -8342,12 +8344,12 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     scoreset <- sprintf('subset(%s, select=c(%s))',
                         scoreset,
                         ifelse(is.null(idents), "", 
-                               sprintf('"%s"', paste(idents, collapse='", "'))))
+                               sprintf('"%s"', paste(idents,collapse='", "'))))
     appendLog("Extract the corresponding identifier fields from the dataset.",
              sprintf("scores <- %s", scoreset))
     
     scores <- eval(parse(text=scoreset))
-    
+
     appendLog("Write the scores to file.",
              paste('write.csv(cbind(scores, predict=crs$pr), file="',
                    score.file, '", row.names=FALSE)', sep=""))
@@ -8359,6 +8361,213 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
   }
   return(sprintf("Scores saved.", getwd(), score.file))
+}
+
+executeEvaluatePvOplot <- function(probcmd, testset, testname)
+{
+  # This modification to executeEvaluateSave was provided by Ed Cox
+  # (080201) to plot predictions vs. observed values. Graham added the
+  # logging and some fine tuning. It's not really specifically an R
+  # squared plot, but it does include the pseudo R-sqared, so call it
+  # that for now.
+
+  # Put 1 or 2 charts onto their own plots. Otherwise, put the
+  # multiple charts onto one plot, keeping them all the same size
+  # (thus if numplots is odd, leave a cell of the plot empty.
+
+  model.list <- getEvaluateModels()
+  numplots <- length(model.list)
+
+  if (numplots == 1)
+    newPlot(1)
+  else if (numplots == 2)
+    newPlot(1)
+  else if (numplots %% 2 == 0)
+    newPlot(numplots)
+  else
+    newPlot(numplots + 1)
+
+  if (numplots <= 2 )
+    cex <- 1.0
+  else if (numplots <= 4)
+    cex <- 0.5
+  else
+    cex <- 0.5
+
+  opar <- par(cex=cex)
+
+  for (mtype in model.list)
+  {
+
+    appendLog(sprintf(paste("%s: Generate a Predicted v Observed plot",
+                            "for %s model on %s."),
+                      toupper(mtype), mtype, testname),
+              gsub("<<-", "<-", probcmd[[mtype]]))
+    
+    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
+
+    # Check for errors - in particular, new levels in the test
+    # dataset. TODO This should be factored into a separate function,
+    # since it is used in a number of places, including
+    # executeEvaluateSave.
+    
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("has new level", result)) || any(grep("New levels",result)))
+        infoDialog("It seems that the dataset on which the probabilities",
+                   "from the", mtype, "model are required has a categorical",
+                   "variable with levels not found in the training",
+                   "dataset. The probabilities can not be determined in",
+                   "this situation. You may need to either ensure",
+                   "the training dataset has representatives of all levels",
+                   "or else remove them from the testing dataset.",
+                   "Alternatively, do not include that variable in the",
+                   "modelling. \n\n The actual error message was:\n\n",
+                   paste(result, "\n"))
+      else
+        errorDialog("Some error occured with", probcmd, "Best to let",
+                    "Graham.Williams@togaware.com know.\n\n",
+                    "The error was:\n\n", result)
+      next()
+    }
+
+    # Obtain a list of the identity variables.
+    
+    idents <- getSelectedVariables("ident")
+    
+    # Transform the dataset expression into what we need to extract
+    # the relevant columns.
+    #
+    # TODO This should be factored into a separate function, since it
+    # is used in a number of places, including executeEvaluateSave.
+    #
+    #
+    # Various formats include:
+    #
+    #    train	crs$dataset[crs$sample, c(3:12,14)]
+    #    test	crs$dataset[-crs$sample, c(3:12,14)]
+    #    csv	crs$testset[,c(3:12,14)]
+    #    df	crs$testset
+    #
+    # Want
+    #    subset(crs$dataset[-crs$sample,], select=Idents) + crs$pr
+    #
+
+    scoreset <- testset[[mtype]]
+
+    # If no comma in scoreset, leave as is, else find first comma,
+    # remove everything after, and replace with "]". PROBLEM TODO If
+    # the testset[[.MODEL]] includes na.omit, we need to do something
+    # different because after the following step of replacing the
+    # column list with nothing, it is very likely that new columns are
+    # included that have NAs, and hence the na.omit will remove even
+    # more rows for the subset command than it does for the predict
+    # command. Yet we still want to ensure we have all the appropriate
+    # columns available. So use na.omit(crs$dataset[-crs$sample,
+    # c(2:4,6:10,13)])@na.action to remove the rows from
+    # crs$dataset[-crs$sample,] that have missing values with regard
+    # the columns c(2:4,6:10,13). Thus if we have scoreset as:
+    #
+    #  na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])
+    #
+    # we want to:
+    #
+    #  omitted <- na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action
+    #
+    # and then scoreset should become:
+    #
+    #  crs$dataset[-crs$sample,][-omitted,]
+
+    # First deal with the na.omit case, to capture the list of rows
+    # omitted.
+    
+    if (substr(scoreset, 1, 7) == "na.omit")
+    {
+      omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
+      appendLog("Record rows omitted from predict command.", omit.cmd)
+      eval(parse(text=omit.cmd))
+    }
+    else
+      omitted <- NULL
+
+    # Now clean out the column subsets.
+    
+    if (length(grep(",", scoreset)) > 0)
+      scoreset <- gsub(",.*]", ",]", scoreset)
+
+    # And finally, remove the na.omit if there is one, replacing it
+    # with specifically removing just the rows that were removed in
+    # the predict command.
+
+    if (not.null(omitted))
+      scoreset <- sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
+
+    # Extract the actual (i.e., observed) values that are to be
+    # compared to the probabilities (i.e., predictions) from the
+    # model.
+    
+    obsset <- sprintf('subset(%s, select=crs$target)', scoreset)
+    appendLog("Obtain the observed output for the dataset",
+              paste("obs <-", obsset))
+    obs <- eval(parse(text=obsset))
+
+    # fitcorr is the so called psuedo-R-square. It has a maximum less
+    # than 1 and is often used in either binary or multinomial
+    # logistic regression. This is to be interpreted differently to
+    # the standard R-square.
+    
+    # TODO Add to LOG
+
+    fitpoints <- na.omit(cbind(obs, Predicted=crs$pr))
+    fitcorr <- format(cor(fitpoints[,1], fitpoints[,2]), digits=4)
+
+    # Plot the points - observed versus predicted.
+    
+    # For 2 plots, so as not to overwrite the first plot, if we are
+    # about to plot the second plot, initiate a new plot.
+    
+    if (numplots == 2 && mtype == model.list[length(model.list)]) newPlot(1)
+
+    # TODO Add to LOG
+
+    op <- par(c(lty="solid", col="blue"))
+    plot(fitpoints, asp=1, xlim=c(0,1), ylim=c(0,1))
+
+    # Fit a linear model Predicted ~ Observed.
+    
+    # TODO Add to LOG
+
+    prline <- lm(fitpoints[,2] ~ fitpoints[,1])
+    abline(prline)
+
+    # Add a diagonal representing perfect correlation.
+    
+    # TODO Add to LOG
+
+    par(c(lty="dashed", col="black"))
+    abline(0, 1)
+    legend("topleft", legend=c("Best Fit to Points", "Predicted=Observed"),
+           lty=c(1, 2),col=c("blue", "black"), bty="n")
+    par(op)
+
+    # TODO Add to LOG
+#    appendLog("Write the scores to file.",
+#             paste('write.csv(cbind(scores, predict=crs$pr), file="',
+#                   score.file, '", row.names=FALSE)', sep=""))
+#    
+#    write.csv(cbind(scores, predict=crs$pr), file=score.file, row.names=FALSE)
+
+    # Add decorations
+    
+    decorcmd <- paste(genPlotTitleCmd("Predicted vs. Observed", mtype,
+                                      testname, "\n", "Pseudo R-square=",
+                                      fitcorr),
+                    '\ngrid()', sep="")
+    appendLog("Add decorations to the plot.", decorcmd)
+    eval(parse(text=decorcmd))
+
+  }
+  return("Pr v Ob plot generated.")
 }
 
 ########################################################################
