@@ -14,13 +14,17 @@
   
 }
 \usage{
-\method{pmml}{ksvm}(model, model.name="SVM_Model", app.name="Rattle/PMML",
+\method{pmml}{ksvm}(model, data.name, model.name="SVM_Model", app.name="Rattle/PMML",
      description="Support Vector Machine PMML Model", copyright=NULL, \dots)
 }
 \arguments{
   
   \item{model}{a ksvm object.}
 
+  \item{data.name}{the name of the data object used to train the SVM
+  model in ksvm - required since the ksvm object does not appear to
+  record information about the used categorical variables.}
+  
   \item{model.name}{a name to give to the model in the PMML.}
 
   \item{app.name}{the name of the application that generated the PMML.}
@@ -65,7 +69,8 @@
 \examples{
 # train a support vector machine to perform binary classification
 require(kernlab)
-genesvm <- ksvm(as.factor(genetarget) ~ ., data=genedata, kernel="rbfdot", prob.model=TRUE)
-pmml.ksvm(genesvm)
+audit <- read.csv(file("http://rattle.togaware.com/audit.csv"))
+myksvm <- ksvm(as.factor(Adjusted) ~ ., data=audit[,c(2:10,13)], kernel="rbfdot", prob.model=TRUE)
+pmml.ksvm(myksvm, audit)
 }
 \keyword{interface}
