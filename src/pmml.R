@@ -2,7 +2,7 @@
 ##
 ## Part of the Rattle package for Data Mining
 ##
-## Time-stamp: <2008-01-30 21:21:42 Graham Williams>
+## Time-stamp: <2008-02-02 14:23:07 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -559,11 +559,12 @@ pmml.ksvm.MiningSchema <- function(field, target=NULL)
 ##
 
 pmml.ksvm <- function(model,
-                    data.name,
-                    model.name="SVM_model",
-                    app.name="Rattle/PMML",
-                    description="Support Vector Machine PMML Model",
-                    copyright=NULL, ...)
+                      model.name="SVM_model",
+                      app.name="Rattle/PMML",
+                      description="Support Vector Machine PMML Model",
+                      copyright=NULL,
+                      data.name,
+                      ...)
 {
   if (! inherits(model, "ksvm")) stop("Not a legitimate ksvm object.")
   

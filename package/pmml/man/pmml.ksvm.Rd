@@ -14,8 +14,8 @@
   
 }
 \usage{
-\method{pmml}{ksvm}(model, data.name, model.name="SVM_Model", app.name="Rattle/PMML",
-     description="Support Vector Machine PMML Model", copyright=NULL, \dots)
+\method{pmml}{ksvm}(model, model.name="SVM_model", app.name="Rattle/PMML",
+     description="Support Vector Machine PMML Model", copyright=NULL,  data.name, \dots)
 }
 \arguments{
   
@@ -63,14 +63,14 @@
 }
 \author{\email{info@zementis.com}}
 \seealso{
-  \code{\link{pmml}},
-  \code{\link{ksvm}}.
+  \code{\link{pmml}}.
+  \code{\link[kernlab]{ksvm}}.
 }
 \examples{
 # train a support vector machine to perform binary classification
 require(kernlab)
 audit <- read.csv(file("http://rattle.togaware.com/audit.csv"))
 myksvm <- ksvm(as.factor(Adjusted) ~ ., data=audit[,c(2:10,13)], kernel="rbfdot", prob.model=TRUE)
-pmml.ksvm(myksvm, audit)
+pmml.ksvm(myksvm, data=audit)
 }
 \keyword{interface}
