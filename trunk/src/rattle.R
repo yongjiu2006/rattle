@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-02-02 10:50:02 Graham Williams>
+# Time-stamp: <2008-02-04 06:56:47 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -3379,34 +3379,34 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  autoroles=TRUE)
 {
 
-  ## Set up initial information about variables throughout Rattle,
-  ## including the Variable tab's variable model, the Explore tab's
-  ## categorical and continuous models, and the Modelling tab defaults
-  ## where they depend on the dataset sizes.
-  ##
-  ## Any values supplied for input, target, risk, ident, ignore,
-  ## boxplot, hisplot, cumplot, benplot, barplot, dotplot, and
-  ## mosplot, arguments should be lists of variable names (list of
-  ## strings).
+  # Set up initial information about variables throughout Rattle,
+  # including the Variable tab's variable model, the Explore tab's
+  # categorical and continuous models, and the Modelling tab defaults
+  # where they depend on the dataset sizes.
+  #
+  # Any values supplied for input, target, risk, ident, ignore,
+  # boxplot, hisplot, cumplot, benplot, barplot, dotplot, and
+  # mosplot, arguments should be lists of variable names (list of
+  # strings).
 
-  ## Retrieve the models.
+  # Retrieve the models.
   
   model <- theWidget("select_treeview")$getModel()
   impute <- theWidget("impute_treeview")$getModel()
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
 
-  ## Identify a default target - the last or first if it's a factor,
-  ## or has only a few values. Then the treeview model will record
-  ## this choice, and we set the appropriate labels with this, and
-  ## record it in crs.
+  # Identify a default target - the last or first if it's a factor,
+  # or has only a few values. Then the treeview model will record
+  # this choice, and we set the appropriate labels with this, and
+  # record it in crs.
 
   if (autoroles && is.null(target))
   {
-    ## Find the last variable that is not an IMP (imputed). This is
-    ## jsut a general heuristic, and works particularly for imputation
-    ## performed in Rattle. Should also do this for first, and also
-    ## for IGNORE variables.
+    # Find the last variable that is not an IMP (imputed). This is
+    # jsut a general heuristic, and works particularly for imputation
+    # performed in Rattle. Should also do this for first, and also
+    # for IGNORE variables.
     last.var <- length(variables)
     while (last.var > 1 && substr(variables[last.var], 1, 4) == "IMP_")
     {
@@ -3442,13 +3442,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       target <- NULL
   }
 
-  ## Determine the list of input variables so far (i.e., not dealing
-  ## with ignore and risk yet).
+  # Determine the list of input variables so far (i.e., not dealing
+  # with ignore and risk yet).
   
   if (is.null(input)) input <- variables
   input <- setdiff(input, target)
   
-  ## Update the Model tab with the selected default target
+  # Update the Model tab with the selected default target
 
   the.target <- sprintf("Target: %s", ifelse(is.null(target), "None", target))
 
@@ -3486,8 +3486,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       cl <- "factor"
     }
 
-    # First check for special variable names. Want to also do this for
-    # TARGET_, eventually
+    # First check for special variable names. 
     
     if (autoroles)
     {
@@ -3505,6 +3504,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       else if (substr(variables[i], 1, 2) == "ID")
       {
         ident <- c(ident, variables[i])
+      }
+      else if (substr(variables[i], 1, 6) == "TARGET")
+      {
+        target <- variables[i]
       }
       else if (substr(variables[i], 1, 6) == "IGNORE")
       {
@@ -3550,6 +3553,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       }
     }
 
+    # Fix any doubling up
+
+    input <- setdiff(input, target)
+    if (target %in% ident) target <- NULL
+    
     # Always change a "factor" to "factor lvls"
     
     if ("factor" %in% cl)
