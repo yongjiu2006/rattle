@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+080203 Ed Cox: Add row selection to Select Tab.
 060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)
 070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
 071215 Display rsq.rpart - the r squared fit by splits.
