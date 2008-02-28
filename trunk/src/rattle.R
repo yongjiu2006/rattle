@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-02-04 06:56:47 Graham Williams>
+# Time-stamp: <2008-02-28 18:42:53 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Feb 2008"
+VERSION.DATE <- "Released 04 Feb 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1377,11 +1377,10 @@ plotNetwork <- function(flow)
 # Shared callbacks
 #
 
-# Update a combo box with just the available data frames
+# Update a combo box with just the available data frames and matrices.
 
 update_comboboxentry_with_dataframes <- function(action, window)
 {
-  #cat("XXX Update Combobox XXX\n")
   current <- theWidget("rdataset_combobox")$getActiveText()
   
   dl <- unlist(sapply(ls(sys.frame(0)),
@@ -3937,6 +3936,11 @@ executeTransformNormalisePerform <- function()
     action <- "medianad"
     vprefix <- "NORM_MEDIANAD_"
   }
+  else if (theWidget("normalise_bygroup_radiobutton")$getActive())
+  {
+    action <- "bygroup"
+    vprefix <- "NORM_BYGROUP_"
+  }
   
   # Obtain the list of selected variables from the treeview.
 
@@ -3958,17 +3962,68 @@ executeTransformNormalisePerform <- function()
   {
     infoDialog(sprintf(paste("We can not %s a categorical variable.",
                              "Ignoring: %s."),
-                       action, paste(variables[which(classes == "factor")], collapse=", ")))
+                       action, paste(variables[which(classes == "factor")],
+                                     collapse=", ")))
     variables <- variables[-which(classes == "factor")] # Remove the factors.
     if (length(variables) == 0) return()
   }
 
+  # Check if, for a groupby, we have just one categorical and the
+  # others are numeric. Then remove the categorical from the list of
+  # variables and store its name in byvname. This allows us to
+  # continue to use the loop below, having just the numeric variables
+  # in the list. TODO Allow multiple categoricals and then group
+  # across all the cateogircals: MaleMarried MaleDivorced
+  # FemaleMarried etc.
+
+  if (action %in% c("bygroup"))
+  {
+    numfactors <- sum(classes=="factor")
+    numnumerics <- sum(classes=="numeric" | classes=="integer")
+
+    # Ensure we have just one categorical variable.
+    
+    if (numfactors == 0)
+    {
+      infoDialog(paste("We must have a categorical variable to group by for",
+                       "the By Group option. Please select one categorical",
+                       "variable."))
+      return()
+    }
+
+    # Ensure we have at least one numeric variable.
+    
+    if (numnumerics == 0)
+    {
+      infoDialog(paste("We must have a numeric variable to normalise for the",
+                       "By Group option. Please select one numeric variable."))
+      return()
+    }
+
+    # Currently, only support grouping by a single categorical. TODO
+    # Support a group by of multiple categoricals.
+    
+    if (numfactors > 1)
+    {
+      infoDialog(paste("We only support By Group with a single categorical",
+                       "variable for now. Please select just one",
+                       "categorical."))
+      return()
+    }
+
+    # All looks okay, so let's set things up.
+
+    byvname <- variables[which(classes=="factor")]
+    variables <- variables[-which(classes == "factor")]
+  }
+  
+  
   startLog("NORMALSIE Variables")
   
   # Make sure we have the reshape library from where the rescaler
   # function comes.
   
-  if (action %in% c("scale01", "rank", "medianad"))
+  if (action %in% c("scale01", "rank", "medianad", "bygroup"))
   {
     if (! packageIsAvailable("reshape", "normalise data")) return()
     lib.cmd <- "require(reshape, quietly=TRUE)"
@@ -3986,15 +4041,19 @@ executeTransformNormalisePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  if (length(variables) > 0) startLog("NORMALISATION")
+  if (length(variables) > 0) startLog("NORMALISE A Variable")
 
   for (v in variables)
   {
     # Generate the command to copy the current variable into a new
     # variable, prefixed appropraitely.
-    
-    vname <- paste(vprefix, v, sep="")
-    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]', vname, v)
+
+    if (action %in% c("bygroup"))
+      vname <- paste(vprefix, byvname, "_", v, sep="")
+    else
+      vname <- paste(vprefix, v, sep="")
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
+                        vname, v)
     cl <- class(crs$dataset[[v]])
 
     # Take a copy of the variable to be imputed.
@@ -4006,7 +4065,8 @@ executeTransformNormalisePerform <- function()
     
     if (action == "recenter")
     {
-      norm.cmd <- sprintf('crs$dataset[["%s"]] <<- scale(crs$dataset[["%s"]])[,1]', vname, v)
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<-',
+                                'scale(crs$dataset[["%s"]])[,1]', vname, v))
       norm.comment <- "Recenter and rescale the data around 0."
     }
     else if (action == "scale01")
@@ -4028,7 +4088,27 @@ executeTransformNormalisePerform <- function()
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
                                 'rescaler((crs$dataset[["%s"]]), "robust")'),
                           vname, v)
-      norm.comment <- "Rescale by subtracting median and dividing by median abs deviation."
+      norm.comment <- paste("Rescale by subtracting median and dividing",
+                            "by median abs deviation.")
+    }
+    else if (action == "bygroup")
+    {
+      # v <- current numeric variable name from variables
+      # byvname <- categorical variable name (no longer in variables)
+      # vname <-  the new variable name set up as above
+
+      # TODO This is not yet implemented - need a for loop.
+
+      norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
+                                'crs$dataset[["%s"]] <<- 0\n',
+                                'for (vl in bylevels) \n',
+                                '  crs$dataset[crs$dataset[["%s"]]==vl, ',
+                                '"%s"] <<-\n',
+                                '    rescaler(crs$dataset[crs$dataset[["%s"]]',
+                                '==vl, "%s"], "range") * 99',
+                                sep=""),
+                          byvname, vname, byvname, vname, byvname, v)
+      norm.comment <- "Rescale to 0-100 within each group."
     }
         
     appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
