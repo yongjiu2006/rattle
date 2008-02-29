@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-02-29 19:20:49 Graham Williams>
+# Time-stamp: <2008-03-01 07:30:54 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Feb 2008"
+VERSION.DATE <- "Released 29 Feb 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -8318,8 +8318,8 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 ##     return()
 ##   }
 
-  ## Now process each model separately, at least for now. TODO,
-  ## collect the outputs and then wrtie them all at once.
+  # Process each model separately, at least for now. TODO,
+  # collect the outputs and then write them all at once.
   
   for (mtype in getEvaluateModels())
   {
@@ -8331,7 +8331,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
-    ## Check for errors - in particular, new levels in the test dataset.
+    # Check for errors - in particular, new levels in the test dataset.
     
     if (inherits(result, "try-error"))
     {
@@ -8353,7 +8353,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
       next()
     }
 
-    ## Determine an appropriate filename (TODO fixed for now but should ask)
+    # Determine an appropriate filename (TODO fixed for now but should ask)
     
     score.file <- sprintf("%s_%s_score.csv",
                           gsub(" ", "_",
@@ -8361,7 +8361,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                                     gsub("(\\[|\\])", "", testname))),
                           mtype)
 
-    ## Obtain a list of the identity vartiables
+    # Obtain a list of the identity vartiables.
     
     idents <- getSelectedVariables("ident")
     
@@ -8381,34 +8381,57 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
     scoreset <- testset[[mtype]]
 
-    ## If no comma in scoreset, leave as is, else find first comma,
-    ## remove everything after, and replace with "]". PROBLEM TODO If
-    ## the testset[[.MODEL]] includes na.omit, we need to do something
-    ## different because after the following step of replacing the
-    ## column list with nothing, it is very likely that new columns
-    ## are included that have NAs, and hence the na.omit will remove
-    ## even more rows for the subset command than it does for the
-    ## predict command. Yet we still want to ensure we have all the
-    ## appropriate columns available. So use
-    ## na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action to
-    ## remove the rows from crs$dataset[-crs$sample,] that have
-    ## missing values with regard the columns c(2:4,6:10,13). Thus if
-    ## we have scoreset as:
-    ##
-    ##  na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])
-    ##
-    ## we want to:
-    ##
-    ##  omitted <- na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action
-    ##
-    ## and then scoreset should become:
-    ##
-    ##  crs$dataset[-crs$sample,][-omitted,]
+    # If no comma in scoreset, leave as is, else find first comma,
+    # remove everything after, and replace with "]". PROBLEM TODO If
+    # the testset[[.MODEL]] includes na.omit, we need to do something
+    # different because after the following step of replacing the
+    # column list with nothing, it is very likely that new columns
+    # are included that have NAs, and hence the na.omit will remove
+    # even more rows for the subset command than it does for the
+    # predict command. Yet we still want to ensure we have all the
+    # appropriate columns available. So use
+    # na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action to
+    # remove the rows from crs$dataset[-crs$sample,] that have
+    # missing values with regard the columns c(2:4,6:10,13). Thus if
+    # we have scoreset as:
+    #
+    #  na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])
+    #
+    # we want to:
+    #
+    #  omitted <- na.omit(crs$dataset[-crs$sample, c(2:4,6:10,13)])@na.action
+    #
+    # and then scoreset should become:
+    #
+    #  crs$dataset[-crs$sample,][-omitted,]
 
-    ## First deal with the na.omit case, to capture the list of rows
-    ## omitted.
+    # First deal with the na.omit case, to capture the list of rows
+    # omitted.
+
+    # Mod by Ed Cox (080301) to fix error when no NAs in test set. The
+    # error was:
+    #
+    #  Error in eval(expr, envir, enclos) :
+    #    no slot of name "na.action" for this object of class "data.frame"
+    #
+    # The issue appears to be that it complains if there are no NAs to
+    # remove so bypass the omission code.  This is not a general fix
+    # because Ed has run into a case where it failed, but until we
+    # have an insight as to what the real problem is we go with
+    # this. It may be related to regression versus classification. Ed
+    # was doing a regression (and testing the Pr v Ob plots).
     
-    if (substr(scoreset, 1, 7) == "na.omit")
+    scorevarlist <- c(getSelectedVariables("ident"),
+                      getSelectedVariables("target"),
+                      getSelectedVariables("input"),
+                      getSelectedVariables("risk"))
+    tmpset <- crs$dataset[-crs$sample, scorevarlist]
+
+    if (substr(scoreset, 1, 7) == "na.omit" &
+        !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
+
+    # End of Ed's modification.
+    # if (substr(scoreset, 1, 7) == "na.omit")
     {
       omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
       appendLog("Record rows omitted from predict command.", omit.cmd)
@@ -8416,7 +8439,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     }
     else
       omitted <- NULL
-
+    
     ## Now clean out the column subsets.
     
     if (length(grep(",", scoreset)) > 0)
@@ -8569,7 +8592,30 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     # First deal with the na.omit case, to capture the list of rows
     # omitted.
     
-    if (substr(scoreset, 1, 7) == "na.omit")
+    # Mod by Ed Cox (080301) to fix error when no NAs in test set. The
+    # error was:
+    #
+    #  Error in eval(expr, envir, enclos) :
+    #    no slot of name "na.action" for this object of class "data.frame"
+    #
+    # The issue appears to be that it complains if there are no NAs to
+    # remove so bypass the omission code.  This is not a general fix
+    # because Ed has run into a case where it failed, but until we
+    # have an insight as to what the real problem is we go with
+    # this. It may be related to regression versus classification. Ed
+    # was doing a regression (and testing the Pr v Ob plots).
+    
+    scorevarlist <- c(getSelectedVariables("ident"),
+                      getSelectedVariables("target"),
+                      getSelectedVariables("input"),
+                      getSelectedVariables("risk"))
+    tmpset <- crs$dataset[-crs$sample, scorevarlist]
+
+    if (substr(scoreset, 1, 7) == "na.omit" &
+        !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
+
+    # End of Ed's modification.
+    # if (substr(scoreset, 1, 7) == "na.omit")
     {
       omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
       appendLog("Record rows omitted from predict command.", omit.cmd)
@@ -8619,7 +8665,11 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     # TODO Add to LOG
 
     op <- par(c(lty="solid", col="blue"))
-    plot(fitpoints, asp=1, xlim=c(0,1), ylim=c(0,1))
+    # In the plot I originally limited the x and y to (0,1). Not sure
+    # why needed. Ed Cox pointed out he was losing values when
+    # predicting more than (0,1) (linear regression), so remove the limits 
+    # for now (080301).
+    plot(fitpoints, asp=1)#, xlim=c(0,1), ylim=c(0,1))
 
     # Fit a linear model Predicted ~ Observed.
     
