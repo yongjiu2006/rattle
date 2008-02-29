@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-02-28 18:42:53 Graham Williams>
+# Time-stamp: <2008-02-29 19:20:49 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Feb 2008"
+VERSION.DATE <- "Released 28 Feb 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -8795,23 +8795,24 @@ switchToPage <- function(page)
       
       if (is.null(crs$page) || crs$page == .NOTEBOOK.MODEL.NAME)
       {
-        ## By default check the current model's check button if we
-        ## have just come from the MODEL page. This makes it easy when
-        ## swaping from the Model page to this page to evaluate the
-        ## just built model (usually). The NULL test on crs$page
-        ## simply covers the loading of a project that did not save
-        ## the crs$page, as was the case for old project files.
-        theWidget(paste(currentModelTab(), "_evaluate_checkbutton",
-                           sep=""))$setActive(TRUE)
+        # By default check the current model's check button if we
+        # have just come from the MODEL page. This makes it easy when
+        # swaping from the Model page to this page to evaluate the
+        # just built model (usually). The NULL test on crs$page
+        # simply covers the loading of a project that did not save
+        # the crs$page, as was the case for old project files.
+        if (currentModelTab() %in% mtypes)
+          theWidget(paste(currentModelTab(), "_evaluate_checkbutton",
+                          sep=""))$setActive(TRUE)
       }
     }
   }
 
 
-  ## When changing to the LOG page desensitise the Execute button. Not
-  ## sure why anyone would push the execute button anyhow, so maybe
-  ## this is just better to result in an errorDialog rather than extra
-  ## logic here to greyt out the button?
+  # When changing to the LOG page desensitise the Execute button. Not
+  # sure why anyone would push the execute button anyhow, so maybe
+  # this is just better to result in an errorDialog rather than extra
+  # logic here to greyt out the button?
   
   if (page == .NOTEBOOK.LOG.NAME)
   {
@@ -8831,8 +8832,8 @@ switchToPage <- function(page)
 }
 
 ########################################################################
-
-## HELP
+#
+# HELP
 
 popupTextviewHelpWindow <- function(topic)
 {

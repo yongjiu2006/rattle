@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+223 080229 Bug fix: checkbox wrongly checked Evaluate tab (Frank Lu)
 222 080228 Add new By Group normalisation to Transform tab (Tony Nolan)
 221 080204 Rene Koch: fix handling of ID, TARGET variables.
 220 080202 Cleanup pmml.ksvm support.
