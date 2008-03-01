@@ -7,13 +7,16 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
-224 080301 Bug fix: use of omitted in evaluate score and PrvOb (Ed Cox)
-223 080229 Bug fix: checkbox wrongly checked Evaluate tab (Frank Lu)
-222 080228 Add new By Group normalisation to Transform tab (Tony Nolan)
-221 080204 Rene Koch: fix handling of ID, TARGET variables.
-220 080202 Cleanup pmml.ksvm support.
-219 080202 Zementis: support for pmml from ksvm and binary logistic regression
-218 080202 Ed Cox: Pr v Ob plots into Eval tab. 
+227 080302 Bug fix: Transform-Normalise-Centered had a syntax error.
+226 080301 Bug fix: use of omitted in evaluate score and PrvOb (Ed Cox)
+225 080229 Bug fix: checkbox wrongly checked Evaluate tab (Frank Lu)
+224 080228 Add new By Group normalisation to Transform tab (Tony Nolan)
+223 080204 Rene Koch: fix handling of ID, TARGET variables.
+222 080202 Cleanup pmml.ksvm support. 
+221 080202 Zementis: support for pmml from ksvm and binary logistic regression 
+220 080202 Ed Cox: Pr v Ob plots into Eval tab.
+219 080131 Add export of SVM into Rattle - not yet working in pmml.
+218 080130 Zementis: addition of pmml export of ksvm.
 217 080129 Ed Cox fix to hier cor plot labels. Fix generation of zip pkg.
 216 080115 Add Help for Normalise.
 215 080114 Export crs$glm using pmml.lm. Spelling fix in pmml.lm.

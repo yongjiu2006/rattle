@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-01 07:30:54 Graham Williams>
+# Time-stamp: <2008-03-02 07:26:30 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -4066,7 +4066,7 @@ executeTransformNormalisePerform <- function()
     if (action == "recenter")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<-',
-                                'scale(crs$dataset[["%s"]])[,1]', vname, v))
+                                'scale(crs$dataset[["%s"]])[,1]'), vname, v)
       norm.comment <- "Recenter and rescale the data around 0."
     }
     else if (action == "scale01")
