@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-02 07:26:30 Graham Williams>
+# Time-stamp: <2008-03-03 18:51:06 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "2"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Feb 2008"
+VERSION.DATE <- "Released 02 Mar 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -3395,15 +3395,19 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
 
-  # Identify a default target - the last or first if it's a factor,
-  # or has only a few values. Then the treeview model will record
-  # this choice, and we set the appropriate labels with this, and
-  # record it in crs.
+  # Identify a default target if none are identified as a target (by
+  # beginning with TARGET) in the variables (080303). Heuristic is -
+  # the last or first if it's a factor, or has only a few values. Then
+  # the treeview model will record this choice, and we set the
+  # appropriate labels with this, and record it in crs.
+
+  given.target <- which(substr(variables, 1, 6) == "TARGET")
+  if (length(given.target) > 0) target <- variables[given.target[1]]
 
   if (autoroles && is.null(target))
   {
     # Find the last variable that is not an IMP (imputed). This is
-    # jsut a general heuristic, and works particularly for imputation
+    # just a general heuristic, and works particularly for imputation
     # performed in Rattle. Should also do this for first, and also
     # for IGNORE variables.
     last.var <- length(variables)
@@ -3504,10 +3508,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       {
         ident <- c(ident, variables[i])
       }
-      else if (substr(variables[i], 1, 6) == "TARGET")
-      {
-        target <- variables[i]
-      }
+      # No longer needed as this is handled prior to the target
+      # heuristics. Remove this code eventually if all looks
+      # okay. (080303)
+      #
+      # else if (substr(variables[i], 1, 6) == "TARGET")
+      # {
+      #   target <- variables[i]
+      # }
       else if (substr(variables[i], 1, 6) == "IGNORE")
       {
         ignore <- c(ignore, variables[i])
