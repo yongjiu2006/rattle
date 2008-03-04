@@ -7,6 +7,7 @@
     number is 2.2.N where N is Revision-132.</p>
 
 <pre>
+229 080304 Bug fix: risk plot - avoid integer overflow - use numeric.
 228 080303 Bug fix: Logic for TARGET handling could result in two targets!
 227 080302 Bug fix: Transform-Normalise-Centered had a syntax error.
 226 080301 Bug fix: use of omitted in evaluate score and PrvOb (Ed Cox)
