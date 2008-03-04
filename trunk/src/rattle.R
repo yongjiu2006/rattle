@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-03 18:51:06 Graham Williams>
+# Time-stamp: <2008-03-04 17:49:24 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -7582,7 +7582,7 @@ evaluateRisk <- function(predicted, actual, risks)
   predicted <- as.factor(round(predicted, 13))
   
   ds.actual <- data.frame(Actual=actual,
-                            Risk=risks,
+                            Risk=as.numeric(risks), # Avoid integer overflow
                             Predict=as.factor(predicted))
   #Predict=as.factor(ds.predict[,2]))
 
