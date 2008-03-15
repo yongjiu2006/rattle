@@ -20,5 +20,5 @@ Description: Rattle provides a Gnome (RGtk2) based interface to
   then begin interacting directly with R itself, if so desired. Rattle also 
   exports a number of utility functions and the graphical user interface does 
   not need to be run to deploy these.  
-License: GPL version 2 or newer
+License: GPL (>= 2)
 URL: http://rattle.togaware.com/

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-12-12 19:15:39 Graham Williams>
+## Time-stamp: <2008-03-15 16:36:23 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -165,7 +165,8 @@ executeClusterKMeans <- function(include)
     }
     else
     {
-      kmeans.cmd <- sprintf('crs$kmeans <<- kmeans(crs$dataset[%s,%s], %s)',
+      kmeans.cmd <- sprintf(paste('crs$kmeans <<- kmeans(',
+                                  'na.omit(crs$dataset[%s,%s]), %s)', sep=""),
                             ifelse(sampling, "crs$sample", ""),
                             include, centers)
     }

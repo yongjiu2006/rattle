@@ -2425,7 +2425,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                     <child>
                       <widget class="GtkCheckButton" id="benford_bars_checkbutton">
                         <property name="can_focus">True</property>
-                        <property name="tooltip_text">Generate a bar plot instead of lines.</property>
+                        <property name="tooltip">Generate a bar plot instead of lines.</property>
                         <property name="label" translatable="yes">Benford Bars</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -2470,7 +2470,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                         <property name="width_request">30</property>
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="tooltip_text">The digit to plot - 1st to 9th are allowed.</property>
+                        <property name="tooltip">The digit to plot - 1st to 9th are allowed.</property>
                         <property name="adjustment">1 1 9 1 1 1</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
@@ -2485,7 +2485,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkRadioButton" id="benford_abs_radiobutton">
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="tooltip_text">Plot the distribution of the absolute values.</property>
+                        <property name="tooltip">Plot the distribution of the absolute values.</property>
                         <property name="label" translatable="yes">abs</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
@@ -2501,7 +2501,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkRadioButton" id="benford_pos_radiobutton">
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="tooltip_text">Plot distribution of only the positive values.</property>
+                        <property name="tooltip">Plot distribution of only the positive values.</property>
                         <property name="label" translatable="yes">+ve</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
@@ -2517,7 +2517,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkRadioButton" id="benford_neg_radiobutton">
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="tooltip_text">Plot distribution of only the negative values.</property>
+                        <property name="tooltip">Plot distribution of only the negative values.</property>
                         <property name="label" translatable="yes">-ve</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
@@ -3122,7 +3122,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                   <widget class="GtkNotebook" id="transform_notebook">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text">Multiply out the slected categoricals into a new single variable.</property>
+                    <property name="tooltip">Multiply out the slected categoricals into a new single variable.</property>
                     <property name="border_width">5</property>
                     <property name="show_border">False</property>
                     <child>
@@ -3500,7 +3500,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip_text">Turn a categorical into a collection of numeric (0,1) variables.</property>
+                                <property name="tooltip">Turn a categorical into a collection of numeric (0,1) variables.</property>
                                 <property name="label" translatable="yes">Indicator Variable</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
@@ -3548,10 +3548,36 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkRadioButton" id="remap_asfactor_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="label" translatable="yes">As Factor</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">remap_quantiles_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">3</property>
+                              </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkRadioButton" id="remap_asnumeric_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="label" translatable="yes">As Numeric</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">remap_quantiles_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">4</property>
+                              </packing>
                             </child>
                           </widget>
                           <packing>
@@ -3716,6 +3742,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                     </child>
                   </widget>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>

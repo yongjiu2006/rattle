@@ -7,6 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
+080315 Add a Last Dataset/Project option (Tony Nolan)
+080305 Implement silhouette plot for kmeans clusters
 080203 Ed Cox: Add row selection to Select Tab (perhaps using "subset").
 080203 Ed Cox: Bug when using ODBC data source multiple times.
 060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)

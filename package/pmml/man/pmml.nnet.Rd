@@ -15,7 +15,7 @@
 }
 \usage{
 \method{pmml}{nnet}(model, model.name="NeuralNet_model", app.name="Rattle/PMML",
-     description="Neural Network PMML Model", copyright=NULL,  data.name, \dots)
+     description="Neural Network PMML Model", copyright=NULL, \dots)
 }
 \arguments{
   

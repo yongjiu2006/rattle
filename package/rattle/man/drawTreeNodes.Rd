@@ -10,7 +10,7 @@
 }
 \usage{
 drawTreeNodes(tree, cex = par("cex"), pch = par("pch"),
-                           size = 2.5 * cex, col = NULL, nodeinfo = FALSE,
+                           size = 4 * cex, col = NULL, nodeinfo = FALSE,
                            units = "", cases = "cases", 
                            digits = getOption("digits"),
                            decimals = 2,

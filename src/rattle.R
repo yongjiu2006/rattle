@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-04 17:49:24 Graham Williams>
+# Time-stamp: <2008-03-15 16:48:51 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -12,7 +12,7 @@
 #
 
 MAJOR <- "2"
-MINOR <- "2"
+MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 VERSION.DATE <- "Released 04 Mar 2008"
@@ -715,10 +715,10 @@ packageIsAvailable <- function(pkg, msg=NULL)
 
 sampleNeedsExecute <- function()
 {
-  ## Popup an error dialog if sampling needs to be executed and return
-  ## TRUE.
+  # Popup an error dialog if sampling needs to be executed and return
+  # TRUE.
 
-  ## If sampling is active, make sure there is a sample.
+  # If sampling is active, make sure there is a sample.
   
   if (theWidget("sample_checkbutton")$getActive()
       && is.null(crs$sample))
@@ -1886,11 +1886,21 @@ executeDataCSV <- function()
 
   if (is.null(filename))
   {
-    errorDialog("No CSV Filename has been chosen yet.",
-                 "You must choose one before execution.",
-                 "Change the radio button selection if you prefer to link",
-                 "to a dataset already loaded into the R Console.")
-    return()
+    if (is.null(questionDialog("No CSV filename has been provided.",
+                               "Would you like to use the sample audit",
+                               "dataset that comes with Rattle?")))
+    {
+      errorDialog("No CSV Filename has been chosen yet.",
+                  "You must choose one before execution.",
+                  "Change the radio button selection if you prefer to link",
+                  "to a dataset already loaded into the R Console.")
+      return()
+    }
+    else
+    {
+      filename <- system.file("csv", "audit.csv", package="rattle")
+      theWidget("csv_filechooserbutton")$setFilename(filename)
+    }
   }
 
   ## If there is a model warn about losing it.
@@ -2937,7 +2947,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 
 executeSelectSample <- function()
 {
-  ## Record that a random sample of the dataset is desired.
+  # Record that a random sample of the dataset is desired.
 
   if (theWidget("sample_checkbutton")$getActive())
   {
@@ -3563,7 +3573,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Fix any doubling up
 
     input <- setdiff(input, target)
-    if (target %in% ident) target <- NULL
+    if (length(target) > 0 & length(ident) > 0 & target %in% ident)
+      target <- NULL
     
     # Always change a "factor" to "factor lvls"
     
@@ -3927,27 +3938,27 @@ executeTransformNormalisePerform <- function()
   if (theWidget("normalise_recenter_radiobutton")$getActive())
   {
     action <- "recenter"
-    vprefix <- "NORM_RECENTER_"
+    vprefix <- "NRC_"
   }
   else if (theWidget("normalise_scale01_radiobutton")$getActive())
   {
     action <- "scale01"
-    vprefix <- "NORM_SCALE01_"
+    vprefix <- "N01_"
   }
   else if (theWidget("normalise_rank_radiobutton")$getActive())
   {
     action <- "rank"
-    vprefix <- "NORM_RANK_"
+    vprefix <- "NRK_"
   }
   else if (theWidget("normalise_medianad_radiobutton")$getActive())
   {
     action <- "medianad"
-    vprefix <- "NORM_MEDIANAD_"
+    vprefix <- "NMD_"
   }
   else if (theWidget("normalise_bygroup_radiobutton")$getActive())
   {
     action <- "bygroup"
-    vprefix <- "NORM_BYGROUP_"
+    vprefix <- "NBG"
   }
   
   # Obtain the list of selected variables from the treeview.
@@ -3976,9 +3987,9 @@ executeTransformNormalisePerform <- function()
     if (length(variables) == 0) return()
   }
 
-  # Check if, for a groupby, we have just one categorical and the
-  # others are numeric. Then remove the categorical from the list of
-  # variables and store its name in byvname. This allows us to
+  # Check if, for a groupby, we have at most one categorical and the
+  # others are numeric. Then remove the categorical (if any) from the
+  # list of variables and store its name in byvname. This allows us to
   # continue to use the loop below, having just the numeric variables
   # in the list. TODO Allow multiple categoricals and then group
   # across all the cateogircals: MaleMarried MaleDivorced
@@ -3989,15 +4000,17 @@ executeTransformNormalisePerform <- function()
     numfactors <- sum(classes=="factor")
     numnumerics <- sum(classes=="numeric" | classes=="integer")
 
-    # Ensure we have just one categorical variable.
+    # Ensure we have just one categorical variable. [080315 gjw] Allow
+    # the case where we have no categoricals, and do the normalisation
+    # over the whole population rather than stratifying.
     
-    if (numfactors == 0)
-    {
-      infoDialog(paste("We must have a categorical variable to group by for",
-                       "the By Group option. Please select one categorical",
-                       "variable."))
-      return()
-    }
+    #if (numfactors == 0)
+    #{
+    #  infoDialog(paste("We must have a categorical variable to group by for",
+    #                   "the By Group option. Please select one categorical",
+    #                   "variable."))
+    #  return()
+    #}
 
     # Ensure we have at least one numeric variable.
     
@@ -4021,10 +4034,14 @@ executeTransformNormalisePerform <- function()
 
     # All looks okay, so let's set things up.
 
-    byvname <- variables[which(classes=="factor")]
-    variables <- variables[-which(classes == "factor")]
+    if (numfactors == 0)
+      byvname <- NULL
+    else
+    {
+      byvname <- variables[which(classes=="factor")]
+      variables <- variables[-which(classes == "factor")]
+    }
   }
-  
   
   startLog("NORMALSIE Variables")
   
@@ -4057,7 +4074,7 @@ executeTransformNormalisePerform <- function()
     # variable, prefixed appropraitely.
 
     if (action %in% c("bygroup"))
-      vname <- paste(vprefix, byvname, "_", v, sep="")
+      vname <- paste(vprefix, byvname, v, sep="_")
     else
       vname <- paste(vprefix, v, sep="")
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
@@ -4105,17 +4122,27 @@ executeTransformNormalisePerform <- function()
       # byvname <- categorical variable name (no longer in variables)
       # vname <-  the new variable name set up as above
 
-      # TODO This is not yet implemented - need a for loop.
+      if (is.null(byvname))
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- 0\n',
+                                  'crs$dataset[, ',
+                                  '"%s"] <<-\n',
+                                  '    rescaler(crs$dataset[',
+                                  ', "%s"], "range") * 99',
+                                  sep=""),
+                            vname, vname, v)
+      else
+        norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
+                                  'crs$dataset[["%s"]] <<- 0\n',
+                                  'for (vl in bylevels) \n',
+                                  '  crs$dataset[crs$dataset[["%s"]]==vl, ',
+                                  '"%s"] <<-\n',
+                                  '    rescaler(crs$dataset[crs$dataset',
+                                  '[["%s"]]',
+                                  '==vl, "%s"], "range") * 99',
+                                  sep=""),
+                            byvname, vname, byvname, vname, byvname, v)
 
-      norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
-                                'crs$dataset[["%s"]] <<- 0\n',
-                                'for (vl in bylevels) \n',
-                                '  crs$dataset[crs$dataset[["%s"]]==vl, ',
-                                '"%s"] <<-\n',
-                                '    rescaler(crs$dataset[crs$dataset[["%s"]]',
-                                '==vl, "%s"], "range") * 99',
-                                sep=""),
-                          byvname, vname, byvname, vname, byvname, v)
+      
       norm.comment <- "Rescale to 0-100 within each group."
     }
         
@@ -4630,10 +4657,22 @@ executeTransformRemapPerform <- function()
     remap.prefix <- "REMAP_LOG_"
     remap.comment <- "Log transform."
   }
+  else if (theWidget("remap_asfactor_radiobutton")$getActive())
+  {
+    action <- "asfactor"
+    remap.prefix <- "RMF"
+    remap.comment <- "Transform into a Factor."
+  }
+  else if (theWidget("remap_asnumeric_radiobutton")$getActive())
+  {
+    action <- "asnumeric"
+    remap.prefix <- "RMN"
+    remap.comment <- "Transform into a Numeric."
+  }
   
   # Check if the action is one that only works on numeric data, and we
   # have any categorical variables selected. If so put up an info
-  # dialogue and remove the cateorigcals from the list of variables to
+  # dialogue and remove the categoricals from the list of variables to
   # be imputed.
 
   classes <- unlist(lapply(vars, function(x) class(crs$dataset[[x]])))
@@ -4719,6 +4758,22 @@ executeTransformRemapPerform <- function()
   else if (action == "log")
   {
     remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- log(crs$',
+                                     'dataset[["%s"]])', sep=""),
+                               remap.prefix, vars, vars),
+                       collapse="\n")
+  }
+  else if (action == "asfactor")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- ',
+                                     'as.factor(crs$',
+                                     'dataset[["%s"]])', sep=""),
+                               remap.prefix, vars, vars),
+                       collapse="\n")
+  }
+  else if (action == "asnumeric")
+  {
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- ',
+                                     'as.numeric(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
                        collapse="\n")
@@ -5143,11 +5198,18 @@ summarySearch <- function(tv, search.str, start.iter)
 executeExploreTab <- function()
 {
   
-  ## Can not explore the data if there is no dataset.
+  # Can not explore the data if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
-  ## Ensure Sample does not require executing.
+  # [080315 gjw] Don't proceed if the variable selections have
+  # changed. For example, two targets might have been selected,
+  # resulting in a popup, but not yet resolved, and so many of the
+  # plots will fail.
+  
+  if (variablesHaveChanged("building a model")) return()
+
+  # Ensure Sample does not require executing.
 
   use.sample <- theWidget("explore_sample_checkbutton")$getActive()
   sampling <- theWidget("sample_checkbutton")$getActive()
@@ -6785,18 +6847,18 @@ current.evaluate.tab <- function()
 executeEvaluateTab <- function()
 {
 
-  ## CECK PRE-CONDITIONS.
+  # CHECK PRE-CONDITIONS:
   
-  # Ensure a dataset exists.
+  #   Ensure a dataset exists.
 
   if (noDatasetLoaded()) return()
 
-  # Obtain some background information.
+  #   Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
 
-  # Ensure we have at least one model to evaluate, otherwise warn the
-  # user and do nothing.
+  #   Ensure we have at least one model to evaluate, otherwise warn
+  #   the user and do nothing.
   
   if (is.null(mtypes))
   {
@@ -6805,7 +6867,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  # Ensure we recognise the model type.
+  #   Ensure we recognise the model type.
   
   if (length(setdiff(mtypes, .MODELLERS)) > 0)
   {
@@ -6817,7 +6879,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  # Ensure there is a model for each that is selected.
+  #   Ensure there is a model for each that is selected.
 
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
@@ -6830,9 +6892,9 @@ executeEvaluateTab <- function()
     return()
   }
 
-  # Ensure the appropriate package is loaded (in the case, for
-  # example, when loading a project and going straight to Evaluate,
-  # and wanting to run predict.svm on new data).
+  #   Ensure the appropriate package is loaded (in the case, for
+  #   example, when loading a project and going straight to Evaluate,
+  #   and wanting to run predict.svm on new data).
 
   if (.ADA %in%  mtypes &&
       ! packageIsAvailable("ada", "evaluate an adaboost model"))
@@ -6938,10 +7000,17 @@ executeEvaluateTab <- function()
     # dataset we do not include the target or the risk in the
     # variables, since they may not be present in the csv file that is
     # being loaded (if that option is active). Thus, in this case it
-    # is best to simply use the whole dataset for scoring. Does this
-    # always work?
-      
-    if (is.null(included) || theWidget("score_radiobutton")$getActive())
+    # is best to simply use the whole dataset for scoring. But, for
+    # the case where there are lots of columns that are ignored in the
+    # model building, if they have lots of NAs then the scoring is
+    # going to give NAs for RF, etc. (Pointed out by Ed Cox 9 Feb
+    # 2008.) In general, not sure how to handle this, except for now
+    # say that the schema must be identical in the scoring dataset to
+    # the training dataset (including the target, risk, and ignored
+    # columns). In fact,, if the target etc are the last columns then
+    # we can get away with it.
+
+    if (is.null(included)) # || theWidget("score_radiobutton")$getActive())
       testset0 <- "crs$testset"
     else
       testset0 <- sprintf("crs$testset[,%s]", included)
@@ -7328,7 +7397,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
 
 executeEvaluateRisk <- function(probcmd, testset, testname)
 {
-  ## Initial setup. 
+  # Initial setup. 
 
   TV <- "risk_textview"
   resetTextview(TV)
@@ -8366,7 +8435,8 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     score.file <- sprintf("%s_%s_score.csv",
                           gsub(" ", "_",
                                gsub("\\.[[:alnum:]]*", "",
-                                    gsub("(\\[|\\])", "", testname))),
+                                    gsub("(\\[|\\])", "",
+                                         gsub("\\*", "", testname)))),
                           mtype)
 
     # Obtain a list of the identity vartiables.
