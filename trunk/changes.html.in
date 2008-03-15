@@ -4,9 +4,18 @@
 
   <p>This is a brief <b>Rattle</b> change log, recording the major
     changes on each revision check-in. The current Rattle version
-    number is 2.2.N where N is Revision-132.</p>
+    number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+231 080315 Bug fix: score CSV uses all columns, ignore as train (Ed Cox)
+           If no CSV filename specified, load audit.csv (Tony Nolan)
+           Add AsFactor and AsNumeric to transform (Greg Rose)
+           Allow ByGroup transform to work without a group (Tony Nolan)
+           Bug fix: check Select tab executed before Explore is attempted.
+           Bug fix: drawTreeNodes incorrect with loss matrix (Rob Williams)
+           Bug fix: kmeans fails with NA's so use na.omit.
+           Bug fix: Transform tab should not expand to fill vertical space!
+230 080304 Add export of PMML for nnet (zementis.com)
 229 080304 Bug fix: risk plot - avoid integer overflow - use numeric.
 228 080303 Bug fix: Logic for TARGET handling could result in two targets!
 227 080302 Bug fix: Transform-Normalise-Centered had a syntax error.

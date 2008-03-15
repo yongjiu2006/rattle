@@ -77,14 +77,8 @@ Completed:
 plotcluster in fpc can plot many different plots. Perhaps plot several
 in the one plot. Need to determine which ones would be useful.
 
-========================================================================
+########################################################################
 IMPUTATION
-
-Proposer: Michael.
-
-Impute using KNN
-
-http://www.napier.ac.uk/depts/fhls/peas/imputation.asp
 
 ------------------------------------------------------------------------
 

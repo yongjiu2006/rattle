@@ -1,4 +1,11 @@
 \name{rattle_gui}
+\alias{on_help_normalise_activate}
+\alias{on_kmeans_hclust_centers_checkbutton_toggled}
+\alias{on_kmeans_iterate_checkbutton_toggled}
+\alias{on_libdata_combobox_changed}
+\alias{on_libdata_radiobutton_toggled}
+\alias{on_remap_radiobutton_toggled}
+\alias{update_libdata_combobox_entry}
 \alias{on_cleanup_radiobutton_toggled}
 \alias{on_impute_constant_radiobutton_toggled}
 \alias{on_normalise_radiobutton_toggled}

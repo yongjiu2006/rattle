@@ -2,7 +2,7 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2007-05-06 17:34:26 Graham>
+## Time-stamp: <2008-03-15 16:19:58 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -354,7 +354,7 @@ drawTreesAda <- function(model,
 {
   stopifnot(require(ada, quietly=TRUE))
   ntrees <- length(model$model$trees)
-  if (length(trees) == 1 && trees == 0) trees=1:ntrees
+  if (length(trees) == 1 && trees == 0) trees <- 1:ntrees
   for (i in trees)
   {
     newPlot()

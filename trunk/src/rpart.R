@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-12 20:52:35 Graham Williams>
+# Time-stamp: <2008-03-15 13:20:24 Graham Williams>
 #
 # RPART TAB
 #
@@ -510,18 +510,26 @@ list.rule.nodes.rpart <- function(model)
 }
 
 #
-# Modify draw.tree from maptree to draw rule nodes rather than sequential
-# numbers to label the leaves.
+# Modify draw.tree from maptree to draw rule nodes rather than
+# sequential numbers to label the leaves.
+#
+# 080315 change size from 2.5 to 4 so the percentages are not cramped
+# up---they did not use to but with a new version of R (not sure which
+# one) they did.
+#
+# 080315 Rob Williams noted that when using loss (e.g., 0,4,1,0) the
+# percentages being displayed are selecting the larger probabiliy, not
+# the correct probability.
 #
 drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
-                           size = 2.5 * cex, col = NULL, nodeinfo = FALSE,
+                           size = 4 * cex, col = NULL, nodeinfo = FALSE,
                            units = "", cases = "cases", 
                            digits = getOption("digits"),
                            decimals = 2,
                            print.levels = TRUE, new = TRUE) 
 {
-  if (new) 
-    plot.new()
+  if (new) plot.new()
+
   rtree <- length(attr(tree, "ylevels")) == 0
   tframe <- tree$frame
   rptree <- length(tframe$complexity) > 0
@@ -542,7 +550,8 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
   for (i in rev(depth)) x[i] <- 0.5 * (x[left.child[i]] + x[right.child[i]])
   nleaves <- sum(leaves)
   nnodes <- length(node)
-  if (rtree) {
+  if (rtree)
+  {
     dev <- tframe$dev
     pcor <- rep(0, nnodes)
     for (i in 1:nnodes) if (!leaves[i]) {
@@ -552,11 +561,14 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
     }
     pcor <- round(pcor/dev[1], 3) * 100
   }
-  else {
+  else
+  {
     crate <- rep(0, nnodes)
     trate <- 0
-    if (!rptree) {
-      for (i in 1:nnodes) {
+    if (!rptree)
+    {
+      for (i in 1:nnodes)
+      {
         yval <- tframe$yval[i]
         string <- paste("tframe$yprob[,\"", as.character(yval), 
                         "\"]", sep = "")
@@ -565,14 +577,31 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
           trate <- trate + tframe$n[i] * crate[i]
       }
     }
-    else {
-      for (i in 1:nnodes) {
+    else
+    {
+      for (i in 1:nnodes)
+      {
         yval <- tframe$yval[i]
         nlv <- floor(ncol(tframe$yval2)/2)
+        # [080315 gjw] Now sort the class rates and get the largest!!!
+        # But wouldn't we want to get the one corresponding to yval
+        # rather than the largest? It won't necessarily be the largest
+        # the when we use a loss matrix? The original code from
+        # draw.tree uses the largest, but for my purposes I was
+        # wanting the correct one! So I keep the index calculation
+        # (for notation) but replace it in the crate assignment with
+        # yval instead. With this change I don't think I affect too
+        # much. The trate variable is affected, but it is only printed
+        # with nodeinfo set to TRUE. I'm not sure the original is
+        # correct though. This is reported as the "total classified
+        # correct."
         index <- rev(order(tframe$yval2[i, 2:(nlv + 1)]))[1]
-        crate[i] <- tframe$yval2[i, (nlv + 1 + index)]
-        if (leaves[i]) 
+        # ORIG crate[i] <- tframe$yval2[i, (nlv + 1 + index1)]
+        crate[i] <- tframe$yval2[i, (nlv + 1 + yval)]
+        if (leaves[i])
+        {
           trate <- trate + tframe$n[i] * crate[i]
+        }
       }
     }
     crate <- round(crate, 3) * 100
@@ -620,8 +649,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
             string <- paste(string, v, sep = "")
             xl <- eval(parse(text = string))
             lf <- rf <- ""
-            for (k in 1:sp["ncat"]) if (tree$csplit[r, k] == 
-                1) 
+            for (k in 1:sp["ncat"]) if (tree$csplit[r, k] == 1) 
                 lf <- paste(lf, xl[k], sep = ",")
             else rf <- paste(rf, xl[k], sep = ",")
             if (!print.levels) 
@@ -644,15 +672,17 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
         string <- paste(as.character(v), "< - >", round(val, decimals))
     }
     text.default(x[1], y[1], string, cex = cex)
-    if (nodeinfo) {
-        n <- tframe$n[1]
-        if (rtree) {
-            z <- round(tframe$yval[1], digits)
-            r <- pcor[1]
-            string <- paste(z, " ", units, "; ", n, " ", cases, 
-                "; ", r, "%", sep = "")
-        }
-        else {
+    if (nodeinfo)
+    {
+      n <- tframe$n[1]
+      if (rtree)
+      {
+        z <- round(tframe$yval[1], digits)
+        r <- pcor[1]
+        string <- paste(z, " ", units, "; ", n, " ", cases, 
+                        "; ", r, "%", sep = "")
+      }
+      else {
             z <- attr(tree, "ylevels")[tframe$yval[1]]
             r <- crate[1]
             string <- paste(z, "; ", n, " ", cases, "; ", r, 
@@ -660,122 +690,129 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
         }
         text.default(x[1], y[1] - ychr, string, cex = cex)
     }
-    for (i in 2:nnodes) {
-        ytop <- ychr * (as.integer(nodeinfo) + 1)
-        if (y[i] < y[i - 1]) {
-            lines(c(x[i - 1], x[i]), c(y[i - 1] - ytop, y[i - 
-                1] - ytop))
-            lines(c(x[i], x[i]), c(y[i - 1] - ytop, y[i] + ychr))
+  for (i in 2:nnodes)
+  {
+    ytop <- ychr * (as.integer(nodeinfo) + 1)
+    if (y[i] < y[i-1])
+    {
+      lines(c(x[i-1], x[i]), c(y[i-1] - ytop, y[i-1] - ytop))
+      lines(c(x[i], x[i]), c(y[i-1] - ytop, y[i] + ychr))
+    }
+    else
+    {
+      lines(c(x[parent[i]], x[i]), c(y[parent[i]] - ytop, y[parent[i]] - ytop))
+      lines(c(x[i], x[i]), c(y[parent[i]] - ytop, y[i] + ychr))
+    }
+    if (!leaves[i])
+    {
+      v <- as.character(tframe$var[i])
+      if (rptree)
+      {
+        k <- 1
+        for (j in 1:(i-1))
+        {
+          m <- tframe$ncompete[j]
+          if (m > 0) k <- k + m + 1
+          m <- tframe$nsurrogate[j]
+          if (m > 0) k <- k + m
+        }
+        sp <- tree$splits[k, ]
+        val <- sp["index"]
+        if (sp["ncat"] > 1) {
+          r <- sp["index"]
+          string <- "attributes(tree)$xlevels$"
+          string <- paste(string, v, sep = "")
+          xl <- eval(parse(text = string))
+          lf <- rf <- ""
+          for (k in 1:sp["ncat"])
+            if (tree$csplit[r, k] == 1) 
+              lf <- paste(lf, xl[k], sep = ",")
+            else rf <- paste(rf, xl[k], sep = ",")
+          if (!print.levels) 
+            string <- v
+          else if (nchar(lf) + nchar(rf) > 10) # Avoid too long
+            string <- v
+          else
+            string <- paste(lf, "=", v, "=", rf)
         }
         else {
-            lines(c(x[parent[i]], x[i]), c(y[parent[i]] - ytop, 
-                y[parent[i]] - ytop))
-            lines(c(x[i], x[i]), c(y[parent[i]] - ytop, y[i] + 
-                ychr))
+          if (sp["ncat"] < 0) 
+            op <- "< - >"
+          else op <- "> - <"
+          string <- paste(v, op, round(val, decimals))
         }
-        if (!leaves[i]) {
-            v <- as.character(tframe$var[i])
-            if (rptree) {
-                k <- 1
-                for (j in 1:(i - 1)) {
-                  m <- tframe$ncompete[j]
-                  if (m > 0) 
-                    k <- k + m + 1
-                  m <- tframe$nsurrogate[j]
-                  if (m > 0) 
-                    k <- k + m
-                }
-                sp <- tree$splits[k, ]
-                val <- sp["index"]
-                if (sp["ncat"] > 1) {
-                  r <- sp["index"]
-                  string <- "attributes(tree)$xlevels$"
-                  string <- paste(string, v, sep = "")
-                  xl <- eval(parse(text = string))
-                  lf <- rf <- ""
-                  for (k in 1:sp["ncat"]) if (tree$csplit[r, 
-                    k] == 1) 
-                    lf <- paste(lf, xl[k], sep = ",")
-                  else rf <- paste(rf, xl[k], sep = ",")
-                  if (!print.levels) 
-                    string <- v
-                  else if (nchar(lf) + nchar(rf) > 10) # Avoid too long
-                    string <- v
-                  else string <- paste(lf, "=", v, "=", rf)
-                }
-                else {
-                  if (sp["ncat"] < 0) 
-                    op <- "< - >"
-                  else op <- "> - <"
-                  string <- paste(v, op, round(val, decimals))
-                }
-            }
-            else {
-                val <- substring(as.character(tframe$splits[i, 
-                  1]), 2)
-                string <- paste(as.character(v), "< - >", round(val, decimals))
-            }
-            text.default(x[i], y[i], string, cex = cex)
-            if (nodeinfo) {
-                n <- tframe$n[i]
-                if (rtree) {
-                  z <- round(tframe$yval[i], digits)
-                  r <- pcor[i]
-                  string <- paste(z, " ", units, "; ", n, " ", 
-                    cases, "; ", r, "%", sep = "")
-                }
-                else {
-                  z <- attr(tree, "ylevels")[tframe$yval[i]]
-                  r <- crate[i]
-                  string <- paste(z, "; ", n, " ", cases, "; ", 
-                    r, "%", sep = "")
-                }
-                text.default(x[i], y[i] - ychr, string, cex = cex)
-            }
+      }
+      else {
+        val <- substring(as.character(tframe$splits[i, 
+                                                    1]), 2)
+        string <- paste(as.character(v), "< - >", round(val, decimals))
+      }
+      text.default(x[i], y[i], string, cex = cex)
+      if (nodeinfo) {
+        n <- tframe$n[i]
+        if (rtree) {
+          z <- round(tframe$yval[i], digits)
+          r <- pcor[i]
+          string <- paste(z, " ", units, "; ", n, " ", 
+                          cases, "; ", r, "%", sep = "")
         }
         else {
-            if (box == 0) {
-                lines(c(x[i], x[i]), c(y[i], y[i] + ychr))
-                lines(c(x[i] - xbh, x[i] + xbh), c(y[i], y[i]))
-            }
-            else {
-                # points(x[i], y[i], pch = pch, cex = size, col = kol[x[i]])
-            }
-            if (rtree) {
-                z <- round(tframe$yval[i], digits)
-                text.default(x[i], y[i] - ybx, paste(z, units, 
-                  sep = " "), cex = cex)
-            }
-            else {
-                z <- attr(tree, "ylevels")[tframe$yval[i]]
-                text.default(x[i], y[i] - ybx, z, cex = cex)
-            }
-            n <- tframe$n[i]
-            text.default(x[i], y[i] - ybx - ychr, paste(n, cases,
-                sep = " "), cex = cex)
-            text.default(x[i], y[i] - 1.6*ybx - ychr,
-                         paste(crate[i], "%", sep = ""), cex = cex)
-                         #paste(crate[i], "%/", proportions[i], sep = ""), cex = cex)
-            if (box != 0)
-            {
-                # ORIG text.default(x[i], y[i], as.character(x[i]), 
-                text.default(x[i], y[i], as.character(leafnode[x[i]]),
-                  cex = cex, col=kol[x[i]], font=2)
-            }    
+          z <- attr(tree, "ylevels")[tframe$yval[i]]
+          r <- crate[i]
+          string <- paste(z, "; ", n, " ", cases, "; ", 
+                          r, "%", sep = "")
         }
+        text.default(x[i], y[i] - ychr, string, cex = cex)
+      }
     }
-    if (nodeinfo) {
-        if (rtree) 
-            string <- paste("Total deviance explained =", sum(pcor), 
-                "%")
-        else string <- paste("Total classified correct =", trate, 
-            "%")
-        if (box == 0) 
-            text.default(mean(x), ymin - 3.5 * ychr, string, cex = 1.2 * 
-                cex)
-        else text.default(mean(x), ymin - 2.2 * ybx, string, 
-            cex = 1.2 * cex)
+    else
+    {
+      if (box == 0)
+      {
+        lines(c(x[i], x[i]), c(y[i], y[i] + ychr))
+        lines(c(x[i] - xbh, x[i] + xbh), c(y[i], y[i]))
+      }
+      else
+      {
+        # points(x[i], y[i], pch = pch, cex = size, col = kol[x[i]])
+      }
+      if (rtree)
+      {
+        z <- round(tframe$yval[i], digits)
+        text.default(x[i], y[i] - ybx, paste(z, units, 
+                                             sep = " "), cex = cex)
+      }
+      else
+      {
+        z <- attr(tree, "ylevels")[tframe$yval[i]]
+        text.default(x[i], y[i] - ybx, z, cex = cex)
+      }
+      n <- tframe$n[i]
+      text.default(x[i], y[i] - ybx - ychr,
+                   paste(n, cases, sep = " "), cex=cex)
+      text.default(x[i], y[i] - 1.6*ybx - ychr,
+                   paste(crate[i], "%", sep = ""), cex=cex)
+      #paste(crate[i], "%/", proportions[i], sep = ""), cex = cex)
+      if (box != 0)
+      {
+        # ORIG text.default(x[i], y[i], as.character(x[i]), 
+        text.default(x[i], y[i], as.character(leafnode[x[i]]),
+                     cex = cex, col=kol[x[i]], font=2)
+      }    
     }
+  }
+  if (nodeinfo) {
+    if (rtree) 
+      string <- paste("Total deviance explained =", sum(pcor), 
+                      "%")
+    else string <- paste("Total classified correct =", trate, 
+                         "%")
+    if (box == 0) 
+      text.default(mean(x), ymin - 3.5 * ychr, string, cex = 1.2 * 
+                   cex)
+    else text.default(mean(x), ymin - 2.2 * ybx, string, 
+                      cex = 1.2 * cex)
+  }
 }
 
 exportRpartTab <- function()
