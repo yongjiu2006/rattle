@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-19 14:09:15 Graham>
+## Time-stamp: <2008-03-19 19:51:01 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -31,14 +31,19 @@ newProject <- function()
   }
   resetRattle()
   ## TODO Plenty of other things that should be reset as well.
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.DATA.NAME))
-  switchToPage(.NOTEBOOK.DATA.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.DATA.NAME))
+  switchToPage(crv$NOTEBOOK.DATA.NAME)
   
 }
   
 saveProject <- function()
 {
 
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  crs <- crs
+  
   ## Pre-conditions
   
   if (noDatasetLoaded()) return()
@@ -51,7 +56,8 @@ saveProject <- function()
                                  "gtk-save", GtkResponseType["accept"])
 
   dialog$setCurrentName(get.stem(crs$dataname))
-
+  if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
+  
   ff <- gtkFileFilterNew()
   ff$setName("Rattle Files")
   ff$addPattern("*.rattle")
@@ -155,7 +161,10 @@ saveProject <- function()
            sprintf('save(crs, file="%s", compress=TRUE)', save.name))
   save(crs, file=save.name, compress=TRUE)
   set.cursor()
-  setDefaultPath(save.name)
+
+  # Record the cwd for projects.
+  
+  crs$pwd <<- dirname(save.name)
   
   setStatusBar("The current project has been saved to", save.name)
 }
@@ -185,6 +194,8 @@ loadProject <- function()
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-open", GtkResponseType["accept"])
 
+  if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
+  
   ff <- gtkFileFilterNew()
   ff$setName("Rattle Files")
   ff$addPattern("*.rattle")
@@ -220,16 +231,19 @@ loadProject <- function()
 
   set.cursor("watch")
 
-  .NOTEBOOK$setCurrentPage(0)
+  crv$NOTEBOOK$setCurrentPage(0)
   load(load.name)
-  setDefaultPath(load.name)
+
+  # Record the cwd for projects.
   
-  ## Now update all appropriate textviews and associated data.
+  crs$pwd <<- dirname(load.name)
+  
+  # Now update all appropriate textviews and associated data.
 
   resetRattle()  # Seems appropriate to clear out the crs
   setRattleTitle(basename(load.name))
 
-  ## DATA
+  # DATA
 
   theWidget("csv_filechooserbutton")$setFilename("")
   

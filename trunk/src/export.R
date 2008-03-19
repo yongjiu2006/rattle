@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-11-25 15:21:50 Graham Williams>
+## Time-stamp: <2008-03-19 06:41:49 Graham Williams>
 ##
 ## Implement functionality associated with the Export button and Menu.
 ##
@@ -22,36 +22,36 @@ dispatchExportButton <- function()
   
   ## Check which tab of notebook and dispatch to appropriate execute action
 
-  ct <- getCurrentPageLabel(.NOTEBOOK)
+  ct <- getCurrentPageLabel(crv$NOTEBOOK)
 
 ## Am now using the Cairo device with a Save button
-##   if (ct == .NOTEBOOK.EXPLORE.NAME)
+##   if (ct == crv$NOTEBOOK.EXPLORE.NAME)
 ##   {  
 ##     exportExploreTab()
 ##   }
 ##   else
-  if (ct == .NOTEBOOK.CLUSTER.NAME)
+  if (ct == crv$NOTEBOOK.CLUSTER.NAME)
   {  
     exportClusterTab()
   }
-  else if (ct == .NOTEBOOK.MODEL.NAME)
+  else if (ct == crv$NOTEBOOK.MODEL.NAME)
   {
     exportModelTab()
   }
-  else if (ct == .NOTEBOOK.DATA.NAME ||
-           ct == .NOTEBOOK.SELECT.NAME ||
-           ct == .NOTEBOOK.TRANSFORM.NAME)
+  else if (ct == crv$NOTEBOOK.DATA.NAME ||
+           ct == crv$NOTEBOOK.SELECT.NAME ||
+           ct == crv$NOTEBOOK.TRANSFORM.NAME)
   {
     # For any of the DATA, SELECT, or TRANSFORM tabs, the logical
     # thing to EXPORT is the dataset.
     
     exportDataTab()
   }
-##   else if (ct == .NOTEBOOK.EVALUATE.NAME)
+##   else if (ct == crv$NOTEBOOK.EVALUATE.NAME)
 ##   {
 ##     exportEvaluateTab()
 ##   }
-  else  if (ct == .NOTEBOOK.LOG.NAME) 
+  else  if (ct == crv$NOTEBOOK.LOG.NAME) 
   {
     exportLogTab()
   }

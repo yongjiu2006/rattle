@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+080318 Migrate all global variables into the crv$ structure - avoid warnings
 080315 Add a Last Dataset/Project option (Tony Nolan)
 080305 Implement silhouette plot for kmeans clusters
 080203 Ed Cox: Add row selection to Select Tab (perhaps using "subset").

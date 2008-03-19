@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-11-24 22:48:23 Graham Williams>
+## Time-stamp: <2008-03-16 22:35:09 Graham Williams>
 ##
 ## Implement LOG functionality.
 ##
@@ -35,10 +35,14 @@ crs <- NULL"))
 
 startLog <- function(msg=NULL)
 {
-  ## Output a suitable separator to the log textview, and if there is
-  ## an optional MSG, display that message, as an introduction to this
-  ## section.
+  # Output a suitable separator to the log textview, and if there is
+  # an optional MSG, display that message, as an introduction to this
+  # section.
   
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+  
+  .START.LOG.COMMENT <- .START.LOG.COMMENT
+
   appendLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
                 "\n## Rattle timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
@@ -48,6 +52,11 @@ startLog <- function(msg=NULL)
 
 appendLog <- function(start, ..., sep=" ", no.start=FALSE)
 {
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+  
+  .START.LOG.COMMENT <- .START.LOG.COMMENT
+  .END.LOG.COMMENT <- .END.LOG.COMMENT
+
   if (no.start)
     msg <- paste(sep=sep, start, ...)
   else

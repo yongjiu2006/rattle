@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-26 19:21:46 Graham>
+## Time-stamp: <2008-03-19 06:42:18 Graham Williams>
 ##
 ## Paradigm control.
 ##
@@ -17,10 +17,10 @@ on_twoclass_radiobutton_toggled <- function(button)
 
     ## Add the new tab after the transform tab.
     
-    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME)
+    ep <- getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.TRANSFORM.NAME)
     
-    .NOTEBOOK$insertPage(.NOTEBOOK.MODEL.WIDGET, .NOTEBOOK.MODEL.LABEL, ep+1)
-    .NOTEBOOK$insertPage(.NOTEBOOK.EVALUATE.WIDGET,.NOTEBOOK.EVALUATE.LABEL,ep+2)
+    crv$NOTEBOOK$insertPage(crv$NOTEBOOK.MODEL.WIDGET, crv$NOTEBOOK.MODEL.LABEL, ep+1)
+    crv$NOTEBOOK$insertPage(crv$NOTEBOOK.EVALUATE.WIDGET,crv$NOTEBOOK.EVALUATE.LABEL,ep+2)
 
     ## If the previous current page is not one of the common pages,
     ## then make the newly inserted page the current page. This
@@ -30,17 +30,17 @@ on_twoclass_radiobutton_toggled <- function(button)
     ## Explore from the common pages list! Will result in one oddity,
     ## but we might get away with it.
 
-    if (crs$page != "" && crs$page %notin% .NOTEBOOK.COMMON.NAMES)
+    if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
     {
-      .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.MODEL.NAME))
-      switchToPage(.NOTEBOOK.MODEL.NAME)
+      crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.MODEL.NAME))
+      switchToPage(crv$NOTEBOOK.MODEL.NAME)
     }
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
   {
-    .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.MODEL.NAME))
-    .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.EVALUATE.NAME))
+    crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.MODEL.NAME))
+    crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.EVALUATE.NAME))
   }
 }
 
@@ -51,27 +51,27 @@ on_unsupervised_radiobutton_toggled <- function(button)
 
     ## Add the new tab after the transform tab.
     
-    ep <- getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME)
+    ep <- getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.TRANSFORM.NAME)
     
-    .NOTEBOOK$insertPage(.NOTEBOOK.CLUSTER.WIDGET, .NOTEBOOK.CLUSTER.LABEL,
+    crv$NOTEBOOK$insertPage(crv$NOTEBOOK.CLUSTER.WIDGET, crv$NOTEBOOK.CLUSTER.LABEL,
                          ep+1)
-    .NOTEBOOK$insertPage(.NOTEBOOK.ASSOCIATE.WIDGET, .NOTEBOOK.ASSOCIATE.LABEL,
+    crv$NOTEBOOK$insertPage(crv$NOTEBOOK.ASSOCIATE.WIDGET, crv$NOTEBOOK.ASSOCIATE.LABEL,
                          ep+2)
 
     ## If the previous current page is not one of the common pages,
     ## then make the newly inserted page the current page.
 
-    if (crs$page != "" && crs$page %notin% .NOTEBOOK.COMMON.NAMES)
+    if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
     {
-      .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
-      switchToPage(.NOTEBOOK.CLUSTER.NAME)
+      crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.CLUSTER.NAME))
+      switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
     }
     
     setStatusBar("Exposed the Cluster and Associate tabs")
   }
   else
   {
-    .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
-    .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.ASSOCIATE.NAME))
+    crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.CLUSTER.NAME))
+    crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.ASSOCIATE.NAME))
   }
 }

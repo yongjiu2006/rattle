@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-01-30 21:39:26 Graham Williams>
+## Time-stamp: <2008-03-19 07:00:39 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -17,7 +17,7 @@ on_regression_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .MODEL$setCurrentPage(.MODEL.GLM.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.GLM.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -27,7 +27,7 @@ on_dtree_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .MODEL$setCurrentPage(.MODEL.RPART.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -37,8 +37,8 @@ on_boost_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    ## .MODEL$setCurrentPage(.MODEL.GBM.TAB)
-    .MODEL$setCurrentPage(.MODEL.ADA.TAB)
+    ## crv$MODEL$setCurrentPage(crv$MODEL.GBM.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.ADA.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -48,7 +48,7 @@ on_nnet_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .MODEL$setCurrentPage(.MODEL.NNET.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.NNET.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -58,7 +58,7 @@ on_rf_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .MODEL$setCurrentPage(.MODEL.RF.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.RF.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -68,7 +68,7 @@ on_svm_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .MODEL$setCurrentPage(.MODEL.SVM.TAB)
+    crv$MODEL$setCurrentPage(crv$MODEL.SVM.TAB)
     setTextview("confusion_textview")
   }
   setStatusBar()
@@ -99,7 +99,13 @@ on_kernlab_radiobutton_toggled <- function(button)
 
 currentModelTab <- function()
 {
-  lb <- getCurrentPageLabel(.MODEL)
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+  
+  .EVALUATE <- .EVALUATE
+  .SVM <- .SVM
+  .KSVM <- .KSVM
+
+  lb <- getCurrentPageLabel(crv$MODEL)
   if (lb == .SVM && theWidget("kernlab_radiobutton")$getActive())
     lb <- .KSVM
   return(lb)
