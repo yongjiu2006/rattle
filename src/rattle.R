@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-15 16:48:51 Graham Williams>
+# Time-stamp: <2008-03-19 19:34:40 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Mar 2008"
+VERSION.DATE <- "Released 15 Mar 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -88,6 +88,101 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 rattle <- function(csvname=NULL)
 {
+
+  # [080319 gjw] Create GLOBAL to avoid "no visible binding" from "R
+  # CMD check" by adding all hidden variables to it. Previously they
+  # all began with "." as in crv$ADA used to be .ADA. R CMD check
+  # complained a lot, once for each of these, so putting them all into
+  # crv means only one complaint!!!!
+
+  crv <<- list()
+
+  ##   .ADA <- NULL
+##   .ADA.NTREE.DEFAULT <- NULL
+##   .CATEGORICAL <- NULL
+##   .CLUSTER <- NULL
+##   .CLUSTER.HCLUST.TAB <- NULL
+##   .CLUSTER.KMEANS.TAB <- NULL
+##   .COLUMN <- NULL
+##   .CONTINUOUS <- NULL
+##   .DATA <- NULL
+##   .DATA.ARFF.TAB <- NULL
+##   .DATA.CSV.TAB <- NULL
+##   .DATA.DATAENTRY.TAB <- NULL
+##   .DATA.LIB.TAB <- NULL
+##   .DATA.ODBC.TAB <- NULL
+##   .DATA.RDATA.TAB <- NULL
+##   .DATA.RDATASET.TAB <- NULL
+##   .END.LOG.COMMENT <- NULL
+##   .EVALUATE <- NULL
+##   .EVALUATE.CONFUSION.TAB <- NULL
+##   .EVALUATE.LIFT.TAB <- NULL
+##   .EVALUATE.PRECISION.TAB <- NULL
+##   .EVALUATE.RISK.TAB <- NULL
+##   .EVALUATE.ROC.TAB <- NULL
+##   .EVALUATE.SENSITIVITY.TAB <- NULL
+##   .EXPLORE <- NULL
+##   .EXPLORE.CORRELATION.TAB <- NULL
+##   .EXPLORE.GGOBI.TAB <- NULL
+##   .EXPLORE.HIERCOR.TAB <- NULL
+##   .EXPLORE.PLOT.TAB <- NULL
+##   .EXPLORE.PRCOMP.TAB <- NULL
+##   .EXPLORE.SUMMARY.TAB <- NULL
+##   .GLM <- NULL
+##   .IMPUTE <- NULL
+##   .KSVM <- NULL
+##   .LOG.COMMENT <- NULL
+##   .MODEL <- NULL
+##   .MODEL.ADA.TAB <- NULL
+##   .MODEL.GLM.TAB <- NULL
+##   .MODEL.NNET.TAB <- NULL
+##   .MODEL.RF.TAB <- NULL
+##   .MODEL.RPART.TAB <- NULL
+##   .MODEL.SVM.TAB <- NULL
+##   .MODELLERS <- NULL
+##   .NNET <- NULL
+##   .NOTEBOOK <- NULL
+##   .NOTEBOOK.ASSOCIATE.LABEL <- NULL
+##   .NOTEBOOK.ASSOCIATE.NAME <- NULL
+##   .NOTEBOOK.ASSOCIATE.WIDGET <- NULL
+##   .NOTEBOOK.CLUSTER.LABEL <- NULL
+##   .NOTEBOOK.CLUSTER.NAME <- NULL
+##   .NOTEBOOK.CLUSTER.WIDGET <- NULL
+##   .NOTEBOOK.COMMON.NAMES <- NULL
+##   .NOTEBOOK.DATA.NAME <- NULL
+##   .NOTEBOOK.EVALUATE.LABEL <- NULL
+##   .NOTEBOOK.EVALUATE.NAME <- NULL
+##   .NOTEBOOK.EVALUATE.WIDGET <- NULL
+##   .NOTEBOOK.EXPLORE.NAME <- NULL
+##   .NOTEBOOK.LOG.NAME <- NULL
+##   .NOTEBOOK.MODEL.LABEL <- NULL
+##   .NOTEBOOK.MODEL.NAME <- NULL
+##   .NOTEBOOK.MODEL.WIDGET <- NULL
+##   .NOTEBOOK.SELECT.NAME <- NULL
+##   .NOTEBOOK.TRANSFORM.NAME <- NULL
+##   .NOTEBOOK.TRANSFORM.NAME <- NULL
+##   .RF <- NULL
+##   .RF.MTRY.DEFAULT <- NULL
+##   .RF.NTREE.DEFAULT <- NULL
+##   .RF.SAMPSIZE.DEFAULT <- NULL
+##   .RPART <- NULL
+##   .RPART.CP.DEFAULT <- NULL
+##   .RPART.MAXDEPTH.DEFAULT <- NULL
+##   .RPART.MINBUCKET.DEFAULT <- NULL
+##   .RPART.MINSPLIT.DEFAULT <- NULL
+##   .START.LOG.COMMENT <- NULL
+##   .SVM <- NULL
+##   .SVMNB <- NULL
+##   .SVMNB.ESVM.TAB <- NULL
+##   .SVMNB.KSVM.TAB <- NULL
+##   .TRANSFORM <- NULL
+##   .TRANSFORM.CLEANUP.TAB <- NULL
+##   .TRANSFORM.IMPUTE.TAB <- NULL
+##   .TRANSFORM.NORMALISE.TAB <- NULL
+##   .TRANSFORM.OUTLIER.TAB <- NULL
+##   .TRANSFORM.REMAP.TAB <- NULL
+##   crs <- NULL
+##   rattleGUI <- NULL
 
   ## Ensure command line arguments look okay
 
@@ -193,7 +288,7 @@ rattle <- function(csvname=NULL)
   .KSVM  <<- "ksvm"
   .NNET  <<- "nnet"
 
-  .MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, .GLM, .NNET)
+  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, .GLM, .NNET)
   
   # RPART
   
@@ -220,10 +315,11 @@ rattle <- function(csvname=NULL)
   
   ## Global variables are generally a bad idea, but until a better idea
   ## comes to mind.
-  
+
   crs <<- list(dataset=NULL,
                dataname=NULL,
-               cwd=getwd(),
+               dwd=NULL, 	# Data Working Directory
+               pwd=NULL,	# Project Working Directory
                input=NULL,
                target=NULL,
                weights=NULL,
@@ -254,60 +350,60 @@ rattle <- function(csvname=NULL)
   ## that are needed for removing and inserting tabs in the notebook,
   ## depending on the selected paradigm.
   
-  .NOTEBOOK <<- theWidget("notebook")
+  crv$NOTEBOOK <<- theWidget("notebook")
 
-  .NOTEBOOK.DATA.NAME <<- "Data"
+  crv$NOTEBOOK.DATA.NAME <<- "Data"
 
-  .NOTEBOOK.SELECT.NAME <<- "Select"
+  crv$NOTEBOOK.SELECT.NAME <<- "Select"
 
-  .NOTEBOOK.EXPLORE.NAME <<- "Explore"
+  crv$NOTEBOOK.EXPLORE.NAME <<- "Explore"
 
-  .NOTEBOOK.TRANSFORM.NAME <<- "Transform"
+  crv$NOTEBOOK.TRANSFORM.NAME <<- "Transform"
 
-  .NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
-  .NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
-  .NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
+  crv$NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
+  crv$NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
+  crv$NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
 
-  .NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
-  .NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
-  .NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
+  crv$NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
+  crv$NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
+  crv$NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
 
-  .NOTEBOOK.MODEL.NAME     <<- "Model"
-  .NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
-  .NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
+  crv$NOTEBOOK.MODEL.NAME     <<- "Model"
+  crv$NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
+  crv$NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
 
-  .NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
-  .NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
-  .NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
+  crv$NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
+  crv$NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
+  crv$NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
 
-  .NOTEBOOK.LOG.NAME       <<- "Log"
+  crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
   ## Pages that are common to all paradigms.
 
-  .NOTEBOOK.COMMON.NAMES <<- c(.NOTEBOOK.DATA.NAME,
-                              .NOTEBOOK.TRANSFORM.NAME,
-                              .NOTEBOOK.SELECT.NAME,
-                              .NOTEBOOK.LOG.NAME)
+  crv$NOTEBOOK.COMMON.NAMES <<- c(crv$NOTEBOOK.DATA.NAME,
+                              crv$NOTEBOOK.TRANSFORM.NAME,
+                              crv$NOTEBOOK.SELECT.NAME,
+                              crv$NOTEBOOK.LOG.NAME)
   
   ## DATA tab pages.
 
-  .DATA              <<- theWidget("data_notebook")
-  .DATA.CSV.TAB      <<- getNotebookPage(.DATA, "csv")
-  .DATA.ARFF.TAB     <<- getNotebookPage(.DATA, "arff")
-  .DATA.RDATA.TAB    <<- getNotebookPage(.DATA, "rdata")
-  .DATA.RDATASET.TAB <<- getNotebookPage(.DATA, "rdataset")
-  .DATA.ODBC.TAB     <<- getNotebookPage(.DATA, "odbc")
-  .DATA.LIB.TAB      <<- getNotebookPage(.DATA, "libdata")
-  .DATA.DATAENTRY.TAB  <<- getNotebookPage(.DATA, "dataentry")
+  crv$DATA              <<- theWidget("data_notebook")
+  crv$DATA.CSV.TAB      <<- getNotebookPage(crv$DATA, "csv")
+  crv$DATA.ARFF.TAB     <<- getNotebookPage(crv$DATA, "arff")
+  crv$DATA.RDATA.TAB    <<- getNotebookPage(crv$DATA, "rdata")
+  crv$DATA.RDATASET.TAB <<- getNotebookPage(crv$DATA, "rdataset")
+  crv$DATA.ODBC.TAB     <<- getNotebookPage(crv$DATA, "odbc")
+  crv$DATA.LIB.TAB      <<- getNotebookPage(crv$DATA, "libdata")
+  crv$DATA.DATAENTRY.TAB  <<- getNotebookPage(crv$DATA, "dataentry")
 
   # Define the TRANSFORM tab pages
   
-  .TRANSFORM               <<- theWidget("transform_notebook")
-  .TRANSFORM.NORMALISE.TAB <<- getNotebookPage(.TRANSFORM, "normalise")
-  .TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(.TRANSFORM, "impute")
-  .TRANSFORM.REMAP.TAB     <<- getNotebookPage(.TRANSFORM, "remap")
-  .TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(.TRANSFORM, "outlier")
-  .TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(.TRANSFORM, "cleanup")
+  crv$TRANSFORM               <<- theWidget("transform_notebook")
+  crv$TRANSFORM.NORMALISE.TAB <<- getNotebookPage(crv$TRANSFORM, "normalise")
+  crv$TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(crv$TRANSFORM, "impute")
+  crv$TRANSFORM.REMAP.TAB     <<- getNotebookPage(crv$TRANSFORM, "remap")
+  crv$TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(crv$TRANSFORM, "outlier")
+  crv$TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(crv$TRANSFORM, "cleanup")
 
   .EXPLORE                 <<- theWidget("explore_notebook")
   .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
@@ -321,14 +417,14 @@ rattle <- function(csvname=NULL)
   .CLUSTER.KMEANS.TAB <<- getNotebookPage(.CLUSTER, "kmeans")
   .CLUSTER.HCLUST.TAB <<- getNotebookPage(.CLUSTER, "hclust")
   
-  .MODEL           <<- theWidget("model_notebook")
-  .MODEL.RPART.TAB <<- getNotebookPage(.MODEL, .RPART)
-  .MODEL.GLM.TAB   <<- getNotebookPage(.MODEL, .GLM)
-  .MODEL.ADA.TAB   <<- getNotebookPage(.MODEL, .ADA)
-  ## .MODEL.GBM.TAB   <<- getNotebookPage(.MODEL, .GBM)
-  .MODEL.RF.TAB    <<- getNotebookPage(.MODEL, .RF)
-  .MODEL.SVM.TAB   <<- getNotebookPage(.MODEL, .SVM)
-  .MODEL.NNET.TAB   <<- getNotebookPage(.MODEL, .NNET)
+  crv$MODEL           <<- theWidget("model_notebook")
+  crv$MODEL.RPART.TAB <<- getNotebookPage(crv$MODEL, .RPART)
+  crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, .GLM)
+  crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, .ADA)
+  ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
+  crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, .RF)
+  crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, .SVM)
+  crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, .NNET)
 
   .SVMNB           <<- theWidget("svm_notebook")
   .SVMNB.ESVM.TAB  <<- getNotebookPage(.SVMNB, "esvm")
@@ -358,11 +454,11 @@ rattle <- function(csvname=NULL)
   
   ## Turn off the sub-notebook tabs.
   
-  .DATA$setShowTabs(FALSE)
+  crv$DATA$setShowTabs(FALSE)
   .EXPLORE$setShowTabs(FALSE)
-  .TRANSFORM$setShowTabs(FALSE)
+  crv$TRANSFORM$setShowTabs(FALSE)
   .CLUSTER$setShowTabs(FALSE)
-  .MODEL$setShowTabs(FALSE)
+  crv$MODEL$setShowTabs(FALSE)
   .EVALUATE$setShowTabs(FALSE)
   
   # Do not enable ARFF option for versions before 2.5.0 where it was
@@ -412,8 +508,8 @@ rattle <- function(csvname=NULL)
   ## variables above, since a Execute on the Model tab runs the
   ## Cluster tab :-)
 
-  .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
-  .NOTEBOOK$removePage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.ASSOCIATE.NAME))
+  crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.CLUSTER.NAME))
+  crv$NOTEBOOK$removePage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.ASSOCIATE.NAME))
 
   while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
@@ -486,7 +582,7 @@ resetRattle <- function()
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.
 
-  .TRANSFORM$setCurrentPage(.TRANSFORM.NORMALISE.TAB)
+  crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
   theWidget("impute_constant_entry")$setText("")
@@ -499,7 +595,7 @@ resetRattle <- function()
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
 
-  .MODEL$setCurrentPage(.MODEL.RPART.TAB)
+  crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
 
@@ -681,6 +777,14 @@ noDatasetLoaded <- function()
 
 variablesHaveChanged <- function(action)
 {
+  # PARAMETERS
+  #
+  # action: a string that is displayed in the error dialogue.
+
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  crs <- crs 
+  
   if (length(crs$ignore) != length(getSelectedVariables("ignore")) ||
       length(crs$ident) != length(getSelectedVariables("ident")) ||
       length(crs$input) != length(getSelectedVariables("input")))
@@ -771,11 +875,13 @@ setStatusBar <- function(..., sep=" ")
 collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
                           width=getOption("width"), envir=parent.frame())
 {
-  ## TODO Should this use cat or print? Cat translates the \n to a
-  ## newline and doesn't precede the output by [1].  For pretty output
-  ## with sprintf() you probably want cat(), but if you have a vector
-  ## of formatted text and you want to look at it (as data), print()
-  ## would be better.
+  # TODO Should this use cat or print? Cat translates the \n to a
+  # newline and doesn't precede the output by [1].  For pretty output
+  # with sprintf() you probably want cat(), but if you have a vector
+  # of formatted text and you want to look at it (as data), print()
+  # would be better.
+
+  # TODO Should we be using collect.output?
 
   owidth <- getOption("width")
   options(width=width)
@@ -806,6 +912,8 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
 
 theWidget <- function(widget)
 {
+  rattleGUI <- rattleGUI # Global - to avoid a "NOTE" from "R CMD check"
+  
   return(rattleGUI$getWidget(widget))
 }
 
@@ -838,20 +946,37 @@ listBuiltModels <- function()
 #            is.null(crs$gbm) && is.null(crs$rf) &&
 #            is.null(crs$svm)))
   models <- c()
-  for (m in .MODELLERS)
+  for (m in crv$MODELLERS)
     if (not.null(eval(parse(text=sprintf("crs$%s", m)))))
       models <- c(models, m)
   return(models)
 }
 
-setDefaultPath <- function(filename)
-{
-  if (not.null(filename))
-  {
-    crs$cwd <<- dirname(filename)
-    setwd(crs$cwd)
-  }
-}
+## setDefaultPath <- function(filename)
+## {
+##   # REMOVE THIS FUNCTION - SEE NOTES BELOW. Simply assign direct to
+##   # crs$dwd and don't setwd.
+  
+##   # Record the default location for data. Also set R's current working
+##   # directory to the path. Note that I expect that for projects we
+##   # record the path as crs$pwd outside of this function but we don't
+##   # set R's cwd to it at any time. Note that we don't really need to
+##   # do this, in that we are moving R's cwd without the user actually
+##   # asking for this. Instead, we should perhaps not change cwd, but
+##   # record it in crs$dwd and then use
+##   # dialog$setCurrentFolder(crs$dwd), as I am doing now (080319) for
+##   # projects.
+  
+##   # Assign GLOBAL to avoid "no visible binding" from "R CMD check"
+  
+##   crs <- crs
+  
+##   if (not.null(filename))
+##   {
+##     crs$dwd <<- dirname(filename)
+##     setwd(crs$dwd)
+##   }
+## }
 
 ########################################################################
 ##
@@ -1016,6 +1141,10 @@ copyPlotToClipboard <- function(dev.num=dev.cur())
 
 savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 {
+  # Assign GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  crs <- crs 
+
   if (is.null(dev.list()))
   {
     warnDialog("There are currently no active graphics devices.",
@@ -1427,17 +1556,16 @@ quit_rattle <- function(action, window)
 }
 
 ########################################################################
-##
-## DATA TAB
-##
+#
+# DATA TAB
+#
 
-##----------------------------------------------------------------------
-##
-## Interface Actions
-##
+#----------------------------------------------------------------------
+#
+# Interface Actions
+#
 display_click_execute_message <- function(button)
 {
-  #cat("XXX Display Click Execute message XXX\n")
   theWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
               "Now click the Execute button to load the dataset.",
@@ -1450,7 +1578,6 @@ display_click_execute_message <- function(button)
 
 display_click_odbc_execute_message <- function(button)
 {
-  #cat("XXX Display Click Execute message XXX\n")
   theWidget("data_textview")$setWrapMode("word")
   setTextview("data_textview",
               "Now click the Execute button to load the dataset.",
@@ -1485,7 +1612,7 @@ on_csv_radiobutton_toggled <- function(button)
   #cat("XXX CSV Radio Toggle XXX\n")
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.CSV.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.CSV.TAB)
   }
   setStatusBar()
 }
@@ -1515,14 +1642,14 @@ on_csv_filechooserbutton_update_preview <- function(button)
   
   while (gtkEventsPending()) gtkMainIteration()
 
-  # CAN'T GO HERE - NEED ANOTHER CALLBACK button$setCurrentFolder(crs$cwd)
+  # CAN'T GO HERE - NEED ANOTHER CALLBACK button$setCurrentFolder(crs$dwd)
 }
 
 on_arff_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.ARFF.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.ARFF.TAB)
   }
   setStatusBar()
 }
@@ -1553,14 +1680,14 @@ on_rdata_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.RDATA.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.RDATA.TAB)
   }
   setStatusBar()
 }
 
 on_rdata_filechooserbutton_update_preview<- function(button)
 {
-  #button$setCurrentFolder(crs$cwd)
+  #button$setCurrentFolder(crs$dwd)
 
   if (length(button$listFilters()) == 0)
   {
@@ -1583,12 +1710,12 @@ load_rdata_set_combo <- function(button)
 {
   TV <- "data_textview"
   
-  ## Collect relevant data
+  # Collect relevant data
 
   filename <- theWidget("rdata_filechooserbutton")$getFilename()
-  setDefaultPath(filename)
+  crs$dwd <<- dirname(filename)
   
-  ## Fix filename for MS - otherwise eval/parse strip the \\.
+  # Fix filename for MS - otherwise eval/parse strip the \\.
 
   if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
@@ -1626,7 +1753,7 @@ on_rdataset_radiobutton_toggled <- function(button)
   #cat("XXX R Dataset Radio toggled XXX\n")
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.RDATASET.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.RDATASET.TAB)
   }
   setStatusBar()
 }
@@ -1638,7 +1765,7 @@ on_libdata_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.LIB.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.LIB.TAB)
   }
   setStatusBar()
 }
@@ -1698,14 +1825,14 @@ on_data_entry_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .DATA$setCurrentPage(.DATA.DATAENTRY.TAB)
+    crv$DATA$setCurrentPage(crv$DATA.DATAENTRY.TAB)
   }
   setStatusBar()
 }
 
 on_odbc_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) .DATA$setCurrentPage(.DATA.ODBC.TAB)
+  if (button$getActive()) crv$DATA$setCurrentPage(crv$DATA.ODBC.TAB)
   setStatusBar()
 }
 
@@ -1880,16 +2007,19 @@ executeDataCSV <- function()
   # Collect relevant data
 
   filename <- theWidget("csv_filechooserbutton")$getFilename()
-  setDefaultPath(filename)
   
-  # Error exit if no filename is given
-
   if (is.null(filename))
   {
+    # No filename has been supplied so give the user the option to use
+    # the Rattle supplied sample dataset.
+    
     if (is.null(questionDialog("No CSV filename has been provided.",
                                "Would you like to use the sample audit",
                                "dataset that comes with Rattle?")))
     {
+      # If no filename is given and the user decides not to go with
+      # the sample dataset the we will return without doing anything.
+
       errorDialog("No CSV Filename has been chosen yet.",
                   "You must choose one before execution.",
                   "Change the radio button selection if you prefer to link",
@@ -1898,12 +2028,26 @@ executeDataCSV <- function()
     }
     else
     {
+      # [080515 gjw] Use the Rattle provided sample dataset.
+      
       filename <- system.file("csv", "audit.csv", package="rattle")
       theWidget("csv_filechooserbutton")$setFilename(filename)
+
+      # [080517 gjw] We need to clear the event list since otherwise
+      # there are three (I don't know why three) calls to
+      # display_click_execute_message that get executed AFTER the
+      # textview is updated with the summary of the new dataset, and
+      # thus wiping out the text in the summary with a message that
+      # says the Execute button needs to be pressed.
+
+      while (gtkEventsPending()) gtkMainIteration()
+      
     }
   }
 
-  ## If there is a model warn about losing it.
+  crs$dwd <<- dirname(filename)
+
+  # If there is a model warn about losing it.
 
   if ( not.null(listBuiltModels()) )
   {
@@ -1919,11 +2063,11 @@ executeDataCSV <- function()
       return()
   }
 
-  ## Fix filename for MS - otherwise eval/parse strip the \\.
+  # Fix filename for MS - otherwise eval/parse strip the \\.
 
   if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
-  ## Get the separator to use.
+  # Get the separator to use.
 
   sep = theWidget("csv_separator_entry")$getText()
   if (sep != ",")
@@ -1931,7 +2075,7 @@ executeDataCSV <- function()
   else
     sep <- ""
 
-  ## Check whether we expect a header or not.
+  # Check whether we expect a header or not.
 
   if (theWidget("csv_header_checkbutton")$getActive())
     hdr <- ""
@@ -1940,13 +2084,13 @@ executeDataCSV <- function()
   
   nastring <- ', na.strings=c(".", "NA", "", "?")'
   
-  ## Generate commands to read the data and then display the structure.
+  # Generate commands to read the data and then display the structure.
 
   read.cmd <- sprintf('crs$dataset <<- read.csv("%s"%s%s%s)',
                       filename, hdr, sep, nastring)
   str.cmd  <- "str(crs$dataset)"
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
@@ -1962,7 +2106,7 @@ executeDataCSV <- function()
   appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
                   collectOutput(str.cmd))
   
-  ## Update the select treeview and samples.
+  # Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
@@ -1992,7 +2136,7 @@ executeDataARFF <- function()
   ## Collect relevant data
 
   filename <- theWidget("arff_filechooserbutton")$getFilename()
-  setDefaultPath(filename)
+  crs$dwd <<- dirname(filename)
   
   ## Error exit if no filename is given
 
@@ -2181,7 +2325,7 @@ executeDataRdata <- function()
   ## Collect relevant data
 
   filename <- theWidget("rdata_filechooserbutton")$getFilename()
-  setDefaultPath(filename)
+  crs$dwd <<- dirname(filename)
   dataset <- theWidget("rdata_combobox")$getActiveText()
 
   ## Error exit if no filename is given
@@ -3388,6 +3532,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  autoroles=TRUE)
 {
 
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  crs <- crs 
+  crv <- crv
+  
   # Set up initial information about variables throughout Rattle,
   # including the Variable tab's variable model, the Explore tab's
   # categorical and continuous models, and the Modelling tab defaults
@@ -3777,11 +3926,13 @@ inputVariables <- function(numonly=FALSE)
 
 used.variables <- function(numonly=FALSE)
 {
-  ## Return, as a comma separated list (as a string) the list of all
-  ## variable indicies for those that are not ignored. If the list
-  ## contains all variables except for the ignored variables, then
-  ## return NULL.
+  # Return, as a comma separated list (as a string) the list of all
+  # variable indicies for those that are not ignored. If the list
+  # contains all variables except for the ignored variables, then
+  # return NULL.
 
+  crs <- crs # Global - to avoid a "NOTE" from "R CMD check"
+  
   ii <- union(getVariableIndicies(crs$ignore), getVariableIndicies(crs$ident))
 
   if (numonly)
@@ -3842,7 +3993,7 @@ on_impute_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    .TRANSFORM$setCurrentPage(.TRANSFORM.IMPUTE.TAB)
+    crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.IMPUTE.TAB)
   }
   setStatusBar()
 }
@@ -3851,7 +4002,7 @@ on_normalise_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    .TRANSFORM$setCurrentPage(.TRANSFORM.NORMALISE.TAB)
+    crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   }
   setStatusBar()
 }
@@ -3860,7 +4011,7 @@ on_remap_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    .TRANSFORM$setCurrentPage(.TRANSFORM.REMAP.TAB)
+    crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.REMAP.TAB)
   }
   setStatusBar()
 }
@@ -3869,7 +4020,7 @@ on_cleanup_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
   {
-    .TRANSFORM$setCurrentPage(.TRANSFORM.CLEANUP.TAB)
+    crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.CLEANUP.TAB)
   }
   setStatusBar()
 }
@@ -4219,27 +4370,27 @@ executeTransformImputePerform <- function()
   if (theWidget("impute_zero_radiobutton")$getActive())
   {
     action <- "zero"
-    vprefix <- "IMP_ZERO_" # May want to distinguish ZERO and MISSING
+    vprefix <- "IZR" # May want to distinguish ZERO and MISSING
   }
   else if (theWidget("impute_mean_radiobutton")$getActive())
   {
     action <- "mean"
-    vprefix <- "IMP_MEAN_"
+    vprefix <- "IMN"
   }
   else if (theWidget("impute_median_radiobutton")$getActive())
   {
     action <- "median"
-    vprefix <- "IMP_MEDIAN_"
+    vprefix <- "IMD"
   }
   else if (theWidget("impute_mode_radiobutton")$getActive())
   {
     action <- "mode"
-    vprefix <- "IMP_MODE_"
+    vprefix <- "IMO"
   }
   else if (theWidget("impute_constant_radiobutton")$getActive())
   {
     action <- "constant"
-    vprefix <- "IMP_CONSTANT_"
+    vprefix <- "ICN"
   }
   
   # Obtain the list of selected variables from the treeview.
@@ -4300,7 +4451,7 @@ executeTransformImputePerform <- function()
     # Generate the command to copy the current variable into a new
     # variable, prefixed appropraitely.
     
-    vname <- paste(vprefix, z, sep="")
+    vname <- paste(vprefix, z, sep="_")
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
                             vname, z)
     cl <- class(crs$dataset[[z]])
@@ -4491,7 +4642,7 @@ executeTransformImputePerform <- function()
     # Update the status bar
 
     setStatusBar(sprintf(paste("Imputed variables added to the dataset",
-                               "with '%s' prefix."), vprefix))
+                               "with '%s_' prefix."), vprefix))
   }
   else
   {
@@ -4619,7 +4770,7 @@ executeTransformRemapPerform <- function()
   {
     action <- "quantiles"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BIN_QU%d_", num.bins)
+    remap.prefix <- sprintf("BQ%d", num.bins)
     remap.comment <- sprintf(paste("Bin the variable into %d bins",
                                    "using quantiles."), num.bins)
   }
@@ -4627,7 +4778,7 @@ executeTransformRemapPerform <- function()
   {
     action <- "kmeans"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BIN_KM%d_", num.bins)
+    remap.prefix <- sprintf("BK%d", num.bins)
     remap.comment <- sprintf(paste("Bin the variable into %d bins",
                                    "using kmeans."), num.bins)
   }
@@ -4635,38 +4786,38 @@ executeTransformRemapPerform <- function()
   {
     action <- "eqwidth"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BIN_EW%d_", num.bins)
+    remap.prefix <- sprintf("BE%d", num.bins)
     remap.comment <- sprintf(paste("Bin the variable into %d bins",
                                    "using equal widths."), num.bins)
   }
   else if (theWidget("remap_indicator_radiobutton")$getActive())
   {
     action <- "indicator"
-    remap.prefix <- "INDI_"
+    remap.prefix <- "IN"
     remap.comment <- "Turn a factor into indicator variables"
   }
   else if (theWidget("remap_joincat_radiobutton")$getActive())
   {
     action <- "joincat"
-    remap.prefix <- "JOIN_"
+    remap.prefix <- "JN"
     remap.comment <- "Turn two factors into one factor"
   }
   else if (theWidget("remap_log_radiobutton")$getActive())
   {
     action <- "log"
-    remap.prefix <- "REMAP_LOG_"
+    remap.prefix <- "LG"
     remap.comment <- "Log transform."
   }
   else if (theWidget("remap_asfactor_radiobutton")$getActive())
   {
     action <- "asfactor"
-    remap.prefix <- "RMF"
+    remap.prefix <- "FC"
     remap.comment <- "Transform into a Factor."
   }
   else if (theWidget("remap_asnumeric_radiobutton")$getActive())
   {
     action <- "asnumeric"
-    remap.prefix <- "RMN"
+    remap.prefix <- "NM"
     remap.comment <- "Transform into a Numeric."
   }
   
@@ -4706,7 +4857,7 @@ executeTransformRemapPerform <- function()
   
   if (action == "quantiles")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- binning(crs$',
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
                                      'dataset[["%s"]], %d, method="quantile")',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -4714,7 +4865,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "kmeans")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- binning(crs$',
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
                                      'dataset[["%s"]], %d, method="kmeans")',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -4722,7 +4873,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "eqwidth")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- cut(crs$',
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- cut(crs$',
                                      'dataset[["%s"]], %d)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -4730,7 +4881,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "indicator")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[, paste("%s%s_", levels(',
+    remap.cmd <- paste(sprintf(paste('crs$dataset[, paste("%s_%s_", levels(',
                                      'crs$dataset[["%s"]]), sep="")] ',
                                      '<<- diag(nlevels(',
                                      'crs$dataset[["%s"]]))[crs$dataset',
@@ -4748,7 +4899,7 @@ executeTransformRemapPerform <- function()
       return()
     }
       
-    remap.cmd <- sprintf(paste('crs$dataset[, "%s%s_%s"] <<- ',
+    remap.cmd <- sprintf(paste('crs$dataset[, "%s_%s_%s"] <<- ',
                                'as.factor(paste(crs$dataset[["%s"]], "_",',
                                'crs$dataset[["%s"]], sep=""))',
                                sep=""),
@@ -4757,7 +4908,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "log")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s%s"]] <<- log(crs$',
+    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- log(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
                        collapse="\n")
@@ -6826,7 +6977,7 @@ getEvaluateModels <- function()
   ## Return a list of models selected for evaluation
 
   models <- c()
-  for (m in .MODELLERS)
+  for (m in crv$MODELLERS)
     if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
       models <- c(models, m)
   return(models)
@@ -6834,6 +6985,10 @@ getEvaluateModels <- function()
 
 current.evaluate.tab <- function()
 {
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  .EVALUATE <- .EVALUATE
+  
   cp <- .EVALUATE$getCurrentPage()
   return(.EVALUATE$getTabLabelText(.EVALUATE$getNthPage(cp)))
 }
@@ -6869,11 +7024,11 @@ executeEvaluateTab <- function()
 
   #   Ensure we recognise the model type.
   
-  if (length(setdiff(mtypes, .MODELLERS)) > 0)
+  if (length(setdiff(mtypes, crv$MODELLERS)) > 0)
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
-                "Yet, Rattle only knows about:", .MODELLERS,
+                "Yet, Rattle only knows about:", crv$MODELLERS,
                 "This is a Rattle bug.",
                 "Please report this to Graham.Williams@togaware.com.")
     return()
@@ -6963,7 +7118,7 @@ executeEvaluateTab <- function()
     # the risk and target variables.
     
     filename <- theWidget("evaluate_filechooserbutton")$getFilename()
-    setDefaultPath(filename)
+    crs$dwd <<- dirname(filename)
 
     if (is.null(filename))
     {
@@ -8372,7 +8527,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 ##   if(not.null(testname))
 ##     dialog$setCurrentName(paste(get.stem(testname), "_", mtype, "_score"))
 
-  ##  dialog$setCurrentFolder(crs$cwd)
+  ##  dialog$setCurrentFolder(crs$dwd)
 
   ##   ff <- gtkFileFilterNew()
 ##   ff$setName("CSV Files")
@@ -8461,7 +8616,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
     # If no comma in scoreset, leave as is, else find first comma,
     # remove everything after, and replace with "]". PROBLEM TODO If
-    # the testset[[.MODEL]] includes na.omit, we need to do something
+    # the testset[[crv$MODEL]] includes na.omit, we need to do something
     # different because after the following step of replacing the
     # column list with nothing, it is very likely that new columns
     # are included that have NAs, and hence the na.omit will remove
@@ -8646,7 +8801,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
 
     # If no comma in scoreset, leave as is, else find first comma,
     # remove everything after, and replace with "]". PROBLEM TODO If
-    # the testset[[.MODEL]] includes na.omit, we need to do something
+    # the testset[[crv$MODEL]] includes na.omit, we need to do something
     # different because after the following step of replacing the
     # column list with nothing, it is very likely that new columns are
     # included that have NAs, and hence the na.omit will remove even
@@ -8844,54 +8999,66 @@ on_notebook_switch_page <- function(notebook, window, page)
 
 on_tools_data_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.DATA.NAME))
-  switchToPage(.NOTEBOOK.DATA.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.DATA.NAME))
+  switchToPage(crv$NOTEBOOK.DATA.NAME)
 }
 
 on_tools_variables_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.SELECT.NAME))
-  switchToPage(.NOTEBOOK.SELECT.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.SELECT.NAME))
+  switchToPage(crv$NOTEBOOK.SELECT.NAME)
 }
 
 on_tools_transform_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.TRANSFORM.NAME))
-  switchToPage(.NOTEBOOK.TRANSFORM.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.TRANSFORM.NAME))
+  switchToPage(crv$NOTEBOOK.TRANSFORM.NAME)
 }
 
 on_tools_explore_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.EXPLORE.NAME))
-  switchToPage(.NOTEBOOK.EXPLORE.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.EXPLORE.NAME))
+  switchToPage(crv$NOTEBOOK.EXPLORE.NAME)
 }
 
 on_tools_cluster_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.CLUSTER.NAME))
-  switchToPage(.NOTEBOOK.CLUSTER.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.CLUSTER.NAME))
+  switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
 }
 
 on_tools_model_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.MODEL.NAME))
-  switchToPage(.NOTEBOOK.MODEL.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.MODEL.NAME))
+  switchToPage(crv$NOTEBOOK.MODEL.NAME)
 }
 
 on_tools_evaluate_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.EVALUATE.NAME))
-  switchToPage(.NOTEBOOK.EVALUATE.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.EVALUATE.NAME))
+  switchToPage(crv$NOTEBOOK.EVALUATE.NAME)
 }
 
 on_tools_log_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.LOG.NAME))
-  switchToPage(.NOTEBOOK.LOG.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.LOG.NAME))
+  switchToPage(crv$NOTEBOOK.LOG.NAME)
 }
 
 switchToPage <- function(page)
 {
+
+  crs <- crs # Global - to avoid a "NOTE" from "R CMD check"
+  crv <- cr
+
   # Blank the status bar whenever we change pages
   
   setStatusBar()
@@ -8899,11 +9066,11 @@ switchToPage <- function(page)
   # This function used to accept numeric pages, so check for that and
   # convert to the page name rather than the now changing page number
   # (page numbers used to be fixed).
-  
-  if (is.numeric(page))
-    page <- .NOTEBOOK$getTabLabelText(.NOTEBOOK$getNthPage(page))
 
-  if (page == .NOTEBOOK.EVALUATE.NAME)
+  if (is.numeric(page))
+    page <- crv$NOTEBOOK$getTabLabelText(crv$NOTEBOOK$getNthPage(page))
+
+  if (page == crv$NOTEBOOK.EVALUATE.NAME)
   {
     
     # On moving to the EVALUATE page, ensure each built model's
@@ -8921,7 +9088,7 @@ switchToPage <- function(page)
              function(x) theWidget(paste(x, "_evaluate_checkbutton",
                                             sep=""))$setSensitive(TRUE))
       
-      if (is.null(crs$page) || crs$page == .NOTEBOOK.MODEL.NAME)
+      if (is.null(crs$page) || crs$page == crv$NOTEBOOK.MODEL.NAME)
       {
         # By default check the current model's check button if we
         # have just come from the MODEL page. This makes it easy when
@@ -8942,7 +9109,7 @@ switchToPage <- function(page)
   # this is just better to result in an errorDialog rather than extra
   # logic here to greyt out the button?
   
-  if (page == .NOTEBOOK.LOG.NAME)
+  if (page == crv$NOTEBOOK.LOG.NAME)
   {
     theWidget("execute_button")$setSensitive(FALSE)
     theWidget("execute_menu")$setSensitive(FALSE)

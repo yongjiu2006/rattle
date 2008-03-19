@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2007-07-09 19:40:28 Graham Williams>
+## Time-stamp: <2008-03-16 16:51:15 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -187,6 +187,9 @@ makeSensitiveAda <- function(state=TRUE)
 
 continueModelAdaGui <- function()
 {
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
+
+  crs <- crs 
   
   ## Extract the new iter from the GUI
 

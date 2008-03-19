@@ -162,10 +162,12 @@ data: package/rattle/data/audit.RData
 package/rattle/data/audit.RData: support/audit.R Makefile
 	R --no-save --quiet < support/audit.R
 	cp audit.RData package/rattle/data/
-	cp audit.csv package/rattle/inst/csv/audit.csv
-	cp audit.arff package/rattle/inst/arff/audit.arff
-	cp audit.RData audit.csv audit.arff src/
-	cp audit_missing.csv audit_auto.csv src/
+	cp data/audit.csv package/rattle/inst/csv/audit.csv
+	cp data/audit.arff package/rattle/inst/arff/audit.arff
+	cp data/audit.RData data/audit.csv data/audit.arff src/
+	cp data/audit_missing.csv data/audit_auto.csv src/
+	cp data/audit.RData data/audit.csv data/audit.arff .
+	cp data/audit_missing.csv data/audit_auto.csv .
 	chmod go+r $@
 
 zip: local plocal

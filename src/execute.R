@@ -1,15 +1,15 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2007-01-17 21:09:24 Graham>
-##
-## Implement functionality associated with the Execute button and Menu.
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-03-19 06:41:21 Graham Williams>
+#
+# Implement functionality associated with the Execute button and Menu.
+#
+# Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
 on_execute_button_clicked <- function(action, window)
 {
-  ## Wrap up the actual call with a "try" so that the watch cursor
-  ## turns off even on error.
+  # Wrap up the actual call with a "try" so that the watch cursor
+  # turns off even on error.
   
   setStatusBar()
   set.cursor("watch")
@@ -19,40 +19,43 @@ on_execute_button_clicked <- function(action, window)
 
 dispatchExecuteButton <- function()
 {
-  
-  ## Check which tab of notebook and dispatch to appropriate execute action
+  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
 
-  ct <- getCurrentPageLabel(.NOTEBOOK)
+  crv <- crv
+
+  # Check which tab of notebook and dispatch to appropriate execute action
+
+  ct <- getCurrentPageLabel(crv$NOTEBOOK)
   
-  if (ct == .NOTEBOOK.DATA.NAME) 
+  if (ct == crv$NOTEBOOK.DATA.NAME) 
   {
     executeDataTab()
   }
-  else if (ct == .NOTEBOOK.EXPLORE.NAME)
+  else if (ct == crv$NOTEBOOK.EXPLORE.NAME)
   {
     executeExploreTab()
   }
-  else if (ct == .NOTEBOOK.SELECT.NAME)
+  else if (ct == crv$NOTEBOOK.SELECT.NAME)
   {
      executeSelectTab()
   }
-  else if (ct == .NOTEBOOK.TRANSFORM.NAME)
+  else if (ct == crv$NOTEBOOK.TRANSFORM.NAME)
   {
     executeTransformTab()
   }
-  else if (ct == .NOTEBOOK.CLUSTER.NAME)
+  else if (ct == crv$NOTEBOOK.CLUSTER.NAME)
   {
     executeClusterTab()
   }
-  else if (ct == .NOTEBOOK.ASSOCIATE.NAME)
+  else if (ct == crv$NOTEBOOK.ASSOCIATE.NAME)
   {
     executeAssociateTab()
   }
-  else if (ct == .NOTEBOOK.MODEL.NAME)
+  else if (ct == crv$NOTEBOOK.MODEL.NAME)
   {
     executeModelTab()
   }
-  else if (ct == .NOTEBOOK.EVALUATE.NAME)
+  else if (ct == crv$NOTEBOOK.EVALUATE.NAME)
   {
 
     ## The wrap mode of the confusion_textview may have been set to

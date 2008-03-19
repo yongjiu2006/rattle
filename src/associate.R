@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-02-25 21:32:15 Graham>
+## Time-stamp: <2008-03-19 06:40:47 Graham Williams>
 ##
 ## Implement associations functionality.
 ##
@@ -13,8 +13,8 @@
 
 on_tools_associate_activate <- function(action, window)
 {
-  .NOTEBOOK$setCurrentPage(getNotebookPage(.NOTEBOOK, .NOTEBOOK.ASSOCIATE.NAME))
-  switchToPage(.NOTEBOOK.ASSOCIATE.NAME)
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.ASSOCIATE.NAME))
+  switchToPage(crv$NOTEBOOK.ASSOCIATE.NAME)
 }
 
 on_associate_plot_frequency_button_clicked <-  function(action, window)
