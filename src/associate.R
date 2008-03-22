@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-19 06:40:47 Graham Williams>
+## Time-stamp: <2008-03-23 09:07:22 Graham Williams>
 ##
 ## Implement associations functionality.
 ##
@@ -44,33 +44,32 @@ generateAprioriSummary <- function(ap)
 }
 
 ########################################################################
-##
-## EXECUTION
-##
+#
+# EXECUTION
+#
 
 executeAssociateTab <- function()
 {
-
-  ## We require a dataset
+  # We require a dataset
 
   if (noDatasetLoaded()) return()
 
-  ## If it looks like the VARIABLES page has not been executed, complain..
+  # If it looks like the VARIABLES page has not been executed, complain..
 
   if (variablesHaveChanged()) return()
 
-  ## Check if sampling needs executing.
+  # Check if sampling needs executing.
 
   if (sampleNeedsExecute()) return()
 
-  ## Determine whether we want basket analysis of transactions or
-  ## rules from the categorical variables. The former is indicated if
-  ## there is a single IDENT variable and a TARGET with multiple
-  ## values. Perhaps we just see if the GUI checkbutton is set and if
-  ## so, check that the variables meet these criteria, and if not the
-  ## return. Also, on  executeSelectTab, if there is one ID and the
-  ## TARGET is factor or integer and there are no inputs then set the
-  ## default to Baskets.
+  # Determine whether we want basket analysis of transactions or
+  # rules from the categorical variables. The former is indicated if
+  # there is a single IDENT variable and a TARGET with multiple
+  # values. Perhaps we just see if the GUI checkbutton is set and if
+  # so, check that the variables meet these criteria, and if not the
+  # return. Also, on  executeSelectTab, if there is one ID and the
+  # TARGET is factor or integer and there are no inputs then set the
+  # default to Baskets.
 
   baskets <- theWidget("associate_baskets_checkbutton")$getActive()
   if (baskets && length(crs$ident) != 1)
@@ -92,7 +91,7 @@ executeAssociateTab <- function()
     return()
   }
       
-  ## Check that we have only categorical attributes.
+  # Check that we have only categorical attributes.
 
   include <- getCategoricalVariables()
   if (!baskets && length(include) == 0)
@@ -106,26 +105,27 @@ executeAssociateTab <- function()
     return()
   }
 
-  ## Ensure the arules library is available and loaded.
+  # Ensure the arules library is available and loaded.
 
   if (! packageIsAvailable("arules", "generate associations")) return()
   startLog("ASSOCIATION RULES GENERATION")
   lib.cmd <- "require(arules, quietly=TRUE)"
-  appendLog("Association rules are implemented in the arules package.", lib.cmd)
+  appendLog("Association rules are implemented in the arules package.",
+            lib.cmd)
   eval(parse(text=lib.cmd))
  
-  ## Initialise the textview.
+  # Initialise the textview.
   
   TV <- "associate_textview"
   resetTextview(TV)
   
-  ## Required information
+  # Required information
   
   sampling   <- not.null(crs$sample)
   support    <- theWidget("associate_support_spinbutton")$getValue()
   confidence <- theWidget("associate_confidence_spinbutton")$getValue()
 
-  ## Transform data into a transactions dataset for arules.
+  # Transform data into a transactions dataset for arules.
 
   if (baskets)
     transaction.cmd <- paste("crs$transactions <<- as(split(",
@@ -144,7 +144,7 @@ executeAssociateTab <- function()
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
 
-  ## Now generate the association rules.
+  # Now generate the association rules.
 
   apriori.cmd <- paste("crs$apriori <<- apriori(crs$transactions, ",
                        "parameter = list(",
@@ -155,7 +155,7 @@ executeAssociateTab <- function()
            gsub("<<-", "<-", apriori.cmd))
   cmd.output <- collectOutput(apriori.cmd)
 
-  ## Add a summary of the rules.
+  # Add a summary of the rules.
 
   mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
   appendLog("Summarise the resulting rule set.", mysummary.cmd)

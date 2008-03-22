@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-19 19:51:01 Graham Williams>
+## Time-stamp: <2008-03-23 09:05:59 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -40,10 +40,6 @@ newProject <- function()
 saveProject <- function()
 {
 
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crs <- crs
-  
   ## Pre-conditions
   
   if (noDatasetLoaded()) return()

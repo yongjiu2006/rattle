@@ -1,15 +1,15 @@
-### PMML: Predictive Modelling Markup Language
-##
-## Part of the Rattle package for Data Mining
-##
-## Time-stamp: <2008-03-10 04:20:11 Graham Williams>
-##
-## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
-##
-## TODO
-##
-##      Extract the DataDictionary stuff to a separate function to
-##      share between pmml.rpat and pmml.kmeans.
+## PMML: Predictive Modelling Markup Language
+#
+# Part of the Rattle package for Data Mining
+#
+# Time-stamp: <2008-03-23 09:25:42 Graham Williams>
+#
+# Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+#
+# TODO
+#
+#      Extract the DataDictionary stuff to a separate function to
+#      share between pmml.rpat and pmml.kmeans.
 
 ########################################################################
 #
@@ -68,7 +68,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
     cin <- "In"
   }
 
-  ## Traverse the tree
+  # Traverse the tree
 
   tr.vars <- attr(model$terms, "dataClasses")[-1]
   var.names <- names(tr.vars)
@@ -84,7 +84,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
     node.var <- var.names[tree[root,'split var']]
     if(var.class == "character" | var.class == "factor")
     {
-      ## Convert the binary split point to a 0/1 list for the levels.
+      # Convert the binary split point to a 0/1 list for the levels.
       var.levels <- levels(eval(model$call$data)[[tree[root,'split var']]])
       bins <- sdecimal2binary(tree[root, 'split point'])
       bins <- c(bins, rep(0, length(var.levels)-length(bins)))
@@ -95,8 +95,8 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
     }
     else if (var.class == "integer" | var.class == "numeric")
     {
-      ## Assume spliting to the left means "<=", and right ">",
-      ## which is not what the man page for getTree claims!
+      # Assume spliting to the left means "<=", and right ">",
+      # which is not what the man page for getTree claims!
 
       node.value <- tree[root, 'split point']
       condition <- sprintf("%s <= %s", node.var, node.value)
@@ -124,9 +124,9 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
   return(result)
 }
 
-########################################################################
-## Main PMML functions
-##
+#######################################################################
+# Main PMML functions
+#
 pmml <- function(model,
                  model.name="Rattle_Model",
                  app.name="Rattle/PMML",
@@ -134,11 +134,11 @@ pmml <- function(model,
                  copyright=NULL, ...)
   UseMethod("pmml")
 
-## Function pmmlRootNode
+# Function pmmlRootNode
 
 pmmlRootNode <- function()
 {
-  ## PMML
+  # PMML
 
   PMML.VERSION <- "3.1"
   return(xmlNode("PMML",
@@ -147,11 +147,11 @@ pmmlRootNode <- function()
                    "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance")))
 }
 
-## Function pmml3.2RootNode
+# Function pmml3.2RootNode
 
 pmml3.2RootNode <- function()
 {
-	## PMML
+	# PMML
 	
 	PMML.VERSION <- "3.2"
 	return(xmlNode("PMML",
@@ -163,7 +163,7 @@ pmml3.2RootNode <- function()
 
 pmmlHeader <- function(description, copyright, app.name)
 {
-  ## Header
+  # Header
   
   VERSION <- "1.1.5" # Add pmml.nnet.
   # "1.1.4" # Add pmml.ksvm. Fix extensions. 
@@ -177,7 +177,7 @@ pmmlHeader <- function(description, copyright, app.name)
     header <- xmlNode("Header",
                       attrs=c(copyright=copyright, description=description))
 
-  ## Header -> Extension
+  # Header -> Extension
 						   
   header <- append.XMLNode(header,
 						   xmlNode("Extension",
@@ -191,7 +191,7 @@ pmmlHeader <- function(description, copyright, app.name)
 												 extender="Rattle")))
 						   
 
-  ## Header -> Application
+  # Header -> Application
 
   header <- append.XMLNode(header, xmlNode("Application",
                                            attrs=c(name=app.name,
@@ -230,13 +230,13 @@ pmmlDataDictionary <- function(field)
       datype <- "string"
     }
 
-    ## DataDictionary -> DataField
+    # DataDictionary -> DataField
 
      data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
                                                 optype=optype,
                                                 dataType=datype))
 
-    ## DataDictionary -> DataField -> Value
+    # DataDictionary -> DataField -> Value
 
     if (optype == "categorical")
       for (j in 1:length(field$levels[[field$name[i]]]))
@@ -270,13 +270,13 @@ pmmlMiningSchema <- function(field, target=NULL)
 }
 
 ########################################################################
-## LM
-##
-## Author: rguha@indiana.edu
-## Date: 28 May 2007
-##
-## Modified on 01 Feb 2008 by Zementis, Inc. (info@zementis.com)to add 
-## the capability to export binary logistic regression models using glm.
+# LM
+#
+# Author: rguha@indiana.edu
+# Date: 28 May 2007
+#
+# Modified on 01 Feb 2008 by Zementis, Inc. (info@zementis.com)to add 
+# the capability to export binary logistic regression models using glm.
 
 pmml.lm <- function(model,
                     model.name="Regression_model",
@@ -288,11 +288,11 @@ pmml.lm <- function(model,
 
   require(XML, quietly=TRUE)
 
-  ## Collect the required information. We list all variables,
-  ## irrespective of whether they appear in the final model. This
-  ## seems to be the standard thing to do with PMML. It also adds
-  ## extra information - i.e., the model did not need these extra
-  ## variables!
+  # Collect the required information. We list all variables,
+  # irrespective of whether they appear in the final model. This
+  # seems to be the standard thing to do with PMML. It also adds
+  # extra information - i.e., the model did not need these extra
+  # variables!
 
   terms <- attributes(model$terms)
   field <- NULL
@@ -303,31 +303,31 @@ pmml.lm <- function(model,
 
   for (i in 1:number.of.fields)
     {
-      ## We don't need to bother with ylevels since lm doesn't do
-      ## factor predictions
+      # We don't need to bother with ylevels since lm doesn't do
+      # factor predictions
       if (field$class[[field$name[i]]] == "factor")
         field$levels[[field$name[i]]] <- model$xlevels[[field$name[i]]]
     }
 
-  ## PMML
+  # PMML
 
   pmml <- pmml3.2RootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright (c) 2007 rguha@indiana.edu"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  ## PMML -> RegressionModel
+  # PMML -> RegressionModel
 
-  ## Added if so that code can also export binary
-  ## logistic regression glm models built with 
-  ## binomial(logit)
+  # Added if so that code can also export binary
+  # logistic regression glm models built with 
+  # binomial(logit)
   if (as.character(model$call[[3]])[1] == "binomial")
   {
 	 lm.model <- xmlNode("RegressionModel",
@@ -345,11 +345,11 @@ pmml.lm <- function(model,
                                targetFieldName=target))
   }
 
-  ## PMML -> RegressionModel -> MiningSchema
+  # PMML -> RegressionModel -> MiningSchema
 
   lm.model <- append.XMLNode(lm.model, pmmlMiningSchema(field, target))
 
-  ## PMML -> RegressionModel -> RegressionTable
+  # PMML -> RegressionModel -> RegressionTable
 
   coeff <- coefficients(model)
   coeffnames <- names(coeff)
@@ -387,7 +387,7 @@ pmml.lm <- function(model,
 
   lm.model <- append.XMLNode(lm.model, regTable)
 
-  ## Add to the top level structure.
+  # Add to the top level structure.
 
   pmml <- append.XMLNode(pmml, lm.model)
 
@@ -395,25 +395,25 @@ pmml.lm <- function(model,
 }
 
 
-########################################################################
-## Neural Networks
-##
-## Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
-## Date: 6 Feb 2008
-## Implements a PMML exporter for nnet objects (Neural Networks)
-##
-########################################################################
+#######################################################################
+# Neural Networks
+#
+# Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
+# Date: 6 Feb 2008
+# Implements a PMML exporter for nnet objects (Neural Networks)
+#
+#######################################################################
 
-## Function pmml.nnet.DataDictionary
+# Function pmml.nnet.DataDictionary
 
 pmml.nnet.DataDictionary <- function(field)
 {
-	## field$name is a vector of strings, and includes target
-	## field$class is indexed by fields$names
-	## field$levels is indexed by fields$names
+	# field$name is a vector of strings, and includes target
+	# field$class is indexed by fields$names
+	# field$levels is indexed by fields$names
 	number.of.fields <- length(field$name)
 	
-	## DataDictionary
+	# DataDictionary
 	
 	data.dictionary <- xmlNode("DataDictionary",
 			attrs=c(numberOfFields=number.of.fields))
@@ -448,7 +448,7 @@ pmml.nnet.DataDictionary <- function(field)
 			}       
 		}
 		
-		## DataDictionary -> DataField
+		# DataDictionary -> DataField
 		
 		data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
 						optype=optype,
@@ -459,7 +459,7 @@ pmml.nnet.DataDictionary <- function(field)
 			field$name[1] <- target
 		}
 		
-		## DataDictionary -> DataField -> Value
+		# DataDictionary -> DataField -> Value
 		
 		if (optype == "categorical")
 			for (j in 1:length(field$levels[[field$name[i]]]))
@@ -473,7 +473,7 @@ pmml.nnet.DataDictionary <- function(field)
 }
 
 ###################################################################
-## Function pmml.nnet.MiningSchema
+# Function pmml.nnet.MiningSchema
 
 pmml.nnet.MiningSchema <- function(field, target=NULL)
 {
@@ -509,8 +509,8 @@ pmml.nnet.MiningSchema <- function(field, target=NULL)
 }
 
 ###################################################################
-## Function pmml.nnet
-##
+# Function pmml.nnet
+#
 
 pmml.nnet <- function(model,
 		              model.name="NeuralNet_model",
@@ -523,12 +523,12 @@ pmml.nnet <- function(model,
 	
 	require(XML, quietly=TRUE)
 	
-	##############################################################################
-	## Collect the required information. We list all variables,
-	## irrespective of whether they appear in the final model. This
-	## seems to be the standard thing to do with PMML. It also adds
-	## extra information - i.e., the model did not need these extra
-	## variables!
+	###################################################################
+	# Collect the required information. We list all variables,
+	# irrespective of whether they appear in the final model. This
+	# seems to be the standard thing to do with PMML. It also adds
+	# extra information - i.e., the model did not need these extra
+	# variables!
 	
 	number.of.neural.layers <- length(model$n) - 1 
 	field <- NULL
@@ -2267,8 +2267,8 @@ pmml.rsf <- function(model,
 
   offset <- leafCount <- 1
   
-  ## Create the recursive output object.  This would be unnecessary if
-  ## it was possible to declare global variables in a package.
+  # Create the recursive output object.  This would be unnecessary if
+  # it was possible to declare global variables in a package.
 
   recursiveOutput <- list(internalNode = internalNode,
                           offset = offset, leafCount = leafCount)
@@ -2282,14 +2282,14 @@ pmml.rsf <- function(model,
                                algorithmName="rsf",
                                splitCharacteristic="binary"))
 
-    ## PMML -> TreeModel [b] -> MiningSchema
+    # PMML -> TreeModel [b] -> MiningSchema
     
     treeModelNode <- append.XMLNode(treeModelNode, pmmlMiningSchema(field))
     
-    ## Global dependencies: (field$name, forest)
+    # Global dependencies: (field$name, forest)
     
-    ## Initialize the root node.  This differs from the rest of the
-    ## internal nodes in the PMML structure.
+    # Initialize the root node.  This differs from the rest of the
+    # internal nodes in the PMML structure.
 
     treeRoot <- xmlNode("Node", attrs=c(score=0, id=1))
     treeRoot <- append.XMLNode(treeRoot, xmlNode("True"))

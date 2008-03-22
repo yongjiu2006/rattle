@@ -2,7 +2,7 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2008-03-15 16:19:58 Graham Williams>
+## Time-stamp: <2008-03-23 09:21:05 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -123,11 +123,10 @@ buildModelAda <- function(formula,
   if (gui) appendLog("Build the adaboost model.",
                      gsub('ada\\(', 'crs$ada <- ada(', model.cmd))
 
-  ## Note that this crs$ada is not the global crs$ada! We use it here
-  ## to be consistent in terms of the commands that are reported to
-  ## the log, but we return this value and in the outer call we
-  ## globally assign to crs$ada, at least in the context of the Rattle
-  ## GUI.
+  # Note that this crs$ada is not the global crs$ada! We use it here
+  # to be consistent in terms of the commands that are reported to the
+  # log, but we return this value and in the outer call we globally
+  # assign to crs$ada, at least in the context of the Rattle GUI.
   
   start.time <- Sys.time()
   crs$ada <- try(eval(parse(text=model.cmd)), silent=TRUE)
