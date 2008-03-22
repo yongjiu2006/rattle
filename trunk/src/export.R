@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-19 06:41:49 Graham Williams>
+## Time-stamp: <2008-03-23 09:21:32 Graham Williams>
 ##
 ## Implement functionality associated with the Export button and Menu.
 ##
@@ -19,8 +19,7 @@ on_export_button_clicked <- function(action, window)
 
 dispatchExportButton <- function()
 {
-  
-  ## Check which tab of notebook and dispatch to appropriate execute action
+  # Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)
 

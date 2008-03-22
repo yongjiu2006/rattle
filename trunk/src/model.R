@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-19 07:00:39 Graham Williams>
+## Time-stamp: <2008-03-23 09:33:30 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -99,15 +99,8 @@ on_kernlab_radiobutton_toggled <- function(button)
 
 currentModelTab <- function()
 {
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-  
-  .EVALUATE <- .EVALUATE
-  .SVM <- .SVM
-  .KSVM <- .KSVM
-
   lb <- getCurrentPageLabel(crv$MODEL)
-  if (lb == .SVM && theWidget("kernlab_radiobutton")$getActive())
-    lb <- .KSVM
+  if (lb == .SVM && theWidget("kernlab_radiobutton")$getActive()) lb <- .KSVM
   return(lb)
 }
 
@@ -305,13 +298,13 @@ executeModelTab <- function()
       setStatusBar("Building", .KSVM, "model ... failed.")
 
   }
-  if (build.all || currentModelTab() == .GLM)
+  if (build.all || currentModelTab() == crv$GLM)
   {
-    setStatusBar("Building", .GLM, "model ...")
+    setStatusBar("Building", crv$GLM, "model ...")
     if (executeModelGLM())
       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", .GLM, "model ... failed.")
+      setStatusBar("Building", crv$GLM, "model ... failed.")
   }
   
   ##   if (build.all || currentModelTab() == NNET)
@@ -396,7 +389,7 @@ executeModelGLM <- function()
   setTextview(TV, "Summary of the model built using glm.\n",
               collectOutput(summary.cmd, TRUE))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, .GLM)
+  if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
   
   ## Finish up.
   
@@ -735,7 +728,7 @@ exportSVMTab <- function()
       return()
   
 
-  pmml.cmd <- "pmml.ksvm(crs$ksvm)"
+  pmml.cmd <- 'pmml.ksvm(crs$ksvm, data.name=crs$dataset)'
   appendLog("Export a SVM model as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 

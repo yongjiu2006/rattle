@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-15 16:36:23 Graham Williams>
+## Time-stamp: <2008-03-23 09:07:34 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -121,7 +121,7 @@ executeClusterKMeans <- function(include)
   TV <- "kmeans_textview"
   sampling  <- not.null(crs$sample)
 
-  ## Obtain interface information.
+  # Obtain interface information.
   
   nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
@@ -131,13 +131,13 @@ executeClusterKMeans <- function(include)
   
   startLog("KMEANS CLUSTER")
 
-  ## SEED: Log the R command and execute.
+  # SEED: Log the R command and execute.
 
   seed.cmd <- sprintf('set.seed(%d)', seed)
   appendLog("Set the seed to get the same clusters each time.", seed.cmd)
   eval(parse(text=seed.cmd))
 
-  ## Calculate the centers
+  # Calculate the centers
 
   if (usehclust)
     centers <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
@@ -145,7 +145,7 @@ executeClusterKMeans <- function(include)
   else
     centers <- nclust
   
-  ## KMEANS: Log the R command and execute.
+  # KMEANS: Log the R command and execute.
 
   if (! useIterate)
   {
@@ -179,7 +179,7 @@ executeClusterKMeans <- function(include)
     eval(parse(text=kmeans.cmd))
     time.taken <- Sys.time()-start.time
 
-    ## SUMMARY: Show the resulting model.
+    # SUMMARY: Show the resulting model.
 
     appendLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
     appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
@@ -194,7 +194,7 @@ executeClusterKMeans <- function(include)
                 collectOutput("crs$kmeans$withinss", TRUE),
                 "\n")
 
-    ## Ensure the kmeans buttons are now active
+    # Ensure the kmeans buttons are now active
 
     theWidget("kmeans_stats_button")$setSensitive(TRUE)
     theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
@@ -428,40 +428,41 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
 
 executeClusterHClust <- function(include)
 {
-  ## Initial setup. Ensure the textview is monospace for fixed width
-  ## output of the centers and other information (so the columns line
-  ## up).
+  # Initial setup. Ensure the textview is monospace for fixed width
+  # output of the centers and other information (so the columns line
+  # up).
 
   TV <- "hclust_textview"
   theWidget(TV)$modifyFont(pangoFontDescriptionFromString("monospace 10"))
   
-  ## TODO : If data is large put up a question about wanting to
-  ## continue?
+  # TODO : If data is large put up a question about wanting to
+  # continue?
   
   sampling  <- not.null(crs$sample)
 
-  ## The amap library needs to be loaded for hcluster. Also note that
-  ## hcluster takes about 0.33 seconds, compared to hclust taking 11
-  ## seconds!
+  # The amap library needs to be loaded for hcluster. Also note that
+  # hcluster takes about 0.33 seconds, compared to hclust taking 11
+  # seconds!
 
   lib.cmd <- "require(amap, quietly=TRUE)"
   if (packageIsAvailable("amap"))
   {
     amap.available <- TRUE
-    appendLog("The hcluster function is provided by the amap package.", lib.cmd)
+    appendLog("The hcluster function is provided by the amap package.",
+              lib.cmd)
     eval(parse(text=lib.cmd))
   }
   else
     amap.available <- FALSE
   
-  ## Obtain interface information.
+  # Obtain interface information.
 
   dist <- theWidget("hclust_distance_combobox")$getActiveText()
   link <- theWidget("hclust_link_combobox")$getActiveText()
   nbproc <- theWidget("hclust_nbproc_spinbutton")$getValue()
 
-  ## Check if user has requested more than a single processor, and if
-  ## so but amap is not available, inform the user and exit.
+  # Check if user has requested more than a single processor, and if
+  # so but amap is not available, inform the user and exit.
   
   if (nbproc != 1 && ! amap.available)
   {
@@ -473,11 +474,11 @@ executeClusterHClust <- function(include)
     return(FALSE)
   }
   
-  ## Determine which hclust to use for clustering.
+  # Determine which hclust to use for clustering.
 
   if (amap.available)
 
-    ## Use the more efficient hcluster for clustering.
+    # Use the more efficient hcluster for clustering.
   
     hclust.cmd <- paste("crs$hclust <<- ",
                         sprintf(paste('hclusterpar(crs$dataset[%s,%s],',
@@ -488,7 +489,7 @@ executeClusterHClust <- function(include)
                         sep="")
   else
 
-    ## Use the standard hclust for clustering.
+    # Use the standard hclust for clustering.
     
     hclust.cmd <- paste("crs$hclust <<- ",
                         sprintf(paste('hclust(dist(crs$dataset[%s,%s],',
@@ -498,13 +499,13 @@ executeClusterHClust <- function(include)
                                 include, dist, link),
                         sep="")
 
-  ## Log the R command.
+  # Log the R command.
 
   startLog("HIERARCHICAL CLUSTER")
   appendLog("Generate a hierarchical cluster of the data.",
           gsub("<<-", "<-", hclust.cmd))
   
-  ## Perform the commands.
+  # Perform the commands.
 
   start.time <- Sys.time()
   result <- try(eval(parse(text=hclust.cmd)), silent=TRUE)
@@ -627,11 +628,11 @@ on_hclust_stats_button_clicked <- function(button)
 
 displayHClustStats <- function()
 {
-  ## Initial setup.
+  # Initial setup.
   
   TV <- "hclust_textview"
 
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
   
   if (is.null(crs$hclust))
   {
@@ -640,8 +641,8 @@ displayHClustStats <- function()
     return()
   }
 
-  ## Ensure the appropriate package is available for the plot, and log
-  ## the R command and execute.
+  # Ensure the appropriate package is available for the plot, and log
+  # the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
@@ -649,8 +650,8 @@ displayHClustStats <- function()
 
   resetTextview(TV)
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   sampling  <- not.null(crs$sample)
@@ -669,7 +670,7 @@ displayHClustStats <- function()
     return()
   }
 
-  ## Cluster centers.
+  # Cluster centers.
 
   centers.cmd <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
@@ -677,7 +678,7 @@ displayHClustStats <- function()
   appendTextview(TV, "Cluster means:\n\n",
                  collectOutput(centers.cmd, use.print=TRUE))
   
-  ## STATS: Log the R command and execute.
+  # STATS: Log the R command and execute.
 
   stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
                              "cutree(crs$hclust, %d))\n"),

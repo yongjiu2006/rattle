@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-19 06:41:21 Graham Williams>
+# Time-stamp: <2008-03-23 09:21:17 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -19,10 +19,6 @@ on_execute_button_clicked <- function(action, window)
 
 dispatchExecuteButton <- function()
 {
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crv <- crv
-
   # Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)

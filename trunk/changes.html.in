@@ -7,6 +7,10 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+232 080319 Begin moving .VARs into crv variable to remove R CMD check NOTEs.
+           Manage different working dirs for projects/data (Michael Fogliani).
+           Bug fix: Ensure data textview is shown after load default audit.csv.
+           Abbreviate generated variable names (otherwise they get too long).
 231 080315 Bug fix: score CSV uses all columns, ignore as train (Ed Cox)
            If no CSV filename specified, load audit.csv (Tony Nolan)
            Add AsFactor and AsNumeric to transform (Greg Rose)

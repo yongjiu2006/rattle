@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2008-03-16 16:51:15 Graham Williams>
+## Time-stamp: <2008-03-23 09:07:04 Graham Williams>
 ##
 ## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 ##
@@ -107,11 +107,11 @@ listTreesAdaGui <- function()
 
 drawTreesAdaGui <- function()
 {
-  ## Obtain user interface options.
+  # Obtain user interface options.
 
   tree.num <- theWidget("ada_draw_spinbutton")$getValue()
 
-  ## Make sure we have that many trees.
+  # Make sure we have that many trees.
 
   if (tree.num > length(crs$ada$model$trees))
   {
@@ -123,12 +123,12 @@ drawTreesAdaGui <- function()
     return(FALSE)
   }
   
-  ## Command to run.
+  # Command to run.
 
   draw.cmd <- sprintf('drawTreesAda(crs$ada, %d, ": %s")', tree.num,
                       paste(crs$dataname, "$", crs$target))
 
-  ## Perform the action.
+  # Perform the action.
 
   appendLog(sprintf("Display tree number %d.", tree.num), draw.cmd)
   eval(parse(text=draw.cmd))
@@ -187,10 +187,6 @@ makeSensitiveAda <- function(state=TRUE)
 
 continueModelAdaGui <- function()
 {
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crs <- crs 
-  
   ## Extract the new iter from the GUI
 
   niter <- theWidget("ada_ntree_spinbutton")$getValue()

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-19 19:34:40 Graham Williams>
+# Time-stamp: <2008-03-23 09:37:46 Graham Williams>
 #
 # Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 Mar 2008"
+VERSION.DATE <- "Released 19 Mar 2008"
 COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -47,7 +47,7 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 #    Use dot separated words for variables: list.of.frames, lib.cmd
 #    RGtk2 uses the capitalised word convention.
 #    Use same names in R code as for the Glade objects.
-#    Hide global variables, all capitalised, by beginning with "."
+#    Hide global variables, all capitalised, by including in crv$
 
 # INTERFACE STYLE
 #
@@ -73,7 +73,7 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 #    want greyed out functionality, but you don't want it to mean not
 #    yet implemented.
 
-## BUGS
+# BUGS
 #
 #   Tooltips are not working on GNU/Linux. Just fine on MS/Windows.
 #
@@ -82,6 +82,22 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 #   be merged into GTK. At that time, that functionality will be part
 #   of RGtk2.
 
+# GLOBALS
+#
+#   Original design placed state variables into crs and global
+#   constants into . variables that then moved into crv instead, after
+#   R CMD check started complaining about possibly unbound
+#   variables. The real solution is probably environments, but I
+#   haven't explored these yet.
+#
+#   Be aware that the trick of doingr
+#
+# 	crs <- crs
+#
+#   within functions only works if we <<- assign to crs and don't make
+#   use of the value in crs after it might change within the function
+#   (or a sub function)! Probably not a good thing to do.
+
 ########################################################################
 ##
 ## INITIALISATIONS
@@ -89,109 +105,22 @@ COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
 rattle <- function(csvname=NULL)
 {
 
-  # [080319 gjw] Create GLOBAL to avoid "no visible binding" from "R
-  # CMD check" by adding all hidden variables to it. Previously they
-  # all began with "." as in crv$ADA used to be .ADA. R CMD check
-  # complained a lot, once for each of these, so putting them all into
-  # crv means only one complaint!!!!
+  # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
+  # "R CMD check" by adding all hidden variables to it. Previously
+  # they all began with "." as in crv$ADA used to be .ADA. "R CMD
+  # check" complained a lot, once for each of these, so putting them
+  # all into crv means only one complaint each time!
 
   crv <<- list()
 
-  ##   .ADA <- NULL
-##   .ADA.NTREE.DEFAULT <- NULL
-##   .CATEGORICAL <- NULL
-##   .CLUSTER <- NULL
-##   .CLUSTER.HCLUST.TAB <- NULL
-##   .CLUSTER.KMEANS.TAB <- NULL
-##   .COLUMN <- NULL
-##   .CONTINUOUS <- NULL
-##   .DATA <- NULL
-##   .DATA.ARFF.TAB <- NULL
-##   .DATA.CSV.TAB <- NULL
-##   .DATA.DATAENTRY.TAB <- NULL
-##   .DATA.LIB.TAB <- NULL
-##   .DATA.ODBC.TAB <- NULL
-##   .DATA.RDATA.TAB <- NULL
-##   .DATA.RDATASET.TAB <- NULL
-##   .END.LOG.COMMENT <- NULL
-##   .EVALUATE <- NULL
-##   .EVALUATE.CONFUSION.TAB <- NULL
-##   .EVALUATE.LIFT.TAB <- NULL
-##   .EVALUATE.PRECISION.TAB <- NULL
-##   .EVALUATE.RISK.TAB <- NULL
-##   .EVALUATE.ROC.TAB <- NULL
-##   .EVALUATE.SENSITIVITY.TAB <- NULL
-##   .EXPLORE <- NULL
-##   .EXPLORE.CORRELATION.TAB <- NULL
-##   .EXPLORE.GGOBI.TAB <- NULL
-##   .EXPLORE.HIERCOR.TAB <- NULL
-##   .EXPLORE.PLOT.TAB <- NULL
-##   .EXPLORE.PRCOMP.TAB <- NULL
-##   .EXPLORE.SUMMARY.TAB <- NULL
-##   .GLM <- NULL
-##   .IMPUTE <- NULL
-##   .KSVM <- NULL
-##   .LOG.COMMENT <- NULL
-##   .MODEL <- NULL
-##   .MODEL.ADA.TAB <- NULL
-##   .MODEL.GLM.TAB <- NULL
-##   .MODEL.NNET.TAB <- NULL
-##   .MODEL.RF.TAB <- NULL
-##   .MODEL.RPART.TAB <- NULL
-##   .MODEL.SVM.TAB <- NULL
-##   .MODELLERS <- NULL
-##   .NNET <- NULL
-##   .NOTEBOOK <- NULL
-##   .NOTEBOOK.ASSOCIATE.LABEL <- NULL
-##   .NOTEBOOK.ASSOCIATE.NAME <- NULL
-##   .NOTEBOOK.ASSOCIATE.WIDGET <- NULL
-##   .NOTEBOOK.CLUSTER.LABEL <- NULL
-##   .NOTEBOOK.CLUSTER.NAME <- NULL
-##   .NOTEBOOK.CLUSTER.WIDGET <- NULL
-##   .NOTEBOOK.COMMON.NAMES <- NULL
-##   .NOTEBOOK.DATA.NAME <- NULL
-##   .NOTEBOOK.EVALUATE.LABEL <- NULL
-##   .NOTEBOOK.EVALUATE.NAME <- NULL
-##   .NOTEBOOK.EVALUATE.WIDGET <- NULL
-##   .NOTEBOOK.EXPLORE.NAME <- NULL
-##   .NOTEBOOK.LOG.NAME <- NULL
-##   .NOTEBOOK.MODEL.LABEL <- NULL
-##   .NOTEBOOK.MODEL.NAME <- NULL
-##   .NOTEBOOK.MODEL.WIDGET <- NULL
-##   .NOTEBOOK.SELECT.NAME <- NULL
-##   .NOTEBOOK.TRANSFORM.NAME <- NULL
-##   .NOTEBOOK.TRANSFORM.NAME <- NULL
-##   .RF <- NULL
-##   .RF.MTRY.DEFAULT <- NULL
-##   .RF.NTREE.DEFAULT <- NULL
-##   .RF.SAMPSIZE.DEFAULT <- NULL
-##   .RPART <- NULL
-##   .RPART.CP.DEFAULT <- NULL
-##   .RPART.MAXDEPTH.DEFAULT <- NULL
-##   .RPART.MINBUCKET.DEFAULT <- NULL
-##   .RPART.MINSPLIT.DEFAULT <- NULL
-##   .START.LOG.COMMENT <- NULL
-##   .SVM <- NULL
-##   .SVMNB <- NULL
-##   .SVMNB.ESVM.TAB <- NULL
-##   .SVMNB.KSVM.TAB <- NULL
-##   .TRANSFORM <- NULL
-##   .TRANSFORM.CLEANUP.TAB <- NULL
-##   .TRANSFORM.IMPUTE.TAB <- NULL
-##   .TRANSFORM.NORMALISE.TAB <- NULL
-##   .TRANSFORM.OUTLIER.TAB <- NULL
-##   .TRANSFORM.REMAP.TAB <- NULL
-##   crs <- NULL
-##   rattleGUI <- NULL
-
-  ## Ensure command line arguments look okay
+  # Ensure command line arguments look okay
 
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
 
-    ## If it does not look like an absolute path then add in the
-    ## current location to make it absolute.
+    # If it does not look like an absolute path then add in the
+    # current location to make it absolute.
     
     if (substr(csvname, 1, 1) %notin% c("\\", "/")
         && substr(csvname, 2, 2) != ":")
@@ -205,23 +134,24 @@ rattle <- function(csvname=NULL)
 
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
-  ## Keep the loading of Hmisc quiet.
+  # Keep the loading of Hmisc quiet.
+
   options(Hverbose=FALSE)
 
-  ## Load the Rattle GUI specification. The three commands here
-  ## represent an attempt to be independent of where R is running and
-  ## where rattle.R is located by finding out from the system calls the
-  ## actual call to source rattle.R, and then point to this same
-  ## location for finding rattle.glade. Assumes the call to source is
-  ## something like: source("abc/def/rattle.R"). The better alternative
-  ## might be to tell people to use the chdir=TRUE option in source.
+  # Load the Rattle GUI specification. The three commands here
+  # represent an attempt to be independent of where R is running and
+  # where rattle.R is located by finding out from the system calls the
+  # actual call to source rattle.R, and then point to this same
+  # location for finding rattle.glade. Assumes the call to source is
+  # something like: source("abc/def/rattle.R"). The better alternative
+  # might be to tell people to use the chdir=TRUE option in source.
   
   ##s <- as.character(sys.calls())
   ##n <- grep("source", s)
   ##p <- gsub("\.R..$", ".glade", gsub("source..", "", s[n]))
 
-  ## Try firstly to load the glade file from the installed rattle
-  ## package, if it exists. Otherwise, look locally.
+  # Try firstly to load the glade file from the installed rattle
+  # package, if it exists. Otherwise, look locally.
   
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
@@ -279,7 +209,7 @@ rattle <- function(csvname=NULL)
   
   # Create constants naming the MODELLERS (i.e., the model builders)
 
-  .GLM   <<- "glm"
+  crv$GLM   <<- "glm"
   .RPART <<- "rpart"
   #GBM <<- "gbm"
   .ADA   <<- "ada"
@@ -288,7 +218,7 @@ rattle <- function(csvname=NULL)
   .KSVM  <<- "ksvm"
   .NNET  <<- "nnet"
 
-  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, .GLM, .NNET)
+  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, crv$GLM, .NNET)
   
   # RPART
   
@@ -419,7 +349,7 @@ rattle <- function(csvname=NULL)
   
   crv$MODEL           <<- theWidget("model_notebook")
   crv$MODEL.RPART.TAB <<- getNotebookPage(crv$MODEL, .RPART)
-  crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, .GLM)
+  crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, crv$GLM)
   crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, .ADA)
   ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
   crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, .RF)
@@ -781,10 +711,6 @@ variablesHaveChanged <- function(action)
   #
   # action: a string that is displayed in the error dialogue.
 
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crs <- crs 
-  
   if (length(crs$ignore) != length(getSelectedVariables("ignore")) ||
       length(crs$ident) != length(getSelectedVariables("ident")) ||
       length(crs$input) != length(getSelectedVariables("input")))
@@ -967,10 +893,6 @@ listBuiltModels <- function()
 ##   # dialog$setCurrentFolder(crs$dwd), as I am doing now (080319) for
 ##   # projects.
   
-##   # Assign GLOBAL to avoid "no visible binding" from "R CMD check"
-  
-##   crs <- crs
-  
 ##   if (not.null(filename))
 ##   {
 ##     crs$dwd <<- dirname(filename)
@@ -1141,9 +1063,6 @@ copyPlotToClipboard <- function(dev.num=dev.cur())
 
 savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 {
-  # Assign GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crs <- crs 
 
   if (is.null(dev.list()))
   {
@@ -2008,22 +1927,20 @@ executeDataCSV <- function()
 
   filename <- theWidget("csv_filechooserbutton")$getFilename()
   
+  # If no filename has been supplied give the user the option to use
+  # the Rattle supplied sample dataset.
+    
   if (is.null(filename))
   {
-    # No filename has been supplied so give the user the option to use
-    # the Rattle supplied sample dataset.
-    
     if (is.null(questionDialog("No CSV filename has been provided.",
                                "Would you like to use the sample audit",
                                "dataset that comes with Rattle?")))
     {
       # If no filename is given and the user decides not to go with
-      # the sample dataset the we will return without doing anything.
+      # the sample dataset then return without doing anything.
 
       errorDialog("No CSV Filename has been chosen yet.",
-                  "You must choose one before execution.",
-                  "Change the radio button selection if you prefer to link",
-                  "to a dataset already loaded into the R Console.")
+                  "You must choose one before execution.")
       return()
     }
     else
@@ -2127,29 +2044,28 @@ executeDataARFF <- function()
     infoDialog("Support for ARFF is only available in R 2.5.0 and beyond.")
     return()
   }
-  
-  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return()
-  lib.cmd <- "require(foreign, quietly=TRUE)"
-  appendLog("The foreign package provides a function to read arff.", lib.cmd)
-  eval(parse(text=lib.cmd))
-  
-  ## Collect relevant data
+
+  # Collect relevant data
 
   filename <- theWidget("arff_filechooserbutton")$getFilename()
-  crs$dwd <<- dirname(filename)
-  
-  ## Error exit if no filename is given
+
+  # If no filename is given then return without doing anything.
 
   if (is.null(filename))
   {
     errorDialog("No ARFF Filename has been chosen yet.",
-                 "You must choose one before execution.",
-                 "Change the radio button selection if you prefer to link",
-                 "to a dataset already loaded into the R Console.")
+                "You must choose one before execution.")
     return()
   }
+  
+  crs$dwd <<- dirname(filename)
 
-  ## If there is a model warn about losing it.
+  # We need the foreign package to read ARFF data.
+  
+  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return()
+  lib.cmd <- "require(foreign, quietly=TRUE)"
+  
+  # If there is a model warn about losing it.
 
   if ( not.null(listBuiltModels()) )
   {
@@ -2180,6 +2096,9 @@ executeDataARFF <- function()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
   resetTextview(TV)
   
+  appendLog("The foreign package provides a function to read arff.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
   appendLog("LOAD ARFF FILE", gsub('<<-', '<-', read.cmd))
   resetRattle()
   eval(parse(text=read.cmd))
@@ -2322,25 +2241,23 @@ executeDataRdata <- function()
 {
   TV <- "data_textview"
   
-  ## Collect relevant data
+  # Collect relevant data
 
   filename <- theWidget("rdata_filechooserbutton")$getFilename()
-  crs$dwd <<- dirname(filename)
   dataset <- theWidget("rdata_combobox")$getActiveText()
 
-  ## Error exit if no filename is given
+  # Error exit if no filename is given
 
   if (is.null(filename))
   {
     errorDialog("No Rdata Filename has been chosen yet.",
-                 "You must choose one before execution.",
-                 "Change the radio button selection if you prefer to link",
-                 "to a dataset already loaded into the R Console,",
-                 "or to load a dataset from a CSV file.")
+                 "You must choose one before execution.")
     return()
   }
 
-  ## Error if no dataset from the Rdata file has been chosen.
+  crs$dwd <<- dirname(filename)
+
+  # Error if no dataset from the Rdata file has been chosen.
   
   if (is.null(dataset))
   {
@@ -2633,7 +2550,7 @@ editData <- function()
 {
   TV <- "data_textview"
   
-  ## Check if there is a model first and then warn about losing it.
+  # Check if there is a model first and then warn about losing it.
 
   if ( not.null(listBuiltModels()) )
   {
@@ -2649,12 +2566,12 @@ editData <- function()
       return()
   }
 
-  ## Generate commands.
+  # Generate commands.
 
   assign.cmd <- 'crs$dataset <<- edit(crs$dataset)'
   str.cmd <- "str(crs$dataset)"
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
@@ -2672,11 +2589,11 @@ editData <- function()
   setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
                collectOutput(str.cmd), sep="")
 
-  ## Update the select treeview and samples.
+  # Update the select treeview and samples.
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
   theWidget("dataentry_viewdata_button")$setSensitive(TRUE)
   theWidget("dataentry_editdata_button")$setSensitive(TRUE)
@@ -3532,11 +3449,6 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  autoroles=TRUE)
 {
 
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  crs <- crs 
-  crv <- crv
-  
   # Set up initial information about variables throughout Rattle,
   # including the Variable tab's variable model, the Explore tab's
   # categorical and continuous models, and the Modelling tab defaults
@@ -3931,8 +3843,6 @@ used.variables <- function(numonly=FALSE)
   # contains all variables except for the ignored variables, then
   # return NULL.
 
-  crs <- crs # Global - to avoid a "NOTE" from "R CMD check"
-  
   ii <- union(getVariableIndicies(crs$ignore), getVariableIndicies(crs$ident))
 
   if (numonly)
@@ -6985,10 +6895,6 @@ getEvaluateModels <- function()
 
 current.evaluate.tab <- function()
 {
-  # Assign from GLOBAL to avoid "no visible binding" from "R CMD check."
-
-  .EVALUATE <- .EVALUATE
-  
   cp <- .EVALUATE$getCurrentPage()
   return(.EVALUATE$getTabLabelText(.EVALUATE$getNthPage(cp)))
 }
@@ -7001,7 +6907,6 @@ current.evaluate.tab <- function()
 
 executeEvaluateTab <- function()
 {
-
   # CHECK PRE-CONDITIONS:
   
   #   Ensure a dataset exists.
@@ -7369,15 +7274,15 @@ executeEvaluateTab <- function()
     ##                                  probability.cmd))
   }
     
-  if (.GLM %in%  mtypes)
+  if (crv$GLM %in%  mtypes)
   {
     ## GLM's predict removes rows with missing values, so we also need
     ## to ensure we remove rows with missing values here.
     
-    testset[[.GLM]] <- sprintf("na.omit(%s)", testset0)
+    testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[.GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
-                              testset[[.GLM]])
+    predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+                              testset[[crv$GLM]])
 
     ## For GLM, a response is a figure close to the class, either close
     ## to 1 or close to 0, so threshold it to be either 1 or 0. TODO
@@ -7385,13 +7290,13 @@ executeEvaluateTab <- function()
     ##    response.cmd <- gsub("predict", "(predict",
     ##                         gsub(")$", ")>0.5)*1", response.cmd))
 
-    respcmd[[.GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
+    respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
                            gsub(")$", ', type="response") > 0.5, 1, 0)))',
-                                predcmd[[.GLM]]))
+                                predcmd[[crv$GLM]]))
 
     ## For GLM, the response is a probability of the class.
   
-    probcmd[[.GLM]] <- gsub(")$", ', type="response")', predcmd[[.GLM]])
+    probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
   
   }
     
@@ -9055,9 +8960,6 @@ on_tools_log_activate <- function(action, window)
 
 switchToPage <- function(page)
 {
-
-  crs <- crs # Global - to avoid a "NOTE" from "R CMD check"
-  crv <- cr
 
   # Blank the status bar whenever we change pages
   
