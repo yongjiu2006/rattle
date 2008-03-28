@@ -7,6 +7,10 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+235 080328 Bug fix: normalise fix ordered factor problem (Tony Nolan).
+234 080328 Rdataset: ensure column names valid R identifiers (Peter Christen)
+233 080323 Review globals - continue moving into crv, but don't crv <- crv.
+           Bug fix pmml.ksvm export - needs data.name
 232 080319 Begin moving .VARs into crv variable to remove R CMD check NOTEs.
            Manage different working dirs for projects/data (Michael Fogliani).
            Bug fix: Ensure data textview is shown after load default audit.csv.
