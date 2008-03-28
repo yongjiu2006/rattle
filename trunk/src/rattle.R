@@ -1,8 +1,8 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-23 09:37:46 Graham Williams>
+# Time-stamp: <2008-03-28 18:12:51 Graham Williams>
 #
-# Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+# Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
 # The Rattle package is made of of the following R source files:
 #
@@ -15,8 +15,8 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Mar 2008"
-COPYRIGHT <- "Copyright (C) 2007 Graham.Williams@togaware.com, GPL"
+VERSION.DATE <- "Released 23 Mar 2008"
+COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested the application. Many colleagues at the
@@ -2354,12 +2354,12 @@ executeDataRdataset <- function()
       return()
   }
 
-  ## Generate commands.
+  # Generate commands.
 
   assign.cmd <- sprintf('crs$dataset <<- %s', dataset)
   str.cmd <- "str(crs$dataset)"
-  
-  ## Start logging and executing the R code.
+
+  # Start logging and executing the R code.
 
   startLog()
   theWidget(TV)$setWrapMode("none") # On for welcome msg
@@ -2371,7 +2371,13 @@ executeDataRdataset <- function()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
   setRattleTitle(crs$dataname)
+
+  # 080328 Fix up any non-supported characters in the column names,
+  # otherwise they cause problems, e.g. "a-b" when used as ds$a-b is
+  # interpreted as (ds$a - b)!
   
+  names(crs$dataset) <<- make.names(names(crs$dataset))
+
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
                collectOutput(str.cmd), sep="")

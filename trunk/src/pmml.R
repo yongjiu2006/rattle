@@ -2,30 +2,34 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-03-23 09:25:42 Graham Williams>
+# Time-stamp: <2008-03-25 08:54:13 Graham Williams>
 #
-# Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+# Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
 # TODO
 #
 #      Extract the DataDictionary stuff to a separate function to
-#      share between pmml.rpat and pmml.kmeans.
+#      share between pmml.rpart and pmml.kmeans.
 
 ########################################################################
-#
+# UTILITY FUNCTIONS
+
 # 070929 these are potentially unintialised! Why? Where are they meant
 # to gloablly come from? They are defined in random_forest.R but that
 # is not part of the pmml package.
+
 cassign <- "<-"
 cif <- "if"
 cthen <- ""
 celse <- "else"
 cendif <- ""
 cin <- "%in%"
+
 sdecimal2binary <- function(x)
 {
   return(rev(sdecimal2binary.smallEndian(x)))
 }
+
 sdecimal2binary.smallEndian <- function(x)
 {
   if (x==0) return(0)
@@ -44,10 +48,11 @@ sdecimal2binary.smallEndian <- function(x)
   }
   return(bin)
 }
+
 treeset.randomForest <- function(model, n=1, root=1, format="R")
 {
-  ## Return a string listing the decision tree form of the chosen tree
-  ## from the random forest.
+  # Return a string listing the decision tree form of the chosen tree
+  # from the random forest.
   tree <- getTree(model, n)
   if (format == "R")
   {
@@ -126,7 +131,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
 
 #######################################################################
 # Main PMML functions
-#
+
 pmml <- function(model,
                  model.name="Rattle_Model",
                  app.name="Rattle/PMML",
@@ -138,8 +143,6 @@ pmml <- function(model,
 
 pmmlRootNode <- function()
 {
-  # PMML
-
   PMML.VERSION <- "3.1"
   return(xmlNode("PMML",
                  attrs=c(version=PMML.VERSION,
@@ -151,14 +154,13 @@ pmmlRootNode <- function()
 
 pmml3.2RootNode <- function()
 {
-	# PMML
-	
-	PMML.VERSION <- "3.2"
-	return(xmlNode("PMML",
-					attrs=c(version=PMML.VERSION,
-							xmlns="http://www.dmg.org/PMML-3_2",
-							"xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance", 
-							"xsi:schemaLocation"="http://www.dmg.org/PMML-3_2 http://www.dmg.org/v3-2/pmml-3-2.xsd")))
+  PMML.VERSION <- "3.2"
+  return(xmlNode("PMML",
+                 attrs=c(version=PMML.VERSION,
+                   xmlns="http://www.dmg.org/PMML-3_2",
+                   "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance", 
+                   "xsi:schemaLocation"=paste("http://www.dmg.org/PMML-3_2",
+                     "http://www.dmg.org/v3-2/pmml-3-2.xsd"))))
 }
 
 pmmlHeader <- function(description, copyright, app.name)
@@ -180,16 +182,17 @@ pmmlHeader <- function(description, copyright, app.name)
   # Header -> Extension
 						   
   header <- append.XMLNode(header,
-						   xmlNode("Extension",
-								   attrs=c(name="timestamp",
-										 value=sprintf("%s", Sys.time()),
-										 extender="Rattle")))
-						   
+                           xmlNode("Extension",
+                                   attrs=c(name="timestamp",
+                                     value=sprintf("%s", Sys.time()),
+                                     extender="Rattle")))
+  
   header <- append.XMLNode(header, xmlNode("Extension",
-										   attrs=c(name="description",
-												 value=sprintf("%s", Sys.info()["user"]),
-												 extender="Rattle")))
-						   
+                                           attrs=c(name="description",
+                                             value=sprintf("%s",
+                                               Sys.info()["user"]),
+                                             extender="Rattle")))
+  
 
   # Header -> Application
 
@@ -199,6 +202,7 @@ pmmlHeader <- function(description, copyright, app.name)
 
   return(header)
 }
+
 pmmlDataDictionary <- function(field)
 {
   ## field$name is a vector of strings, and includes target
@@ -275,7 +279,7 @@ pmmlMiningSchema <- function(field, target=NULL)
 # Author: rguha@indiana.edu
 # Date: 28 May 2007
 #
-# Modified on 01 Feb 2008 by Zementis, Inc. (info@zementis.com)to add 
+# Modified on 01 Feb 2008 by Zementis, Inc. (info@zementis.com) to add 
 # the capability to export binary logistic regression models using glm.
 
 pmml.lm <- function(model,
@@ -325,24 +329,24 @@ pmml.lm <- function(model,
 
   # PMML -> RegressionModel
 
-  # Added if so that code can also export binary
-  # logistic regression glm models built with 
-  # binomial(logit)
+  # Added by Zementis so that code can also export binary logistic
+  # regression glm models built with binomial(logit)
+
   if (as.character(model$call[[3]])[1] == "binomial")
   {
-	 lm.model <- xmlNode("RegressionModel",
-			             attrs=c(modelName=model.name,
-					           functionName="regression",
-							   normalizationMethod="softmax",
-					           targetFieldName=target)) 
+    lm.model <- xmlNode("RegressionModel",
+                        attrs=c(modelName=model.name,
+                          functionName="regression",
+                          normalizationMethod="softmax",
+                          targetFieldName=target)) 
   }
-  else # the original code for linear regression models
+  else # The original code for linear regression models
   {
-     lm.model <- xmlNode("RegressionModel",
-                         attrs=c(modelName=model.name,
-                               functionName="regression",
-                               algorithmName="least squares",
-                               targetFieldName=target))
+    lm.model <- xmlNode("RegressionModel",
+                        attrs=c(modelName=model.name,
+                          functionName="regression",
+                          algorithmName="least squares",
+                          targetFieldName=target))
   }
 
   # PMML -> RegressionModel -> MiningSchema
@@ -353,10 +357,10 @@ pmml.lm <- function(model,
 
   coeff <- coefficients(model)
   coeffnames <- names(coeff)
-
+  
   regTable <- xmlNode("RegressionTable",
                       attrs=c(intercept=as.numeric(coeff[1])))
-
+  
   for (i in 1:length(field$name))
   {
     name <- field$name[[i]]
@@ -384,16 +388,15 @@ pmml.lm <- function(model,
       }
     }
   }
-
+  
   lm.model <- append.XMLNode(lm.model, regTable)
-
+  
   # Add to the top level structure.
-
+  
   pmml <- append.XMLNode(pmml, lm.model)
-
+  
   return(pmml)
 }
-
 
 #######################################################################
 # Neural Networks
@@ -402,74 +405,73 @@ pmml.lm <- function(model,
 # Date: 6 Feb 2008
 # Implements a PMML exporter for nnet objects (Neural Networks)
 #
-#######################################################################
 
 # Function pmml.nnet.DataDictionary
 
 pmml.nnet.DataDictionary <- function(field)
 {
-	# field$name is a vector of strings, and includes target
-	# field$class is indexed by fields$names
-	# field$levels is indexed by fields$names
-	number.of.fields <- length(field$name)
+  # field$name is a vector of strings, and includes target
+  # field$class is indexed by fields$names
+  # field$levels is indexed by fields$names
+  number.of.fields <- length(field$name)
+  
+  # DataDictionary
 	
-	# DataDictionary
-	
-	data.dictionary <- xmlNode("DataDictionary",
-			attrs=c(numberOfFields=number.of.fields))
-	data.fields <- list()
-	for (i in 1:number.of.fields)
-	{
-		# Determine the operation type
-		
-		optype <- "UNKNOWN"
-		datype <- "UNKNOWN"
-		values <- NULL
-		modified.target <- FALSE
-		
-		if (field$class[[field$name[i]]] == "numeric")
-		{
-			optype <- "continuous"
-			datype <- "double"
-		}
-		else if (field$class[[field$name[i]]] == "factor")
-		{
-			optype <- "categorical"
-			datype <- "string"
-			
-			temp = grep("as.factor", field$name[i], value = TRUE, fixed = TRUE)
-			if (i == 1 && length(temp) > 0)
-			{
-				target <- field$name[i]
-				tempName <- strsplit(field$name[i],"")
-				endPos <- (length(tempName[[1]]) - 1)
-				field$name[i] <- substring(target,11,endPos)
-				modified.target <- TRUE
-			}       
-		}
-		
-		# DataDictionary -> DataField
-		
-		data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
-						optype=optype,
-						dataType=datype))
-		
-		if (modified.target == TRUE) 
-		{
-			field$name[1] <- target
-		}
-		
-		# DataDictionary -> DataField -> Value
-		
-		if (optype == "categorical")
-			for (j in 1:length(field$levels[[field$name[i]]]))
-				data.fields[[i]][[j]] <- xmlNode("Value",
-						attrs=c(value=field$levels[[field$name[i]]][j]))
-	}
-	data.dictionary$children <- data.fields
-	
-	return(data.dictionary)
-	
+  data.dictionary <- xmlNode("DataDictionary",
+                             attrs=c(numberOfFields=number.of.fields))
+  data.fields <- list()
+  for (i in 1:number.of.fields)
+  {
+    # Determine the operation type
+    
+    optype <- "UNKNOWN"
+    datype <- "UNKNOWN"
+    values <- NULL
+    modified.target <- FALSE
+    
+    if (field$class[[field$name[i]]] == "numeric")
+    {
+      optype <- "continuous"
+      datype <- "double"
+    }
+    else if (field$class[[field$name[i]]] == "factor")
+    {
+      optype <- "categorical"
+      datype <- "string"
+      
+      temp = grep("as.factor", field$name[i], value = TRUE, fixed = TRUE)
+      if (i == 1 && length(temp) > 0)
+      {
+        target <- field$name[i]
+        tempName <- strsplit(field$name[i],"")
+        endPos <- (length(tempName[[1]]) - 1)
+        field$name[i] <- substring(target,11,endPos)
+        modified.target <- TRUE
+      }       
+    }
+    
+    # DataDictionary -> DataField
+    
+    data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
+                                               optype=optype,
+                                               dataType=datype))
+    
+    if (modified.target == TRUE) 
+    {
+      field$name[1] <- target
+    }
+    
+    # DataDictionary -> DataField -> Value
+    
+    if (optype == "categorical")
+      for (j in 1:length(field$levels[[field$name[i]]]))
+        data.fields[[i]][[j]] <- xmlNode("Value",
+                                         attrs=c(value=field$levels[[field$name[i]]][j]))
+  }
+  data.dictionary$children <- data.fields
+  
+  return(data.dictionary)
+  
 }
 
 ###################################################################
@@ -1657,7 +1659,7 @@ pmml.rpart <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
@@ -1846,7 +1848,7 @@ pmml.randomForest <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
@@ -2014,7 +2016,7 @@ pmml.rpart.as.rules <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   ## PMML -> DataDictionary
@@ -2117,7 +2119,7 @@ pmml.kmeans <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
