@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-28 18:12:51 Graham Williams>
+# Time-stamp: <2008-03-28 23:21:29 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Mar 2008"
+VERSION.DATE <- "Released 28 Mar 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -4043,6 +4043,13 @@ executeTransformNormalisePerform <- function()
   # be normalised.
 
   classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
+
+  # 080328 For any ordered factors class returns two values, so we
+  # remove the "ordered" from the list to hopefully get back to the
+  # right length for classes (i.e., one class for each variable).
+
+  classes <- classes[classes!="ordered"]
+  
   if (action %in% c("recenter", "scale01", "rank", "medianad")
       && "factor" %in% classes)
   {
