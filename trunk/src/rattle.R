@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-28 23:21:29 Graham Williams>
+# Time-stamp: <2008-03-29 22:21:53 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -4212,9 +4212,12 @@ executeTransformNormalisePerform <- function()
                                   '"%s"] <<-\n',
                                   '    rescaler(crs$dataset[crs$dataset',
                                   '[["%s"]]',
-                                  '==vl, "%s"], "range") * 99',
+                                  '==vl, "%s"], "range") * 99\n',
+                                  'crs$dataset[is.nan(crs$dataset[["%s"]]), ',
+                                  '"%s"] <<- 0',
                                   sep=""),
-                            byvname, vname, byvname, vname, byvname, v)
+                            byvname, vname, byvname, vname, byvname, v,
+                            vname, vname)
 
       
       norm.comment <- "Rescale to 0-100 within each group."
