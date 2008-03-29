@@ -7,6 +7,7 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+236 080329 Bug fix: normalise by group when group has one element -> 0.
 235 080328 Bug fix: normalise fix ordered factor problem (Tony Nolan).
 234 080328 Rdataset: ensure column names valid R identifiers (Peter Christen)
 233 080323 Review globals - continue moving into crv, but don't crv <- crv.
@@ -298,6 +299,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Oct  6 14:55:14 EST 2007
+Last modified: Sat Mar 29 22:24:10 2008
 <!-- hhmts end -->
   </p>
