@@ -7,6 +7,10 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+237 080406 Bug fix: ByGroup of a singleton rank was set to 0 - now 99.
+           Bug fix: BQ and BK binning generate factor, not ordered factor
+                    since RF can't handle ordered factor.
+           Bug fix: missing _ caused remap vars not identified as Input
 236 080329 Bug fix: normalise by group when group has one element -> 0.
 235 080328 Bug fix: normalise fix ordered factor problem (Tony Nolan).
 234 080328 Rdataset: ensure column names valid R identifiers (Peter Christen)
