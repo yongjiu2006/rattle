@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-29 22:21:53 Graham Williams>
+# Time-stamp: <2008-04-06 12:46:56 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Mar 2008"
+VERSION.DATE <- "Released 29 Mar 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -4214,7 +4214,7 @@ executeTransformNormalisePerform <- function()
                                   '[["%s"]]',
                                   '==vl, "%s"], "range") * 99\n',
                                   'crs$dataset[is.nan(crs$dataset[["%s"]]), ',
-                                  '"%s"] <<- 0',
+                                  '"%s"] <<- 99',
                                   sep=""),
                             byvname, vname, byvname, vname, byvname, v,
                             vname, vname)
@@ -4582,6 +4582,9 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
                      labels=NULL, ordered=TRUE)
 {
   # From Daniele Medri 31 Jan 2007.
+
+  # Set ordered to FALSE in Rattle since randomForests don't work when
+  # the factor is ordered, for some reason (080406).
   
   # Best k for natural breaks
 
@@ -4784,7 +4787,8 @@ executeTransformRemapPerform <- function()
   if (action == "quantiles")
   {
     remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
-                                     'dataset[["%s"]], %d, method="quantile")',
+                                     'dataset[["%s"]], %d, method="quantile",',
+                                     'ordered=FALSE)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
                        collapse="\n")
@@ -4792,7 +4796,8 @@ executeTransformRemapPerform <- function()
   else if (action == "kmeans")
   {
     remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
-                                     'dataset[["%s"]], %d, method="kmeans")',
+                                     'dataset[["%s"]], %d, method="kmeans",',
+                                     'ordered=FALSE)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
                        collapse="\n")
@@ -4865,11 +4870,11 @@ executeTransformRemapPerform <- function()
   # Record the new variables as having an INPUT role. No other changes
   # as the original variables are probably still required for
   # modelling.
-  
+
   if (action == "joincat")
-    input <- union(input, paste(remap.prefix, vars[1], "_", vars[2], sep=""))
+    input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
   else
-    input <- union(input, paste(remap.prefix, vars, sep=""))
+    input <- union(input, paste(remap.prefix, vars, sep="_"))
 
   # Reset the dataset views keeping the roles unchanged except for
   # those that have been created, wich have just been added as inputs.
