@@ -109,13 +109,13 @@ install: build pbuild zip check pcheck
 	 perl -pi -e "s|pmml_[0-9\.]*tar.gz|pmml_$(PVERSION).tar.gz|g" \
 			rattle.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*zip|rattle_$(VERSION).zip|g" \
-			radownload.html.in;\
+			rattle-download.html.in;\
 	 perl -pi -e "s|rattle_[0-9\.]*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			radownload.html.in;\
+			rattle-download.html.in;\
 	 perl -pi -e "s|pmml_[0-9\.]*zip|pmml_$(PVERSION).zip|g" \
-			radownload.html.in;\
+			rattle-download.html.in;\
 	 perl -pi -e "s|pmml_[0-9\.]*tar.gz|pmml_$(PVERSION).tar.gz|g" \
-			radownload.html.in;\
+			rattle-download.html.in;\
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
 	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \

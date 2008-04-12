@@ -7,7 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
-080330 Aftre Transform refreshes list, keep same selections?
+080408 Transform Tab, "Filter" textbox for rows to keep
+080330 After Transform refreshes list, keep same selections?
 080318 Migrate all global variables into the crv$ structure - avoid warnings
 080315 Add a Last Dataset/Project option (Tony Nolan)
 080305 Implement silhouette plot for kmeans clusters

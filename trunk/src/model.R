@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-23 09:33:30 Graham Williams>
+## Time-stamp: <2008-04-12 09:09:55 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -371,7 +371,9 @@ executeModelGLM <- function()
                        ", family=", family,
                        ")", sep="")
 
-  summary.cmd <- "summary(crs$glm)"
+  summary.cmd <- paste("print(summary(crs$glm))",
+                       "cat('==== ANOVA ====\n\n')",
+                       "print(anova(crs$glm))", sep="\n")
   
   ## Build the model.
 
@@ -387,7 +389,7 @@ executeModelGLM <- function()
           
   resetTextview(TV)
   setTextview(TV, "Summary of the model built using glm.\n",
-              collectOutput(summary.cmd, TRUE))
+              collectOutput(summary.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
   

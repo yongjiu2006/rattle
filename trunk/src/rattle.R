@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-06 12:46:56 Graham Williams>
+# Time-stamp: <2008-04-12 08:05:55 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Mar 2008"
+VERSION.DATE <- "Released 06 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -3640,7 +3640,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Fix any doubling up
 
     input <- setdiff(input, target)
-    if (length(target) > 0 & length(ident) > 0 & target %in% ident)
+    if (length(target) > 0 && length(ident) > 0 && target %in% ident)
       target <- NULL
     
     # Always change a "factor" to "factor lvls"
@@ -4044,9 +4044,14 @@ executeTransformNormalisePerform <- function()
 
   classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
 
-  # 080328 For any ordered factors class returns two values, so we
-  # remove the "ordered" from the list to hopefully get back to the
-  # right length for classes (i.e., one class for each variable).
+  # 080328 For any ordered factors class returns two values (since the
+  # object inherits first from ordered and then factor), so we remove
+  # the "ordered" from the list to hopefully get back to the right
+  # length for classes (i.e., one class for each variable). We do note
+  # though that objects can inherit from multiple classes, and the
+  # order presented is the order in which they inherit. I should
+  # probably work with the unlist above to turn multiple results into
+  # one, like "ordered_factor".
 
   classes <- classes[classes!="ordered"]
   
@@ -4782,7 +4787,8 @@ executeTransformRemapPerform <- function()
   if (length(vars) == 0) return()
 
   # Now that we know which variables we are remapping, we can specify
-  # the actions.
+  # the actions. 080406 We set ordered=FALSE here for now because
+  # randomForest does not handle them. Andy is working on it.
   
   if (action == "quantiles")
   {
@@ -5303,7 +5309,7 @@ executeExploreTab <- function()
 
   vars <- getIncludedVariables(risk=TRUE)
   dataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                     ifelse(use.sample & sampling,"crs$sample", ""),
+                     ifelse(use.sample && sampling,"crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
 
   ## For the distribution plot, we do list all variables in the
@@ -5314,7 +5320,7 @@ executeExploreTab <- function()
   ## "avdataset".
 
   avdataset <- sprintf("%s[%s,]", "crs$dataset",
-                     ifelse(use.sample & sampling,"crs$sample", ""))
+                     ifelse(use.sample && sampling,"crs$sample", ""))
   
   vars <- getIncludedVariables(numonly=TRUE)
   ## TODO 060606 The question here is whether NULL means all variables
@@ -5324,13 +5330,13 @@ executeExploreTab <- function()
   #  ndataset <- NULL
   #else
     ndataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                        ifelse(use.sample & sampling,"crs$sample", ""),
+                        ifelse(use.sample && sampling,"crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
   ## Numeric input variables
   vars <- inputVariables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                       ifelse(use.sample & sampling,"crs$sample", ""),
+                       ifelse(use.sample && sampling,"crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
   ## Dispatch
@@ -5412,7 +5418,7 @@ executeExploreSummary <- function(dataset)
     appendLog("SUMMARY OF DATASET.", summary.cmd)
     appendTextview(TV,
                    paste("Summary of the ",
-                         ifelse(use.sample & sampling, "** sample **", "full"),
+                         ifelse(use.sample && sampling, "** sample **", "full"),
                          " dataset.\n\n", sep=""),
                    sprintf(paste("The data contains %d entities",
                                  "with missing values."),
@@ -5435,7 +5441,7 @@ executeExploreSummary <- function(dataset)
       appendLog("Generate a description of the dataset.", describe.cmd)
       appendTextview(TV,
                      paste("Description of the",
-                           ifelse(use.sample & sampling,
+                           ifelse(use.sample && sampling,
                                   "** sample **", "full"),
                            "dataset.\n\n"),
                      collectOutput(describe.cmd, TRUE, width=200))
@@ -5460,7 +5466,7 @@ executeExploreSummary <- function(dataset)
         appendTextview(TV,
                        paste("Basic statistics for each numeric variable",
                              "of the",
-                             ifelse(use.sample & sampling,
+                             ifelse(use.sample && sampling,
                                     "** sample **", "full"),
                              "dataset.\n\n"),
                        collectOutput(basics.cmd, TRUE))
@@ -5475,7 +5481,7 @@ executeExploreSummary <- function(dataset)
         appendTextview(TV,
                        paste("Kurtosis for each numeric variable ",
                              "of the ",
-                             ifelse(use.sample & sampling,
+                             ifelse(use.sample && sampling,
                                     "** sample **", "full"),
                              " dataset.\n",
                              "Larger values mean sharper peaks and ",
@@ -5497,7 +5503,7 @@ executeExploreSummary <- function(dataset)
         appendTextview(TV,
                        paste("Skewness for each numeric variable",
                              "of the",
-                             ifelse(use.sample & sampling,
+                             ifelse(use.sample && sampling,
                                     "** sample **", "full"),
                              "dataset.\nPositive means the right tail",
                              "is longer.\n\n"),
@@ -5695,7 +5701,7 @@ executeExplorePlot <- function(dataset)
   ## Check for sampling.
   
   use.sample <- theWidget("explore_sample_checkbutton")$getActive()
-  sampling  <- use.sample & not.null(crs$sample)
+  sampling  <- use.sample && not.null(crs$sample)
 
   ## Record other options.
 
@@ -7471,10 +7477,10 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
   return(sprintf("Generated Confusion Tables.", mtype, testname))
 }
 
-##----------------------------------------------------------------------
-##
-## EVALUATE RISK CHART
-##
+#----------------------------------------------------------------------
+#
+# EVALUATE RISK CHART
+#
 
 executeEvaluateRisk <- function(probcmd, testset, testname)
 {
@@ -7483,7 +7489,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   TV <- "risk_textview"
   resetTextview(TV)
   
-  ## Ensure a risk variable has been specified.
+  # Ensure a risk variable has been specified.
   
   risk <- crs$risk
   if (is.null(risk))
@@ -7533,15 +7539,15 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     setStatusBar("Applying", mtype, "model to the dataset to generate",
                  "a risk chart ...")
     
-    ## We need the base testset name here to get the risk variable, which
-    ## is not usually in the list of included columns.
+    # We need the base testset name here to get the risk variable, which
+    # is not usually in the list of included columns.
   
-    ## testbase <- gsub(", ?c\\(.*\\]", ",]", testset)
+    # testbase <- gsub(", ?c\\(.*\\]", ",]", testset)
 
-    ## Instead, obtain the column list, and if it exists, add the risk
-    ## variable to it, to avoid listing all columns, since this can
-    ## affect the na.omit function which will omit more rows if these
-    ## extra columns have NAs.
+    # Instead, obtain the column list, and if it exists, add the risk
+    # variable to it, to avoid listing all columns, since this can
+    # affect the na.omit function which will omit more rows if these
+    # extra columns have NAs.
 
     testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
     if (testcols != "")
@@ -7570,7 +7576,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), TRUE)
 
-    ## Check for errors - in particular, new levels in the test dataset.
+    # Check for errors - in particular, new levels in the test dataset.
     
     if (inherits(result, "try-error"))
     {
@@ -7606,7 +7612,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
       next()
     }
 
-    ## Check for all results the same.
+    # Check for all results the same.
     
     if (length(levels(as.factor(crs$pr))) == 1)
     {
@@ -7614,15 +7620,16 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                   "so there is nothing to plot!")
       return()
     }
-    ## Now generate a summary of the performance at various probability
-    ## cutoffs, with the result being stored in crs$eval.
+
+    # Now generate a summary of the performance at various probability
+    # cutoffs, with the result being stored in crs$eval.
   
     eval(parse(text=evaluate.cmd))
 
-    ## We want to display the numeric results of the evaluation. But if
-    ## there are too many rows, as produced by KSVM for example, it will
-    ## be too much, so limit it to 100 row, which need to be selected
-    ## every Nth.
+    # We want to display the numeric results of the evaluation. But if
+    # there are too many rows, as produced by KSVM for example, it will
+    # be too much, so limit it to 100 row, which need to be selected
+    # every Nth.
 
     ne <- nrow(crs$eval)
     maxev <- 100
@@ -7643,7 +7650,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                  " by probability cutoffs.\n\n", msg, sep="")
     appendTextview(TV, msg, collectOutput(sprintf("crs$eval[%s,]", id), TRUE))
 
-    ## Display the AUC measures.
+    # Display the AUC measures.
 
     #auc <- calculateRiskAUC(crs$eval)
     #print(auc)
@@ -7659,7 +7666,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                                      round(100*aucRecall), aucRecall),
                              sep=""))
     
-    ## Display the Risk Chart itself now.
+    # Display the Risk Chart itself now.
 
     # For 2 plots, so as not to overwrite the first plot, if we are
     # about to plot the second plot, initiate a new plot.
@@ -7670,7 +7677,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
   }
   
-  ## Restore par
+  # Restore par
   
   par(opar)
 
@@ -7805,7 +7812,7 @@ calculateAUC <- function(x, y)
 
 openMyDevice <- function(dev, filename)
 {
-  if (dev == "" & filename != "")
+  if (dev == "" && filename != "")
   {
     fn <- unlist(strsplit(filename, "\\."))
     dev=fn[length(fn)]
@@ -7841,7 +7848,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
 
   if (all(cl <= 1)) cl <- cl * 100
   if (all(re <= 1)) re <- re * 100
-  if (not.null(ri) & all(ri <= 1.5)) ri <- ri * 100 # Can sometimes be just >1
+  if (not.null(ri) && all(ri <= 1.5)) ri <- ri * 100 # Can sometimes be just >1
   if (all(pr <= 1)) pr <- pr * 100
   #
   # If list is in min to max order then reverse
@@ -8586,7 +8593,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                       getSelectedVariables("risk"))
     tmpset <- crs$dataset[-crs$sample, scorevarlist]
 
-    if (substr(scoreset, 1, 7) == "na.omit" &
+    if (substr(scoreset, 1, 7) == "na.omit" &&
         !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
 
     # End of Ed's modification.
@@ -8770,7 +8777,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                       getSelectedVariables("risk"))
     tmpset <- crs$dataset[-crs$sample, scorevarlist]
 
-    if (substr(scoreset, 1, 7) == "na.omit" &
+    if (substr(scoreset, 1, 7) == "na.omit" &&
         !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
 
     # End of Ed's modification.

@@ -7,6 +7,10 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+238 080412 Bug fix: Error reading numeric matrix - bad use of & (Mark Andersen)
+           Include anova output in glm display
+           pmml.rpart check for class methd, else fail
+           Add kernlab to pmml DESCRIPTION (Wen-Chi Lin)
 237 080406 Bug fix: ByGroup of a singleton rank was set to 0 - now 99.
            Bug fix: BQ and BK binning generate factor, not ordered factor
                     since RF can't handle ordered factor.

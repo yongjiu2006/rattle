@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-03-25 08:54:13 Graham Williams>
+# Time-stamp: <2008-04-12 20:40:49 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -167,7 +167,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.5" # Add pmml.nnet.
+  VERSION <- "1.1.6"
+  #  "1.1.5" # Add pmml.nnet.
   # "1.1.4" # Add pmml.ksvm. Fix extensions. 
   # "1.1.3" # Fixes for new version of randomSurvivalForest.
   # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
@@ -1627,7 +1628,9 @@ pmml.rpart <- function(model,
                        copyright=NULL, ...)
 {
   if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
-
+  if (model$method != "class")
+    stop("Currently only classification is handled.")
+  
   require(XML, quietly=TRUE)
   require(rpart, quietly=TRUE)
 
