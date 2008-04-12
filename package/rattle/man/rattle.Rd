@@ -38,6 +38,6 @@ rattle(csvname=NULL)
 ## You can start rattle with a path to a csv file to pre-specify the
 ## dataset. You then need to click Execute to load the data.
 
-rattle(system.file("csv", "audit.csv", package = "rattle"))
+\dontrun{rattle(system.file("csv", "audit.csv", package = "rattle"))}
 }
 \keyword{environment}
