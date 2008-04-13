@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-12 09:09:55 Graham Williams>
+## Time-stamp: <2008-04-13 20:05:24 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -173,10 +173,10 @@ executeModelTab <- function()
 
   if (sampleNeedsExecute()) return()
     
-  ## If the target has more than 2 levels, disable the ROCR and Risk
-  ## plots, and place a message on the first textview of the Evaluate
-  ## tab. We make this word wrap here and then turn that off once the
-  ## tab is Executed.
+  # If the target has more than 2 levels, disable the ROCR and Risk
+  # plots, and place a message on the first textview of the Evaluate
+  # tab. We make this word wrap here and then turn that off once the
+  # tab is Executed.
   
   if (length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
   {
@@ -189,7 +189,7 @@ executeModelTab <- function()
                    "will not be available. In particular, the ROCR",
                    "package (Lift, ROC, Precision, and Sensitivity",
                    "charts) and the Risk Chart only handle binary",
-                   "classification.")
+                   "classification.", sep=" ")
   }
   else
   {

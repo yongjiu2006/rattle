@@ -1,16 +1,19 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-04-06 13:28:52 Graham>
+## Time-stamp: <2008-04-13 17:47:37 Graham Williams>
 ##
 ## NNET TAB 061230
 ##
 ## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
-########################################################################
-##
-## TODO
-##
-## Figure out the actual framework for two class prediction
+#######################################################################
+#
+# TODO
+#
+# Figure out the actual framework for two class prediction
+#
+# use multinom from nnet package - but that is just same as glm.
+#
 
 ########################################################################
 ##

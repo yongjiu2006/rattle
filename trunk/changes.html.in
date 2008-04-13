@@ -7,6 +7,8 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+239 080413 Enable Regression and start setting up for this paradigm
+           Currently working for rpart - build and score work.
 238 080412 Bug fix: Error reading numeric matrix - bad use of & (Mark Andersen)
            Include anova output in glm display
            pmml.rpart check for class methd, else fail

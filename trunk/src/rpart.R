@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-03-15 13:20:24 Graham Williams>
+# Time-stamp: <2008-04-13 20:00:52 Graham Williams>
 #
 # RPART TAB
 #
@@ -189,6 +189,8 @@ executeModelRPart <- function(action="build")
   control <- NULL
   parms <- NULL
 
+  paradigm <- getParadigm()
+  
   # Scrape the value of the tuning controls
 
   tune.controls <- theWidget("rpart_tune_entry")$getText()
@@ -344,19 +346,21 @@ executeModelRPart <- function(action="build")
   if (action == "build")
   {
     rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=crs$dataset",
-                     if (subsetting) "[",
-                     if (sampling) "crs$sample",
-                     if (subsetting) ",",
-                     if (including) included,
-                     if (subsetting) "]",
-                     ifelse(is.null(crs$weights), "",
-                            sprintf(", weights=(%s)%s",
-                                    crs$weights,
-                                    ifelse(sampling, "[crs$sample]", ""))),
-                     ', method="class"',
-                     ifelse(is.null(parms), "", parms),
-                     ifelse(is.null(control), "", control),
-                     ")", sep="")
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ifelse(is.null(crs$weights), "",
+                              sprintf(", weights=(%s)%s",
+                                      crs$weights,
+                                      ifelse(sampling, "[crs$sample]", ""))),
+                       ', method=',
+                       ifelse(paradigm=="classification",
+                              '"class"', '"anova"'),
+                       ifelse(is.null(parms), "", parms),
+                       ifelse(is.null(control), "", control),
+                       ")", sep="")
 
     print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   }
