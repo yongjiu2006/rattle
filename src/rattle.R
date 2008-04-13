@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-12 08:05:55 Graham Williams>
+# Time-stamp: <2008-04-13 20:23:59 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Apr 2008"
+VERSION.DATE <- "Released 12 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2852,12 +2852,14 @@ on_variables_toggle_input_button_clicked <- function(action, window)
  executeSelectTab <- function()
 {
   
-  ## Can not do any preparation if there is no dataset.
+  # Can not do any preparation if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
   executeSelectSample()
 
+  paradigm <- getParadigm()
+  
   input   <- getSelectedVariables("input")
   target  <- getSelectedVariables("target")
   risk    <- getSelectedVariables("risk")
@@ -2866,7 +2868,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   weights <- theWidget("weight_entry")$getText()
   if (weights == "") weights <- NULL
   
-  ## Fail if there is more than one target
+  # Fail if there is more than one target
 
   if (length(target) > 1)
   {
@@ -2879,20 +2881,26 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     return()
   }
   
-  ## Fail if the Target does not look like a taget.
+  # Ask if the Target does not look like a target.
 
-##   if (not.null(target) && is.numeric(crs$dataset[[target]]) &&
-##       length(levels(as.factor(crs$dataset[[target]]))) > 20)
-##   {
-##     errorDialog("The column selected for your target",
-##                  sprintf("(%s)", crs$dataset[[target]]),
-##                  "is numeric and has more than 20 distinct values.",
-##                  "Please select a column with fewer classes.",
-##                  "Regresion modelling is not currently supported.")
-##     return()
-##   }
+  target.levels <- length(levels(as.factor(crs$dataset[[target]])))
+  
+  if (not.null(target) && paradigm == "classification" &&
+      # 080413 Doesn't need to be numeric! is.numeric(crs$dataset[[target]]) &&
+      target.levels > 20)
+  {
+    if (is.null(questionDialog("The column selected for your target",
+                               sprintf("(%s)", target),
+                               "has more than 20 distinct values",
+                               sprintf("(%d in fact).", target.levels),
+                               "That is unusual and some model builders will",
+                               "take a long time. Consider using fewer",
+                               "classes.",
+                               "\n\nDo you want to continue anyhow?")))
+      return()
+  }
 
-  ## Fail if there is more than one risk
+  # Fail if there is more than one risk
 
   if (length(risk) > 1)
   {
@@ -2905,7 +2913,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     return()
   }
 
-  ## Fail if the Risk column is not numeric.
+  # Fail if the Risk column is not numeric.
 
   if (not.null(risk) && ! is.numeric(crs$dataset[[risk]]))
   {
@@ -2915,7 +2923,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     return()
   }
 
-  ## Obtain a list of variables and R functions in the Weight Calculator
+  # Obtain a list of variables and R functions in the Weight Calculator
 
   if (not.null(weights) && nchar(weights) > 0)
   {
@@ -2932,7 +2940,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     allvars <- union(input, union(target, union(risk, union(ident, ignore))))
     for (i in 1:sum(vars))
     {
-      ## Check for any missing variables
+      # Check for any missing variables
 
       if (identifiers[vars][i] %notin% allvars)
       {
@@ -2942,7 +2950,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
         return()
       }
 
-      ## Check if Weight variables are not ignored, and inform user if not
+      # Check if Weight variables are not ignored, and inform user if not
 
       if (identifiers[vars][i] %notin%
                         union(ident, union(target, union(ignore, risk))))
@@ -2955,8 +2963,8 @@ on_variables_toggle_input_button_clicked <- function(action, window)
                     "Rattle suggests you ignore the variable.")
       }
       
-      ## For each Weights variable, replace with full reference to
-      ## crs$dataset, since the variable is ignored.
+      # For each Weights variable, replace with full reference to
+      # crs$dataset, since the variable is ignored.
 
       weights <- gsub(identifiers[vars][i],
                       sprintf("crs$dataset$%s", identifiers[vars][i]),
@@ -2965,7 +2973,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     }
   }
   
-  ## Record appropriate information.
+  # Record appropriate information.
   
   crs$input   <<- input
   crs$target  <<- target
@@ -2974,7 +2982,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   crs$ignore  <<- ignore
   crs$weights <<- weights
   
-  ## Update MODEL targets
+  # Update MODEL targets
 
   the.target <- sprintf("Target: %s", ifelse(is.null(crs$target),
                                              "None", crs$target))
@@ -2985,10 +2993,10 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   theWidget("rf_target_label")$setText(the.target)
   theWidget("svm_target_label")$setText(the.target)
   theWidget("glm_target_label")$setText(the.target)
-  ## theWidget("gbm_target_label")$setText(the.target)
+  # theWidget("gbm_target_label")$setText(the.target)
   theWidget("ada_target_label")$setText(the.target)
 
-  ## Update MODEL weights
+  # Update MODEL weights
 
   if (not.null(crs$weights))
   {
@@ -2996,17 +3004,24 @@ on_variables_toggle_input_button_clicked <- function(action, window)
     the.weight <- sprintf("Weights: %s", weights.display)
     theWidget("rpart_weights_label")$setText(the.weight)
   }
+
+  # 080413 Update MODEL types that are available. For example, with
+  # more than two classes we can't use Ada since the current package
+  # does not support more than 2 classes.
+
+  theWidget("boost_radiobutton")$setSensitive(paradigm == "classification"
+                                              && target.levels <= 2)
   
-  ## Update EVALUATE risk variable
+  # Update EVALUATE risk variable
   
   theWidget("evaluate_risk_label")$setText(crs$risk)
 
-  ## Update defaults tha rely on the number of variables.
+  # Update defaults tha rely on the number of variables.
   
   .RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
   theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
 
-  ## Finished - update the status bar.
+  # Finished - update the status bar.
   
   setStatusBar("Choice of variable characterics noted.",
                 "There are", length(crs$input), "input variables.")
@@ -6940,10 +6955,11 @@ executeEvaluateTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  #   Obtain some background information.
+  # Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
-
+  paradigm <- getParadigm()
+  
   #   Ensure we have at least one model to evaluate, otherwise warn
   #   the user and do nothing.
   
@@ -7377,7 +7393,10 @@ executeEvaluateTab <- function()
   else if (theWidget("pvo_radiobutton")$getActive())
     msg <- executeEvaluatePvOplot(probcmd, testset, testname)
   else if (theWidget("score_radiobutton")$getActive())
-    msg <- executeEvaluateScore(probcmd, testset, testname)
+    if (paradigm == "classification")
+      msg <- executeEvaluateScore(probcmd, testset, testname)
+    else if  (paradigm == "regression")
+      msg <- executeEvaluateScore(predcmd, testset, testname)
 
   if (not.null(msg)) setStatusBar(msg)
 }
@@ -8437,13 +8456,13 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 }
 
 #----------------------------------------------------------------------
-##
-## SCORE - Save the probability scores for each selected model to a file
-## Would be best into one file but testset may be different for each.
-##
-## TODO: Wouldn't this be better as the Export functionality for the
-## Evaluate tab?
-##
+#
+# SCORE - Save the probability scores for each selected model to a file
+# Would be best into one file but testset may be different for each.
+#
+# TODO: Wouldn't this be better as the Export functionality for the
+# Evaluate tab?
+#
 
 executeEvaluateScore <- function(probcmd, testset, testname)
 {
