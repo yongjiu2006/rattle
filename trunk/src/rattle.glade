@@ -772,9 +772,6 @@
                         <property name="n_rows">2</property>
                         <property name="n_columns">3</property>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
                           <widget class="GtkRadioButton" id="radiobutton15">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
@@ -863,6 +860,23 @@
                             <property name="right_attach">2</property>
                             <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkRadioButton" id="spatial_paradigm_radiobutton">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Spatial</property>
+                            <property name="response_id">0</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">twoclass_radiobutton</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="right_attach">3</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
                           </packing>
                         </child>
                       </widget>
@@ -1830,7 +1844,7 @@
                         <property name="accepts_tab">False</property>
                         <property name="text" translatable="yes">Welcome to Rattle.
 
-Rattle is an Open Source project to develop a GNOME Data Mining suite of applications built on top of the statistical and data mining package R, licensed under the GNU General Public License, and Copyright (c) Graham J Williams.
+Rattle is an Open Source project to develop a GNOME Data Mining suite of applications built on top of the statistical and data mining package R, licensed under the GNU General Public License, and Copyright (c) Togaware.
 
 See the Help menu for extensive support in using Rattle.
 
@@ -1838,7 +1852,7 @@ Togaware's Desktop Data Mining Survival Guide (under development) includes exten
 
     http://rattle.togaware.com 
 
-Rattle is Copyright (c) 2007-2008, Graham.Williams@togaware.com.
+Rattle is Copyright (c) 2007-2008, Togaware.
 Rattle is licensed under the GNU General Public License, Version 2.
 See Help-&gt;About for details.</property>
                       </widget>
@@ -7250,7 +7264,7 @@ The default chart displays caseload versus performance.</property>
     <property name="window_position">GTK_WIN_POS_MOUSE</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
-    <property name="copyright" translatable="yes">Copyright (C) 2007-2008 Graham.Williams@togaware.com</property>
+    <property name="copyright" translatable="yes">Copyright (C) 2007-2008 Togaware</property>
     <property name="comments" translatable="yes">The R Analytical Tool To Learn Easily
 (A GNOME Data Miner Built on R)</property>
     <property name="website">http://rattle.togaware.com</property>
@@ -7556,7 +7570,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
     <property name="has_separator">False</property>
-    <property name="copyright" translatable="yes">Copyright (C) 2007-2008 Graham.Williams@togaware.com</property>
+    <property name="copyright" translatable="yes">Copyright (C) 2007-2008 Togaware</property>
     <property name="comments" translatable="yes">The R Analytical Tool To Learn Easily
 (A GNOME Data Miner Built on R)</property>
     <property name="website">http://rattle.togaware.com</property>

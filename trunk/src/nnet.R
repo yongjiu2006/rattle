@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-13 17:47:37 Graham Williams>
+## Time-stamp: <2008-04-14 20:57:23 Graham Williams>
 ##
 ## NNET TAB 061230
 ##
@@ -93,7 +93,8 @@ executeModelNNet <- function()
   ## Finish up.
   
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A neural network model has been generated.", time.msg)

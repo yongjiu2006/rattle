@@ -2,9 +2,9 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2008-03-23 09:07:04 Graham Williams>
+## Time-stamp: <2008-04-14 21:21:15 Graham Williams>
 ##
-## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+## Copyright (c) 2007 Togaware, GPL Version 2
 ##
 ## Below we define the Rattle GUI specific functions for controlling
 ## ada modelling. The interface callbacks make calls to R functions,

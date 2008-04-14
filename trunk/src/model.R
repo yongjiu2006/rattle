@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-13 20:05:24 Graham Williams>
+## Time-stamp: <2008-04-14 21:18:43 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -255,7 +255,7 @@ executeModelTab <- function()
     {
       errorDialog("Rattle tried building an rpart model with option not",
                   "one of build/tune/best. This should not be possible.",
-                  "Let Graham.Williams@togaware.com know.")
+                  "Let support@togaware.com know.")
       return(FALSE)
       
     }
@@ -313,7 +313,8 @@ executeModelTab <- function()
   if (build.all)
   {
     time.taken <- Sys.time()-start.time
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                        attr(time.taken, "units"))
     setStatusBar("All models have been generated.", time.msg)
   }
   
@@ -396,7 +397,8 @@ executeModelGLM <- function()
   ## Finish up.
   
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A glm model has been generated.", time.msg)
@@ -639,7 +641,7 @@ executeModelSVM <- function()
                   "The error message was:", result,
                   "I am not familiar with this error, and you may",
                   "want to report it to the Rattle author",
-                  "at Graham.Williams@togaware.com")
+                  "at support@togaware.com")
     return(FALSE)
   }
 
@@ -663,7 +665,8 @@ executeModelSVM <- function()
   ## Finish up.
 
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",

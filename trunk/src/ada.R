@@ -2,9 +2,9 @@
 ##
 ## This is a model or template "module" for rattle.
 ##
-## Time-stamp: <2008-03-23 09:21:05 Graham Williams>
+## Time-stamp: <2008-04-14 21:21:55 Graham Williams>
 ##
-## Copyright (c) 2007 Graham Williams, Togaware.com, GPL Version 2
+## Copyright (c) 2007-2008 Togaware, GPL Version 2
 ##
 
 ## BUG FIX TO ALLOW ada.update TO WORK....
@@ -159,7 +159,8 @@ buildModelAda <- function(formula,
   
   if (gui)
   {
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                        attr(time.taken, "units"))
     appendTextview(tv, "\n", time.msg)
     appendLog(time.msg)
     setStatusBar("An adaboost model has been generated.", time.msg)
@@ -248,7 +249,8 @@ continueModelAda <- function(niter)
   
   if (gui)
   {
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                        attr(time.taken, "units"))
     appendTextview(tv, "\n", time.msg)
     appendLog(time.msg)
     setStatusBar("An adaboost model has been updated.", time.msg)
@@ -295,7 +297,7 @@ plotImportanceAda <- function()
     errorDialog("E135: Should not be here.",
                 "There is no ADA model and attempting to plot importance.",
                 "The button should not be active.",
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return()
   }
 
@@ -321,7 +323,7 @@ plotErrorsAda <- function()
     errorDialog("E136: Should not be here.",
                 "There is no ADA model and attempting to plot error.",
                 "The button should not be active.",
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return()
   }
 

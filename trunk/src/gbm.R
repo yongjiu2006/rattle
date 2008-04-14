@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-03-09 06:32:18 Graham>
+## Time-stamp: <2008-04-14 21:19:18 Graham Williams>
 ##
 ## GBM TAB
 ##
@@ -104,7 +104,8 @@ executeModelGBM <- function()
   if (sampling) crs$smodel <<- union(crs$smodel, GBM)
   
   timeTaken <- Sys.time()-startTime
-  appendLog(sprintf("Time taken: %0.2f %s", timeTaken, timeTaken@units))
+  appendLog(sprintf("Time taken: %0.2f %s", timeTaken,
+                    attr(timeTaken, "units")))
   setStatusBar("Boosted model has been generated.")
   return(TRUE)
 }
@@ -166,7 +167,7 @@ plotGBMImportance <- function()
     errorDialog("E134: Should not be here.",
                 "There is no GBM and attempting to plot importance.",
                 "Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
   

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2007-05-14 21:23:05 Graham>
+## Time-stamp: <2008-04-14 21:14:50 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -164,7 +164,7 @@ executeModelRF <- function()
                    if (including) included,
                    if (subsetting) "]",
                    sep="")
-  missing.cmd <- sprintf("length((na.omit(%s))@na.action)", dataset)
+  missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
   result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
   if (inherits(result, "try-error")) missing <- 0
   dsrow.cmd <- sprintf("nrow(%s)", dataset)
@@ -227,10 +227,9 @@ executeModelRF <- function()
     }
     else
       errorDialog("The call to randomForest appears to have failed.",
-                   "The error message was:", result,
-                   "I am not familiar with this error, and you may",
-                   "want to report it to the Rattle author",
-                   "at Graham.Williams@togaware.com")
+                  "The error message was:", result,
+                  "This is an unexpected error, and you may",
+                  "want to report it to support@togaware.com")
     return(FALSE)
   }
 
@@ -264,7 +263,8 @@ executeModelRF <- function()
   ## Finish up.
 
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A randomForest model has been generated.", time.msg)
@@ -286,10 +286,9 @@ plotRandomForestImportance <- function()
 
   if (is.null(crs$rf))
   {
-    errorDialog("E123: Should not be here.",
+    errorDialog("E123: This is an unexpected error.",
                 "There is no RF and attempting to plot importance.",
-                "Please report to",
-                "Graham.Williams@togaware.com")
+                "Please report this error to support@togaware.com")
     return()
   }
   
@@ -310,10 +309,9 @@ plotRandomForestError <- function()
 
   if (is.null(crs$rf))
   {
-    errorDialog("E129: Should not be here.",
+    errorDialog("E129: This is an unexpected error.",
                 "There is no RF and attempting to plot errors.",
-                "Please report to",
-                "Graham.Williams@togaware.com")
+                "Please report to support@togaware.com")
     return()
   }
   
