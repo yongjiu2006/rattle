@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-14 21:18:43 Graham Williams>
+## Time-stamp: <2008-04-15 05:15:54 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -320,18 +320,20 @@ executeModelTab <- function()
   
 }
 
-##----------------------------------------------------------------------
-##
-## MODEL GLM
-##
+#----------------------------------------------------------------------
+#
+# MODEL GLM
+#
 
 executeModelGLM <- function()
 {
-  ## Initial setup. 
+  # Initial setup. 
   
   TV <- "glm_textview"
+
+  paradigm <- getParadigm()
   
-  ## Currently only handling binary classification.
+  # Currently only handling binary classification.
   
 ##   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
 ##   if (num.classes > 2)
@@ -347,47 +349,57 @@ executeModelGLM <- function()
 
   family <- theWidget("glm_family_comboboxentry")$getActiveText()
   
-  ## Build the formula for the model.
+  # Build the formula for the model.
 
   frml <- paste(crs$target, "~ .")
 
-  ## List, as a string, the variables to be included. 
+  # List, as a string, the variables to be included. 
   
   included <- getIncludedVariables()
   
-  ## Some convenience booleans.
+  # Some convenience booleans.
 
   sampling  <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
   
-  ## Assume logistic regression for binary classification for now.
-  
-  glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
-                       if (subsetting) "[",
-                       if (sampling) "crs$sample",
-                       if (subsetting) ",",
-                       if (including) included,
-                       if (subsetting) "]",
-                       ", family=", family,
-                       ")", sep="")
+  # Assume logistic regression for binary classification for now.
 
+  if (paradigm == "classification")
+    glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+                     if (subsetting) "[",
+                     if (sampling) "crs$sample",
+                     if (subsetting) ",",
+                     if (including) included,
+                     if (subsetting) "]",
+                     ", family=", family,
+                     ")", sep="")
+  else if (paradigm == "regression")
+    glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
+                     if (subsetting) "[",
+                     if (sampling) "crs$sample",
+                     if (subsetting) ",",
+                     if (including) included,
+                     if (subsetting) "]",
+                     #", family=", family,
+                     ")", sep="")
+  
   summary.cmd <- paste("print(summary(crs$glm))",
                        "cat('==== ANOVA ====\n\n')",
                        "print(anova(crs$glm))", sep="\n")
   
-  ## Build the model.
+  # Build the model.
 
   startLog("LOGISTIC REGRESSION")
   appendLog("Build a logistic regression model using glm.",
-          gsub("<<-", "<-", glm.cmd), sep="")
+            gsub("<<-", "<-", glm.cmd), sep="")
   start.time <- Sys.time()
   eval(parse(text=glm.cmd))
   
-  ## Summarise the model.
+  # Summarise the model.
 
   appendLog("Summary of the resulting GLM model", summary.cmd)
-          
+  
   resetTextview(TV)
   setTextview(TV, "Summary of the model built using glm.\n",
               collectOutput(summary.cmd))

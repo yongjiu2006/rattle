@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-14 21:16:53 Graham Williams>
+# Time-stamp: <2008-04-15 05:50:46 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Apr 2008"
+VERSION.DATE <- "Released 14 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7209,14 +7209,14 @@ executeEvaluateTab <- function()
     predcmd[[.RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
                                 testset[[.RPART]])
 
-    ## For .RPART, the default is to generate class probabilities for
-    ## each output class, so ensure we instead generate the response.
+    # For .RPART, the default is to generate class probabilities for
+    # each output class, so ensure we instead generate the response.
   
     respcmd[[.RPART]] <- gsub(")$", ', type="class")', predcmd[[.RPART]])
 
-    ## For RPART the default predict command generates the probabilities
-    ## for each class and we assume we are interested in the final class
-    ## (i.e., for binary classification we are interested in the 1's).
+    # For RPART the default predict command generates the probabilities
+    # for each class and we assume we are interested in the final class
+    # (i.e., for binary classification we are interested in the 1's).
     
     probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
   }
@@ -7373,10 +7373,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  ## DISPATCH
-
-  ##print(respcmd)
-  ##print(probcmd)
+  # DISPATCH
   
   if (theWidget("confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)
@@ -7401,10 +7398,10 @@ executeEvaluateTab <- function()
   if (not.null(msg)) setStatusBar(msg)
 }
 
-##----------------------------------------------------------------------
-##
-## EVALUATE CONFUSION TABLE
-##
+#----------------------------------------------------------------------
+#
+# EVALUATE CONFUSION TABLE
+#
   
 executeEvaluateConfusion <- function(respcmd, testset, testname)
 {
