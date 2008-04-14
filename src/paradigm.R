@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-14 21:30:15 Graham Williams>
+# Time-stamp: <2008-04-15 05:44:06 Graham Williams>
 #
 # Paradigm control.
 #
@@ -14,6 +14,26 @@ getParadigm <- function()
     return("classification")
   else if (theWidget("unsupervised_radiobutton")$getActive())
     return("unsupervised")
+}
+
+switchToSelect <- function(data.available=not.null(crs$dataset))
+{
+  # 080413 Always change focus to the Select tab on changing the
+  # Paradigm, unless there is not data in whcih case switch to the
+  # Data tab. This is perhaps most logical.
+
+  if (data.available)
+  {
+    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                                crv$NOTEBOOK.SELECT.NAME))
+    switchToPage(crv$NOTEBOOK.SELECT.NAME)
+  }
+  else
+  {
+    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                                crv$NOTEBOOK.DATA.NAME))
+    switchToPage(crv$NOTEBOOK.DATA.NAME)
+  }
 }
 
 #
@@ -49,13 +69,7 @@ on_twoclass_radiobutton_toggled <- function(button)
 ##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
 ##     }
 
-    # 080413 Always change focus to the Data tab on changing the
-    # Paradigm. This is perhaps most logical.
-
-    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                crv$NOTEBOOK.SELECT.NAME))
-    switchToPage(crv$NOTEBOOK.SELECT.NAME)
-    
+    switchToSelect()
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -96,13 +110,7 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
 ##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
 ##     }
 
-    # 080413 Always change focus to the Select tab on changing the
-    # Paradigm. This is perhaps most logical.
-
-    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                crv$NOTEBOOK.SELECT.NAME))
-    switchToPage(crv$NOTEBOOK.SELECT.NAME)
-
+    switchToSelect()
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -140,13 +148,7 @@ on_unsupervised_radiobutton_toggled <- function(button)
 ##       switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
 ##     }
     
-    # 080413 Always change focus to the Data tab on changing the
-    # Paradigm. This is perhaps most logical.
-
-    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                crv$NOTEBOOK.SELECT.NAME))
-    switchToPage(crv$NOTEBOOK.SELECT.NAME)
-
+    switchToSelect()
     setStatusBar("Exposed the Cluster and Associate tabs")
   }
   else
