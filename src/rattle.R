@@ -1,8 +1,8 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-13 20:23:59 Graham Williams>
+# Time-stamp: <2008-04-14 21:16:53 Graham Williams>
 #
-# Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
+# Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
 # The Rattle package is made of of the following R source files:
 #
@@ -15,8 +15,8 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 12 Apr 2008"
-COPYRIGHT <- "Copyright (C) 2007-2008 Graham.Williams@togaware.com, GPL"
+VERSION.DATE <- "Released 13 Apr 2008"
+COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested the application. Many colleagues at the
@@ -2895,7 +2895,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
                                sprintf("(%d in fact).", target.levels),
                                "That is unusual and some model builders will",
                                "take a long time. Consider using fewer",
-                               "classes.",
+                               "classes or performing a regression.",
                                "\n\nDo you want to continue anyhow?")))
       return()
   }
@@ -5423,7 +5423,7 @@ executeExploreSummary <- function(dataset)
     ## Find the number of entities with any missing value for the
     ## non-ignored variables.
     
-    missing.cmd <- sprintf("length((na.omit(%s))@na.action)", dataset)
+    missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
     result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
     if (inherits(result, "try-error")) missing <- 0
     
@@ -6978,7 +6978,7 @@ executeEvaluateTab <- function()
                 "We found the model types to be:", mtypes,
                 "Yet, Rattle only knows about:", crv$MODELLERS,
                 "This is a Rattle bug.",
-                "Please report this to Graham.Williams@togaware.com.")
+                "Please report this to support@togaware.com.")
     return()
   }
 
@@ -6991,7 +6991,7 @@ executeEvaluateTab <- function()
                 "The models not built:",
                 sapply(mtypes, function(x) is.null(crs[[x]])),
                 "This is a Rattle bug.",
-                "Please report this to Graham.Williams@togaware.com.")
+                "Please report this to support@togaware.com.")
     return()
   }
 
@@ -7369,7 +7369,7 @@ executeEvaluateTab <- function()
                  "charts) apply only for binary classification.",
                  "Either restructure the data for binary classificaiton,",
                  "or else suggest an alternative to the author of Rattle",
-                 "at Graham.Williams@togaware.com!")
+                 "at support@togaware.com!")
     return()
   }
 
@@ -7469,7 +7469,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       else
         errorDialog("E141: Some error occured with the following command:",
                     "\n\n", respcmd, "\n\nBest to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -7626,7 +7626,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8026,7 +8026,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8146,7 +8146,7 @@ executeEvaluateROC <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8277,7 +8277,7 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8395,7 +8395,7 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8532,7 +8532,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8618,7 +8618,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     # End of Ed's modification.
     # if (substr(scoreset, 1, 7) == "na.omit")
     {
-      omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
+      omit.cmd <- paste("omitted <- attr(", scoreset, ', "na.action")', sep="")
       appendLog("Record rows omitted from predict command.", omit.cmd)
       eval(parse(text=omit.cmd))
     }
@@ -8722,7 +8722,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else
         errorDialog("Some error occured with", probcmd, "Best to let",
-                    "Graham.Williams@togaware.com know.\n\n",
+                    "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
     }
@@ -8802,7 +8802,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     # End of Ed's modification.
     # if (substr(scoreset, 1, 7) == "na.omit")
     {
-      omit.cmd <- paste("omitted <- ", scoreset, "@na.action", sep="")
+      omit.cmd <- paste("omitted <- attr(", scoreset, ', "na.action")', sep="")
       appendLog("Record rows omitted from predict command.", omit.cmd)
       eval(parse(text=omit.cmd))
     }
@@ -9133,8 +9133,8 @@ general classification and regression tasks.
 <<>>
 The most I can guarantee about this
 code is that there are bugs! When you find one, or a misfeature or
-something else you would like Rattle to do, please do email me at
-Graham.Williams@togaware.com.
+something else you would like Rattle to do, please do email
+support@togaware.com.
 <<>>
 Enjoy.")
 }

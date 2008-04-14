@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2007-11-28 05:02:20 Graham Williams>
+# Time-stamp: <2008-04-14 21:17:36 Graham Williams>
 #
 # Textview widget support
 #
@@ -58,7 +58,7 @@ resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
                 "The textview object supplied to resetTextview",
                 "is neither a GtkTextView nor a string.",
                 "We found a", class(tv)[1],
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return(FALSE)
   }
   wid$modifyFont(pangoFontDescriptionFromString("monospace 10"))
@@ -85,7 +85,7 @@ appendTextview <- function(tv, ..., sep="", tvsep=TRUE)
                 "The textview object supplied to appendTextview",
                 "is neither a GtkTextView nor a string.",
                 "We found a", class(tv)[1],
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return(FALSE)
   }
   msg <- paste(sep=sep, ...)
@@ -125,7 +125,7 @@ setTextview <- function(tv, ..., sep="")
                 "The textview object supplied to setTextview",
                 "is neither a GtkTextView nor a string.",
                 "We found a", class(tv)[1],
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return(FALSE)
   }
   oldopt <- options(useFancyQuotes="utf8") # Bug fix for MSWindows [071128]
@@ -143,7 +143,7 @@ addTextview <- function(tv, ..., sep="")
                 "The textview object supplied to addTextview",
                 "is neither a GtkTextView nor a string.",
                 "We found a", class(tv)[1],
-                "Please report this to Graham.Williams@togaware.com")
+                "Please report this to support@togaware.com")
     return(FALSE)
   }
   msg <- paste(sep=sep, ...)

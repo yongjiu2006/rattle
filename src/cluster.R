@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-23 09:07:34 Graham Williams>
+## Time-stamp: <2008-04-14 21:20:24 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -231,7 +231,8 @@ executeClusterKMeans <- function(include)
            col=c("blue", "red"), lty=c(1, 2), pch=c(1,4), inset=0.05)
   }
 
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("The K Means cluster has been generated.",
@@ -267,7 +268,7 @@ on_kmeans_stats_button_clicked <- function(button)
   if (is.null(crs$kmeans))
   {
     errorDialog("E124: Should not be here. Plaes report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -313,7 +314,7 @@ on_kmeans_data_plot_button_clicked <- function(button)
   if (is.null(crs$kmeans))
   {
     errorDialog("E132: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -367,7 +368,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
   if (is.null(crs$kmeans))
   {
     errorDialog("E125: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -527,8 +528,7 @@ executeClusterHClust <- function(include)
       errorDialog("The call to hclust appears to have failed.",
                    "The error message was:", result,
                    "I am not familiar with this error, and you may",
-                   "want to report it to the Rattle author",
-                   "at Graham.Williams@togaware.com")
+                   "want to report it to support@togaware.com")
     return()
   }
 
@@ -541,7 +541,8 @@ executeClusterHClust <- function(include)
   theWidget("hclust_data_plot_button")$setSensitive(TRUE)
   theWidget("hclust_discriminant_plot_button")$setSensitive(TRUE)
 
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A hierarchical cluster has been generated.", time.msg)
@@ -578,7 +579,7 @@ plotDendrogram <- function()
     errorDialog("E126: Should not be here.",
                 "There is no Hierarchical Cluster yet we are",
                 "trying to plot it.",
-                "Please report to Graham.Williams@togaware.com")
+                "Please report to support@togaware.com")
     return()
   }
 
@@ -637,7 +638,7 @@ displayHClustStats <- function()
   if (is.null(crs$hclust))
   {
     errorDialog("E127: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -699,7 +700,7 @@ on_hclust_data_plot_button_clicked <- function(button)
   if (is.null(crs$hclust))
   {
     errorDialog("E133: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -755,7 +756,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   if (is.null(crs$hclust))
   {
     errorDialog("E128: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -821,7 +822,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 ##   if (is.null(crs$hclust))
 ##   {
 ##     errorDialog("SHOULD NOT BE HERE. REPORT TO",
-##                 "Graham.Williams@togaware.com")
+##                 "support@togaware.com")
 ##     return()
 ##   }
 

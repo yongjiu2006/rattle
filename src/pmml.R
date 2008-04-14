@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-04-12 20:40:49 Graham Williams>
+# Time-stamp: <2008-04-14 21:05:08 Graham Williams>
 #
-# Copyright (c) 2007-2008 Graham Williams, Togaware.com, GPL Version 2
+# Copyright (c) 2007-2008 Togaware, GPL Version 2
 #
 # TODO
 #
@@ -1103,9 +1103,9 @@ pmml.ksvm.MiningSchema <- function(field, target=NULL)
   return(mining.schema)
 }
 
-###################################################################
-## Function pmml.ksvm
-##
+##################################################################
+# Function pmml.ksvm
+#
 
 pmml.ksvm <- function(model,
                       model.name="SVM_model",
@@ -1115,14 +1115,15 @@ pmml.ksvm <- function(model,
                       data.name,
                       ...)
 {
-  if (! inherits(model, "ksvm")) stop("Not a legitimate ksvm object.")
+  if (! inherits(model, "ksvm"))
+    stop("Not a legitimate ksvm object.")
   
-  if (! is.object(data.name)) stop("Specified dataset not a legitimate object.")
+  if (! is.object(data.name))
+    stop("Specified dataset not a legitimate object.")
 
   require(XML, quietly=TRUE)
 
-
-  ## Collect the required information.
+  # Collect the required information.
 
   attributes.model <- attributes(model)
   terms.model <- attributes.model$terms
@@ -1134,124 +1135,127 @@ pmml.ksvm <- function(model,
   number.of.labels <- length(terms$term.labels)
   number.of.fields <- length(field$name)
   number.of.SV <- model@nSV
-
-  ######################################################################################
-  ## Regression Vs. Classification
-  ## Assumes target is the first variable: Numeric = Regression, Factor = Classification
+  
+  #####################################################################
+  # Regression Vs. Classification
+  #
+  # Assumes target is the first variable: Numeric = Regression, Factor
+  # = Classification
 
   if (field$class[[1]][1] == "numeric")
   {
-      field$function.name <- "regression"
+    field$function.name <- "regression"
   }
   else
   {
-      field$function.name <- "classification"
+    field$function.name <- "classification"
   }
   
-  ####################################################################
-  ## Determining the number of SVMs:
-  ## For a classification task with more than two classes, ksvm will
-  ## generate the correspondent number of SVMs: one machine per class.
-  ## For a two class problem, only one machine will be generated.
+  ###################################################################
+  # Determining the number of SVMs:
+  # For a classification task with more than two classes, ksvm will
+  # generate the correspondent number of SVMs: one machine per class.
+  # For a two class problem, only one machine will be generated.
 
   if (field$function.name == "classification" && model@nclass > 2)
   {
-      number.of.SVMs <- (model@nclass * (model@nclass - 1)) / 2 
+    number.of.SVMs <- (model@nclass * (model@nclass - 1)) / 2 
   }
   else
   {
-       number.of.SVMs <- 1
+    number.of.SVMs <- 1
   }
-
+  
   ######################################################################
-  ## Using and manipulating predicted (or target) variable
-  ## 1) Assumes that there is a single factor and this is the target
-  ## 2) Assumes that target is the first variable.
-  ## First, remove as.factor() from target name
-  ## Second, capture classes for levels.
+  # Using and manipulating predicted (or target) variable
+  # 1) Assumes that there is a single factor and this is the target
+  # 2) Assumes that target is the first variable.
+  # First, remove as.factor() from target name
+  # Second, capture classes for levels.
   
   temp = grep("as.factor", target, value = TRUE, fixed = TRUE)
   if (field$function.name == "classification" && length(temp) > 0)
   {
-     tempName <- strsplit(target,"")
-     endPos <- (length(tempName[[1]]) - 1)
-     target <- substring(target,11,endPos)
+    tempName <- strsplit(target,"")
+    endPos <- (length(tempName[[1]]) - 1)
+    target <- substring(target,11,endPos)
   }
   
   for (i in 1:number.of.fields)
-    {
-      if (field$class[[field$name[i]]] == "factor")  
-        field$levels[[field$name[i]]] <- model@lev
-    }
-
-
-  ## PMML
+  {
+    if (field$class[[field$name[i]]] == "factor")  
+      field$levels[[field$name[i]]] <- model@lev
+  }
+  
+  # PMML
 
   pmml <- pmml3.2RootNode()
 
-
-  ## PMML -> Header
-
+  # PMML -> Header
+  
   if (is.null(copyright))
     copyright <- "Copyright (c) 2008 Zementis, Inc. (www.zementis.com)"
-  pmml <- append.XMLNode(pmml, pmml.ksvm.Header(description, copyright, app.name))
+  pmml <- append.XMLNode(pmml, pmml.ksvm.Header(description,
+                                                copyright, app.name))
 
- 
-  ## PMML -> DataDictionary
-
-  pmml <- append.XMLNode(pmml, pmml.ksvm.DataDictionary(field, data.name))
-
+  # PMML -> DataDictionary
   
-  ## PMML -> SupportVectorMachineModel
-
+  pmml <- append.XMLNode(pmml, pmml.ksvm.DataDictionary(field, data.name))
+  
+  # PMML -> SupportVectorMachineModel
+  
   if (field$function.name == "classification" && model@nclass == 2)
   {
-       ksvm.model <- xmlNode("SupportVectorMachineModel",
-                            attrs=c(modelName=model.name,
-                                  functionName=field$function.name,
-                                  algorithmName="supportVectorMachine",
-                                  svmRepresentation="SupportVectors",
-                                  alternateBinaryTargetCategory=model@lev[2]))
+    ksvm.model <- xmlNode("SupportVectorMachineModel",
+                          attrs=c(modelName=model.name,
+                            functionName=field$function.name,
+                            algorithmName="supportVectorMachine",
+                            svmRepresentation="SupportVectors",
+                            alternateBinaryTargetCategory=model@lev[2]))
   }
   else
   {
-     ksvm.model <- xmlNode("SupportVectorMachineModel",
-                            attrs=c(modelName=model.name,
-                                  functionName=field$function.name,
-                                  algorithmName="supportVectorMachine",
-                                  svmRepresentation="SupportVectors"))
+    ksvm.model <- xmlNode("SupportVectorMachineModel",
+                          attrs=c(modelName=model.name,
+                            functionName=field$function.name,
+                            algorithmName="supportVectorMachine",
+                            svmRepresentation="SupportVectors"))
   }
-
-  ## PMML -> SupportVectorMachineModel -> MiningSchema
+  
+  # PMML -> SupportVectorMachineModel -> MiningSchema
 
   field$name[1] <- target
-  ksvm.model <- append.XMLNode(ksvm.model, pmml.ksvm.MiningSchema(field, target))
+  ksvm.model <- append.XMLNode(ksvm.model,
+                               pmml.ksvm.MiningSchema(field, target))
   
   
-  ##############################################################################
-  ## PMML -> SupportVectorMachineModel -> Targets
-  ## Targets are necessary to scale SVM output and make data compatible
-  ## with ksvm's algorithm (post-processing) in case of regression
+  ##########################################################################
+  # PMML -> SupportVectorMachineModel -> Targets
+  # Targets are necessary to scale SVM output and make data compatible
+  # with ksvm's algorithm (post-processing) in case of regression
   
   if (field$function.name == "regression")
   {
-     TargetsList <- xmlNode("Targets")
-  
-     targetNode <- xmlNode("Target", 
-                           attrs=c(field=target,
-                                 rescaleConstant=attributes.model$scaling$y.scale$`scaled:center`,
-                                 rescaleFactor=attributes.model$scaling$y.scale$`scaled:scale`))
-  
-     TargetsList <- append.XMLNode(TargetsList, targetNode)
-     
-     ksvm.model <- append.XMLNode(ksvm.model, TargetsList) 
+    TargetsList <- xmlNode("Targets")
+    
+    targetNode <- xmlNode("Target", 
+                          attrs=c(field=target,
+                            rescaleConstant=
+                            attributes.model$scaling$y.scale$`scaled:center`,
+                            rescaleFactor=
+                            attributes.model$scaling$y.scale$`scaled:scale`))
+    
+    TargetsList <- append.XMLNode(TargetsList, targetNode)
+    
+    ksvm.model <- append.XMLNode(ksvm.model, TargetsList) 
   }
   
 
-  ##############################################################################
-  ## PMML -> SupportVectorMachineModel -> LocalTransformations 
-  ## LocalTransformations are necessary to scale x and y and make data compatible
-  ## with ksvm's algorithm (pre-processing)
+  ###################################################################
+  # PMML -> SupportVectorMachineModel -> LocalTransformations 
+  #
+  # LocalTransformations are necessary to scale x and y and make data
+  # compatible with ksvm's algorithm (pre-processing)
   
   number.of.data.names <- length(names(data.name))  
   number.of.scaled <- length(attributes.model$scaling$x.scale$`scaled:center`)
@@ -1260,119 +1264,121 @@ pmml.ksvm <- function(model,
   
   for (i in 1:number.of.labels)
   {
-	 if (field$class[[field$name[i+1]]] == "factor")
-	 {
-		 for (j in 1:number.of.data.names)
-		    if (terms$term.labels[i] == names(data.name)[j])
-		    {
-			   number.of.values = length(levels(data.name[[j]]))
-			   usedValues <- levels(data.name[[j]])
-			   break
-			}
-		
-	     for (j in 1:number.of.values)
-		 {
-		     fieldName <- paste("derived_",terms$term.labels[i],sep="")
-		     fieldName <- paste(fieldName,usedValues[[j]],sep="")
-		 
-		     derivedFieldNode <- xmlNode("DerivedField",
-		                                 attrs=c(name=fieldName, 
-	                                           optype="continuous",
-						                       dataType="double"))
-						 
-	         normDiscreteNode <- xmlNode("NormDiscrete",
-                                         attrs=c(field=terms$term.labels[i],
-	  		                                   value=usedValues[j]))
-								
-		     derivedFieldNode <- append.XMLNode(derivedFieldNode, normDiscreteNode)
-			
-			 LocalTransformations <- append.XMLNode(LocalTransformations, derivedFieldNode)
-		}
-	 }
-	 else
-	 {
-		for (j in 1:number.of.scaled)
-		{
-			if (number.of.scaled == 1) break
-			if (terms$term.labels[i] == names(attributes.model$scaling$x.scale$'scaled:center'[j]))
-			   break	
-	    }
-	   
-        normValue <- (attributes.model$scaling$x.scale$`scaled:center`[[j]] * -1) / 
-                      attributes.model$scaling$x.scale$`scaled:scale`[[j]]
-     
+    if (field$class[[field$name[i+1]]] == "factor")
+    {
+      for (j in 1:number.of.data.names)
+        if (terms$term.labels[i] == names(data.name)[j])
+        {
+          number.of.values = length(levels(data.name[[j]]))
+          usedValues <- levels(data.name[[j]])
+          break
+        }
+      for (j in 1:number.of.values)
+      {
         fieldName <- paste("derived_",terms$term.labels[i],sep="")
-     
+        fieldName <- paste(fieldName,usedValues[[j]],sep="")
+        
         derivedFieldNode <- xmlNode("DerivedField",
                                     attrs=c(name=fieldName, 
-                                          optype="continuous",
-                                          dataType="double"))
-        normContinuousNode <- xmlNode("NormContinuous", 
-                                      attrs=c(field=terms$term.labels[i]))
-                                   
-        linearNormNode <- xmlNode("LinearNorm", 
-                                  attrs=c(orig="0",
-                                        norm=normValue))
-                                     
-        normContinuousNode <- append.XMLNode(normContinuousNode, linearNormNode)
+                                      optype="continuous",
+                                      dataType="double"))
+        
+        normDiscreteNode <- xmlNode("NormDiscrete",
+                                    attrs=c(field=terms$term.labels[i],
+                                      value=usedValues[j]))
+        
+        derivedFieldNode <- append.XMLNode(derivedFieldNode, normDiscreteNode)
+        
+        LocalTransformations <- append.XMLNode(LocalTransformations,
+                                               derivedFieldNode)
+      }
+    }
+    else
+    {
+      for (j in 1:number.of.scaled)
+      {
+        if (number.of.scaled == 1) break
+        if (terms$term.labels[i] ==
+            names(attributes.model$scaling$x.scale$'scaled:center'[j]))
+          break	
+      }
+      
+      normValue <- (attributes.model$scaling$x.scale$`scaled:center`[[j]] * -1) / 
+        attributes.model$scaling$x.scale$`scaled:scale`[[j]]
+      
+      fieldName <- paste("derived_",terms$term.labels[i],sep="")
      
-        linearNormNode <- xmlNode("LinearNorm", 
-                                  attrs=c(orig=attributes.model$scaling$x.scale$`scaled:center`[[j]],
-                                        norm="0"))
-                                     
-        normContinuousNode <- append.XMLNode(normContinuousNode, linearNormNode)  
-                                      
-        derivedFieldNode <- append.XMLNode(derivedFieldNode, normContinuousNode)
-		
-		LocalTransformations <- append.XMLNode(LocalTransformations, derivedFieldNode)
-     } 
+      derivedFieldNode <- xmlNode("DerivedField",
+                                  attrs=c(name=fieldName, 
+                                    optype="continuous",
+                                    dataType="double"))
+      normContinuousNode <- xmlNode("NormContinuous", 
+                                    attrs=c(field=terms$term.labels[i]))
+      
+      linearNormNode <- xmlNode("LinearNorm", 
+                                attrs=c(orig="0",
+                                  norm=normValue))
+      
+      normContinuousNode <- append.XMLNode(normContinuousNode, linearNormNode)
+      
+      linearNormNode <- xmlNode("LinearNorm", 
+                                attrs=c(orig=attributes.model$scaling$x.scale$`scaled:center`[[j]],
+                                  norm="0"))
+      
+      normContinuousNode <- append.XMLNode(normContinuousNode, linearNormNode)
+      
+      derivedFieldNode <- append.XMLNode(derivedFieldNode, normContinuousNode)
+      
+      LocalTransformations <- append.XMLNode(LocalTransformations,
+                                             derivedFieldNode)
+    } 
   }
   
   ksvm.model <- append.XMLNode(ksvm.model, LocalTransformations)  
   
   
-  ##############################################################################
-  ## Support PMML Kernel Functions
-  ## PMML -> SupportVectorMachineMode -> KernelTypeNode
+  ###########################################################################
+  # Support PMML Kernel Functions
+  # PMML -> SupportVectorMachineMode -> KernelTypeNode
 
   if (model@kcall[[4]] == "rbfdot")
   {
-        KernelTypeNode <- xmlNode("RadialBasisKernelType",
-                                          attrs=c(gamma=model@kernelf@kpar$sigma,
-                                                description="Radial basis kernel type"))
+    KernelTypeNode <- xmlNode("RadialBasisKernelType",
+                              attrs=c(gamma=model@kernelf@kpar$sigma,
+                                description="Radial basis kernel type"))
   }
   else if (model@kcall[[4]] == "polydot")
   {
-        KernelTypeNode <- xmlNode("PolynomialKernelType",
-                                          attrs=c(gamma=model@kernelf@kpar$scale,
-                                                coef0=model@kernelf@kpar$offset,
-                                                degree=model@kernelf@kpar$degree,
-                                                description="Polynomial kernel type"))
+    KernelTypeNode <- xmlNode("PolynomialKernelType",
+                              attrs=c(gamma=model@kernelf@kpar$scale,
+                                coef0=model@kernelf@kpar$offset,
+                                degree=model@kernelf@kpar$degree,
+                                description="Polynomial kernel type"))
   }
   else if (model@kcall[[4]] == "vanilladot")
   {
-        KernelTypeNode <- xmlNode("LinearKernelType",
-                                          attrs=c(description="Linear kernel type"))
+    KernelTypeNode <- xmlNode("LinearKernelType",
+                              attrs=c(description="Linear kernel type"))
   }
   else if (model@kcall[4] == "tanhdot")
   {
-        KernelTypeNode <- xmlNode("SigmoidKernelType",
-                                          attrs=c(gamma=model@kernelf@kpar$scale,
-                                                coef0=model@kernelf@kpar$offset,
-                                                description="Sigmoid kernel type"))
+    KernelTypeNode <- xmlNode("SigmoidKernelType",
+                              attrs=c(gamma=model@kernelf@kpar$scale,
+                                coef0=model@kernelf@kpar$offset,
+                                description="Sigmoid kernel type"))
   }
-
+  
   ksvm.model <- append.XMLNode(ksvm.model, KernelTypeNode)
-
-
-  ## PMML -> SupportVectorMachineMode -> VectorDictionary
-
+  
+  
+  # PMML -> SupportVectorMachineMode -> VectorDictionary
+  
   VectorDictionary <- xmlNode("VectorDictionary",
                               attrs=c(numberOfVectors=as.numeric(number.of.SV)))
 
   ########################################################################## 
   ## Allocate and initialize variables to make multi class problems possible
-
+  
   number.of.SV.entries <- length(attributes.model$scaling$scaled)
   ix.matrix <- array(0, dim=c(number.of.SVMs, number.of.SV))
   supportVectorEntries <- array(0, dim=c(number.of.SV, number.of.SV.entries))
@@ -1380,56 +1386,56 @@ pmml.ksvm <- function(model,
   usedAlphaID <- vector("list", number.of.SV)
   for (i in 1:number.of.SV) usedAlphaID[[i]] <- 0
   newID <- 1
-				  
+  
   if (field$function.name == "classification")
   {
-     for (ix in 1:number.of.SVMs)
-     {
-        coeff <- coef(model)
-        number.of.coeff <- length(coeff[[ix]])
-
-        for (i in 1:number.of.coeff)
+    for (ix in 1:number.of.SVMs)
+    {
+      coeff <- coef(model)
+      number.of.coeff <- length(coeff[[ix]])
+      
+      for (i in 1:number.of.coeff)
+      {
+        all.coef[ix,i] <- coeff[[ix]][i]
+        sameCoeff <- FALSE
+        for (j in 1:number.of.SV)
         {
-           all.coef[ix,i] <- coeff[[ix]][i]
-	       sameCoeff <- FALSE
-	       for (j in 1:number.of.SV)
-	       {
-              if (usedAlphaID[[j]] == model@alphaindex[[ix]][i])
-              {
-                 sameCoeff <- TRUE
-                 ix.matrix[ix,i] <- j
-              }
-           }
-           if (sameCoeff == FALSE)
-           {
-              ix.matrix[ix,i] <- newID
-              usedAlphaID[[newID]] <- model@alphaindex[[ix]][i]
-              for (j in 1:number.of.SV.entries)
-              {
-                 supportVectorEntries[newID,j] = model@xmatrix[[ix]][i,j] 
-              }
-              newID <- (newID + 1)
-           }
-	    }
-     }
+          if (usedAlphaID[[j]] == model@alphaindex[[ix]][i])
+          {
+            sameCoeff <- TRUE
+            ix.matrix[ix,i] <- j
+          }
+        }
+        if (sameCoeff == FALSE)
+        {
+          ix.matrix[ix,i] <- newID
+          usedAlphaID[[newID]] <- model@alphaindex[[ix]][i]
+          for (j in 1:number.of.SV.entries)
+          {
+            supportVectorEntries[newID,j] = model@xmatrix[[ix]][i,j] 
+          }
+          newID <- (newID + 1)
+        }
+      }
+    }
   }
   else   ## Regression
   {
-     coeff <- coef(model)
-     number.of.coeff <- length(coeff)
-
-     for (i in 1:number.of.coeff)
-     {
-        all.coef[1,i] <- coeff[i]
-        ix.matrix[1,i] <- i
-        usedAlphaID[[i]] <- model@alphaindex[[i]]
-        for (j in 1:number.of.SV.entries)
-        {
-        	supportVectorEntries[i,j] = model@xmatrix[i,j] 
-	    }
-     }
+    coeff <- coef(model)
+    number.of.coeff <- length(coeff)
+    
+    for (i in 1:number.of.coeff)
+    {
+      all.coef[1,i] <- coeff[i]
+      ix.matrix[1,i] <- i
+      usedAlphaID[[i]] <- model@alphaindex[[i]]
+      for (j in 1:number.of.SV.entries)
+      {
+        supportVectorEntries[i,j] = model@xmatrix[i,j] 
+      }
+    }
   }
-
+  
   ###########################################################################
   ## PMML -> SupportVectorMachineMode -> VectorDictionary -> VectorFieldsList
   ##
@@ -1451,174 +1457,175 @@ pmml.ksvm <- function(model,
   firstFactor <- TRUE
   for (i in 1:number.of.labels)
   {
-	  if (field$class[[field$name[i+1]]] == "factor")
-	  {
-		 for (j in 1:number.of.data.names)
-			 if (terms$term.labels[i] == names(data.name)[j])
-		     {
-		         number.of.values = length(levels(data.name[[j]]))
-	             usedValues <- levels(data.name[[j]])
-			     break
-			 }		  
-		 for (j in 1:number.of.values)
-		 {
-			 ## Reflecting the problem ... by using an if statement
-			 if (j > 1 || firstFactor)
-			 {
-			    fieldName <- paste("derived_",terms$term.labels[i],sep="")
-			    fieldName <- paste(fieldName,usedValues[[j]],sep="")
-
-                vectorFieldsNode <- xmlNode("FieldRef",
-                                          attrs=c(field=fieldName))
-                VectorFieldsList <- append.XMLNode(VectorFieldsList, vectorFieldsNode)
-				firstFactor <- FALSE
-			 }
-	     }   
-	 }
-	 else
-	 {
-		 fieldName <- paste("derived_",terms$term.labels[i],sep="")
-		 
-		 vectorFieldsNode <- xmlNode("FieldRef",
-				                     attrs=c(field=fieldName))
-		 VectorFieldsList <- append.XMLNode(VectorFieldsList, vectorFieldsNode)
-	 }
+    if (field$class[[field$name[i+1]]] == "factor")
+    {
+      for (j in 1:number.of.data.names)
+        if (terms$term.labels[i] == names(data.name)[j])
+        {
+          number.of.values = length(levels(data.name[[j]]))
+          usedValues <- levels(data.name[[j]])
+          break
+        }		  
+      for (j in 1:number.of.values)
+      {
+        ## Reflecting the problem ... by using an if statement
+        if (j > 1 || firstFactor)
+        {
+          fieldName <- paste("derived_",terms$term.labels[i],sep="")
+          fieldName <- paste(fieldName,usedValues[[j]],sep="")
+          
+          vectorFieldsNode <- xmlNode("FieldRef",
+                                      attrs=c(field=fieldName))
+          VectorFieldsList <- append.XMLNode(VectorFieldsList, vectorFieldsNode)
+          firstFactor <- FALSE
+        }
+      }   
+    }
+    else
+    {
+      fieldName <- paste("derived_",terms$term.labels[i],sep="")
+      
+      vectorFieldsNode <- xmlNode("FieldRef",
+                                  attrs=c(field=fieldName))
+      VectorFieldsList <- append.XMLNode(VectorFieldsList, vectorFieldsNode)
+    }
   }
-
+  
   VectorDictionary <- append.XMLNode(VectorDictionary, VectorFieldsList)
-
-
+  
+  
   ## PMML -> SupportVectorMachineModel -> VectorDictionary -> VectorInstances
-
+  
   for (i in 1:number.of.SV)
   {
-        vectorInstanceNode <- xmlNode("VectorInstance",
-                                      attrs=c(id=as.numeric(i)))
-
-        vectorIndices <- NULL
-        entries <- NULL
-        for (j in 1:number.of.SV.entries)
-        {
-        	vectorIndices <- append(vectorIndices, j)
-            vectorIndices <- append(vectorIndices," ")
-
-            entries <- append(entries,supportVectorEntries[i,j])
-            entries <- append(entries," ")
-        }
-
-        sparseArrayNode <- xmlNode("REAL-SparseArray",
-                                   attrs=c(n=as.numeric(number.of.labels)),
-                                   xmlNode("Indices",vectorIndices),
-                                   xmlNode("REAL-Entries",entries))
-
-        vectorInstanceNode <- append.XMLNode(vectorInstanceNode, sparseArrayNode)
-
-        VectorDictionary <- append.XMLNode(VectorDictionary, vectorInstanceNode)
+    vectorInstanceNode <- xmlNode("VectorInstance",
+                                  attrs=c(id=as.numeric(i)))
+    
+    vectorIndices <- NULL
+    entries <- NULL
+    for (j in 1:number.of.SV.entries)
+    {
+      vectorIndices <- append(vectorIndices, j)
+      vectorIndices <- append(vectorIndices," ")
+      
+      entries <- append(entries,supportVectorEntries[i,j])
+      entries <- append(entries," ")
+    }
+    
+    sparseArrayNode <- xmlNode("REAL-SparseArray",
+                               attrs=c(n=as.numeric(number.of.labels)),
+                               xmlNode("Indices",vectorIndices),
+                               xmlNode("REAL-Entries",entries))
+    
+    vectorInstanceNode <- append.XMLNode(vectorInstanceNode, sparseArrayNode)
+    
+    VectorDictionary <- append.XMLNode(VectorDictionary, vectorInstanceNode)
   }
-
+  
   ksvm.model <- append.XMLNode(ksvm.model, VectorDictionary)
-
+  
   ############################################################
   ## PMML -> SupportVectorMachineModel -> SupportVectorMachine
   
   if (field$function.name == "classification" && number.of.SVMs > 2)
   {
-     target1 <- vector("list", number.of.SVMs)
-     target2 <- vector("list", number.of.SVMs)
-     ix <- 1
-     for (i in 1:length(model@lev))
-     {
-        for (j in i:length(model@lev))
+    target1 <- vector("list", number.of.SVMs)
+    target2 <- vector("list", number.of.SVMs)
+    ix <- 1
+    for (i in 1:length(model@lev))
+    {
+      for (j in i:length(model@lev))
+      {
+        if (j > i)
         {
-           if (j > i)
-           {
-              target1[[ix]] <- i
-              target2[[ix]] <- j
-              ix <- ix + 1
-           }
+          target1[[ix]] <- i
+          target2[[ix]] <- j
+          ix <- ix + 1
         }
-     }
+      }
+    }
   }
-
+  
   for (ix in 1:number.of.SVMs)
   {
-        ## Number of Support Vectors needs to be the same as number of coefficients in PMML.
-
-        if (field$function.name == "classification")
-        {
-			coeff <- coef(model)
-			number.of.coeff <- length(coeff[[ix]])
-			
-            if (number.of.SVMs > 2)
-            {
-         	   SupportVectorMachine <- xmlNode("SupportVectorMachine",
-                                               attrs=c(targetCategory=model@lev[target1[[ix]]]))
-                                               
-               targetExtension <- xmlNode("Extension",
-                                          attrs=c(name="alternateTargetCategory",
-                                                value=model@lev[target2[[ix]]],
-                                                extender="ADAPA"))
-                                          
-               SupportVectorMachine <- append.XMLNode(SupportVectorMachine, targetExtension)           
-            }
-            else  # binary classification
-            {
-        	   SupportVectorMachine <- xmlNode("SupportVectorMachine",
-                                               attrs=c(targetCategory=model@lev[ix]))
-            }
-        }
-        else   # Regression
-        {
-			coeff <- coef(model)
-			number.of.coeff <- length(coeff)
-			
-        	SupportVectorMachine <- xmlNode("SupportVectorMachine")
-        }
-
-        ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> SupportVectorsList
-
-        SupportVectorsList <- xmlNode("SupportVectors",
-                                      attrs=c(numberOfAttributes=as.numeric(number.of.SV.entries),
-                                       	    numberOfSupportVectors=as.numeric(number.of.coeff)))
-
-
-        for (i in 1:number.of.coeff)
-        {
-            supportVectorNode <- xmlNode("SupportVector",
-                                         attrs=c(vectorId=as.numeric(ix.matrix[ix,i])))
-            SupportVectorsList <- append.XMLNode(SupportVectorsList, supportVectorNode)
-        }
-
-        SupportVectorMachine <- append.XMLNode(SupportVectorMachine, SupportVectorsList)
-
-        ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> CoefficientsList
-
-        bias <- (model@b[ix] * -1)
+    ## Number of Support Vectors needs to be the same as number of coefficients in PMML.
+    
+    if (field$function.name == "classification")
+    {
+      coeff <- coef(model)
+      number.of.coeff <- length(coeff[[ix]])
+      
+      if (number.of.SVMs > 2)
+      {
+        SupportVectorMachine <- xmlNode("SupportVectorMachine",
+                                        attrs=c(targetCategory=model@lev[target1[[ix]]]))
         
-        CoefficientsList <- xmlNode("Coefficients",
-                                    attrs=c(absoluteValue=as.numeric(bias),
-                                          numberOfCoefficients=as.numeric(number.of.coeff)))
-
-        for (i in 1:number.of.coeff)
-        {
-        	coefficientNode <- xmlNode("Coefficient",
-                                       attrs=c(value=as.numeric(all.coef[ix,i])))
-            CoefficientsList <- append.XMLNode(CoefficientsList, coefficientNode)
-        }
-
-        SupportVectorMachine <- append.XMLNode(SupportVectorMachine, CoefficientsList)
-
-        ksvm.model <- append.XMLNode(ksvm.model, SupportVectorMachine)
-
+        targetExtension <- xmlNode("Extension",
+                                   attrs=c(name="alternateTargetCategory",
+                                     value=model@lev[target2[[ix]]],
+                                     extender="ADAPA"))
+        
+        SupportVectorMachine <- append.XMLNode(SupportVectorMachine, targetExtension)           
+      }
+      else  # binary classification
+      {
+        SupportVectorMachine <- xmlNode("SupportVectorMachine",
+                                        attrs=c(targetCategory=model@lev[ix]))
+      }
+    }
+    else   # Regression
+    {
+      coeff <- coef(model)
+      number.of.coeff <- length(coeff)
+      
+      SupportVectorMachine <- xmlNode("SupportVectorMachine")
+    }
+    
+    ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> SupportVectorsList
+    
+    SupportVectorsList <- xmlNode("SupportVectors",
+                                  attrs=c(numberOfAttributes=as.numeric(number.of.SV.entries),
+                                    numberOfSupportVectors=as.numeric(number.of.coeff)))
+    
+    
+    for (i in 1:number.of.coeff)
+    {
+      supportVectorNode <- xmlNode("SupportVector",
+                                   attrs=c(vectorId=as.numeric(ix.matrix[ix,i])))
+      SupportVectorsList <- append.XMLNode(SupportVectorsList, supportVectorNode)
+    }
+    
+    SupportVectorMachine <- append.XMLNode(SupportVectorMachine, SupportVectorsList)
+    
+    ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> CoefficientsList
+    
+    bias <- (model@b[ix] * -1)
+    
+    CoefficientsList <- xmlNode("Coefficients",
+                                attrs=c(absoluteValue=as.numeric(bias),
+                                  numberOfCoefficients=as.numeric(number.of.coeff)))
+    
+    for (i in 1:number.of.coeff)
+    {
+      coefficientNode <- xmlNode("Coefficient",
+                                 attrs=c(value=as.numeric(all.coef[ix,i])))
+      CoefficientsList <- append.XMLNode(CoefficientsList, coefficientNode)
+    }
+    
+    SupportVectorMachine <- append.XMLNode(SupportVectorMachine, CoefficientsList)
+    
+    ksvm.model <- append.XMLNode(ksvm.model, SupportVectorMachine)
+    
   }
-
-
+  
+  
   ## Add to the top level structure.
-
+  
   pmml <- append.XMLNode(pmml, ksvm.model)
-
+  
   return(pmml)
 }
+
 ########################################################################
 
 pmml.rpart <- function(model,
@@ -1641,18 +1648,18 @@ pmml.rpart <- function(model,
   ## variables!
 
   field <- NULL
-  field$name <- as.character(model$terms@variables)[-1]
+  field$name <- as.character(attr(model$terms, "variables"))[-1]
   number.of.fields <- length(field$name)
-  field$class <- model$terms@dataClasses
+  field$class <- attr(model$terms, "dataClasses")
   target <- field$name[1]
 
   for (i in 1:number.of.fields)
   {
     if (field$class[[field$name[i]]] == "factor")
       if (field$name[i] == target)
-        field$levels[[field$name[i]]] <- model@ylevels
+        field$levels[[field$name[i]]] <- attr(model, "ylevels")
       else
-        field$levels[[field$name[i]]] <- model@xlevels[[field$name[i]]]
+        field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
   ## PMML
@@ -1662,7 +1669,7 @@ pmml.rpart <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
@@ -1686,7 +1693,7 @@ pmml.rpart <- function(model,
 
   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
   count <- model$frame$n
-  score <- model@ylevels[model$frame$yval]
+  score <- attr(model, "ylevels")[model$frame$yval]
   label <- labels(model, pretty=0)
 
   field <- label[1]
@@ -1851,7 +1858,7 @@ pmml.randomForest <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary
@@ -1998,18 +2005,18 @@ pmml.rpart.as.rules <- function(model,
   ## Collect the required information
 
   field <- NULL
-  field$name <- as.character(model$terms@variables)[-1]
+  field$name <- as.character(attr(model$terms, "variables"))[-1]
   number.of.fields <- length(field$name)
-  field$class <- model$terms@dataClasses
+  field$class <- attr(model$terms, "dataClasses")
   target <- field$name[1]
 
   for (i in 1:number.of.fields)
   {
     if (field$class[[field$name[i]]] == "factor")
       if (field$name[i] == target)
-        field$levels[[field$name[i]]] <- model@ylevels
+        field$levels[[field$name[i]]] <- attr(model, "ylevels")
       else
-        field$levels[[field$name[i]]] <- model@xlevels[[field$name[i]]]
+        field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
   ## PMML
@@ -2019,7 +2026,7 @@ pmml.rpart.as.rules <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   ## PMML -> DataDictionary
@@ -2122,7 +2129,7 @@ pmml.kmeans <- function(model,
   ## PMML -> Header
 
   if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Graham.Williams@Togaware.com"
+    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   ## PMML -> DataDictionary

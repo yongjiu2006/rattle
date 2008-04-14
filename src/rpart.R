@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-13 20:00:52 Graham Williams>
+# Time-stamp: <2008-04-14 21:18:11 Graham Williams>
 #
 # RPART TAB
 #
@@ -55,8 +55,8 @@ on_rpart_plot_button_clicked <- function(button)
 
   if (is.null(crs$rpart))
   {
-    errorDialog("E122: Should not be here. Please report to",
-                "Graham.Williams@togaware.com")
+    errorDialog("E122: This is an unexpected error. Please report to",
+                "support@togaware.com")
     return()
   }
   
@@ -104,7 +104,7 @@ on_rpart_rules_button_clicked <- function(button)
   {
     errorDialog("E130: There is no rpart model yet.",
                 "This is a Rattle bug. Please report to",
-                "Graham.Williams@togaware.com")
+                "support@togaware.com")
     return()
   }
 
@@ -435,7 +435,8 @@ executeModelRPart <- function(action="build")
 
   ## Finish up.
   
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken, time.taken@units)
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+                      attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("An rpart model has been generated.", time.msg)

@@ -7,6 +7,9 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+240 080414 Use supprt@togaware.com
+           Move severl var@attr to attr(var, "attr") for non-S4 objects
+           Change focus to Select tab on a Paradigm change
 239 080413 Enable Regression and start setting up for this paradigm
            Currently working for rpart - build and score work.
 238 080412 Bug fix: Error reading numeric matrix - bad use of & (Mark Andersen)

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-13 19:35:51 Graham Williams>
+# Time-stamp: <2008-04-14 21:30:15 Graham Williams>
 #
 # Paradigm control.
 #
@@ -25,7 +25,7 @@ on_twoclass_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
 
-    ## Add the new tab after the transform tab.
+    # Add the new tab after the transform tab.
     
     ep <- getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.TRANSFORM.NAME)
     
@@ -34,20 +34,28 @@ on_twoclass_radiobutton_toggled <- function(button)
     crv$NOTEBOOK$insertPage(crv$NOTEBOOK.EVALUATE.WIDGET,
                             crv$NOTEBOOK.EVALUATE.LABEL,ep+2)
 
-    ## If the previous current page is not one of the common pages,
-    ## then make the newly inserted page the current page. This
-    ## doesn't work, since if we are coming from a CLuster page, for
-    ## example, that page no longer exists, so we get the Explore as
-    ## the last page, and thus this does nothing - unless I remove
-    ## Explore from the common pages list! Will result in one oddity,
-    ## but we might get away with it.
+    # If the previous current page is not one of the common pages,
+    # then make the newly inserted page the current page. This
+    # doesn't work, since if we are coming from a CLuster page, for
+    # example, that page no longer exists, so we get the Explore as
+    # the last page, and thus this does nothing - unless I remove
+    # Explore from the common pages list! Will result in one oddity,
+    # but we might get away with it.
 
-    if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-    {
-      crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                  crv$NOTEBOOK.MODEL.NAME))
-      switchToPage(crv$NOTEBOOK.MODEL.NAME)
-    }
+##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
+##     {
+##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+##                                                   crv$NOTEBOOK.MODEL.NAME))
+##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
+##     }
+
+    # 080413 Always change focus to the Data tab on changing the
+    # Paradigm. This is perhaps most logical.
+
+    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                                crv$NOTEBOOK.SELECT.NAME))
+    switchToPage(crv$NOTEBOOK.SELECT.NAME)
+    
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -81,12 +89,20 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
     # the common pages list! Will result in one oddity, but we might
     # get away with it.
 
-    if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-    {
-      crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                  crv$NOTEBOOK.MODEL.NAME))
-      switchToPage(crv$NOTEBOOK.MODEL.NAME)
-    }
+##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
+##     {
+##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+##                                                   crv$NOTEBOOK.MODEL.NAME))
+##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
+##     }
+
+    # 080413 Always change focus to the Select tab on changing the
+    # Paradigm. This is perhaps most logical.
+
+    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                                crv$NOTEBOOK.SELECT.NAME))
+    switchToPage(crv$NOTEBOOK.SELECT.NAME)
+
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -103,7 +119,7 @@ on_unsupervised_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
 
-    ## Add the new tab after the transform tab.
+    # Add the new tab after the transform tab.
     
     ep <- getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.TRANSFORM.NAME)
     
@@ -114,16 +130,23 @@ on_unsupervised_radiobutton_toggled <- function(button)
                             crv$NOTEBOOK.ASSOCIATE.LABEL,
                             ep+2)
 
-    ## If the previous current page is not one of the common pages,
-    ## then make the newly inserted page the current page.
+    # If the previous current page is not one of the common pages,
+    # then make the newly inserted page the current page.
 
-    if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-    {
-      crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                                  crv$NOTEBOOK.CLUSTER.NAME))
-      switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
-    }
+##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
+##     {
+##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+##                                                   crv$NOTEBOOK.CLUSTER.NAME))
+##       switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
+##     }
     
+    # 080413 Always change focus to the Data tab on changing the
+    # Paradigm. This is perhaps most logical.
+
+    crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                                crv$NOTEBOOK.SELECT.NAME))
+    switchToPage(crv$NOTEBOOK.SELECT.NAME)
+
     setStatusBar("Exposed the Cluster and Associate tabs")
   }
   else
