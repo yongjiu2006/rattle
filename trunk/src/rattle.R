@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-15 05:50:46 Graham Williams>
+# Time-stamp: <2008-04-17 19:49:45 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Apr 2008"
+VERSION.DATE <- "Released 15 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -102,8 +102,10 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 ##
 ## INITIALISATIONS
 
-rattle <- function(csvname=NULL)
+rattle <- function(csvname=NULL, getenv=FALSE)
 {
+  # Set getenv to TRUE to load data from file identified by
+  # RATTLE_DATA. This overides any csvname supplied.
 
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
@@ -115,6 +117,13 @@ rattle <- function(csvname=NULL)
 
   # Ensure command line arguments look okay
 
+  if (getenv)
+  {
+    .rattle.data <- Sys.getenv("RATTLE_DATA")
+    if (.rattle.data != "")
+      csvname <- .rattle.data
+  }
+  
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
@@ -203,7 +212,7 @@ rattle <- function(csvname=NULL)
   
   .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
                     dotplot = 3, mosplot = 4, comment = 5)
-
+  
   .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
@@ -8649,9 +8658,12 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     
     write.csv(cbind(scores, predict=crs$pr), file=score.file, row.names=FALSE)
 
+    fname <- paste(getwd(), score.file, sep="/")
     infoDialog("The scores for", mtype, "have been saved into the file",
-               paste(getwd(), score.file, sep="/"))
-
+               fname)
+    # 080417 Communicate the score file name. This unfortunately does
+    # not export the name outside the R process so it is of now use.
+    Sys.setenv(RATTLE_SCORE=fname)
   }
   return(sprintf("Scores saved.", getwd(), score.file))
 }

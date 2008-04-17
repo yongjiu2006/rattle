@@ -2,8 +2,9 @@ Package: pmml
 Type: Package
 Title: Generate PMML for various models
 Version: 1.1.6
-Date: 2008-04-14
-Author: Graham Williams <Graham.Williams@togaware.com>
+Date: 2008-04-17
+Author: Graham Williams, Zementis Inc, Hemant Ishwaran, Udaya B. Kogalur, 
+  Rajarshi Guha
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: XML
 Suggests: nnet, rpart, randomSurvivalForest, randomForest, kernlab

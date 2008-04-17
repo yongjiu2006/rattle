@@ -1,8 +1,8 @@
-## PMML: Predictive Modelling Markup Language
+# PMML: Predictive Modelling Markup Language
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-04-14 21:05:08 Graham Williams>
+# Time-stamp: <2008-04-16 06:38:34 Graham Williams>
 #
 # Copyright (c) 2007-2008 Togaware, GPL Version 2
 #
@@ -206,12 +206,12 @@ pmmlHeader <- function(description, copyright, app.name)
 
 pmmlDataDictionary <- function(field)
 {
-  ## field$name is a vector of strings, and includes target
-  ## field$class is indexed by fields$names
-  ## field$levels is indexed by fields$names
+  # field$name is a vector of strings, and includes target
+  # field$class is indexed by fields$names
+  # field$levels is indexed by fields$names
   number.of.fields <- length(field$name)
 
-  ## DataDictionary
+  # DataDictionary
 
   data.dictionary <- xmlNode("DataDictionary",
                              attrs=c(numberOfFields=number.of.fields))
@@ -516,364 +516,364 @@ pmml.nnet.MiningSchema <- function(field, target=NULL)
 #
 
 pmml.nnet <- function(model,
-		              model.name="NeuralNet_model",
-		              app.name="Rattle/PMML",
-		              description="Neural Network PMML Model",
-		              copyright=NULL, 
-					  ...)
+                      model.name="NeuralNet_model",
+                      app.name="Rattle/PMML",
+                      description="Neural Network PMML Model",
+                      copyright=NULL, 
+                      ...)
 {
-	if (! inherits(model, "nnet")) stop("Not a legitimate nnet object")
-	
-	require(XML, quietly=TRUE)
-	
-	###################################################################
-	# Collect the required information. We list all variables,
-	# irrespective of whether they appear in the final model. This
-	# seems to be the standard thing to do with PMML. It also adds
-	# extra information - i.e., the model did not need these extra
-	# variables!
-	
-	number.of.neural.layers <- length(model$n) - 1 
-	field <- NULL
-	if (model$call[[1]] == "nnet.formula")
-	{
-        terms <- attributes(model$terms)
-		field$name <- names(terms$dataClasses)
-		field$class <- terms$dataClasses
-		target <- field$name[1]
-		number.of.fields <- length(terms$term.labels) + 1  # number of input nodes + target
-		number.of.inputs <- length(terms$term.labels)
-	}
-	else  # nnet.default
-	{
-		number.of.fields <- model$n[1] + 1  # number of input nodes + target
-		number.of.inputs <- model$n[1]
-		target <- "y"
-		field$name[1] <- target
-		field$class[[field$name[1]]] <- "numeric"
-		for (i in 1:number.of.inputs)
-		{
-			tmp <- paste("x", i, sep='')
-			field$name[i + 1] <- tmp
-			field$class[[field$name[i + 1]]] <- "numeric"
-		}
-	}
-	
-	################################################################################
-	## According to the nnet documentation:
-	## If the response in formula is a factor, an appropriate classification 
-	## network is constructed; this has one output and entropy fit if the number 
-	## of levels is two, and a number of outputs equal to the number of classes 
-	## and a softmax output stage for more levels.
-	## If the response is not a factor, it is passed on unchanged to nnet.default.
-	##
-	## However, we will actually export a network with two output neurons for binary 
-	## classification with a softmax output stage. 
-	## 
-	
-	normalization.method <- "none"
-	skipLayers <- FALSE
-	linearOutputUnits <- FALSE
-	
-	if (length(model$call$skip) > 0)
-	{
-		if(model$call$skip == "T" || model$call$skip == "TRUE")
-		{
-			skipLayers <- TRUE
-		}
-	}
-	if (model$nunits > model$nsunits)
-	{	
-		linearOutputUnits <- TRUE
-	}
-	if (model$softmax)
-	{
-		normalization.method <- "softmax"
-	}
-	if (model$censored)
-	{
-		stop("PMML does not support the censored variant of softmax!")
-	}
-	
-    # Levels
-	
-	if (field$class[[field$name[1]]] == "factor")
-	{
-		field$levels[[field$name[1]]] <- model$lev
-	}
-	factor_count <- 1
-	for (i in 1:number.of.inputs)
-	{
-		if (field$class[[field$name[i + 1]]] == "factor")
-		{
-			field$levels[[field$name[i + 1]]] <- model$xlevels[[factor_count]]
-			factor_count <- factor_count + 1
-		}
-	}
-
-	##############################################################################
-	## PMML
-	
-	pmml <- pmml3.2RootNode()
-	
-	## PMML -> Header
-	
-	if (is.null(copyright))
-		copyright <- "Copyright (c) 2008 Zementis, Inc. (www.zementis.com)"
-	pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
-	
-	## PMML -> DataDictionary
-     
-	pmml <- append.XMLNode(pmml, pmml.nnet.DataDictionary(field))     
-	
-	##############################################################################
-	## PMML -> NeuralNetwork
-		
-
-	if (model$n[length(model$n)] == 1 && field$class[[field$name[1]]] == "factor")
-	{
-		temp <- number.of.neural.layers + 1
-	}
-	else
-	{
-		temp <- number.of.neural.layers
-	}
-
-	if (field$class[[field$name[1]]] == "factor")
-	{
-		nnet.model <- xmlNode("NeuralNetwork",
-							  attrs=c(modelName=model.name,
-							          functionName="classification",
-									  numberOfLayers=temp,
-									  activationFunction="logistic")) 		
-	}
-	else
-	{
-		nnet.model <- xmlNode("NeuralNetwork",
-				              attrs=c(modelName=model.name,
-						              functionName="regression",
-									  numberOfLayers=temp,
-						              activationFunction="logistic")) 
-	}
-	
-      ## PMML -> NeuralNetwork -> MiningSchema
-
-      temp = grep("as.factor", target, value = TRUE, fixed = TRUE)
-      if (length(temp) > 0)
+  if (! inherits(model, "nnet")) stop("Not a legitimate nnet object")
+  
+  require(XML, quietly=TRUE)
+  
+  ###################################################################
+  # Collect the required information. We list all variables,
+  # irrespective of whether they appear in the final model. This
+  # seems to be the standard thing to do with PMML. It also adds
+  # extra information - i.e., the model did not need these extra
+  # variables!
+  
+  number.of.neural.layers <- length(model$n) - 1 
+  field <- NULL
+  if (model$call[[1]] == "nnet.formula")
+  {
+    terms <- attributes(model$terms)
+    field$name <- names(terms$dataClasses)
+    field$class <- terms$dataClasses
+    target <- field$name[1]
+    number.of.fields <- length(terms$term.labels) + 1  # number of input nodes + target
+    number.of.inputs <- length(terms$term.labels)
+  }
+  else  # nnet.default
+  {
+    number.of.fields <- model$n[1] + 1  # number of input nodes + target
+    number.of.inputs <- model$n[1]
+    target <- "y"
+    field$name[1] <- target
+    field$class[[field$name[1]]] <- "numeric"
+    for (i in 1:number.of.inputs)
+    {
+      tmp <- paste("x", i, sep='')
+      field$name[i + 1] <- tmp
+      field$class[[field$name[i + 1]]] <- "numeric"
+    }
+  }
+  
+  ################################################################################
+  # According to the nnet documentation:
+  # If the response in formula is a factor, an appropriate classification 
+  # network is constructed; this has one output and entropy fit if the number 
+  # of levels is two, and a number of outputs equal to the number of classes 
+  # and a softmax output stage for more levels.
+  # If the response is not a factor, it is passed on unchanged to nnet.default.
+  #
+  # However, we will actually export a network with two output neurons for binary 
+  # classification with a softmax output stage. 
+  # 
+  
+  normalization.method <- "none"
+  skipLayers <- FALSE
+  linearOutputUnits <- FALSE
+  
+  if (length(model$call$skip) > 0)
+  {
+    if(model$call$skip == "T" || model$call$skip == "TRUE")
+    {
+      skipLayers <- TRUE
+    }
+  }
+  if (model$nunits > model$nsunits)
+  {	
+    linearOutputUnits <- TRUE
+  }
+  if (model$softmax)
+  {
+    normalization.method <- "softmax"
+  }
+  if (model$censored)
+  {
+    stop("PMML does not support the censored variant of softmax!")
+  }
+  
+  # Levels
+  
+  if (field$class[[field$name[1]]] == "factor")
+  {
+    field$levels[[field$name[1]]] <- model$lev
+  }
+  factor_count <- 1
+  for (i in 1:number.of.inputs)
+  {
+    if (field$class[[field$name[i + 1]]] == "factor")
+    {
+      field$levels[[field$name[i + 1]]] <- model$xlevels[[factor_count]]
+      factor_count <- factor_count + 1
+    }
+  }
+  
+  ##############################################################################
+  # PMML
+  
+  pmml <- pmml3.2RootNode()
+  
+  # PMML -> Header
+  
+  if (is.null(copyright))
+    copyright <- "Copyright (c) 2008 Zementis, Inc. (www.zementis.com)"
+  pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
+  
+  # PMML -> DataDictionary
+  
+  pmml <- append.XMLNode(pmml, pmml.nnet.DataDictionary(field))     
+  
+  #############################################################################
+  # PMML -> NeuralNetwork
+  
+  
+  if (model$n[length(model$n)] == 1 && field$class[[field$name[1]]] == "factor")
+  {
+    temp <- number.of.neural.layers + 1
+  }
+  else
+  {
+    temp <- number.of.neural.layers
+  }
+  
+  if (field$class[[field$name[1]]] == "factor")
+  {
+    nnet.model <- xmlNode("NeuralNetwork",
+                          attrs=c(modelName=model.name,
+                            functionName="classification",
+                            numberOfLayers=temp,
+                            activationFunction="logistic")) 		
+  }
+  else
+  {
+    nnet.model <- xmlNode("NeuralNetwork",
+                          attrs=c(modelName=model.name,
+                            functionName="regression",
+                            numberOfLayers=temp,
+                            activationFunction="logistic")) 
+  }
+  
+  # PMML -> NeuralNetwork -> MiningSchema
+  
+  temp = grep("as.factor", target, value = TRUE, fixed = TRUE)
+  if (length(temp) > 0)
+  {
+    tempName <- strsplit(target,"")
+    endPos <- (length(tempName[[1]]) - 1)
+    target <- substring(target,11,endPos)
+  }
+  
+  nnet.model <- append.XMLNode(nnet.model, pmml.nnet.MiningSchema(field, target))
+  
+  
+  ##############################################################################
+  # PMML -> NeuralNetwork -> NeuralInputs
+  
+  neuralInputs <- xmlNode("NeuralInputs",
+                          attrs=c(numberOfInputs=as.numeric(model$n[1])))
+  input_count <- 1
+  factor_count <- 1
+  for (i in 1:number.of.inputs)
+  {
+    if (field$class[[field$name[i+1]]] == "factor")
+    {
+      number.of.values = length(model$xlevels[[factor_count]])
+      usedValues <- model$xlevels[[factor_count]]
+      factor_count <- factor_count + 1
+      
+      for (j in 1:number.of.values)
       {
-         tempName <- strsplit(target,"")
-         endPos <- (length(tempName[[1]]) - 1)
-         target <- substring(target,11,endPos)
+        if (j > 1) # skips first category during dummyfication
+        {
+          neuralInputNode <- xmlNode("NeuralInput", 
+                                     attrs=c(id=as.numeric(input_count)))
+          input_count <- input_count + 1
+          
+          fieldName <- paste("derivedNI_",terms$term.labels[i],sep="")
+          fieldName <- paste(fieldName,usedValues[j],sep="")
+          
+          derivedFieldNode <- xmlNode("DerivedField",
+                                      attrs=c(name=fieldName, 
+                                        optype="continuous",
+                                        dataType="double"))
+          
+          normDiscreteNode <- xmlNode("NormDiscrete",
+                                      attrs=c(field=terms$term.labels[i],
+                                        value=usedValues[j]))
+          
+          derivedFieldNode <- append.XMLNode(derivedFieldNode, normDiscreteNode)
+          
+          neuralInputNode <- append.XMLNode(neuralInputNode, derivedFieldNode)
+          
+          neuralInputs <- append.XMLNode(neuralInputs, neuralInputNode)
+        }
       }
-
-	nnet.model <- append.XMLNode(nnet.model, pmml.nnet.MiningSchema(field, target))
-	
-
-	##############################################################################
-	## PMML -> NeuralNetwork -> NeuralInputs
-	
-	neuralInputs <- xmlNode("NeuralInputs",
-			               attrs=c(numberOfInputs=as.numeric(model$n[1])))
-    input_count <- 1
-	factor_count <- 1
-	for (i in 1:number.of.inputs)
-	{
-		if (field$class[[field$name[i+1]]] == "factor")
-		{
-		    number.of.values = length(model$xlevels[[factor_count]])
-			usedValues <- model$xlevels[[factor_count]]
-			factor_count <- factor_count + 1
-			
-			for (j in 1:number.of.values)
-			{
-				if (j > 1) # skips first category during dummyfication
-				{
-					neuralInputNode <- xmlNode("NeuralInput", 
-						             	       attrs=c(id=as.numeric(input_count)))
-					input_count <- input_count + 1
-				
-					fieldName <- paste("derivedNI_",terms$term.labels[i],sep="")
-					fieldName <- paste(fieldName,usedValues[j],sep="")
-				
-					derivedFieldNode <- xmlNode("DerivedField",
-						                        attrs=c(name=fieldName, 
-								                      optype="continuous",
-								                      dataType="double"))
-				
-					normDiscreteNode <- xmlNode("NormDiscrete",
-						                         attrs=c(field=terms$term.labels[i],
-								                         value=usedValues[j]))
-					
-					derivedFieldNode <- append.XMLNode(derivedFieldNode, normDiscreteNode)
-				
-					neuralInputNode <- append.XMLNode(neuralInputNode, derivedFieldNode)
-				
-					neuralInputs <- append.XMLNode(neuralInputs, neuralInputNode)
-				}
+    }
+    else 
+    {
+      neuralInputNode <- xmlNode("NeuralInput", 
+                                 attrs=c(id=as.numeric(input_count)))
+      input_count <- input_count + 1
+      
+      name <- field$name[i + 1]
+      fieldName <- paste("derivedNI_",name,sep="")	
+      
+      derivedFieldNode <- xmlNode("DerivedField",
+                                  attrs=c(name=fieldName, 
+                                    optype="continuous",
+                                    dataType="double"))
+      
+      fieldRefNode <- xmlNode("FieldRef",
+                              attrs=c(field=terms$term.labels[i]))
+      
+      derivedFieldNode <- append.XMLNode(derivedFieldNode, fieldRefNode)
+      
+      neuralInputNode <- append.XMLNode(neuralInputNode, derivedFieldNode)
+      
+      neuralInputs <- append.XMLNode(neuralInputs, neuralInputNode)
+    }				  
+    
+  }
+  
+  nnet.model <- append.XMLNode(nnet.model, neuralInputs)
+  
+  number.of.inputs <- model$n[1]
+  
+  #############################################################################
+  # PMML -> NeuralNetwork -> NeuralLayers
+  
+  wtsID <- 1
+  neuronID <- number.of.inputs
+  previous.number.of.neurons <- number.of.inputs
+  for (i in 1:number.of.neural.layers)
+  {
+    number.of.neurons <- model$n[i + 1]
+    
+    if (i == number.of.neural.layers) # output layer
+    {
+      if (number.of.neurons == 1 && field$class[[field$name[1]]] == "factor")
+      {
+        neuralLayerNode <- xmlNode("NeuralLayer",
+                                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))
+      }
+      else if (model$softmax)
+      {
+        neuralLayerNode <- xmlNode("NeuralLayer",
+                                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons),
+                                     activationFunction="identity", 
+                                     normalizationMethod="softmax"))
+      }
+      else if (linearOutputUnits)
+      {
+        neuralLayerNode <- xmlNode("NeuralLayer",
+                                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons),
+                                     activationFunction="identity"))				
+      }
+      else
+      {
+        neuralLayerNode <- xmlNode("NeuralLayer",
+                                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))				
+      }
+    }
+    else # hidden layer
+    {
+      neuralLayerNode <- xmlNode("NeuralLayer",
+                                 attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))	
+    }
+    
+    for (j in 1:number.of.neurons)
+    {
+      neuronID <- neuronID + 1
+      
+      neuronNode <- xmlNode("Neuron", 
+                            attrs=c(id=as.numeric(neuronID),
+                              bias=model$wts[wtsID]))
+      wtsID <- wtsID + 1
+      
+      if (i == number.of.neural.layers && j==1) # output layer
+      {
+        first.outputNeuronID <- neuronID
 			}
-		}
-		else 
-		{
-			neuralInputNode <- xmlNode("NeuralInput", 
-					attrs=c(id=as.numeric(input_count)))
-			input_count <- input_count + 1
-			
-			name <- field$name[i + 1]
-			fieldName <- paste("derivedNI_",name,sep="")	
-			
-	    	derivedFieldNode <- xmlNode("DerivedField",
-								        attrs=c(name=fieldName, 
-								     	      optype="continuous",
-										      dataType="double"))
-			
-			fieldRefNode <- xmlNode("FieldRef",
-									 attrs=c(field=terms$term.labels[i]))
-							  
-			derivedFieldNode <- append.XMLNode(derivedFieldNode, fieldRefNode)
-							  
-			neuralInputNode <- append.XMLNode(neuralInputNode, derivedFieldNode)
-							  
-			neuralInputs <- append.XMLNode(neuralInputs, neuralInputNode)
-		}				  
-
-	}
-
-	nnet.model <- append.XMLNode(nnet.model, neuralInputs)
-
-	number.of.inputs <- model$n[1]
-	
-	##############################################################################
-	## PMML -> NeuralNetwork -> NeuralLayers
-
-	wtsID <- 1
-	neuronID <- number.of.inputs
-	previous.number.of.neurons <- number.of.inputs
-	for (i in 1:number.of.neural.layers)
-	{
-		number.of.neurons <- model$n[i + 1]
-		
-		if (i == number.of.neural.layers) # output layer
-		{
-			if (number.of.neurons == 1 && field$class[[field$name[1]]] == "factor")
-			{
-				neuralLayerNode <- xmlNode("NeuralLayer",
-						                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))
-			}
-		    else if (model$softmax)
-		    {
-		   	   neuralLayerNode <- xmlNode("NeuralLayer",
-									      attrs=c(numberOfNeurons=as.numeric(number.of.neurons),
-											      activationFunction="identity", 
-												  normalizationMethod="softmax"))
-		    }
-			else if (linearOutputUnits)
-			{
-				neuralLayerNode <- xmlNode("NeuralLayer",
-						                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons),
-								           activationFunction="identity"))				
-			}
-			else
-			{
-				neuralLayerNode <- xmlNode("NeuralLayer",
-						                   attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))				
-			}
-		}
-		else # hidden layer
-		{
-			neuralLayerNode <- xmlNode("NeuralLayer",
-                    				   attrs=c(numberOfNeurons=as.numeric(number.of.neurons)))	
-		}
-		
-		for (j in 1:number.of.neurons)
-		{
-			neuronID <- neuronID + 1
-			
-			neuronNode <- xmlNode("Neuron", 
-					              attrs=c(id=as.numeric(neuronID),
-								        bias=model$wts[wtsID]))
-			wtsID <- wtsID + 1
-			
-			if (i == number.of.neural.layers && j==1) # output layer
-			{
-				first.outputNeuronID <- neuronID
-			}
-			if (i == number.of.neural.layers && skipLayers)
-			{
-				previous.number.of.neurons <- previous.number.of.neurons + number.of.inputs
-			}
-			for (k in 1:previous.number.of.neurons)
-			{
+      if (i == number.of.neural.layers && skipLayers)
+      {
+        previous.number.of.neurons <- previous.number.of.neurons + number.of.inputs
+      }
+      for (k in 1:previous.number.of.neurons)
+      {
 				number.of.connections <- model$n[i + 1]
 				
 				connectionNode <- xmlNode("Con",
-					                   	  attrs=c(from=model$conn[wtsID],
+                                                          attrs=c(from=model$conn[wtsID],
 												weight=model$wts[wtsID]))
-			    wtsID <- wtsID + 1
+                                wtsID <- wtsID + 1
 				
 				neuronNode <- append.XMLNode(neuronNode, connectionNode)
-			}
+                              }
 			neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
-		}
-						
-		previous.number.of.neurons <- number.of.neurons
-		
-		nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
     }
-	
-	# Special case for NN with 1 output neuron implementing classification
-	# Code creates an extra neural layer with a connection set to 1 and bias 
-	# to 0 so that the threshold function can be applied. 
-	# The previous layer is assumed to have an output from 0 to 1 and so the 
-	# threshold is set to 0.5. 
-	
-
-	if (number.of.neurons == 1 && field$class[[field$name[1]]] == "factor")
+    
+    previous.number.of.neurons <- number.of.neurons
+    
+    nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
+  }
+  
+  # Special case for NN with 1 output neuron implementing classification
+  # Code creates an extra neural layer with a connection set to 1 and bias 
+  # to 0 so that the threshold function can be applied. 
+  # The previous layer is assumed to have an output from 0 to 1 and so the 
+  # threshold is set to 0.5. 
+  
+  
+  if (number.of.neurons == 1 && field$class[[field$name[1]]] == "factor")
 	{
-		neuralLayerNode <- xmlNode("NeuralLayer",
-				                   attrs=c(numberOfNeurons="2",
-						                   activationFunction="threshold",threshold = "0.5"))	
-		
-		neuronID <- neuronID + 1
-		first.outputNeuronID <- neuronID
-		
-		neuronNode <- xmlNode("Neuron", 
-				              attrs=c(id=as.numeric(neuronID),
-						              bias="1.0"))
-		
-		connectionNode <- xmlNode("Con",
-				                  attrs=c(from=neuronID - 1,
-						                  weight="-1.0"))	  
-						  
-		neuronNode <- append.XMLNode(neuronNode, connectionNode)
-						  
-		neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
-						  
-	    neuronID <- neuronID + 1
-						  
-	    neuronNode <- xmlNode("Neuron", 
-	    					  attrs=c(id=as.numeric(neuronID),
-				              bias="0.0"))
-						  
-	    connectionNode <- xmlNode("Con",
-								  attrs=c(from=neuronID - 2,
-										  weight="1.0"))				  
-		
-		neuronNode <- append.XMLNode(neuronNode, connectionNode)
-		
-		neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
-		
-		nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
-		
-		number.of.neurons <- number.of.neurons + 1
-		
-		previous.number.of.neurons <- number.of.neurons
-		
+          neuralLayerNode <- xmlNode("NeuralLayer",
+                                     attrs=c(numberOfNeurons="2",
+                                       activationFunction="threshold",threshold = "0.5"))	
+          
+          neuronID <- neuronID + 1
+          first.outputNeuronID <- neuronID
+          
+          neuronNode <- xmlNode("Neuron", 
+                                attrs=c(id=as.numeric(neuronID),
+                                  bias="1.0"))
+          
+          connectionNode <- xmlNode("Con",
+                                    attrs=c(from=neuronID - 1,
+                                      weight="-1.0"))	  
+          
+          neuronNode <- append.XMLNode(neuronNode, connectionNode)
+          
+          neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
+          
+          neuronID <- neuronID + 1
+          
+          neuronNode <- xmlNode("Neuron", 
+                                attrs=c(id=as.numeric(neuronID),
+                                  bias="0.0"))
+          
+          connectionNode <- xmlNode("Con",
+                                    attrs=c(from=neuronID - 2,
+                                      weight="1.0"))				  
+          
+          neuronNode <- append.XMLNode(neuronNode, connectionNode)
+          
+          neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
+          
+          nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
+          
+          number.of.neurons <- number.of.neurons + 1
+          
+          previous.number.of.neurons <- number.of.neurons
+          
 	}
-	
-	##############################################################################
-    ## PMML -> NeuralNetwork -> NeuralOutputs
-	
-	neuralOutputs <- xmlNode("NeuralOutputs",
+  
+  ##############################################################################
+  # PMML -> NeuralNetwork -> NeuralOutputs
+  
+  neuralOutputs <- xmlNode("NeuralOutputs",
 				             attrs=c(numberOfOutputs=previous.number.of.neurons))
 		
 	for (i in 1:number.of.neurons)
@@ -934,7 +934,7 @@ pmml.nnet <- function(model,
 
 	nnet.model <- append.XMLNode(nnet.model, neuralOutputs)
 	
-	## Add to the top level structure.
+	# Add to the top level structure.
 	
 	pmml <- append.XMLNode(pmml, nnet.model)
 	
@@ -942,20 +942,20 @@ pmml.nnet <- function(model,
 }
 
 ########################################################################
-## SVM
-##
-## Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
-## Date: 17 Jan 2008
-## Implements a PMML exporter for ksvm objects (Support Vector Machines)
-##
+# SVM
+#
+# Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
+# Date: 17 Jan 2008
+# Implements a PMML exporter for ksvm objects (Support Vector Machines)
+#
 ########################################################################
 
 
-## Function pmml.ksvm.Header
+# Function pmml.ksvm.Header
 
 pmml.ksvm.Header <- function(description, copyright, app.name)
 {
-  ## Header
+  # Header
 
   KSVMVERSION <- "1.1.5"
   # "1.1.4" # Add pmml.ksvm. Fix extensions. 
@@ -969,7 +969,7 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
     header <- xmlNode("Header",
                       attrs=c(copyright=copyright, description=description))
 
-  ## Header -> Extension
+  # Header -> Extension
 
   header <- append.XMLNode(header,
                            xmlNode("Extension",
@@ -982,7 +982,7 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
                                                  value=sprintf("%s", Sys.info()["user"]),
                                                  extender="Rattle")))
 
-  ## Header -> Application
+  # Header -> Application
 
   header <- append.XMLNode(header, xmlNode("Application",
                                            attrs=c(name=app.name,
@@ -992,18 +992,18 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
 }
 
 ###################################################################
-## Function pmml.ksvm.DataDictionary
+# Function pmml.ksvm.DataDictionary
 
 pmml.ksvm.DataDictionary <- function(field, dataset)
 {
-  ## field$name is a vector of strings, and includes target
-  ## field$class is indexed by fields$names
-  ## field$levels is indexed by fields$names
+  # field$name is a vector of strings, and includes target
+  # field$class is indexed by fields$names
+  # field$levels is indexed by fields$names
 
   number.of.fields <- length(field$name)
   number.of.data.names = length(names(dataset))
   
-  ## DataDictionary
+  # DataDictionary
 
   data.dictionary <- xmlNode("DataDictionary",
                              attrs=c(numberOfFields=number.of.fields))
@@ -1038,7 +1038,7 @@ pmml.ksvm.DataDictionary <- function(field, dataset)
       }       
     }
 
-    ## DataDictionary -> DataField
+    # DataDictionary -> DataField
 
     data.fields[[i]] <- xmlNode("DataField", attrs=c(name=field$name[i],
                                                    optype=optype,
@@ -1049,7 +1049,7 @@ pmml.ksvm.DataDictionary <- function(field, dataset)
        field$name[1] <- target
     }
     
-    ## DataDictionary -> DataField -> Value
+    # DataDictionary -> DataField -> Value
 
     if (i == 1)  # target?
     {
@@ -1081,7 +1081,7 @@ pmml.ksvm.DataDictionary <- function(field, dataset)
 }
 
 ###################################################################
-## Function pmml.ksvm.MiningSchema
+# Function pmml.ksvm.MiningSchema
 
 pmml.ksvm.MiningSchema <- function(field, target=NULL)
 {
@@ -1377,7 +1377,7 @@ pmml.ksvm <- function(model,
                               attrs=c(numberOfVectors=as.numeric(number.of.SV)))
 
   ########################################################################## 
-  ## Allocate and initialize variables to make multi class problems possible
+  # Allocate and initialize variables to make multi class problems possible
   
   number.of.SV.entries <- length(attributes.model$scaling$scaled)
   ix.matrix <- array(0, dim=c(number.of.SVMs, number.of.SV))
@@ -1419,7 +1419,7 @@ pmml.ksvm <- function(model,
       }
     }
   }
-  else   ## Regression
+  else   # Regression
   {
     coeff <- coef(model)
     number.of.coeff <- length(coeff)
@@ -1437,19 +1437,19 @@ pmml.ksvm <- function(model,
   }
   
   ###########################################################################
-  ## PMML -> SupportVectorMachineMode -> VectorDictionary -> VectorFieldsList
-  ##
-  ## When implementing the code to deal with categorical inputs, we found a
-  ## potential problem with ksvm. When it produces dummy variables for say
-  ## 3 categorical variables with 4 categories each, it produces four dummy
-  ## variables for the first categorical variable, but three variables
-  ## for the two subsequent categorical variables. The code below mimics 
-  ## the problem for sake of consistency with ksvm. Otherwise, it would not
-  ## execute. 
-  ## We have already contacted
-  ## Alexandros Karatzoglou and reported the issue. Whenever we learn
-  ## that ksvm has been fixed, we will alter the code below to reflect the
-  ## fix.
+  # PMML -> SupportVectorMachineMode -> VectorDictionary -> VectorFieldsList
+  #
+  # When implementing the code to deal with categorical inputs, we found a
+  # potential problem with ksvm. When it produces dummy variables for say
+  # 3 categorical variables with 4 categories each, it produces four dummy
+  # variables for the first categorical variable, but three variables
+  # for the two subsequent categorical variables. The code below mimics 
+  # the problem for sake of consistency with ksvm. Otherwise, it would not
+  # execute. 
+  # We have already contacted
+  # Alexandros Karatzoglou and reported the issue. Whenever we learn
+  # that ksvm has been fixed, we will alter the code below to reflect the
+  # fix.
 
   VectorFieldsList <- xmlNode("VectorFields",
                               attrs=c(numberOfFields=number.of.SV.entries))
@@ -1468,7 +1468,7 @@ pmml.ksvm <- function(model,
         }		  
       for (j in 1:number.of.values)
       {
-        ## Reflecting the problem ... by using an if statement
+        # Reflecting the problem ... by using an if statement
         if (j > 1 || firstFactor)
         {
           fieldName <- paste("derived_",terms$term.labels[i],sep="")
@@ -1494,7 +1494,7 @@ pmml.ksvm <- function(model,
   VectorDictionary <- append.XMLNode(VectorDictionary, VectorFieldsList)
   
   
-  ## PMML -> SupportVectorMachineModel -> VectorDictionary -> VectorInstances
+  # PMML -> SupportVectorMachineModel -> VectorDictionary -> VectorInstances
   
   for (i in 1:number.of.SV)
   {
@@ -1525,7 +1525,7 @@ pmml.ksvm <- function(model,
   ksvm.model <- append.XMLNode(ksvm.model, VectorDictionary)
   
   ############################################################
-  ## PMML -> SupportVectorMachineModel -> SupportVectorMachine
+  # PMML -> SupportVectorMachineModel -> SupportVectorMachine
   
   if (field$function.name == "classification" && number.of.SVMs > 2)
   {
@@ -1548,7 +1548,7 @@ pmml.ksvm <- function(model,
   
   for (ix in 1:number.of.SVMs)
   {
-    ## Number of Support Vectors needs to be the same as number of coefficients in PMML.
+    # Number of Support Vectors needs to be the same as number of coefficients in PMML.
     
     if (field$function.name == "classification")
     {
@@ -1581,7 +1581,7 @@ pmml.ksvm <- function(model,
       SupportVectorMachine <- xmlNode("SupportVectorMachine")
     }
     
-    ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> SupportVectorsList
+    # PMML -> SupportVectorMachineModel -> SupportVectorMachine -> SupportVectorsList
     
     SupportVectorsList <- xmlNode("SupportVectors",
                                   attrs=c(numberOfAttributes=as.numeric(number.of.SV.entries),
@@ -1597,7 +1597,7 @@ pmml.ksvm <- function(model,
     
     SupportVectorMachine <- append.XMLNode(SupportVectorMachine, SupportVectorsList)
     
-    ## PMML -> SupportVectorMachineModel -> SupportVectorMachine -> CoefficientsList
+    # PMML -> SupportVectorMachineModel -> SupportVectorMachine -> CoefficientsList
     
     bias <- (model@b[ix] * -1)
     
@@ -1619,7 +1619,7 @@ pmml.ksvm <- function(model,
   }
   
   
-  ## Add to the top level structure.
+  # Add to the top level structure.
   
   pmml <- append.XMLNode(pmml, ksvm.model)
   
@@ -1634,18 +1634,19 @@ pmml.rpart <- function(model,
                        description="RPart decision tree model",
                        copyright=NULL, ...)
 {
-  if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
+  if (! inherits(model, "rpart"))
+    stop("Not a legitimate rpart object")
   if (model$method != "class")
     stop("Currently only classification is handled.")
   
   require(XML, quietly=TRUE)
   require(rpart, quietly=TRUE)
 
-  ## Collect the required information. We list all variables,
-  ## irrespective of whether they appear in the final model. This
-  ## seems to be the standard thing to do with PMML. It also adds
-  ## extra information - i.e., the model did not need these extra
-  ## variables!
+  # Collect the required information. We list all variables,
+  # irrespective of whether they appear in the final model. This
+  # seems to be the standard thing to do with PMML. It also adds
+  # extra information - i.e., the model did not need these extra
+  # variables!
 
   field <- NULL
   field$name <- as.character(attr(model$terms, "variables"))[-1]
@@ -1662,21 +1663,21 @@ pmml.rpart <- function(model,
         field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
-  ## PMML
+  # PMML
 
   pmml <- pmmlRootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  ## PMML -> TreeModel
+  # PMML -> TreeModel
 
   tree.model <- xmlNode("TreeModel",
                         attrs=c(modelName=model.name,
@@ -1685,11 +1686,11 @@ pmml.rpart <- function(model,
                           splitCharacteristic="binarySplit"))
 
 
-  ## PMML -> TreeModel -> MiningSchema
+  # PMML -> TreeModel -> MiningSchema
 
   tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
 
-  ## PMML -> TreeModel -> Node
+  # PMML -> TreeModel -> Node
 
   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
   count <- model$frame$n
@@ -1724,7 +1725,7 @@ pmml.rpart <- function(model,
 
   tree.model <- append.XMLNode(tree.model, node)
 
-  ## Add to the top level structure.
+  # Add to the top level structure.
 
   pmml <- append.XMLNode(pmml, tree.model)
 
@@ -1810,16 +1811,16 @@ pmml.randomForest <- function(model,
   require(XML, quietly=TRUE)
   require(randomForest, quietly=TRUE)
 
-  ## Collect the required information. We list all variables,
-  ## irrespective of whether they appear in the final model. This
-  ## seems to be the standard thing to do with PMML. It also adds
-  ## extra information - i.e., the model did not need these extra
-  ## variables!
-  ##
-  ## For a randomForest formula as currently used in Rattle, the
-  ## target is, for example, as.factor(Adjusted). Here, I need to
-  ## remove the as.factor(...). I wonder if I need to identify a
-  ## transformation in the PMML.
+  # Collect the required information. We list all variables,
+  # irrespective of whether they appear in the final model. This
+  # seems to be the standard thing to do with PMML. It also adds
+  # extra information - i.e., the model did not need these extra
+  # variables!
+  #
+  # For a randomForest formula as currently used in Rattle, the
+  # target is, for example, as.factor(Adjusted). Here, I need to
+  # remove the as.factor(...). I wonder if I need to identify a
+  # transformation in the PMML.
 
   field <- NULL
   tr.vars <- attr(model$terms, "dataClasses")
@@ -1851,21 +1852,21 @@ pmml.randomForest <- function(model,
         # model@xlevels[[field$name[i]]]
   }
 
-  ## PMML
+  # PMML
 
   pmml <- pmmlRootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  ## PMML -> TreeModel
+  # PMML -> TreeModel
 
   # For now, get one tree and print that out. Then put this into a
   # loop over all of the trees in the forest.
@@ -1876,11 +1877,11 @@ pmml.randomForest <- function(model,
                           algorithmName="randomForest",
                           splitCharacteristic="binarySplit"))
 
-  ## PMML -> TreeModel -> MiningSchema
+  # PMML -> TreeModel -> MiningSchema
 
   tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
 
-  ## PMML -> TreeModel -> Node
+  # PMML -> TreeModel -> Node
 
 ##   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
 ##   count <- model$frame$n
@@ -1915,7 +1916,7 @@ pmml.randomForest <- function(model,
 
   tree.model <- append.XMLNode(tree.model, node)
 
-  ## Add to the top level structure.
+  # Add to the top level structure.
   
   pmml <- append.XMLNode(pmml, tree.model)
 
@@ -1946,7 +1947,7 @@ genBinaryRFTreeNodes <- function(model, n=1, root=1)
     node.var <- var.names[tree[root,'split var']]
     if(var.class == "character" | var.class == "factor")
     {
-      ## Convert the binary split point to a 0/1 list for the levels.
+      # Convert the binary split point to a 0/1 list for the levels.
       
       var.levels <- levels(eval(model$call$data)[[tree[root,'split var']]])
       bins <- sdecimal2binary(tree[root, 'split point'])
@@ -1958,8 +1959,8 @@ genBinaryRFTreeNodes <- function(model, n=1, root=1)
     }
     else if (var.class == "integer" | var.class == "numeric")
     {
-      ## Assume spliting to the left means "<=", and right ">",
-      ## which is not what the man page for getTree claims!
+      # Assume spliting to the left means "<=", and right ">",
+      # which is not what the man page for getTree claims!
 
       node.value <- tree[root, 'split point']
       condition <- sprintf("%s <= %s", node.var, node.value)
@@ -2002,7 +2003,7 @@ pmml.rpart.as.rules <- function(model,
   
   if (! inherits(model, "rpart")) stop("Not a legitimate rpart tree")
 
-  ## Collect the required information
+  # Collect the required information
 
   field <- NULL
   field$name <- as.character(attr(model$terms, "variables"))[-1]
@@ -2019,21 +2020,21 @@ pmml.rpart.as.rules <- function(model,
         field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
-  ## PMML
+  # PMML
   
   pmml <- pmmlRootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
   
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  ## PMML -> RuleSetModel
+  # PMML -> RuleSetModel
   
   tree.model <- xmlNode("RuleSetModel",
                         attrs=c(modelName=model.name,
@@ -2041,18 +2042,18 @@ pmml.rpart.as.rules <- function(model,
                           splitCharacteristic="binary",
                           algorithmName="rpart"))
 
-  ## MiningSchema
+  # MiningSchema
   
   tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
 
-  ## Add in actual tree nodes.
+  # Add in actual tree nodes.
 
   rule.set <- xmlNode("RuleSet")
   rule.set <- append.XMLNode(rule.set,
                              xmlNode("RuleSelectionMethod",
                                      attrs=c(criterion="firstHit")))
   
-  ## Visit each leaf node to generate a rule.
+  # Visit each leaf node to generate a rule.
 
   ordered <- rev(sort(model$frame$yval2[,5], index=TRUE)$ix)
   names <- row.names(model$frame)
@@ -2091,7 +2092,7 @@ pmml.rpart.as.rules <- function(model,
 
   tree.model <- append.XMLNode(tree.model, rule.set)
   
-  ## Add to the top level structure.
+  # Add to the top level structure.
   
   pmml <- append.XMLNode(pmml, tree.model)
   
@@ -2110,7 +2111,7 @@ pmml.kmeans <- function(model,
   
   if (! inherits(model, "kmeans")) stop("Not a legitimate kmeans object")
 
-  ## Collect the required information.
+  # Collect the required information.
 
   field <- NULL
   field$name <-  colnames(model$centers)
@@ -2122,21 +2123,21 @@ pmml.kmeans <- function(model,
   number.of.clusters <- length(model$size)
   cluster.names <- rownames(model$centers)
 
-  ## PMML
+  # PMML
 
   pmml <- pmmlRootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  ## PMML -> ClusteringModel
+  # PMML -> ClusteringModel
 
   cl.model <- xmlNode("ClusteringModel",
                       attrs=c(modelName=model.name,
@@ -2145,16 +2146,16 @@ pmml.kmeans <- function(model,
                         modelClass="centerBased",
                         numberOfClusters=number.of.clusters))
 
-  ## PMML -> ClusteringModel -> MiningSchema
+  # PMML -> ClusteringModel -> MiningSchema
 
   cl.model <- append.XMLNode(cl.model, pmmlMiningSchema(field))
 
-  ## PMML -> ClusteringModel -> ComparisonMeasure
+  # PMML -> ClusteringModel -> ComparisonMeasure
   
   cl.model <- append.XMLNode(cl.model, xmlNode("ComparisonMeasure",
                                                attrs=c(kind="distance")))
   
-  ## PMML -> ClusteringModel -> Cluster -> Array
+  # PMML -> ClusteringModel -> Cluster -> Array
   
   clusters <- list()
   for (i in 1:number.of.clusters)
@@ -2181,9 +2182,9 @@ pmml.rsf <- function(model,
                      description="Random Survival Forest Tree Model",
                      copyright=NULL, ...)
 {
-  ## Based on RANDOM SURVIVAL FOREST 2.0.0, Copyright 2006, Cleveland Clinic
-  ## Original by Hemant Ishwaran and Udaya B. Kogalur
-  ## UInified with the pmml package by Graham Williams
+  # Based on RANDOM SURVIVAL FOREST 2.0.0, Copyright 2006, Cleveland Clinic
+  # Original by Hemant Ishwaran and Udaya B. Kogalur
+  # Unified with the pmml package by Graham Williams
   
   if (sum(inherits(model, c("rsf", "forest"), TRUE) == c(1, 2)) != 2)
     stop("Not a legitimate (rsf, forest) object")
@@ -2191,7 +2192,7 @@ pmml.rsf <- function(model,
   require(XML, quietly=TRUE)
   require(randomSurvivalForest, quietly=TRUE)
 
-  ## Collect the required information.
+  # Collect the required information.
 
   field <- NULL
 
@@ -2221,37 +2222,37 @@ pmml.rsf <- function(model,
   if (is.null(forestSeed))
     stop("RSF forestSeed content is NULL.  Please ensure object is valid.")
 
-  ## PMML
+  # PMML
 
   pmml <- pmmlRootNode()
 
-  ## PMML -> Header
+  # PMML -> Header
 
   if (is.null(copyright))
     copyright <- "Copyright 2006, Cleveland Clinic"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> MiningBuildTask
+  # PMML -> MiningBuildTask
 
   buildNode <- xmlNode("MiningBuildTask")
 
-  ## PMML -> MiningBuildTask -> Extension
+  # PMML -> MiningBuildTask -> Extension
   
   extensionNode <- xmlNode("Extension")
 
-  ## PMML -> MiningBuildTask -> Extension -> X-RSF-Formula
+  # PMML -> MiningBuildTask -> Extension -> X-RSF-Formula
 
   extensionNode <- append.XMLNode(extensionNode,
                                   xmlNode("X-RSF-Formula",
                                           attrs=c(name=formula)))
 
-  ## PMML -> MiningBuildTask -> Extension -> X-RSF-BootstrapSeeds -> Array
+  # PMML -> MiningBuildTask -> Extension -> X-RSF-BootstrapSeeds -> Array
     
   extensionNode <- append.XMLNode(extensionNode, 
                                   xmlNode("X-RSF-ForestSeed", 
                                           attrs=c(value=forestSeed)))
 
-  ## PMML -> MiningBuildTask -> Extension -> TimesOfInterest
+  # PMML -> MiningBuildTask -> Extension -> TimesOfInterest
 
   extensionNode <- append.XMLNode(extensionNode, 
                                   xmlNode("X-RSF-TimesOfInterest", 
@@ -2261,21 +2262,21 @@ pmml.rsf <- function(model,
                                                   paste(timeInterest,
                                                         collapse="  \n  "))))
   
-  ## Add into the PMML.
+  # Add into the PMML.
 
   pmml <- append.XMLNode(pmml, append.XMLNode(buildNode, extensionNode))
   
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
   
-  ## Create a dummy XML node object to insert into the recursive
-  ## output object.
+  # Create a dummy XML node object to insert into the recursive
+  # output object.
 
   internalNode <- xmlNode("Null")
   
-  ## Define the variables for the offset and leaf count in the
-  ## recursive output object.
+  # Define the variables for the offset and leaf count in the
+  # recursive output object.
 
   offset <- leafCount <- 1
   
@@ -2285,7 +2286,7 @@ pmml.rsf <- function(model,
   recursiveOutput <- list(internalNode = internalNode,
                           offset = offset, leafCount = leafCount)
   
-  ## Loop through all trees in the forest and extract the data.
+  # Loop through all trees in the forest and extract the data.
 
   for (b in 1:numTrees)
   {
@@ -2312,8 +2313,8 @@ pmml.rsf <- function(model,
     recursiveOutput$offset <- recursiveOutput$offset + 1
     recursiveOutput$leafCount <- 1
     
-    ## Check that the current tree is not a stump (root node only with
-    ## no branches)
+    # Check that the current tree is not a stump (root node only with
+    # no branches)
 
     if (rootParmID != 0)
     {
@@ -2350,7 +2351,7 @@ pmml.rsf <- function(model,
       
     }
     
-    ## Add the current tree to the PMML data structure.
+    # Add the current tree to the PMML data structure.
 
     treeModelNode <- append.XMLNode(treeModelNode, treeRoot)
     pmml <- append.XMLNode(pmml, treeModelNode)
@@ -2470,8 +2471,8 @@ rsfMakeTree <- function(recursiveObject, nativeArray, predictorNames,
 
 sql.pmml <- function(pmml)
 {
-  ## pmml <- xmlTreeParse("../TARGET.rpart.xml")
-  ## pmml <- xmlTreeParse("../TARGET.rpart.xml", useInternalNodes=TRUE)
+  # pmml <- xmlTreeParse("../TARGET.rpart.xml")
+  # pmml <- xmlTreeParse("../TARGET.rpart.xml", useInternalNodes=TRUE)
 
   root <- xmlRoot(pmml)
   children <- xmlChildren(root)
