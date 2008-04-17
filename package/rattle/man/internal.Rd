@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_regression_paradigm_radiobutton_toggled}
 \alias{on_help_normalise_activate}
 \alias{on_kmeans_hclust_centers_checkbutton_toggled}
 \alias{on_kmeans_iterate_checkbutton_toggled}

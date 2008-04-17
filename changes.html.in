@@ -7,8 +7,13 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+242 080417 Add getenv option to rattle function for RATTLE_DATA.
+           Change zzz .onLoad to .onAttach to auto start rattle if
+           rattle package is autoladed i.e. getOption("defaultPackages")
+           Cleanup pmml documentation code and add other authors to pmml.
+           Fix up the generation of the package repository.
 241 080415 On paradigm shift, go to Select or Data tab.
-           Add initial support for Linear mode regression vs classification
+           Add initial support for Linear model regression vs classification
 240 080414 Use supprt@togaware.com
            Move severl var@attr to attr(var, "attr") for non-S4 objects
            Change focus to Select tab on a Paradigm change

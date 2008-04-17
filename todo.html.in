@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+080415 Fix about Quit button
 080408 Transform Tab, "Filter" textbox for rows to keep
 080330 After Transform refreshes list, keep same selections?
 080318 Migrate all global variables into the crv$ structure - avoid warnings

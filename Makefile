@@ -14,6 +14,7 @@ NAMESPACE=$(PACKAGE)/NAMESPACE
 PPACKAGE=package/pmml
 PDESCRIPTION=$(PPACKAGE)/DESCRIPTION
 
+RVER=$(shell R --version | head -1 | cut -d" " -f3 | sed 's|\..$||')
 REPOSITORY=repository
 
 # Canonical version information from rattle.R
@@ -90,7 +91,7 @@ meld:
 	  meld $$i;\
 	done
 
-install: build pbuild zip check pcheck
+install: build pbuild zip # check pcheck
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	cp todo.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
@@ -122,8 +123,8 @@ install: build pbuild zip check pcheck
 			dmsurvivor.tex;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			dmsurvivor.tex)
-	mv rattle_$(VERSION).tar.gz rattle_$(VERSION).zip $(REPOSITORY)
-	mv pmml_$(PVERSION).tar.gz pmml_$(PVERSION).zip $(REPOSITORY)
+	mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
+	mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
