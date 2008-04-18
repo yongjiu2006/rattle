@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-18 17:00:29 Graham Williams>
+# Time-stamp: <2008-04-18 19:07:53 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Apr 2008"
+VERSION.DATE <- "Released 18 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -6788,9 +6788,10 @@ executeExplorePrcomp <- function(dataset)
     return()
   }
 
-  ## Construct the commands.
+  # Construct the commands.
   
-  prcomp.cmd  <- sprintf('pc <<- prcomp(%s, scale=TRUE, center=TRUE, tol=0)',
+  prcomp.cmd  <- sprintf(paste('pc <<- prcomp(na.omit(%s),',
+                               'scale=TRUE, center=TRUE, tol=0)'),
                          dataset)
   print.cmd   <- "pc"
   summary.cmd <- "summary(pc)"

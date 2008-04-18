@@ -16,7 +16,7 @@
   cat(sprintf(paste("Rattle, Graphical interface for data mining using R, ",
                     "Version %s.\n", COPYRIGHT, "\n", sep=""), VERSION))
   if ("rattle" %in% getOption("defaultPackages"))
-    rattle(getenv=TRUE)
+    rattle()
   else
     cat(paste("Type \"rattle()\" to shake, rattle, and roll ",
               "your data.\n", sep=""))
