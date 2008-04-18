@@ -7,7 +7,9 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
-243 080417 Use env RATTLE_SCORE for the name of score file to save to.
+244 080418 Bug Fix: use na.omit for prcomp (Esther)
+           Bug Fix: zzz.R should not be using getenv any more.
+243 080418 Use env RATTLE_SCORE for the name of score file to save to.
            Support Close and Quit (Close does not kill the R Console).
            Bug Fix: glm score when na.omit has effect => error.
            Remove getenv option. Just use the env var if it is defined.
