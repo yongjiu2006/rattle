@@ -25,9 +25,14 @@ rattle(csvname=NULL)
   utility functions used within Rattle. These are made available through
   loading the rattle package into your R library. The See Also section
   lists these utility functions that may be useful outside of Rattle.
-}
+  
+  If the environment variable RATTLE\_DATA is defined then that is set
+  as the default CSV file name to load, unless csvname is provided.}
+
 \references{Package home page: \url{http://rattle.togaware.com}}
+
 \author{\email{Graham.Williams@togaware.com}}
+
 \seealso{
 
   \code{\link{evaluateRisk}}, \code{\link{genPlotTitleCmd}},

@@ -7,6 +7,12 @@
     priorities and especially code.</p>
 
 <pre>
+080418 Load rattle script files (.ras) for data, score, test:
+ .RATTLE.DATA <- "C:/Documents and Settings/Graham/My Documents/train.csv"
+ .RATTLE.SCORE.IN <- "C:/Documents and Settings/Graham/My Documents/score.csv"
+ .RATTLE.SCORE.OUT <- "C:/Documents and Settings/Graham/My Documents/results.csv"
+
+080418 Allow txt score file (perhaps automatic if training data is txt)
 080415 Fix about Quit button
 080408 Transform Tab, "Filter" textbox for rows to keep
 080330 After Transform refreshes list, keep same selections?

@@ -7,6 +7,10 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+243 080417 Use env RATTLE_SCORE for the name of score file to save to.
+           Support Close and Quit (Close does not kill the R Console).
+           Bug Fix: glm score when na.omit has effect => error.
+           Remove getenv option. Just use the env var if it is defined.
 242 080417 Add getenv option to rattle function for RATTLE_DATA.
            Change zzz .onLoad to .onAttach to auto start rattle if
            rattle package is autoladed i.e. getOption("defaultPackages")
