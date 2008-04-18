@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-17 19:49:45 Graham Williams>
+# Time-stamp: <2008-04-18 17:00:29 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 Apr 2008"
+VERSION.DATE <- "Released 17 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -102,10 +102,10 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 ##
 ## INITIALISATIONS
 
-rattle <- function(csvname=NULL, getenv=FALSE)
+rattle <- function(csvname=NULL)
 {
-  # Set getenv to TRUE to load data from file identified by
-  # RATTLE_DATA. This overides any csvname supplied.
+  # Load data from file identified by RATTLE_DATA if defined. This is
+  # overridden if a csvname is supplied.
 
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
@@ -117,12 +117,9 @@ rattle <- function(csvname=NULL, getenv=FALSE)
 
   # Ensure command line arguments look okay
 
-  if (getenv)
-  {
-    .rattle.data <- Sys.getenv("RATTLE_DATA")
-    if (.rattle.data != "")
+  .rattle.data <- Sys.getenv("RATTLE_DATA")
+  if (.rattle.data != "" && is.null(csvname))
       csvname <- .rattle.data
-  }
   
   if (not.null(csvname))
   {
@@ -165,9 +162,11 @@ rattle <- function(csvname=NULL, getenv=FALSE)
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
-    rattleGUI<<-gladeXMLNew("rattle.glade",root="rattle_window")
+    rattleGUI <<- gladeXMLNew("rattle.glade",
+                              root="rattle_window")
   else
-    rattleGUI<<-gladeXMLNew(file.path(etc,"rattle.glade"),root="rattle_window")
+    rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
+                              root="rattle_window")
 
   ## Some default GUI settings
 
@@ -453,24 +452,26 @@ rattle <- function(csvname=NULL, getenv=FALSE)
   while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
   #gtkMain() # Tooltips work but the console is blocked and need gtkMainQuit
-  ## TODO Add a console into Rattle to interact with R.
+  # TODO Add a console into Rattle to interact with R.
 
-  ## Now deal with any arguments to rattle.
+  # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
   {
+    # 080417 On MS/Windows this is very badly behaved! I get
+    # completely diferent names being displayed for some bizzare
+    # reason. Is there some issue with the gtk library on MS/Windows?
     theWidget("csv_filechooserbutton")$setFilename(csvname)
   }
-
   invisible()
 }
 
 resetRattle <- function()
 {
-  ## Cleanup various bits of Rattle, as when a new dataset is loaded
-  ## or a project is loaded. Might also be useful for the New button.
+  # Cleanup various bits of Rattle, as when a new dataset is loaded
+  # or a project is loaded. Might also be useful for the New button.
 
-  ## Initialise CRS
+  # Initialise CRS
 
   crs$dataset  <<- NULL
   crs$dataname <<- NULL
@@ -498,7 +499,7 @@ resetRattle <- function()
   crs$testset  <<- NULL
   crs$testname <<- NULL
 
-  ## Clear all now outdated text views
+  # Clear all now outdated text views
 
   setTextview("data_textview")
   setTextview("summary_textview")
@@ -541,9 +542,9 @@ resetRattle <- function()
   .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
 
-  ## Reset the DATA tab. But we don't want to do this because
-  ## resetRattle is called on loading a database table, and this ends
-  ## up clearing all the widgets!
+  # Reset the DATA tab. But we don't want to do this because
+  # resetRattle is called on loading a database table, and this ends
+  # up clearing all the widgets!
 
 ##   theWidget("odbc_dsn_entry")$setText("")
 ##   theWidget("odbc_combobox")$setActive(-1)
@@ -1460,27 +1461,34 @@ update_comboboxentry_with_dataframes <- function(action, window)
   }
 }
 
-quit_rattle <- function(action, window)
+close_rattle <- function(action, window)
 {
-  ## Don't remove the graphics for now. In moving to the Cairo device,
-  ## this blanks the device, but does not destroy the containing
-  ## window. I wonder if there is some way to get a list of the plot
-  ## windows, and destroy each one?
+  # Don't remove the graphics for now. In moving to the Cairo device,
+  # this blanks the device, but does not destroy the containing
+  # window. I wonder if there is some way to get a list of the plot
+  # windows, and destroy each one?
 
-  ## graphics.off() # for (i in dev.list()) dev.off(i)
+  # graphics.off() # for (i in dev.list()) dev.off(i)
 
   theWidget("rattle_window")$destroy()
 
-  ## Communicate to R that Rattle has finished. This is used by the
-  ## rattle script on GNU/Linux using the littler package which allows
-  ## one to use R as a scripting language. But rattle dispatches
-  ## itself from R, and so normally the script immediately
-  ## terminates. Instead we can have a loop that checks if rattleGUI
-  ## is NULL, and when it is we finish! Seems to work.
+  # Communicate to R that Rattle has finished. This is used by the
+  # rattle script on GNU/Linux using the littler package which allows
+  # one to use R as a scripting language. But rattle dispatches
+  # itself from R, and so normally the script immediately
+  # terminates. Instead we can have a loop that checks if rattleGUI
+  # is NULL, and when it is we finish! Seems to work.
 
   rattleGUI <<- NULL
 
   #gtkMainQuit() # Only needed if gtkMain is run.
+
+}
+
+quit_rattle <- function(action, window)
+{
+  close_rattle(action, window)
+  quit(save="no")
 }
 
 ########################################################################
@@ -7152,16 +7160,16 @@ executeEvaluateTab <- function()
     eval(parse(text=assign.cmd))
   }
 
-  ## Ensure the test dataset has the same levels for each variable of
-  ## the training dataset. This can arise when we externally split a
-  ## dataset into a training and testing dataset, and the smaller
-  ## testing dataset may not have representatives of all of the
-  ## variables. Be sure to add any new levels to the end, otherwise
-  ## you'll end up renaming some of the other levels! This won't help
-  ## a model that uses the variable and does not find the particular
-  ## level, although it is okay if it is missing levels. TODO this
-  ## might need to check for the former and error out if it is the
-  ## case.
+  # Ensure the test dataset has the same levels for each variable of
+  # the training dataset. This can arise when we externally split a
+  # dataset into a training and testing dataset, and the smaller
+  # testing dataset may not have representatives of all of the
+  # variables. Be sure to add any new levels to the end, otherwise
+  # you'll end up renaming some of the other levels! This won't help a
+  # model that uses the variable and does not find the particular
+  # level, although it is okay if it is missing levels. TODO this
+  # might need to check for the former and error out if it is the
+  # case.
 
   if (not.null(crs$testname) && crs$testname != crs$dataname)
     for (c in colnames(crs$dataset))
@@ -7328,25 +7336,25 @@ executeEvaluateTab <- function()
     
   if (crv$GLM %in%  mtypes)
   {
-    ## GLM's predict removes rows with missing values, so we also need
-    ## to ensure we remove rows with missing values here.
+    # GLM's predict removes rows with missing values, so we also need
+    # to ensure we remove rows with missing values here.
     
     testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
 
     predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
                               testset[[crv$GLM]])
 
-    ## For GLM, a response is a figure close to the class, either close
-    ## to 1 or close to 0, so threshold it to be either 1 or 0. TODO
-    ## Simplify this like?
-    ##    response.cmd <- gsub("predict", "(predict",
-    ##                         gsub(")$", ")>0.5)*1", response.cmd))
+    # For GLM, a response is a figure close to the class, either close
+    # to 1 or close to 0, so threshold it to be either 1 or 0. TODO
+    # Simplify this like?
+    #    response.cmd <- gsub("predict", "(predict",
+    #                         gsub(")$", ")>0.5)*1", response.cmd))
 
     respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
                            gsub(")$", ', type="response") > 0.5, 1, 0)))',
                                 predcmd[[crv$GLM]]))
 
-    ## For GLM, the response is a probability of the class.
+    # For GLM, the response is a probability of the class.
   
     probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
   
@@ -7365,8 +7373,8 @@ executeEvaluateTab <- function()
 ##     probcmd[[GBM]] <- predcmd[[GBM]]
 ##   }
 
-  ## Currently (and perhaps permanently) the ROCR package deals only
-  ## with binary classification, as does my own Risk Chart.
+  # Currently (and perhaps permanently) the ROCR package deals only
+  # with binary classification, as does my own Risk Chart.
   
   if (!theWidget("confusion_radiobutton")$getActive()
       && is.factor(crs$dataset[[crs$target]])
@@ -7422,7 +7430,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     setStatusBar("Applying", mtype, "model to the dataset to generate",
                  "a confusion table...")
     
-    ## Generate the command to show the confusion matrix.
+    # Generate the command to show the confusion matrix.
     
     confuse.cmd <- paste(sprintf("table(crs$pr, %s$%s, ",
                                  testset[[mtype]], crs$target),
@@ -8545,12 +8553,22 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
     # Determine an appropriate filename (TODO fixed for now but should ask)
     
-    score.file <- sprintf("%s_%s_score.csv",
-                          gsub(" ", "_",
-                               gsub("\\.[[:alnum:]]*", "",
-                                    gsub("(\\[|\\])", "",
-                                         gsub("\\*", "", testname)))),
-                          mtype)
+    # 080417 Communicate the score file name. This unfortunately does
+    # not export the name outside the R process so it is of now
+    # use. TODO We could get a bit more sophisticated here and add
+    # getwd() to the RATTLE_SCORE if it is a relative path.
+
+    fname <- Sys.getenv("RATTLE_SCORE")
+    if (fname == "")
+    {
+      score.file <- sprintf("%s_%s_score.csv",
+                            gsub(" ", "_",
+                                 gsub("\\.[[:alnum:]]*", "",
+                                      gsub("(\\[|\\])", "",
+                                           gsub("\\*", "", testname)))),
+                            mtype)
+      fname <- paste(getwd(), score.file, sep="/")
+    }
 
     # Obtain a list of the identity vartiables.
     
@@ -8616,20 +8634,26 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                       getSelectedVariables("target"),
                       getSelectedVariables("input"),
                       getSelectedVariables("risk"))
-    tmpset <- crs$dataset[-crs$sample, scorevarlist]
 
-    if (substr(scoreset, 1, 7) == "na.omit" &&
-        !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
-
-    # End of Ed's modification.
-    # if (substr(scoreset, 1, 7) == "na.omit")
+    omitted <- NULL
+    if (substr(scoreset, 1, 7) == "na.omit")
     {
-      omit.cmd <- paste("omitted <- attr(", scoreset, ', "na.action")', sep="")
-      appendLog("Record rows omitted from predict command.", omit.cmd)
-      eval(parse(text=omit.cmd))
+      narm.dim <- eval(parse(text=sprintf("dim(%s)", scoreset)))[1]
+      orig.dim <- eval(parse(text=sub('na.omit', 'dim', scoreset)))[1]
+      if (narm.dim != orig.dim)
+        
+        # Ed had: && !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
+        
+        # End of Ed's modification.
+        # if (substr(scoreset, 1, 7) == "na.omit")
+      {
+        omit.cmd <- paste("omitted <- attr(", scoreset, ', "na.action")',
+                          sep="")
+        appendLog("Record rows omitted from predict command.", omit.cmd)
+        eval(parse(text=omit.cmd))
+      }
     }
-    else
-      omitted <- NULL
+    
     
     ## Now clean out the column subsets.
     
@@ -8654,18 +8678,14 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
     appendLog("Write the scores to file.",
              paste('write.csv(cbind(scores, predict=crs$pr), file="',
-                   score.file, '", row.names=FALSE)', sep=""))
+                   fname, '", row.names=FALSE)', sep=""))
     
-    write.csv(cbind(scores, predict=crs$pr), file=score.file, row.names=FALSE)
+    write.csv(cbind(scores, predict=crs$pr), file=fname, row.names=FALSE)
 
-    fname <- paste(getwd(), score.file, sep="/")
     infoDialog("The scores for", mtype, "have been saved into the file",
                fname)
-    # 080417 Communicate the score file name. This unfortunately does
-    # not export the name outside the R process so it is of now use.
-    Sys.setenv(RATTLE_SCORE=fname)
   }
-  return(sprintf("Scores saved.", getwd(), score.file))
+  return("Scores saved.")
 }
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
