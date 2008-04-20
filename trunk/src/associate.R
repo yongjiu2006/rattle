@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-23 09:07:22 Graham Williams>
+## Time-stamp: <2008-04-19 10:23:13 Graham Williams>
 ##
 ## Implement associations functionality.
 ##
@@ -291,12 +291,14 @@ listAssociateRules <- function()
 #                 paste('inspect(SORT(subset(crs$apriori, lift >',
 #                       lift, '), by="confidence"))'))
 
-  ## I wanted to use the subset function to list just the top rules,
-  ## but the use of "lift" has issues when run within a library, even
-  ## though it is fine when loaded using source.
-  ##
+  # I wanted to use the subset function to list just the top rules,
+  # but the use of "lift" has issues when run within a library, even
+  # though it is fine when loaded using source. The problems seems to
+  # have been fixed by 080419 so refine this to do the right thing.
+
   summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
                        lift, '),  by="confidence"))')
+  appendLog("List rules filtered by Lift.", summary1.cmd)
   ## This suceeds.
   ##result <- eval(parse(text=summary1.cmd))
   ## This fails
@@ -308,16 +310,18 @@ listAssociateRules <- function()
   sink()
   close(zz)
   result <- paste(commandsink, collapse="\n")
-  appendTextview(TV, "Top Rules\n\n", result, "\n\n",
-                 "If nothing appears above, ",
-                 "past the following into the console:\n\n",
-                 paste('inspect(SORT(subset(crs$apriori, lift >',
-                       lift, '), by="confidence"))'))
+  appendTextview(TV, "Top Rules\n\n", result)#,
+                 #"If nothing appears above, ",
+                 #"past the following into the console:\n\n",
+                 #paste('inspect(SORT(subset(crs$apriori, lift >',
+                 #      lift, '), by="confidence"))'))
   
-  ## This works but it lists all rules.
-  summary.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
-  appendLog("List all rules.", summary.cmd)
-  appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
+  # This works but it lists all rules.
 
-  setStatusBar("Finished listing the rules.")
+#  summary.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
+#  appendLog("List all rules.", summary.cmd)
+#  appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
+
+  setStatusBar(paste("Finished listing the rules",
+                     "- scroll the text window to view the rules."))
 }
