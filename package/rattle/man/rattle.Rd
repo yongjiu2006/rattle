@@ -26,8 +26,14 @@ rattle(csvname=NULL)
   loading the rattle package into your R library. The See Also section
   lists these utility functions that may be useful outside of Rattle.
   
+  Rattle can initialise some options using a .Rattle file if the folder
+  in which Rattle is started. The currently supported options are
+  .RATTLE.DATA, .RATTLE.SCORE.IN, and .RATTLE.SCORE.OUT.
+  
   If the environment variable RATTLE\_DATA is defined then that is set
-  as the default CSV file name to load, unless csvname is provided.}
+  as the default CSV file name to load. Otherwise, if .RATTLE.DATA is
+  defined then that will be used as the CSV file to load. Otherwise, if
+  csvname is provided then that will be used.}
 
 \references{Package home page: \url{http://rattle.togaware.com}}
 

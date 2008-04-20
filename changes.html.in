@@ -7,6 +7,9 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+245 080419 Spelling fix (Peter Christen)
+           Rule generation by arules now works so use it (Peter Christen)
+           Support .Rattle files.
 244 080418 Bug Fix: use na.omit for prcomp (Esther)
            Bug Fix: zzz.R should not be using getenv any more.
 243 080418 Use env RATTLE_SCORE for the name of score file to save to.

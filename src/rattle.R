@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-18 19:07:53 Graham Williams>
+# Time-stamp: <2008-04-20 15:16:31 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -104,9 +104,6 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 rattle <- function(csvname=NULL)
 {
-  # Load data from file identified by RATTLE_DATA if defined. This is
-  # overridden if a csvname is supplied.
-
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
   # they all began with "." as in crv$ADA used to be .ADA. "R CMD
@@ -115,12 +112,34 @@ rattle <- function(csvname=NULL)
 
   crv <<- list()
 
-  # Ensure command line arguments look okay
+  # Load data from the file identified by the csvname supplied in the
+  # call to Rattle, or from the environment variable RATTLE_DATA if
+  # defined, or from the variable .RATTLE.DATA (as might be defined in
+  # a .Rattle file), or else don't load any data by default.
 
-  .rattle.data <- Sys.getenv("RATTLE_DATA")
-  if (.rattle.data != "" && is.null(csvname))
-      csvname <- .rattle.data
+  # First, always execute any .Rattle file in the current working
+  # directory.
   
+  if (file.exists(".Rattle")) source(".Rattle")
+
+  if (is.null(csvname))
+  {
+    # Use the .Rattle settings first, but these might be overriden if
+    # the environment variable is defined.
+    
+    if (exists(".RATTLE.DATA")) csvname <- .RATTLE.DATA
+
+    # Obtain the value of the RATTLE_DATA environment variable and if
+    # it is defined then use that at the csvname.
+    
+    if ((.rattle.data <- Sys.getenv("RATTLE_DATA")) != "")
+      csvname <- .rattle.data
+  }
+
+  # Tidy up the csvname. TODO Is there an R command to do this, or
+  # else put this into a function as I want to do it in a couple of
+  # places (like further below in using .RATTLE.SCORE.IN).
+
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
@@ -457,12 +476,8 @@ rattle <- function(csvname=NULL)
   # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
-  {
-    # 080417 On MS/Windows this is very badly behaved! I get
-    # completely diferent names being displayed for some bizzare
-    # reason. Is there some issue with the gtk library on MS/Windows?
     theWidget("csv_filechooserbutton")$setFilename(csvname)
-  }
+
   invisible()
 }
 
@@ -605,6 +620,45 @@ resetRattle <- function()
   theWidget("evaluate_filechooserbutton")$setFilename("")
   theWidget("evaluate_rdataset_combobox")$setActive(-1)
 
+  # If there is a .RATTLE.SCORE.IN defined, as might be from a .Rattle
+  # file, then use that for the filename of the CSV evaluate option.
+  
+  if (exists(".RATTLE.SCORE.IN"))
+  {
+    scorename <- .RATTLE.SCORE.IN
+    if (not.null(scorename))
+    {
+      scorename <- path.expand(scorename)
+      
+      # If it does not look like an absolute path then add in the
+      # current location to make it absolute.
+      
+      if (substr(scorename, 1, 1) %notin% c("\\", "/")
+          && substr(scorename, 2, 2) != ":")
+        scorename <- file.path(getwd(), scorename)
+      if (! file.exists(scorename))
+      {
+        errorDialog("The specified SCORE file", sprintf('"%s"', scorename),
+                    "(sourced from the .Rattle file through the",
+                    ".RATTLE.SCORE.IN variable)",
+                    "does not exist. Rattle will continue",
+                    "as if it had not been speficied.")
+        
+        # Remove the varaible (from the global environment where the
+        # source command will have plade the bindings) so the rest of
+        # the code continues to work on the assumption that it has not
+        # been supplied.
+
+        rm(.RATTLE.SCORE.IN, pos=globalenv())
+      }
+      else
+      {
+        theWidget("evaluate_filechooserbutton")$setFilename(scorename)
+        theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
+      }
+    }
+  }
+  
   theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
   theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
@@ -1892,7 +1946,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -3075,12 +3129,15 @@ executeSelectSample <- function()
     crs$sample <<- NULL
 
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+    if (exists(".RATTLE.SCORE.IN"))
+      theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
+    else
+      theWidget("evaluate_training_radiobutton")$setActive(TRUE)
   }
   
   crs$smodel <<- vector()
 
-  ## TODO For test/train, use sample,split from caTools?
+  # TODO For test/train, use sample,split from caTools?
 
   ## Set some defaults that depend on sample size.
   
@@ -6076,7 +6133,7 @@ executeExplorePlot <- function(dataset)
     if (barbutton)
     {
       plot.cmd <- paste('barplot2(ds, beside=TRUE,',
-                       'xlab="Dsitribution of the ',
+                       'xlab="Distribution of the ',
                         paste(digspin, c("st", "nd",
                                          "rd", "th")[min(4, digspin)],
                               sep = ""),
@@ -8482,10 +8539,10 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 executeEvaluateScore <- function(probcmd, testset, testname)
 {
 
-  # Obtain filename to write the scores to. TODO Wait until we get all
-  # scores into a single file, then this will be the filename we
-  # obtain here (since currently need to add the mtyp to each file
-  # name.
+  # TODO Obtain filename to write the scores to. TODO Wait until we
+  # get all scores into a single file, then this will be the filename
+  # we obtain here (since currently need to add the mtype to each file
+  # name whereas it should be the column name.
   
 ##   dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
 ##                                  "gtk-cancel", GtkResponseType["cancel"],
@@ -8517,8 +8574,8 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 ##     return()
 ##   }
 
-  # Process each model separately, at least for now. TODO,
-  # collect the outputs and then write them all at once.
+  # Process each model separately, at least for now. TODO, collect the
+  # outputs and then write them all at once.
   
   for (mtype in getEvaluateModels())
   {
@@ -8552,14 +8609,27 @@ executeEvaluateScore <- function(probcmd, testset, testname)
       next()
     }
 
-    # Determine an appropriate filename (TODO fixed for now but should ask)
+    # Determine an appropriate filename (TODO the filename is fixed
+    # for now but should ask the user if RATTLE_SCORE and
+    # .RATTLE.SCORE.OUT are not provided.)
     
-    # 080417 Communicate the score file name. This unfortunately does
-    # not export the name outside the R process so it is of now
-    # use. TODO We could get a bit more sophisticated here and add
-    # getwd() to the RATTLE_SCORE if it is a relative path.
+    # 080417 Communicate the score file name. Note that originally I
+    # intended to export the user's choice as an environment variable
+    # to communicate that back to a calling process. But setenv
+    # unfortunately does not export the name outside the R process so
+    # it is of no use. TODO We could get a bit more sophisticated
+    # here and add getwd() to the RATTLE_SCORE if it is a relative
+    # path.
 
     fname <- Sys.getenv("RATTLE_SCORE")
+    if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
+
+    # Until we get all scores into one file, tack the mtype on to the
+    # file name.
+    
+    if (fname != "")
+      fname <- gsub(".csv", paste("_", mtype, ".csv", sep=""), fname)
+      
     if (fname == "")
     {
       score.file <- sprintf("%s_%s_score.csv",
@@ -8655,15 +8725,14 @@ executeEvaluateScore <- function(probcmd, testset, testname)
       }
     }
     
-    
-    ## Now clean out the column subsets.
+    # Now clean out the column subsets.
     
     if (length(grep(",", scoreset)) > 0)
       scoreset = gsub(",.*]", ",]", scoreset)
 
-    ## And finally, remove the na.omit if there is one, replacing it
-    ## with specifically removing just the rows that were removed in
-    ## the predict command.
+    # And finally, remove the na.omit if there is one, replacing it
+    # with specifically removing just the rows that were removed in
+    # the predict command.
 
     if (not.null(omitted))
       scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
@@ -8686,7 +8755,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     infoDialog("The scores for", mtype, "have been saved into the file",
                fname)
   }
-  return("Scores saved.")
+  return("Scores have been saved to file.")
 }
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
