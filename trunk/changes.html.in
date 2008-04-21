@@ -7,6 +7,9 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+246 080421 Add pmml.arules to pmml and add Rattle support (Michael Hahsler)
+           Fix pmml to export S3 methods, not full names. Update Rattle.
+           Release version 1.1.7 of pmml.
 245 080419 Spelling fix (Peter Christen)
            Rule generation by arules now works so use it (Peter Christen)
            Support .Rattle files.

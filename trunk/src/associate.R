@@ -1,19 +1,20 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-04-19 10:23:13 Graham Williams>
-##
-## Implement associations functionality.
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-04-21 19:18:02 Graham Williams>
+#
+# Implement associations functionality.
+#
+# Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
 ########################################################################
-##
-## CALLBACKS
-##
+#
+# CALLBACKS
+#
 
 on_tools_associate_activate <- function(action, window)
 {
-  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK, crv$NOTEBOOK.ASSOCIATE.NAME))
+  crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
+                                              crv$NOTEBOOK.ASSOCIATE.NAME))
   switchToPage(crv$NOTEBOOK.ASSOCIATE.NAME)
 }
 
@@ -28,9 +29,9 @@ on_associate_rules_button_clicked <-  function(action, window)
 }
 
 ########################################################################
-##
-## SUPPORT
-##
+#
+# SUPPORT
+#
 
 generateAprioriSummary <- function(ap)
 {
@@ -324,4 +325,81 @@ listAssociateRules <- function()
 
   setStatusBar(paste("Finished listing the rules",
                      "- scroll the text window to view the rules."))
+}
+
+########################################################################
+#
+# EXPORT
+#
+
+exportAssociateTab <- function()
+{
+  # Make sure we have already done something in Rattle.
+  
+  if (noDatasetLoaded()) return()
+
+  # Make sure we have a model first!
+  
+  if (is.null(crs$apriori))
+  {
+    errorDialog("No association rules model is available. Be sure to build",
+                "the model before trying to export it! You will need",
+                "to press the Execute button (F5) in order to build the",
+                "model.")
+    return()
+  }
+
+  # Require the pmml package
+  
+  lib.cmd <- "require(pmml, quietly=TRUE)"
+  if (! packageIsAvailable("pmml", "export associate rules")) return(FALSE)
+  appendLog("Load the PMML package to export association rules.", lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  # Obtain filename to write the PMML to.
+  
+  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_arules", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("PMML Files")
+  ff$addPattern("*.xml")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+  
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+    
+  if (file.exists(save.name))
+    if (is.null(questionDialog("An XML file of the name", save.name,
+                                "already exists. Do you want to overwrite",
+                                "this file?")))
+      return()
+  
+  pmml.cmd <- "pmml(crs$apriori)"
+  appendLog("Export association rules as PMML.", pmml.cmd)
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
+
+  infoDialog("The PMML file", save.name, "has been written.")
+
+  setStatusBar("The PMML file", save.name, "has been written.")
+  
 }
