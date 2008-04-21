@@ -15,4 +15,6 @@ source("projects.R")
 source("rpart.R")
 source("random_forest.R")
 source("textview.R")
+
 source("pmml.R")
+source("pmml.arules.R")

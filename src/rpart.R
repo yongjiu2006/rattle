@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-14 21:18:11 Graham Williams>
+# Time-stamp: <2008-04-21 19:17:47 Graham Williams>
 #
 # RPART TAB
 #
@@ -879,7 +879,7 @@ exportRpartTab <- function()
       return()
   
 
-  pmml.cmd <- "pmml.rpart(crs$rpart)"
+  pmml.cmd <- "pmml(crs$rpart)"
   appendLog("Export a decision tree as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 

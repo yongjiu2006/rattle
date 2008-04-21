@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-14 21:20:24 Graham Williams>
+## Time-stamp: <2008-04-21 19:19:28 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
@@ -946,7 +946,7 @@ exportKMeansTab <- function(file)
                                  "this file?")))
         return()
 
-    pmml.cmd <- "pmml.kmeans(crs$kmeans)"
+    pmml.cmd <- "pmml(crs$kmeans)"
     appendLog("Export the cluster as PMML.", pmml.cmd)
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   

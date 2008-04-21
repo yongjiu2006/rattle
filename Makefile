@@ -52,7 +52,8 @@ R_SOURCE = \
 # Eventually remove pmml.R from above and put into own package.
 
 PSOURCE = \
-	src/pmml.R
+	src/pmml.R \
+	src/pmml.arules.R
 
 GLADE_SOURCE = src/rattle.glade
 
@@ -65,7 +66,7 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 #temp:
 #	grep REVISION src/rattle.R
 
-default: local
+default: local plocal
 
 # This one checks the R installations for overlap of packages
 # installed. If they are in both local and lib, should remove the

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-15 05:15:54 Graham Williams>
+## Time-stamp: <2008-04-21 19:19:58 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -476,7 +476,7 @@ exportRegressionTab <- function()
       return()
   
 
-  pmml.cmd <- "pmml.lm(crs$glm)"
+  pmml.cmd <- "pmml(crs$glm)"
   appendLog("Export a regression model as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
@@ -745,7 +745,7 @@ exportSVMTab <- function()
       return()
   
 
-  pmml.cmd <- 'pmml.ksvm(crs$ksvm, data.name=crs$dataset)'
+  pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
   appendLog("Export a SVM model as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
@@ -809,9 +809,9 @@ exportSVMTab <- function()
 
 
 ########################################################################
-##
-## EXPORT
-##
+#
+# EXPORT
+#
 
 exportModelTab <- function()
 {
