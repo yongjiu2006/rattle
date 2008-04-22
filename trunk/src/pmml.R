@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-04-21 19:06:02 Graham Williams>
+# Time-stamp: <2008-04-22 05:31:28 Graham Williams>
 #
 # Copyright (c) 2007-2008 Togaware, GPL Version 2
 #
@@ -2466,7 +2466,6 @@ rsfMakeTree <- function(recursiveObject, nativeArray, predictorNames,
   return (recursiveObject)
   
 }
-
 
 ########################################################################
 

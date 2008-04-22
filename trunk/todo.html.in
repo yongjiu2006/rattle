@@ -7,6 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
+080421 For assoc, if ID is not unique, set Baskets to checked
+080422 Complete read.pmml function for rpart.
 080419 Accumlate the transforms and apply to new CSV score file (Tom Neice)
 080418 Change plots to be tabbed plots with second tab being parameters that
        lay behind the model whose performance is being plotted.

@@ -7,6 +7,9 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+247 080422 Change Normalise to Rescale.
+           Add Wei Lin's rescale over a matrix operation.
+           Update pmml.lm man to lessen the advertising. 
 246 080421 Add pmml.arules to pmml and add Rattle support (Michael Hahsler)
            Fix pmml to export S3 methods, not full names. Update Rattle.
            Release version 1.1.7 of pmml.

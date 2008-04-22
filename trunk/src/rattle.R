@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-20 15:16:31 Graham Williams>
+# Time-stamp: <2008-04-23 05:50:23 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 20 Apr 2008"
+VERSION.DATE <- "Released 21 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -356,6 +356,7 @@ rattle <- function(csvname=NULL)
   # Define the TRANSFORM tab pages
   
   crv$TRANSFORM               <<- theWidget("transform_notebook")
+  # TODO 080423 Change to RESCALE
   crv$TRANSFORM.NORMALISE.TAB <<- getNotebookPage(crv$TRANSFORM, "normalise")
   crv$TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(crv$TRANSFORM, "impute")
   crv$TRANSFORM.REMAP.TAB     <<- getNotebookPage(crv$TRANSFORM, "remap")
@@ -537,6 +538,7 @@ resetRattle <- function()
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.
 
+  # TODO 080423 Change to RESCALE
   crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
@@ -4003,6 +4005,7 @@ on_impute_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+# TODO 080423 Change to RESCALE
 on_normalise_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) 
@@ -4047,8 +4050,9 @@ executeTransformTab <- function()
   if (noDatasetLoaded()) return()
 
   # Dispatch to the appropriate sub option. Currently [071124] only
-  # Normalise and Impute are implemented so this is siple.
+  # Rescale and Impute are implemented so this is simple.
 
+  # TODO 080423 Change to RESCALE
   if (theWidget("normalise_radiobutton")$getActive())
     executeTransformNormalisePerform()
   else if (theWidget("impute_radiobutton")$getActive())
@@ -4079,42 +4083,49 @@ modalvalue <- function(x, na.rm=FALSE)
     u[which.max(frequencies)]
 }
 
+# TODO 080423 Change to RESCALE
+
 executeTransformNormalisePerform <- function()
 {
   # First determine which normalisation option has been chosen and the
   # prefix of the new variable that will be introduced.  Default to
   # NULL in the hope of picking up an error if something has gone wrong.
 
-  # [TODO 071124] The radio buttons could be checkbuttons, and we do
+  # TODO 071124 The radio buttons could be checkbuttons, and we do
   # multiple imputations for the selected variables, but for now, stay
-  # with radio buttons as it is simply, without loss of functionality.
+  # with radio buttons as it is simple, without loss of functionality.
   
   action <- NULL
   vprefix <- NULL
   if (theWidget("normalise_recenter_radiobutton")$getActive())
   {
     action <- "recenter"
-    vprefix <- "NRC_"
+    vprefix <- "RRC_"
   }
   else if (theWidget("normalise_scale01_radiobutton")$getActive())
   {
     action <- "scale01"
-    vprefix <- "N01_"
+    vprefix <- "R01_"
   }
   else if (theWidget("normalise_rank_radiobutton")$getActive())
   {
     action <- "rank"
-    vprefix <- "NRK_"
+    vprefix <- "RRK_"
   }
   else if (theWidget("normalise_medianad_radiobutton")$getActive())
   {
     action <- "medianad"
-    vprefix <- "NMD_"
+    vprefix <- "RMD_"
   }
   else if (theWidget("normalise_bygroup_radiobutton")$getActive())
   {
     action <- "bygroup"
-    vprefix <- "NBG"
+    vprefix <- "RBG"
+  }
+  else if (theWidget("rescale_matrix_radiobutton")$getActive())
+  {
+    action <- "matrix"
+    vprefix <- "RMA_"
   }
   
   # Obtain the list of selected variables from the treeview.
@@ -4144,10 +4155,11 @@ executeTransformNormalisePerform <- function()
 
   classes <- classes[classes!="ordered"]
   
-  if (action %in% c("recenter", "scale01", "rank", "medianad")
+  if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix")
       && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste("We can not %s a categorical variable.",
+    infoDialog(sprintf(paste('We can not rescale using "%s"',
+                             "on a categorical variable.",
                              "Ignoring: %s."),
                        action, paste(variables[which(classes == "factor")],
                                      collapse=", ")))
@@ -4155,7 +4167,7 @@ executeTransformNormalisePerform <- function()
     if (length(variables) == 0) return()
   }
 
-  # Check if, for a groupby, we have at most one categorical and the
+  # Check if, for a BYGROUP, we have at most one categorical and the
   # others are numeric. Then remove the categorical (if any) from the
   # list of variables and store its name in byvname. This allows us to
   # continue to use the loop below, having just the numeric variables
@@ -4211,7 +4223,7 @@ executeTransformNormalisePerform <- function()
     }
   }
   
-  startLog("NORMALSIE Variables")
+  startLog("RESCALE Variables")
   
   # Make sure we have the reshape library from where the rescaler
   # function comes.
@@ -4234,8 +4246,22 @@ executeTransformNormalisePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  if (length(variables) > 0) startLog("NORMALISE A Variable")
+  if (length(variables) > 0) startLog("Rescale A Variable")
 
+  # For MATRIX obtain the matrix totla first and then divide each
+  # column by this.
+
+  if (action == "matrix")
+  {
+    matrix.total <- 0
+    total.cmd <- sprintf(paste("matrix.total <- sum(crs$dataset[,",
+                               'c("%s")],',
+                               "na.rm=TRUE)"),
+                         paste(variables, collapse='", "'))
+    appendLog("Calculate matrix total", total.cmd)
+    eval(parse(text=total.cmd))
+  }
+    
   for (v in variables)
   {
     # Generate the command to copy the current variable into a new
@@ -4251,7 +4277,7 @@ executeTransformNormalisePerform <- function()
 
     # Take a copy of the variable to be imputed.
     
-    appendLog(sprintf("NORMALISE %s.", v), gsub("<<-", "<-", copy.cmd))
+    appendLog(sprintf("RESCALE %s.", v), gsub("<<-", "<-", copy.cmd))
     eval(parse(text=copy.cmd))
     
     # Determine what action to perform.
@@ -4316,7 +4342,14 @@ executeTransformNormalisePerform <- function()
       
       norm.comment <- "Rescale to 0-100 within each group."
     }
-        
+    else if (action == "matrix")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+                                'crs$dataset[["%s"]]/matrix.total'),
+                          vname, v)
+      norm.comment <- "Dvidie column values by matrix total."
+    }
+
     appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
     eval(parse(text=norm.cmd))
 
