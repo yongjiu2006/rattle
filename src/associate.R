@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-21 19:18:02 Graham Williams>
+# Time-stamp: <2008-04-21 19:52:41 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -295,7 +295,9 @@ listAssociateRules <- function()
   # I wanted to use the subset function to list just the top rules,
   # but the use of "lift" has issues when run within a library, even
   # though it is fine when loaded using source. The problems seems to
-  # have been fixed by 080419 so refine this to do the right thing.
+  # have been fixed by 080419 so refine this to do the right
+  # thing. Some more testing 080421 indicates I'm back to the old
+  # problem...
 
   summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
                        lift, '),  by="confidence"))')
@@ -311,11 +313,11 @@ listAssociateRules <- function()
   sink()
   close(zz)
   result <- paste(commandsink, collapse="\n")
-  appendTextview(TV, "Top Rules\n\n", result)#,
-                 #"If nothing appears above, ",
-                 #"past the following into the console:\n\n",
-                 #paste('inspect(SORT(subset(crs$apriori, lift >',
-                 #      lift, '), by="confidence"))'))
+  appendTextview(TV, "Top Rules\n\n", result,
+                 "Known Bug: If nothing appears above, ",
+                 "paste the following into the console:\n\n",
+                 paste('inspect(SORT(subset(crs$apriori, lift >',
+                       lift, '), by="confidence"))'))
   
   # This works but it lists all rules.
 
