@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-23 05:50:23 Graham Williams>
+# Time-stamp: <2008-04-24 21:53:59 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Apr 2008"
+VERSION.DATE <- "Released 23 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -8571,49 +8571,88 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 
 executeEvaluateScore <- function(probcmd, testset, testname)
 {
-
-  # TODO Obtain filename to write the scores to. TODO Wait until we
-  # get all scores into a single file, then this will be the filename
-  # we obtain here (since currently need to add the mtype to each file
-  # name whereas it should be the column name.
+  # Apply each selected model to the selected dataset and save the
+  # results to a file where each column is the score from a specific
+  # model.
   
-##   dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
-##                                  "gtk-cancel", GtkResponseType["cancel"],
-##                                  "gtk-save", GtkResponseType["accept"])
+  # Obtain filename to write the scores to.  We ask the user for a
+  # file name if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
+    
+  # 080417 Communicate the score file name. Note that originally I
+  # intended to export the user's choice as an environment variable to
+  # communicate that back to a calling process. But setenv does not
+  # export the name outside the R process so it is of no use.
 
-##   if(not.null(testname))
-##     dialog$setCurrentName(paste(get.stem(testname), "_", mtype, "_score"))
+  # TODO We could get a bit more sophisticated here and add getwd() to
+  # the RATTLE_SCORE if it is a relative path.
 
-  ##  dialog$setCurrentFolder(crs$dwd)
+  fname <- Sys.getenv("RATTLE_SCORE")
+  if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
 
-  ##   ff <- gtkFileFilterNew()
-##   ff$setName("CSV Files")
-##   ff$addPattern("*.csv")
-##   dialog$addFilter(ff)
+  if (fname == "")
+  {
+    default <- sprintf("%s_score.csv",
+                       gsub(" ", "_",
+                            gsub("\\.[[:alnum:]]*", "",
+                                 gsub("(\\[|\\])", "",
+                                      gsub("\\*", "", testname)))))
+    # fname <- paste(getwd(), default, sep="/")
 
-##   ff <- gtkFileFilterNew()
-##   ff$setName("All Files")
-##   ff$addPattern("*")
-##   dialog$addFilter(ff)
+
+    dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
+                                   "gtk-cancel", GtkResponseType["cancel"],
+                                   "gtk-save", GtkResponseType["accept"])
+    
+    if(not.null(testname))
+      dialog$setCurrentName(default)
+
+    #dialog$setCurrentFolder(crs$dwd)
+
+    ff <- gtkFileFilterNew()
+    ff$setName("CSV Files")
+    ff$addPattern("*.csv")
+    dialog$addFilter(ff)
+
+    ff <- gtkFileFilterNew()
+    ff$setName("All Files")
+    ff$addPattern("*")
+    dialog$addFilter(ff)
   
-##   if (dialog$run() == GtkResponseType["accept"])
-##   {
-##     save.name <- dialog$getFilename()
-##     dialog$destroy()
-##   }
-##   else
-##   {
-##     dialog$destroy()
-##     return()
-##   }
+    if (dialog$run() == GtkResponseType["accept"])
+    {
+      fname <- dialog$getFilename()
+      dialog$destroy()
+    }
+    else
+    {
+      dialog$destroy()
+      return()
+    }
+  }
 
+  # infoDialog(fname)
+  
   # Process each model separately, at least for now. TODO, collect the
   # outputs and then write them all at once.
-  
-  for (mtype in getEvaluateModels())
-  {
 
-    appendLog(sprintf(paste("%s: Save probability scores to file",
+  ts <- testset[[1]]
+  if (substr(ts, 1, 7) == "na.omit") ts <- sub('na.omit\\((.*)\\)$', '\\1', ts)
+  the.names <- eval(parse(text=sprintf("row.names(%s)", ts)))
+  the.models <- getEvaluateModels()
+  scores <- as.data.frame(matrix(nrow=length(the.names),
+                                 ncol=length(the.models)))
+  row.names(scores) <- the.names
+  names(scores) <- the.models
+  
+  # Obtain a list of the identity vartiables.
+    
+  idents <- getSelectedVariables("ident")
+    
+  for (mtype in the.models)
+  {
+    # Apply the model to the dataset.
+    
+    appendLog(sprintf(paste("%s: Obtain probability scores",
                             "for %s model on %s."),
                       toupper(mtype), mtype, testname),
               gsub("<<-", "<-", probcmd[[mtype]]))
@@ -8625,7 +8664,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     if (inherits(result, "try-error"))
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
-        infoDialog("It seems that the dataset on which the probabilities",
+        infoDialog("The dataset on which the probabilities",
                    "from the", mtype, "model are required has a categorical",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
@@ -8636,7 +8675,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
+        errorDialog("An error occured with", probcmd, "Best to let",
                     "support@togaware.com know.\n\n",
                     "The error was:\n\n", result)
       next()
@@ -8654,43 +8693,39 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     # here and add getwd() to the RATTLE_SCORE if it is a relative
     # path.
 
-    fname <- Sys.getenv("RATTLE_SCORE")
-    if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
+##     fname <- Sys.getenv("RATTLE_SCORE")
+##     if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
 
-    # Until we get all scores into one file, tack the mtype on to the
-    # file name.
+##     # Until we get all scores into one file, tack the mtype on to the
+##     # file name.
     
-    if (fname != "")
-      fname <- gsub(".csv", paste("_", mtype, ".csv", sep=""), fname)
+## #    if (fname != "")
+## #      fname <- gsub(".csv", paste("_", mtype, ".csv", sep=""), fname)
       
-    if (fname == "")
-    {
-      score.file <- sprintf("%s_%s_score.csv",
-                            gsub(" ", "_",
-                                 gsub("\\.[[:alnum:]]*", "",
-                                      gsub("(\\[|\\])", "",
-                                           gsub("\\*", "", testname)))),
-                            mtype)
-      fname <- paste(getwd(), score.file, sep="/")
-    }
+##     if (fname == "")
+##     {
+##       score.file <- sprintf("%s_%s_score.csv",
+##                             gsub(" ", "_",
+##                                  gsub("\\.[[:alnum:]]*", "",
+##                                       gsub("(\\[|\\])", "",
+##                                            gsub("\\*", "", testname)))),
+##                             mtype)
+##       fname <- paste(getwd(), score.file, sep="/")
+##     }
 
-    # Obtain a list of the identity vartiables.
-    
-    idents <- getSelectedVariables("ident")
-    
-    ## Transform the dataset expression into what we need to extract
-    ## the relevant columns.
-    ##
-    ## Various formats include:
-    ##
-    ##    train	crs$dataset[crs$sample, c(3:12,14)]
-    ##    test	crs$dataset[-crs$sample, c(3:12,14)]
-    ##    csv	crs$testset[,c(3:12,14)]
-    ##    df	crs$testset
-    ##
-    ## Want
-    ##    subset(crs$dataset[-crs$sample,], select=Idents) + crs$pr
-    ##
+    # Transform the dataset expression into what we need to extract
+    # the relevant columns.
+    #
+    # Various formats include:
+    #
+    #    train	crs$dataset[crs$sample, c(3:12,14)]
+    #    test	crs$dataset[-crs$sample, c(3:12,14)]
+    #    csv	crs$testset[,c(3:12,14)]
+    #    df	crs$testset
+    #
+    # Want
+    #    subset(crs$dataset[-crs$sample,], select=Idents) + crs$pr
+    #
 
     scoreset <- testset[[mtype]]
 
@@ -8734,10 +8769,10 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     # this. It may be related to regression versus classification. Ed
     # was doing a regression (and testing the Pr v Ob plots).
     
-    scorevarlist <- c(getSelectedVariables("ident"),
-                      getSelectedVariables("target"),
-                      getSelectedVariables("input"),
-                      getSelectedVariables("risk"))
+    #scorevarlist <- c(getSelectedVariables("ident"),
+    #                  getSelectedVariables("target"),
+    #                  getSelectedVariables("input"),
+    #                  getSelectedVariables("risk"))
 
     omitted <- NULL
     if (substr(scoreset, 1, 7) == "na.omit")
@@ -8760,34 +8795,62 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     
     # Now clean out the column subsets.
     
-    if (length(grep(",", scoreset)) > 0)
-      scoreset = gsub(",.*]", ",]", scoreset)
+    #if (length(grep(",", scoreset)) > 0)
+    #  scoreset = gsub(",.*]", ",]", scoreset)
 
     # And finally, remove the na.omit if there is one, replacing it
     # with specifically removing just the rows that were removed in
     # the predict command.
 
-    if (not.null(omitted))
-      scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
+    #if (not.null(omitted))
+    #  scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
     
-    scoreset <- sprintf('subset(%s, select=c(%s))',
-                        scoreset,
-                        ifelse(is.null(idents), "", 
-                               sprintf('"%s"', paste(idents,collapse='", "'))))
-    appendLog("Extract the corresponding identifier fields from the dataset.",
-             sprintf("scores <- %s", scoreset))
+    #scoreset <- sprintf('subset(%s, select=c(%s))',
+    #                    scoreset,
+    #                    ifelse(is.null(idents), "", 
+    #                           sprintf('"%s"', paste(idents,collapse='", "'))))
+    #appendLog("Extract the corresponding identifier fields from the dataset.",
+    #         sprintf("scores <- %s", scoreset))
     
-    scores <- eval(parse(text=scoreset))
+    #scores <- eval(parse(text=scoreset))
 
-    appendLog("Write the scores to file.",
-             paste('write.csv(cbind(scores, predict=crs$pr), file="',
-                   fname, '", row.names=FALSE)', sep=""))
+    #appendLog("Write the scores to file.",
+    #         paste('write.csv(cbind(scores, predict=crs$pr), file="',
+    #               fname, '", row.names=FALSE)', sep=""))
     
-    write.csv(cbind(scores, predict=crs$pr), file=fname, row.names=FALSE)
+    #write.csv(cbind(scores, predict=crs$pr), file=fname, row.names=FALSE)
 
-    infoDialog("The scores for", mtype, "have been saved into the file",
-               fname)
+    #infoDialog("The scores for", mtype, "have been saved into the file",
+    #           fname)
+
+    # Add the scores into scores.
+
+    if (is.null(omitted))
+      scores[[mtype]] <- result
+    else
+      scores[[mtype]][-omitted] <- result
+    
   }
+  
+  # Generate the other columns to be included in the score file.
+
+  # Ensure we have all columns available in the dataset to start with,
+  # so remove the " c(....)" selector. We are then going to include
+  # the identifiers in the output so select those columns.
+  
+  if (length(grep(",", ts)) > 0) ts <- gsub(",.*]", ",]", ts)
+  
+  scoreset <- sprintf('subset(%s, select=c(%s))', ts,
+                      ifelse(is.null(idents), "", 
+                             sprintf('"%s"', paste(idents, collapse='", "'))))
+  appendLog("Extract the corresponding identifier fields from the dataset.",
+            sprintf("sdata <- %s", scoreset))
+  
+  sdata <- eval(parse(text=scoreset))
+  
+  write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
+  infoDialog("The scores have been saved into the file", fname)
+  
   return("Scores have been saved to file.")
 }
 
