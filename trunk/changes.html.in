@@ -7,6 +7,8 @@
     number is 2.3.N where N is Revision-230.</p>
 
 <pre>
+248 080425 All scores are now placed into a single file.
+           A filename to save to is now requested on saving scores.
 247 080422 Change Normalise to Rescale.
            Add Wei Lin's rescale over a matrix operation.
            Update pmml.lm man to lessen the advertising. 
