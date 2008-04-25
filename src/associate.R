@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-21 19:52:41 Graham Williams>
+# Time-stamp: <2008-04-25 17:13:11 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -229,12 +229,15 @@ plotAssociateFrequencies <- function()
   appendLog("Association rules are implemented in the arules package.", lib.cmd)
   eval(parse(text=lib.cmd))
  
-  ## Required information
+  # Required information
   
   sampling  <- not.null(crs$sample)
   support <- theWidget("associate_support_spinbutton")$getValue()
 
-  ## Transform data into a transactions dataset for arules.
+  # Transform data into a transactions dataset for arules.
+
+  # TODO 080425 Note that aprior does "as(..., 'transactions')" so we
+  # don't need this here do we?
   
   if (baskets)
     transaction.cmd <- paste("crs$transactions <<- as(split(",
@@ -299,8 +302,11 @@ listAssociateRules <- function()
   # thing. Some more testing 080421 indicates I'm back to the old
   # problem...
 
-  summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
-                       lift, '),  by="confidence"))')
+  if (lift == 0)
+    summary1.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
+  else
+    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+                          lift, '),  by="confidence"))')
   appendLog("List rules filtered by Lift.", summary1.cmd)
   ## This suceeds.
   ##result <- eval(parse(text=summary1.cmd))
@@ -314,10 +320,11 @@ listAssociateRules <- function()
   close(zz)
   result <- paste(commandsink, collapse="\n")
   appendTextview(TV, "Top Rules\n\n", result,
-                 "Known Bug: If nothing appears above, ",
+                 "\n\nKnown Bug: If nothing appears above, ",
                  "paste the following into the console:\n\n",
-                 paste('inspect(SORT(subset(crs$apriori, lift >',
-                       lift, '), by="confidence"))'))
+                 summary1.cmd)
+#                 paste('inspect(SORT(subset(crs$apriori, lift >',
+#                       lift, '), by="confidence"))'))
   
   # This works but it lists all rules.
 

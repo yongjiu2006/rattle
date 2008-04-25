@@ -92,7 +92,10 @@ meld:
 	  meld $$i;\
 	done
 
+.PHONY: install
 install: build pbuild zip # check pcheck
+	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
+			changes.html.in
 	cp changes.html.in /home/gjw/projects/togaware/www/
 	cp todo.html.in /home/gjw/projects/togaware/www/
 	(cd /home/gjw/projects/togaware/www/;\
