@@ -2,11 +2,16 @@
     Rattle: Change Log
   </p>
 
-  <p>This is a brief <b>Rattle</b> change log, recording the major
-    changes on each revision check-in. The current Rattle version
-    number is 2.3.N where N is Revision-230.</p>
+  <p>This is a brief <b>Rattle</b> change log. Each revision
+    corresponds to a Rattle version. Generally, only major changes on
+    each revision check-in are recorded here. The current Rattle
+
+    version is 2.3.18.
+
+   </p>
 
 <pre>
+249 080425 Score file can optionally contain all columns or just idents.
 248 080425 All scores are now placed into a single file.
            A filename to save to is now requested on saving scores.
 247 080422 Change Normalise to Rescale.

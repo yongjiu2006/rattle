@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-24 21:53:59 Graham Williams>
+# Time-stamp: <2008-04-25 20:07:56 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Apr 2008"
+VERSION.DATE <- "Released 25 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -723,6 +723,17 @@ errorDialog <- function(...)
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
+errorReport <- function(cmd, result)
+{
+  # A standard command error report that is not being captured by
+  # Rattle. Eventually, all of these should be identified by Rattle
+  # and a sugggestion given as to how to avoid the error.
+  
+  errorDialog("An error occured with", cmd,
+              "Please report this to support@togaware.com\n\n",
+              "The error was:\n\n", result)
+}
+
 questionDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
@@ -889,8 +900,8 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   if (inherits(result, "try-error"))
   {
     errorDialog(sprintf("A Rattle command has failed: %s.", command),
-                 "The action you requested has not been completed.",
-                 "Refer to the R Console for details.")
+                "The action you requested has not been completed.",
+                "Refer to the R Console for details.")
     commandsink <- "FAILED"
   }
   options(width=owidth)
@@ -7471,13 +7482,13 @@ executeEvaluateTab <- function()
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
-    errorDialog("The number of levels in the target is > 2.",
-                 "Currently, Rattle's Risk chart, and the ROCR package",
-                 "(which implements the Lift, ROC, Precision, and Specificity",
-                 "charts) apply only for binary classification.",
-                 "Either restructure the data for binary classificaiton,",
-                 "or else suggest an alternative to the author of Rattle",
-                 "at support@togaware.com!")
+    errorDialog("The number of levels in the target is greater than 2.",
+                "Currently, Rattle's Risk chart, and the ROCR package",
+                "(which implements the Lift, ROC, Precision, and Specificity",
+                "charts) apply only to binary classification.",
+                "Either restructure the data for binary classificaiton,",
+                "or else suggest an alternative method of evaluation",
+                "to support@togaware.com.")
     return()
   }
 
@@ -7572,10 +7583,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    "\n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("E141: Some error occured with the following command:",
-                    "\n\n", respcmd, "\n\nBest to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(respcmd, result)
       next()
     }
     
@@ -7730,9 +7738,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                    "\n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -8130,9 +8136,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -8250,9 +8254,7 @@ executeEvaluateROC <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -8381,9 +8383,7 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -8499,9 +8499,7 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -8562,62 +8560,68 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 
 #----------------------------------------------------------------------
 #
-# SCORE - Save the probability scores for each selected model to a file
-# Would be best into one file but testset may be different for each.
-#
-# TODO: Wouldn't this be better as the Export functionality for the
-# Evaluate tab?
 #
 
 executeEvaluateScore <- function(probcmd, testset, testname)
 {
   # Apply each selected model to the selected dataset and save the
-  # results to a file where each column is the score from a specific
-  # model.
-  
-  # Obtain filename to write the scores to.  We ask the user for a
-  # file name if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
-    
-  # 080417 Communicate the score file name. Note that originally I
-  # intended to export the user's choice as an environment variable to
-  # communicate that back to a calling process. But setenv does not
-  # export the name outside the R process so it is of no use.
+  # results to a file with columns containing the score from a
+  # specific model. Other columns depend on the radio button options,
+  # and will either be just the identifiers, or a copy of the full
+  # data, or else, the score columns are written to the original file
+  # (assuming CSV).  TODO: Would this be better as the Export
+  # functionality for the Evaluate tab?
 
-  # TODO We could get a bit more sophisticated here and add getwd() to
-  # the RATTLE_SCORE if it is a relative path.
+  # Obtain information from the interface: what other data is to be
+  # included with the scores.
+
+  sinclude <- NULL
+  if (theWidget("score_idents_radiobutton")$getActive())
+    sinclude <- "idents"
+  else if (theWidget("score_all_radiobutton")$getActive())
+    sinclude <- "all"
+  
+  # Obtain the filename to write the scores to.  We ask the user for a
+  # filename if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
+  # TODO should we add getwd() to the RATTLE_SCORE or
+  # .RATTLE.SCORE.OUT if a relative path.
 
   fname <- Sys.getenv("RATTLE_SCORE")
   if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
-
+  
   if (fname == "")
   {
-    default <- sprintf("%s_score.csv",
+    # The default filename is the testname with spaces replaced by
+    # "_", etc., and then "_score" is appended, and then "_all" or
+    # "_idents" to indicate what other columns are included, and then
+    # ".csv".
+    
+    default <- sprintf("%s_score_%s.csv",
                        gsub(" ", "_",
                             gsub("\\.[[:alnum:]]*", "",
                                  gsub("(\\[|\\])", "",
-                                      gsub("\\*", "", testname)))))
+                                      gsub("\\*", "", testname)))),
+                       sinclude)
     # fname <- paste(getwd(), default, sep="/")
-
-
+      
     dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
                                    "gtk-cancel", GtkResponseType["cancel"],
                                    "gtk-save", GtkResponseType["accept"])
     
-    if(not.null(testname))
-      dialog$setCurrentName(default)
-
-    #dialog$setCurrentFolder(crs$dwd)
-
+    if(not.null(testname)) dialog$setCurrentName(default)
+    
+    # dialog$setCurrentFolder(crs$dwd)
+    
     ff <- gtkFileFilterNew()
     ff$setName("CSV Files")
     ff$addPattern("*.csv")
     dialog$addFilter(ff)
-
+    
     ff <- gtkFileFilterNew()
     ff$setName("All Files")
     ff$addPattern("*")
     dialog$addFilter(ff)
-  
+    
     if (dialog$run() == GtkResponseType["accept"])
     {
       fname <- dialog$getFilename()
@@ -8629,14 +8633,35 @@ executeEvaluateScore <- function(probcmd, testset, testname)
       return()
     }
   }
-
-  # infoDialog(fname)
   
-  # Process each model separately, at least for now. TODO, collect the
-  # outputs and then write them all at once.
+  # Score the data with each model, collect the outputs, and then
+  # write them all at once to file.
+  #
+  # Note that there is at least one testset (hence, below we look at
+  # just the first testset), but possibly others, and there is an
+  # assumption that they are all of the forms:
+  #
+  # crs$dataset[-crs$sample, c(...)]
+  # na.omit(crs$dataset[-crs$sample, c(...)])
+  #
+  # or else they are all of the forms:
+  #
+  # crs$testset[,c(...)]
+  # na.omit(crs$testset[,c(...)])
+  #
+  # TODO 080425 I could test to make sure they are all of the same
+  # form to make sure the assumption is not breached.
+  #
+  # We first remove the na.omit so we can get all row names. The
+  # na.omit is there for those models, like glm and ksvm, which do not
+  # handle NA's themselves.
 
   ts <- testset[[1]]
   if (substr(ts, 1, 7) == "na.omit") ts <- sub('na.omit\\((.*)\\)$', '\\1', ts)
+
+  # Create the data frame to hold the scores, initialised to NA in
+  # every cell.
+  
   the.names <- eval(parse(text=sprintf("row.names(%s)", ts)))
   the.models <- getEvaluateModels()
   scores <- as.data.frame(matrix(nrow=length(the.names),
@@ -8647,27 +8672,33 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   # Obtain a list of the identity vartiables.
     
   idents <- getSelectedVariables("ident")
-    
+
+  setStatusBar("Scoring dataset ...")
+  
   for (mtype in the.models)
   {
+    setStatusBar("Scoring dataset using", mtype, "...")
+  
     # Apply the model to the dataset.
     
     appendLog(sprintf(paste("%s: Obtain probability scores",
-                            "for %s model on %s."),
+                            "for the %s model on %s."),
                       toupper(mtype), mtype, testname),
               gsub("<<-", "<-", probcmd[[mtype]]))
     
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
-    # Check for errors - in particular, new levels in the test dataset.
+    # Check for errors - in particular, new levels in the testset. If
+    # an error is found we skip this mtype and proceed to the
+    # next. This will leave NA's in the score file for this mtype.
     
     if (inherits(result, "try-error"))
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
-        infoDialog("The dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+        infoDialog("The dataset on which the", mtype,
+                   "model is applied to has a categorical",
                    "variable with levels not found in the training",
-                   "dataset. The probabilities can not be determined in",
+                   "dataset. The model can not be applied in",
                    "this situation. You may need to either ensure",
                    "the training dataset has representatives of all levels",
                    "or else remove them from the testing dataset.",
@@ -8675,16 +8706,10 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("An error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
-    # Determine an appropriate filename (TODO the filename is fixed
-    # for now but should ask the user if RATTLE_SCORE and
-    # .RATTLE.SCORE.OUT are not provided.)
-    
     # 080417 Communicate the score file name. Note that originally I
     # intended to export the user's choice as an environment variable
     # to communicate that back to a calling process. But setenv
@@ -8692,26 +8717,6 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     # it is of no use. TODO We could get a bit more sophisticated
     # here and add getwd() to the RATTLE_SCORE if it is a relative
     # path.
-
-##     fname <- Sys.getenv("RATTLE_SCORE")
-##     if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
-
-##     # Until we get all scores into one file, tack the mtype on to the
-##     # file name.
-    
-## #    if (fname != "")
-## #      fname <- gsub(".csv", paste("_", mtype, ".csv", sep=""), fname)
-      
-##     if (fname == "")
-##     {
-##       score.file <- sprintf("%s_%s_score.csv",
-##                             gsub(" ", "_",
-##                                  gsub("\\.[[:alnum:]]*", "",
-##                                       gsub("(\\[|\\])", "",
-##                                            gsub("\\*", "", testname)))),
-##                             mtype)
-##       fname <- paste(getwd(), score.file, sep="/")
-##     }
 
     # Transform the dataset expression into what we need to extract
     # the relevant columns.
@@ -8792,38 +8797,8 @@ executeEvaluateScore <- function(probcmd, testset, testname)
         eval(parse(text=omit.cmd))
       }
     }
-    
-    # Now clean out the column subsets.
-    
-    #if (length(grep(",", scoreset)) > 0)
-    #  scoreset = gsub(",.*]", ",]", scoreset)
 
-    # And finally, remove the na.omit if there is one, replacing it
-    # with specifically removing just the rows that were removed in
-    # the predict command.
-
-    #if (not.null(omitted))
-    #  scoreset = sub(")", "[-omitted,]", sub("na.omit\\(", "", scoreset))
-    
-    #scoreset <- sprintf('subset(%s, select=c(%s))',
-    #                    scoreset,
-    #                    ifelse(is.null(idents), "", 
-    #                           sprintf('"%s"', paste(idents,collapse='", "'))))
-    #appendLog("Extract the corresponding identifier fields from the dataset.",
-    #         sprintf("scores <- %s", scoreset))
-    
-    #scores <- eval(parse(text=scoreset))
-
-    #appendLog("Write the scores to file.",
-    #         paste('write.csv(cbind(scores, predict=crs$pr), file="',
-    #               fname, '", row.names=FALSE)', sep=""))
-    
-    #write.csv(cbind(scores, predict=crs$pr), file=fname, row.names=FALSE)
-
-    #infoDialog("The scores for", mtype, "have been saved into the file",
-    #           fname)
-
-    # Add the scores into scores.
+    # Add the scores into the scores variable.
 
     if (is.null(omitted))
       scores[[mtype]] <- result
@@ -8835,23 +8810,38 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   # Generate the other columns to be included in the score file.
 
   # Ensure we have all columns available in the dataset to start with,
-  # so remove the " c(....)" selector. We are then going to include
-  # the identifiers in the output so select those columns.
+  # so remove the " c(....)" selector from ts. We are then going to
+  # include the identifiers or all columns in the output (depending on
+  # the value of sinclude) so select those columns.
   
   if (length(grep(",", ts)) > 0) ts <- gsub(",.*]", ",]", ts)
-  
-  scoreset <- sprintf('subset(%s, select=c(%s))', ts,
-                      ifelse(is.null(idents), "", 
-                             sprintf('"%s"', paste(idents, collapse='", "'))))
-  appendLog("Extract the corresponding identifier fields from the dataset.",
+
+  if (sinclude == "all")
+    scoreset <- ts
+  else if (sinclude == "idents")
+    scoreset <- sprintf('subset(%s, select=c(%s))', ts,
+                        ifelse(is.null(idents), "", 
+                               sprintf('"%s"',
+                                       paste(idents, collapse='", "'))))
+  else
+  {
+    errorDialog("We should not be here! The value of sinclude should have",
+                "been one of all or idents. We found:", sinclude,
+                "\n\nPlease report this to support@togaware.com")
+    return()
+  }
+
+  appendLog("Extract the relevant columns from the dataset.",
             sprintf("sdata <- %s", scoreset))
   
   sdata <- eval(parse(text=scoreset))
   
   write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
-  infoDialog("The scores have been saved into the file", fname)
+
+  # StatusBar is enough so don't pop up a dialog?
+  # infoDialog("The scores have been saved into the file", fname)
   
-  return("Scores have been saved to file.")
+  return(paste("Scores have been saved to the file", fname))
 }
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
@@ -8916,9 +8906,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorDialog("Some error occured with", probcmd, "Best to let",
-                    "support@togaware.com know.\n\n",
-                    "The error was:\n\n", result)
+        errorReport(probcmd, result)
       next()
     }
 
@@ -9324,9 +9312,10 @@ crs to store its current state, and you can modify this directly.
 Rattle is being extensively tested
 on binary classification problems (with 0/1 or a two level variable
 as the outcomes for the Target variable). It is less well tested on
-general classification and regression tasks.
+mulitnomial classification and regression tasks. but is become stable
+in those areas also, over time.
 <<>>
-The most I can guarantee about this
+The most we can guarantee about this
 code is that there are bugs! When you find one, or a misfeature or
 something else you would like Rattle to do, please do email
 support@togaware.com.
