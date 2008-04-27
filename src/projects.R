@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-03-23 09:05:59 Graham Williams>
+## Time-stamp: <2008-04-27 12:10:13 Graham Williams>
 ##
 ## Project functionality.
 ##
@@ -351,13 +351,13 @@ loadProject <- function()
   if (not.null(crs$rpart.opt$bucket))
     theWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
 
-  ## Make buttons sensitive for MODEL:RPART if there is an RPART model
+  # Make buttons sensitive for MODEL:RPART if there is an RPART model
   
-  if (not.null(crs$rpart)) makeRPartSensitive()
+  showModelRPartExists()
 
   ## Make buttons sensitive for MODEL:ADA if there is an ADA model
   
-  if (not.null(crs$ada)) makeSensitiveAda()
+  showModelAdaExists()
 
   if (not.null(crs$rf.opt$trees))
     theWidget("rf_ntree_spinbutton")$setValue(crs$rf.opt$trees)
@@ -370,7 +370,7 @@ loadProject <- function()
 
   ## Make buttons sensitive for MODEL:RF if there is an RF model
 
-  if (not.null(crs$rf)) makeRandomForestSensitive()
+  showModelRFExists()
   
   if (not.null(crs$svm))
     theWidget("e1071_radiobutton")$setActive(TRUE)

@@ -1,11 +1,11 @@
-## Rattle TwoClass Ada
-##
-## This is a model or template "module" for rattle.
-##
-## Time-stamp: <2008-04-14 21:21:55 Graham Williams>
-##
-## Copyright (c) 2007-2008 Togaware, GPL Version 2
-##
+# Rattle TwoClass Ada
+#
+# This is a model or template "module" for rattle.
+#
+# Time-stamp: <2008-04-27 06:56:27 Graham Williams>
+#
+# Copyright (c) 2007-2008 Togaware, GPL Version 2
+#
 
 ## BUG FIX TO ALLOW ada.update TO WORK....
 

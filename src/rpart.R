@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-21 19:17:47 Graham Williams>
+# Time-stamp: <2008-04-27 16:42:47 Graham Williams>
 #
 # RPART TAB
 #
@@ -189,8 +189,6 @@ executeModelRPart <- function(action="build")
   control <- NULL
   parms <- NULL
 
-  paradigm <- getParadigm()
-  
   # Scrape the value of the tuning controls
 
   tune.controls <- theWidget("rpart_tune_entry")$getText()
@@ -327,7 +325,8 @@ executeModelRPart <- function(action="build")
   sampling  <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
-
+  paradigm <- getParadigm()
+  
   # Commands.
   
   lib.cmd <- "require(rpart, quietly=TRUE)"
@@ -429,11 +428,12 @@ executeModelRPart <- function(action="build")
 
   if (sampling) crs$smodel <<- union(crs$smodel, .RPART)
 
-  ## Now that we have a model, make sure the plot button is sensitive.
+  # Now that we have a model, make sure the rules and plot buttons are
+  # visible.
   
-  makeRPartSensitive()
+  showModelRPartExists()
 
-  ## Finish up.
+  # Finish up.
   
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
                       attr(time.taken, "units"))
@@ -443,10 +443,23 @@ executeModelRPart <- function(action="build")
   return(TRUE)
 }
 
-makeRPartSensitive <- function(state=TRUE)
+showModelRPartExists <- function(state=!is.null(crs$rpart))
 {
-  theWidget("rpart_plot_button")$setSensitive(state)
-  theWidget("rpart_rules_button")$setSensitive(state)
+  # If an rpart model exists then show the Rules and Draw buttons on
+  # the Model tab.
+  
+  if (state)
+  {
+    theWidget("rpart_plot_button")$show()
+    theWidget("rpart_plot_button")$setSensitive(TRUE)
+    theWidget("rpart_rules_button")$show()
+    theWidget("rpart_rules_button")$setSensitive(TRUE)
+  }
+  else
+  {
+    theWidget("rpart_plot_button")$hide()
+    theWidget("rpart_rules_button")$hide()
+  }    
 }
 
 ##----------------------------------------------------------------------
@@ -883,7 +896,7 @@ exportRpartTab <- function()
   appendLog("Export a decision tree as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  infoDialog("The PMML file", save.name, "has been written.")
+  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
 
   setStatusBar("The PMML file", save.name, "has been written.")
   

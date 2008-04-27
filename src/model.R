@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-21 19:19:58 Graham Williams>
+## Time-stamp: <2008-04-27 16:47:48 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -106,42 +106,41 @@ currentModelTab <- function()
 
 deactivateROCRPlots <- function()
 {
-  theWidget("lift_radiobutton")$setSensitive(FALSE)
-  theWidget("roc_radiobutton")$setSensitive(FALSE)
-  theWidget("precision_radiobutton")$setSensitive(FALSE)
-  theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-  theWidget("risk_radiobutton")$setSensitive(FALSE)
+  theWidget("lift_radiobutton")$hide()
+  theWidget("roc_radiobutton")$hide()
+  theWidget("precision_radiobutton")$hide()
+  theWidget("sensitivity_radiobutton")$hide()
+  theWidget("risk_radiobutton")$hide()
 }
 
 activateROCRPlots <- function()
 {
-  theWidget("lift_radiobutton")$setSensitive(TRUE)
-  theWidget("roc_radiobutton")$setSensitive(TRUE)
-  theWidget("precision_radiobutton")$setSensitive(TRUE)
-  theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-  theWidget("risk_radiobutton")$setSensitive(TRUE)
+  theWidget("lift_radiobutton")$show()
+  theWidget("roc_radiobutton")$show()
+  theWidget("precision_radiobutton")$show()
+  theWidget("sensitivity_radiobutton")$show()
+  theWidget("risk_radiobutton")$show()
 }
 
 ########################################################################
-##
-## EXECUTE MODEL TAB
-##
+#
+# EXECUTE MODEL TAB
+#
 
 executeModelTab <- function()
 {
-  ## Can not build a model without a dataset.
+  # Can not build a model without a dataset.
 
   if (noDatasetLoaded()) return()
 
-  ## If VARIABLES has some ignores but crs$ignore is NULL, complain.
+  # If VARIABLES has some ignores but crs$ignore is NULL, complain.
 
   if (variablesHaveChanged("building a model")) return()
 
-  ## If the WeightCalculator has changed but it is not the same as
-  ## crs$weight, complain. This doesn't work any more since we add
-  ## crs$dataset to the variable names in the Weights Calculator, so
-  ## they are different! But, let's remove the crs$dataset and
-  ## compare.
+  # If the WeightCalculator has changed but it is not the same as
+  # crs$weight, complain. This doesn't work any more since we add
+  # crs$dataset to the variable names in the Weights Calculator, so
+  # they are different! But, let's remove the crs$dataset and compare.
 
   weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
 
@@ -158,7 +157,7 @@ executeModelTab <- function()
     return()
   }
     
-  ## Retrieve the target and make sure there is one.
+  # Retrieve the target and make sure there is one.
 
   if (length(crs$target) == 0)
   {
@@ -169,16 +168,20 @@ executeModelTab <- function()
     return()
   }
 
-  ## Check if sampling needs executing.
+  # Check if sampling needs executing.
 
   if (sampleNeedsExecute()) return()
     
-  # If the target has more than 2 levels, disable the ROCR and Risk
-  # plots, and place a message on the first textview of the Evaluate
-  # tab. We make this word wrap here and then turn that off once the
-  # tab is Executed.
+  # If the target has more than 2 levels and we are looking at the
+  # classification paradigm, disable the ROCR and Risk plots, and
+  # place a message on the first textview of the Evaluate tab. We make
+  # this word wrap here and then turn that off once the tab is
+  # Executed.
+
+  paradigm <- getParadigm()
   
-  if (length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
+  if (paradigm == "classification" &&
+      length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
   {
     deactivateROCRPlots()
     theWidget("confusion_textview")$setWrapMode("word")
@@ -260,7 +263,8 @@ executeModelTab <- function()
       
     }
   }
-  if (build.all || currentModelTab() == .ADA)
+  if ((paradigm == "classification" && build.all)
+      || currentModelTab() == .ADA)
   {
     setStatusBar("Building", .ADA, "model ...")
     crs$ada <<-
@@ -274,14 +278,15 @@ executeModelTab <- function()
                     ntree=theWidget("ada_ntree_spinbutton")$getValue())
     if (not.null(crs$ada))
     {
-      makeSensitiveAda()
+      showModelAdaExists()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
     }
     else
       setStatusBar("Building", .ADA, "model ... failed.")
 
   }
-  if (build.all || currentModelTab() == .RF)
+  if ((paradigm == "classification" && build.all)
+      || currentModelTab() == .RF)
   {
     setStatusBar("Building", .RF, "model ...")
     if (executeModelRF())
@@ -289,7 +294,8 @@ executeModelTab <- function()
     else
       setStatusBar("Building", .RF, "model ... failed.")
   }
-  if (build.all || currentModelTab() %in% c(.SVM, .KSVM))
+  if ((paradigm == "classification" && build.all)
+      || currentModelTab() %in% c(.SVM, .KSVM))
   {
     setStatusBar("Building", .KSVM, "model ...")
     if (executeModelSVM())
@@ -298,7 +304,8 @@ executeModelTab <- function()
       setStatusBar("Building", .KSVM, "model ... failed.")
 
   }
-  if (build.all || currentModelTab() == crv$GLM)
+  if ((paradigm == "regression" && build.all)
+      || currentModelTab() == crv$GLM)
   {
     setStatusBar("Building", crv$GLM, "model ...")
     if (executeModelGLM())
@@ -306,10 +313,15 @@ executeModelTab <- function()
     else
       setStatusBar("Building", crv$GLM, "model ... failed.")
   }
+  if (build.all || currentModelTab() == crv$NNET)
+  {
+    setStatusBar("Building", crv$NNET, "model ...")
+    if (executeModelNNet())
+      theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
+    else
+      setStatusBar("Building", crv$NNET, "model ... failed.")
+  }
   
-  ##   if (build.all || currentModelTab() == NNET)
-  ##     executeModelNNet()
-
   if (build.all)
   {
     time.taken <- Sys.time()-start.time
@@ -480,7 +492,7 @@ exportRegressionTab <- function()
   appendLog("Export a regression model as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  infoDialog("The PMML file", save.name, "has been written.")
+  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
 
   setStatusBar("The PMML file", save.name, "has been written.")
   
@@ -749,7 +761,7 @@ exportSVMTab <- function()
   appendLog("Export a SVM model as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  infoDialog("The PMML file", save.name, "has been written.")
+  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
 
   setStatusBar("The PMML file", save.name, "has been written.")
   
@@ -829,6 +841,10 @@ exportModelTab <- function()
   else if (theWidget("svm_radiobutton")$getActive())
   {
     exportSVMTab()
+  }
+  else if (theWidget("nnet_radiobutton")$getActive())
+  {
+    exportNNetTab()
   }
   else
   {

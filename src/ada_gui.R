@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2008-04-14 21:21:15 Graham Williams>
+## Time-stamp: <2008-04-27 11:59:51 Graham Williams>
 ##
 ## Copyright (c) 2007 Togaware, GPL Version 2
 ##
@@ -175,14 +175,35 @@ setGuiDefaultsAda <- function(stumps=FALSE)
   }
 }
 
-makeSensitiveAda <- function(state=TRUE)
+showModelAdaExists <- function(state=!is.null(crs$ada))
 {
-  theWidget("ada_importance_button")$setSensitive(state)
-  theWidget("ada_errors_button")$setSensitive(state)
-  theWidget("ada_list_button")$setSensitive(state)
-  theWidget("ada_draw_button")$setSensitive(state)
-  theWidget("ada_continue_button")$setSensitive(state)
-  theWidget("ada_draw_spinbutton")$setSensitive(state)
+  # If an ada model exists then show the relevant buttons that require
+  # the model to exists.
+  
+  if (state)
+  {
+    theWidget("ada_importance_button")$show()
+    theWidget("ada_importance_button")$setSensitive(TRUE)
+    theWidget("ada_errors_button")$show()
+    theWidget("ada_errors_button")$setSensitive(TRUE)
+    theWidget("ada_list_button")$show()
+    theWidget("ada_list_button")$setSensitive(TRUE)
+    theWidget("ada_draw_button")$show()
+    theWidget("ada_draw_button")$setSensitive(TRUE)
+    theWidget("ada_continue_button")$show()
+    theWidget("ada_continue_button")$setSensitive(TRUE)
+    theWidget("ada_draw_spinbutton")$show()
+    theWidget("ada_draw_spinbutton")$setSensitive(TRUE)
+  }
+  else
+  {
+    theWidget("ada_importance_button")$hide()
+    theWidget("ada_errors_button")$hide()
+    theWidget("ada_list_button")$hide()
+    theWidget("ada_draw_button")$hide()
+    theWidget("ada_continue_button")$hide()
+    theWidget("ada_draw_spinbutton")$hide()
+  }    
 }
 
 continueModelAdaGui <- function()
