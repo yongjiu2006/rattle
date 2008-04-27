@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-14 21:14:50 Graham Williams>
+## Time-stamp: <2008-04-27 12:09:53 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -62,9 +62,9 @@ The R package for building Random Forests is called randomForest."))
 }
 
 ########################################################################
-##
-## MODEL RF - RANDOM FOREST
-##
+#
+# MODEL RF - RANDOM FOREST
+#
 
 executeModelRF <- function()
 {
@@ -256,11 +256,11 @@ executeModelRF <- function()
 
   if (sampling) crs$smodel <<- union(crs$smodel, .RF)
 
-  ## Now that we have a model, make sure the buttons are sensitive.
+  # Now that we have a model, make sure the buttons are sensitive.
 
-  makeRandomForestSensitive()
+  showModelRFExists()
 
-  ## Finish up.
+  # Finish up.
 
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
@@ -271,12 +271,29 @@ executeModelRF <- function()
   return(TRUE)
 }
 
-makeRandomForestSensitive <- function(state=TRUE)
+showModelRFExists <- function(state=!is.null(crs$rf))
 {
-  theWidget("rf_importance_button")$setSensitive(state)
-  theWidget("rf_errors_button")$setSensitive(state)
-  theWidget("rf_print_tree_button")$setSensitive(state)
-  theWidget("rf_print_tree_spinbutton")$setSensitive(state)
+  # If an rf model exists then show the various buttons on the Model
+  # tab.
+  
+  if (state)
+  {
+    theWidget("rf_importance_button")$show()
+    theWidget("rf_importance_button")$setSensitive(TRUE)
+    theWidget("rf_errors_button")$show()
+    theWidget("rf_errors_button")$setSensitive(TRUE)
+    theWidget("rf_print_tree_button")$show()
+    theWidget("rf_print_tree_button")$setSensitive(TRUE)
+    theWidget("rf_print_tree_spinbutton")$show()
+    theWidget("rf_print_tree_spinbutton")$setSensitive(TRUE)
+  }
+  else
+  {
+    theWidget("rf_importance_button")$hide()
+    theWidget("rf_errors_button")$hide()
+    theWidget("rf_print_tree_button")$hide()
+    theWidget("rf_print_tree_spinbutton")$hide()
+  }
 }
 
 plotRandomForestImportance <- function()

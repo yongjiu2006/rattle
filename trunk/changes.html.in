@@ -6,12 +6,22 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.18.
+    version is 2.3.19.
 
    </p>
 
 <pre>
+250 061230 Implement nnet for classification and regression.
+           Ensure scores for nnet regression are working
+           Export nnet to PMML
+           Make unimplemented paradigms invisible, not greyed out.
+           Hide/show score options on radio button toggle
+           Hide elements not in use in general (HIG Guidelines)
+           On change paradigm clear all old models
+           Remove Boost, Forest, SVM from Regression
+           Remove Linear from Classification (logistic == mulitnom, i.e. nnet)
 249 080425 Score file can optionally contain all columns or just idents.
+           Tidy up some error messages with the errorReport function.
 248 080425 All scores are now placed into a single file.
            A filename to save to is now requested on saving scores.
 247 080422 Change Normalise to Rescale.

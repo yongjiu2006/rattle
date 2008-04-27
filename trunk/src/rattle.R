@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-25 20:07:56 Graham Williams>
+# Time-stamp: <2008-04-27 15:20:50 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -51,23 +51,23 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # INTERFACE STYLE
 #
-#    Should the philosophy be to have them active, and check
-#    conditions on execute, rather than messing around turning things
-#    on and off?
+#    080427 For major bits of functionality, like paradigms and model
+#    types, we show and hide widgets appropriately. For smaller
+#    options like a button to shaw a model once it has been built,
+#    generally we activate/deactivet the widgets appropraitely.
 #
-#    If the functionality is not yet implemented, full stop, then
-#    have the interface item(s) greyed out, as an indication that the
-#    functionality is to come. Probably not a good idea. The
-#    expectation is that perhaps there is some way within the
-#    interface of getting it not to be greyed out! But doing this
-#    also encourages those with an interest in the greyed out bits to
-#    either complain (i.e., I get to know what is wanted) or else
-#    help implement them!
+#    If the functionality is not yet implemented, full stop, then have
+#    the interface item(s) not present. This is better than having
+#    them greyed out as the expectation is that perhaps there is some
+#    way within the interface of getting it not to be greyed out! But
+#    doing this also encourages those with an interest in the greyed
+#    out bits to either complain (i.e., I get to know what is wanted)
+#    or else help implement them!
 #
 #    If the functionality is not appropriate in a particular
-#    circumstance then don't grey it out. Simply check, in the one
-#    place in the code (e.g., when the button is pushed) and pop up
-#    an error dialogue.
+#    circumstance then don't provide the button. Simply check, in the
+#    one place in the code (e.g., when the button is pushed) and pop
+#    up an error dialogue.
 #
 #    This doesn't always work, as in the case of sample where you do
 #    want greyed out functionality, but you don't want it to mean not
@@ -243,9 +243,9 @@ rattle <- function(csvname=NULL)
   .RF    <<- "rf"
   .SVM   <<- "svm"
   .KSVM  <<- "ksvm"
-  .NNET  <<- "nnet"
+  crv$NNET  <<- "nnet"
 
-  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, crv$GLM, .NNET)
+  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, crv$GLM, crv$NNET)
   
   # RPART
   
@@ -283,6 +283,7 @@ rattle <- function(csvname=NULL)
                risk=NULL,
                ident=NULL,
                ignore=NULL,
+               nontargets=NULL, # 080426 Started but not yet implemented
                sample=NULL,
                sample.seed=NULL,
                kmeans=NULL,
@@ -382,7 +383,7 @@ rattle <- function(csvname=NULL)
   ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
   crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, .RF)
   crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, .SVM)
-  crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, .NNET)
+  crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, crv$NNET)
 
   .SVMNB           <<- theWidget("svm_notebook")
   .SVMNB.ESVM.TAB  <<- getNotebookPage(.SVMNB, "esvm")
@@ -423,7 +424,7 @@ rattle <- function(csvname=NULL)
   # not included in the foreign package.
 
   if (R.version$minor < "4.0")
-    theWidget("arff_radiobutton")$setSensitive(FALSE)
+    theWidget("arff_radiobutton")$hide()
   
   # Set glm_family_comboboxentry to default value.
   
@@ -440,7 +441,7 @@ rattle <- function(csvname=NULL)
   if (! packageIsAvailable("cairoDevice"))
   {
     theWidget("use_cairo_graphics_device")$setActive(FALSE)
-    theWidget("use_cairo_graphics_device")$setSensitive(FALSE)
+    theWidget("use_cairo_graphics_device")$hide()
   }
   
   # Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
@@ -497,6 +498,7 @@ resetRattle <- function()
   crs$risk     <<- NULL
   crs$ident    <<- NULL
   crs$ignore   <<- NULL
+  crs$nontargets <<- NULL # 080426 Started but not yet implemented.
   crs$sample   <<- NULL
   crs$sample.seed <<- NULL
   crs$kmeans   <<- NULL
@@ -510,6 +512,7 @@ resetRattle <- function()
   crs$rf       <<- NULL
   crs$svm      <<- NULL
   crs$ksvm     <<- NULL
+  crs$nnet     <<- NULL
   crs$perf     <<- NULL
   crs$eval     <<- NULL
   crs$testset  <<- NULL
@@ -586,16 +589,16 @@ resetRattle <- function()
   theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
   theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
   theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
-  makeRPartSensitive(FALSE)
+  showModelRPartExists()
 
   ## Reset MODEL:ADA
   
-  makeSensitiveAda(FALSE)
+  showModelAdaExists()
   setGuiDefaultsAda()
   
   ## Reset MODEL:RF
   
-  makeRandomForestSensitive(FALSE)
+  showModelRFExists()
 
   ## Reset MODEL:SVM
 
@@ -616,6 +619,7 @@ resetRattle <- function()
   theWidget("ada_target_label")$setText("No target selected")
   theWidget("rf_target_label")$setText("No target selected")
   theWidget("svm_target_label")$setText("No target selected")
+  theWidget("nnet_target_label")$setText("No target selected")
   theWidget("evaluate_risk_label")$setText("No risk variable selected")
   
   theWidget("evaluate_training_radiobutton")$setActive(TRUE)
@@ -667,23 +671,23 @@ resetRattle <- function()
   theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
 
-  theWidget("rpart_evaluate_checkbutton")$setSensitive(FALSE)
-  theWidget("rf_evaluate_checkbutton")$setSensitive(FALSE)
-  theWidget("ksvm_evaluate_checkbutton")$setSensitive(FALSE)
-  theWidget("glm_evaluate_checkbutton")$setSensitive(FALSE)
-  theWidget("ada_evaluate_checkbutton")$setSensitive(FALSE)
+  #theWidget("rpart_evaluate_checkbutton")$hide()
+  #theWidget("rf_evaluate_checkbutton")$hide()
+  #theWidget("ksvm_evaluate_checkbutton")$hide()
+  #theWidget("glm_evaluate_checkbutton")$hide()
+  #theWidget("ada_evaluate_checkbutton")$hide()
 
   ## Update CLUSTER tab
 
   theWidget("kmeans_hclust_centers_checkbutton")$setActive(FALSE)
   theWidget("hclust_distance_combobox")$setActive(0)
   theWidget("hclust_link_combobox")$setActive(0)
-  theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
-  theWidget("hclust_clusters_label")$setSensitive(FALSE)
-  theWidget("hclust_clusters_spinbutton")$setSensitive(FALSE)
-  theWidget("hclust_stats_button")$setSensitive(FALSE)
-  theWidget("hclust_data_plot_button")$setSensitive(FALSE)
-  theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
+  theWidget("hclust_dendrogram_button")$hide()
+  theWidget("hclust_clusters_label")$hide()
+  theWidget("hclust_clusters_spinbutton")$hide()
+  theWidget("hclust_stats_button")$hide()
+  theWidget("hclust_data_plot_button")$hide()
+  theWidget("hclust_discriminant_plot_button")$hide()
   
 }
 
@@ -831,13 +835,13 @@ sampleNeedsExecute <- function()
       && is.null(crs$sample))
   {
     errorDialog("Sampling is active but has not been Executed.",
-                    "Either ensure you Execute the sampling by clicking",
-                    "the Execute button on the Transform tab,",
-                    "or else de-activate Sampling on the Transform tab.")
+                "Either ensure you Execute the sampling by clicking",
+                "the Execute button on the Transform tab,",
+                "or else de-activate Sampling on the Transform tab.")
     return(TRUE)
   }
 
-  ## If sampling is inactive, make sure there is no sample.
+  # If sampling is inactive, make sure there is no sample.
 
   if (! theWidget("sample_checkbutton")$getActive()
       && not.null(crs$sample))
@@ -2002,6 +2006,11 @@ resetDatasetViews <- function(input, target, risk, ident, ignore)
   appendTextview("data_textview", collectOutput("str(crs$dataset)"))
 }
 
+showDataViewButtons <- function(widget)
+{
+  theWidget(paste(widget, "_viewdata_button", sep=""))$setSensitive(TRUE)
+  theWidget(paste(widget, "_editdata_button", sep=""))$setSensitive(TRUE)
+}  
 
 executeDataCSV <- function()
 {
@@ -2111,10 +2120,9 @@ executeDataCSV <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("csv_viewdata_button")$setSensitive(TRUE)
-  theWidget("csv_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("csv")
   
   setStatusBar("The CSV data has been loaded:", crs$dataname)
 }
@@ -2197,10 +2205,9 @@ executeDataARFF <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("arff_viewdata_button")$setSensitive(TRUE)
-  theWidget("arff_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("arff")
   
   setStatusBar("The ARFF data has been loaded:", crs$dataname)
 }
@@ -2312,10 +2319,9 @@ executeDataODBC <- function()
   
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
   
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("odbc_viewdata_button")$setSensitive(TRUE)
-  theWidget("odbc_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("odbc")
   
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
@@ -2398,8 +2404,7 @@ executeDataRdata <- function()
 
   ## Enable the Data View button.
 
-  theWidget("rdata_viewdata_button")$setSensitive(TRUE)
-  theWidget("rdata_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("rdata")
   
   setStatusBar("The data has been loaded:", crs$dataname)
 }
@@ -2470,10 +2475,9 @@ executeDataRdataset <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("rdataset_viewdata_button")$setSensitive(TRUE)
-  theWidget("rdataset_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("rdataset")
   
   setStatusBar("The data has been assigned into Rattle.")
 }
@@ -2555,10 +2559,9 @@ executeDataLibrary <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("libdata_viewdata_button")$setSensitive(TRUE)
-  theWidget("libdata_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("libdata")
   
   setStatusBar("The data has been assigned into Rattle.")
 }
@@ -2611,10 +2614,9 @@ executeDataEntry <- function()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  ## Enable the Data View button.
+  # Enable the Data View button.
 
-  theWidget("dataentry_viewdata_button")$setSensitive(TRUE)
-  theWidget("dataentry_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("dataentry")
   
   setStatusBar("The data has been assigned into Rattle.")
 }
@@ -2685,8 +2687,7 @@ editData <- function()
 
   # Enable the Data View button.
 
-  theWidget("dataentry_viewdata_button")$setSensitive(TRUE)
-  theWidget("dataentry_editdata_button")$setSensitive(TRUE)
+  showDataViewButtons("dataentry")
   
   setStatusBar("The data has been assigned into Rattle.")
 
@@ -2752,10 +2753,10 @@ exportDataTab <- function()
 ## EVALUATE the crs$risk is used for the Risk Chart.
 ##
 
-##------------------------------------------------------------------------
-##
-## Interface
-##
+#------------------------------------------------------------------------
+#
+# Interface
+#
 
 on_sample_checkbutton_toggled <- function(button)
 {
@@ -3076,9 +3077,9 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   theWidget("rpart_target_label")$setText(the.target)
   theWidget("rf_target_label")$setText(the.target)
   theWidget("svm_target_label")$setText(the.target)
-  theWidget("glm_target_label")$setText(the.target)
   # theWidget("gbm_target_label")$setText(the.target)
   theWidget("ada_target_label")$setText(the.target)
+  theWidget("nnet_target_label")$setText(the.target)
 
   # Update MODEL weights
 
@@ -3093,8 +3094,10 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   # more than two classes we can't use Ada since the current package
   # does not support more than 2 classes.
 
-  theWidget("boost_radiobutton")$setSensitive(paradigm == "classification"
-                                              && target.levels <= 2)
+  if (paradigm == "classification" && target.levels <= 2)
+    theWidget("boost_radiobutton")$show()
+  else
+    theWidget("boost_radiobutton")$hide()
   
   # Update EVALUATE risk variable
   
@@ -3113,7 +3116,24 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 
 executeSelectSample <- function()
 {
-  # Record that a random sample of the dataset is desired.
+  # Identify if there are entities without a target value. TODO
+  # 080426. I started looking at noting those entities with missing
+  # target values. This is recorded in crs$nontargets. Currently I'm
+  # not using it. The intention was to only sample from those with
+  # targets, etc. But the impacts need to be carefuly thought through.
+  #
+  # Perhaps the philosophy should go back to the fact that the user
+  # can split the dataset up themselves quite easily, and I do
+  # provide a mechanism for them to load their dataset for scoring.
+  
+  #target <- getSelectedVariables("target")
+  #print(target)
+  #crs$nontargets <<- which(is.na(crs$dataset[[target]]))
+  
+  # Record that a random sample of the dataset is desired and the
+  # random sample itself is loaded into crs$sample. 080425 Whilst we
+  # are at it we also set the variable crs$targeted to be those row
+  # indicies that have a non NA target.
 
   if (theWidget("sample_checkbutton")$getActive())
   {
@@ -3147,7 +3167,7 @@ executeSelectSample <- function()
     else
       theWidget("evaluate_training_radiobutton")$setActive(TRUE)
   }
-  
+
   crs$smodel <<- vector()
 
   # TODO For test/train, use sample,split from caTools?
@@ -3642,6 +3662,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   theWidget("ada_target_label")$setText(the.target)
   theWidget("rf_target_label")$setText(the.target)
   theWidget("svm_target_label")$setText(the.target)
+  theWidget("nnet_target_label")$setText(the.target)
 
   plots <- union(boxplot,
                  union(hisplot,
@@ -7026,6 +7047,18 @@ on_sensitivity_radiobutton_toggled <- function(button)
 
 on_score_radiobutton_toggled <- function(button)
 {
+  if (button$getActive())
+  {
+    theWidget("score_include_label")$show()
+    theWidget("score_idents_radiobutton")$show()
+    theWidget("score_all_radiobutton")$show()
+  }
+  else
+  {
+    theWidget("score_include_label")$hide()
+    theWidget("score_idents_radiobutton")$hide()
+    theWidget("score_all_radiobutton")$hide()
+  }    
   setStatusBar()
 }
 
@@ -7127,7 +7160,7 @@ executeEvaluateTab <- function()
   if (.RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
     return()
-  if (.NNET %in%  mtypes &&
+  if (crv$NNET %in%  mtypes &&
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
 
@@ -7311,16 +7344,15 @@ executeEvaluateTab <- function()
     probcmd[[.ADA]] <- genProbabilityAda(testset[[.ADA]])
   }
 
-##   if ( .NNET %in%  mtypes)
-##   {
-##     testset[[.NNET]] <- testset0
+  if (crv$NNET %in%  mtypes)
+  {
+    testset[[crv$NNET]] <- testset0
 
-##     predcmd[[.NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
-##                               testset[[.NNET]])
-##     respcmd[[.NNET]] <- predcmd[[.NNET]]
-##     probcmd[[.NNET]] <- sprintf("%s[,2]",
-##                               gsub(")$", ', type="class")', predcmd[[.NNET]]))
-##   }
+    predcmd[[crv$NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
+                                   testset[[crv$NNET]])
+    respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
+    probcmd[[crv$NNET]] <- gsub(")$", ', type="prob")', predcmd[[crv$NNET]])
+  }
 
   if (.RPART %in%  mtypes)
   {
@@ -7844,27 +7876,29 @@ evaluateRisk <- function(predicted, actual, risks)
 {
   if (is.factor(actual))
     actual <- as.integer(actual)-1
-      
-  if (min(actual) != 0 | max(actual) !=1 )
-    stop("actual must be binary (0,1) but found (",
-         min(actual), ",", max(actual), ").")
 
-  ## For KSVMs, and perhaps other modellers, the predictied values are
-  ## probabilites, which may be a very high level of precision (e.g.,
-  ## 0.999999999999996 or 2.58015830922886e-13), and thus, when
-  ## converted to a factor, we have almost a one-to-one match from an
-  ## entity to a probability. When converted to a data frame the
-  ## resulting row names (these probablities of being a 1) have
-  ## caseloads of 1, 2, or 3, thus there are very many, and sometimes,
-  ## the probablities are the same! We then get duplicate row names
-  ## and the assigning of new names to the columns below gives an
-  ## error about duplicat row names! We should aggregate up to three
-  ## significant figures in the probabilities to make everything much
-  ## easier. BUT this then lumsp all ot eh 0.9999999.... together, and
-  ## leaves a very large jump at the right end of the plot! We really
-  ## might want to instead aggregate on caseload! But rounding it to
-  ## 13 digits seems okay! We gete a good plot, and no duplicates in
-  ## survey-training (10% train/90%test).
+  # With na.rm=TRUE we cater for the case when the actual data has
+  # missing values for the target.
+  
+  if (min(actual, na.rm=TRUE) != 0 || max(actual, na.rm=TRUE) !=1 )
+    stop("actual must be binary (0,1) but found (",
+         min(actual, na.rm=TRUE), ",", max(actual, na.rm=TRUE), ").")
+
+  # For KSVMs, and perhaps other modellers, the predictied values are
+  # probabilites, which may be a very high level of precision (e.g.,
+  # 0.999999999999996 or 2.58015830922886e-13), and thus, when
+  # converted to a factor, we have almost a one-to-one match from an
+  # entity to a probability. When converted to a data frame the
+  # resulting row names (these probablities of being a 1) have
+  # caseloads of 1, 2, or 3, thus there are very many, and sometimes,
+  # the probablities are the same! We then get duplicate row names and
+  # the assigning of new names to the columns below gives an error
+  # about duplicate row names! We should aggregate up to three
+  # significant figures in the probabilities to make everything much
+  # easier. BUT this then lumps all of the 0.9999999.... together, and
+  # leaves a very large jump at the right end of the plot! We really
+  # might want to instead aggregate on caseload! But rounding it to 13
+  # digits seems okay! We get a good plot.
 
   predicted <- as.factor(round(predicted, 13))
   
@@ -7873,8 +7907,12 @@ evaluateRisk <- function(predicted, actual, risks)
                             Predict=as.factor(predicted))
   #Predict=as.factor(ds.predict[,2]))
 
+  # With na.rm=TRUE in the first sum here we cater for the case when
+  # the actual data has missing values for the target. 
+  
   ds.evaluation <- as.data.frame(t(rbind(tapply(ds.actual$Actual,
-                                                ds.actual$Predict, sum),
+                                                ds.actual$Predict,
+                                                sum, na.rm=TRUE),
                                          tapply(ds.actual$Risk,
                                                 ds.actual$Predict,
                                                 sum, na.rm=TRUE),
@@ -7901,7 +7939,7 @@ evaluateRisk <- function(predicted, actual, risks)
   ds.evaluation$Recall <- ds.evaluation$Recall/ds.evaluation$Recall[1]
   ds.evaluation$Risk <- ds.evaluation$Risk/ds.evaluation$Risk[1]
   ds.evaluation$Caseload <- ds.evaluation$Caseload/ds.evaluation$Caseload[1]
-  ## This is Michael's measure of performance.
+  # This is Michael's measure of performance.
   ds.evaluation$Measure <- abs(ds.evaluation$Recall - ds.evaluation$Caseload) +
     abs(ds.evaluation$Risk - ds.evaluation$Caseload)
   return(ds.evaluation)
@@ -8680,10 +8718,17 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     setStatusBar("Scoring dataset using", mtype, "...")
   
     # Apply the model to the dataset.
+
+    paradigm <- getParadigm()
     
-    appendLog(sprintf(paste("%s: Obtain probability scores",
+    appendLog(sprintf(paste("%s: Obtain %s",
                             "for the %s model on %s."),
-                      toupper(mtype), mtype, testname),
+                      toupper(mtype),
+                      if (paradigm == "classification")
+                      "probability scores"
+                      else if (paradigm == "regression")
+                      "predictions",
+                      mtype, testname),
               gsub("<<-", "<-", probcmd[[mtype]]))
     
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)

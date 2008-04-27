@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-04-22 05:31:28 Graham Williams>
+# Time-stamp: <2008-04-27 16:39:55 Graham Williams>
 #
 # Copyright (c) 2007-2008 Togaware, GPL Version 2
 #
@@ -1638,7 +1638,7 @@ pmml.rpart <- function(model,
   if (! inherits(model, "rpart"))
     stop("Not a legitimate rpart object")
   if (model$method != "class")
-    stop("Currently only classification is handled.")
+    print("WARNING pmml.rpart: Non-classification is experimental.")
   
   require(XML, quietly=TRUE)
   require(rpart, quietly=TRUE)
