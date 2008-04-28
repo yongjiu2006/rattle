@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-25 17:13:11 Graham Williams>
+# Time-stamp: <2008-04-28 06:42:13 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -256,7 +256,7 @@ plotAssociateFrequencies <- function()
            gsub("<<-", "<-", transaction.cmd))
   eval(parse(text=transaction.cmd))
 
-  ## Now plot the relative frequencies.
+  # Now plot the relative frequencies.
 
   plot.cmd <- paste("itemFrequencyPlot(crs$transactions, support=",
                     support, ", cex=0.8)", sep="")
@@ -407,7 +407,7 @@ exportAssociateTab <- function()
   appendLog("Export association rules as PMML.", pmml.cmd)
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  infoDialog("The PMML file", save.name, "has been written.")
+  # Reduce chatter infoDialog("The PMML file", save.name, "has been written.")
 
   setStatusBar("The PMML file", save.name, "has been written.")
   

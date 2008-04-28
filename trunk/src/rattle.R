@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-27 15:20:50 Graham Williams>
+# Time-stamp: <2008-04-28 18:11:51 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Apr 2008"
+VERSION.DATE <- "Released 27 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -187,7 +187,7 @@ rattle <- function(csvname=NULL)
     rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                               root="rattle_window")
 
-  ## Some default GUI settings
+  # Some default GUI settings
 
   #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
   id.string <- paste('<span foreground="blue">',
