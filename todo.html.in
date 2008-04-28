@@ -9,10 +9,9 @@
 <pre>
 080427 Report pmml.nnet error to Zementis
 080427 Fix Draw of decision tree for Regression
-080427 capture output from nnet bild and place into textview.
 080427 On Score be sure to include the commands in log.
-080426 Add "Transform" check button on Evaluate tab (active when Score and CSV
-       that will perform all of transformations on the scoring dataset. (Tony)
+080426 Add "Transform" check button on Evaluate tab (active when Score and CSV)
+       that will perform same transformations on the scoring dataset. (Tony)
 080427 Fix export of PMML for rpart
 080421 For assoc, if ID is not unique, set Baskets to checked
 080422 Complete read.pmml function for rpart.

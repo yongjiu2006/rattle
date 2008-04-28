@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-27 16:47:48 Graham Williams>
+## Time-stamp: <2008-04-28 21:36:48 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -111,10 +111,14 @@ deactivateROCRPlots <- function()
   theWidget("precision_radiobutton")$hide()
   theWidget("sensitivity_radiobutton")$hide()
   theWidget("risk_radiobutton")$hide()
+
+  if (getParadigm() == "regression")
+    theWidget("confusion_radiobutton")$hide()
 }
 
 activateROCRPlots <- function()
 {
+  theWidget("confusion_radiobutton")$show()
   theWidget("lift_radiobutton")$show()
   theWidget("roc_radiobutton")$show()
   theWidget("precision_radiobutton")$show()
@@ -193,6 +197,11 @@ executeModelTab <- function()
                    "package (Lift, ROC, Precision, and Sensitivity",
                    "charts) and the Risk Chart only handle binary",
                    "classification.", sep=" ")
+  }
+  else if (paradigm == "regression")
+  {
+    deactivateROCRPlots()
+    setTextview("confusion_textview") # Clear any confusion table
   }
   else
   {

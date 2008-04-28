@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-27 14:39:06 Graham Williams>
+# Time-stamp: <2008-04-28 20:46:49 Graham Williams>
 #
 # Paradigm control.
 #
@@ -49,8 +49,11 @@ switchToSelect <- function(data.available=not.null(crs$dataset))
 
 on_twoclass_radiobutton_toggled <- function(button)
 {
-  # This is what is now the Classification radio button.
-  
+  # Switch to the Select tab first since otherwise, if we modify an
+  # exposed tab then the window will resize incorrectly.
+
+  switchToSelect()
+
   if (button$getActive())
   {
     # Make sure we want to do this because all current models will be
@@ -90,6 +93,17 @@ on_twoclass_radiobutton_toggled <- function(button)
     
     theWidget("rpart_radiobutton")$setActive(TRUE)
     
+    # Show the evaluations that are available.
+
+    theWidget("confusion_radiobutton")$show()
+    theWidget("risk_radiobutton")$show()
+    theWidget("lift_radiobutton")$show()
+    theWidget("roc_radiobutton")$show()
+    theWidget("precision_radiobutton")$show()
+    theWidget("sensitivity_radiobutton")$show()
+    theWidget("pvo_radiobutton")$show()
+    theWidget("score_radiobutton")$show()
+    
     # Show the relevent model Type check buttons for the Evaluate tab.
 
     theWidget("rpart_evaluate_checkbutton")$show()
@@ -100,22 +114,6 @@ on_twoclass_radiobutton_toggled <- function(button)
     theWidget("nnet_evaluate_checkbutton")$show()
     theWidget("mars_evaluate_checkbutton")$hide()
     
-    # If the previous current page is not one of the common pages,
-    # then make the newly inserted page the current page. This
-    # doesn't work, since if we are coming from a CLuster page, for
-    # example, that page no longer exists, so we get the Explore as
-    # the last page, and thus this does nothing - unless I remove
-    # Explore from the common pages list! Will result in one oddity,
-    # but we might get away with it.
-
-##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-##     {
-##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-##                                                   crv$NOTEBOOK.MODEL.NAME))
-##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
-##     }
-
-    switchToSelect()
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -129,6 +127,11 @@ on_twoclass_radiobutton_toggled <- function(button)
 
 on_regression_paradigm_radiobutton_toggled <- function(button)
 {
+  # Switch to the Select tab first since otherwise, if we modify an
+  # exposed tab then the window will resize incorrectly.
+
+  switchToSelect()
+
   if (button$getActive())
   {
     # Make sure we want to do this because all current models will be
@@ -167,6 +170,17 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
     # Reset the default model to be the decision tree.
     
     theWidget("rpart_radiobutton")$setActive(TRUE)
+
+    # Show the evaluations that are available.
+
+    theWidget("confusion_radiobutton")$show()
+    theWidget("risk_radiobutton")$hide()
+    theWidget("lift_radiobutton")$hide()
+    theWidget("roc_radiobutton")$hide()
+    theWidget("precision_radiobutton")$hide()
+    theWidget("sensitivity_radiobutton")$hide()
+    theWidget("pvo_radiobutton")$show()
+    theWidget("score_radiobutton")$show()
     
     # Show the relevent model Type check buttons for the Evaluate tab.
 
@@ -178,22 +192,6 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
     theWidget("nnet_evaluate_checkbutton")$show()
     theWidget("mars_evaluate_checkbutton")$hide()
     
-    # If the previous current page is not one of the common pages,
-    # then make the newly inserted page the current page. This doesn't
-    # work, since if we are coming from a Cluster page, for example,
-    # that page no longer exists, so we get the Explore as the last
-    # page, and thus this does nothing - unless I remove Explore from
-    # the common pages list! Will result in one oddity, but we might
-    # get away with it.
-
-##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-##     {
-##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-##                                                   crv$NOTEBOOK.MODEL.NAME))
-##       switchToPage(crv$NOTEBOOK.MODEL.NAME)
-##     }
-
-    switchToSelect()
     setStatusBar("Exposed the Model and Evaluate tabs")
   }
   else
@@ -207,6 +205,11 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
 
 on_unsupervised_radiobutton_toggled <- function(button)
 {
+  # Switch to the Select tab first since otherwise, if we modify an
+  # exposed tab then the window will resize incorrectly.
+
+  switchToSelect()
+
   if (button$getActive())
   {
 
@@ -221,17 +224,6 @@ on_unsupervised_radiobutton_toggled <- function(button)
                             crv$NOTEBOOK.ASSOCIATE.LABEL,
                             ep+2)
 
-    # If the previous current page is not one of the common pages,
-    # then make the newly inserted page the current page.
-
-##     if (crs$page != "" && crs$page %notin% crv$NOTEBOOK.COMMON.NAMES)
-##     {
-##       crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-##                                                   crv$NOTEBOOK.CLUSTER.NAME))
-##       switchToPage(crv$NOTEBOOK.CLUSTER.NAME)
-##     }
-    
-    switchToSelect()
     setStatusBar("Exposed the Cluster and Associate tabs")
   }
   else
