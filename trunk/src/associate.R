@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-28 06:42:13 Graham Williams>
+# Time-stamp: <2008-04-30 20:37:01 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -269,11 +269,11 @@ plotAssociateFrequencies <- function()
 
 listAssociateRules <- function()
 {
-  ## We require a dataset
+  # We require a dataset
 
   if (noDatasetLoaded()) return()
 
-  ## Also make sure we have already generated the association rules.
+  # Also make sure we have already generated the association rules.
   
   if (is.null(crs$apriori))
   {
@@ -282,13 +282,13 @@ listAssociateRules <- function()
     return()
   }
 
-  ## Note the textview.
+  # Note the textview.
   
   TV <- "associate_textview"
   
-  ## Required information
+  # Required information
   
-  lift    <- theWidget("associate_lift_spinbutton")$getValue()
+#  lift    <- theWidget("associate_lift_spinbutton")$getValue()
 
 #  appendTextview(TV, "Top Rules\n\n",
 #                 "For now, run the following command in the console:\n\n",
@@ -302,27 +302,29 @@ listAssociateRules <- function()
   # thing. Some more testing 080421 indicates I'm back to the old
   # problem...
 
-  if (lift == 0)
+#  if (lift == 0)
     summary1.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
-  else
-    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
-                          lift, '),  by="confidence"))')
-  appendLog("List rules filtered by Lift.", summary1.cmd)
-  ## This suceeds.
-  ##result <- eval(parse(text=summary1.cmd))
-  ## This fails
-  ##result <- collectOutput(summary1.cmd)
-  ## This succeeds
-  zz <- textConnection("commandsink", "w", TRUE)
-  sink(zz)
-  cat(eval(parse(text=summary1.cmd)))
-  sink()
-  close(zz)
-  result <- paste(commandsink, collapse="\n")
-  appendTextview(TV, "Top Rules\n\n", result,
-                 "\n\nKnown Bug: If nothing appears above, ",
-                 "paste the following into the console:\n\n",
-                 summary1.cmd)
+#  else
+#    summary1.cmd <- paste('SORT(subset(crs$apriori, lift > ',
+#                          lift, '),  by="confidence")')
+#ORIG    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+#                          lift, '),  by="confidence"))')
+  appendLog("List rules.", summary1.cmd)
+  # print(summary1.cmd)
+  ## This returns "" 080429 when "lift > 1.3" is included in the
+  ## subset command.
+  result <- collectOutput(summary1.cmd)
+  ## This 
+##   zz <- textConnection("commandsink", "w", TRUE)
+##   sink(zz)
+##   cat(eval(parse(text=summary1.cmd)))
+##   sink()
+##   close(zz)
+##   result <- paste(commandsink, collapse="\n")
+  # print(result) # DEBUG
+  appendTextview(TV, "Top Rules\n\n", result, "\n")
+                 #"\n\nKnown Bug: If nothing appears above, ",
+                 #"set the Lift to 0.0\n")
 #                 paste('inspect(SORT(subset(crs$apriori, lift >',
 #                       lift, '), by="confidence"))'))
   

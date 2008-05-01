@@ -6,11 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.20.
+    version is 2.3.21.
 
    </p>
 
 <pre>
+252 080430 Remove Lift filter on Show Rules in Assoc - arules bug?
+           Fix bug when no target is selected (Peter Christen).
+           Improve heuristic for selecting target (must have < 5 levels).
 251 080428 Fix bug where paradigm change when Model/Eval exposed resizes window
            Fix bug where after building regression models extra Evals re-added
 250 080427 Implement nnet for classification and regression.

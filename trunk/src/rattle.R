@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-28 18:11:51 Graham Williams>
+# Time-stamp: <2008-05-01 20:13:42 Graham Williams>
 #
 # Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 27 Apr 2008"
+VERSION.DATE <- "Released 28 Apr 2008"
 COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1515,7 +1515,9 @@ update_comboboxentry_with_dataframes <- function(action, window)
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
-                        cmd <- sprintf("is.data.frame(%s)", x)
+                        cmd <- sprintf(paste("is.data.frame(%s) ||",
+                                             'inherits(%s,',
+                                             '"sqlite.data.frame")'), x, x)
                         var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
                                           x, NULL), silent=TRUE)
                         if (inherits(var, "try-error"))
@@ -2413,20 +2415,21 @@ executeDataRdataset <- function()
 {
   TV <- "data_textview"
   
-  ## Collect relevant data
+  # Collect relevant data
+
   dataset <- theWidget("rdataset_combobox")$getActiveText()
   
   if (is.null(dataset))
   {
     errorDialog("No R dataset name has been specified.",
-                 "Please identify the name of the R dataset.",
-                 "Any data frames that exist in the R Console",
-                 "are available to choose from in the Data Name",
-                 "combo box.")
+                "Please identify the name of the R dataset.",
+                "Any data frames that exist in the R Console",
+                "are available to choose from in the Data Name",
+                "combo box.")
     return()
   }
 
-  ## Check if there is a model first and then warn about losing it.
+  # Check if there is a model first and then warn about losing it.
 
   if ( not.null(listBuiltModels()) )
   {
@@ -2934,7 +2937,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 # Execution
 #
 
- executeSelectTab <- function()
+executeSelectTab <- function()
 {
   
   # Can not do any preparation if there is no dataset.
@@ -2968,7 +2971,10 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   
   # Ask if the Target does not look like a target.
 
-  target.levels <- length(levels(as.factor(crs$dataset[[target]])))
+  if (not.null(target))
+    target.levels <- length(levels(as.factor(crs$dataset[[target]])))
+  else
+    target.levels <- 0
   
   if (not.null(target) && paradigm == "classification" &&
       # 080413 Doesn't need to be numeric! is.numeric(crs$dataset[[target]]) &&
@@ -3594,11 +3600,12 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
 
-  # Identify a default target if none are identified as a target (by
-  # beginning with TARGET) in the variables (080303). Heuristic is -
-  # the last or first if it's a factor, or has only a few values. Then
-  # the treeview model will record this choice, and we set the
-  # appropriate labels with this, and record it in crs.
+  # Automatically identify a default target if none are identified as
+  # a target (by beginning with TARGET) in the variables
+  # (080303). Heuristic is - the last or first if it's a factor with
+  # few levels, or has only a few values. Then the treeview model will
+  # record this choice, and we set the appropriate labels with this,
+  # and record it in crs.
 
   given.target <- which(substr(variables, 1, 6) == "TARGET")
   if (length(given.target) > 0) target <- variables[given.target[1]]
@@ -3607,8 +3614,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   {
     # Find the last variable that is not an IMP (imputed). This is
     # just a general heuristic, and works particularly for imputation
-    # performed in Rattle. Should also do this for first, and also
-    # for IGNORE variables.
+    # performed in Rattle. Should also do this for first, and also for
+    # IGNORE variables.
+    
     last.var <- length(variables)
     while (last.var > 1 && substr(variables[last.var], 1, 4) == "IMP_")
     {
@@ -3617,12 +3625,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     
     target <- -1
     if ((is.factor(crs$dataset[,last.var]) &&
-         length(levels(crs$dataset[,last.var])) > 1)
+         length(levels(crs$dataset[,last.var])) > 1 &&
+         length(levels(crs$dataset[,last.var])) < 5)
         || (length(levels(as.factor(crs$dataset[,last.var]))) < 5
             && length(levels(as.factor(crs$dataset[,last.var]))) > 1))
       target <- last.var
     else if ((is.factor(crs$dataset[,1]) &&
-              length(levels(crs$dataset[,1])) > 1)
+              length(levels(crs$dataset[,1])) > 1 &&
+              length(levels(crs$dataset[,1])) < 5)
              || (length(levels(as.factor(crs$dataset[,1]))) < 5
                  && length(levels(as.factor(crs$dataset[,1]))) > 1))
       target <- 1
@@ -3630,7 +3640,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       for (i in 2:length(variables)-1)
       {
         if ((is.factor(crs$dataset[,i]) &&
-             length(levels(crs$dataset[,i])) > 1)
+             length(levels(crs$dataset[,i])) > 1 &&
+              length(levels(crs$dataset[,i])) < 5)
             || (length(levels(as.factor(crs$dataset[,i]))) < 5
                 && length(levels(as.factor(crs$dataset[,i]))) > 1))
         {
