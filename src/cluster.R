@@ -1,10 +1,26 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-21 19:19:28 Graham Williams>
+## Time-stamp: <2008-05-03 15:21:11 Graham Williams>
 ##
 ## Implement cluster functionality.
 ##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+## Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
 
 ########################################################################
 ##
@@ -900,14 +916,14 @@ exportKMeansTab <- function(file)
 
   if (exportModel)
   {
-    ## Require the pmml package
+    # Require the pmml package
   
     lib.cmd <- "require(pmml, quietly=TRUE)"
     if (! packageIsAvailable("pmml", "export kmeans clusters")) return(FALSE)
     appendLog("Load the PMML package to export a kmeans cluster.", lib.cmd)
     eval(parse(text=lib.cmd))
   
-    ## Obtain filename to write the clusters to.
+    # Obtain filename to write the clusters to.
   
     dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                    "gtk-cancel", GtkResponseType["cancel"],
@@ -950,14 +966,14 @@ exportKMeansTab <- function(file)
     appendLog("Export the cluster as PMML.", pmml.cmd)
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   
-    infoDialog("The PMML file", save.name, "has been written.")
+    # infoDialog("The PMML file", save.name, "has been written.")
 
     setStatusBar("The PMML file", save.name, "has been written.")
   }
-  else # Export clusters to CSV
+  else # Export clusters to CSV, augmenting the original data.
   {
     
-    ## Obtain filename to write the clusters to.
+    # Obtain filename to write the clusters to.
   
     dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
                                    "gtk-cancel", GtkResponseType["cancel"],
@@ -998,18 +1014,20 @@ exportKMeansTab <- function(file)
 
     idents <- getSelectedVariables("ident")
 
+    # Output all original data plus the cluster number
+    
     csv.cmd <-  sprintf("cbind(crs$dataset[%s, c(%s)], crs$kmeans$cluster)",
+    #csv.cmd <-  sprintf("cbind(crs$dataset[%s,], crs$kmeans$cluster)",
                         ifelse(theWidget("sample_checkbutton")$getActive(),
                                "crs$sample", ""),
-                        sprintf('"%s"', paste(idents, collapse='", "')))
+                        sprintf('"%s"', paste(idents, collapse='", "'))
+                        )
                           
     appendLog("Export the clusters to CSV.", csv.cmd)
     write.table(eval(parse(text=csv.cmd)), file=save.name, sep=",",
                 qmethod = "double", row.names=FALSE,
                 col.names=c(idents, "cluster"))
   
-    infoDialog("The CSV file", save.name, "has been written.")
-
     setStatusBar("TheCSV file", save.name, "has been written.")
     
   }

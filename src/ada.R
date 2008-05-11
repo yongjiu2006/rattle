@@ -2,10 +2,24 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2008-04-27 06:56:27 Graham Williams>
+# Time-stamp: <2008-05-03 15:20:20 Graham Williams>
 #
-# Copyright (c) 2007-2008 Togaware, GPL Version 2
+# Copyright (c) 2008 Togaware Pty Ltd
 #
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 ## BUG FIX TO ALLOW ada.update TO WORK....
 

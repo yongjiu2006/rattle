@@ -1,33 +1,48 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-03-16 22:35:09 Graham Williams>
-##
-## Implement LOG functionality.
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-05-10 19:56:45 Graham Williams>
+#
+# Implement LOG functionality.
+#
+# Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 initiateLog <- function()
 {
-  startLog(paste(sprintf("Rattle version %s User %s",
-                         VERSION, Sys.info()["user"]),
-           #sprintf("## Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
-          "\n\n## We can export the contents of this log textview to file using
-## the export button or Tools menu. This will save a log of what we have done,
-## potentially to repeat the process by sending the same commands directly
-## to R. For example, if we export to the file \"model061205.R\" then in the
-## R Console we can issue the command 'source(\"model061205.R\")' to run the
-## commands in that file. We may want to edit the file to suit our needs.
-## We can also directly edit this current log textview to record additional
-## information about the work you have done, before exporting the log.
-##
-## Saving and loading projects also retains this log.
+  startLog(paste(sprintf("%s version %s User %s",
+                         crv$appname, VERSION, Sys.info()["user"]),
+           #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
+          "\n\n# We can export the contents of this log textview to file using
+# the export button or Tools menu. This will save a log of what we have done,
+# potentially to repeat the process by sending the same commands directly
+# to R. For example, if we export to the file \"model061205.R\" then in the
+# R Console we can issue the command 'source(\"model061205.R\")' to run the
+# commands in that file. We may want to edit the file to suit our needs.
+# We can also directly edit this current log textview to record additional
+# information about the work you have done, before exporting the log.
+#
+# Saving and loading projects also retains this log.
 
 library(rattle)
 
-## The variable crs is used by Rattle to store the Current Rattle State.
-## We initialise it here to be empty and Rattle then starts populating it.
-## Simply type \"str(crs)\" in the R Console to see a summary of what is
-## stored there!
+# The variable crs is used by Rattle to store the Current Rattle State.
+# We initialise it here to be empty and Rattle then starts populating it.
+# Simply type \"str(crs)\" in the R Console to see a summary of what is
+# stored there!
 
 crs <- NULL"))
 
@@ -43,8 +58,8 @@ startLog <- function(msg=NULL)
   
   .START.LOG.COMMENT <- .START.LOG.COMMENT
 
-  appendLog(paste("\n\n##", paste(rep("=", 60), collapse=""),
-                "\n## Rattle timestamp: ", Sys.time(), sep=""),
+  appendLog(paste("\n\n#", paste(rep("=", 60), collapse=""),
+                  "\n# ", crv$appname, " timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
   if (not.null(msg))
     appendLog(paste(sep="", .START.LOG.COMMENT, msg), no.start=TRUE)
@@ -63,7 +78,7 @@ appendLog <- function(start, ..., sep=" ", no.start=FALSE)
     msg <- paste(sep="", .START.LOG.COMMENT, start, .END.LOG.COMMENT, ...)
   if (length(msg) == 0) msg <-""
 
-  ## Always place text at the end, irrespective of where the cursor is.
+  # Always place text at the end, irrespective of where the cursor is.
 
   log.buf <- theWidget("log_textview")$getBuffer()
   location <- log.buf$getEndIter()$iter

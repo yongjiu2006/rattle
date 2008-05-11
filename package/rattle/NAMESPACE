@@ -18,6 +18,7 @@ export(
        printRandomForests,
        randomForest2Rules,
        rattle,
+       RStat,
        savePlotToFile,
        treeset.randomForest,
        ada.formula
