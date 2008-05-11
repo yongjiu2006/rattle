@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-01 20:13:42 Graham Williams>
+# Time-stamp: <2008-05-11 12:19:32 Graham Williams>
 #
-# Copyright (c) 2007-2008 Graham Williams, Togaware, GPL Version 2
+# Copyright (c) 2008 Togaware Pty Ltd
 #
-# The Rattle package is made of of the following R source files:
+# The Rattle package is made of the following R source files:
 #
 # cluster.R	KMeans and Hierachical Clustering.
 # execute.R	The Execute functionality.
@@ -15,8 +15,8 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Apr 2008"
-COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
+VERSION.DATE <- "Released 01 May 2008"
+COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested the application. Many colleagues at the
@@ -26,19 +26,20 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 
 # LICENSE
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version. See the file gpl-license.
+# This files is part of Rattle.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 # STYLE GUIDE
 #
@@ -99,10 +100,15 @@ COPYRIGHT <- "Copyright (C) 2007-2008 Togaware, GPL"
 #   (or a sub function)! Probably not a good thing to do.
 
 ########################################################################
-##
-## INITIALISATIONS
+#
+# INITIALISATIONS
 
-rattle <- function(csvname=NULL)
+RStat <- function(csvname=NULL) 
+{
+  rattle(csvname, appname="RStat")
+}
+
+rattle <- function(csvname=NULL, appname="Rattle")
 {
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
@@ -111,7 +117,17 @@ rattle <- function(csvname=NULL)
   # all into crv means only one complaint each time!
 
   crv <<- list()
+  crv$appname <<- appname
 
+  # 080511 Record the current options and set the scientific penalty
+  # to be 5 so we generally get numerics pinted using fixed rather
+  # than exponential notation. We reset all options to what they were
+  # at the startup of Rattle on closing Rattle. Not necessarily a good
+  # idea since the knowing user may actually also change options
+  # whilst Rattle is running.
+  
+  crv$options <<- options(scipen=5)
+  
   # Load data from the file identified by the csvname supplied in the
   # call to Rattle, or from the environment variable RATTLE_DATA if
   # defined, or from the variable .RATTLE.DATA (as might be defined in
@@ -189,9 +205,11 @@ rattle <- function(csvname=NULL)
 
   # Some default GUI settings
 
+  setRattleTitle()
+  
   #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
   id.string <- paste('<span foreground="blue">',
-                     '<i>Rattle</i> ',
+                     '<i>', crv$appname, '</i> ',
                      '<i>Version ', VERSION, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
@@ -202,17 +220,15 @@ rattle <- function(csvname=NULL)
   rattle.menu$getChild()$setMarkup(id.string)
   #rattle.menu$getChild()$setText(id.string)
 
-########################################################################
-
-  ## Constants: I would like these available within this package, but
-  ## not outside? Do I use assign in some way? That is, how to keep
-  ## these constants within the package only.
+  # Constants: I would like these available within this package, but
+  # not outside? Do I use assign in some way? That is, how to keep
+  # these constants within the package only.
   
-  ## TODO Put these constants into the top level of this file, defined
-  ## as NULL. Then keep these double arrow assignments here. I think
-  ## then that they will stay with the package, but not be in
-  ## .GlobalEnv because the package scope will be found before the top
-  ## level.
+  # TODO Put these constants into the top level of this file, defined
+  # as NULL. Then keep these double arrow assignments here. I think
+  # then that they will stay with the package, but not be in
+  # .GlobalEnv because the package scope will be found before the top
+  # level.
   
   ########################################################################
   # PACKAGE GLOBAL CONSTANTS
@@ -222,20 +238,22 @@ rattle <- function(csvname=NULL)
   # locally. TODO Needs cleaning up.
   #
   # Various Treeview Columns
-
+  
   .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
-               target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
-
+                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
+  
   .IMPUTE <<- c(number=0, variable=1, comment=2)
   
   .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
-                    dotplot = 3, mosplot = 4, comment = 5)
+                     dotplot = 3, mosplot = 4, comment = 5)
   
   .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
-                    hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
+                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
-  # Create constants naming the MODELLERS (i.e., the model builders)
-
+  # Create constants naming the MODELLERS (i.e., the model
+  # builders). Note that these are migrating into the crv varaible,
+  # but not all are done yet.
+  
   crv$GLM   <<- "glm"
   .RPART <<- "rpart"
   #GBM <<- "gbm"
@@ -260,18 +278,16 @@ rattle <- function(csvname=NULL)
   .RF.MTRY.DEFAULT     <<- 10
   .RF.SAMPSIZE.DEFAULT <<- ""
   
-  ## MISC
+  # MISC
   
   .START.LOG.COMMENT <<- "\n\n# "	# Assume paste with sep=""
   .LOG.COMMENT       <<- "\n## "	# Assume paste with sep=""
   .END.LOG.COMMENT   <<- "\n\n"	# Assume paste with sep=""
   
-########################################################################
+  # PACKAGE STATE VARIABLE
   
-  ## PACKAGE STATE VARIABLE
-  
-  ## Global variables are generally a bad idea, but until a better idea
-  ## comes to mind.
+  # Global variables are generally a bad idea, but until a better idea
+  # comes to mind.
 
   crs <<- list(dataset=NULL,
                dataname=NULL,
@@ -304,9 +320,9 @@ rattle <- function(csvname=NULL)
                alog=NULL	# Record of interaction - useful?
                )
 
-  ## Main notebook related constants and widgets.  Track the widgets
-  ## that are needed for removing and inserting tabs in the notebook,
-  ## depending on the selected paradigm.
+  # Main notebook related constants and widgets.  Track the widgets
+  # that are needed for removing and inserting tabs in the notebook,
+  # depending on the selected paradigm.
   
   crv$NOTEBOOK <<- theWidget("notebook")
 
@@ -336,14 +352,14 @@ rattle <- function(csvname=NULL)
 
   crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
-  ## Pages that are common to all paradigms.
+  # Pages that are common to all paradigms.
 
   crv$NOTEBOOK.COMMON.NAMES <<- c(crv$NOTEBOOK.DATA.NAME,
                               crv$NOTEBOOK.TRANSFORM.NAME,
                               crv$NOTEBOOK.SELECT.NAME,
                               crv$NOTEBOOK.LOG.NAME)
   
-  ## DATA tab pages.
+  # DATA tab pages.
 
   crv$DATA              <<- theWidget("data_notebook")
   crv$DATA.CSV.TAB      <<- getNotebookPage(crv$DATA, "csv")
@@ -397,21 +413,21 @@ rattle <- function(csvname=NULL)
   .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
   .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
   
-########################################################################
-  
-  ## Now connect the callbacks
+  ########################################################################
+  #
+  # Now connect the callbacks
   
   gladeXMLSignalAutoconnect(rattleGUI)
   
-  ## A friendly startup message in the status bar
+  # A friendly startup message in the status bar
   
   ##setStatusBar("Select a CSV filename to load into Rattle to get started.")
   
-  ## Some initialisations
+  # Some initialisations
   
   initialiseVariableViews()
   
-  ## Turn off the sub-notebook tabs.
+  # Turn off the sub-notebook tabs.
   
   crv$DATA$setShowTabs(FALSE)
   .EXPLORE$setShowTabs(FALSE)
@@ -446,21 +462,19 @@ rattle <- function(csvname=NULL)
   
   # Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   #
-  # Brian D. Ripley 15 Jul 2007 07:57:49 +0100 requested the momry mod
-  # be removed.
+  # Brian D. Ripley 15 Jul 2007 07:57:49 +0100 requested the memory mod
+  # be removed:
   #
-  # First, because you should not be setting the limit high
-  # if the user has only limited memory: the defaults are chosen with a lot of
-  # care.  Second, because the default can be as high as 2.5Gb on a machine
-  # with 4Gb RAM and the /3GB switch set (the case here).
+  # First, because you should not be setting the limit high if the
+  # user has only limited memory: the defaults are chosen with a lot
+  # of care.  Second, because the default can be as high as 2.5Gb on a
+  # machine with 4Gb RAM and the /3GB switch set (the case here).
   #
-  # The correct way to refer to things in packages on which you have not
-  # declared a dependence is utils::memory.limit.
+  # The correct way to refer to things in packages on which you have
+  # not declared a dependence is utils::memory.limit.
 
   # if (isWindows()) utils::memory.limit(2073)
 
-  initiateLog()
-  
   ## By default the CLUSTER page is not showing.
 
   ## Don't turn this off until we move away from using the numeric tab
@@ -475,11 +489,65 @@ rattle <- function(csvname=NULL)
   #gtkMain() # Tooltips work but the console is blocked and need gtkMainQuit
   # TODO Add a console into Rattle to interact with R.
 
+  # 080510 Display a relevant welcome message in the textview.
+
+  if (crv$appname == "Rattle")
+  {
+    resetTextview("data_textview", "Welcome to Rattle.\n\n", tvsep=FALSE)
+    resetTextview("log_textview", "# Rattle Log File.\n\n", tvsep=FALSE)
+  }
+  else if (crv$appname == "RStat")
+  {
+    resetTextview("data_textview",
+                  paste("Welcome to RStat, the WebFOCUS Data Miner,",
+                        "built on Rattle and R.\n\n"),
+                  tvsep=FALSE)
+    resetTextview("log_textview",
+                  paste("# RStat Log File.\n",
+                        "\n# RStat is built on Rattle and R.",
+                        "\n# This file is an R script.\n\n"),
+                  tvsep=FALSE)
+  }
+  
+  appendTextview("data_textview",
+                 paste("Rattle is a free graphical user",
+                       "interface for Data Mining, developed using R.",
+                       "R is a free software environment",
+                       "for statistical computing and graphics.",
+                       "Together they provide one of the most sophisticated",
+                       "and complete environments for performing data mining,",
+                       "statistical analyses, and data visualisation.",
+                       "\n\nSee the Help menu for extensive support in",
+                       "using Rattle.",
+                       "\n\nTogaware's Desktop Data Mining Survival Guide",
+                       "(under development) includes extensive documentation",
+                       "on using Rattle. It is available from\n\n",
+                       "    http://datamining.togaware.com",
+                       "\n\nRattle is licensed under the",
+                       "GNU General Public License, Version 2.",
+                       "\nRattle comes with ABSOLUTELY NO WARRANTY.",
+                       "\nSee Help -> About for details.",
+                       "\n\nRattle version", VERSION,
+                       "\nCopyright (C) 2008 Togaware Pty Ltd"),
+                 tvsep=FALSE)
+  appendTextview("log_textview",
+                 paste("# Rattle is Copyright (C) 2008",
+                       "Togaware Pty Ltd"),
+                 tvsep=FALSE)
+
+  initiateLog()
+  
+  # Make sure the text is shown on startup.
+  
+  while (gtkEventsPending()) gtkMainIteration()
+  
   # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
     theWidget("csv_filechooserbutton")$setFilename(csvname)
 
+  ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
+  
   invisible()
 }
 
@@ -861,9 +929,12 @@ sampleNeedsExecute <- function()
 ## Simplify updates to status bar
 ##
 
-setRattleTitle <- function(title)
+setRattleTitle <- function(title=NULL)
 {
-  standard <- "Rattle: Effective Data Mining with R"
+  if (crv$appname == "RStat")
+    standard <- "RStat: WebFOCUS Data Miner"
+  else
+    standard <- "Rattle: Effective Data Mining with R"
   if (is.null(title))
     theWidget("rattle_window")$setTitle(standard)
   else
@@ -1554,6 +1625,10 @@ close_rattle <- function(action, window)
 
   rattleGUI <<- NULL
 
+  # 080511 Restore options to how they were before Rattle started.
+
+  options(crv$options)
+  
   #gtkMainQuit() # Only needed if gtkMain is run.
 
 }
@@ -1646,8 +1721,8 @@ on_csv_filechooserbutton_update_preview <- function(button)
     button$addFilter(ff)
   }
 
-  ## Kick the GTK event loop otherwise you end up waiting until the
-  ## mouse is moved, for example.
+  # Kick the GTK event loop otherwise you end up waiting until the
+  # mouse is moved, for example.
   
   while (gtkEventsPending()) gtkMainIteration()
 
@@ -2016,26 +2091,40 @@ showDataViewButtons <- function(widget)
 
 executeDataCSV <- function()
 {
+  # A filename is already expected to be avialble in the
+  # csv_filechooserbutton. This could be either a CSV or TXT file. If
+  # no filename is supplied, then give the user the option to load a
+  # sample dataset (for now, the audit dataset).
+  
   TV <- "data_textview"
   
-  # Collect relevant data
+  # Collect the relevant data from the interface. 080511 The file
+  # chooser button has a getFilename to retrieve the filename. The
+  # getUri also retrieves the file name, but as a URL. So we use this,
+  # since R can handle the "file:///home/kayon/audit.csv" just
+  # fine. Thus I have now allowed the filechooser button to accept
+  # non-local files (i.e., URLs). Unfortunately I can't yet get the
+  # basename of the URL to be displayed in the button text.
 
-  filename <- theWidget("csv_filechooserbutton")$getFilename()
+  filename <- theWidget("csv_filechooserbutton")$getUri()
+
+  ## 080511 NOT NEEDED - ALSWAYS GET URI
+  ## if (is.null(filename))
+  ##  filename <-  theWidget("csv_filechooserbutton")$getUri()
   
   # If no filename has been supplied give the user the option to use
   # the Rattle supplied sample dataset.
     
   if (is.null(filename))
   {
-    if (is.null(questionDialog("No CSV filename has been provided.",
-                               "Would you like to use the sample audit",
+    if (is.null(questionDialog("No CSV filename has been provided.\n",
+                               "\nYou must choose one before execution.\n",
+                               "\nWould you like to use the sample audit",
                                "dataset that comes with Rattle?")))
     {
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
 
-      errorDialog("No CSV Filename has been chosen yet.",
-                  "You must choose one before execution.")
       return()
     }
     else
@@ -2110,7 +2199,19 @@ executeDataCSV <- function()
   
   appendLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
   resetRattle()
-  eval(parse(text=read.cmd))
+  result <- try(eval(parse(text=read.cmd)), silent=TRUE)
+  if (inherits(result, "try-error"))
+  {
+    if (any(grep("cannot open the connection", result)))
+    {
+      errorDialog("The file address you specified could not be found:\n\n  ",
+                  filename, "\n\nPlease check the address and try again.")
+      return()
+    }
+    else
+      errorReport(read.cmd, result)
+  }
+    
   crs$dataname <<- basename(filename)
   setRattleTitle(crs$dataname)
 
@@ -2986,7 +3087,8 @@ executeSelectTab <- function()
                                sprintf("(%d in fact).", target.levels),
                                "That is unusual and some model builders will",
                                "take a long time. Consider using fewer",
-                               "classes or performing a regression.",
+                               "classes or changing the paradigm to be",
+                               "regression (top right radio buttons).",
                                "\n\nDo you want to continue anyhow?")))
       return()
   }
@@ -7737,7 +7839,9 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                           sprintf("%s$%s)", testsetr, risk))
 
     plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
-                      "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk)",
+                      "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
+                      'risk.name="', risk, '", recall.name="', crs$target,
+                      '")',
                       "\n",
                       genPlotTitleCmd("Risk Chart", mtype, testname,
                                       risk),
@@ -9430,6 +9534,9 @@ recording the values of the variables for this entity.
 Use the Separator box to choose a separator other than the default comma.
 A common alternative is a tab (\\t), or simply leave it blank to have
 any white space act as a separator.
+<<>>
+A URL can be supplied in the Location: text box so that a CSV file can be
+loaded from the network.
 <<>>
 The corresponding R code uses the simple read.csv() function."))
     popupTextviewHelpWindow("read.csv") }

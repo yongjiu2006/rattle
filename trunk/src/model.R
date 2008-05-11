@@ -1,10 +1,25 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-28 21:36:48 Graham Williams>
+## Time-stamp: <2008-05-11 14:11:15 Graham Williams>
 ##
 ## MODEL TAB
 ##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+## Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
 ##
@@ -411,18 +426,18 @@ executeModelGLM <- function()
   
   # Build the model.
 
-  startLog("LOGISTIC REGRESSION")
-  appendLog("Build a logistic regression model using glm.",
+  startLog("REGRESSION")
+  appendLog("Build a regression model using lm.",
             gsub("<<-", "<-", glm.cmd), sep="")
   start.time <- Sys.time()
   eval(parse(text=glm.cmd))
   
   # Summarise the model.
 
-  appendLog("Summary of the resulting GLM model", summary.cmd)
+  appendLog("Summary of the resulting LM model", summary.cmd)
   
   resetTextview(TV)
-  setTextview(TV, "Summary of the model built using glm.\n",
+  setTextview(TV, "Summary of the model built using lm.\n",
               collectOutput(summary.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
@@ -434,7 +449,7 @@ executeModelGLM <- function()
                       attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
-  setStatusBar("A glm model has been generated.", time.msg)
+  setStatusBar("A lm model has been generated.", time.msg)
   return(TRUE)
 }
 

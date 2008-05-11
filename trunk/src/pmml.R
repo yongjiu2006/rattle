@@ -2,15 +2,30 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-04-27 16:39:55 Graham Williams>
+# Time-stamp: <2008-05-04 15:16:57 Graham Williams>
 #
-# Copyright (c) 2007-2008 Togaware, GPL Version 2
+# Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 #
 # TODO
 #
 #      Extract the DataDictionary stuff to a separate function to
 #      share between pmml.rpart and pmml.kmeans.
-
+#
 ########################################################################
 # UTILITY FUNCTIONS
 
@@ -24,6 +39,11 @@ cthen <- ""
 celse <- "else"
 cendif <- ""
 cin <- "%in%"
+
+generateCopyright <- function()
+{
+  return(paste("Copyright (c)", format(Sys.time(), "%Y"), Sys.info()["user"]))
+}
 
 sdecimal2binary <- function(x)
 {
@@ -175,11 +195,9 @@ pmmlHeader <- function(description, copyright, app.name)
   # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
   # "1.1.1" Add pmml.lm
 
-  if (is.null(copyright))
-    header <- xmlNode("Header", attrs=c(description=description))
-  else
-    header <- xmlNode("Header",
-                      attrs=c(copyright=copyright, description=description))
+  if (is.null(copyright)) copyright <- generateCopyright()
+  header <- xmlNode("Header",
+                    attrs=c(copyright=copyright, description=description))
 
   # Header -> Extension
 						   
@@ -281,8 +299,9 @@ pmmlMiningSchema <- function(field, target=NULL)
 # Author: rguha@indiana.edu
 # Date: 28 May 2007
 #
-# Modified on 01 Feb 2008 by Zementis, Inc. (info@zementis.com) to add 
-# the capability to export binary logistic regression models using glm.
+# Modified: 01 Feb 2008 by Zementis, Inc. (info@zementis.com) to add
+# the capability to export binary logistic regression models using
+# glm.
 
 pmml.lm <- function(model,
                     model.name="Regression_model",
@@ -321,8 +340,6 @@ pmml.lm <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2007 rguha@indiana.edu"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   # PMML -> DataDictionary
@@ -619,8 +636,6 @@ pmml.nnet <- function(model,
   
   # PMML -> Header
   
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2008 Zementis, Inc. (www.zementis.com)"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   # PMML -> DataDictionary
@@ -965,10 +980,9 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
   # "1.1.1" Add pmml.lm
 
   if (is.null(copyright))
-    header <- xmlNode("Header", attrs=c(description=description))
-  else
-    header <- xmlNode("Header",
-                      attrs=c(copyright=copyright, description=description))
+    copyright <- generateCopyright()
+  header <- xmlNode("Header",
+                    attrs=c(copyright=copyright, description=description))
 
   # Header -> Extension
 
@@ -1194,8 +1208,6 @@ pmml.ksvm <- function(model,
 
   # PMML -> Header
   
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2008 Zementis, Inc. (www.zementis.com)"
   pmml <- append.XMLNode(pmml, pmml.ksvm.Header(description,
                                                 copyright, app.name))
 
@@ -1670,8 +1682,6 @@ pmml.rpart <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   # PMML -> DataDictionary
@@ -1859,8 +1869,6 @@ pmml.randomForest <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   # PMML -> DataDictionary
@@ -2027,8 +2035,6 @@ pmml.rpart.as.rules <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
   
   # PMML -> DataDictionary
@@ -2130,8 +2136,6 @@ pmml.kmeans <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright (c) 2007-2008 Togaware"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   # PMML -> DataDictionary
@@ -2229,8 +2233,6 @@ pmml.rsf <- function(model,
 
   # PMML -> Header
 
-  if (is.null(copyright))
-    copyright <- "Copyright 2006, Cleveland Clinic"
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
   # PMML -> MiningBuildTask

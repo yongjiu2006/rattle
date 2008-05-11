@@ -7,6 +7,10 @@
     priorities and especially code.</p>
 
 <pre>
+080504 Allow risk charts without a RISK identified
+080502 Put PMML.COPYRIGHT into .Rattle
+080502 Add report info to PMML export of GLM
+080501 Fix cluster export to CSV
 080429 Add a SQLiteDF data option
 080427 Report pmml.nnet error to Zementis
 080427 Fix Draw of decision tree for Regression
