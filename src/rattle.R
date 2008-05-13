@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-11 12:19:32 Graham Williams>
+# Time-stamp: <2008-05-13 19:31:55 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 May 2008"
+VERSION.DATE <- "Released 11 May 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -156,6 +156,12 @@ rattle <- function(csvname=NULL, appname="Rattle")
   # else put this into a function as I want to do it in a couple of
   # places (like further below in using .RATTLE.SCORE.IN).
 
+  if (not.null(csvname) && substr(csvname, 1, 4) == "http")
+  {
+    print("URLS for the csvname not currently supported")
+    return()
+  }
+  
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
@@ -748,14 +754,14 @@ resetRattle <- function()
   ## Update CLUSTER tab
 
   theWidget("kmeans_hclust_centers_checkbutton")$setActive(FALSE)
-  theWidget("hclust_distance_combobox")$setActive(0)
-  theWidget("hclust_link_combobox")$setActive(0)
-  theWidget("hclust_dendrogram_button")$hide()
-  theWidget("hclust_clusters_label")$hide()
-  theWidget("hclust_clusters_spinbutton")$hide()
-  theWidget("hclust_stats_button")$hide()
-  theWidget("hclust_data_plot_button")$hide()
-  theWidget("hclust_discriminant_plot_button")$hide()
+  theWidget("hclust_distance_combobox")$setActive(FALSE)
+  theWidget("hclust_link_combobox")$setActive(FALSE)
+  theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
+  theWidget("hclust_clusters_label")$setSensitive(FALSE)
+  theWidget("hclust_clusters_spinbutton")$setSensitive(FALSE)
+  theWidget("hclust_stats_button")$setSensitive(FALSE)
+  theWidget("hclust_data_plot_button")$setSensitive(FALSE)
+  theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
   
 }
 
@@ -2104,10 +2110,12 @@ executeDataCSV <- function()
   # since R can handle the "file:///home/kayon/audit.csv" just
   # fine. Thus I have now allowed the filechooser button to accept
   # non-local files (i.e., URLs). Unfortunately I can't yet get the
-  # basename of the URL to be displayed in the button text.
+  # basename of the URL to be displayed in the button text. 080512 The
+  # URLdecode will replace the %3F with "?" and %3D with "=", etc, as
+  # is required for using this with the read.csv function.
 
   filename <- theWidget("csv_filechooserbutton")$getUri()
-
+  
   ## 080511 NOT NEEDED - ALSWAYS GET URI
   ## if (is.null(filename))
   ##  filename <-  theWidget("csv_filechooserbutton")$getUri()
@@ -2145,6 +2153,9 @@ executeDataCSV <- function()
       
     }
   }
+  else
+    filename <- URLdecode(filename)
+
 
   crs$dwd <<- dirname(filename)
 
@@ -7623,16 +7634,19 @@ executeEvaluateTab <- function()
   # Currently (and perhaps permanently) the ROCR package deals only
   # with binary classification, as does my own Risk Chart.
   
-  if (!theWidget("confusion_radiobutton")$getActive()
+  if (!(theWidget("confusion_radiobutton")$getActive())# ||
+        #theWidget("pvo_radiobutton")$getActive() || Not working for multiclass
+        #theWidget("score_radiobutton")$getActive())
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
     errorDialog("The number of levels in the target is greater than 2.",
                 "Currently, Rattle's Risk chart, and the ROCR package",
                 "(which implements the Lift, ROC, Precision, and Specificity",
-                "charts) apply only to binary classification.",
+                "charts) and Scoring and PrvOb",
+                "apply only to binary classification.",
                 "Either restructure the data for binary classificaiton,",
-                "or else suggest an alternative method of evaluation",
+                "or else please suggest an alternative method of evaluation",
                 "to support@togaware.com.")
     return()
   }

@@ -7,6 +7,11 @@
     priorities and especially code.</p>
 
 <pre>
+080512 Fix scoring for multiple class classification
+080512 Notice $ amount s and , in thousands and treat as numeric (Tony Nolan)
+080511 Move to using guiDo from plotAndPlayGTK
+080511 Move to using playwith from plotAndPlayGTK for plots
+080511 Add support for scagnostics package
 080504 Allow risk charts without a RISK identified
 080502 Put PMML.COPYRIGHT into .Rattle
 080502 Add report info to PMML export of GLM
