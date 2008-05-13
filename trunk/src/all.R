@@ -1,3 +1,4 @@
+setwd("/home/gjw/projects/rattle/src")
 redo <- function() {source("all.R"); rattle()}
 source("rattle.R")
 source("zzz.R")

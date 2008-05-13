@@ -6,18 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.22.
+    version is 2.3.23.
 
    </p>
 
 <pre>
 253 080411 Move to generalising the Rattle badge, accommodating RStat
-Remove redundant Info dialogs where status contains the same message
-Add new RStat option (rebadging plus eventually tuned functionality)
-Avoid scientific notation in printing numbers (using scipen)
-Support specifying a CSV file using a URL
-Identify LM as regression in the log, not logistic regression
-For pmml do not claim copyright for generated PMML
+           Remove redundant Info dialogs where status contains the same message
+           Add new RStat option (rebadging plus eventually tuned functionality)
+           Avoid scientific notation in printing numbers (using scipen)
+           Support specifying a CSV file using a URL
+           Identify LM as regression in the log, not logistic regression
+           For pmml do not claim copyright for generated PMML
 252 080430 Remove Lift filter on Show Rules in Assoc - arules bug?
            Fix bug when no target is selected (Peter Christen).
            Improve heuristic for selecting target (must have < 5 levels).
