@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-05-11 14:11:15 Graham Williams>
+## Time-stamp: <2008-05-14 19:27:55 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -167,11 +167,11 @@ executeModelTab <- function()
       && weights.display != theWidget("weight_entry")$getText())
   {
     errorDialog("You appear to have changed the formula for calculating the",
-                "weights on the Variables tab without executing the tab.",
+                "weights on the Select tab without executing the tab.",
                 "The previous formula",
                 sprintf('was "%s" and it is now "%s".', crs$weights,
                         theWidget("weight_entry")$getText()),
-                "Please be sure to execute the Variables tab",
+                "Please be sure to execute the Select tab",
                 "before continuing.")
     return()
   }
@@ -181,7 +181,7 @@ executeModelTab <- function()
   if (length(crs$target) == 0)
   {
     errorDialog("No target has been specified.",
-                 "Please identify the target using the Variables tab.",
+                 "Please identify the target using the Select tab.",
                  "Be sure to Execute the tab once the target has",
                  "been identified.")
     return()
@@ -280,7 +280,7 @@ executeModelTab <- function()
     }
     else # That's all the radio buttons - we should not be here.
     {
-      errorDialog("Rattle tried building an rpart model with option not",
+      errorDialog("Tried building an rpart model with option not",
                   "one of build/tune/best. This should not be possible.",
                   "Let support@togaware.com know.")
       return(FALSE)
@@ -328,8 +328,7 @@ executeModelTab <- function()
       setStatusBar("Building", .KSVM, "model ... failed.")
 
   }
-  if ((paradigm == "regression" && build.all)
-      || currentModelTab() == crv$GLM)
+  if (build.all || currentModelTab() == crv$GLM)
   {
     setStatusBar("Building", crv$GLM, "model ...")
     if (executeModelGLM())
@@ -411,13 +410,13 @@ executeModelGLM <- function()
                      ", family=", family,
                      ")", sep="")
   else if (paradigm == "regression")
-    glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
+    glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",
-                     #", family=", family,
+                     ", family=", family,
                      ")", sep="")
   
   summary.cmd <- paste("print(summary(crs$glm))",
@@ -688,7 +687,7 @@ executeModelSVM <- function()
       errorDialog("The call to svm appears to have failed.",
                   "The error message was:", result,
                   "I am not familiar with this error, and you may",
-                  "want to report it to the Rattle author",
+                  "want to report it to",
                   "at support@togaware.com")
     return(FALSE)
   }

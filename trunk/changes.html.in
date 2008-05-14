@@ -6,12 +6,23 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.23.
+    version is 2.3.24.
 
+   The version number is determined as 2.3.n where n is the current
+   revision identified below minus 230.
    </p>
 
 <pre>
-253 080411 Move to generalising the Rattle badge, accommodating RStat
+255 080515 Textviews and plots now identify the appname.
+Add the regression button again for Classification
+Ensure the glm family selector is shown.
+Start fixing help and messages to switch on appname.
+Fix references to the Variables tab (now the Select tab)
+254 080513 Note that csvname as URL on startup not yet supported.
+           Fix bug where hclust buttons had disappeared!
+           Use URLdecode to ensure special characters are restored.
+           Note Score and PrVOb not support more than 2 classes.
+253 080511 Move to generalising the Rattle badge, accommodating RStat
            Remove redundant Info dialogs where status contains the same message
            Add new RStat option (rebadging plus eventually tuned functionality)
            Avoid scientific notation in printing numbers (using scipen)
