@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-04-27 12:09:53 Graham Williams>
+## Time-stamp: <2008-05-14 06:23:16 Graham Williams>
 ##
 ## RANDOM FOREST TAB
 ##
@@ -92,7 +92,7 @@ executeModelRF <- function()
                    "categorical variables with more than 32 levels.",
                    "The variable", i, "has", length(levels(crs$dataset[,i])),
                    "levels. Please choose to ignore it in the",
-                   "Variables tab if you wish to build a randomForest model.")
+                   "Select tab if you wish to build a randomForest model.")
       return(FALSE)
     }
 

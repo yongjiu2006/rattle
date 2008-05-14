@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-03 15:21:23 Graham Williams>
+# Time-stamp: <2008-05-14 06:22:27 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -91,7 +91,7 @@ executeAssociateTab <- function()
   if (baskets && length(crs$ident) != 1)
   {
     errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Variables tab to be used as",
+                "in the Select tab to be used as",
                 "the identifier of the transactions.",
                 "I found", length(crs$ident), "variables.",
                 "The entities need to be aggregated by the Ident to",
@@ -100,7 +100,7 @@ executeAssociateTab <- function()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Variables tab.",
+    errorDialog("You need to specify a Target variable in the Select tab.",
                 "This vairable then identifies the items associated with each",
                 "basket or transaction in the analysis. Each basket or",
                 "transaction is uniquely identified using the Ident variable.")
@@ -206,7 +206,7 @@ plotAssociateFrequencies <- function()
   if (baskets && length(crs$ident) != 1)
   {
     errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Variables tab to be used as",
+                "in the Select tab to be used as",
                 "the identifier of the transactions.",
                 "I found", length(crs$ident), "variables.",
                 "The entities need to be aggregated by the Ident to",
@@ -215,7 +215,7 @@ plotAssociateFrequencies <- function()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Variables tab.",
+    errorDialog("You need to specify a Target variable in the Select tab.",
                 "This vairable then identifies the items associated with each",
                 "basket or transaction in the analysis. Each basket or",
                 "transaction is uniquely identified using the Ident variable.")

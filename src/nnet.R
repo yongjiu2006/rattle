@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-03 15:24:05 Graham Williams>
+# Time-stamp: <2008-05-14 19:31:37 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -22,6 +22,14 @@
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 #######################################################################
+#
+# COMMENTS
+#
+# 080514 For classification tasks we use multinom which calls nnet. As
+# in the documentation in R, multinom fits multinomial log-linear
+# models via neural networks. If you use glm instead for the case of
+# binary classificatio we get only a very slightly different
+# model. See Wikipedia for details of GLM.
 #
 # TODO
 #

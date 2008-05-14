@@ -7,6 +7,10 @@
     priorities and especially code.</p>
 
 <pre>
+080513 Remove paradigms - display all tabs (Tony Nolan)
+080513 Combine Data/Select tabs into one (Tony Nolan)
+080513 Add a R command entry where paradigms were (Tony Nolan)
+080513 Introduce Ensemble scoring to add scores together (see NetFlix).
 080512 Fix scoring for multiple class classification
 080512 Notice $ amount s and , in thousands and treat as numeric (Tony Nolan)
 080511 Move to using guiDo from plotAndPlayGTK

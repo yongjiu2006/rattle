@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-04-28 20:46:49 Graham Williams>
+# Time-stamp: <2008-05-14 19:27:11 Graham Williams>
 #
 # Paradigm control.
 #
@@ -77,10 +77,13 @@ on_twoclass_radiobutton_toggled <- function(button)
     theWidget("boost_radiobutton")$show()
     theWidget("rf_radiobutton")$show()
     theWidget("svm_radiobutton")$show()
-    theWidget("regression_radiobutton")$hide()
+    theWidget("regression_radiobutton")$show()
     theWidget("nnet_radiobutton")$show()
     theWidget("mars_radiobutton")$hide()
     theWidget("all_models_radiobutton")$show()
+
+    theWidget("glm_family_label")$show()
+    theWidget("glm_family_comboboxentry")$show()
 
     # NULL any models shared between classification and regression.
     
@@ -110,7 +113,7 @@ on_twoclass_radiobutton_toggled <- function(button)
     theWidget("ada_evaluate_checkbutton")$show()
     theWidget("rf_evaluate_checkbutton")$show()
     theWidget("ksvm_evaluate_checkbutton")$show()
-    theWidget("glm_evaluate_checkbutton")$hide()
+    theWidget("glm_evaluate_checkbutton")$show()
     theWidget("nnet_evaluate_checkbutton")$show()
     theWidget("mars_evaluate_checkbutton")$hide()
     
@@ -160,6 +163,9 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
     theWidget("mars_radiobutton")$hide()
     theWidget("all_models_radiobutton")$show()
     
+    #theWidget("glm_family_label")$hide()
+    #theWidget("glm_family_comboboxentry")$hide()
+
     # NULL any models shared between classification and regression.
     
     crs$rpart <<- NULL

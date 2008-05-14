@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-13 19:31:55 Graham Williams>
+# Time-stamp: <2008-05-14 06:23:44 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 11 May 2008"
+VERSION.DATE <- "Released 13 May 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -213,7 +213,6 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   setRattleTitle()
   
-  #id.string <- sprintf("<i>Rattle  Version %s  togaware.com</i>", VERSION)
   id.string <- paste('<span foreground="blue">',
                      '<i>', crv$appname, '</i> ',
                      '<i>Version ', VERSION, '</i> ',
@@ -721,7 +720,7 @@ resetRattle <- function()
         errorDialog("The specified SCORE file", sprintf('"%s"', scorename),
                     "(sourced from the .Rattle file through the",
                     ".RATTLE.SCORE.IN variable)",
-                    "does not exist. Rattle will continue",
+                    "does not exist. We will continue",
                     "as if it had not been speficied.")
         
         # Remove the varaible (from the global environment where the
@@ -891,7 +890,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
                  "R command",
                  sprintf('install.packages("%s"),', pkg),
                  "to use the full",
-                 "functionality of Rattle.")
+                 "functionality of", crv$appname)
     return(FALSE)
   }
   else
@@ -980,7 +979,7 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   close(zz)
   if (inherits(result, "try-error"))
   {
-    errorDialog(sprintf("A Rattle command has failed: %s.", command),
+    errorDialog(sprintf("A command has failed: %s.", command),
                 "The action you requested has not been completed.",
                 "Refer to the R Console for details.")
     commandsink <- "FAILED"
@@ -1066,13 +1065,13 @@ listBuiltModels <- function()
 
 on_plot_save_button_clicked <- function(action)
 {
-  ## To know which window we are called from we extract the plot
-  ## number from the window title!!!. This then ensures we save the
-  ## right device.
-  ##
-  ## Also, export to pdf (from Cairo) is not too good it seems. Gets a
-  ## grey rather than white background. PNG and JPEG look just fine.
-  ## This is being fixed by Michael Lawrence.  
+  # To know which window we are called from we extract the plot
+  # number from the window title!!!. This then ensures we save the
+  # right device.
+  #
+  # Also, export to pdf (from Cairo) is not too good it seems. Gets a
+  # grey rather than white background. PNG and JPEG look just fine.
+  # This is being fixed by Michael Lawrence.  
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
@@ -1102,7 +1101,7 @@ on_plot_print_button_clicked <- function(action)
   appendLog(paste("Print the plot on device", dev.num),
             sprintf('printPlot(%s)', dev.num))
   printPlot(dev.num)
-  infoDialog(sprintf("Rattle: Plot %d has been sent to the printer.", dev.num))
+  infoDialog(sprintf("Plot %d has been sent to the printer.", dev.num))
 }
 
 on_plot_close_button_clicked <- function(action)
@@ -1286,7 +1285,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
   
   if (savePlotToFile(save.name, dev.num))
-    infoDialog("Rattle: Plot", dev.num, "has been exported to", save.name)
+    infoDialog("Plot", dev.num, "has been exported to", save.name)
 }
 
 savePlotToFile <- function(file.name, dev.num=dev.cur())
@@ -1462,12 +1461,12 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   main = paste(...)
   if(vector)
   {
-    sub = sprintf("Rattle %s %s", Sys.time(), Sys.info()["user"])
+    sub = sprintf("%s %s %s", crv$appname, Sys.time(), Sys.info()["user"])
     return(c(main, sub))
   }
   else
   {  
-    sub = sprintf('paste("Rattle", Sys.time(), Sys.info()["user"])')
+    sub = sprintf('paste("%s", Sys.time(), Sys.info()["user"])', crv$appname)
     return(sprintf('title(main="%s", sub=%s)', main, sub))
   }
 }
@@ -2128,7 +2127,7 @@ executeDataCSV <- function()
     if (is.null(questionDialog("No CSV filename has been provided.\n",
                                "\nYou must choose one before execution.\n",
                                "\nWould you like to use the sample audit",
-                               "dataset that comes with Rattle?")))
+                               "dataset?")))
     {
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
@@ -2545,8 +2544,7 @@ executeDataRdataset <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to load a new dataset",
-                               "into Rattle.",
+    if (is.null(questionDialog("You have chosen to load a new dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
                                "If you choose not to continue",
@@ -2594,7 +2592,7 @@ executeDataRdataset <- function()
 
   showDataViewButtons("rdataset")
   
-  setStatusBar("The data has been assigned into Rattle.")
+  setStatusBar("The R dataset is now available.")
 }
 
 executeDataLibrary <- function()
@@ -2633,8 +2631,7 @@ executeDataLibrary <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to load a new dataset",
-                               "into Rattle.",
+    if (is.null(questionDialog("You have chosen to load a new dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
                                "If you choose not to continue",
@@ -2678,7 +2675,7 @@ executeDataLibrary <- function()
 
   showDataViewButtons("libdata")
   
-  setStatusBar("The data has been assigned into Rattle.")
+  setStatusBar("The R package data is now available.")
 }
 
 executeDataEntry <- function()
@@ -2689,8 +2686,7 @@ executeDataEntry <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to load a new dataset",
-                               "into Rattle.",
+    if (is.null(questionDialog("You have chosen to load a new dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
                                "If you choose not to continue",
@@ -2733,7 +2729,7 @@ executeDataEntry <- function()
 
   showDataViewButtons("dataentry")
   
-  setStatusBar("The data has been assigned into Rattle.")
+  setStatusBar("The provided data is now available.")
 }
 
 viewData <- function()
@@ -2761,7 +2757,7 @@ editData <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to edit the Ratte dataset.",
+    if (is.null(questionDialog("You have chosen to edit the loaded dataset.",
                                "This will clear the old project (dataset and",
                                "models) which has not been saved.",
                                "If you choose not to continue",
@@ -2804,7 +2800,7 @@ editData <- function()
 
   showDataViewButtons("dataentry")
   
-  setStatusBar("The data has been assigned into Rattle.")
+  setStatusBar("The supplied data is now available.")
 
 }
 
@@ -3164,7 +3160,7 @@ executeSelectTab <- function()
                     "in the weights formula but it is an input.",
                     "This is unusual since it is both an input variable",
                     "and used to weight the outputs.",
-                    "Rattle suggests you ignore the variable.")
+                    "It is suggested that you ignore the variable.")
       }
       
       # For each Weights variable, replace with full reference to
@@ -6048,7 +6044,7 @@ executeExplorePlot <- function(dataset)
   ## variables, ask the user if we want to continue.
 
   if (total.plots > 10 && pmax == 1)
-    if (is.null(questionDialog("Rattle is about to generate", total.plots,
+    if (is.null(questionDialog("We are about to generate", total.plots,
                                "individual plots. That's quite a few.",
                                "You could select fewer variables, or you",
                                "can change the number of plots per page,",
@@ -6940,11 +6936,10 @@ executeExploreHiercor <- function(dataset)
   if (is.null(dataset))
   {
     errorDialog("Correlations are calculated only for numeric data.",
-                 "Currently Rattle does not transform categorical data",
-                 "into numeric data, but this can be done in R with",
-                 "the as.integer() function.",
-                 "No numeric variables were found in the dataset",
-                 "from amongst those that are not ignored.")
+                "No numeric variables were found in the dataset",
+                "from amongst those that are not ignored.",
+                "You may want to use the transform tab to transform",
+                "your categorical data into numeric data.")
     return()
   }
 
@@ -6953,12 +6948,12 @@ executeExploreHiercor <- function(dataset)
   ncols <- eval(parse(text=sprintf("NCOL(%s)", dataset)))
   if ( ncols < 2 )
   {
-    errorDialog("The dataset contains less than two numeric features.",
-                 "Correlations are calculated only for numeric data.",
-                 "Currently Rattle does not transform categorical data",
-                 "into numeric data, but this can be done in R with",
-                 "the as.integer() function.",
-                 "For now please select numeric variables.")
+    errorDialog("The dataset contains less than two numeric variables.",
+                "Correlations are calculated only for numeric data.",
+                "You may want to select more numeric variables or",
+                "use the transform tab to transform",
+                "your categorical variables into numeric variables.")
+
     return()
   }
     
@@ -7640,8 +7635,9 @@ executeEvaluateTab <- function()
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
-    errorDialog("The number of levels in the target is greater than 2.",
-                "Currently, Rattle's Risk chart, and the ROCR package",
+    errorDialog("The number of levels in the target variable is greater",
+                "than 2.",
+                "Currently, Risk charts and the ROCR package",
                 "(which implements the Lift, ROC, Precision, and Specificity",
                 "charts) and Scoring and PrvOb",
                 "apply only to binary classification.",
@@ -7786,7 +7782,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   if (is.null(risk))
   {
     errorDialog("No risk variable has been specified.",
-                 "From the Variables tab please identify one variable as",
+                 "From the Select tab please identify one variable as",
                  "a risk variable and rerun the modelling (if the variable",
                  "was previously an input variable).",
                  "The risk variable is a measure of the size of the risk.",
@@ -7862,7 +7858,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                       sep="")
 
     appendLog("Generate a Risk Chart",
-             "## Rattle provides evaluateRisk and plotRisk.\n\n",
+             "#The Rattle package provides evaluateRisk and plotRisk.\n\n",
              gsub("<<-", "<-", probcmd[[mtype]]), "\n",
              gsub("<<-", "<-", evaluate.cmd), "\n",
              plot.cmd, sep="")
@@ -9459,8 +9455,15 @@ showHelp <- function(msg)
 
 on_help_general_activate <- function(action, window)
 {
-  showHelp("Rattle is an Open Source project
-written in GNOME and R, and licensed under the GNU General Public License.
+  showHelp(paste(ifelse(crv$appname=="RStat",
+                  paste("RStat is the WebFOCUS data mining application",
+                        "developed by Information Builders on top of",
+                        "Rattle and R. "),
+                  ""),
+           "Rattle is a graphical user interface for data mining
+written in GNOME and R. R is an environment for statistical computing.
+They are all free software licensed under the GNU General
+Public License (GPL).
 <<>>
 Interaction with Rattle logically proceeds by progressing through the Tabs:
 first load in some Data, select Variables for exploring and mining,
@@ -9494,7 +9497,7 @@ code is that there are bugs! When you find one, or a misfeature or
 something else you would like Rattle to do, please do email
 support@togaware.com.
 <<>>
-Enjoy.")
+Enjoy.", sep=""))
 }
 
 on_help_nomenclature_data_activate <- function(action, window)
@@ -9533,11 +9536,11 @@ numbers.")
 
 on_help_csv_activate <- function(action, window)
 {
-  if (showHelpPlus("Rattle can load data from
+  if (showHelpPlus("Data can be loaded from
 a comma separated value (CSV) file, as might be generated
 by spreadsheets and databases,
 including Excel, Gnumeric, SAS/EM, QueryMan, and many other applications.
-This is a good option for importing your data into Rattle.
+This is a good option for importing data.
 <<>>
 The CSV file is assumed to begin with a header row, listing the names
 of the variables. 
@@ -9557,7 +9560,7 @@ The corresponding R code uses the simple read.csv() function."))
 
 on_help_arff_activate <- function(action, window)
 {
-  if (showHelpPlus("Rattle can load data from
+  if (showHelpPlus("Data can be loaded from
 an Attribute-Relation File Format, or ARFF, file
 (beginning with version 2.5.0 of R).
 ARFF is an ASCII text file format
@@ -9583,10 +9586,10 @@ be listed for selection.")
 
 on_help_rdataset_activate <- function(action, window)
 {
-  showHelp("Rattle can use a dataset that is already loaded
-into R (although it will take a copy of it, with memory implications).
-Only data frames are currently supported, and Rattle will list
-for you the names of all of the available data frames.
+  showHelp("Datasets already loaded into R can be used
+(although a copy is taken, with memory implications).
+Only data frames are currently supported, and 
+the names of all of the available data frames will be lsited.
 <<>>
 The data frames need to be constructed in the same R session
 that is running Rattle (i.e., the same R Console in which you
@@ -9609,7 +9612,7 @@ listed for selection."))
 
 on_help_roles_activate <- function(action, window)
 {
-  showHelp("The Variables tab allows you to select roles for the
+  showHelp("The Select tab allows you to select roles for the
 variables.
 <<>>
 By default, all variables have an Input role, except for any variables
