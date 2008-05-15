@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-14 19:27:11 Graham Williams>
+# Time-stamp: <2008-05-15 20:59:55 Graham Williams>
 #
 # Paradigm control.
 #
@@ -163,8 +163,8 @@ on_regression_paradigm_radiobutton_toggled <- function(button)
     theWidget("mars_radiobutton")$hide()
     theWidget("all_models_radiobutton")$show()
     
-    #theWidget("glm_family_label")$hide()
-    #theWidget("glm_family_comboboxentry")$hide()
+    theWidget("glm_family_label")$hide()
+    theWidget("glm_family_comboboxentry")$hide()
 
     # NULL any models shared between classification and regression.
     

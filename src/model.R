@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-05-14 19:27:55 Graham Williams>
+## Time-stamp: <2008-05-15 20:58:04 Graham Williams>
 ##
 ## MODEL TAB
 ##
@@ -410,13 +410,13 @@ executeModelGLM <- function()
                      ", family=", family,
                      ")", sep="")
   else if (paradigm == "regression")
-    glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+    glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",
-                     ", family=", family,
+                     #", family=", family,
                      ")", sep="")
   
   summary.cmd <- paste("print(summary(crs$glm))",
