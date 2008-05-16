@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.25.
+    version is 2.3.26.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+257 080516 Fix up branding: textview updates; plot title; plot subtitles
+           Only show web page link on "I" button in menu bar for Rattle.
+           Autoload any supplied csv file.
 256 080516 For regression/linear, use lm.
 255 080515 Textviews and plots now identify the appname.
            Add the regression button again for Classification

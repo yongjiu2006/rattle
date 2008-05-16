@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-14 06:23:44 Graham Williams>
+# Time-stamp: <2008-05-16 20:34:28 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -212,18 +212,21 @@ rattle <- function(csvname=NULL, appname="Rattle")
   # Some default GUI settings
 
   setRattleTitle()
-  
-  id.string <- paste('<span foreground="blue">',
-                     '<i>', crv$appname, '</i> ',
-                     '<i>Version ', VERSION, '</i> ',
-                     '<i><span underline="single">togaware.com</span></i>',
-                     '</span>', sep="")
-  rattle.menu <- theWidget("rattle_menu")
-  rattle.menu$SetRightJustified(TRUE)
-  #rattle.menu$getChild()$setText(id.string)
-  #rattle.menu$getChild()$setUseMarkup(TRUE)
-  rattle.menu$getChild()$setMarkup(id.string)
-  #rattle.menu$getChild()$setText(id.string)
+
+  if (crv$appname == "Rattle")
+  {
+    id.string <- paste('<span foreground="blue">',
+                       '<i>', crv$appname, '</i> ',
+                       '<i>Version ', VERSION, '</i> ',
+                       '<i><span underline="single">togaware.com</span></i>',
+                       '</span>', sep="")
+
+    rattle.menu <- theWidget("rattle_menu")
+    rattle.menu$SetRightJustified(TRUE)
+    rattle.menu$getChild()$setMarkup(id.string)
+  }
+  else
+     theWidget("rattle_menu")$hide()
 
   # Constants: I would like these available within this package, but
   # not outside? Do I use assign in some way? That is, how to keep
@@ -549,7 +552,11 @@ rattle <- function(csvname=NULL, appname="Rattle")
   # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
+  {
     theWidget("csv_filechooserbutton")$setFilename(csvname)
+    while (gtkEventsPending()) gtkMainIteration() # Make sure GUI updates
+    executeDataCSV()
+  }
 
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
   
@@ -937,13 +944,15 @@ sampleNeedsExecute <- function()
 setRattleTitle <- function(title=NULL)
 {
   if (crv$appname == "RStat")
-    standard <- "RStat: WebFOCUS Data Miner"
+    standard <- "Developer Studio - [RStat]"
   else
-    standard <- "Rattle: Effective Data Mining with R"
+    standard <- "R Data Miner - [Rattle]"
   if (is.null(title))
     theWidget("rattle_window")$setTitle(standard)
   else
-    theWidget("rattle_window")$setTitle(sprintf("%s: %s", standard, title))
+    theWidget("rattle_window")$setTitle(sub("]",
+                                            sprintf(" (%s)]", title),
+                                            standard))
 }
 
 setStatusBar <- function(..., sep=" ")
@@ -1107,7 +1116,7 @@ on_plot_print_button_clicked <- function(action)
 on_plot_close_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub("Rattle: Plot ", "", ttl))
+  devnum <- as.integer(sub(paste(crv$appname, ": Plot ", sep=""), "", ttl))
   dev.off(devnum)
   pw <- action$getParentWindow()
   pw$destroy()
@@ -1136,7 +1145,8 @@ newPlot <- function(pcnt=1)
     gladeXMLSignalAutoconnect(plotGUI)
     da <- plotGUI$getWidget("drawingarea")
     asCairoDevice(da)
-    plotGUI$getWidget("plot_window")$setTitle(paste("Rattle: Plot", dev.cur()))
+    plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": Plot ",
+                                                    dev.cur(), sep=""))
   }
   else if (.Platform$GUI %in% c("X11", "unknown"))
   {
@@ -1458,15 +1468,23 @@ my.savePlot <- function (filename = "Rplot",
 
 genPlotTitleCmd <- function(..., vector=FALSE)
 {
+  # 080516 For RStat do not brand the plots.
+  
   main = paste(...)
   if(vector)
   {
-    sub = sprintf("%s %s %s", crv$appname, Sys.time(), Sys.info()["user"])
+    if (crv$appname == "RStat")
+      sub <- ""
+    else
+      sub <- sprintf("%s %s %s", crv$appname, Sys.time(), Sys.info()["user"])
     return(c(main, sub))
   }
   else
   {  
-    sub = sprintf('paste("%s", Sys.time(), Sys.info()["user"])', crv$appname)
+    if (crv$appname == "RStat")
+      sub <- ""
+    else
+      sub <- sprintf('paste("%s", Sys.time(), Sys.info()["user"])',crv$appname)
     return(sprintf('title(main="%s", sub=%s)', main, sub))
   }
 }
@@ -2094,9 +2112,10 @@ showDataViewButtons <- function(widget)
   theWidget(paste(widget, "_editdata_button", sep=""))$setSensitive(TRUE)
 }  
 
-executeDataCSV <- function()
+executeDataCSV <- function(filename=NULL)
 {
-  # A filename is already expected to be avialble in the
+  # Either a filename is supplied in the function call or a filename
+  # is already expected to be availble in the
   # csv_filechooserbutton. This could be either a CSV or TXT file. If
   # no filename is supplied, then give the user the option to load a
   # sample dataset (for now, the audit dataset).
@@ -2113,7 +2132,8 @@ executeDataCSV <- function()
   # URLdecode will replace the %3F with "?" and %3D with "=", etc, as
   # is required for using this with the read.csv function.
 
-  filename <- theWidget("csv_filechooserbutton")$getUri()
+  if (is.null(filename))
+      filename <- theWidget("csv_filechooserbutton")$getUri()
   
   ## 080511 NOT NEEDED - ALSWAYS GET URI
   ## if (is.null(filename))
@@ -2747,6 +2767,7 @@ viewData <- function()
   op <- options(width=10000)
   tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
   options(op)
+  ## For IBI viewdataGUI$getWidget("viewdata_window")$setTitle("Fred")
 }
     
 editData <- function()
@@ -5577,28 +5598,28 @@ executeExploreTab <- function()
   sampling <- theWidget("sample_checkbutton")$getActive()
   if (use.sample && sampleNeedsExecute()) return()
 
-  ## We generate a string representing the subset of the dataset on
-  ## which the exploration is to be performed. This is then passed to
-  ## the individually dispatched functions.
+  # We generate a string representing the subset of the dataset on
+  # which the exploration is to be performed. This is then passed to
+  # the individually dispatched functions.
 
   vars <- getIncludedVariables(risk=TRUE)
   dataset <- sprintf("%s[%s,%s]", "crs$dataset",
                      ifelse(use.sample && sampling,"crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
 
-  ## For the distribution plot, we do list all variables in the
-  ## interface, even if they are ignored. TODO 061006 We could instead
-  ## grey out the ignored ones (i.e., make them not sensitive). But
-  ## for now, for plots, allow all variables, even the ignored ones,
-  ## and thus we need a dataset that includes all variables - the
-  ## "avdataset".
+  # For the distribution plot, we do list all variables in the
+  # interface, even if they are ignored. TODO 061006 We could instead
+  # grey out the ignored ones (i.e., make them not sensitive). But
+  # for now, for plots, allow all variables, even the ignored ones,
+  # and thus we need a dataset that includes all variables - the
+  # "avdataset".
 
   avdataset <- sprintf("%s[%s,]", "crs$dataset",
                      ifelse(use.sample && sampling,"crs$sample", ""))
   
   vars <- getIncludedVariables(numonly=TRUE)
-  ## TODO 060606 The question here is whether NULL means all variables
-  ## or means none found?
+  # TODO 060606 The question here is whether NULL means all variables
+  # or means none found?
   
   #if (is.null(vars))
   #  ndataset <- NULL
@@ -5607,13 +5628,14 @@ executeExploreTab <- function()
                         ifelse(use.sample && sampling,"crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
-  ## Numeric input variables
+  # Numeric input variables
+
   vars <- inputVariables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
                        ifelse(use.sample && sampling,"crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
-  ## Dispatch
+  # Dispatch
   
   if (theWidget("summary_radiobutton")$getActive())
     executeExploreSummary(dataset)
@@ -5914,13 +5936,13 @@ plotBenfordsLaw <- function(l)
 
 executeExplorePlot <- function(dataset)
 {
-  ## Plot the data. The dataset is a string that defines the dataset
-  ## to use. Information about what variables to plot and the kind of
-  ## plots is obtained from the continuous_treeview and the
-  ## categorical_treeview which are displayed in the Explore tab's
-  ## Distribution option. The appropriate plots are displayed.
+  # Plot the data. The dataset is a string that defines the dataset
+  # to use. Information about what variables to plot and the kind of
+  # plots is obtained from the continuous_treeview and the
+  # categorical_treeview which are displayed in the Explore tab's
+  # Distribution option. The appropriate plots are displayed.
 
-  ## Obtain the selection of variables.
+  # Obtain the selection of variables.
 
   boxplots  <- getSelectedVariables("boxplot")
   nboxplots <- length(boxplots)
@@ -5972,16 +5994,16 @@ executeExplorePlot <- function(dataset)
 ##     targets <- NULL
 ##   }
   
-  ## Check for sampling.
+  # Check for sampling.
   
   use.sample <- theWidget("explore_sample_checkbutton")$getActive()
   sampling  <- use.sample && not.null(crs$sample)
 
-  ## Record other options.
+  # Record other options.
 
   annotate <- theWidget("explot_annotate_checkbutton")$getActive()
   
-  ## Split the data, first for all values.
+  # Split the data, first for all values.
 
   bind.cmd <- sprintf('rbind(data.frame(dat=%s[,"%%s"], grp="All")', dataset)
 
@@ -5999,34 +6021,34 @@ executeExplorePlot <- function(dataset)
     }
   }
   
-  ## Finish off the command to create the dataset for plotting.
+  # Finish off the command to create the dataset for plotting.
   
   bind.cmd <- sprintf("%s)", bind.cmd)
 
-  ## Build a list of generic datasets. This describes how to get the
-  ## relevant rows from the dataset for All the data, then each of the
-  ## levels of a target. Each contains a "%s" which is replace gor
-  ## specific chosen variables at the time of using this construct to
-  ## obtain the data for the plot. The form is:
-  ##
-  ## All = crs$dataset$%s
-  ##
-  ## or if sampling is enabled:
-  ##
-  ## All = crs$dataset[crs$sample,]$%s  
-  ##
-  ## For each level:
-  ##
-  ## '0' = crs$dataset[crs$dataset$Adjusted=="0",]$%s
-  ##
-  ## or if sampling is enabled:
-  ##
-  ## '0' = crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Adjusted=="0",]$%s
-  ##
-  ## This is a newer alternative to identifying the dataset
-  ## segments. We build this list of target and a specification of the
-  ## correspending data subset. Eventually move all plotting to use
-  ## this approach rather than using bind.cmd.
+  # Build a list of generic datasets. This describes how to get the
+  # relevant rows from the dataset for All the data, then each of the
+  # levels of a target. Each contains a "%s" which is replace gor
+  # specific chosen variables at the time of using this construct to
+  # obtain the data for the plot. The form is:
+  #
+  # All = crs$dataset$%s
+  #
+  # or if sampling is enabled:
+  #
+  # All = crs$dataset[crs$sample,]$%s  
+  #
+  # For each level:
+  #
+  # '0' = crs$dataset[crs$dataset$Adjusted=="0",]$%s
+  #
+  # or if sampling is enabled:
+  #
+  # '0' = crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Adjusted=="0",]$%s
+  #
+  # This is a newer alternative to identifying the dataset
+  # segments. We build this list of target and a specification of the
+  # correspending data subset. Eventually move all plotting to use
+  # this approach rather than using bind.cmd.
 
   genericDataSet <- data.frame(All=sprintf('%s$%%s', dataset))
   if (not.null(targets))
@@ -6040,8 +6062,8 @@ executeExplorePlot <- function(dataset)
       genericDataSet <- cbind(genericDataSet, tmpDataSet)
     }
 
-  ## Generate a plot for each variable. If there are too many
-  ## variables, ask the user if we want to continue.
+  # Generate a plot for each variable. If there are too many
+  # variables, ask the user if we want to continue.
 
   if (total.plots > 10 && pmax == 1)
     if (is.null(questionDialog("We are about to generate", total.plots,
@@ -6052,7 +6074,7 @@ executeExplorePlot <- function(dataset)
                                "\n\nWould you like to proceed?")))
       return()
 
-  ##---------------------------------------------------------------------
+  #---------------------------------------------------------------------
 
   if (nboxplots > 0)
   {
