@@ -6,7 +6,13 @@
 ##
 ## Copyright (c) 2008 Togaware Pty Ltd
 #
-# This files is part of Rattle.
+# Time-stamp: <2008-05-20 21:56:42 Graham>
+#
+# MODEL TAB
+#
+# Copyright (c) 2008 Togaware Pty Ltd
+#
+# This file is part of Rattle.
 #
 # Rattle is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -22,11 +28,9 @@
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-##
-## CALLBACKS
-##
+# CALLBACKS
 
-## When radio button is selected, display appropriate tab page
+# When radio button is selected, display appropriate tab page
 
 on_regression_radiobutton_toggled <- function(button)
 {
@@ -108,9 +112,36 @@ on_kernlab_radiobutton_toggled <- function(button)
 }
 
 ########################################################################
-##
-## SUPPORT FUNCTIONS
-##
+# UTILITIES
+
+commonName <- function(mtype)
+{
+  name.map <- data.frame(rpart="Tree",
+                         ada="Boost",
+                         rf="Forest",
+                         ksvm="SVM",
+                         glm="Linear",
+                         multinom="Neural Net",
+                         nnet="Neural Net")
+  return(as.character(name.map[[mtype]]))
+}
+
+numericTarget <- function()
+{
+  if (length(getSelectedVariables("target")) == 0)
+    return(FALSE)
+  else
+    return(theWidget("target_numeric_radiobutton")$getActive())
+}
+
+categoricTarget <- function()
+{
+  if (length(getSelectedVariables("target")) == 0)
+    return(FALSE)
+  else
+    return(theWidget("target_categoric_radiobutton")$getActive())
+}
+
 
 currentModelTab <- function()
 {
@@ -148,6 +179,8 @@ activateROCRPlots <- function()
 
 executeModelTab <- function()
 {
+  ## Check for prerequisites.
+
   # Can not build a model without a dataset.
 
   if (noDatasetLoaded()) return()
@@ -181,9 +214,9 @@ executeModelTab <- function()
   if (length(crs$target) == 0)
   {
     errorDialog("No target has been specified.",
-                 "Please identify the target using the Select tab.",
-                 "Be sure to Execute the tab once the target has",
-                 "been identified.")
+                "Please identify the target using the Select tab.",
+                "Be sure to Execute the tab once the target has",
+                "been identified.")
     return()
   }
 
@@ -191,11 +224,10 @@ executeModelTab <- function()
 
   if (sampleNeedsExecute()) return()
     
-  # If the target has more than 2 levels and we are looking at the
-  # classification paradigm, disable the ROCR and Risk plots, and
-  # place a message on the first textview of the Evaluate tab. We make
-  # this word wrap here and then turn that off once the tab is
-  # Executed.
+  # If the target is a categorical and has more than 2 levels then
+  # disable the ROCR and Risk plots, and place a message on the first
+  # textview of the Evaluate tab. We make this word wrap here and then
+  # turn that off once the tab is Executed.
 
   paradigm <- getParadigm()
   
@@ -224,7 +256,7 @@ executeModelTab <- function()
     setTextview("confusion_textview") # Clear any confusion table
   }
 
-  ## DISPATCH
+  # DISPATCH
 
   build.all <- theWidget("all_models_radiobutton")$getActive()
 
@@ -521,13 +553,11 @@ exportRegressionTab <- function()
   
 }
 
-##------------------------------------------------------------------------
-##
-## MODEL SVM - SUPPORT VECTOR MACHINE
-##
-
-## Eventually the following will go into svm_gui.R, using the same
-## conventions as in ada.R.
+#------------------------------------------------------------------------
+# MODEL SVM - SUPPORT VECTOR MACHINE
+#
+# Eventually the following will go into svm_gui.R, using the same
+# conventions as in ada.R.
 
 on_svm_kernel_comboboxentry_changed <- function(action, window)
 {

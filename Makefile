@@ -37,6 +37,7 @@ R_SOURCE = \
 	src/ada_gui.R \
 	src/associate.R \
 	src/cluster.R \
+#	src/data.R \
 	src/execute.R \
 	src/export.R \
 	src/log.R \

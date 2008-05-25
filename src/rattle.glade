@@ -7,6 +7,7 @@
     <property name="title" translatable="yes">Rattle: Effective Data Mining with R</property>
     <property name="default_width">750</property>
     <property name="default_height">580</property>
+    <signal name="destroy" handler="close_rattle"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>

@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2008-05-03 15:20:20 Graham Williams>
+# Time-stamp: <2008-05-20 18:59:15 Graham>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -165,7 +165,7 @@ buildModelAda <- function(formula,
     print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
     appendLog("Print the results of the modelling.", print.cmd)
     resetTextview(tv, tvsep=FALSE,
-                  "Summary of the adaboost modelling:\n\n",
+                  "Summary of the Boost model (built using ada):\n\n",
                   collectOutput(print.cmd))
   }
 

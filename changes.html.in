@@ -6,13 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.26.
+    version is 2.3.27.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+259 080513 Remove paradigms - display all tabs (Tony Nolan)
+Combine Data/Select tabs into one (Tony Nolan)
+258 080524 For kmeans plot and stats, ensure use na.omit (Peter Christen)
+Export kmeans to CSV exports original data + cluster (Peter Christen)
+Ensure a Window exit will set rattleGUI to NULL
+Catch RF error on Inf numbers
 257 080516 Fix up branding: textview updates; plot title; plot subtitles
            Only show web page link on "I" button in menu bar for Rattle.
            Autoload any supplied csv file.

@@ -7,19 +7,32 @@
     priorities and especially code.</p>
 
 <pre>
-080513 Remove paradigms - display all tabs (Tony Nolan)
-080513 Combine Data/Select tabs into one (Tony Nolan)
-080513 Add a R command entry where paradigms were (Tony Nolan)
-080513 Introduce Ensemble scoring to add scores together (see NetFlix).
+080525 Use "norm" for multivariate normalisation:
+       prelim.norm, em.nrom, imp.norm - stratify by target values
+080520 Bug: Ada trees show -1/1 rather than 0/1?
+0080518 Remove correlated + near constant columns in transform tab
+       See http://cheminfo.informatics.indiana.edu/~rguha/code/R/
+080518 Implement knn regression as in
+       http://cheminfo.informatics.indiana.edu/~rguha/code/R/
 080512 Fix scoring for multiple class classification
-080512 Notice $ amount s and , in thousands and treat as numeric (Tony Nolan)
+080517 Review Tony Nolan's weather dataset for demo inclusion
+080513 Introduce Ensemble scoring to add scores together (see NetFlix).
+080504 Allow risk charts without a RISK identified
+080427 Fix Draw of decision tree for Regression
+080512 Notice $ amounts and , in thousands and treat as numeric (Tony Nolan)
+080521 Use dprep's ce.impute to impute: mean, median, knn
+080521 Use dprep functionality for feature selection +++
+080521 Use dprep for outlier detection
+080517 Add a Statistics option under Explore (t-test/z-test/chi^2 (Tony Nolan)
+080513 Add a R command console where paradigms were (Tony Nolan)
+080517 Add a macros menu with canned R templates (Tony Nolan)
 080511 Move to using guiDo from plotAndPlayGTK
 080511 Move to using playwith from plotAndPlayGTK for plots
 080511 Add support for scagnostics package
 080504 Allow risk charts without a RISK identified
 080502 Put PMML.COPYRIGHT into .Rattle
 080502 Add report info to PMML export of GLM
-080501 Fix cluster export to CSV
+080501 Fix cluster export to CSV to export the whole dataset
 080429 Add a SQLiteDF data option
 080427 Report pmml.nnet error to Zementis
 080427 Fix Draw of decision tree for Regression
@@ -77,7 +90,6 @@
 061001 Choice of Kernel for SVMs. 
 070319 Introduce a progress bar for all activities (Tony Nolan)
 070114 Add textmining.R to Rattle
-061227 Eval->Save: All to one file.
 060723 Simplify RF rule sets
 070220 Auto update feature(Tony Nolan)
 070201 Investigate party for rattle (Daniel Medri)
