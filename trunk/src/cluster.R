@@ -1,10 +1,10 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-05-03 15:21:11 Graham Williams>
-##
-## Implement cluster functionality.
-##
-## Copyright (c) 2008 Togaware Pty Ltd
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-05-23 17:42:05 Graham>
+#
+# Implement cluster functionality.
+#
+# Copyright (c) 2008 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -21,13 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
-
 ########################################################################
-##
-## CALLBACKS
-##
+# CALLBACKS
 
-## When a radio button is selected, display the appropriate tab page.
+# When a radio button is selected, display the appropriate tab page.
 
 on_kmeans_radiobutton_toggled <- function(button)
 {
@@ -88,9 +85,7 @@ on_kmeans_iterate_checkbutton_toggled <- function(button)
 
 
 ########################################################################
-##
-## EXECUTION
-##
+# EXECUTION
 
 executeClusterTab <- function()
 {
@@ -119,7 +114,7 @@ executeClusterTab <- function()
     return()
   }
 
-  ## Dispatch.
+  # Dispatch.
 
   if (theWidget("kmeans_radiobutton")$getActive())
     executeClusterKMeans(include)
@@ -127,10 +122,10 @@ executeClusterTab <- function()
     executeClusterHClust(include)
 }
 
-##----------------------------------------------------------------------
-##
-## KMEANS
-##
+#----------------------------------------------------------------------
+#
+# KMEANS
+#
 
 executeClusterKMeans <- function(include)
 {
@@ -310,9 +305,11 @@ on_kmeans_stats_button_clicked <- function(button)
     return()
   }
 
-  ## STATS: Log the R command and execute.
+  # STATS: Log the R command and execute. 080521 TODO Fix a bug by
+  # adding the na.omit here (since by default that is done in building
+  # the clusters). Not sure if this is generally correct.
 
-  stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
+  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
                              "crs$kmeans$cluster)\n"),
                        ifelse(sampling, "crs$sample", ""), include)
   appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
@@ -325,7 +322,7 @@ on_kmeans_stats_button_clicked <- function(button)
 on_kmeans_data_plot_button_clicked <- function(button)
 {
 
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
 
   if (is.null(crs$kmeans))
   {
@@ -334,8 +331,8 @@ on_kmeans_data_plot_button_clicked <- function(button)
     return()
   }
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
   sampling  <- not.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
@@ -345,15 +342,18 @@ on_kmeans_data_plot_button_clicked <- function(button)
     include <- simplifyNumberList(intersect(nums, indicies))
   }
 
-  if (length(nums) == 0 || length(indicies) == 0)
-  {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
-    return()
-  }
+  ## 080521 Do we still need the following? I don't think so. It is
+  ## cheked when building the cluster, not now.
+  
+##   if (length(nums) == 0 || length(indicies) == 0)
+##   {
+##     errorDialog("Clusters are currently calculated only for numeric data.",
+##                 "No numeric variables were found in the dataset",
+##                 "from amongst those having an input/target/risk role.")
+##     return()
+##   }
 
-  ## We can only plot if there is more than a single variable.
+  # We can only plot if there is more than a single variable.
   
   if (length(intersect(nums, indicies)) == 1)
   {
@@ -363,9 +363,14 @@ on_kmeans_data_plot_button_clicked <- function(button)
     return()
   }
 
-  ## PLOT: Log the R command and execute.
+  # PLOT: Log the R command and execute. 080521 TODO I've added in
+  # na.omit here, since when we cluster the audit data, with missing
+  # values for Age we need to ensure the data points correspond to the
+  # cluster numbers. Otherwise we get a bad looking plot!!!! But do we
+  # always need na.omit. It is not always used on bulding clusters.
 
-  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+  plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",
                             "col=crs$kmeans$cluster)\n",
                             genPlotTitleCmd(""), sep=""),
                       ifelse(sampling, "crs$sample", ""), include)
@@ -424,9 +429,10 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  ## PLOT: Log the R command and execute.
+  # PLOT: Log the R command and execute. 080521 Add the na.omit since
+  # kmeans is usually built with this.
 
-  plot.cmd <- sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
+  plot.cmd <- sprintf(paste("plotcluster(na.omit(crs$dataset[%s,%s]), ",
                             "crs$kmeans$cluster)\n",
                             genPlotTitleCmd("Discriminant Coordinates",
                                             crs$dataname), sep=""),
@@ -901,7 +907,7 @@ exportClusterTab <- function()
 
 exportKMeansTab <- function(file)
 {
-  ## Make sure we have a model first!
+  # Make sure we have a model first!
   
   if (is.null(crs$kmeans))
   {
@@ -1012,23 +1018,40 @@ exportKMeansTab <- function(file)
                                  "this file?")))
         return()
 
-    idents <- getSelectedVariables("ident")
+    ## 080523 No longer used      idents <- getSelectedVariables("ident")
 
-    # Output all original data plus the cluster number
+    # 080523 Output all original data plus the cluster number, taking
+    # missing values into account. This gets a little complex, to say
+    # the least. We need to put the cluster number with each input
+    # record, then add in those that have missing values, giving them
+    # a cluster number of NA, and then make sure we generate the CSV
+    # file in the same numeric order as it was read in.
+
+    clnm <- "names(crs$kmeans$cluster)"
+    clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
+                    ifelse(theWidget("sample_checkbutton")$getActive(),
+                               "crs$sample", ""), clnm)
     
-    csv.cmd <-  sprintf("cbind(crs$dataset[%s, c(%s)], crs$kmeans$cluster)",
-    #csv.cmd <-  sprintf("cbind(crs$dataset[%s,], crs$kmeans$cluster)",
+    csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s, ],",
+                             "kmeans=crs$kmeans$cluster),",
+                              "data.frame(crs$dataset[%s, ][%s,],",
+                              "kmeans=NA))[as.character(sort(as.integer(",
+                              "rownames(crs$dataset[%s, ])))), ]"),
                         ifelse(theWidget("sample_checkbutton")$getActive(),
                                "crs$sample", ""),
-                        sprintf('"%s"', paste(idents, collapse='", "'))
+                        clnm,
+                        ifelse(theWidget("sample_checkbutton")$getActive(),
+                               "crs$sample", ""),
+                        clna,
+                        ifelse(theWidget("sample_checkbutton")$getActive(),
+                               "crs$sample", "")
+                        ##sprintf('"%s"', paste(idents, collapse='", "'))
                         )
                           
-    appendLog("Export the clusters to CSV.", csv.cmd)
-    write.table(eval(parse(text=csv.cmd)), file=save.name, sep=",",
-                qmethod = "double", row.names=FALSE,
-                col.names=c(idents, "cluster"))
+    appendLog("Generate data frame to export the clusters to CSV.", csv.cmd)
+    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
   
-    setStatusBar("TheCSV file", save.name, "has been written.")
+    setStatusBar("The CSV file", save.name, "has been written.")
     
   }
 

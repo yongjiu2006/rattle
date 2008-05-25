@@ -8,14 +8,13 @@
 #
 # cluster.R	KMeans and Hierachical Clustering.
 # execute.R	The Execute functionality.
-# paradigm.R	Display and hide tabs depending on paradigm radio buttons
 #
 
 MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 May 2008"
+VERSION.DATE <- "Released 16 May 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -52,18 +51,18 @@ COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # INTERFACE STYLE
 #
-#    080427 For major bits of functionality, like paradigms and model
-#    types, we show and hide widgets appropriately. For smaller
-#    options like a button to shaw a model once it has been built,
-#    generally we activate/deactivet the widgets appropraitely.
+#    080427 For options like a button to show a model once it has been
+#    built or which model builders are available given the nature of
+#    the data, we generally toggle the Sensistivity of the widgets
+#    appropraitely.
 #
 #    If the functionality is not yet implemented, full stop, then have
 #    the interface item(s) not present. This is better than having
 #    them greyed out as the expectation is that perhaps there is some
 #    way within the interface of getting it not to be greyed out! But
-#    doing this also encourages those with an interest in the greyed
-#    out bits to either complain (i.e., I get to know what is wanted)
-#    or else help implement them!
+#    displaying future functionality also encourages those with an
+#    interest in the greyed out bits to either complain (i.e., I get
+#    to know what is wanted) or else help implement them!
 #
 #    If the functionality is not appropriate in a particular
 #    circumstance then don't provide the button. Simply check, in the
@@ -119,63 +118,6 @@ rattle <- function(csvname=NULL, appname="Rattle")
   crv <<- list()
   crv$appname <<- appname
 
-  # 080511 Record the current options and set the scientific penalty
-  # to be 5 so we generally get numerics pinted using fixed rather
-  # than exponential notation. We reset all options to what they were
-  # at the startup of Rattle on closing Rattle. Not necessarily a good
-  # idea since the knowing user may actually also change options
-  # whilst Rattle is running.
-  
-  crv$options <<- options(scipen=5)
-  
-  # Load data from the file identified by the csvname supplied in the
-  # call to Rattle, or from the environment variable RATTLE_DATA if
-  # defined, or from the variable .RATTLE.DATA (as might be defined in
-  # a .Rattle file), or else don't load any data by default.
-
-  # First, always execute any .Rattle file in the current working
-  # directory.
-  
-  if (file.exists(".Rattle")) source(".Rattle")
-
-  if (is.null(csvname))
-  {
-    # Use the .Rattle settings first, but these might be overriden if
-    # the environment variable is defined.
-    
-    if (exists(".RATTLE.DATA")) csvname <- .RATTLE.DATA
-
-    # Obtain the value of the RATTLE_DATA environment variable and if
-    # it is defined then use that at the csvname.
-    
-    if ((.rattle.data <- Sys.getenv("RATTLE_DATA")) != "")
-      csvname <- .rattle.data
-  }
-
-  # Tidy up the csvname. TODO Is there an R command to do this, or
-  # else put this into a function as I want to do it in a couple of
-  # places (like further below in using .RATTLE.SCORE.IN).
-
-  if (not.null(csvname) && substr(csvname, 1, 4) == "http")
-  {
-    print("URLS for the csvname not currently supported")
-    return()
-  }
-  
-  if (not.null(csvname))
-  {
-    csvname <- path.expand(csvname)
-
-    # If it does not look like an absolute path then add in the
-    # current location to make it absolute.
-    
-    if (substr(csvname, 1, 1) %notin% c("\\", "/")
-        && substr(csvname, 2, 2) != ":")
-      csvname <- file.path(getwd(), csvname)
-    if (! file.exists(csvname))
-      stop('The supplied CSV file "', csvname, '" does not exist.')
-  }
-  
   if (! packageIsAvailable("RGtk2"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
@@ -248,7 +190,7 @@ rattle <- function(csvname=NULL, appname="Rattle")
   # Various Treeview Columns
   
   .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
-                target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
+              target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
   
   .IMPUTE <<- c(number=0, variable=1, comment=2)
   
@@ -330,7 +272,8 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   # Main notebook related constants and widgets.  Track the widgets
   # that are needed for removing and inserting tabs in the notebook,
-  # depending on the selected paradigm.
+  # depending on the selected paradigm. TODO Paradigms have gone as of
+  # 080519 so we may not need all this machinery now!
   
   crv$NOTEBOOK <<- theWidget("notebook")
 
@@ -360,7 +303,8 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
-  # Pages that are common to all paradigms.
+  # Pages that are common to all paradigms. TODO 080519 Perhaps no
+  # longer needed with hte removal of paradigms.
 
   crv$NOTEBOOK.COMMON.NAMES <<- c(crv$NOTEBOOK.DATA.NAME,
                               crv$NOTEBOOK.TRANSFORM.NAME,
@@ -1637,7 +1581,12 @@ close_rattle <- function(action, window)
 
   # graphics.off() # for (i in dev.list()) dev.off(i)
 
-  theWidget("rattle_window")$destroy()
+  # 080523 When this is called as a callback from the destroy signal
+  # of the GtkObject, the window has already been destroyed, so no
+  # need to try again.
+
+  rw <- theWidget("rattle_window")
+  if (not.null(rw)) rw$destroy()
 
   # Communicate to R that Rattle has finished. This is used by the
   # rattle script on GNU/Linux using the littler package which allows
@@ -1648,7 +1597,7 @@ close_rattle <- function(action, window)
 
   rattleGUI <<- NULL
 
-  # 080511 Restore options to how they were before Rattle started.
+  # 080511 Restore options to how they were when Rattle was started.
 
   options(crv$options)
   
@@ -5306,16 +5255,15 @@ executeTransformCleanupPerform <- function()
 
 
 ########################################################################
-##
-## EXPLORE TAB
-##
+# EXPLORE TAB
 
-##----------------------------------------------------------------------
-##
-## Interface Actions
-##
+#----------------------------------------------------------------------
+# Interface Actions
 
-## When a radio button is selected, display the appropriate tab
+# TODO 080519 The following need to be simplified in much the same way
+# that we handle the show/hide of the widegts on the Data Tab.
+
+# When a radio button is selected, display the appropriate tab
 
 on_summary_radiobutton_toggled <- function(button)
 {
@@ -7376,7 +7324,7 @@ executeEvaluateTab <- function()
     
     if (is.null(crs$testname) || (basename(filename) != crs$testname))
     {
-      ## Fix filename for MS/Windows - otherwise eval/parse strips the \\.
+      # Fix filename for MS/Windows - otherwise eval/parse strips the \\.
 
       if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
@@ -7695,9 +7643,7 @@ executeEvaluateTab <- function()
 }
 
 #----------------------------------------------------------------------
-#
 # EVALUATE CONFUSION TABLE
-#
   
 executeEvaluateConfusion <- function(respcmd, testset, testname)
 {

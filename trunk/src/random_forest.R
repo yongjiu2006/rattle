@@ -225,7 +225,24 @@ executeModelRF <- function()
                    "less than 2000 entities.")
       setTextview(TV)
     }
-    else
+    else if (any(grep("NA/NaN/Inf", result)))
+    {
+      # TODO 080520 This error arose when a log transform is done on
+      # Deductions where there are many 0's (hence -Inf). To be more
+      # helpful, find the column with the -Inf and suggest ignoring
+      # it. We can test this is the error if the following returns
+      # non-zero:
+      #
+      # sum(crs$dataset[crs$sample,c(2:10, 13:14)]==-Inf, na.rm=TRUE)
+      
+      errorDialog("The call to randomForest failed.",
+                   "The problem may be with the data",
+                   "containing Infinite values.",
+                   "A quick solution may be to remove columns",
+                   "with any Inf or -Inf values.")
+      setTextview(TV)
+    }
+    else 
       errorDialog("The call to randomForest appears to have failed.",
                   "The error message was:", result,
                   "This is an unexpected error, and you may",
@@ -233,7 +250,7 @@ executeModelRF <- function()
     return(FALSE)
   }
 
-  ## Display the resulting model.
+  # Display the resulting model.
 
   summary.cmd <- "crs$rf"
   appendLog("Generate textual output of randomForest model.", summary.cmd)
