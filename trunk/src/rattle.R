@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-16 20:34:28 Graham Williams>
+# Time-stamp: <2008-05-26 07:36:10 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -14,7 +14,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 16 May 2008"
+VERSION.DATE <- "Released 25 May 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -123,22 +123,6 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
-  # Keep the loading of Hmisc quiet.
-
-  options(Hverbose=FALSE)
-
-  # Load the Rattle GUI specification. The three commands here
-  # represent an attempt to be independent of where R is running and
-  # where rattle.R is located by finding out from the system calls the
-  # actual call to source rattle.R, and then point to this same
-  # location for finding rattle.glade. Assumes the call to source is
-  # something like: source("abc/def/rattle.R"). The better alternative
-  # might be to tell people to use the chdir=TRUE option in source.
-  
-  ##s <- as.character(sys.calls())
-  ##n <- grep("source", s)
-  ##p <- gsub("\.R..$", ".glade", gsub("source..", "", s[n]))
-
   # Try firstly to load the glade file from the installed rattle
   # package, if it exists. Otherwise, look locally.
   
@@ -169,6 +153,82 @@ rattle <- function(csvname=NULL, appname="Rattle")
   }
   else
      theWidget("rattle_menu")$hide()
+
+  # 080511 Record the current options and set the scientific penalty
+  # to be 5 so we generally get numerics pinted using fixed rather
+  # than exponential notation. We reset all options to what they were
+  # at the startup of Rattle on closing Rattle. Not necessarily a good
+  # idea since the knowing user may actually also change options
+  # whilst Rattle is running.
+  
+  crv$options <<- options(scipen=5)
+  
+  # Load data from the file identified by the csvname supplied in the
+  # call to Rattle, or from the environment variable RATTLE_DATA if
+  # defined, or from the variable .RATTLE.DATA (as might be defined in
+  # a .Rattle file), or else don't load any data by default.
+
+  # First, always execute any .Rattle file in the current working
+  # directory.
+  
+  if (file.exists(".Rattle")) source(".Rattle")
+
+  if (is.null(csvname))
+  {
+    # Use the .Rattle settings first, but these might be overriden if
+    # the environment variable is defined.
+    
+    if (exists(".RATTLE.DATA")) csvname <- .RATTLE.DATA
+
+    # Obtain the value of the RATTLE_DATA environment variable and if
+    # it is defined then use that at the csvname.
+    
+    if ((.rattle.data <- Sys.getenv("RATTLE_DATA")) != "")
+      csvname <- .rattle.data
+  }
+
+  # Tidy up the csvname. TODO Is there an R command to do this, or
+  # else put this into a function as I want to do it in a couple of
+  # places (like further below in using .RATTLE.SCORE.IN).
+
+  if (not.null(csvname) && substr(csvname, 1, 4) == "http")
+  {
+    infoDialog("URLS for the csvname not currently supported")
+    csvname <- NULL
+  }
+  
+  if (not.null(csvname))
+  {
+    csvname <- path.expand(csvname)
+
+    # If it does not look like an absolute path then add in the
+    # current location to make it absolute.
+    
+    if (substr(csvname, 1, 1) %notin% c("\\", "/")
+        && substr(csvname, 2, 2) != ":")
+      csvname <- file.path(getwd(), csvname)
+    if (! file.exists(csvname))
+    {
+      infoDialog('The supplied CSV file "', csvname, '" does not exist.')
+      csvname <- NULL
+    }
+  }
+    
+  # Keep the loading of Hmisc quiet.
+
+  options(Hverbose=FALSE)
+
+  # Load the Rattle GUI specification. The three commands here
+  # represent an attempt to be independent of where R is running and
+  # where rattle.R is located by finding out from the system calls the
+  # actual call to source rattle.R, and then point to this same
+  # location for finding rattle.glade. Assumes the call to source is
+  # something like: source("abc/def/rattle.R"). The better alternative
+  # might be to tell people to use the chdir=TRUE option in source.
+  
+  ##s <- as.character(sys.calls())
+  ##n <- grep("source", s)
+  ##p <- gsub("\.R..$", ".glade", gsub("source..", "", s[n]))
 
   # Constants: I would like these available within this package, but
   # not outside? Do I use assign in some way? That is, how to keep
@@ -304,7 +364,7 @@ rattle <- function(csvname=NULL, appname="Rattle")
   crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
   # Pages that are common to all paradigms. TODO 080519 Perhaps no
-  # longer needed with hte removal of paradigms.
+  # longer needed with the removal of paradigms.
 
   crv$NOTEBOOK.COMMON.NAMES <<- c(crv$NOTEBOOK.DATA.NAME,
                               crv$NOTEBOOK.TRANSFORM.NAME,
@@ -499,7 +559,7 @@ rattle <- function(csvname=NULL, appname="Rattle")
   {
     theWidget("csv_filechooserbutton")$setFilename(csvname)
     while (gtkEventsPending()) gtkMainIteration() # Make sure GUI updates
-    executeDataCSV()
+    executeDataCSV(csvname)
   }
 
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")

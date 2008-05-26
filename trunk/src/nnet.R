@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-14 19:31:37 Graham Williams>
+# Time-stamp: <2008-05-26 18:37:19 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -91,7 +91,7 @@ executeModelNNet <- function()
 
   sampling <- not.null(crs$sample)
   including <- not.null(included)
-  subsetting <- sampling
+  subsetting <- sampling || including
   paradigm <- getParadigm()
 
   # Time the model building.
