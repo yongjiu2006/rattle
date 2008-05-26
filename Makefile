@@ -31,13 +31,14 @@ PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
 DATE=$(shell date +%F)
 
+# 080524 add data.R and remove paradigm.R
+
 R_SOURCE = \
 	src/rattle.R \
 	src/ada.R \
 	src/ada_gui.R \
 	src/associate.R \
 	src/cluster.R \
-#	src/data.R \
 	src/execute.R \
 	src/export.R \
 	src/log.R \

@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+080526 Add transforms: log(n+1); asin(sqrt(x)); sqrt(x); x^(1/3); 1/x (Norrie)
 080525 Use "norm" for multivariate normalisation:
        prelim.norm, em.nrom, imp.norm - stratify by target values
 080520 Bug: Ada trees show -1/1 rather than 0/1?
