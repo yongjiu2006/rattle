@@ -6,17 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.30.
+    version is 2.3.31.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+262 080531 Add size option for nnet.
+           Ensure pmml.rpart generates at least 7 decimal points (David Locke)
 261 080513 Clean up original Welcome message
-Remove paradigms - display all tabs (Tony Nolan)
-Combine Data/Select tabs into one (Tony Nolan)
-Include Cost Curves for evaluation (Robert Holt).
+           Remove paradigms - display all tabs (Tony Nolan)
+           Combine Data/Select tabs into one (Tony Nolan)
+           Include Cost Curves for evaluation (Robert Holt).
 260 080531 Bug fix: Ensure gladeXMLNew is available on loading RGtk2
 	   Bug fix: median undefined with .Rattle file usage - require stats
 259 080526 Ensure sourcing of .Rattle is oprational.

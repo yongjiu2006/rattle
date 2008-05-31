@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-26 18:37:19 Graham Williams>
+# Time-stamp: <2008-05-31 21:50:06 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -71,6 +71,8 @@ executeModelNNet <- function()
 
   # Obtain user interface model options.
 
+  size <- theWidget("nnet_hidden_nodes_spinbutton")$getValue()
+  
   # Load the package into the library
 
   startLog("NEURAL NETWORK")
@@ -109,8 +111,8 @@ executeModelNNet <- function()
                      if (subsetting) "]",
                      # TODO 080427 How to choose a good value for size?
                      if (numericTarget())
-                     ", size=10, linout=TRUE, skip=TRUE",
-                     ", trace=FALSE",
+                     sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
+                     ", trace=FALSE, maxit=1000",
                      ")", sep="")
 
   appendLog("Build the nnet model.", gsub("<<-", "<-", model.cmd))
