@@ -6,19 +6,22 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.28.
+    version is 2.3.29.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-259 080513 Clean up original Welcome message
+261 080513 Clean up original Welcome message
 Remove paradigms - display all tabs (Tony Nolan)
 Combine Data/Select tabs into one (Tony Nolan)
+Include Cost Curves for evaluation (Robert Holt).
+260 080531 Bug fix: Ensure gladeXMLNew is available on loading RGtk2
+Bug fix: median undefined with .Rattle file usage - require stats
 259 080526 Ensure sourcing of .Rattle is oprational.
-Ensure supplied csvname gets loaded directly.
-Bug fix nnet with no sample (Mark Norrie)
+           Ensure supplied csvname gets loaded directly.
+           Bug fix nnet with no sample (Mark Norrie)
 258 080524 For kmeans plot and stats, ensure use na.omit (Peter Christen)
 	   Export kmeans CSV include original data + cluster (Peter Christen)
 	   Ensure a Window exit will set rattleGUI to NULL

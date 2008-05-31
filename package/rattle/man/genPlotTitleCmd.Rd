@@ -30,13 +30,13 @@ genPlotTitleCmd(..., vector=FALSE)
   \code{\link{eval}}, \code{\link{title}}, \code{\link{plotRisk}}.
 }
 \examples{
-## generate some random plot
+# generate some random plot
 plot(rnorm(100))
 
-## generate the string representing the command to add titles
-tl <- genPlotTitleCmd("Sample Plot of", "No Particular Import")
+# generate the string representing the command to add titles
+tl <- genPlotTitleCmd("Sample Plot of", "No Particular Importance")
 
-## cause the string to be executed as an R command
+# cause the string to be executed as an R command
 eval(parse(text=tl))
 }
 \keyword{aplot}

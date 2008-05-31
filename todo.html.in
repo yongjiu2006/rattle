@@ -7,6 +7,9 @@
     priorities and especially code.</p>
 
 <pre>
+080531 Migrate from libglade to GtkBuilder
+080529 Parallel Coords plot with target to colour lines (ggobi)
+080529 Add ADTrees to Rattle 
 080526 Add transforms: log(n+1); asin(sqrt(x)); sqrt(x); x^(1/3); 1/x (Norrie)
 080525 Use "norm" for multivariate normalisation:
        prelim.norm, em.nrom, imp.norm - stratify by target values

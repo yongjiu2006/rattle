@@ -166,6 +166,7 @@
 \alias{on_variables_toggle_ignore_button_clicked}
 \alias{on_variables_toggle_input_button_clicked}
 \alias{open_odbc_set_combo}
+\alias{close_rattle}
 \alias{quit_rattle}
 \alias{update_comboboxentry_with_dataframes}
 \title{Interal Rattle user interface callbacks.}

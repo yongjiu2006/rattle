@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-26 07:36:10 Graham Williams>
+# Time-stamp: <2008-05-31 12:58:31 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -14,7 +14,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 May 2008"
+VERSION.DATE <- "Released 26 May 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -123,6 +123,12 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
+  # Check to make sure libglade is available.
+
+  if (! exists("gladeXMLNew"))
+    stop("The RGtk2 package did not find libglade installed. ",
+         "Please install it.")
+  
   # Try firstly to load the glade file from the installed rattle
   # package, if it exists. Otherwise, look locally.
   
@@ -170,6 +176,13 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   # First, always execute any .Rattle file in the current working
   # directory.
+  
+  # When reading the .Rattle file and identifying a dataset to load,
+  # for some reason the stats package will not have been loaded at
+  # this stage. The symptom is that median is not defined. So make
+  # sure it is always available.
+
+  require(stats, quietly=TRUE)
   
   if (file.exists(".Rattle")) source(".Rattle")
 
@@ -1473,6 +1486,12 @@ my.savePlot <- function (filename = "Rplot",
 genPlotTitleCmd <- function(..., vector=FALSE)
 {
   # 080516 For RStat do not brand the plots.
+
+  if (! exists("crv"))
+  {
+    crv <- list()
+    crv$appname <- "Rattle"
+  }
   
   main = paste(...)
   if(vector)

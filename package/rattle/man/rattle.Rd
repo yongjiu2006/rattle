@@ -10,10 +10,11 @@
 
 }
 \usage{
-rattle(csvname=NULL)
+rattle(csvname=NULL, appname="Rattle")
 }
 \arguments{
   \item{csvname}{the name of a CSV file to load into Rattle on startup.}
+  \item{appname}{the application name allowing interface tuning.}
 }
 \details{
 
@@ -46,9 +47,9 @@ rattle(csvname=NULL)
 
 }
 \examples{
-## You can start rattle with a path to a csv file to pre-specify the
-## dataset. You then need to click Execute to load the data.
+# You can start rattle with a path to a csv file to pre-specify the
+# dataset. You then need to click Execute to load the data.
 
-\dontrun{rattle(system.file("csv", "audit.csv", package = "rattle"))}
+rattle(system.file("csv", "audit.csv", package = "rattle"))
 }
 \keyword{environment}
