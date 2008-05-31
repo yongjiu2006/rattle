@@ -259,7 +259,8 @@ executeModelRF <- function()
   appendLog("List the importance of the variables.", importance.cmd)
 
   resetTextview(TV)
-  addTextview(TV, "Summary of the randomForest model:\n\n",
+  addTextview(TV, paste("Summary of the Forest model",
+                        "(built using randomForest):\n\n"),
               collectOutput(summary.cmd, TRUE))
 
   addTextview(TV, "\n\nVARIABLE IMPORTANCE:\n\n",

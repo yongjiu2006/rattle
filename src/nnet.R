@@ -92,7 +92,6 @@ executeModelNNet <- function()
   sampling <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
-  paradigm <- getParadigm()
 
   # Time the model building.
   
@@ -101,7 +100,7 @@ executeModelNNet <- function()
   # Build a model.
 
   model.cmd <- paste("crs$nnet <<- ",
-                     ifelse(paradigm == "regression", "nnet", "multinom"),
+                     ifelse(numericTarget(), "nnet", "multinom"),
                      "(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -109,7 +108,7 @@ executeModelNNet <- function()
                      if (including) included,
                      if (subsetting) "]",
                      # TODO 080427 How to choose a good value for size?
-                     if (paradigm == "regression")
+                     if (numericTarget())
                      ", size=10, linout=TRUE, skip=TRUE",
                      ", trace=FALSE",
                      ")", sep="")
@@ -127,7 +126,10 @@ executeModelNNet <- function()
   print.cmd <- paste("print(crs$nnet)", "print(summary(crs$nnet))", sep="\n")
   appendLog("Print the results of the modelling.", print.cmd)
   resetTextview(TV)
-  setTextview(TV, "Summary of the nnet modelling:\n\n",
+  setTextview(TV,
+              paste("Summary of the Neural Net model (built using ",
+                    ifelse(numericTarget(), "nnet", "multinom"), "):\n\n",
+                    sep=""),
               collectOutput(print.cmd))
 
   # Now that we have a model, make sure appropriate actions are sensitive.

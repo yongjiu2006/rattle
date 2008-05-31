@@ -1,3 +1,7 @@
+## 080519 This should now be redunandent on moving away from
+## paradigms.
+
+
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
 # Time-stamp: <2008-05-15 20:59:55 Graham Williams>
