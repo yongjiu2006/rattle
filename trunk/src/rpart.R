@@ -340,7 +340,6 @@ executeModelRPart <- function(action="build")
   sampling  <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
-  paradigm <- getParadigm()
   
   # Commands.
   
@@ -370,7 +369,7 @@ executeModelRPart <- function(action="build")
                                       crs$weights,
                                       ifelse(sampling, "[crs$sample]", ""))),
                        ', method=',
-                       ifelse(paradigm=="classification",
+                       ifelse(categoricTarget(),
                               '"class"', '"anova"'),
                        ifelse(is.null(parms), "", parms),
                        ifelse(is.null(control), "", control),
@@ -438,7 +437,7 @@ executeModelRPart <- function(action="build")
 
   resetTextview(TV)
   setTextview(TV,
-              "Summary of the rpart model:\n\n",
+              "Summary of the Tree model (built using rpart):\n\n",
               collectOutput(print.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, .RPART)

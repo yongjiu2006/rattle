@@ -1,12 +1,6 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-05-15 20:58:04 Graham Williams>
-##
-## MODEL TAB
-##
-## Copyright (c) 2008 Togaware Pty Ltd
+# Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-20 21:56:42 Graham>
+# Time-stamp: <2008-05-28 12:53:49 Graham>
 #
 # MODEL TAB
 #
@@ -142,6 +136,17 @@ categoricTarget <- function()
     return(theWidget("target_categoric_radiobutton")$getActive())
 }
 
+binomialTarget <- function()
+{
+  return(categoricTarget() &&
+         length(levels(as.factor(crs$dataset[[crs$target]]))) == 2)
+}
+
+multinomialTarget <- function()
+{
+  return(categoricTarget() &&
+         length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
+}
 
 currentModelTab <- function()
 {
@@ -152,24 +157,24 @@ currentModelTab <- function()
 
 deactivateROCRPlots <- function()
 {
-  theWidget("lift_radiobutton")$hide()
-  theWidget("roc_radiobutton")$hide()
-  theWidget("precision_radiobutton")$hide()
-  theWidget("sensitivity_radiobutton")$hide()
-  theWidget("risk_radiobutton")$hide()
+  theWidget("lift_radiobutton")$setSensitive(FALSE)
+  theWidget("roc_radiobutton")$setSensitive(FALSE)
+  theWidget("precision_radiobutton")$setSensitive(FALSE)
+  theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
+  theWidget("risk_radiobutton")$setSensitive(FALSE)
 
-  if (getParadigm() == "regression")
-    theWidget("confusion_radiobutton")$hide()
+  if (numericTarget())
+    theWidget("confusion_radiobutton")$setSensitive(FALSE)
 }
 
 activateROCRPlots <- function()
 {
-  theWidget("confusion_radiobutton")$show()
-  theWidget("lift_radiobutton")$show()
-  theWidget("roc_radiobutton")$show()
-  theWidget("precision_radiobutton")$show()
-  theWidget("sensitivity_radiobutton")$show()
-  theWidget("risk_radiobutton")$show()
+  theWidget("confusion_radiobutton")$setSensitive(TRUE)
+  theWidget("lift_radiobutton")$setSensitive(TRUE)
+  theWidget("roc_radiobutton")$setSensitive(TRUE)
+  theWidget("precision_radiobutton")$setSensitive(TRUE)
+  theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
+  theWidget("risk_radiobutton")$setSensitive(TRUE)
 }
 
 ########################################################################
@@ -229,10 +234,9 @@ executeModelTab <- function()
   # textview of the Evaluate tab. We make this word wrap here and then
   # turn that off once the tab is Executed.
 
-  paradigm <- getParadigm()
+##  paradigm <- getParadigm()
   
-  if (paradigm == "classification" &&
-      length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
+  if (multinomialTarget())
   {
     deactivateROCRPlots()
     theWidget("confusion_textview")$setWrapMode("word")
@@ -245,7 +249,7 @@ executeModelTab <- function()
                    "charts) and the Risk Chart only handle binary",
                    "classification.", sep=" ")
   }
-  else if (paradigm == "regression")
+  else if (numericTarget())
   {
     deactivateROCRPlots()
     setTextview("confusion_textview") # Clear any confusion table
@@ -263,10 +267,11 @@ executeModelTab <- function()
   # Reset all Evaluate options to unchecked.
   
   theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
   theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("nnet_evaluate_checkbutton")$setActive(FALSE)
   
   ## The following work for ada, do they work for the rest?
   formula <- paste(crs$target, "~ .")
@@ -319,7 +324,7 @@ executeModelTab <- function()
       
     }
   }
-  if ((paradigm == "classification" && build.all)
+  if ((binomialTarget() && build.all)
       || currentModelTab() == .ADA)
   {
     setStatusBar("Building", .ADA, "model ...")
@@ -341,7 +346,7 @@ executeModelTab <- function()
       setStatusBar("Building", .ADA, "model ... failed.")
 
   }
-  if ((paradigm == "classification" && build.all)
+  if ((categoricTarget() && build.all)
       || currentModelTab() == .RF)
   {
     setStatusBar("Building", .RF, "model ...")
@@ -350,7 +355,7 @@ executeModelTab <- function()
     else
       setStatusBar("Building", .RF, "model ... failed.")
   }
-  if ((paradigm == "classification" && build.all)
+  if ((categoricTarget() && build.all)
       || currentModelTab() %in% c(.SVM, .KSVM))
   {
     setStatusBar("Building", .KSVM, "model ...")
@@ -398,7 +403,7 @@ executeModelGLM <- function()
   
   TV <- "glm_textview"
 
-  paradigm <- getParadigm()
+##  paradigm <- getParadigm()
   
   # Currently only handling binary classification.
   
@@ -432,7 +437,7 @@ executeModelGLM <- function()
   
   # Assume logistic regression for binary classification for now.
 
-  if (paradigm == "classification")
+  if (categoricTarget())
     glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -441,7 +446,7 @@ executeModelGLM <- function()
                      if (subsetting) "]",
                      ", family=", family,
                      ")", sep="")
-  else if (paradigm == "regression")
+  else if (numericTarget())
     glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -468,7 +473,11 @@ executeModelGLM <- function()
   appendLog("Summary of the resulting LM model", summary.cmd)
   
   resetTextview(TV)
-  setTextview(TV, "Summary of the model built using lm.\n",
+  setTextview(TV, sprintf(paste("Summary of the %s model",
+                                "(built using %s):\n"),
+                          commonName("glm"),
+                          ifelse(categoricTarget(),
+                                 "glm", "lm")),
               collectOutput(summary.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
@@ -566,7 +575,6 @@ on_svm_kernel_comboboxentry_changed <- function(action, window)
   setGuiDefaultsSVM(krnl)
 }
 
-
 setGuiDefaultsSVM <- function(kernel=NULL)
 {
   if (is.null(kernel))
@@ -642,7 +650,7 @@ executeModelSVM <- function()
   ## classification rather than regression, at least for now.
 
   if (useKernlab)
-    frml <- paste(ifelse(is.factor(crs$dataset[[crs$target]]),
+    frml <- paste(ifelse(numericTarget(),
                          crs$target,
                          sprintf("as.factor(%s)", crs$target)),
                   "~ .")
@@ -730,7 +738,9 @@ executeModelSVM <- function()
     summaryCmd <- "crs$svm"
   appendLog("Generate textual output of the svm model.", summaryCmd)
   resetTextview(TV)
-  setTextview(TV, "Summary of the svm model:\n\n",
+  setTextview(TV, sprintf(paste("Summary of the %s model",
+                                "(built using ksvm):\n\n"),
+                          commonName("ksvm")),
               collectOutput(summaryCmd, TRUE), "\n")
 
   if (sampling)

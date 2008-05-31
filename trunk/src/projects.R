@@ -30,7 +30,10 @@ newProject <- function()
       return()
   }
   resetRattle()
-  ## TODO Plenty of other things that should be reset as well.
+  # TODO Plenty of other things that should be reset as well.
+
+  theWidget("data_filechooserbutton")$setFilename("")
+  
   crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
                                               crv$NOTEBOOK.DATA.NAME))
   switchToPage(crv$NOTEBOOK.DATA.NAME)
@@ -92,7 +95,6 @@ saveProject <- function()
   ## Save all of the text views to be restored on a load.
   ## Put the following into a function and call for each textview.
 
-  crs$text$data <<- getTextviewContent("data_textview")
   crs$text$summary <<- getTextviewContent("summary_textview")
   crs$text$correlation <<- getTextviewContent("correlation_textview")
   crs$text$prcomp <<- getTextviewContent("prcomp_textview")
@@ -241,9 +243,7 @@ loadProject <- function()
 
   # DATA
 
-  theWidget("csv_filechooserbutton")$setFilename("")
-  
-  setTextviewContents("data_textview", crs$text$data)
+  theWidget("data_filechooserbutton")$setFilename("")
   
   crs$dataname <<- crs$dataname
   crs$dataset <<- crs$dataset
