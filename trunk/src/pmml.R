@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-05-04 15:16:57 Graham Williams>
+# Time-stamp: <2008-05-31 22:45:39 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -187,7 +187,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.7" # Add arules.
+  VERSION <- "1.1.8" # Increase number of digits extracted for rpart tests.
+  # "1.1.7" # Add arules.
   # "1.1.6"
   # "1.1.5" # Add pmml.nnet.
   # "1.1.4" # Add pmml.ksvm. Fix extensions. 
@@ -1706,7 +1707,7 @@ pmml.rpart <- function(model,
   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
   count <- model$frame$n
   score <- attr(model, "ylevels")[model$frame$yval]
-  label <- labels(model, pretty=0)
+  label <- labels(model, pretty=0, digits=7)
 
   field <- label[1]
   operator <- ""
