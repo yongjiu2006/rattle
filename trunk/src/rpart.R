@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-03 15:25:12 Graham Williams>
+# Time-stamp: <2008-06-01 20:44:32 Graham Williams>
 #
 # RPART TAB
 #
@@ -849,7 +849,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
 
 exportRpartTab <- function()
 {
-  ## Make sure we have a model first!
+  # Make sure we have a model first!
   
   if (is.null(crs$rpart))
   {
@@ -860,14 +860,14 @@ exportRpartTab <- function()
     return()
   }
 
-  ## Require the pmml package
+  # Require the pmml package
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export decision trees")) return(FALSE)
   appendLog("Load the PMML package to export a decision tree.", lib.cmd)
   eval(parse(text=lib.cmd))
   
-  ## Obtain filename to write the PMML to.
+  # Obtain filename to write the PMML to.
   
   dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],

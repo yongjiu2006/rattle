@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-31 15:03:53 Graham Williams>
+# Time-stamp: <2008-06-01 21:35:13 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -946,17 +946,18 @@ sampleNeedsExecute <- function()
     return(TRUE)
   }
 
-  # If sampling is inactive, make sure there is no sample.
+  # If sampling is inactive, make sure there is no sample. 080601 Why
+  # would I need this test?
 
-  if (! theWidget("sample_checkbutton")$getActive()
-      && not.null(crs$sample))
-  {
-    errorDialog("Sampling is inactive but has not been Executed",
-                 "since being made inactive.",
-                 "Please ensure you Execute the Transform tab",
-                 "after de-activating the Sampling on the Transform tab.")
-        return(TRUE)
-  }
+###   if (! theWidget("sample_checkbutton")$getActive()
+###       && not.null(crs$sample))
+###   {
+###     errorDialog("Sampling is inactive but has not been Executed",
+###                  "since being made inactive.",
+###                  "Please ensure you Execute the Transform tab",
+###                  "after de-activating the Sampling on the Transform tab.")
+###         return(TRUE)
+###   }
 
   return(FALSE)
 }

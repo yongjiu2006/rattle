@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.31.
+    version is 2.3.32.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+263 080602 Bug fix on no sampling but still msg about need execute.
 262 080531 Add size option for nnet.
            Ensure pmml.rpart generates at least 7 decimal points (David Locke)
 261 080513 Clean up original Welcome message

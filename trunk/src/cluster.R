@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-23 17:42:05 Graham>
+# Time-stamp: <2008-06-01 12:20:01 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -261,7 +261,7 @@ on_help_kmeans_activate <- function(action, window)
 {
   if (showHelpPlus("KMeans is a traditional approach to clustering.
 In addition to building a cluster, a discriminant coordinates plot
-can be generated, using tha package fpc, as a display of the clusters."))
+can be generated, using the package fpc, as a display of the clusters."))
   {
     popupTextviewHelpWindow("kmeans")
     if (packageIsAvailable("fpc", "view documentation for plotcluster"))
