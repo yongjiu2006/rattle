@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-28 12:53:49 Graham>
+# Time-stamp: <2008-06-01 21:41:42 Graham Williams>
 #
 # MODEL TAB
 #
@@ -205,11 +205,11 @@ executeModelTab <- function()
       && weights.display != theWidget("weight_entry")$getText())
   {
     errorDialog("You appear to have changed the formula for calculating the",
-                "weights on the Select tab without executing the tab.",
+                "weights on the Data tab without executing the tab.",
                 "The previous formula",
                 sprintf('was "%s" and it is now "%s".', crs$weights,
                         theWidget("weight_entry")$getText()),
-                "Please be sure to execute the Select tab",
+                "Please be sure to execute the Data tab",
                 "before continuing.")
     return()
   }
@@ -219,7 +219,7 @@ executeModelTab <- function()
   if (length(crs$target) == 0)
   {
     errorDialog("No target has been specified.",
-                "Please identify the target using the Select tab.",
+                "Please identify the target using the Data tab.",
                 "Be sure to Execute the tab once the target has",
                 "been identified.")
     return()
