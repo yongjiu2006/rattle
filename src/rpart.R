@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-01 20:44:32 Graham Williams>
+# Time-stamp: <2008-06-04 08:21:31 Graham Williams>
 #
 # RPART TAB
 #
@@ -437,7 +437,10 @@ executeModelRPart <- function(action="build")
 
   resetTextview(TV)
   setTextview(TV,
-              "Summary of the Tree model (built using rpart):\n\n",
+              sprintf("Summary of the %s model for %s (built using %s):\n\n",
+                      commonName("rpart"),
+                      "Classification", # 080604 TODO put the right type
+                      "rpart"),
               collectOutput(print.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, .RPART)
