@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-04 07:51:21 Graham Williams>
+# Time-stamp: <2008-06-04 19:34:34 Graham Williams>
 #
 # DATA TAB
 #
@@ -262,9 +262,13 @@ executeDataTab <- function()
   if (changedDataTab())
   {
     if (theWidget("data_csv_radiobutton")$getActive())
-      if (! executeDataCSV()) return()
+    {
+      if (! executeDataCSV()) return(FALSE)
+    }
     else if (theWidget("data_arff_radiobutton")$getActive())
-      executeDataARFF()
+    {
+      if (! executeDataARFF()) return(FALSE)
+    }
     else if (theWidget("data_odbc_radiobutton")$getActive())
       executeDataODBC()
     else if (theWidget("data_rdata_radiobutton")$getActive())
@@ -717,12 +721,12 @@ executeDataARFF <- function()
   if (R.version$minor < "4.0")
   {
     infoDialog("Support for ARFF is only available in R 2.5.0 and beyond.")
-    return()
+    return(FALSE)
   }
 
   # Collect relevant data
 
-  filename <- theWidget("arff_filechooserbutton")$getFilename()
+  filename <- theWidget("data_filechooserbutton")$getFilename()
 
   # If no filename is given then return without doing anything.
 
@@ -730,34 +734,34 @@ executeDataARFF <- function()
   {
     errorDialog("No ARFF Filename has been chosen yet.",
                 "You must choose one before execution.")
-    return()
+    return(FALSE)
   }
   
   crs$dwd <<- dirname(filename)
 
   # We need the foreign package to read ARFF data.
   
-  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return()
+  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return(FALSE)
   lib.cmd <- "require(foreign, quietly=TRUE)"
   
   # If there is a model warn about losing it.
 
-  if (! overwriteModel()) return()
+  if (! overwriteModel()) return(FALSE)
 
-  ## Fix filename for MS - otherwise eval/parse strip the \\.
+  # Fix filename for MS - otherwise eval/parse strip the \\.
 
   if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
-  ## Generate commands to read the data and then display the structure.
+  # Generate commands to read the data and then display the structure.
 
   read.cmd <- sprintf('crs$dataset <<- read.arff("%s")', filename)
   str.cmd  <- "str(crs$dataset)"
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   startLog()
-  theWidget(TV)$setWrapMode("none") # On for welcome msg
-  resetTextview(TV)
+  ##theWidget(TV)$setWrapMode("none") # On for welcome msg
+  ##resetTextview(TV)
   
   appendLog("The foreign package provides a function to read arff.", lib.cmd)
   eval(parse(text=lib.cmd))
@@ -769,8 +773,8 @@ executeDataARFF <- function()
   setRattleTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
-                  collectOutput(str.cmd))
+  ##appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
+  ##                collectOutput(str.cmd))
   
   ## Update the select treeview and samples.
 
@@ -781,6 +785,8 @@ executeDataARFF <- function()
 ##  showDataViewButtons()
   
   setStatusBar("The ARFF data has been loaded:", crs$dataname)
+
+  return(TRUE)
 }
 
 executeDataODBC <- function()

@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.33.
+    version is 2.3.34.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+265 080605 Bug fix: use na.omit for interate over clusters in kmeans.
+           Bug fix: read of ARFF now works again.
+264 080604
 263 080602 Bug fix on no sampling but still msg about need execute.
 262 080531 Add size option for nnet.
            Ensure pmml.rpart generates at least 7 decimal points (David Locke)
