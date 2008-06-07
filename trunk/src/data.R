@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-07 07:16:23 Graham Williams>
+# Time-stamp: <2008-06-07 14:15:35 Graham Williams>
 #
 # DATA TAB
 #
@@ -203,7 +203,6 @@ on_data_csv_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    
     dataTabShow("data_filename_label",
                 "data_filechooserbutton",
                 "data_separator_label",

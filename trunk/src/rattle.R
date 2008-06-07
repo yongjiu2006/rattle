@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-07 12:47:12 Graham Williams>
+# Time-stamp: <2008-06-07 14:27:07 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -14,7 +14,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Jun 2008"
+VERSION.DATE <- "Released 07 Jun 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -440,16 +440,12 @@ rattle <- function(csvname=NULL, appname="Rattle")
   .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
   
   ########################################################################
-  #
-  # Now connect the callbacks
+  # Connect the callbacks.
   
   gladeXMLSignalAutoconnect(rattleGUI)
-  
-  # A friendly startup message in the status bar
-  
-  ##setStatusBar("Select a CSV filename to load into Rattle to get started.")
-  
-  # Some initialisations
+
+  ########################################################################
+  # User interface initialisations.
   
   initialiseVariableViews()
   
@@ -461,6 +457,10 @@ rattle <- function(csvname=NULL, appname="Rattle")
   .CLUSTER$setShowTabs(FALSE)
   crv$MODEL$setShowTabs(FALSE)
   .EVALUATE$setShowTabs(FALSE)
+
+  # Ensure the filechooserbutton by default will filter CSVs.
+
+  updateFilenameFilters("data_filechooserbutton", "CSV")
   
   # Do not enable ARFF option for versions before 2.5.0 where it was
   # not included in the foreign package.
@@ -4438,9 +4438,9 @@ executeExploreCorrelation <- function(dataset)
                              "\n\nWith", nvars, "variables the plot may take",
                              "some time to display, and the display will",
                              "be cramped.",
-                             "Consider identifying up to",
+                             "Consider identifying up to only",
                              crv$max.vars.correlation,
-                             "variables only as input variables.\n\n",
+                             "input variables.\n\n",
                              "Would you like to continue anyhow?")))
     return(FALSE)
   
