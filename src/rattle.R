@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-04 07:00:49 Graham Williams>
+# Time-stamp: <2008-06-07 12:47:12 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -118,6 +118,10 @@ rattle <- function(csvname=NULL, appname="Rattle")
   crv <<- list()
   crv$appname <<- appname
 
+  # Some global constants
+
+  crv$max.vars.correlation <<- 40
+  
   if (! packageIsAvailable("RGtk2"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
@@ -322,6 +326,7 @@ rattle <- function(csvname=NULL, appname="Rattle")
   crs <<- list(dataset=NULL,
                dataname=NULL,
                dwd=NULL, 	# Data Working Directory
+               mtime=NULL,	# Modification time of file
                pwd=NULL,	# Project Working Directory
                input=NULL,
                target=NULL,
@@ -662,12 +667,12 @@ resetRattle <- function()
 
   theWidget("sample_count_spinbutton")$setValue(0)
   theWidget("sample_checkbutton")$setActive(FALSE)
-  theWidget("target_categoric_radiobutton")$setActive(TRUE)
+  theWidget("target_type_radiobutton")$setActive(TRUE)
   
   ## 080520 Don't turn these off - it makes sesne to allow the user to
   ## set these options even before the dataset is loaded.
   
-  ##theWidget("target_type_label")$setSensitive(FALSE)
+  ##theWidget("target_type_radiobutton")$setSensitive(FALSE)
   ##theWidget("target_categoric_radiobutton")$setSensitive(FALSE)
   ##theWidget("target_numeric_radiobutton")$setSensitive(FALSE)
   
@@ -3728,7 +3733,7 @@ executeExplorePlot <- function(dataset)
   
   if (nhisplots > 0)
   {
-    ## Plot a histogram for numeric data.
+    # Plot a histogram for numeric data.
 
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
                       'col=rainbow(10))\n',
@@ -3741,7 +3746,8 @@ executeExplorePlot <- function(dataset)
     # If the data looks more categorical then do a more usual hist
     # plot.
 
-    altplot.cmd <- 'plot(as.factor(ds[ds$grp=="All",1]))'
+    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1],',
+                         'digits=2)), col=rainbow(10))')
 
     for (s in 1:nhisplots)
     {
@@ -4422,10 +4428,25 @@ executeExploreCorrelation <- function(dataset)
                  "No numeric data was found in the dataset.")
     return()
   }
-  
-  ## Construct the commands.
 
-  ## Deal with showing the missing values plot.
+  # Warn if there are too many variables. An alternative is to offer
+  # to just plot the variables with the highest amount of correlation.
+  
+  nvars <- eval(parse(text=sprintf("ncol(%s)", dataset)))
+  if (nvars > crv$max.vars.correlation &&
+      is.null(questionDialog("You have requested a Correlation plot.",
+                             "\n\nWith", nvars, "variables the plot may take",
+                             "some time to display, and the display will",
+                             "be cramped.",
+                             "Consider identifying up to",
+                             crv$max.vars.correlation,
+                             "variables only as input variables.\n\n",
+                             "Would you like to continue anyhow?")))
+    return(FALSE)
+  
+  # Construct the commands.
+
+  # Deal with showing the missing values plot.
   
   nas <- theWidget("correlation_na_checkbutton")$getActive()
   if (nas)
@@ -4918,6 +4939,7 @@ executeEvaluateTab <- function()
     
     filename <- theWidget("evaluate_filechooserbutton")$getFilename()
     crs$dwd <<- dirname(filename)
+    crs$mtime <<- urlModTime(filename)
 
     if (is.null(filename))
     {

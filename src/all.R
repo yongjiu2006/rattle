@@ -1,3 +1,4 @@
+cwd <- getwd()
 setwd("/home/gjw/projects/rattle/src")
 redo <- function() {source("all.R"); rattle()}
 source("rattle.R")
@@ -19,3 +20,4 @@ source("data.R")
 
 source("pmml.R")
 source("pmml.arules.R")
+setwd(cwd)
