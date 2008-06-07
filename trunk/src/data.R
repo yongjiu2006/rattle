@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-04 19:34:34 Graham Williams>
+# Time-stamp: <2008-06-07 07:16:23 Graham Williams>
 #
 # DATA TAB
 #
@@ -91,6 +91,15 @@ showDataViewButtons <- function(action=TRUE)
   theWidget("data_edit_button")$setSensitive(action)
 }  
 
+urlModTime <- function(filename)
+{
+  # Return the modification time of the file. Strip out any "file://"
+  # prefix to the filename. We note that this will not work for
+  # http:// urls.
+  
+  return(file.info(gsub("file:///", "/", filename))$mtime)
+}
+
 changedDataTab <- function()
 {
   # 080520 Determine whether any of the data source aspects of the
@@ -103,6 +112,13 @@ changedDataTab <- function()
     return(TRUE)
   
   if (basename(filename) != crs$dataname || dirname(filename) != crs$dwd)
+    return(TRUE)
+
+  # 080606 TODO Test if file date has changed, and if so, return TRUE.
+  # file.info does not handle URLs so this is no good at present.
+
+  now.mtime <- urlModTime(filename)
+  if (! is.na(crs$mtime) && ! is.na(now.mtime) && now.mtime > crs$mtime)
     return(TRUE)
   
   # Return FALSE if we did not detect any changes.
@@ -393,7 +409,8 @@ executeDataCSV <- function(filename=NULL)
 
 
   crs$dwd <<- dirname(filename)
-
+  crs$mtime <<- urlModTime(filename)
+  
   # If there is a model warn about losing it.
 
   if (! overwriteModel()) return(FALSE)
@@ -493,7 +510,8 @@ on_data_filechooserbutton_file_set <- function(button)
 
     filename <- theWidget("data_filechooserbutton")$getFilename()
     crs$dwd <<- dirname(filename)
-  
+    crs$mtime <<- urlModTime(filename)
+
     # Fix filename for MS - otherwise eval/parse strip the \\.
 
     if (isWindows()) filename <- gsub("\\\\", "/", filename)
@@ -738,6 +756,7 @@ executeDataARFF <- function()
   }
   
   crs$dwd <<- dirname(filename)
+  crs$mtime <<- urlModTime(filename)
 
   # We need the foreign package to read ARFF data.
   
@@ -909,6 +928,7 @@ executeDataRdata <- function()
   }
 
   crs$dwd <<- dirname(filename)
+  crs$mtime <<- urlModTime(filename)
 
   # Error if no dataset from the Rdata file has been chosen.
   
@@ -1465,25 +1485,6 @@ executeSelectTab <- function()
     target.levels <- length(levels(as.factor(crs$dataset[[target]])))
   else
     target.levels <- 0
-  
-  if (not.null(target)
-      && categoricTarget()
-      && target.levels > 20)
-  {
-    if (is.null(questionDialog("The column selected as a Target",
-                               sprintf("(%s)", target),
-                               "will be treated as a categorical variable",
-                               "since Target Type is set to Categoric.",
-                               "\n\nThe variable has more than 20 distinct",
-                               "values",
-                               sprintf("(%d in fact).", target.levels),
-                               "That is unusual and some model builders will",
-                               "take a long time.\n\nConsider using fewer",
-                               "classes for the target categorical variable",
-                               "or select Target Type as Numeric.",
-                               "\n\nDo you want to continue anyhow?")))
-      return()
-  }
 
   # Fail if there is more than one risk.
 
@@ -1647,6 +1648,30 @@ executeSelectTab <- function()
   .RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
   theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
   
+  # 080505 We auto decide whether the target looks like a categorical
+  # or numeric, but if it ends up being a categoric (the user
+  # overrides with the type radio button) with vary many classes,
+  # then complain!
+  
+  if (not.null(target)
+      && categoricTarget()
+      && target.levels > 10)
+  {
+    if (is.null(questionDialog("The column selected as a Target",
+                               sprintf("(%s)", target),
+                               "will be treated as a categorical variable",
+                               "since Target Type is set to Categoric.",
+                               "\n\nThe variable has more than 10 distinct",
+                               "values",
+                               sprintf("(%d in fact).", target.levels),
+                               "That is unusual and some model builders will",
+                               "take a long time.\n\nConsider using fewer",
+                               "classes for the target categorical variable",
+                               "or select Target Type as Numeric.",
+                               "\n\nDo you want to continue anyhow?")))
+      return()
+  }
+
   # Finished - update the status bar.
   
   setStatusBar("Variable roles noted.",
@@ -2333,6 +2358,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
 
+    unique.count <- length(unique(crs$dataset[[variables[i]]]))
+
+    numeric.var <- is.numeric(crs$dataset[[variables[i]]])
+    possible.categoric <- (unique.count <= 10 ||
+                           theWidget("target_categoric_radiobutton")$
+                           getActive())
+    
     # Convert internal class to printable form.
     
     prcl <- cl
@@ -2353,10 +2385,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               .COLUMN["risk"], variables[i] %in% risk,
               .COLUMN["ident"], variables[i] %in% ident,
               .COLUMN["ignore"], variables[i] %in% ignore,
-              .COLUMN["comment"], ifelse(missing.count > 0,
-                                        sprintf("%d missing values.",
-                                                missing.count),
-                                        ""))
+              .COLUMN["comment"], paste(ifelse(missing.count > 0,
+                                               sprintf("Missing: %d ",
+                                                       missing.count), ""),
+                                        ifelse(numeric.var,# &&
+                                               #possible.categoric,
+                                               sprintf("Unique: %d ",
+                                                       unique.count), ""),
+                                        sep=""))
 
     # Selected variables go into the other treeviews.
 
