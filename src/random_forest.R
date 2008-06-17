@@ -1,15 +1,13 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-05-14 06:23:16 Graham Williams>
-##
-## RANDOM FOREST TAB
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-06-10 16:26:54 Graham>
+#
+# RANDOM FOREST TAB
+#
+# Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
 
-########################################################################
-##
-## CALLBACKS
-##
+#######################################################################
+# CALLBACKS
 
 on_rf_importance_button_clicked <- function(button)
 {

@@ -1,12 +1,13 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-07 14:27:07 Graham Williams>
+# Time-stamp: <2008-06-10 11:14:53 Graham>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
 # The Rattle package is made of the following R source files:
 #
 # cluster.R	KMeans and Hierachical Clustering.
+# data.R	Handle Data management tasks.
 # execute.R	The Execute functionality.
 #
 
@@ -1802,10 +1803,11 @@ modalvalue <- function(x, na.rm=FALSE)
     u[which.max(frequencies)]
 }
 
-# TODO 080423 Change to RESCALE
-
 executeTransformNormalisePerform <- function()
 {
+  # TODO 080609 We should rename this in line with the interface change,
+  # since it is not necessarily normalisation but is rescaling.
+  
   # First determine which normalisation option has been chosen and the
   # prefix of the new variable that will be introduced.  Default to
   # NULL in the hope of picking up an error if something has gone wrong.
@@ -1965,7 +1967,7 @@ executeTransformNormalisePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  if (length(variables) > 0) startLog("Rescale A Variable")
+  ## 080609 - REMOVE if (length(variables) > 0) startLog("Rescale A Variable")
 
   # For MATRIX obtain the matrix totla first and then divide each
   # column by this.
@@ -1983,13 +1985,35 @@ executeTransformNormalisePerform <- function()
     
   for (v in variables)
   {
-    # Generate the command to copy the current variable into a new
-    # variable, prefixed appropraitely.
-
+    # Create the new name for the variable.
+    
     if (action %in% c("bygroup"))
       vname <- paste(vprefix, byvname, v, sep="_")
     else
       vname <- paste(vprefix, v, sep="")
+    # Check variable specific preconditions, and if we fail then
+    # proceed to next variable.
+
+    if (action == "medianad")
+    {
+      # 080609 For audit$Deductions this returns all NaN or Inf
+      # because the median is 0. We can see this with
+      # rescaler((crs$dataset[["Deductions"]]), "robust") So check for
+      # this and do nothing!
+
+      median.cmd <- sprintf('median(crs$dataset[["%s"]], na.rm=TRUE)', v)
+      if (eval(parse(text=median.cmd)) == 0)
+      {
+        warnDialog(sprintf('The variable "%s" has a median of 0.', v),
+                   "We can not compute the Median/MAD Rescaler",
+                   "for this variable.")
+        next()
+      }
+    }
+         
+    # Generate the command to copy the current variable into a new
+    # variable, prefixed appropraitely.
+
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
                         vname, v)
     cl <- class(crs$dataset[[v]])
