@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-05-31 22:45:39 Graham Williams>
+# Time-stamp: <2008-06-15 20:39:21 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -164,9 +164,19 @@ pmml <- function(model,
 pmmlRootNode <- function()
 {
   PMML.VERSION <- "3.1"
+  # 080615 - The xmlns= namespace addition causes a warning on calling
+  # getNodeSet unless we specify the namespace there:
+  # 	> doc <- xmlTreeParse("test.xml", useInternalNodes=TRUE)
+  #     > els <- getNodeSet(doc, "/PMML/DataDictionary/DataField")
+  #     Warning message:
+  #     using http://www.dmg.org/PMML-3_1 as prefix for default
+  #     namespace http://www.dmg.org/PMML-3_1 
+  #     > els <- getNodeSet(doc, "//DataField", c(p="http://www.dmg.org/PMML-3_1"))
+  # For now, don't include xmlns in the generated XML since none of the
+  # example on DMG use it.
   return(xmlNode("PMML",
                  attrs=c(version=PMML.VERSION,
-                   xmlns="http://www.dmg.org/PMML-3_1",
+                   # xmlns="http://www.dmg.org/PMML-3_1",
                    "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance")))
 }
 
@@ -175,9 +185,19 @@ pmmlRootNode <- function()
 pmml3.2RootNode <- function()
 {
   PMML.VERSION <- "3.2"
+  # 080615 - The xmlns= namespace addition causes a warning on using the 
+  # the XML in getNodeSet:
+  # 	> doc <- xmlTreeParse("test.xml", useInternalNodes=TRUE)
+  #     > els <- getNodeSet(doc, "/PMML/DataDictionary/DataField")
+  #     Warning message:
+  #     using http://www.dmg.org/PMML-3_2 as prefix for default
+  #     namespace http://www.dmg.org/PMML-3_2
+  #     > els <- getNodeSet(doc, "//DataField", c(p="http://www.dmg.org/PMML-3_2"))
+  # For now, don't include xmlns in the generated XML since none of the
+  # example on DMG use it.
   return(xmlNode("PMML",
                  attrs=c(version=PMML.VERSION,
-                   xmlns="http://www.dmg.org/PMML-3_2",
+                   # xmlns="http://www.dmg.org/PMML-3_2",
                    "xmlns:xsi"="http://www.w3.org/2001/XMLSchema-instance", 
                    "xsi:schemaLocation"=paste("http://www.dmg.org/PMML-3_2",
                      "http://www.dmg.org/v3-2/pmml-3-2.xsd"))))
@@ -1679,7 +1699,7 @@ pmml.rpart <- function(model,
 
   # PMML
 
-  pmml <- pmmlRootNode()
+  pmml <- pmml3.2RootNode()
 
   # PMML -> Header
 

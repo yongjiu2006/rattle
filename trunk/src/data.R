@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-07 14:15:35 Graham Williams>
+# Time-stamp: <2008-06-10 11:17:25 Graham>
 #
 # DATA TAB
 #
@@ -111,11 +111,14 @@ changedDataTab <- function()
   if (is.null(filename) || is.null(crs$dataname) || is.null(crs$dwd))
     return(TRUE)
   
-  if (basename(filename) != crs$dataname || dirname(filename) != crs$dwd)
+  if (basename(filename) != crs$dataname ||
+      dirname(URLdecode(filename)) != crs$dwd)
     return(TRUE)
 
   # 080606 TODO Test if file date has changed, and if so, return TRUE.
-  # file.info does not handle URLs so this is no good at present.
+  # file.info does not handle URLs so this is no good at present. Note
+  # that under MS/Windows this returns NA so we don't get a chance to
+  # notice updated files.
 
   now.mtime <- urlModTime(filename)
   if (! is.na(crs$mtime) && ! is.na(now.mtime) && now.mtime > crs$mtime)
@@ -2406,15 +2409,19 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Integer [%d to %d; mean=%d]",
+        dtype <- sprintf("Integer [%d to %d; mean=%d; median=%d]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
-                         as.integer(mean(crs$dataset[[variables[i]]], na.rm=TRUE)))
+                         as.integer(mean(crs$dataset[[variables[i]]],
+                                         na.rm=TRUE)),
+                         as.integer(median(crs$dataset[[variables[i]]],
+                                         na.rm=TRUE)))
       else if (cl == "numeric")
-        dtype <- sprintf("Numeric [%.2f to %.2f; mean=%.2f]",
+        dtype <- sprintf("Numeric [%.2f to %.2f; mean=%.2f; median=%.2f]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
-                         mean(crs$dataset[[variables[i]]], na.rm=TRUE))
+                         mean(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         median(crs$dataset[[variables[i]]], na.rm=TRUE))
       else if (substr(cl, 1, 6) == "factor")
         dtype <- sprintf("Categorical [%s levels]",
                          length(levels(crs$dataset[[variables[i]]])))
