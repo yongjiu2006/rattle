@@ -13,6 +13,7 @@
    </p>
 
 <pre>
+270 080619 Add xmlns back in and fix code to handle it.
 269 080618 Bug fix: medianad failed if median was 0.
            PMML: Remove xmlns=. It causes reading of PMML in R to be tricky.
            Bug fix: Code to check changed files needed to URLdecode filenames.
