@@ -55,7 +55,14 @@ R_SOURCE = \
 
 PSOURCE = \
 	src/pmml.R \
-	src/pmml.arules.R
+	src/pmml.arules.R \
+	src/pmml.kmeans.R \
+	src/pmml.ksvm.R \
+	src/pmml.lm.R \
+	src/pmml.nnet.R \
+	src/pmml.randomForest.R \
+	src/pmml.rpart.R \
+	src/pmml.rsf.R
 
 GLADE_SOURCE = src/rattle.glade
 
