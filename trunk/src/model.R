@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-05 06:37:49 Graham Williams>
+# Time-stamp: <2008-06-20 17:42:41 Graham Williams>
 #
 # MODEL TAB
 #
@@ -421,21 +421,9 @@ executeModelGLM <- function()
   
   TV <- "glm_textview"
 
-##  paradigm <- getParadigm()
-  
   # Currently only handling binary classification.
   
-##   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
-##   if (num.classes > 2)
-##   {
-##     errorDialog("Currently Rattle only handles logistic regression for",
-##                  "binary classification.",
-##                  sprintf("The %s dataset has %d classes.",
-##                          crs$dataname, num.classes))
-##     return(FALSE)
-##   }
-
-  ## Obtain the family
+  # Obtain the family
 
   family <- theWidget("glm_family_comboboxentry")$getActiveText()
   

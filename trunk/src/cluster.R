@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-04 22:06:04 Graham Williams>
+# Time-stamp: <2008-06-21 17:04:49 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -887,9 +887,9 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 ## }
 
 ########################################################################
-##
-## EXPORT
-##
+#
+# EXPORT
+#
 
 exportClusterTab <- function()
 {
@@ -919,10 +919,15 @@ exportKMeansTab <- function(file)
     return()
   }
 
+  # Do we export a model to PMML? If not then we export the acutal
+  # cluster assignment to CSV.
+  
   exportModel <- theWidget("kmeans_export_model_radiobutton")$getActive()
 
   if (exportModel)
   {
+    startLog("EXPORT KMEANS AS PMML")
+  
     # Require the pmml package
   
     lib.cmd <- "require(pmml, quietly=TRUE)"
@@ -969,9 +974,9 @@ exportKMeansTab <- function(file)
                                  "this file?")))
         return()
 
-    pmml.cmd <- "pmml(crs$kmeans)"
+    pmml.cmd <- sprintf('saveXML(pmml(crs$kmeans), "%s")', save.name)
     appendLog("Export the cluster as PMML.", pmml.cmd)
-    saveXML(eval(parse(text=pmml.cmd)), save.name)
+    eval(parse(text=pmml.cmd))
   
     # infoDialog("The PMML file", save.name, "has been written.")
 
@@ -979,6 +984,7 @@ exportKMeansTab <- function(file)
   }
   else # Export clusters to CSV, augmenting the original data.
   {
+    startLog("EXPORT KMEANS CLUSTER ASSIGNMENT AS CSV")
     
     # Obtain filename to write the clusters to.
   
