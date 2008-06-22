@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 14:49:15 Graham Williams>
+# Time-stamp: <2008-06-22 09:32:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -20,18 +20,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
-
-########################################################################
-# SVM
 #
-# Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
-# Date: 17 Jan 2008
+# SVM Module
+#
 # Implements a PMML exporter for ksvm objects (Support Vector Machines)
 #
-########################################################################
-
-
-# Function pmml.ksvm.Header
+# Author: Zementis, Inc. (www.zementis.com)
+# E-mail: info@zementis.com
+# Date: 17 Jan 2008
 
 pmml.ksvm.Header <- function(description, copyright, app.name)
 {

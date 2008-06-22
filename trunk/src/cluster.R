@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-21 17:04:49 Graham Williams>
+# Time-stamp: <2008-06-22 18:11:19 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -887,9 +887,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 ## }
 
 ########################################################################
-#
 # EXPORT
-#
 
 exportClusterTab <- function()
 {
@@ -978,8 +976,6 @@ exportKMeansTab <- function(file)
     appendLog("Export the cluster as PMML.", pmml.cmd)
     eval(parse(text=pmml.cmd))
   
-    # infoDialog("The PMML file", save.name, "has been written.")
-
     setStatusBar("The PMML file", save.name, "has been written.")
   }
   else # Export clusters to CSV, augmenting the original data.
@@ -1038,25 +1034,33 @@ exportKMeansTab <- function(file)
     clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
                     ifelse(theWidget("sample_checkbutton")$getActive(),
                                "crs$sample", ""), clnm)
+    # Check if there are missing values, and if not we don't need to
+    # be so complex!
+
+    missing <- length(eval(parse(text=clna))) > 0
     
     csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s, ],",
-                             "kmeans=crs$kmeans$cluster),",
-                              "data.frame(crs$dataset[%s, ][%s,],",
-                              "kmeans=NA))[as.character(sort(as.integer(",
+                              "kmeans=crs$kmeans$cluster)",
+                              "%s", # If non missing this is empty.
+                              ")[as.character(sort(as.integer(",
                               "rownames(crs$dataset[%s, ])))), ]"),
                         ifelse(theWidget("sample_checkbutton")$getActive(),
                                "crs$sample", ""),
                         clnm,
-                        ifelse(theWidget("sample_checkbutton")$getActive(),
-                               "crs$sample", ""),
-                        clna,
+                        ifelse(missing,
+                               sprintf(",data.frame(crs$dataset[%s, ][%s,], kmeans=NA)",
+                                       ifelse(theWidget("sample_checkbutton")$
+                                              getActive(), "crs$sample", ""),
+                                       clna),
+                               ""),
                         ifelse(theWidget("sample_checkbutton")$getActive(),
                                "crs$sample", "")
                         ##sprintf('"%s"', paste(idents, collapse='", "'))
                         )
-                          
-    appendLog("Generate data frame to export the clusters to CSV.", csv.cmd)
-    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
+
+    csv.cmd <- sprintf('write.csv(%s,  file="%s", row.names=FALSE)', csv.cmd, save.name)
+    appendLog("Generate data frame and export the clusters to CSV.", csv.cmd)
+    eval(parse(text=csv.cmd))
   
     setStatusBar("The CSV file", save.name, "has been written.")
     

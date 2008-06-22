@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-14 06:22:27 Graham Williams>
+# Time-stamp: <2008-06-22 16:34:17 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -420,12 +420,9 @@ exportAssociateTab <- function()
                                 "this file?")))
       return()
   
-  pmml.cmd <- "pmml(crs$apriori)"
+  pmml.cmd <- sprintf('saveXML(pmml(crs$apriori), "%s")', save.name)
   appendLog("Export association rules as PMML.", pmml.cmd)
-  saveXML(eval(parse(text=pmml.cmd)), save.name)
-
-  # Reduce chatter infoDialog("The PMML file", save.name, "has been written.")
+  eval(parse(text=pmml.cmd))
 
   setStatusBar("The PMML file", save.name, "has been written.")
-  
 }
