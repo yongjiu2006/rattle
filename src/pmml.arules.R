@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 14:49:22 Graham Williams>
+# Time-stamp: <2008-06-22 15:53:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -20,9 +20,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
-
-### PMML: Predictive Modelling Markup Language
-##
+#
+# ARules Module
+#
+# Implements a PMML exporter for arules objects (Association Rules)
+#
+# Author: 
+# E-mail: 
+# Date: 
+#
+# Conform to PMML 3.2 Graham Williams 080622
 
 markup <- function(x)
   gsub("<", "&lt;", gsub(">", "&gt;", gsub("&", "&amp;", x)))
@@ -37,16 +44,17 @@ pmml.rules <- function(model,
   #if (!inherits(model, "rules")) stop("Not a legitimate arules rules object")
   #require(XML, quietly=TRUE)
   #require(arules, quietly=TRUE)
-
   
-  ## PMML
-  pmml <- pmmlRootNode()
+  # PMML
 
-  ## PMML -> Header
+  pmml <- pmmlRootNode("3.2")
+
+  # PMML -> Header
 
   pmml <- append.XMLNode(pmml, pmmlHeader(description, copyright, app.name))
 
-  ## PMML -> DataDictionary
+  # PMML -> DataDictionary
+
   data.dictionary <- xmlNode("DataDictionary", attrs=c(numberOfFields = 2L))
   data.dictionary <- append.xmlNode(data.dictionary, list(
       xmlNode("DataField", attrs=c(name="transaction",
@@ -57,11 +65,13 @@ pmml.rules <- function(model,
 
   pmml <- append.XMLNode(pmml, data.dictionary)
 
-  ## association rule model
+  # Association rule model
+
   quality <- quality(model)
   is <- c(lhs(model),rhs(model))
 
-  ## fixme: why does the S4 dispatch not work?
+  # fixme: why does the S4 dispatch not work?
+
   is.unique <- getMethod("unique", "itemMatrix")(is)
 
   association.model <- xmlNode("AssociationModel", 

@@ -6,14 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.39.
+    version is 2.3.40.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+271 080622 Bug fix: kmeans export CSV with transforms failed (Yves Kem)
 270 080621 kmeans and rpart XML export updates to conform to PMML 3.2
+           Split pmml.r into constituent files per model class
+           Migrate all PMML to version 3.2 - not yet all tested
+           Return the CSV radio button to the GUI!!
+           Update PMML man pages
 269 080619 Add xmlns back in and fix code to handle it.
 268 080618 Bug fix: medianad failed if median was 0.
            PMML: Remove xmlns=. It causes reading of PMML in R to be tricky.

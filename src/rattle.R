@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-10 11:14:53 Graham>
+# Time-stamp: <2008-06-22 17:38:43 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Jun 2008"
+VERSION.DATE <- "Released 21 Jun 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -654,7 +654,8 @@ resetRattle <- function()
 
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
-
+  theWidget("kmeans_export_model_radiobutton")$setActive(TRUE)
+  
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
