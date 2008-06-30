@@ -6,14 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.41.
+    version is 2.3.42.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-272 080626 Fix determination of available R datasets and library datasets.
+273 080701 Update to pmml.rpart (Zementis)
+272 080630 Fix determination of available R datasets and library datasets.
            Include a blank family for Linear to suit lm
            Include Rattle version in error messages (Tony Nolan)
            Don't display Corpus radio button just yet (release to CRAN first)

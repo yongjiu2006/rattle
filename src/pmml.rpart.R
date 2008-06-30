@@ -98,7 +98,7 @@ pmml.rpart <- function(model,
   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
   count <- model$frame$n
   label <- labels(model, pretty=0, digits=7)
-  field <- label[1]
+  fieldLabel <- label[1]
   operator <- ""
   value <- "" #list("")
 
@@ -120,26 +120,26 @@ pmml.rpart <- function(model,
 
   for (i in 2:length(label))
   {
-    field <-  c(field, strsplit(label[i], '>|<|=')[[1]][1])
-    op <- substr(label[i], nchar(field[i])+1, nchar(field[i])+2)
+    fieldLabel <-  c(fieldLabel, strsplit(label[i], '>|<|=')[[1]][1])
+    op <- substr(label[i], nchar(fieldLabel[i])+1, nchar(fieldLabel[i])+2)
     if (op == ">=")
     {
       operator <- c(operator, "greaterOrEqual")
-      value <- c(value, substr(label[i], nchar(field[i])+3, nchar(label[i])))
+      value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
     }
     else if (op == "< ")
     {
       operator <- c(operator, "lessThan")
-      value <- c(value, substr(label[i], nchar(field[i])+3, nchar(label[i])))
+      value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
     }
     else if (substr(op, 1, 1) == "=")
     {
       operator <- c(operator, "isIn")
-      value <- c(value, substr(label[i], nchar(field[i])+2, nchar(label[i])))
+      value <- c(value, substr(label[i], nchar(fieldLabel[i])+2, nchar(label[i])))
     }
   }
 
-  node <- genBinaryTreeNodes(depth, id, count, score, field, operator, value ,
+  node <- genBinaryTreeNodes(depth, id, count, score, fieldLabel, operator, value ,
                              model, parent_ii, rows,"right")
 
   tree.model <- append.XMLNode(tree.model, node)
@@ -156,13 +156,13 @@ pmml.rpart <- function(model,
 #
 # Goal: create nodes for the tree (a recursive function)
 
-genBinaryTreeNodes <- function(depths, ids, counts, scores, fields,
+genBinaryTreeNodes <- function(depths, ids, counts, scores, fieldLabels,
                                ops, values,model, parent_ii, rows,position)
 {
   depth <- depths[1]
   count <- counts[1]
   score <- scores[1]
-  field <- fields[1]
+  fieldLabel <- fieldLabels[1]
   op <- ops[1]
   value <- values[1]
 
@@ -192,7 +192,7 @@ genBinaryTreeNodes <- function(depths, ids, counts, scores, fields,
 
   # Create the predicate for the node
 
-  if (field == "root")
+  if (fieldLabel == "root")
   {
     predicate <- xmlNode("True")
   }
@@ -202,17 +202,17 @@ genBinaryTreeNodes <- function(depths, ids, counts, scores, fields,
 
     # Add the primary predicate
     
-    predicate <- append.XMLNode(predicate,getPrimaryPredicates(field,op,value))
+    predicate <- append.XMLNode(predicate,getPrimaryPredicates(fieldLabel,op,value))
 
     # Add the surrogate predicates
     
-    predicate <- getSurrogatePredicates(predicate, ff, model$splits, parent_ii, position)
+    predicate <- getSurrogatePredicates(predicate, model, parent_ii, position)
   }
   else # When the node does not have surrogate predicates
   {
      # Add the primary predicate
     
-     predicate <- getPrimaryPredicates(field, op, value)
+     predicate <- getPrimaryPredicates(fieldLabel, op, value)
   }
   node <- append.XMLNode(node, predicate) 
 
@@ -236,9 +236,9 @@ genBinaryTreeNodes <- function(depths, ids, counts, scores, fields,
     split.point <- which(depths[c(-1,-2)] == depths[2]) + 1 # Binary tree
     lb <- 2:split.point
     rb <- (split.point + 1):length(depths)
-    left <- genBinaryTreeNodes(depths[lb], ids[lb], counts[lb], scores[lb], fields[lb],
+    left <- genBinaryTreeNodes(depths[lb], ids[lb], counts[lb], scores[lb], fieldLabels[lb],
                                ops[lb], values[lb], model, ii, rows[lb], "left")
-    right <- genBinaryTreeNodes(depths[rb], ids[rb],counts[rb], scores[rb], fields[rb],
+    right <- genBinaryTreeNodes(depths[rb], ids[rb],counts[rb], scores[rb], fieldLabels[rb],
                                 ops[rb], values[rb], model, ii, rows[rb], "right")  
   }
  
@@ -280,43 +280,118 @@ getPrimaryPredicates <- function(field,op,value)
 #
 # date: June, 2008
 ##############################################################################
-getSurrogatePredicates <- function(predicate,ff,splits,i,position)
+getSurrogatePredicates <- function(predicate, model,i,position)
 {
+    ff <- model$frame
     is.leaf <- (ff$var=='<leaf>')
     index <- cumsum(c(1, ff$ncompete + ff$nsurrogate + 1*(!is.leaf)))
 
     # j: indices of the surrogate predicates in the splits (list) for the current node
     j <- seq(1 +index[i] + ff$ncompete[i], length.out=ff$nsurrogate[i])
 
-    predicateNameList <- dimnames(splits)[[1]]
-    predicateSignList <- splits[,2]
-    predicateValueList <- splits[,4]
+    predicateNameList <- dimnames(model$splits)[[1]]
+    predicateSignList <- model$splits[,2]
+    predicateValueList <- model$splits[,4]
 
     # n: number of surrogate predicates in the current node
     n<- length(predicateNameList[j])
     currentNodePredicateNameList <- predicateNameList[j]
     currentNodeSignList <- predicateSignList[j]
     currentNodeValueList <- predicateValueList[j]
-
-    for (k in 1:n)
-    { 
-       if(position == "left") {
-          op <- "lessThan"
-          if(currentNodeSignList[[k]]>=0)
-          { 
-             op <- "greaterOrEqual"
-          }
-       } else {
-          op <- "greaterOrEqual"
-          if(currentNodeSignList[[k]]>=0)
-          {
-             op <- "lessThan"
-          }
-       }
-
-       predicate<- append.XMLNode(predicate,xmlNode("SimplePredicate",attrs=c(field=currentNodePredicateNameList[k], operator=op,
-                                  value=currentNodeValueList[[k]])))
+     
+    # for simple set predicate
+    digits=getOption("digits") 
+    temp <- model$splits[,2]
+    cuts <- vector(mode='character', length=nrow(model$splits))
+    for (k in 1:length(cuts)) 
+    {
+            if (temp[k] == -1)
+                cuts[k] <-paste("<", format(signif(model$splits[k,4], digits=digits)))
+            else if (temp[k] ==1)
+                cuts[k] <-paste("<", format(signif(model$splits[k,4], digits=digits)))
+            else cuts[k]<- paste(c("L", "-", "R")[model$csplit[model$splits[k,4], 1:temp[k]]], collapse='', sep='')
     }
+    currentNodeCutsList <- cuts[j]
+    field <- NULL
+    field$name <- as.character(attr(model$terms, "variables"))[-1]
+    number.of.fields <- length(field$name)
+    field$class <- attr(model$terms, "dataClasses")
+    target <- field$name[1]
+
+    for (i in 1:number.of.fields)
+    {
+        if (field$class[[field$name[i]]] == "factor") 
+        {
+           if (field$name[i] == target) 
+           {
+               field$levels[[field$name[i]]] <- attr(model, "ylevels")
+           } else
+           {
+               field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
+           }
+        }
+    }
+
+   # generate simple set predicate
+   for (k in 1:n)
+   {
+         if(position == "left")
+         {
+             if(currentNodeSignList[[k]]==1)
+             {
+                op <- "greaterOrEqual"
+             } else if (currentNodeSignList[[k]]== -1)
+             {
+                op <- "lessThan"
+             } else {
+                op <- "isIn"
+             }
+         } else if(position == "right")
+         {
+             if(currentNodeSignList[[k]]==1)
+             {
+                op <- "lessThan"
+             } else if (currentNodeSignList[[k]]==-1)
+             {
+                op <- "greaterOrEqual"
+             } else
+             {
+                op <- "isIn"
+             }
+         }
+
+         if (op == "isIn" && position == "left")
+         {
+             # simple set predicate for a left node
+             value1 <- strsplit(currentNodeCutsList[k],"")
+             value <- NULL
+             for(s in 1:length(value1[[1]])) 
+             {
+                 if(value1[[1]][s] == "L") 
+                 {
+                     value <-  paste(value, field$levels[[currentNodePredicateNameList[k]]][s],sep="")
+                     value <- paste(value,",",sep="") 
+                 }
+             }
+             predicate <-  append.XMLNode(predicate,getSimpleSetPredicate(currentNodePredicateNameList[k],op,value))
+         } else if( op =="isIn" && position == "right")
+         {
+             # simple set predicate for a right node
+             value1 <- strsplit(currentNodeCutsList[k],"")
+             value <- NULL
+             for(s in 1:length(value1[[1]])) {
+                if(value1[[1]][s] == "R") {
+                  value <-  paste(value, field$levels[[currentNodePredicateNameList[k]]][s],sep="")
+                  value <- paste(value,",",sep="")
+                }
+             }
+             predicate <-  append.XMLNode(predicate,getSimpleSetPredicate(currentNodePredicateNameList[k],op,value))
+         } else
+         {
+             predicate<- append.XMLNode(predicate,xmlNode("SimplePredicate",attrs=c(field=currentNodePredicateNameList[k], operator=op,
+                                  value=currentNodeValueList[[k]])))
+         }
+   }
     return(predicate)
 }
 
