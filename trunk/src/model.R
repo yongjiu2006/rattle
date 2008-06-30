@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-20 17:42:41 Graham Williams>
+# Time-stamp: <2008-06-30 17:59:24 Graham Williams>
 #
 # MODEL TAB
 #
@@ -441,9 +441,16 @@ executeModelGLM <- function()
   including <- not.null(included)
   subsetting <- sampling || including
   
-  # Assume logistic regression for binary classification for now.
-
   if (categoricTarget())
+    
+    # For a categoric variable we usually default to assuming
+    # proprtions data, and so we perform logistic regression, which
+    # uses a binomial distribution and a logit link function. However,
+    # the user can choose a different distriubtion/link pair.
+    #
+    # If we have a binary response it may be that we might consider
+    # using a loglog link rather than a logit link.
+
     glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -452,7 +459,15 @@ executeModelGLM <- function()
                      if (subsetting) "]",
                      ", family=", family,
                      ")", sep="")
+
   else if (numericTarget())
+
+    # For a numeric target we expect to produce the usual linear
+    # model. We could use glm to generate the model using the gaussian
+    # distribution and the identity link function. This will produce
+    # the same model as lm. But lm is faster and it also produces the
+    # R squared stats, so we use lm.
+    
     glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -556,10 +571,10 @@ exportRegressionTab <- function()
                                 "already exists. Do you want to overwrite",
                                 "this file?")))
       return()
-  
 
   pmml.cmd <- "pmml(crs$glm)"
-  appendLog("Export a regression model as PMML.", pmml.cmd)
+  appendLog("Export a regression model as PMML.",
+            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
   # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
@@ -824,16 +839,13 @@ exportSVMTab <- function()
                                 "already exists. Do you want to overwrite",
                                 "this file?")))
       return()
-  
 
   pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
-  appendLog("Export a SVM model as PMML.", pmml.cmd)
+  appendLog("Export a SVM model as PMML.",
+            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
-
   setStatusBar("The PMML file", save.name, "has been written.")
-  
 }
 
 ##----------------------------------------------------------------------

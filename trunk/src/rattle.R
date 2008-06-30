@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-22 17:38:43 Graham Williams>
+# Time-stamp: <2008-06-30 18:00:30 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Jun 2008"
+VERSION.DATE <- "Released 22 Jun 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -835,7 +835,8 @@ warnDialog <- function(...)
 errorDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
-                                ...)
+                                ...,
+                                sprintf("\n\n[%s Version %s]", crv$appname, VERSION))
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1638,18 +1639,17 @@ plotNetwork <- function(flow)
 # Shared callbacks
 #
 
-# Update a combo box with just the available data frames and matrices.
-
 update_comboboxentry_with_dataframes <- function(action, window)
 {
-  current <- theWidget("rdataset_combobox")$getActiveText()
+  # Update a combo box (Evaluate -> Score) with just the available
+  # data frames and matrices.
+
+  current <- theWidget("data_name_combobox")$getActiveText()
   
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
-                        cmd <- sprintf(paste("is.data.frame(%s) ||",
-                                             'inherits(%s,',
-                                             '"sqlite.data.frame")'), x, x)
+                        cmd <- sprintf("is.data.frame(%s)", x)
                         var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
                                           x, NULL), silent=TRUE)
                         if (inherits(var, "try-error"))
@@ -4839,23 +4839,20 @@ current.evaluate.tab <- function()
 }
 
 
-##----------------------------------------------------------------------
-##
-## Execution
-##
+#----------------------------------------------------------------------
+# Execution
 
 executeEvaluateTab <- function()
 {
-  # CHECK PRE-CONDITIONS:
+  # Check pre-conditions first.
   
-  #   Ensure a dataset exists.
+  # Ensure a dataset exists.
 
   if (noDatasetLoaded()) return()
 
   # Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
-##  paradigm <- getParadigm()
   
   #   Ensure we have at least one model to evaluate, otherwise warn
   #   the user and do nothing.
@@ -6671,8 +6668,6 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   
     # Apply the model to the dataset.
 
-##    paradigm <- getParadigm()
-    
     appendLog(sprintf(paste("%s: Obtain %s",
                             "for the %s model on %s."),
                       toupper(mtype),

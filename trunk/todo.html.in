@@ -7,6 +7,11 @@
     priorities and especially code.</p>
 
 <pre>
+080629 Capture transformations in PMML
+080627 Allow categorics with hclust
+080627 Auto normalise variables in clustering?
+080627 Move to using pam since can handle missing and categorics
+080626 Add a transpose option (Tony Nolan)
 080531 Migrate from libglade to GtkBuilder
 080529 Parallel Coords plot with target to colour lines (ggobi)
 080529 Add ADTrees to Rattle 

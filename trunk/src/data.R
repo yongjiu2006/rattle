@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-10 11:17:25 Graham>
+# Time-stamp: <2008-06-29 21:43:15 Graham Williams>
 #
 # DATA TAB
 #
@@ -235,14 +235,18 @@ on_data_rdata_radiobutton_toggled <- function(button)
                 "data_name_label",
                 "data_name_combobox")
     updateFilenameFilters("data_filechooserbutton", "Rdata")
+    cbox <- theWidget("data_name_combobox")
+    cbox$getModel()$clear()
   }
 }
 
 on_data_rdataset_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    dataTabShow("data_name_label",
-                "data_name_combobox")
+  {
+    dataTabShow("data_name_label", "data_name_combobox")
+    updateRDatasets()
+  }
 }
 
 on_data_library_radiobutton_toggled <- function(button)
@@ -265,6 +269,37 @@ on_data_odbc_radiobutton_toggled <- function(button)
                 "data_odbc_limit_spinbutton",
                 "data_odbc_believeNRows_checkbutton")
 }
+
+updateRDatasets <- function()
+{
+  # Update a combo box with just the available data frames and matrices.
+
+  dl <- unlist(sapply(ls(sys.frame(0)),
+                      function(x)
+                      {
+                        cmd <- sprintf(paste("is.data.frame(%s) ||",
+                                             'inherits(%s,',
+                                             '"sqlite.data.frame")'), x, x)
+                        var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
+                                          x, NULL), silent=TRUE)
+                        if (inherits(var, "try-error"))
+                          var <- NULL
+                        return(var)
+                      }))
+
+  cbox <- theWidget("data_name_combobox")
+  
+  if (not.null(dl))
+  {
+    cbox$getModel()$clear()
+    lapply(dl, cbox$appendText)
+    ## Set the selection to that which was already selected, if possible.
+#    if (not.null(current) && current %in% dl)
+#      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
+  }
+}
+
+  
 
 ########################################################################
 # EXECUTE
@@ -290,11 +325,15 @@ executeDataTab <- function()
     else if (theWidget("data_odbc_radiobutton")$getActive())
       executeDataODBC()
     else if (theWidget("data_rdata_radiobutton")$getActive())
+    {
       if (! executeDataRdata()) return()
+    }
     else if (theWidget("data_rdataset_radiobutton")$getActive())
       executeDataRdataset()
     else if (theWidget("data_library_radiobutton")$getActive())
-      executeDataLibrary()
+    {
+      if (! executeDataLibrary()) return()
+    }
 
     # Update the select treeview. This is done on a Data execute only
     # when a new dataset has been loaded. If the user has simply
@@ -973,7 +1012,7 @@ executeDataRdataset <- function()
   
   # Collect relevant data
 
-  dataset <- theWidget("rdataset_combobox")$getActiveText()
+  dataset <- theWidget("data_name_combobox")$getActiveText()
   
   if (is.null(dataset))
   {
@@ -997,8 +1036,8 @@ executeDataRdataset <- function()
   # Start logging and executing the R code.
 
   startLog()
-  theWidget(TV)$setWrapMode("none") # On for welcome msg
-  resetTextview(TV)
+  #theWidget(TV)$setWrapMode("none") # On for welcome msg
+  #resetTextview(TV)
   
   appendLog("LOAD R DATA FRAME",
           gsub('<<-', '<-', assign.cmd))
@@ -1014,8 +1053,8 @@ executeDataRdataset <- function()
   names(crs$dataset) <<- make.names(names(crs$dataset))
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
-               collectOutput(str.cmd), sep="")
+  #setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
+   #            collectOutput(str.cmd), sep="")
 
   ## Update the select treeview and samples.
 
@@ -1036,6 +1075,14 @@ executeDataLibrary <- function()
   
   dataset <- theWidget("data_name_combobox")$getActiveText()
 
+  if (is.null(dataset))
+  {
+    errorDialog("No dataset from the R libraries has been specified.",
+                "Please identify the name of the dataset",
+                "you wish to load using the Data Name chooser.")
+    return(FALSE)
+  }
+
   # Actual dataset name as known when loaded.
   
   adsname <- gsub('([^ :]*).*$', '\\1', unlist(strsplit(dataset, ":"))[1])
@@ -1050,14 +1097,6 @@ executeDataLibrary <- function()
 
   dspkg <- unlist(strsplit(dataset, ":"))[2]
 
-  if (is.null(dataset))
-  {
-    errorDialog("No dataset from the R libraries has been specified.",
-                "Please identify the name of the dataset",
-                "you wish to load using the Data Name chooser.")
-    return()
-  }
-
   # If there is a model then warn about losing it.
 
   if (! overwriteModel()) return()
@@ -1067,34 +1106,32 @@ executeDataLibrary <- function()
   assign.cmd <- sprintf(paste('data(list = "%s", package = "%s")\n',
                               'crs$dataset <<- %s', sep=""),
                         dsname, dspkg, adsname)
-  str.cmd <- "str(crs$dataset)"
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   startLog()
-##  theWidget(TV)$setWrapMode("none") # On for welcome msg
-##  resetTextview(TV)
   
-  appendLog("LOAD R DATASET",
-          gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD R DATASET", gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
-  crs$dataname <<- adsname
+  if (class(crs$dataset) != "data.frame")
+  {
+    errorDialog(sprintf("The selected dataset, '%s', from the '%s' package",
+                        adsname, dspkg),
+                "is not of class data frame (the data type).",
+                sprintf("Its data class is '%s.'", class(crs$dataset)),
+                "This is not currently supported by", crv$appname,
+                "and so it  can not be loaded. Perhaps choose a different",
+                "dataset from the library.")
+    return(FALSE)
+  }
+  
+  # crs$dataname <<- adsname
   setRattleTitle(crs$dataname)
   
-##  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-##  setTextview(TV, sprintf("Structure of %s.\n\n", adsname),
-##               collectOutput(str.cmd), sep="")
-
-  ## Update the select treeview and samples.
-
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-
-  # Enable the Data View button.
-
-##  showDataViewButtons()
-  
   setStatusBar("The R package data is now available.")
+
+  return(TRUE)
 }
 
 executeDataEntry <- function()
@@ -1250,11 +1287,10 @@ exportDataTab <- function()
                                 "already exists. Are you sure you want to overwrite",
                                 "this file?")))
       return()
+
   write.csv(crs$dataset, save.name, row.names=FALSE)
 
   setStatusBar("The dataset has been exported to", save.name)
-
-  infoDialog("The dataset has been exported to", save.name)
 
 }  
 
@@ -1450,9 +1486,10 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 executeSelectTab <- function()
 {
   # 080520 TODO May want to rename this as SELECT is no longer a tab
-  # but is not part of the DATA tab.
+  # but is not part of the DATA tab. Perhaps we call it
+  # resetSelections.
   
-  # Check for prerequisites.
+  # Check for pre-requisites.
   
   # Can not do any preparation if there is no dataset.
 
@@ -1596,8 +1633,8 @@ executeSelectTab <- function()
 
   ## 080413 Update MODEL types that are available.
 
-  # For example, with more than two classes we can't use Ada since the
-  # current package does not support more than 2 classes.
+  # With more than two classes we can't use AdaBoost since the current
+  # package does not support more than 2 classes.
 
   if (categoricTarget() && target.levels <= 2)
     theWidget("boost_radiobutton")$setSensitive(TRUE)
@@ -1616,6 +1653,13 @@ executeSelectTab <- function()
     theWidget("all_models_radiobutton")$setSensitive(TRUE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+
+    # For linear models, if it is categoric assume logistic regression
+    # - that is, default to binmoial distribution and the logit link
+    # function.
+
+    theWidget("glm_family_comboboxentry")$setActive(1)
+    
   }
   else if (numericTarget())
   {
@@ -1627,6 +1671,13 @@ executeSelectTab <- function()
     theWidget("all_models_radiobutton")$setSensitive(TRUE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(TRUE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
+
+    # For linear models, if it is numeric we are probably going to use
+    # a lm so set the default family to nothing! This is becasue lm
+    # simply does gaussian and an identity link function.
+
+    theWidget("glm_family_comboboxentry")$setActive(0)
+    
   }
   else # What else could it be? No target!
   {

@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.40.
+    version is 2.3.41.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+272 080626 Fix determination of available R datasets and library datasets.
+           Include a blank family for Linear to suit lm
+           Include Rattle version in error messages (Tony Nolan)
+           Don't display Corpus radio button just yet (release to CRAN first)
+           Bug fix: "parse" can't handle MS/Windows "\" in filenames.
 271 080622 Bug fix: kmeans export CSV with transforms failed (Yves Kem)
 270 080621 kmeans and rpart XML export updates to conform to PMML 3.2
            Split pmml.r into constituent files per model class
