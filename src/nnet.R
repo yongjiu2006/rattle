@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-31 21:50:06 Graham Williams>
+# Time-stamp: <2008-06-25 06:51:17 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -207,7 +207,8 @@ exportNNetTab <- function()
   
 
   pmml.cmd <- "pmml(crs$nnet)"
-  appendLog("Export a neural net as PMML.", pmml.cmd)
+  appendLog("Export a neural net as PMML.",
+            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
   # Be less chatty infoDialog("The PMML file", save.name, "has been written.")

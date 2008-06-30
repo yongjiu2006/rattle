@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-22 16:34:17 Graham Williams>
+# Time-stamp: <2008-06-30 17:44:38 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -229,10 +229,10 @@ plotAssociateFrequencies <- function()
   {
     errorDialog("Associations are calculated only for categorical data.",
                 "No categorical variables were found in the dataset",
-                "from amongst those having an input role.",
+                "from amongst those having an Input role.",
                 "If you wanted a basket analysis with the Target variable",
                 "listing the items, and the Ident variable identifying",
-                "the baskets, then please check the Baskets button.")
+                "the baskets, then please click the Baskets button.")
     return()
   }
 
@@ -420,9 +420,14 @@ exportAssociateTab <- function()
                                 "this file?")))
       return()
   
-  pmml.cmd <- sprintf('saveXML(pmml(crs$apriori), "%s")', save.name)
-  appendLog("Export association rules as PMML.", pmml.cmd)
-  eval(parse(text=pmml.cmd))
+  # We can't pass "\" in a filename to the parse command in
+  # MS/Windows so we have to run the save/write command separately,
+  # i.e., not inside the string thaat is being parsed.
+
+  pmml.cmd <- 'pmml(crs$apriori)'
+  appendLog("Export association rules as PMML.",
+            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
 
   setStatusBar("The PMML file", save.name, "has been written.")
 }

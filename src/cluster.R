@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-22 18:11:19 Graham Williams>
+# Time-stamp: <2008-06-25 06:44:05 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -972,9 +972,15 @@ exportKMeansTab <- function(file)
                                  "this file?")))
         return()
 
-    pmml.cmd <- sprintf('saveXML(pmml(crs$kmeans), "%s")', save.name)
-    appendLog("Export the cluster as PMML.", pmml.cmd)
-    eval(parse(text=pmml.cmd))
+    pmml.cmd <- "pmml(crs$kmeans)"
+
+    # We can't pass "\" in a filename to the parse command in
+    # MS/Windows so we have to run the save/write command separately,
+    # i.e., not inside the string thaat is being parsed.
+
+    appendLog("Export the cluster as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
   
     setStatusBar("The PMML file", save.name, "has been written.")
   }
@@ -1012,7 +1018,7 @@ exportKMeansTab <- function(file)
       return()
     }
 
-    if (get.extension(save.name) == "")
+    if (get.extension(save.name) != "csv")
       save.name <- sprintf("%s.csv", save.name)
     
     if (file.exists(save.name))
@@ -1058,12 +1064,14 @@ exportKMeansTab <- function(file)
                         ##sprintf('"%s"', paste(idents, collapse='", "'))
                         )
 
-    csv.cmd <- sprintf('write.csv(%s,  file="%s", row.names=FALSE)', csv.cmd, save.name)
-    appendLog("Generate data frame and export the clusters to CSV.", csv.cmd)
-    eval(parse(text=csv.cmd))
+    # We can't pass "\" in a filename to the parse command in
+    # MS/Windows so we have to run the save/write command separately,
+    # i.e., not inside the string thaat is being parsed.
+
+    appendLog("Generate data frame and export the clusters to CSV.",
+              sprintf('write.csv(%s, file="%s", row.names=FALSE)', csv.cmd, save.name))
+    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
   
     setStatusBar("The CSV file", save.name, "has been written.")
-    
   }
-
 }

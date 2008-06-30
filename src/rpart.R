@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-21 15:30:29 Graham Williams>
+# Time-stamp: <2008-06-25 06:41:05 Graham Williams>
 #
 # RPART TAB
 #
@@ -910,13 +910,15 @@ exportRpartTab <- function()
                                 "this file?")))
       return()
   
-
-  pmml.cmd <- sprintf('saveXML(pmml(crs$rpart), "%s")', save.name)
-  appendLog("Export a decision tree as PMML.", pmml.cmd)
-  eval(parse(text=pmml.cmd))
-
-  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
-
-  setStatusBar("The PMML file", save.name, "has been written.")
+  # We can't pass "\" in a filename to the parse command in MS/Windows
+  # so we have to run the save/write command separately, i.e., not
+  # inside the string thaat is being parsed.
   
+  pmml.cmd <- "pmml(crs$rpart)"
+  appendLog("Export a decision tree as PMML.",
+            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+  eval(parse(text=pmml.cmd))
+  saveXML(eval(parse(text=pmml.cmd)), save.name)
+          
+  setStatusBar("The PMML file", save.name, "has been written.")
 }

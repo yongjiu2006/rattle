@@ -922,7 +922,6 @@
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="data_corpus_radiobutton">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">Load a collection of documents for text mining.</property>
                         <property name="label" translatable="yes">Corpus</property>
@@ -5524,9 +5523,10 @@ ANOVA RBF (anovadot)</property>
                             <child>
                               <widget class="GtkComboBoxEntry" id="glm_family_comboboxentry">
                                 <property name="visible">True</property>
-                                <property name="items" translatable="yes">binomial(logit)
-gaussian(identity)
-poisson(log)</property>
+                                <property name="items" translatable="yes">
+binomial(logit)
+poisson(log)
+gaussian(identity)</property>
                                 <child internal-child="entry">
                                   <widget class="GtkEntry" id="comboboxentry-entry2">
                                     <property name="visible">True</property>
