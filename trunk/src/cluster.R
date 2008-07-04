@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-25 06:44:05 Graham Williams>
+# Time-stamp: <2008-07-03 22:00:13 Graham>
 #
 # Implement cluster functionality.
 #
@@ -922,6 +922,10 @@ exportKMeansTab <- function(file)
   
   exportModel <- theWidget("kmeans_export_model_radiobutton")$getActive()
 
+  # TODO 080703 request a file, allowing either .csv or .xml
+  # extension, and then take the appropriate action, rather than
+  # having that as a radio button choice.
+  
   if (exportModel)
   {
     startLog("EXPORT KMEANS AS PMML")
