@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-30 18:00:30 Graham Williams>
+# Time-stamp: <2008-07-05 09:25:40 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 30 Jun 2008"
+VERSION.DATE <- "Released 01 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -579,9 +579,28 @@ rattle <- function(csvname=NULL, appname="Rattle")
     executeDataCSV(csvname)
   }
 
+  # Tune the interface to suit RStat
+
+  if (crv$appname == "RStat") tuneRStat()
+  
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
   
   invisible()
+}
+
+tuneRStat <- function()
+{
+  # Data -> Weight
+  
+  theWidget("weight_label")$hide()
+  theWidget("weight_entry")$hide()
+
+  # Explore -> Summary -> Find
+  
+  theWidget("summary_find_label")$hide()
+  theWidget("summary_find_entry")$hide()
+  theWidget("summary_find_button")$hide()
+  theWidget("summary_next_button")$hide()
 }
 
 resetRattle <- function()
@@ -889,10 +908,10 @@ noDatasetLoaded <- function()
   if (is.null(crs$dataset))
   {
     errorDialog("No dataset has been loaded at this time.",
-                 "At a minimum, please load a dataset from the Data tab",
-                 "before attempting any other operation.",
-                 "Be sure to Execute the Data tab once the",
-                 "data source has been specified.")
+                "\n\nAt a minimum, please load a dataset from the Data tab",
+                "before attempting any other operation.",
+                "\n\nBe sure to Execute the Data tab once the",
+                "data source has been specified.")
     return(TRUE)
   }
   else
@@ -2889,7 +2908,7 @@ executeTransformCleanupPerform <- function()
 
 on_summary_radiobutton_toggled <- function(button)
 {
-  separator       <- theWidget("explore_vseparator")
+  #separator       <- theWidget("explore_vseparator")
   summary.button  <- theWidget("summary_checkbutton")
   describe.button <- theWidget("describe_checkbutton")
   basics.button   <- theWidget("basics_checkbutton")
@@ -2899,7 +2918,7 @@ on_summary_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
-    separator$show()
+    #separator$show()
     summary.button$show()
     describe.button$show()
     basics.button$show()
@@ -2909,7 +2928,7 @@ on_summary_radiobutton_toggled <- function(button)
   }
   else
   {
-    separator$hide()
+    #separator$hide()
     summary.button$hide()
     describe.button$hide()
     basics.button$hide()
@@ -2922,7 +2941,7 @@ on_summary_radiobutton_toggled <- function(button)
 
 on_explot_radiobutton_toggled <- function(button)
 {
-  separator <- theWidget("explore_vseparator")
+  #separator <- theWidget("explore_vseparator")
   barbutton <- theWidget("benford_bars_checkbutton")
   absbutton <- theWidget("benford_abs_radiobutton")
   posbutton <- theWidget("benford_pos_radiobutton")
@@ -2933,7 +2952,7 @@ on_explot_radiobutton_toggled <- function(button)
   if (button$getActive()) 
   {
     .EXPLORE$setCurrentPage(.EXPLORE.PLOT.TAB)
-    separator$show()
+    #separator$show()
     barbutton$show()
     absbutton$show()
     posbutton$show()
@@ -2943,7 +2962,7 @@ on_explot_radiobutton_toggled <- function(button)
   }
   else
   {
-    separator$hide()
+    #separator$hide()
     barbutton$hide()
     absbutton$hide()
     posbutton$hide()
@@ -2962,17 +2981,17 @@ on_ggobi_radiobutton_toggled <- function(button)
 
 on_correlation_radiobutton_toggled <- function(button)
 {
-  separator <- theWidget("explore_vseparator")
+  #separator <- theWidget("explore_vseparator")
   nabutton  <- theWidget("correlation_na_checkbutton")
   if (button$getActive()) 
   {
     .EXPLORE$setCurrentPage(.EXPLORE.CORRELATION.TAB)
-    separator$show()
+    #separator$show()
     nabutton$show()
   }
   else
   {
-    separator$hide()
+    #separator$hide()
     nabutton$hide()
   }
   setStatusBar()
@@ -3131,8 +3150,8 @@ summarySearch <- function(tv, search.str, start.iter)
   tvb <- tv$getBuffer()
   if (found$retval)
   {
-    tvb$selectRange(found$match_start, found$match_end)
-    last.search.pos <-tvb$createMark('last.search.pos', found$match_end)
+    tvb$selectRange(found$match.start, found$match.end)
+    last.search.pos <-tvb$createMark('last.search.pos', found$match.end)
 
     tv$scrollToMark(last.search.pos, 0.2)
     while(gtkEventsPending()) gtkMainIteration()
@@ -3164,9 +3183,8 @@ executeExploreTab <- function()
 
   # Ensure Sample does not require executing.
 
-  use.sample <- theWidget("explore_sample_checkbutton")$getActive()
   sampling <- theWidget("sample_checkbutton")$getActive()
-  if (use.sample && sampleNeedsExecute()) return()
+  if (sampling && sampleNeedsExecute()) return()
 
   # We generate a string representing the subset of the dataset on
   # which the exploration is to be performed. This is then passed to
@@ -3174,7 +3192,7 @@ executeExploreTab <- function()
 
   vars <- getIncludedVariables(risk=TRUE)
   dataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                     ifelse(use.sample && sampling,"crs$sample", ""),
+                     ifelse(sampling, "crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
 
   # For the distribution plot, we do list all variables in the
@@ -3185,7 +3203,7 @@ executeExploreTab <- function()
   # "avdataset".
 
   avdataset <- sprintf("%s[%s,]", "crs$dataset",
-                     ifelse(use.sample && sampling,"crs$sample", ""))
+                     ifelse(sampling, "crs$sample", ""))
   
   vars <- getIncludedVariables(numonly=TRUE)
   # TODO 060606 The question here is whether NULL means all variables
@@ -3195,14 +3213,14 @@ executeExploreTab <- function()
   #  ndataset <- NULL
   #else
     ndataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                        ifelse(use.sample && sampling,"crs$sample", ""),
+                        ifelse(sampling, "crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
   # Numeric input variables
 
   vars <- inputVariables(numonly=TRUE)
   nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
-                       ifelse(use.sample && sampling,"crs$sample", ""),
+                       ifelse(sampling, "crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
   # Dispatch
@@ -3230,9 +3248,9 @@ executeExploreSummary <- function(dataset)
 {
   TV <- "summary_textview"
 
-  ## Get the current state of the relevant buttons.
+  # Get the current state of the relevant buttons.
   
-  use.sample  <- theWidget("explore_sample_checkbutton")$getActive()
+  use.sample  <- theWidget("sample_checkbutton")$getActive()
   do.summary  <- theWidget("summary_checkbutton")$getActive()
   do.describe <- theWidget("describe_checkbutton")$getActive()
   do.basics   <- theWidget("basics_checkbutton")$getActive()
@@ -3566,7 +3584,7 @@ executeExplorePlot <- function(dataset)
   
   # Check for sampling.
   
-  use.sample <- theWidget("explore_sample_checkbutton")$getActive()
+  use.sample <- theWidget("sample_checkbutton")$getActive()
   sampling  <- use.sample && not.null(crs$sample)
 
   # Record other options.
@@ -3664,40 +3682,42 @@ executeExplorePlot <- function(dataset)
                             sprintf('xlab="%s",', target)),
                      'notch=TRUE)')
 
-    ## Based on an example from Jim Holtman on r-help 070406.
+    # Based on an example from Jim Holtman on r-help 070406.
     
     annotate.cmd <- paste("for (i in seq(ncol(bp$stats)))",
                           "{text(i,",
-                          "bp$stats[,i]-0.02*(max(ds$dat)-min(ds$dat)),",
+                          "bp$stats[,i] - 0.02*(max(ds$dat, na.rm=TRUE)",
+                          "- min(ds$dat, na.rm=TRUE)),",
                           "labels=bp$stats[,i])}")
     
     lib.cmd <- "require(doBy, quietly=TRUE)"
     
-    ## TODO: Try using "by" instead of needing another package to
-    ## provide summaryBy. Also, the new version of doBy (061006) seems
-    ## to be outputting extra status information that makes the R
-    ## Console a little chatty unneccessarily - perhaps this will
-    ## disappear again - it looks like debugging information!
-    ##
-    ## status:
-    ## lhsvar     : dat 
-    ## rhsvar     : grp 
-    ## idvar      :  
-    ## fun.names  : mean 
-    ## varPrefix  : mean 
-    ## newNames   : mean.dat 
+    # TODO: Try using "by" instead of needing another package to
+    # provide summaryBy. Also, the new version of doBy (061006) seems
+    # to be outputting extra status information that makes the R
+    # Console a little chatty unneccessarily - perhaps this will
+    # disappear again - it looks like debugging information!
+    #
+    # status:
+    # lhsvar     : dat 
+    # rhsvar     : grp 
+    # idvar      :  
+    # fun.names  : mean 
+    # varPrefix  : mean 
+    # newNames   : mean.dat 
 
-    ## Only use summaryBy if there is a target, because it fails if
-    ## there is actually only one group in the data. Might be a new
-    ## bug in the doBy package.
+    # Only use summaryBy if there is a target, because it fails if
+    # there is actually only one group in the data. Might be a new
+    # bug in the doBy package.
     
     if (length(targets) > 1)
       mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
-                        "summaryBy(dat ~ grp, data=ds, FUN=mean)$dat.mean,",
+                        "summaryBy(dat ~ grp, data=ds,",
+                        "FUN=mean, na.rm=TRUE)$dat.mean,",
                         "pch=8)")
     else
       mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
-                        "mean(ds$dat),",
+                        "mean(ds$dat, na.rm=TRUE),",
                         "pch=8)")
     
     for (s in 1:nboxplots)

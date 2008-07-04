@@ -6,13 +6,20 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.42.
+    version is 2.3.43.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+    080705 Bug: Load project ensure not reload data on Execute (Linda Clayton)
+           Explore will use sample if Data sample active (Peter Helmstedt)
+           Improve usability of Target Type radio buttons.
+           Bug: Find in Summary TV needed var name updates.
+           Remove Data.Weights and Explore.Summary.Find for RStat
+           Fix changedDataTab for files with spaces in name (Gary Issar)
+           Fix plot annotation (was failing on NAs)
 273 080701 Update to pmml.rpart (Zementis)
 272 080630 Fix determination of available R datasets and library datasets.
            Include a blank family for Linear to suit lm

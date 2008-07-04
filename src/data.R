@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-29 21:43:15 Graham Williams>
+# Time-stamp: <2008-07-05 09:17:11 Graham Williams>
 #
 # DATA TAB
 #
@@ -27,14 +27,13 @@
 # anyone be interested in manually entering some data - use Gnumeric
 # or some other spreadsheet to do that.
 #
-########################################################################
 
 ########################################################################
 # UTILITIES
 
 overwriteModel <- function()
 {
-  # 080523 If a model exists then wanr the user abuot losing the model
+  # 080523 If a model exists then warn the user about losing the model
   # on loading a new dataset. Perhaps this could be generalised to any
   # kind of opration that replaces the current model.
   
@@ -45,8 +44,8 @@ overwriteModel <- function()
                                    "been saved.",
                                    "If you choose not to continue",
                                    "you can save the project, and then load",
-                                   "the new dataset.",
-                                   "\n\nDo you wish to continue, and overwrite",
+                                   "the new dataset.\n",
+                                   "\nDo you wish to continue, and overwrite",
                                    "the old project?")))
   else
     return(TRUE)
@@ -56,7 +55,8 @@ dataTabShow <- function(...)
 {
   # A support function to display the indicated widgets and hide all
   # others, within the data tab. When new widgets are added to the tab
-  # be sure to add it to the list of known widgets here.
+  # through editting the XML file with glade, be sure to add it to the
+  # list of known widgets here.
   
   widgets <- c(...)
   known <- c("data_filename_label",
@@ -111,7 +111,7 @@ changedDataTab <- function()
   if (is.null(filename) || is.null(crs$dataname) || is.null(crs$dwd))
     return(TRUE)
   
-  if (basename(filename) != crs$dataname ||
+  if (URLdecode(basename(filename)) != crs$dataname ||
       dirname(URLdecode(filename)) != crs$dwd)
     return(TRUE)
 
@@ -391,8 +391,9 @@ executeDataTab <- function()
 
 executeDataCSV <- function(filename=NULL)
 {
+
   # Either a filename is supplied in the function call or a filename
-  # is expected to be available in the data_csv_filechooserbutton. This
+  # is expected to be available in the data_filechooserbutton. This
   # could be either a CSV or TXT file. If no filename is supplied,
   # then give the user the option to load a sample dataset (for now,
   # the audit dataset).
@@ -1317,7 +1318,8 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(TRUE)
     theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
     theWidget("sample_seed_button")$setSensitive(TRUE)
-    theWidget("explore_sample_checkbutton")$setSensitive(TRUE)
+    theWidget("explore_sample_label")$show()
+    theWidget("explore_vseparator")$show()
   }
   else
   {
@@ -1327,8 +1329,8 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(FALSE)
     theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
     theWidget("sample_seed_button")$setSensitive(FALSE)
-    theWidget("explore_sample_checkbutton")$setActive(FALSE)
-    theWidget("explore_sample_checkbutton")$setSensitive(FALSE)
+    theWidget("explore_sample_label")$hide()
+    theWidget("explore_vseparator")$hide()
   }
   crs$sample <<- NULL
   setStatusBar()

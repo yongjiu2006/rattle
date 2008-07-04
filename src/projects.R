@@ -1,10 +1,25 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-04-27 12:10:13 Graham Williams>
-##
-## Project functionality.
-##
-## Copyright (c) 2006 Graham Williams, Togaware.com, GPL Version 2
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-07-03 20:48:32 Graham>
+#
+# Project functionality.
+#
+# Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 on_new_activate <- function(action, window)     { newProject()  }
 on_open_activate <- function(action, window)    { loadProject() }
@@ -43,12 +58,12 @@ newProject <- function()
 saveProject <- function()
 {
 
-  ## Pre-conditions
+  # Pre-conditions
   
   if (noDatasetLoaded()) return()
   if (variablesHaveChanged("saving the project")) return()
 
-  ## Obtain filename to save to
+  # Obtain filename to save to
   
   dialog <- gtkFileChooserDialog("Save Project", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
@@ -92,8 +107,12 @@ saveProject <- function()
                                 "this file?")))
       return()
 
-  ## Save all of the text views to be restored on a load.
-  ## Put the following into a function and call for each textview.
+  # Save the filename to restore on reloading.
+
+  crs$filename <<- theWidget("data_filechooserbutton")$getUri()
+
+  # Save all of the text views to be restored on a load.
+  # Put the following into a function and call for each textview.
 
   crs$text$summary <<- getTextviewContent("summary_textview")
   crs$text$correlation <<- getTextviewContent("correlation_textview")
@@ -110,12 +129,12 @@ saveProject <- function()
   crs$text$roc <<- getTextviewContent("roc_textview")
   crs$text$log <<- getTextviewContent("log_textview")
 
-  ## Save Transform variables selections - not sure it is really
-  ## needed, but follow the template!
+  # Save Transform variables selections - not sure it is really
+  # needed, but follow the template!
 
   crs$zero <<- getSelectedVariables("zero")
   
-  ## Save Distribution variable selections
+  # Save Distribution variable selections
 
   crs$boxplot <<- getSelectedVariables("boxplot")
   crs$hisplot <<- getSelectedVariables("hisplot")
@@ -124,12 +143,12 @@ saveProject <- function()
   crs$barplot <<- getSelectedVariables("barplot")
   crs$dotplot <<- getSelectedVariables("dotplot")
 
-  ## Save seed information
+  # Save seed information
 
   crs$sample.seed <<- theWidget("sample_seed_spinbutton")$getValue()
   crs$kmeans.seed <<- theWidget("kmeans_seed_spinbutton")$getValue()
   
-  ## Save Model options
+  # Save Model options
 
   if (not.null(crs$rpart))
   {
@@ -169,11 +188,11 @@ saveProject <- function()
 
 loadProject <- function()
 {
-  ## Check if crs exists and if so warn about losing the current project.
+  # Check if crs exists and if so warn about losing the current project.
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to load a project.",
+    if (is.null(questionDialog("You have chosen to load a project.\n\n",
                                "This will clear the old project (dataset and",
                                "models) which may not have been saved.",
                                "If you choose not to continue you can save",
@@ -186,7 +205,7 @@ loadProject <- function()
       return()
   }
 
-  ## Request the rattle filename to be loaded
+  # Request the rattle filename to be loaded
 
   dialog <- gtkFileChooserDialog("Open Project", NULL, "load",
                                  "gtk-cancel", GtkResponseType["cancel"],
@@ -225,7 +244,7 @@ loadProject <- function()
                                 "does not exist?")))
       return()
   
-  ## Load the file
+  # Load the file
 
   set.cursor("watch")
 
@@ -243,11 +262,25 @@ loadProject <- function()
 
   # DATA
 
-  theWidget("data_filechooserbutton")$setFilename("")
+  # Reset the file chooser button.
+  
+  theWidget("data_filechooserbutton")$setUri(crs$filename)
   
   crs$dataname <<- crs$dataname
   crs$dataset <<- crs$dataset
 
+  # Restore the filename options.
+  
+  crs$filename <<- crs$filename
+  crs$dwd <<- crs$dwd
+
+  # Make sure we don't attempt to reload the file on executing the
+  # Data tab, and thereby overwriting the current data, losing all of
+  # the work already done on it. Set the modified time for the dataset
+  # to be apparently now.
+
+  crs$mtime <<- Sys.time()
+  
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
                      crs$zero,
@@ -258,7 +291,7 @@ loadProject <- function()
   if (not.null(crs$risk))
     theWidget("evaluate_risk_label")$setText(crs$risk)
   
-  ## VARIABLES
+  # VARIABLES
 
   if (not.null(crs$weights))
   {
