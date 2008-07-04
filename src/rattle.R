@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-05 09:25:40 Graham Williams>
+# Time-stamp: <2008-07-05 09:55:26 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 Jul 2008"
+VERSION.DATE <- "Released 05 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -389,14 +389,6 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
-  # Pages that are common to all paradigms. TODO 080519 Perhaps no
-  # longer needed with the removal of paradigms.
-
-  crv$NOTEBOOK.COMMON.NAMES <<- c(crv$NOTEBOOK.DATA.NAME,
-                              crv$NOTEBOOK.TRANSFORM.NAME,
-                              crv$NOTEBOOK.SELECT.NAME,
-                              crv$NOTEBOOK.LOG.NAME)
-  
   # Define the TRANSFORM tab pages
   
   crv$TRANSFORM               <<- theWidget("transform_notebook")
@@ -518,7 +510,7 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   # 080510 Display a relevant welcome message in the textview.
 
-## PUT THE MAIN TEST HERE INTO THE ABOUT.
+## PUT THE MAIN TEXT HERE INTO THE ABOUT.
 ##
 ##   if (crv$appname == "Rattle")
 ##   {
