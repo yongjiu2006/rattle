@@ -28,3 +28,8 @@ source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
 setwd(cwd)
+
+#library(playwith)
+#autoplay(on=TRUE, ask=TRUE)
+#rattle(tooltiphack=TRUE)
+#rattle()

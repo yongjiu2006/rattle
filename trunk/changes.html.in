@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.44.
+    version is 2.3.45.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+276 080706
+Add tooltiphack to see if we can get tooltips on GNU/Linux
+Start moving Dialogs to not use RGtk2 if it is not avialble.
+275 080705 Tidyup
 274 080704 Bug: Load project ensure not reload data on Execute (Linda Clayton)
            Explore will use sample if Data sample active (Peter Helmstedt)
            Improve usability of Target Type radio buttons.
