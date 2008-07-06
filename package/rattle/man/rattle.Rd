@@ -10,11 +10,12 @@
 
 }
 \usage{
-rattle(csvname=NULL, appname="Rattle")
+rattle(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
 }
 \arguments{
   \item{csvname}{the name of a CSV file to load into Rattle on startup.}
   \item{appname}{the application name allowing interface tuning.}
+  \item{tooltiphack}{attempt to enable tooltips on GNU/Linux.}
 }
 \details{
 

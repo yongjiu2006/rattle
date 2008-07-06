@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-05 09:17:11 Graham Williams>
+# Time-stamp: <2008-07-06 12:32:30 Graham Williams>
 #
 # DATA TAB
 #
@@ -196,7 +196,7 @@ updateFilenameFilters <- function(button, fname)
   # Kick the GTK event loop otherwise you end up waiting until the
   # mouse is moved, for example.
   
-  while (gtkEventsPending()) gtkMainIteration()
+  while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 }
 
 ########################################################################
@@ -443,7 +443,10 @@ executeDataCSV <- function(filename=NULL)
       filename <- paste("file://", filename, sep="")
       
       ## 080519 Do we still need the events flush?
-      ## while (gtkEventsPending()) gtkMainIteration()
+      ## while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+
+      #gtkmainquit_handler(NULL, NULL)
+      #gtkmain_handler(NULL, NULL)
     }
   }
   else
@@ -1656,12 +1659,16 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
 
-    # For linear models, if it is categoric assume logistic regression
-    # - that is, default to binmoial distribution and the logit link
-    # function.
+    # For linear models, if it is categoricand binomial then assume
+    # logistic regression (default to binmoial distribution and the
+    # logit link function) otherwise it is multinomial so assume
+    # poisson regression (default o poisson distribution and log link
+    # function).
 
-    theWidget("glm_family_comboboxentry")$setActive(1)
-    
+    if (binomialTarget())
+      theWidget("glm_family_comboboxentry")$setActive(1)
+    else
+      theWidget("glm_family_comboboxentry")$setActive(2)
   }
   else if (numericTarget())
   {

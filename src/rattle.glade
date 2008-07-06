@@ -817,7 +817,7 @@
                       <widget class="GtkRadioButton" id="data_csv_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Load data from a comma separated value (CSV) file.</property>
+                        <property name="tooltip" translatable="yes">Load data from a comma separated value (CSV) file, as might be expeorted from a spreadsheet or database.</property>
                         <property name="label" translatable="yes">CSV File</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -834,7 +834,7 @@
                       <widget class="GtkRadioButton" id="data_arff_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Load data from an ARFF file (CSV with data types).</property>
+                        <property name="tooltip" translatable="yes">Load data from an ARFF file (CSV with data types) as is used with the Weka data mining tool.</property>
                         <property name="label" translatable="yes">ARFF</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -852,7 +852,7 @@
                       <widget class="GtkRadioButton" id="data_rdata_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Load data from a R datafile (usually binary).</property>
+                        <property name="tooltip" translatable="yes">Load data from a R datafile, which is usually a binary file, possibly containing multiple datasets.</property>
                         <property name="label" translatable="yes">RData File</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -888,7 +888,7 @@
                       <widget class="GtkRadioButton" id="data_library_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Choose one of the supplied datasets supplied by R.</property>
+                        <property name="tooltip" translatable="yes">Choose one of the datasets supplied by any of the installed R packages.</property>
                         <property name="label" translatable="yes">Library</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -965,6 +965,7 @@
                         <property name="width_request">150</property>
                         <property name="height_request">17</property>
                         <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Click here to open a file chooser to select a dataset file to load.</property>
                         <property name="local_only">False</property>
                         <property name="title" translatable="yes">Select A CSV File</property>
                         <signal name="file_set" handler="on_data_filechooserbutton_file_set"/>
@@ -1454,7 +1455,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkEntry" id="weight_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Enter an R formula for calculating the weight. Variables can be named.</property>
+                        <property name="tooltip" translatable="yes">Enter an R formula for calculating a weight for each entity. Variables can be named in the formula.</property>
                         <property name="invisible_char">*</property>
                       </widget>
                       <packing>
@@ -1477,7 +1478,6 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkTreeView" id="select_treeview">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Choose roles for the variables.</property>
                       </widget>
                     </child>
                   </widget>
@@ -1493,6 +1493,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
             <child>
               <widget class="GtkLabel" id="label11">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Load a dataset.</property>
                 <property name="label" translatable="yes">Data</property>
               </widget>
               <packing>
@@ -2337,6 +2338,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
             <child>
               <widget class="GtkLabel" id="label7">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Explore the data to identify how it is distributed.</property>
                 <property name="label" translatable="yes">Explore</property>
               </widget>
               <packing>
@@ -3122,6 +3124,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
             <child>
               <widget class="GtkLabel" id="sample_tab_label">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Transform the data in various ways.</property>
                 <property name="label" translatable="yes">Transform</property>
               </widget>
               <packing>
@@ -6626,6 +6629,7 @@ The default chart displays caseload versus performance.</property>
             <child>
               <widget class="GtkLabel" id="evaluate_tab_label">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Evaluate the models.</property>
                 <property name="label" translatable="yes">Evaluate</property>
               </widget>
               <packing>
@@ -6657,6 +6661,7 @@ The default chart displays caseload versus performance.</property>
             <child>
               <widget class="GtkLabel" id="label18">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Show a complete log of all R commands. Useful to save as an R script.</property>
                 <property name="label" translatable="yes">Log</property>
               </widget>
               <packing>

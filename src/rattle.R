@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-05 09:55:26 Graham Williams>
+# Time-stamp: <2008-07-06 16:08:36 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -103,13 +103,20 @@ COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 #
 # INITIALISATIONS
 
-RStat <- function(csvname=NULL) 
+RStat <- function(csvname=NULL, ...) 
 {
-  rattle(csvname, appname="RStat")
+  rattle(csvname, appname="RStat", ...)
 }
 
-rattle <- function(csvname=NULL, appname="Rattle")
+rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
 {
+  # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
+  # the R console, but at least tooltips work, and on losing focus
+  # gtkMainQuit is called, and thus the console is no longer blocked!
+  # A bit ugly, but seems to work. This was suggested by Felix Andrew,
+  # 080705. I notice that to load the supplied audit dataset I need to
+  # change focus out of Rattle.
+
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
   # they all began with "." as in crv$ADA used to be .ADA. "R CMD
@@ -118,7 +125,9 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
   crv <<- list()
   crv$appname <<- appname
-
+  crv$tooltiphack <<- tooltiphack # Record the value globally
+  crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
+  
   # Some global constants
 
   crv$max.vars.correlation <<- 40
@@ -437,6 +446,17 @@ rattle <- function(csvname=NULL, appname="Rattle")
   
   gladeXMLSignalAutoconnect(rattleGUI)
 
+  # Manually for the tooltiphack
+
+  if (tooltiphack)
+  {
+    myWin <- theWidget("rattle_window")
+    myWin$addEvents(GdkEventMask["focus-change-mask"])
+    gSignalConnect(myWin, "focus-in-event", gtkmain_handler)
+    gSignalConnect(myWin, "focus-out-event", gtkmainquit_handler)
+    gSignalConnect(myWin, "delete-event", gtkmainquit_handler)
+  }
+
   ########################################################################
   # User interface initialisations.
   
@@ -505,7 +525,11 @@ rattle <- function(csvname=NULL, appname="Rattle")
 
 ##  while (gtkEventsPending()) gtkMainIteration() # Make sure window is displayed
 
-  #gtkMain() # Tooltips work but the console is blocked and need gtkMainQuit
+   # Tooltips work when gtkMain is called, but the console is blocked
+   # and need gtkMainQuit.
+  
+  # if (tooltiphack) gtkMain()
+
   # TODO Add a console into Rattle to interact with R.
 
   # 080510 Display a relevant welcome message in the textview.
@@ -560,14 +584,14 @@ rattle <- function(csvname=NULL, appname="Rattle")
   
   # Make sure the text is shown on startup.
   
-  while (gtkEventsPending()) gtkMainIteration()
+  while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
   
   # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
   {
     theWidget("data_filechooserbutton")$setFilename(csvname)
-    while (gtkEventsPending()) gtkMainIteration() # Make sure GUI updates
+    while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE) # Make sure GUI updates
     executeDataCSV(csvname)
   }
 
@@ -594,6 +618,41 @@ tuneRStat <- function()
   theWidget("summary_find_button")$hide()
   theWidget("summary_next_button")$hide()
 }
+
+#-----------------------------------------------------------------------
+# MAINLOOP ITERATION
+#
+# Attempt to get tooltips working forGNU/Linux by starting up gtkMain
+# on the window etting focus, and stopping it when it loses
+# focus. Based on idea from Felix Andrews.
+
+gtkmain_handler <- function(widget, event)
+{
+#  if (! crv$tooltiphack)
+#    return(gtkmainquit_handler(widget, event))
+  
+  # Switch to GTK event loop while the window is in focus (for tooltips)
+  
+  if (! crv$.gtkMain)
+  {
+    crv$.gtkMain <<- TRUE
+    gtkMain()
+  }
+  return(FALSE)
+}
+
+gtkmainquit_handler <- function(widget, event)
+{
+  if (crv$.gtkMain)
+  {
+    crv$.gtkMain <<- FALSE
+    gtkMainQuit()
+  }
+  return(FALSE)
+}
+
+#-----------------------------------------------------------------------
+# RESET RATTLE
 
 resetRattle <- function()
 {
@@ -831,9 +890,18 @@ debugDialog <- function(...)
 
 infoDialog <- function(...)
 {
-  dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "close",
-                                ...)
-  connectSignal(dialog, "response", gtkWidgetDestroy)
+  # If the RGtk2 package's functions are not available, then just
+  # issue a warning instad of a popup.
+  
+  if (exists("gtkMessageDialogNew"))
+  {
+    dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "close",
+                                  ...)
+    connectSignal(dialog, "response", gtkWidgetDestroy)
+  }
+  else
+    # 080706 This fails the MS/Windows check with "crv" not defined????? 
+    if (! isWindows()) warning(...)
 }
 
 warnDialog <- function(...)
@@ -934,6 +1002,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
   if (pkg %notin% rownames(installed.packages()))
   {
     if (not.null(msg))
+      
       infoDialog("The package", pkg, "is required to",
                  paste(msg, ".", sep=""),
                  "It does not appear to be installed.",
@@ -1005,7 +1074,7 @@ setStatusBar <- function(..., sep=" ")
   msg <- paste(sep=sep, ...)
   if (length(msg) == 0) msg <-""
   theWidget("statusbar")$push(1, msg)
-  while (gtkEventsPending()) gtkMainIteration() # Refresh status and windows
+  while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE) # Refresh status/windows
   invisible(NULL)
 }
 
@@ -1609,32 +1678,32 @@ plotNetwork <- function(flow)
   
   flow.net <- network(as.matrix(flow))
 
-  ## Change the line widths to represent the magnitude of the flow.
-  ## Use a log transform to get integers for the line widths.
+  # Change the line widths to represent the magnitude of the flow.
+  # Use a log transform to get integers for the line widths.
 
   flow.log <- log10(flow) # Log 10 to get magnitude
   flow.log[flow.log==0] <- 1 # Set any 0's to 1 as the base case
   flow.log[flow.log==-Inf] <- 0 # Set resulting -Infinty (log10(0)) values to 0
   flow.mag <- round(flow.log) # Round them to 
 
-  ## Add color to indicate the magnitude.  Use heat colours to
-  ## indicate the magnitude of the flow, from yellow to red.
+  # Add color to indicate the magnitude.  Use heat colours to
+  # indicate the magnitude of the flow, from yellow to red.
 
   heat <- rev(heat.colors(max(flow.mag)))
   flow.col <- flow.mag
   for (i in 1:length(heat)) flow.col[flow.col==i] <- heat[i]
   flow.col <- sapply(flow.col, as.character)
   
-  ## Record the magnitude of flow coming into any label and use this to
-  ## scale the entity labels. 
+  # Record the magnitude of flow coming into any label and use this to
+  # scale the entity labels. 
 
   entity.sizes <- round(log10(apply(flow, 2, sum)))
   entity.sizes[entity.sizes==-Inf] <- 0
   entity.sizes <- 1 + entity.sizes-min(entity.sizes)
   entity.sizes <- 1 + entity.sizes/max(entity.sizes)
 
-  ## A warning that "par()$cxy * label.cex" have missmatched
-  ## dimensions. par()$cxy is of length 2? Should be 1?
+  # A warning that "par()$cxy * label.cex" have missmatched
+  # dimensions. par()$cxy is of length 2? Should be 1?
   
   suppressWarnings(plot(flow.net, displaylabels=TRUE, usecurve=TRUE,
                         mode="circle",
@@ -1706,7 +1775,7 @@ close_rattle <- function(action, window)
 
   options(crv$options)
   
-  #gtkMainQuit() # Only needed if gtkMain is run.
+  # if (crv$tooltiphack) gtkMainQuit() # Only needed if gtkMain is run.
 
 }
 
@@ -3146,7 +3215,7 @@ summarySearch <- function(tv, search.str, start.iter)
     last.search.pos <-tvb$createMark('last.search.pos', found$match.end)
 
     tv$scrollToMark(last.search.pos, 0.2)
-    while(gtkEventsPending()) gtkMainIteration()
+    while(gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 
     setStatusBar(sprintf('The string "%s" was found.', search.str))
   }
@@ -4578,9 +4647,9 @@ executeExploreHiercor <- function(dataset)
   if (is.null(dataset))
   {
     errorDialog("Correlations are calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
+                "\n\nNo numeric variables were found in the dataset",
                 "from amongst those that are not ignored.",
-                "You may want to use the transform tab to transform",
+                "\n\nYou may want to use the transform tab to transform",
                 "your categorical data into numeric data.")
     return()
   }
@@ -4591,8 +4660,8 @@ executeExploreHiercor <- function(dataset)
   if ( ncols < 2 )
   {
     errorDialog("The dataset contains less than two numeric variables.",
-                "Correlations are calculated only for numeric data.",
-                "You may want to select more numeric variables or",
+                "\n\nCorrelations are calculated only for numeric data.",
+                "\n\nYou may want to select more numeric variables or",
                 "use the transform tab to transform",
                 "your categorical variables into numeric variables.")
 
@@ -7348,10 +7417,10 @@ either of which may be categorical or numeric.
 dataset = A collection of data.
 <<>>
 entity = An object of interest, descibed by variables.
-Also called a record or object.
+Also called a record, object, row or observation.
 <<>>
 variable = The data items used to describe an enitity.
-Also called an attribute or feature.
+Also called an attribute, feature or column.
 <<>>
 input variable = A measured or preset data item.
 Also called predictor, independent variable, observed variable,
@@ -7361,8 +7430,8 @@ output variable = A variable possibly influenced by the input variables.
 Also called response or dependent variable.
 <<>>
 categorical variable = A variable that takes on a value from a fixed
-set of values. In R these are called factors and the set of possible values
-is refered to as the levels of the factor.
+set of values. In R these are called factors and the possible values
+are refered to as the levels of the factor.
 <<>>
 numeric variable = A variable that has values that are integers or real
 numbers.")
