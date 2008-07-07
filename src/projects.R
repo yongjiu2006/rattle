@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-03 20:48:32 Graham>
+# Time-stamp: <2008-07-07 21:35:13 Graham Williams>
 #
 # Project functionality.
 #
@@ -34,27 +34,46 @@ newProject <- function()
   if ( not.null(listBuiltModels()) )
   {
     if (is.null(questionDialog("You have requested to start a new project.",
-                               "This will clear the current project (dataset",
+                               "\n\nThis will clear the current project (dataset",
                                "and models).",
-                               "If you choose not to continue you can save",
+                               "\n\nIf you choose not to continue you can save",
                                "the project, and then start a new project.",
-                               "\n\n",
-                               "Do you wish to continue, and overwrite the",
+                               "\n\nDo you wish to continue, and overwrite the",
                                "current project?"
                                )))
       return()
   }
   resetRattle()
+
+  # Ensure data sources are enabled again.
+  
+  enableDataSourceFunctions()
+  
+  theWidget("data_filechooserbutton")$setFilename("")
+
   # TODO Plenty of other things that should be reset as well.
 
-  theWidget("data_filechooserbutton")$setFilename("")
-  
   crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
                                               crv$NOTEBOOK.DATA.NAME))
   switchToPage(crv$NOTEBOOK.DATA.NAME)
   
 }
+
+enableDataSourceFunctions <- function(enable=TRUE)
+{
+  # 080707 Turn the data source options on/off. This is used when
+  # loading a project to avoid datasets being loaded. Logically we
+  # don't load a new dataset if we have loaded a project. We can
+  # always click New to then load a new dataset.
   
+  widgets <- c("data_type_label", "data_csv_radiobutton", "data_arff_radiobutton",
+                "data_rdata_radiobutton", "data_rdataset_radiobutton",
+                "data_library_radiobutton", "data_odbc_radiobutton",
+                "data_corpus_radiobutton")
+  for (w in widgets) theWidget(w)$setSensitive(enable)
+}
+
+
 saveProject <- function()
 {
 
@@ -103,7 +122,7 @@ saveProject <- function()
     
   if (file.exists(save.name))
     if (is.null(questionDialog("The rattle project file", save.name,
-                                "already exists. Do you want to overwrite",
+                                "already exists.\n\nDo you want to overwrite",
                                 "this file?")))
       return()
 
@@ -290,6 +309,13 @@ loadProject <- function()
   
   if (not.null(crs$risk))
     theWidget("evaluate_risk_label")$setText(crs$risk)
+
+  # 080707 Ensure data sources are disabled so that we can not,
+  # logically, load a dataset after we have loaded a project. This
+  # also helps to ensure when we press theExecute button, a data set
+  # is not thought to be needed to be loaded.
+
+  enableDataSourceFunctions(FALSE)
   
   # VARIABLES
 
@@ -426,7 +452,7 @@ loadProject <- function()
   crs$testset  <<- crs$testset
   crs$testname <<- crs$testname
   
-  ## LOG
+  # LOG
   
   setTextviewContents("log_textview", crs$text$log)
   startLog()
