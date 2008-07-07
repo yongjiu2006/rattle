@@ -6,16 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.45.
+    version is 2.3.46.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-276 080706
-Add tooltiphack to see if we can get tooltips on GNU/Linux
-Start moving Dialogs to not use RGtk2 if it is not avialble.
+277 080707 Fix Project load to disable data set load.
+           Add a watch cursor while drawing scatterplot
+276 080706 Add tooltiphack to see if we can get tooltips on GNU/Linux
+           Start moving Dialogs to not use RGtk2 if it is not avialble.
+           Auto select poisson(log) for multinomial linear regression
 275 080705 Tidyup
 274 080704 Bug: Load project ensure not reload data on Execute (Linda Clayton)
            Explore will use sample if Data sample active (Peter Helmstedt)

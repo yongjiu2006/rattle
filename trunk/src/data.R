@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-06 12:32:30 Graham Williams>
+# Time-stamp: <2008-07-07 21:38:08 Graham Williams>
 #
 # DATA TAB
 #
@@ -307,12 +307,13 @@ updateRDatasets <- function()
 executeDataTab <- function()
 {
   # Dispatch to the task indicated by the selected radio button within
-  # the Data tab. If there is no change to the data source then sipmly
-  # update the variable roles instead, without reloading the data.
-  # 080520 This is now required as a result of merging the Data and
-  # the Select tabs.
+  # the Data tab. If there is no change to the data source, or the
+  # data type label is not sensisteive (i.e., we have loaded a
+  # project), then simply update the variable roles instead, without
+  # reloading the data.  080520 This is now required as a result of
+  # merging the Data and the Select tabs.
 
-  if (changedDataTab())
+  if (theWidget("data_type_label")$isSensitive() && changedDataTab())
   {
     if (theWidget("data_csv_radiobutton")$getActive())
     {

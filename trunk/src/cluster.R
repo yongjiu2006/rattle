@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-03 22:00:13 Graham>
+# Time-stamp: <2008-07-06 20:32:22 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -343,17 +343,6 @@ on_kmeans_data_plot_button_clicked <- function(button)
     include <- simplifyNumberList(intersect(nums, indicies))
   }
 
-  ## 080521 Do we still need the following? I don't think so. It is
-  ## cheked when building the cluster, not now.
-  
-##   if (length(nums) == 0 || length(indicies) == 0)
-##   {
-##     errorDialog("Clusters are currently calculated only for numeric data.",
-##                 "No numeric variables were found in the dataset",
-##                 "from amongst those having an input/target/risk role.")
-##     return()
-##   }
-
   # We can only plot if there is more than a single variable.
   
   if (length(intersect(nums, indicies)) == 1)
@@ -370,14 +359,17 @@ on_kmeans_data_plot_button_clicked <- function(button)
   # cluster numbers. Otherwise we get a bad looking plot!!!! But do we
   # always need na.omit. It is not always used on bulding clusters.
 
-##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+  ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
   plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",
                             "col=crs$kmeans$cluster)\n",
                             genPlotTitleCmd(""), sep=""),
                       ifelse(sampling, "crs$sample", ""), include)
   appendLog("Generate a data plot.", plot.cmd)
+
+  set.cursor("watch")
   newPlot()
   eval(parse(text=plot.cmd))
+  set.cursor("left-ptr")
 
   setStatusBar("Data plot has been generated.")
 }
