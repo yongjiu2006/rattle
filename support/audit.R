@@ -32,7 +32,7 @@ colnames(audit)[12] <- "Adjusted"
 
 audit$Adjusted <- as.integer(audit$Adjusted)-1
 
-## Make sure most productive cases have an adjustment
+# Make sure most productive cases have an adjustment
 
 adj <- audit[audit$Adjusted==0 & audit$Adjustment != 0, 'Adjustment']
 a <- length(adj)
@@ -42,11 +42,11 @@ r <- m%/%a*a
 set.seed(12345)
 audit[audit$Adjusted==1 & audit$Adjustment==0, 'Adjustment'][sample(m, r)] <- as.integer(adj*(rnorm(r) + 2))
 
-## Make sure no nonproductive case has an adjustment
+# Make sure no nonproductive case has an adjustment
 
 audit[audit$Adjusted==0 & audit$Adjustment!=0,'Adjustment'] <- 0
 
-## Tidyup ForeignAccounts
+# Tidyup ForeignAccounts
 
 levels(audit$Accounts)[6] <- "NewZealand"
 levels(audit$Accounts)[8] <- "Singapore"
@@ -57,7 +57,7 @@ levels(audit$Accounts)[35] <- "Vietnam"
 levels(audit$Accounts)[38] <- "Indonesia"
 levels(audit$Accounts)[39] <- "UnitedStates"
 
-## Tidyup Employment
+# Tidyup Employment
 
 levels(audit$Employment)[1] <- "PSFederal"
 levels(audit$Employment)[2] <- "PSLocal"
@@ -67,15 +67,14 @@ levels(audit$Employment)[6] <- "Consultant"
 levels(audit$Employment)[7] <- "PSState"
 levels(audit$Employment)[8] <- "Volunteer"
 
-
-## Tidyup Marital
+# Tidyup Marital
 
 levels(audit$Marital)[2] <- "Married"
 levels(audit$Marital)[3] <- "Married"
 levels(audit$Marital)[4] <- "Absent"
 levels(audit$Marital)[5] <- "Unmarried"
 
-## Tidyup Occupation
+# Tidyup Occupation
 
 levels(audit$Occupation)[1] <- "Clerical"
 levels(audit$Occupation)[2] <- "Military"
@@ -109,19 +108,18 @@ levels(audit$Education)[14] <- "Preschool"
 levels(audit$Education)[15] <- "Professional"
 levels(audit$Education)[16] <- "College"
 
-## Turn Relationship into Income
+# Turn Relationship into Income
 
 set.seed(12345)
 audit$Income <- round(abs(as.numeric(audit$Income)*rnorm(length(audit$Income),
                                                          35000, 15000)), 2)
 
+# Make deductions look more 0 for the non-productive cases!
 
-## Make deductions look more 0 for the non-productive cases!
 audit[audit$Adjusted==0,'Deductions'] <-
   audit[audit$Adjusted==0,'Deductions']/1.5
 
-
-## Sample just 2000 cases and add an Identifier - always the same
+# Sample just 2000 cases and add an Identifier - always the same
 
 set.seed(12345)
 cases <- sample(nrow(audit), 2000)
@@ -129,20 +127,29 @@ set.seed(12345)
 idents <- as.integer(sort(runif(2000, 1000000, 9999999)))
 audit <- cbind(ID=idents, audit[cases,])
 
+# Use standard prefixes
+
+colnames(audit)[11] <- "IGNORE_Accounts" # randomForest can't handle
+colnames(audit)[12] <- "RISK_Adjustment" 
+colnames(audit)[13] <- "TARGET_Adjusted"
+
+# Write out the data
+
 write.table(audit, "audit.csv", sep=",", row.names=FALSE)
 audit <- read.csv("audit.csv")
 save(audit, file="audit.RData", compress=TRUE)
 
 library(foreign)
 arff <- audit
-arff$Adjusted <- as.factor(arff$Adjusted)
+arff$TARGET_Adjusted <- as.factor(arff$TARGET_Adjusted)
 write.arff(arff, "audit.arff")
 
 # Create a dataset with special variable names.
+# 080709 I now do this as default.
 
-colnames(audit)[11] <- "IGNORE_Accounts"
-colnames(audit)[12] <- "RISK_Adjustment"
-write.table(audit, "audit_auto.csv", sep=",", row.names=FALSE)
+# colnames(audit)[11] <- "IGNORE_Accounts"
+# colnames(audit)[12] <- "RISK_Adjustment"
+# write.table(audit, "audit_auto.csv", sep=",", row.names=FALSE)
 
 # Create a dataset with many more missing values.
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-06 20:32:22 Graham Williams>
+# Time-stamp: <2008-07-10 11:34:37 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -366,12 +366,10 @@ on_kmeans_data_plot_button_clicked <- function(button)
                       ifelse(sampling, "crs$sample", ""), include)
   appendLog("Generate a data plot.", plot.cmd)
 
-  set.cursor("watch")
+  set.cursor("watch", "Rendering the plot. Please wait...")
   newPlot()
   eval(parse(text=plot.cmd))
-  set.cursor("left-ptr")
-
-  setStatusBar("Data plot has been generated.")
+  set.cursor("left-ptr", "Data plot has been generated.")
 }
 
 on_kmeans_discriminant_plot_button_clicked <- function(button)

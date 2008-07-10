@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-25 06:41:05 Graham Williams>
+# Time-stamp: <2008-07-10 15:12:12 Graham Williams>
 #
 # RPART TAB
 #
@@ -404,16 +404,21 @@ executeModelRPart <- function(action="build")
 
     print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   }
-  
-                             
-  ## Load the required library.
+                               
+  # Load the required library.
 
   startLog("DECISION TREE")
   appendLog("Build a decision tree using the rpart package.", lib.cmd)
 
   eval(parse(text=lib.cmd))
 
-  ## Build the model.
+  # Set the seed so that xerror and xstd are consistent each time
+
+  seed.cmd <- 'set.seed(123455)'
+  appendLog("Set the seed to ensure same cross validation results each time.", seed.cmd)
+  eval(parse(text=seed.cmd))
+
+  # Build the model.
 
   appendLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
   start.time <- Sys.time()
