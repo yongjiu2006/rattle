@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-07 21:35:13 Graham Williams>
+# Time-stamp: <2008-07-10 09:28:59 Graham Williams>
 #
 # Project functionality.
 #
@@ -48,8 +48,11 @@ newProject <- function()
   # Ensure data sources are enabled again.
   
   enableDataSourceFunctions()
+
+  # Reset things that can't be done in resetRattle()
   
   theWidget("data_filechooserbutton")$setFilename("")
+  theWidget("data_name_combobox")$getModel()$clear()
 
   # TODO Plenty of other things that should be reset as well.
 

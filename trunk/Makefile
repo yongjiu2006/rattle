@@ -183,14 +183,13 @@ data: package/rattle/data/audit.RData
 
 package/rattle/data/audit.RData: support/audit.R Makefile
 	R --no-save --quiet < support/audit.R
+	chmod go+r audit.RData audit.csv audit.arff audit_missing.csv
+	cp audit.RData audit.csv audit.arff audit_missing.csv data/
+	cp audit.RData audit.csv audit.arff audit_missing.csv src/
 	cp audit.RData package/rattle/data/
-	cp data/audit.csv package/rattle/inst/csv/audit.csv
-	cp data/audit.arff package/rattle/inst/arff/audit.arff
-	cp data/audit.RData data/audit.csv data/audit.arff src/
-	cp data/audit_missing.csv data/audit_auto.csv src/
-	cp data/audit.RData data/audit.csv data/audit.arff .
-	cp data/audit_missing.csv data/audit_auto.csv .
-	chmod go+r $@
+	cp audit.csv package/rattle/inst/csv/
+	cp audit.arff package/rattle/inst/arff/
+	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
 
 zip: local plocal
 	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.7; zip -r9 - rattle) \

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-07 21:38:08 Graham Williams>
+# Time-stamp: <2008-07-10 11:31:49 Graham Williams>
 #
 # DATA TAB
 #
@@ -274,6 +274,8 @@ updateRDatasets <- function()
 {
   # Update a combo box with just the available data frames and matrices.
 
+  set.cursor("watch", "Determining the available datasets....")
+  
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
@@ -297,6 +299,7 @@ updateRDatasets <- function()
 #    if (not.null(current) && current %in% dl)
 #      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
+  set.cursor(message="")
 }
 
   
@@ -324,13 +327,17 @@ executeDataTab <- function()
       if (! executeDataARFF()) return(FALSE)
     }
     else if (theWidget("data_odbc_radiobutton")$getActive())
-      executeDataODBC()
+    {
+      if (! executeDataODBC()) return(FALSE)
+    }
     else if (theWidget("data_rdata_radiobutton")$getActive())
     {
       if (! executeDataRdata()) return()
     }
     else if (theWidget("data_rdataset_radiobutton")$getActive())
-      executeDataRdataset()
+    {
+      if (! executeDataRdataset()) return()
+    }
     else if (theWidget("data_library_radiobutton")$getActive())
     {
       if (! executeDataLibrary()) return()
@@ -520,7 +527,7 @@ executeDataCSV <- function(filename=NULL)
 
 ##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
 
-  # Enable the Data View a=nd Edit buttons.
+  # Enable the Data View and Edit buttons.
 
 ##  showDataViewButtons()
   
@@ -618,12 +625,11 @@ updateDataLibrary <- function()
   # This could take a little while, so use to watch cursor to indicate
   # we are busy.
   
-  set.cursor("watch")
+  set.cursor("watch", "Determining the available datasets from all packages...")
+  
   da <- data(package = .packages(all.available = TRUE))
   dl <- sort(paste(da$results[,'Item'], ":", da$results[,'Package'], 
                    ":", da$results[,'Title'], sep=""))
-  set.cursor()
-
   # Add the entries to the combo box.
   
   if (not.null(dl))
@@ -636,28 +642,31 @@ updateDataLibrary <- function()
     if (not.null(current) && current %in% dl)
       data.name.combobox$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
+
+  set.cursor(message="")
+
 }
 
 #-----------------------------------------------------------------------
 
 open_odbc_set_combo <- function(button)
 {
-  ## This is a callback for when the ODBC DSN name has changed.  Load
-  ## the corresponding tables from the specified ODBC database.
+  # This is a callback for when the ODBC DSN name has changed.  Load
+  # the corresponding tables from the specified ODBC database.
 
-  ## Obtain name of the DSN.
+  # Obtain name of the DSN.
 
-  DSNname <- theWidget("odbc_dsn_entry")$getText()
+  DSNname <- theWidget("data_odbc_dsn_entry")$getText()
   
-  ## Generate commands to connect to the database and retrieve the tables.
+  # Generate commands to connect to the database and retrieve the tables.
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
   connect.cmd <- sprintf('crs$odbc <<- odbcConnect("%s")', DSNname)
   tables.cmd  <- sprintf('sqlTables(crs$odbc)$TABLE_NAME')
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
-  if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return()
+  if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return(FALSE)
       
   startLog("ODBC CONNECTION")
 
@@ -666,9 +675,9 @@ open_odbc_set_combo <- function(button)
   eval(parse(text=lib.cmd))
   set.cursor("")
        
-  ## Close all currently open channels. This assumes that the user is
-  ## not openning channelse themselves. Could be a bad choice, but
-  ## assume we are addressing the usual Rattle user.
+  # Close all currently open channels. This assumes that the user is
+  # not openning channelse themselves. Could be a bad choice, but
+  # assume we are addressing the usual Rattle user.
 
   odbcCloseAll()
   
@@ -680,7 +689,7 @@ open_odbc_set_combo <- function(button)
     errorDialog("The attempt to open the ODBC connection failed.",
                 "Please check that the DSN is correct.",
                 "See the R Console for further details.")
-    return()
+    return(FALSE)
   }
   
   appendLog("Load the names of available tables.", tables.cmd)
@@ -692,7 +701,7 @@ open_odbc_set_combo <- function(button)
     errorDialog("The attempt to query the ODBC connection failed.",
                 "Please check that the DSN is correct.",
                 "See the R Console for further details.")
-    return()
+    return(FALSE)
   }
 
   ## Add list of tables to the combo box.
@@ -704,11 +713,9 @@ open_odbc_set_combo <- function(button)
     lapply(tables, combobox$appendText)
   }
   
-  theWidget(TV)$setWrapMode("word")
-  resetTextview(TV)
-  setTextview(TV, "Now select a table from those available.")
-  setStatusBar()
+  setStatusBar("Database loaded. Select a table.")
 
+  return(TRUE)
 }
 
 ##----------------------------------------------------------------------
@@ -861,11 +868,11 @@ executeDataODBC <- function()
   ## in SQL, but it is LIMIT in Teradata, so perhaps we go with that
   ## for now?
   
-  dsn.name <- theWidget("odbc_dsn_entry")$getText()
-  table <- theWidget("odbc_combobox")$getActiveText()
-  row.limit <- theWidget("odbc_limit_spinbutton")$getValue()
-  believe.nrows <- theWidget("odbc_believeNRows_checkbutton")$getActive()
-  sql.query <- theWidget("odbc_sql_entry")$getText()
+  dsn.name <- theWidget("data_odbc_dsn_entry")$getText()
+  table <- theWidget("data_odbc_table_combobox")$getActiveText()
+  row.limit <- theWidget("data_odbc_limit_spinbutton")$getValue()
+  believe.nrows <- theWidget("data_odbc_believeNRows_checkbutton")$getActive()
+  sql.query <- "" # theWidget("odbc_sql_entry")$getText()
   
   ## If the ODBC channel has not been openned, then tell the user how
   ## to do so.
@@ -878,7 +885,7 @@ executeDataODBC <- function()
                 "This will also populate the list of tables to choose from.",
                 "After establishing the connection you can choose a table",
                 "or else enter a specific SQL query to retrieve a dataset.")
-    return()
+    return(FALSE)
   }
   
   ## Error if no table from the database has been chosen.
@@ -889,13 +896,13 @@ executeDataODBC <- function()
                 "Please identify the name of the table you wish to load.",
                 "All tables in the connected database are listed",
                 "once a connection is made.",
-                "Alternatively, enter a query to retrieve a dataset.")
-    return()
+                "\n\nAlternatively, enter a query to retrieve a dataset.")
+    return(FALSE)
   }
 
   # If there is a model warn about losing it.
 
-  if (! overwriteModel()) return()
+  if (! overwriteModel()) return(FALSE)
 
   if (sql.query != "")
     sql <- sql.query
@@ -929,9 +936,6 @@ executeDataODBC <- function()
   ## Start logging and executing the R code.
 
   startLog()
-  theWidget(TV)$setWrapMode("none") # On for welcome msg
-  resetTextview(TV)
-  
   appendLog("LOAD FROM DATABASE TABLE",
            gsub('<<-', '<-', assign.cmd))
   resetRattle()
@@ -940,9 +944,6 @@ executeDataODBC <- function()
   setRattleTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  appendTextview(TV,
-                 sprintf("Structure of %s from %s.\n\n", table, dsn.name),
-                 collectOutput(str.cmd))
   
   ## Update the select treeview and samples.
   
@@ -954,6 +955,7 @@ executeDataODBC <- function()
   
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 
+  return(TRUE)
 }
 
 executeDataRdata <- function()
@@ -1026,12 +1028,12 @@ executeDataRdataset <- function()
                 "Any data frames that exist in the R Console",
                 "are available to choose from in the Data Name",
                 "combo box.")
-    return()
+    return(FALSE)
   }
 
   # If there is a model then warn about losing it.
 
-  if (! overwriteModel()) return()
+  if (! overwriteModel()) return(FALSE)
 
   # Generate commands.
 
@@ -1044,8 +1046,7 @@ executeDataRdataset <- function()
   #theWidget(TV)$setWrapMode("none") # On for welcome msg
   #resetTextview(TV)
   
-  appendLog("LOAD R DATA FRAME",
-          gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD R DATA FRAME", gsub('<<-', '<-', assign.cmd))
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
@@ -1058,18 +1059,10 @@ executeDataRdataset <- function()
   names(crs$dataset) <<- make.names(names(crs$dataset))
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  #setTextview(TV, sprintf("Structure of %s.\n\n", dataset),
-   #            collectOutput(str.cmd), sep="")
 
-  ## Update the select treeview and samples.
-
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-
-  # Enable the Data View button.
-
-##  showDataViewButtons()
-  
   setStatusBar("The R dataset is now available.")
+
+  return(TRUE)
 }
 
 executeDataLibrary <- function()

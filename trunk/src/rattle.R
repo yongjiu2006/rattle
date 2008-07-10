@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-06 16:08:36 Graham Williams>
+# Time-stamp: <2008-07-10 15:20:29 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Jul 2008"
+VERSION.DATE <- "Released 07 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -483,6 +483,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   
   # Set glm_family_comboboxentry to default value.
   
+  theWidget("rpart_surrogates_combobox")$setActive(0)
   theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
 
@@ -663,6 +664,8 @@ resetRattle <- function()
 
   crs$dataset  <<- NULL
   crs$dataname <<- NULL
+  crs$dwd      <<- NULL
+  crs$mtime    <<- NULL
   crs$input    <<- NULL
   crs$target   <<- NULL
   crs$weights  <<- NULL
@@ -711,7 +714,7 @@ resetRattle <- function()
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.
 
-  # TODO 080423 Change to RESCALE
+  # TODO 080423 Change name to RESCALE
   crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   theWidget("normalise_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
@@ -771,6 +774,7 @@ resetRattle <- function()
   theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
   theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
   theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
+  theWidget("rpart_surrogates_combobox")$setActive(0)
   showModelRPartExists()
 
   ## Reset MODEL:ADA
@@ -1608,8 +1612,9 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   }
 }
 
-set.cursor <- function(cursor="left-ptr")
+set.cursor <- function(cursor="left-ptr", message=NULL)
 {
+  if (! is.null(message)) setStatusBar(message)
   theWidget("rattle_window")$getWindow()$
   setCursor(gdkCursorNew(cursor))
 }
@@ -5334,9 +5339,9 @@ executeEvaluateTab <- function()
   # Currently (and perhaps permanently) the ROCR package deals only
   # with binary classification, as does my own Risk Chart.
   
-  if (!(theWidget("confusion_radiobutton")$getActive())# ||
+  if (!(theWidget("confusion_radiobutton")$getActive()
         #theWidget("pvo_radiobutton")$getActive() || Not working for multiclass
-        #theWidget("score_radiobutton")$getActive())
+        || theWidget("score_radiobutton")$getActive())
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
