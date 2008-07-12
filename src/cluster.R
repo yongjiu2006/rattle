@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 11:34:37 Graham Williams>
+# Time-stamp: <2008-07-10 19:53:04 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -585,7 +585,7 @@ on_hclust_dendrogram_button_clicked <- function(button)
 plotDendrogram <- function()
 {
 
-  ## Make sure there is a hclust object first.
+  # Make sure there is a hclust object first.
 
   if (is.null(crs$hclust))
   {
@@ -596,16 +596,20 @@ plotDendrogram <- function()
     return()
   }
 
-  ## Load the required package into the library.  The library, cba,
-  ## should already be loaded. But check anyhow.
+  # Load the required package into the library.  The library, cba,
+  # should already be loaded. But check anyhow.
 
   lib.cmd <- "require(cba, quietly=TRUE)"
   if (! packageIsAvailable("cba", "plot a dendrogram")) return(FALSE)
   appendLog("The plot functionality is provided by the cba package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  ## Generate the plot command to not print the xaxis labels if there
-  ## are too many entities.
+  # Show a busy cursor whilst drawing the plot.
+
+  set.cursor("watch", "Rendering hierarchical cluster dndrogram...")
+  
+  # Generate the plot command to not print the xaxis labels if there
+  # are too many entities.
 
   if (length(crs$hclust$order) > 100)
     limit <- ", labels=FALSE, hang=0"
@@ -616,13 +620,13 @@ plotDendrogram <- function()
                     genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
                     sep="")
 
-  ## Log the R command and execute.
+  # Log the R command and execute.
   
   appendLog("Generate a dendrogram plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
-  ## Identify the clusters in the plot, if specified.
+  # Identify the clusters in the plot, if specified.
 
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   if (nclust > 1 && nclust <= length(crs$hclust$height))
@@ -632,7 +636,7 @@ plotDendrogram <- function()
     eval(parse(text=rect.cmd))
   }
   
-  setStatusBar("Dendrogram plot completed.")
+  set.cursor(message="")
 }
 
 on_hclust_stats_button_clicked <- function(button)

@@ -849,24 +849,6 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="data_rdata_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Load data from a R datafile, which is usually a binary file, possibly containing multiple datasets.</property>
-                        <property name="label" translatable="yes">RData File</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">data_csv_radiobutton</property>
-                        <signal name="toggled" handler="on_data_rdata_radiobutton_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="GtkRadioButton" id="data_rdataset_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -881,7 +863,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">4</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -895,6 +877,24 @@
                         <property name="draw_indicator">True</property>
                         <property name="group">data_csv_radiobutton</property>
                         <signal name="toggled" handler="on_data_library_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="data_rdata_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Load data from a R datafile, which is usually a binary file, possibly containing multiple datasets.</property>
+                        <property name="label" translatable="yes">RData File</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">data_csv_radiobutton</property>
+                        <signal name="toggled" handler="on_data_rdata_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -4019,7 +4019,7 @@ centroid</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">Build a logistic, linear or poisson model with glm.</property>
-                        <property name="label" translatable="yes">Linear</property>
+                        <property name="label" translatable="yes">Regression</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
@@ -4128,6 +4128,25 @@ centroid</property>
                             <property name="column_spacing">11</property>
                             <property name="row_spacing">5</property>
                             <child>
+                              <widget class="GtkCheckButton" id="rpart_include_missing_checkbutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Check this box to use surrogate variables when confronted with missing values.</property>
+                                <property name="label" translatable="yes">Include Missing</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">7</property>
+                                <property name="right_attach">8</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
                               <placeholder/>
                             </child>
                             <child>
@@ -4188,34 +4207,6 @@ centroid</property>
                                 <property name="right_attach">8</property>
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkComboBox" id="rpart_surrogates_combobox">
-                                <property name="tooltip" translatable="yes">Specify how maissing values should be handled.</property>
-                                <property name="items" translatable="yes">Use Surrogates or Majority
-Use Surrogates or Stop
-Stop on Missing
-</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">7</property>
-                                <property name="right_attach">8</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label8">
-                                <property name="label" translatable="yes">Surrogates:  </property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">6</property>
-                                <property name="right_attach">7</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -5605,10 +5596,9 @@ ANOVA RBF (anovadot)</property>
                             <child>
                               <widget class="GtkComboBoxEntry" id="glm_family_comboboxentry">
                                 <property name="visible">True</property>
-                                <property name="items" translatable="yes">
-binomial(logit)
-poisson(log)
-gaussian(identity)</property>
+                                <property name="items" translatable="yes">Linear
+Logistic
+Log-Linear</property>
                                 <child internal-child="entry">
                                   <widget class="GtkEntry" id="comboboxentry-entry2">
                                     <property name="visible">True</property>

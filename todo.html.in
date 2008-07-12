@@ -7,6 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
+080712 Fix RData File and ODBC wrt changedDataTab
+080711 Replace Distributions with laticist/playwith (Felix Andrews)
 080629 Capture transformations in PMML
 080627 Allow categorics with hclust
 080627 Auto normalise variables in clustering?

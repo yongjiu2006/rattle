@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 15:12:12 Graham Williams>
+# Time-stamp: <2008-07-12 08:57:39 Graham Williams>
 #
 # RPART TAB
 #
@@ -283,6 +283,18 @@ executeModelRPart <- function(action="build")
       control <- sprintf(", control=rpart.control(cp=%f)", cp)
     else
       control <- gsub(")$", sprintf(", cp=%f)", cp), control)
+  }
+
+  # Retrieve the Include Missing checkbutton status and if not set
+  # then change default beahviour in usesurrogate.
+
+  usesurrogate <- theWidget("rpart_include_missing_checkbutton")$getActive()
+  if (! usesurrogate)
+  {
+    if (is.null(control))
+      control <- ", control=rpart.control(usesurrogate=0)"
+    else
+      control <- gsub(")$", ", usesurrogate=0)", control)
   }
 
   # Retrieve the Cross Validation value and if different from

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 15:20:29 Graham Williams>
+# Time-stamp: <2008-07-12 10:10:22 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 07 Jul 2008"
+VERSION.DATE <- "Released 10 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -483,7 +483,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   
   # Set glm_family_comboboxentry to default value.
   
-  theWidget("rpart_surrogates_combobox")$setActive(0)
+  theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
   theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
 
@@ -664,7 +664,7 @@ resetRattle <- function()
 
   crs$dataset  <<- NULL
   crs$dataname <<- NULL
-  crs$dwd      <<- NULL
+  # crs$dwd      <<- NULL
   crs$mtime    <<- NULL
   crs$input    <<- NULL
   crs$target   <<- NULL
@@ -774,7 +774,7 @@ resetRattle <- function()
   theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
   theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
   theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
-  theWidget("rpart_surrogates_combobox")$setActive(0)
+  theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
   showModelRPartExists()
 
   ## Reset MODEL:ADA
