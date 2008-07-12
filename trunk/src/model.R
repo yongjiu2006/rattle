@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-30 17:59:24 Graham Williams>
+# Time-stamp: <2008-07-10 21:44:11 Graham Williams>
 #
 # MODEL TAB
 #
@@ -114,7 +114,7 @@ commonName <- function(mtype)
                          ada="Boost",
                          rf="Forest",
                          ksvm="SVM",
-                         glm="Linear",
+                         glm="Regression",
                          multinom="Neural Net",
                          nnet="Neural Net")
   return(as.character(name.map[[mtype]]))
@@ -426,6 +426,10 @@ executeModelGLM <- function()
   # Obtain the family
 
   family <- theWidget("glm_family_comboboxentry")$getActiveText()
+  if (family == "Logistic")
+    family="binomial(logit)"
+  else if (family == "Log-Linear")
+    family="poisson(log)"
   
   # Build the formula for the model.
 
@@ -441,7 +445,7 @@ executeModelGLM <- function()
   including <- not.null(included)
   subsetting <- sampling || including
   
-  if (categoricTarget())
+  if (categoricTarget() && family != "Linear")
     
     # For a categoric variable we usually default to assuming
     # proprtions data, and so we perform logistic regression, which
@@ -460,7 +464,7 @@ executeModelGLM <- function()
                      ", family=", family,
                      ")", sep="")
 
-  else if (numericTarget())
+  else if (numericTarget() || family == "Linear")
 
     # For a numeric target we expect to produce the usual linear
     # model. We could use glm to generate the model using the gaussian
@@ -491,13 +495,13 @@ executeModelGLM <- function()
   
   # Summarise the model.
 
-  appendLog("Summary of the resulting LM model", summary.cmd)
+  appendLog("Summary of the resulting", commonName("glm"), "model", summary.cmd)
   
   resetTextview(TV)
   setTextview(TV, sprintf(paste("Summary of the %s model",
                                 "(built using %s):\n"),
                           commonName("glm"),
-                          ifelse(categoricTarget(),
+                          ifelse(categoricTarget() && family != "Linear",
                                  "glm", "lm")),
               collectOutput(summary.cmd))
 

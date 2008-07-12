@@ -6,21 +6,25 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.47.
+    version is 2.3.48.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-Add missing but required files for packaging.
-Use a seed pre-rpart to ensure repeatability.
-Ensure data_name_combobox is cleared on a reset.
-Put in placeholder for rpart surrogates.
-Enable mulitnomial scoring - but it needs coding changes.
-Change layout of buttons on Data and Model/Rpart tabs.
-Modify set.cursor with optional Status Bar message.
-Fix ODBC abd Rdataset loading to return FALSE on fail.
+279 080712
+Add watch cursor on display of dendrogram in hclust.
+Add support for suggorates in rpart (missing values)
+data_name_combobox bug - reset to -1. Don't clear it.
+278 080710 Add missing but required files for packaging.
+           Use a seed pre-rpart to ensure repeatability.
+	   Ensure data_name_combobox is cleared on a reset.
+	   Put in placeholder for rpart surrogates.
+	   Enable mulitnomial scoring - but it needs coding changes.
+	   Change layout of buttons on Data and Model/Rpart tabs.
+	   Modify set.cursor with optional Status Bar message.
+	   Fix ODBC abd Rdataset loading to return FALSE on fail.
 277 080707 Fix Project load to disable data set load.
            Add a watch cursor while drawing scatterplot
 276 080706 Add tooltiphack to see if we can get tooltips on GNU/Linux

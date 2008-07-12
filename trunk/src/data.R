@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 11:31:49 Graham Williams>
+# Time-stamp: <2008-07-12 10:10:24 Graham Williams>
 #
 # DATA TAB
 #
@@ -106,24 +106,70 @@ changedDataTab <- function()
   # Data tab have changed. This is probably limited to checking things
   # relevant to the currently selected data source radio button.
 
-  filename <- theWidget("data_filechooserbutton")$getUri()  
-
-  if (is.null(filename) || is.null(crs$dataname) || is.null(crs$dwd))
-    return(TRUE)
+  # 080712 If there is no dataname stored, then don't bother testing
+  # any other conditions. The dataset should be loaded.
   
-  if (URLdecode(basename(filename)) != crs$dataname ||
-      dirname(URLdecode(filename)) != crs$dwd)
-    return(TRUE)
-
-  # 080606 TODO Test if file date has changed, and if so, return TRUE.
-  # file.info does not handle URLs so this is no good at present. Note
-  # that under MS/Windows this returns NA so we don't get a chance to
-  # notice updated files.
-
-  now.mtime <- urlModTime(filename)
-  if (! is.na(crs$mtime) && ! is.na(now.mtime) && now.mtime > crs$mtime)
-    return(TRUE)
+  if (is.null(crs$dataname)) return(TRUE)
   
+  # 080712 Check what data source is active, and act
+  # appropriately. For those I have yet to work on, simply return TRUE
+  # so that at least the data always gets loaded. But this does then
+  # wipe out any changes the user makes to selections.
+
+  if (theWidget("data_csv_radiobutton")$getActive()
+      || theWidget("data_arff_radiobutton")$getActive())
+  {
+  
+    filename <- theWidget("data_filechooserbutton")$getUri()  
+
+    if (is.null(filename) || is.null(crs$dwd))
+      return(TRUE)
+  
+    if (URLdecode(basename(filename)) != crs$dataname ||
+        dirname(URLdecode(filename)) != crs$dwd)
+      return(TRUE)
+
+    # 080606 TODO Test if file date has changed, and if so, return
+    # TRUE.  file.info does not handle URLs so this is no good at
+    # present. Note that under MS/Windows this returns NA so we don't
+    # get a chance to notice updated files.
+
+    now.mtime <- urlModTime(filename)
+    if (! is.null(crs$mtime) && ! is.null(now.mtime) && now.mtime > crs$mtime)
+      return(TRUE)
+  
+  }
+  else if (theWidget("data_rdataset_radiobutton")$getActive())
+  {
+    dataname <- theWidget("data_name_combobox")$getActiveText()
+
+    if (is.null(dataname) || crs$dataname != dataname)
+      return(TRUE)
+  }
+  else if (theWidget("data_library_radiobutton")$getActive())
+  {
+    dataname <- theWidget("data_name_combobox")$getActiveText()
+    if (is.null(crs$datapkg) || is.null(dataname))
+      return(TRUE)
+    adsname <- gsub('([^ :]*).*$', '\\1', unlist(strsplit(dataname, ":"))[1])
+    dspkg <- unlist(strsplit(dataname, ":"))[2]
+    if (crs$dataname != adsname
+        || crs$datapkg != dspkg)
+      return(TRUE)
+  }
+  else if (theWidget("data_rdata_radiobutton")$getActive())
+  {
+    dataname <- theWidget("data_name_combobox")$getActiveText()
+
+    if (is.null(dataname) || crs$dataname != dataname) return(TRUE)
+  }
+  else if (theWidget("data_odbc_radiobutton")$getActive())
+  {
+   table <- theWidget("data_odbc_table_combobox")$getActiveText()
+
+   if (is.null(table) || crs$dataname != table) return(TRUE)
+  }
+
   # Return FALSE if we did not detect any changes.
 
   return(FALSE)
@@ -459,7 +505,6 @@ executeDataCSV <- function(filename=NULL)
   }
   else
     filename <- URLdecode(filename)
-
 
   crs$dwd <<- dirname(filename)
   crs$mtime <<- urlModTime(filename)
@@ -797,7 +842,7 @@ executeDataARFF <- function()
 
   # Collect relevant data
 
-  filename <- theWidget("data_filechooserbutton")$getFilename()
+  filename <- theWidget("data_filechooserbutton")$getUri()
 
   # If no filename is given then return without doing anything.
 
@@ -864,9 +909,9 @@ executeDataARFF <- function()
 executeDataODBC <- function()
 {
 
-  ## Retrieve information. Note that there is no standard LIMIT option
-  ## in SQL, but it is LIMIT in Teradata, so perhaps we go with that
-  ## for now?
+  # Retrieve information. Note that there is no standard LIMIT option
+  # in SQL, but it is LIMIT in Teradata, so perhaps we go with that
+  # for now?
   
   dsn.name <- theWidget("data_odbc_dsn_entry")$getText()
   table <- theWidget("data_odbc_table_combobox")$getActiveText()
@@ -874,8 +919,8 @@ executeDataODBC <- function()
   believe.nrows <- theWidget("data_odbc_believeNRows_checkbutton")$getActive()
   sql.query <- "" # theWidget("odbc_sql_entry")$getText()
   
-  ## If the ODBC channel has not been openned, then tell the user how
-  ## to do so.
+  # If the ODBC channel has not been openned, then tell the user how
+  # to do so.
 
   if (class(crs$odbc) != "RODBC")
   {
@@ -888,7 +933,7 @@ executeDataODBC <- function()
     return(FALSE)
   }
   
-  ## Error if no table from the database has been chosen.
+  # Error if no table from the database has been chosen.
   
   if (sql.query == "" && is.null(table))
   {
@@ -1076,7 +1121,7 @@ executeDataLibrary <- function()
   if (is.null(dataset))
   {
     errorDialog("No dataset from the R libraries has been specified.",
-                "Please identify the name of the dataset",
+                "\n\nPlease identify the name of the dataset",
                 "you wish to load using the Data Name chooser.")
     return(FALSE)
   }
@@ -1124,7 +1169,8 @@ executeDataLibrary <- function()
     return(FALSE)
   }
   
-  # crs$dataname <<- adsname
+  crs$dataname <<- adsname
+  crs$datapkg <<- dspkg
   setRattleTitle(crs$dataname)
   
   setStatusBar("The R package data is now available.")

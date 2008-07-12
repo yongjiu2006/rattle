@@ -29,7 +29,10 @@ source("pmml.rpart.R")
 source("pmml.rsf.R")
 setwd(cwd)
 
+#audit <- read.csv("http://rattle.togaware.com/audit.csv")
+
 #library(playwith)
-#autoplay(on=TRUE, ask=TRUE)
+#latticist(audit)
+
 #rattle(tooltiphack=TRUE)
 #rattle()
