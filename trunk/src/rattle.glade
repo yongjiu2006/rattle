@@ -3999,6 +3999,7 @@ centroid</property>
                       <widget class="GtkRadioButton" id="nnet_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Build a Regression (numeric target) or Classification (categoric target) model with nnet/multinom respectively.</property>
                         <property name="label" translatable="yes">Neural Net</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -4018,7 +4019,7 @@ centroid</property>
                       <widget class="GtkRadioButton" id="regression_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build a logistic, linear or poisson model with glm.</property>
+                        <property name="tooltip" translatable="yes">Build a Linear (numeric target) or Logist (binary target) model with lm/glm respectively.</property>
                         <property name="label" translatable="yes">Regression</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
@@ -4343,7 +4344,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               <widget class="GtkLabel" id="label119">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -4865,7 +4866,7 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                               <widget class="GtkLabel" id="label147">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5143,7 +5144,7 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                               <widget class="GtkLabel" id="label122">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">rf</property>
+                                <property name="label" translatable="yes">randomForest</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">3</property>
@@ -5156,7 +5157,7 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                               <widget class="GtkLabel" id="label121">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5299,9 +5300,69 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                             <property name="visible">True</property>
                             <property name="border_width">5</property>
                             <property name="n_rows">1</property>
-                            <property name="n_columns">6</property>
+                            <property name="n_columns">7</property>
                             <property name="column_spacing">5</property>
                             <property name="row_spacing">5</property>
+                            <child>
+                              <widget class="GtkLabel" id="label8">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">ksvm</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="kernlab_radiobutton">
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Use ksvm from the kernlab package.</property>
+                                <property name="label" translatable="yes">ksvm</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_kernlab_radiobutton_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">3</property>
+                                <property name="right_attach">4</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="e1071_radiobutton">
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Use svm from the e1071 package (recommended).</property>
+                                <property name="label" translatable="yes">svm</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">kernlab_radiobutton</property>
+                                <signal name="toggled" handler="on_e1071_radiobutton_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">4</property>
+                                <property name="right_attach">5</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label181">
+                                <property name="visible">True</property>
+                                <property name="xpad">5</property>
+                                <property name="label" translatable="yes">Kernel:</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">5</property>
+                                <property name="right_attach">6</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
                             <child>
                               <widget class="GtkComboBoxEntry" id="svm_kernel_comboboxentry">
                                 <property name="visible">True</property>
@@ -5319,66 +5380,18 @@ ANOVA RBF (anovadot)</property>
                                 </child>
                               </widget>
                               <packing>
-                                <property name="left_attach">5</property>
-                                <property name="right_attach">6</property>
+                                <property name="left_attach">6</property>
+                                <property name="right_attach">7</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options">GTK_FILL</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label181">
-                                <property name="visible">True</property>
-                                <property name="xpad">5</property>
-                                <property name="label" translatable="yes">Kernel:</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">4</property>
-                                <property name="right_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="e1071_radiobutton">
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">Use svm from the e1071 package (recommended).</property>
-                                <property name="label" translatable="yes">svm</property>
-                                <property name="use_underline">True</property>
-                                <property name="response_id">0</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">kernlab_radiobutton</property>
-                                <signal name="toggled" handler="on_e1071_radiobutton_toggled"/>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">3</property>
-                                <property name="right_attach">4</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="kernlab_radiobutton">
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">Use ksvm from the kernlab package.</property>
-                                <property name="label" translatable="yes">ksvm</property>
-                                <property name="use_underline">True</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_kernlab_radiobutton_toggled"/>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkLabel" id="label123">
+                                <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="xpad">5</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -5550,7 +5563,53 @@ ANOVA RBF (anovadot)</property>
                             <property name="column_spacing">10</property>
                             <property name="row_spacing">5</property>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkRadioButton" id="glm_log_linear_radiobutton">
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Log-Linear</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">glm_linear_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">4</property>
+                                <property name="right_attach">5</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="glm_logistic_radiobutton">
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Logistic</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">glm_linear_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">3</property>
+                                <property name="right_attach">4</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="glm_linear_radiobutton">
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Linear</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
                             </child>
                             <child>
                               <placeholder/>
@@ -5562,13 +5621,7 @@ ANOVA RBF (anovadot)</property>
                               <placeholder/>
                             </child>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label125">
+                              <widget class="GtkLabel" id="glm_builder_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">glm</property>
@@ -5584,7 +5637,7 @@ ANOVA RBF (anovadot)</property>
                               <widget class="GtkLabel" id="label124">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5595,7 +5648,6 @@ ANOVA RBF (anovadot)</property>
                             </child>
                             <child>
                               <widget class="GtkComboBoxEntry" id="glm_family_comboboxentry">
-                                <property name="visible">True</property>
                                 <property name="items" translatable="yes">Linear
 Logistic
 Log-Linear</property>
@@ -5628,7 +5680,6 @@ Log-Linear</property>
                             </child>
                             <child>
                               <widget class="GtkLabel" id="glm_family_label">
-                                <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Family:</property>
                               </widget>
@@ -5734,7 +5785,7 @@ Log-Linear</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label154">
+                              <widget class="GtkLabel" id="nnet_builder_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">nnet</property>
@@ -5750,7 +5801,7 @@ Log-Linear</property>
                               <widget class="GtkLabel" id="label153">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5874,7 +5925,7 @@ Log-Linear</property>
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
                                 <property name="xpad">5</property>
-                                <property name="label" translatable="yes">Model Type:</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>

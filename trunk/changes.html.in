@@ -6,17 +6,28 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.48.
+    version is 2.3.49.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-279 080712
-Add watch cursor on display of dendrogram in hclust.
-Add support for suggorates in rpart (missing values)
-data_name_combobox bug - reset to -1. Don't clear it.
+280 080713
+Hide Models/All for RStat
+Set default location when scoring to file.
+Add target to score output when choosing only Idents.
+Remove Cost Curve if multinomial or numeric.
+Test removal of family from Regression and auto decide Linear or Logistic
+Auto decide also for nnet/multinom.
+With tooltiphack reintroduce flush on loading sample dataset (or else it waits)
+279 080712 Add watch cursor on display of dendrogram in hclust.
+           Add support for suggorates in rpart (missing values)
+           data_name_combobox bug - reset to -1. Don't clear it.
+           Rename Linear radio button to Regression.
+           Use simpler names for Regression families.
+           Fix logic for determining when new datasets need to be loaded.
+           Fix ODBC loading - not tested yet.
 278 080710 Add missing but required files for packaging.
            Use a seed pre-rpart to ensure repeatability.
 	   Ensure data_name_combobox is cleared on a reset.

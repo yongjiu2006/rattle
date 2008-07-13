@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 21:44:11 Graham Williams>
+# Time-stamp: <2008-07-13 15:39:13 Graham Williams>
 #
 # MODEL TAB
 #
@@ -180,6 +180,7 @@ deactivateROCRPlots <- function()
   theWidget("precision_radiobutton")$setSensitive(FALSE)
   theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
   theWidget("risk_radiobutton")$setSensitive(FALSE)
+  theWidget("costcurve_radiobutton")$setSensitive(FALSE)
 
   if (numericTarget())
     theWidget("confusion_radiobutton")$setSensitive(FALSE)
@@ -193,6 +194,7 @@ activateROCRPlots <- function()
   theWidget("precision_radiobutton")$setSensitive(TRUE)
   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
   theWidget("risk_radiobutton")$setSensitive(TRUE)
+  theWidget("costcurve_radiobutton")$setSensitive(TRUE)
 }
 
 ########################################################################
