@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-12 10:10:24 Graham Williams>
+# Time-stamp: <2008-07-13 15:44:31 Graham Williams>
 #
 # DATA TAB
 #
@@ -475,6 +475,7 @@ executeDataCSV <- function(filename=NULL)
                                "\nWe require a dataset to be loaded.\n",
                                "\nWould you like to use the sample audit",
                                "dataset?")))
+
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
       
@@ -496,8 +497,11 @@ executeDataCSV <- function(filename=NULL)
 
       filename <- paste("file://", filename, sep="")
       
-      ## 080519 Do we still need the events flush?
-      ## while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+      # 080713 We still need the events flush with tootiphack set
+      # since otherwise we have to lose focus before the screen gets
+      # updated.
+      
+      while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 
       #gtkmainquit_handler(NULL, NULL)
       #gtkmain_handler(NULL, NULL)
@@ -1302,6 +1306,8 @@ exportDataTab <- function()
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_saved", sep=""))
 
+  dialog$setCurrentFolder(crs$dwd)
+
   ff <- gtkFileFilterNew()
   ff$setName("CSV Files")
   ff$addPattern("*.csv")
@@ -1676,7 +1682,7 @@ executeSelectTab <- function()
     theWidget("rpart_weights_label")$setText(the.weight)
   }
 
-  ## 080413 Update MODEL types that are available.
+  # 080413 Update MODEL types that are available.
 
   # With more than two classes we can't use AdaBoost since the current
   # package does not support more than 2 classes.
@@ -1693,11 +1699,12 @@ executeSelectTab <- function()
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
     theWidget("rf_radiobutton")$setSensitive(TRUE)
     theWidget("svm_radiobutton")$setSensitive(TRUE)
-    theWidget("regression_radiobutton")$setSensitive(TRUE)
     theWidget("nnet_radiobutton")$setSensitive(TRUE)
     theWidget("all_models_radiobutton")$setSensitive(TRUE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+
+    theWidget("nnet_builder_label")$setText("multinom (Classification)")
 
     # For linear models, if it is categoricand binomial then assume
     # logistic regression (default to binmoial distribution and the
@@ -1706,9 +1713,17 @@ executeSelectTab <- function()
     # function).
 
     if (binomialTarget())
+    {
       theWidget("glm_family_comboboxentry")$setActive(1)
+      theWidget("regression_radiobutton")$setSensitive(TRUE)
+      theWidget("glm_builder_label")$setText("glm (Logistic)")
+    }
     else
+    {
       theWidget("glm_family_comboboxentry")$setActive(2)
+      theWidget("glm_builder_label")$setText("")
+      theWidget("regression_radiobutton")$setSensitive(FALSE)
+    }
   }
   else if (numericTarget())
   {
@@ -1721,11 +1736,14 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_label")$setSensitive(TRUE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
 
+    theWidget("nnet_builder_label")$setText("nnet (Regression)")
+
     # For linear models, if it is numeric we are probably going to use
     # a lm so set the default family to nothing! This is becasue lm
     # simply does gaussian and an identity link function.
 
     theWidget("glm_family_comboboxentry")$setActive(0)
+    theWidget("glm_builder_label")$setText("lm (Linear)")
     
   }
   else # What else could it be? No target!

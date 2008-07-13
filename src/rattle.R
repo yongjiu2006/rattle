@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-12 10:10:22 Graham Williams>
+# Time-stamp: <2008-07-13 11:48:16 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 10 Jul 2008"
+VERSION.DATE <- "Released 12 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -618,6 +618,10 @@ tuneRStat <- function()
   theWidget("summary_find_entry")$hide()
   theWidget("summary_find_button")$hide()
   theWidget("summary_next_button")$hide()
+
+  # Model -> All
+
+  theWidget("all_models_radiobutton")$hide()
 }
 
 #-----------------------------------------------------------------------
@@ -992,9 +996,11 @@ variablesHaveChanged <- function(action)
       length(crs$ident) != length(getSelectedVariables("ident")) ||
       length(crs$input) != length(getSelectedVariables("input")))
   {
-    errorDialog("I have detected changes to the selected variables in the",
-                 "Select tab that have not been Executed.",
-                 "Please do so before", paste(action, ".", sep=""))
+    errorDialog("It appears that there have been some changes made",
+                "to the variables in the",
+                "Select tab that have not been Executed.",
+                "\n\nPlease click Execute on the Data tab before",
+                paste(action, ".", sep=""))
     return(TRUE)
   }
   else
@@ -6683,7 +6689,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     
     if(not.null(testname)) dialog$setCurrentName(default)
     
-    # dialog$setCurrentFolder(crs$dwd)
+    dialog$setCurrentFolder(crs$dwd)
     
     ff <- gtkFileFilterNew()
     ff$setName("CSV Files")
@@ -6742,9 +6748,9 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   row.names(scores) <- the.names
   names(scores) <- the.models
   
-  # Obtain a list of the identity vartiables.
+  # Obtain a list of the identity vartiables and 080713 target to output.
     
-  idents <- getSelectedVariables("ident")
+  idents <- union(getSelectedVariables("ident"), getSelectedVariables("target"))
 
   setStatusBar("Scoring dataset ...")
   
