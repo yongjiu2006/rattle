@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-13 15:44:31 Graham Williams>
+# Time-stamp: <2008-07-16 06:11:10 Graham Williams>
 #
 # DATA TAB
 #
@@ -1699,12 +1699,16 @@ executeSelectTab <- function()
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
     theWidget("rf_radiobutton")$setSensitive(TRUE)
     theWidget("svm_radiobutton")$setSensitive(TRUE)
-    theWidget("nnet_radiobutton")$setSensitive(TRUE)
-    theWidget("all_models_radiobutton")$setSensitive(TRUE)
+
+    theWidget("regression_radiobutton")$setSensitive(TRUE)
+
+    theWidget("nnet_radiobutton")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+    theWidget("nnet_builder_label")$setText("")
 
-    theWidget("nnet_builder_label")$setText("multinom (Classification)")
+    # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
+
 
     # For linear models, if it is categoricand binomial then assume
     # logistic regression (default to binmoial distribution and the
@@ -1714,15 +1718,19 @@ executeSelectTab <- function()
 
     if (binomialTarget())
     {
-      theWidget("glm_family_comboboxentry")$setActive(1)
-      theWidget("regression_radiobutton")$setSensitive(TRUE)
       theWidget("glm_builder_label")$setText("glm (Logistic)")
+      theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_logistic_radiobutton")$setSensitive(TRUE)
+      theWidget("glm_logistic_radiobutton")$setActive(TRUE)
+      theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
     }
     else
     {
-      theWidget("glm_family_comboboxentry")$setActive(2)
-      theWidget("glm_builder_label")$setText("")
-      theWidget("regression_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_builder_label")$setText("multinom")
+      theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_multinomial_radiobutton")$setSensitive(TRUE)
+      theWidget("glm_multinomial_radiobutton")$setActive(TRUE)
     }
   }
   else if (numericTarget())
@@ -1730,21 +1738,28 @@ executeSelectTab <- function()
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
     theWidget("rf_radiobutton")$setSensitive(FALSE)
     theWidget("svm_radiobutton")$setSensitive(FALSE)
-    theWidget("regression_radiobutton")$setSensitive(TRUE)
-    theWidget("nnet_radiobutton")$setSensitive(TRUE)
-    theWidget("all_models_radiobutton")$setSensitive(TRUE)
-    theWidget("nnet_hidden_nodes_label")$setSensitive(TRUE)
-    theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
-
-    theWidget("nnet_builder_label")$setText("nnet (Regression)")
 
     # For linear models, if it is numeric we are probably going to use
     # a lm so set the default family to nothing! This is becasue lm
     # simply does gaussian and an identity link function.
 
-    theWidget("glm_family_comboboxentry")$setActive(0)
+#    theWidget("glm_family_comboboxentry")$setActive(0)
+
+    theWidget("regression_radiobutton")$setSensitive(TRUE)
     theWidget("glm_builder_label")$setText("lm (Linear)")
-    
+    theWidget("glm_linear_radiobutton")$setSensitive(TRUE)
+    theWidget("glm_linear_radiobutton")$setActive(TRUE)
+    theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
+
+    theWidget("nnet_radiobutton")$setSensitive(TRUE)
+    theWidget("nnet_hidden_nodes_label")$setSensitive(TRUE)
+    theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
+    theWidget("nnet_builder_label")$setText("nnet (Regression)")
+
+
+    # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
+
   }
   else # What else could it be? No target!
   {
@@ -1757,6 +1772,9 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
     theWidget("sample_checkbutton")$setActive(FALSE)
+    theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
   }
   
   # Update EVALUATE risk variable

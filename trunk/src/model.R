@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-13 15:39:13 Graham Williams>
+# Time-stamp: <2008-07-16 06:33:26 Graham Williams>
 #
 # MODEL TAB
 #
@@ -184,6 +184,8 @@ deactivateROCRPlots <- function()
 
   if (numericTarget())
     theWidget("confusion_radiobutton")$setSensitive(FALSE)
+  else if (multinomialTarget())
+    theWidget("confusion_radiobutton")$setSensitive(TRUE)
 }
 
 activateROCRPlots <- function()
@@ -254,8 +256,6 @@ executeModelTab <- function()
   # textview of the Evaluate tab. We make this word wrap here and then
   # turn that off once the tab is Executed.
 
-##  paradigm <- getParadigm()
-  
   if (multinomialTarget())
   {
     deactivateROCRPlots()
@@ -427,11 +427,12 @@ executeModelGLM <- function()
   
   # Obtain the family
 
-  family <- theWidget("glm_family_comboboxentry")$getActiveText()
-  if (family == "Logistic")
-    family="binomial(logit)"
-  else if (family == "Log-Linear")
-    family="poisson(log)"
+  if (theWidget("glm_linear_radiobutton")$getActive())
+    family <- "Linear"
+  else if (theWidget("glm_logistic_radiobutton")$getActive())
+    family <- "Binomial"
+  else if (theWidget("glm_multinomial_radiobutton")$getActive())
+    family <- "Multinomial"
   
   # Build the formula for the model.
 
@@ -447,64 +448,97 @@ executeModelGLM <- function()
   including <- not.null(included)
   subsetting <- sampling || including
   
-  if (categoricTarget() && family != "Linear")
-    
+  startLog("REGRESSION")
+
+  if (family == "Binomial")
+  {
     # For a categoric variable we usually default to assuming
     # proprtions data, and so we perform logistic regression, which
     # uses a binomial distribution and a logit link function. However,
-    # the user can choose a different distriubtion/link pair.
+    # the user could eventually choose a different distriubtion/link
+    # pair.
     #
     # If we have a binary response it may be that we might consider
     # using a loglog link rather than a logit link.
 
-    glm.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
-                     if (subsetting) "[",
-                     if (sampling) "crs$sample",
-                     if (subsetting) ",",
-                     if (including) included,
-                     if (subsetting) "]",
-                     ", family=", family,
-                     ")", sep="")
+    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ", family=binomial(logit)",
+                       ")", sep="")
 
-  else if (numericTarget() || family == "Linear")
+    summary.cmd <- paste("print(summary(crs$glm))",
+                         "cat('==== ANOVA ====\n\n')",
+                         "print(anova(crs$glm))", sep="\n")
+  }
+  
+  else if (family == "Linear")
+  {
 
     # For a numeric target we expect to produce the usual linear
     # model. We could use glm to generate the model using the gaussian
     # distribution and the identity link function. This will produce
-    # the same model as lm. But lm is faster and it also produces the
-    # R squared stats, so we use lm.
+    # the same model as lm. But lm is faster (glm is an iterative
+    # algorithm) and it also produces the R squared stats, so we use
+    # lm.
     
-    glm.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
-                     if (subsetting) "[",
-                     if (sampling) "crs$sample",
-                     if (subsetting) ",",
-                     if (including) included,
-                     if (subsetting) "]",
-                     #", family=", family,
-                     ")", sep="")
+    model.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ")", sep="")
+
+    summary.cmd <- paste("print(summary(crs$glm))",
+                         "cat('==== ANOVA ====\n\n')",
+                         "print(anova(crs$glm))", sep="\n")
+  }
   
-  summary.cmd <- paste("print(summary(crs$glm))",
-                       "cat('==== ANOVA ====\n\n')",
-                       "print(anova(crs$glm))", sep="\n")
+  else if (family == "Multinomial")
+  {
+    lib.cmd <-  "require(nnet, quietly=TRUE)"
+    if (! packageIsAvailable("nnet", "build a mulitnomial model")) return(FALSE)
+    appendLog("Build a multinomial model using the nnet package.", lib.cmd)
+    eval(parse(text=lib.cmd))
+    
+    model.cmd <- paste("crs$glm <<- ",
+                       "multinom",
+                       "(", frml, ", data=crs$dataset",
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ", trace=FALSE, maxit=1000",
+                       ")", sep="")
+
+    summary.cmd <- "print(crs$glm)"
+  }
   
   # Build the model.
 
-  startLog("REGRESSION")
-  appendLog("Build a regression model using lm.",
-            gsub("<<-", "<-", glm.cmd), sep="")
+  appendLog("Build a Regression model.",
+            gsub("<<-", "<-", model.cmd), sep="")
   start.time <- Sys.time()
-  eval(parse(text=glm.cmd))
+  eval(parse(text=model.cmd))
   
   # Summarise the model.
 
-  appendLog("Summary of the resulting", commonName("glm"), "model", summary.cmd)
+  appendLog(paste("Summary of the resulting", commonName("glm"), "model"),
+            summary.cmd)
   
   resetTextview(TV)
   setTextview(TV, sprintf(paste("Summary of the %s model",
                                 "(built using %s):\n"),
                           commonName("glm"),
-                          ifelse(categoricTarget() && family != "Linear",
-                                 "glm", "lm")),
+                          ifelse(numericTarget(),
+                                 "lm",
+                                 ifelse(family == "Logistic",
+                                 "glm", "multinom"))),
               collectOutput(summary.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
@@ -516,7 +550,7 @@ executeModelGLM <- function()
                       attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
-  setStatusBar("A lm model has been generated.", time.msg)
+  setStatusBar("A Regression model has been generated.", time.msg)
   return(TRUE)
 }
 

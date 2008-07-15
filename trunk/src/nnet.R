@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-25 06:51:17 Graham Williams>
+# Time-stamp: <2008-07-14 05:41:18 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -125,7 +125,12 @@ executeModelNNet <- function()
   
   # Print the results of the modelling.
 
-  print.cmd <- paste("print(crs$nnet)", "print(summary(crs$nnet))", sep="\n")
+  if (numericTarget())
+    print.cmd <- paste("print(crs$nnet)", 'print("\n\nNetwork Weights:\n\n")',
+                       "print(summary(crs$nnet))", sep="\n")
+  else
+    print.cmd <- "print(crs$nnet)"
+
   appendLog("Print the results of the modelling.", print.cmd)
   resetTextview(TV)
   setTextview(TV,

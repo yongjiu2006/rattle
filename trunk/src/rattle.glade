@@ -5563,45 +5563,14 @@ ANOVA RBF (anovadot)</property>
                             <property name="column_spacing">10</property>
                             <property name="row_spacing">5</property>
                             <child>
-                              <widget class="GtkRadioButton" id="glm_log_linear_radiobutton">
+                              <widget class="GtkRadioButton" id="glm_multinomial_radiobutton">
+                                <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Log-Linear</property>
+                                <property name="label" translatable="yes">Multinomial</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">glm_linear_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">4</property>
-                                <property name="right_attach">5</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="glm_logistic_radiobutton">
-                                <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Logistic</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">glm_linear_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">3</property>
-                                <property name="right_attach">4</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="glm_linear_radiobutton">
-                                <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Linear</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5619,6 +5588,45 @@ ANOVA RBF (anovadot)</property>
                             </child>
                             <child>
                               <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="glm_logistic_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Logistic</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">glm_linear_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="glm_linear_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Linear</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                              </widget>
+                              <packing>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkLabel" id="glm_builder_label">
@@ -5647,26 +5655,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkComboBoxEntry" id="glm_family_comboboxentry">
-                                <property name="items" translatable="yes">Linear
-Logistic
-Log-Linear</property>
-                                <child internal-child="entry">
-                                  <widget class="GtkEntry" id="comboboxentry-entry2">
-                                    <property name="visible">True</property>
-                                  </widget>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkLabel" id="glm_target_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
@@ -5674,18 +5662,6 @@ Log-Linear</property>
                               </widget>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="glm_family_label">
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Family:</property>
-                              </widget>
-                              <packing>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
@@ -6280,7 +6256,7 @@ Log-Linear</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Linear</property>
+                        <property name="label" translatable="yes">Regression</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>

@@ -6,21 +6,22 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.49.
+    version is 2.3.50.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-280 080713
-Hide Models/All for RStat
-Set default location when scoring to file.
-Add target to score output when choosing only Idents.
-Remove Cost Curve if multinomial or numeric.
-Test removal of family from Regression and auto decide Linear or Logistic
-Auto decide also for nnet/multinom.
-With tooltiphack reintroduce flush on loading sample dataset (or else it waits)
+281 080716
+Move nnet multinom to Regression - more logical location.
+280 080713 Hide Models/All for RStat
+           Set default location when scoring to file.
+           Add target to score output when choosing only Idents.
+           Remove Cost Curve if multinomial or numeric.
+           Test removal of Regression family. Auto decide Linear or Logistic.
+           Auto decide also for nnet/multinom.
+           Tooltiphack: reintroduce flush on load sample dataset (avoid waits)
 279 080712 Add watch cursor on display of dendrogram in hclust.
            Add support for suggorates in rpart (missing values)
            data_name_combobox bug - reset to -1. Don't clear it.
