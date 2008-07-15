@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-13 11:48:16 Graham Williams>
+# Time-stamp: <2008-07-16 07:12:51 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 12 Jul 2008"
+VERSION.DATE <- "Released 13 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -481,10 +481,8 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   if (R.version$minor < "4.0")
     theWidget("arff_radiobutton")$hide()
   
-  # Set glm_family_comboboxentry to default value.
-  
   theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
-  theWidget("glm_family_comboboxentry")$setActive(0)
+  #theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
 
   ## Check if some external applications are available and if not
@@ -4994,6 +4992,9 @@ executeEvaluateTab <- function()
   if (.RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", "evaluate this rf"))
     return()
+  if (crv$GLM %in%  mtypes && "multinom" %in% class(crs$glm) &&
+      ! packageIsAvailable("nnet", "evaluate a multinom model"))
+    return()
   if (crv$NNET %in%  mtypes &&
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
@@ -5305,28 +5306,43 @@ executeEvaluateTab <- function()
     
   if (crv$GLM %in%  mtypes)
   {
-    # GLM's predict removes rows with missing values, so we also need
-    # to ensure we remove rows with missing values here.
+    # 080716 The multinom model has been moved to GLM, even though it
+    # is using the nnet library. So we need to do the nnet predict
+    # here.
+
+    if ("multinom" %in% class(crs$glm))
+    {
+      testset[[crv$GLM]] <- testset0
+      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
+                                     testset[[crv$GLM]])
+      respcmd[[crv$GLM]] <- predcmd[[crv$GLM]]
+      probcmd[[crv$GLM]] <- gsub(")$", ', type="prob")', predcmd[[crv$GLM]])
+    }        
+    else
+    {
+        
+      # GLM's predict removes rows with missing values, so we also need
+      # to ensure we remove rows with missing values here.
     
-    testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
+      testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
-                              testset[[crv$GLM]])
+      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+                                    testset[[crv$GLM]])
 
-    # For GLM, a response is a figure close to the class, either close
-    # to 1 or close to 0, so threshold it to be either 1 or 0. TODO
-    # Simplify this like?
-    #    response.cmd <- gsub("predict", "(predict",
-    #                         gsub(")$", ")>0.5)*1", response.cmd))
+      # For GLM, a response is a figure close to the class, either close
+      # to 1 or close to 0, so threshold it to be either 1 or 0. TODO
+      # Simplify this like?
+      #    response.cmd <- gsub("predict", "(predict",
+      #                         gsub(")$", ")>0.5)*1", response.cmd))
+      
+      respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
+                                 gsub(")$", ', type="response") > 0.5, 1, 0)))',
+                                      predcmd[[crv$GLM]]))
 
-    respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
-                           gsub(")$", ', type="response") > 0.5, 1, 0)))',
-                                predcmd[[crv$GLM]]))
-
-    # For GLM, the response is a probability of the class.
-  
-    probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
-  
+      # For GLM, the response is a probability of the class.
+      
+      probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
+    }
   }
     
 ##   if (GBM %in%  mtypes)
