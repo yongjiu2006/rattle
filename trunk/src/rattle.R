@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 07:12:51 Graham Williams>
+# Time-stamp: <2008-07-16 18:46:19 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Jul 2008"
+VERSION.DATE <- "Released 16 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1795,16 +1795,13 @@ quit_rattle <- function(action, window)
 }
 
 ########################################################################
-#
 # TRANSFORM TAB
-#
 
 #----------------------------------------------------------------------
-#
 # Interface Actions
-#
 
-# When a radio button is selected, display the appropriate tab
+# When a radio button on the TRANSFORM tab is selected, display the
+# appropriate option.
 
 on_impute_radiobutton_toggled <- function(button)
 {
@@ -1849,9 +1846,7 @@ on_impute_constant_radiobutton_toggled <- function(button)
 }
 
 #----------------------------------------------------------------------
-#
 # Execution
-#
 
 executeTransformTab <- function()
 {
@@ -1859,10 +1854,10 @@ executeTransformTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  # Dispatch to the appropriate sub option. Currently [071124] only
-  # Rescale and Impute are implemented so this is simple.
+  # Dispatch to the appropriate option.
 
-  # TODO 080423 Change to RESCALE
+  # TODO 080423 Change NORMALISE to RESCALE
+  
   if (theWidget("normalise_radiobutton")$getActive())
     executeTransformNormalisePerform()
   else if (theWidget("impute_radiobutton")$getActive())
@@ -2629,6 +2624,8 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
 
 executeTransformRemapPerform <- function()
 {
+  # Remap variables in some way.
+
   # Obtain the list of selected variables from the treeview.
 
   vars <- NULL
@@ -2834,6 +2831,9 @@ executeTransformRemapPerform <- function()
 
   if (action == "joincat")
     input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
+  else if (action == "indicator")
+    input <- union(input, paste(remap.prefix, vars,
+                                levels(crs$dataset[[vars]]), sep="_"))
   else
     input <- union(input, paste(remap.prefix, vars, sep="_"))
 
@@ -6215,7 +6215,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
-    ## Check for errors - in particular, new levels in the test dataset.
+    # Check for errors - in particular, new levels in the test dataset.
     
     if (inherits(result, "try-error"))
     {
@@ -6263,7 +6263,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
     eval(parse(text=plot.cmd))
     models <- c("Test", "Train")
     nummodels <- 2
-    legtitle <- getEvaluateModels()
+    legtitle <- sapply(getEvaluateModels(), commonName)
     title <- sub('\\[test\\]', '', testname)
   }
   else

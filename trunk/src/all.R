@@ -1,6 +1,6 @@
 cwd <- getwd()
 setwd("/home/gjw/projects/rattle/src")
-redo <- function() {source("all.R"); rattle(tooltiphack=TRUE)}
+redo <- function() {source("all.R"); rattle(tooltiphack=FALSE)}
 source("rattle.R")
 source("zzz.R")
 source("associate.R")
