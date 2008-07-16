@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 06:33:26 Graham Williams>
+# Time-stamp: <2008-07-16 17:22:45 Graham Williams>
 #
 # MODEL TAB
 #
@@ -115,7 +115,7 @@ commonName <- function(mtype)
                          rf="Forest",
                          ksvm="SVM",
                          glm="Regression",
-                         multinom="Neural Net",
+                         multinom="Regression",
                          nnet="Neural Net")
   return(as.character(name.map[[mtype]]))
 }
@@ -206,9 +206,9 @@ activateROCRPlots <- function()
 
 executeModelTab <- function()
 {
-  ## Check for prerequisites.
-
-  # Can not build a model without a dataset.
+  # Perform the actions requested from the Model tab.
+  
+  # Check for prerequisites: Can not build a model without a dataset.
 
   if (noDatasetLoaded()) return()
 
@@ -293,7 +293,8 @@ executeModelTab <- function()
   theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("nnet_evaluate_checkbutton")$setActive(FALSE)
   
-  ## The following work for ada, do they work for the rest?
+  # The following work for ada, do they work for the rest?
+  
   formula <- paste(crs$target, "~ .")
   included <- getIncludedVariables()
   sampling <- not.null(crs$sample)
@@ -308,8 +309,8 @@ executeModelTab <- function()
                    sep="")
 
   
-  ## This order of execution should correspond to the order in the
-  ## GUI as this makes most logical sense to the user.
+  # This order of execution should correspond to the order in the
+  # GUI as this makes most logical sense to the user.
 
   start.time <- Sys.time()
 
@@ -393,7 +394,8 @@ executeModelTab <- function()
     else
       setStatusBar("Building", crv$GLM, "model ... failed.")
   }
-  if (build.all || currentModelTab() == crv$NNET)
+  if ((theWidget("nnet_radiobutton")$isSensitive() && build.all)
+      || currentModelTab() == crv$NNET)
   {
     setStatusBar("Building", crv$NNET, "model ...")
     if (executeModelNNet())
@@ -430,7 +432,7 @@ executeModelGLM <- function()
   if (theWidget("glm_linear_radiobutton")$getActive())
     family <- "Linear"
   else if (theWidget("glm_logistic_radiobutton")$getActive())
-    family <- "Binomial"
+    family <- "Logistic"
   else if (theWidget("glm_multinomial_radiobutton")$getActive())
     family <- "Multinomial"
   
@@ -450,7 +452,7 @@ executeModelGLM <- function()
   
   startLog("REGRESSION")
 
-  if (family == "Binomial")
+  if (family == "Logistic")
   {
     # For a categoric variable we usually default to assuming
     # proprtions data, and so we perform logistic regression, which
@@ -532,9 +534,9 @@ executeModelGLM <- function()
             summary.cmd)
   
   resetTextview(TV)
-  setTextview(TV, sprintf(paste("Summary of the %s model",
+  setTextview(TV, sprintf(paste("Summary of the %s %s model",
                                 "(built using %s):\n"),
-                          commonName("glm"),
+                          family, commonName("glm"),
                           ifelse(numericTarget(),
                                  "lm",
                                  ifelse(family == "Logistic",
