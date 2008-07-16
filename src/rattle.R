@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 18:46:19 Graham Williams>
+# Time-stamp: <2008-07-16 21:37:45 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -3312,6 +3312,8 @@ executeExploreTab <- function()
     executeExploreHiercor(ndataset)
   else if (theWidget("prcomp_radiobutton")$getActive())
     executeExplorePrcomp(nidataset)
+  else if (theWidget("playwith_radiobutton")$getActive())
+    executeExplorePlaywith(dataset)
 }
 
 executeExploreSummary <- function(dataset)
@@ -4804,6 +4806,24 @@ executeExplorePrcomp <- function(dataset)
   setStatusBar("A principal components analysis has been completed.")
 
 }
+
+executeExplorePlaywith <- function(dataset)
+{
+  # Testing for now. This has great potential.
+
+  if (! packageIsAvailable("playwith","visual data exploration")) return()
+
+  startLog("EXPLORE DATA.")
+
+  lib.cmd <- "require(playwith)"
+  appendLog("The latticist command comes from the playwith package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  plot.cmd <- sprintf("latticist(%s)", dataset)
+  appendLog("Call upon the latticist command written for Rattle.", plot.cmd)
+  eval(parse(text=plot.cmd))
+}
+
 
 ########################################################################
 # EVALUATE TAB
