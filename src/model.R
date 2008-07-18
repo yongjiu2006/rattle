@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 17:22:45 Graham Williams>
+# Time-stamp: <2008-07-19 07:50:56 Graham Williams>
 #
 # MODEL TAB
 #
@@ -104,6 +104,30 @@ on_kernlab_radiobutton_toggled <- function(button)
   }
   setStatusBar()
 }
+
+# When any of the regression radion buttons change then ensure the
+# Model Builder label is updated to indicate the right model bulder.
+
+on_glm_linear_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) theWidget("glm_builder_label")$setText("lm (Linear)")
+}
+
+on_glm_gaussian_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) theWidget("glm_builder_label")$setText("glm (Gaussian)")
+}
+
+on_glm_logistic_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) theWidget("glm_builder_label")$setText("glm (Logistic)")
+}
+
+on_glm_multinomial_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) theWidget("glm_builder_label")$setText("multinom")
+}
+
 
 ########################################################################
 # UTILITIES
@@ -431,6 +455,8 @@ executeModelGLM <- function()
 
   if (theWidget("glm_linear_radiobutton")$getActive())
     family <- "Linear"
+  else if (theWidget("glm_gaussian_radiobutton")$getActive())
+    family <- "Gaussian"
   else if (theWidget("glm_logistic_radiobutton")$getActive())
     family <- "Logistic"
   else if (theWidget("glm_multinomial_radiobutton")$getActive())
@@ -476,7 +502,6 @@ executeModelGLM <- function()
                          "cat('==== ANOVA ====\n\n')",
                          "print(anova(crs$glm))", sep="\n")
   }
-  
   else if (family == "Linear")
   {
 
@@ -499,7 +524,26 @@ executeModelGLM <- function()
                          "cat('==== ANOVA ====\n\n')",
                          "print(anova(crs$glm))", sep="\n")
   }
-  
+  else if (family == "Gaussian")
+  {
+    # Whilst this is a less efficient equivalent of the Linear model
+    # using lm, it is identified that some users perceive value in
+    # having both lm and glm options for numeric regression. This uses
+    # a gaussian distribution and an identity link function.
+
+    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ", family=gaussian(identity)",
+                       ")", sep="")
+
+    summary.cmd <- paste("print(summary(crs$glm))",
+                         "cat('==== ANOVA ====\n\n')",
+                         "print(anova(crs$glm))", sep="\n")
+  }
   else if (family == "Multinomial")
   {
     lib.cmd <-  "require(nnet, quietly=TRUE)"
@@ -530,22 +574,19 @@ executeModelGLM <- function()
   
   # Summarise the model.
 
-  appendLog(paste("Summary of the resulting", commonName("glm"), "model"),
-            summary.cmd)
+  appendLog(paste("Summary of the resulting", commonName("glm"), "model"), summary.cmd)
   
   resetTextview(TV)
   setTextview(TV, sprintf(paste("Summary of the %s %s model",
                                 "(built using %s):\n"),
                           family, commonName("glm"),
-                          ifelse(numericTarget(),
-                                 "lm",
-                                 ifelse(family == "Logistic",
-                                 "glm", "multinom"))),
+                          ifelse(family == "Linear", "lm",
+                                 ifelse(family == "Multinomial", "multinom", "glm"))),
               collectOutput(summary.cmd))
 
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
   
-  ## Finish up.
+  # Finish up.
   
   time.taken <- Sys.time()-start.time
   time.msg <- sprintf("Time taken: %0.2f %s", time.taken,

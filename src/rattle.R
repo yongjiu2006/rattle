@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 21:37:45 Graham Williams>
+# Time-stamp: <2008-07-18 22:58:55 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -729,7 +729,6 @@ resetRattle <- function()
 
   .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
-  theWidget("kmeans_export_model_radiobutton")$setActive(TRUE)
   
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
@@ -858,6 +857,11 @@ resetRattle <- function()
   theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
   theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
+
+  theWidget("kmeans_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("hclust_evaluate_checkbutton")$setActive(FALSE)
+  theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
+  theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
 
   #theWidget("rpart_evaluate_checkbutton")$hide()
   #theWidget("rf_evaluate_checkbutton")$hide()
@@ -4907,13 +4911,20 @@ on_score_radiobutton_toggled <- function(button)
     theWidget("score_include_label")$show()
     theWidget("score_idents_radiobutton")$show()
     theWidget("score_all_radiobutton")$show()
+    if (not.null(crs$kmeans))
+      theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
+    if (not.null(crs$hclust))
+      theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
   }
   else
   {
     theWidget("score_include_label")$hide()
     theWidget("score_idents_radiobutton")$hide()
     theWidget("score_all_radiobutton")$hide()
-  }    
+
+    theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
+    theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
+}    
   setStatusBar()
 }
 
@@ -4939,6 +4950,9 @@ getEvaluateModels <- function()
   for (m in crv$MODELLERS)
     if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
       models <- c(models, m)
+  if (theWidget("kmeans_evaluate_checkbutton")$isSensitive() &&
+      theWidget("kmeans_evaluate_checkbutton")$getActive())
+    models <- c(models, "kmeans")
   return(models)
 }
 
@@ -4970,13 +4984,13 @@ executeEvaluateTab <- function()
   if (is.null(mtypes))
   {
     warnDialog("No model has been specified.",
-               "Please select one or more from the list of models available.")
+               "\n\nPlease select one or more from the list of models available.")
     return()
   }
 
   #   Ensure we recognise the model type.
   
-  if (length(setdiff(mtypes, crv$MODELLERS)) > 0)
+  if (length(setdiff(mtypes, union(crv$MODELLERS, c("kmeans")))) > 0)
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
@@ -5019,7 +5033,10 @@ executeEvaluateTab <- function()
       ! packageIsAvailable("nnet", "evaluate a neural network model"))
     return()
 
-  startLog("EVALUATE MODEL PERFORMANCE")
+  if(theWidget("score_radiobutton")$getActive())
+    startLog("SCORE A DATASET")
+  else
+    startLog("EVALUATE MODEL PERFORMANCE")
 
   # Identify the data on which evaluation is to be performed.
 
@@ -5054,7 +5071,7 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_testing_radiobutton")$getActive())
   {
-    # EVALAUTE ON TEST DATA
+    # EVALUATE ON TEST DATA
     
     if (is.null(included))
       testset0 <- "crs$dataset[-crs$sample,]"
@@ -5418,10 +5435,17 @@ executeEvaluateTab <- function()
   else if (theWidget("pvo_radiobutton")$getActive())
     msg <- executeEvaluatePvOplot(probcmd, testset, testname)
   else if (theWidget("score_radiobutton")$getActive())
-    if (categoricTarget())
-      msg <- executeEvaluateScore(probcmd, testset, testname)
-    else if  (numericTarget())
-      msg <- executeEvaluateScore(predcmd, testset, testname)
+  {
+    if (theWidget("kmeans_evaluate_checkbutton")$getActive())
+      msg <- executeEvaluateKmeansScore()
+    else
+    {
+      if (categoricTarget())
+        msg <- executeEvaluateScore(probcmd, testset, testname)
+      else if  (numericTarget())
+        msg <- executeEvaluateScore(predcmd, testset, testname)
+    }
+  }
   else
     msg <- "No appropriate evaluator found."
 
@@ -6674,8 +6698,108 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 }
 
 #----------------------------------------------------------------------
-#
-#
+
+executeEvaluateKmeansScore <- function()
+{
+
+  # TODO 080718 Need to select the dataset to which we append the
+  # "score". Currently, it is the training dataset ONLY.
+  
+  startLog("EXPORT KMEANS CLUSTER ASSIGNMENT AS CSV")
+    
+  # Obtain filename to write the clusters to.
+  
+  dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+    
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("CSV Files")
+  ff$addPattern("*.csv")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+    
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) != "csv")
+    save.name <- sprintf("%s.csv", save.name)
+  
+  if (file.exists(save.name))
+    if (is.null(questionDialog("A file of the same name as", save.name,
+                               "already exists. Do you want to overwrite",
+                               "this file?")))
+      return()
+
+  # 080523 Output all original data plus the cluster number, taking
+  # missing values into account. This gets a little complex, to say
+  # the least. We need to put the cluster number with each input
+  # record, then add in those that have missing values, giving them
+  # a cluster number of NA, and then make sure we generate the CSV
+  # file in the same numeric order as it was read in.
+
+  clnm <- "names(crs$kmeans$cluster)"
+  clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
+                  ifelse(theWidget("sample_checkbutton")$getActive(),
+                         "crs$sample", ""), clnm)
+
+  # Check if there are missing values, and if not we don't need to
+  # be so complex!
+
+  missing <- length(eval(parse(text=clna))) > 0
+
+  if (theWidget("score_idents_radiobutton")$getActive())
+    sinclude <- paste('c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
+                      sep="")
+  else if (theWidget("score_all_radiobutton")$getActive())
+    sinclude <- paste('c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
+
+  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s,%s],",
+                            "kmeans=crs$kmeans$cluster)",
+                            "%s", # If non missing this is empty.
+                            ")[as.character(sort(as.integer(",
+                            "rownames(crs$dataset[%s, ])))), ]"),
+                      ifelse(theWidget("sample_checkbutton")$getActive(),
+                             "crs$sample", ""),
+                      clnm,
+                      sinclude,
+                      ifelse(missing,
+                             sprintf(",data.frame(crs$dataset[%s, ][%s,], kmeans=NA)",
+                                     ifelse(theWidget("sample_checkbutton")$
+                                            getActive(), "crs$sample", ""),
+                                     clna),
+                             ""),
+                      ifelse(theWidget("sample_checkbutton")$getActive(),
+                             "crs$sample", "")
+                      ##sprintf('"%s"', paste(idents, collapse='", "'))
+                      )
+  
+  # We can't pass "\" in a filename to the parse command in
+  # MS/Windows so we have to run the save/write command separately,
+  # i.e., not inside the string thaat is being parsed.
+  
+  appendLog("Generate data frame and export the clusters to CSV.",
+            sprintf('write.csv(%s, file="%s", row.names=FALSE)', csv.cmd, save.name))
+  write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
+
+  return(paste("Scores have been saved to the file", save.name))
+}
+
 
 executeEvaluateScore <- function(probcmd, testset, testname)
 {

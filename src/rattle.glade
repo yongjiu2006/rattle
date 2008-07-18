@@ -1646,7 +1646,7 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                       <widget class="GtkRadioButton" id="playwith_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">PlayWith</property>
+                        <property name="label" translatable="yes">Latticist</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
@@ -3421,49 +3421,13 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label1">
-                                <property name="visible">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="label" translatable="yes">    Export As:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">3</property>
-                              </packing>
+                              <placeholder/>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="kmeans_export_model_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="label" translatable="yes">Model (PMML)</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">4</property>
-                              </packing>
+                              <placeholder/>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="kmeans_clusters_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="label" translatable="yes">Clusters (CSV)</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">kmeans_export_model_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">5</property>
-                              </packing>
+                              <placeholder/>
                             </child>
                           </widget>
                           <packing>
@@ -5578,14 +5542,34 @@ ANOVA RBF (anovadot)</property>
                             <property name="column_spacing">10</property>
                             <property name="row_spacing">5</property>
                             <child>
-                              <widget class="GtkRadioButton" id="glm_multinomial_radiobutton">
+                              <widget class="GtkRadioButton" id="glm_gaussian_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Multinomial</property>
+                                <property name="label" translatable="yes">Generalized</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">glm_linear_radiobutton</property>
+                                <signal name="toggled" handler="on_glm_gaussian_radiobutton_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="glm_logistic_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Logistic</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">glm_linear_radiobutton</property>
+                                <signal name="toggled" handler="on_glm_logistic_radiobutton_toggled"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -5608,21 +5592,19 @@ ANOVA RBF (anovadot)</property>
                               <placeholder/>
                             </child>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="glm_logistic_radiobutton">
+                              <widget class="GtkRadioButton" id="glm_multinomial_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">Logistic</property>
+                                <property name="label" translatable="yes">Multinomial</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">glm_linear_radiobutton</property>
+                                <signal name="toggled" handler="on_glm_multinomial_radiobutton_toggled"/>
                               </widget>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
+                                <property name="left_attach">3</property>
+                                <property name="right_attach">4</property>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
@@ -5636,6 +5618,7 @@ ANOVA RBF (anovadot)</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_glm_linear_radiobutton_toggled"/>
                               </widget>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -5647,7 +5630,7 @@ ANOVA RBF (anovadot)</property>
                               <widget class="GtkLabel" id="glm_builder_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">glm</property>
+                                <property name="label" translatable="yes">lm (Linear)</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">3</property>
@@ -6314,6 +6297,34 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkCheckButton" id="kmeans_evaluate_checkbutton">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="label" translatable="yes">KMeans</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckButton" id="hclust_evaluate_checkbutton">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="label" translatable="yes">HClust</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">9</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="GtkLabel" id="score_include_label">
                         <property name="xalign">0</property>
                         <property name="xpad">15</property>
@@ -6322,7 +6333,7 @@ ANOVA RBF (anovadot)</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">8</property>
+                        <property name="position">10</property>
                       </packing>
                     </child>
                     <child>
@@ -6336,7 +6347,7 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">9</property>
+                        <property name="position">11</property>
                       </packing>
                     </child>
                     <child>
@@ -6352,14 +6363,8 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">10</property>
+                        <property name="position">12</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                   </widget>
                   <packing>

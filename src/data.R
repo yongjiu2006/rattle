@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-16 06:11:10 Graham Williams>
+# Time-stamp: <2008-07-19 07:32:42 Graham Williams>
 #
 # DATA TAB
 #
@@ -1720,6 +1720,7 @@ executeSelectTab <- function()
     {
       theWidget("glm_builder_label")$setText("glm (Logistic)")
       theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(TRUE)
       theWidget("glm_logistic_radiobutton")$setActive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
@@ -1728,6 +1729,7 @@ executeSelectTab <- function()
     {
       theWidget("glm_builder_label")$setText("multinom")
       theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setActive(TRUE)
@@ -1749,6 +1751,7 @@ executeSelectTab <- function()
     theWidget("glm_builder_label")$setText("lm (Linear)")
     theWidget("glm_linear_radiobutton")$setSensitive(TRUE)
     theWidget("glm_linear_radiobutton")$setActive(TRUE)
+    theWidget("glm_gaussian_radiobutton")$setSensitive(TRUE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
 
@@ -1773,6 +1776,7 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
     theWidget("sample_checkbutton")$setActive(FALSE)
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
   }
