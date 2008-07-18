@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.52.
+    version is 2.3.53.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+284 080719 Cluster Export now limited to just PMML - csv "score" now in Evaluate.
+           Add Generalized to Regression options - equivalent to lm but using glm.
+           Rename Latticist option to Playwith.
 283 080716 Add PlayWith to Explore - Experimental.
 282 080716 When Indicator transform, ensure new variables are Input.
            Use commonName in Lift charts.

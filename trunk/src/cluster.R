@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-10 19:53:04 Graham Williams>
+# Time-stamp: <2008-07-18 07:11:45 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -914,14 +914,14 @@ exportKMeansTab <- function(file)
   # Do we export a model to PMML? If not then we export the acutal
   # cluster assignment to CSV.
   
-  exportModel <- theWidget("kmeans_export_model_radiobutton")$getActive()
+  # 080718 exportModel <- theWidget("kmeans_export_model_radiobutton")$getActive()
 
   # TODO 080703 request a file, allowing either .csv or .xml
   # extension, and then take the appropriate action, rather than
   # having that as a radio button choice.
   
-  if (exportModel)
-  {
+  # 080718 if (exportModel)
+  # 080718 {
     startLog("EXPORT KMEANS AS PMML")
   
     # Require the pmml package
@@ -981,95 +981,96 @@ exportKMeansTab <- function(file)
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   
     setStatusBar("The PMML file", save.name, "has been written.")
-  }
-  else # Export clusters to CSV, augmenting the original data.
-  {
-    startLog("EXPORT KMEANS CLUSTER ASSIGNMENT AS CSV")
+  # 080718 }
+  # 080718 else # Export clusters to CSV, augmenting the original data.
+# 080718 THIS WILL MOVE TO SCORE UNDER EVALUATE
+  ###   {
+###     startLog("EXPORT KMEANS CLUSTER ASSIGNMENT AS CSV")
     
-    # Obtain filename to write the clusters to.
+###     # Obtain filename to write the clusters to.
   
-    dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
-                                   "gtk-cancel", GtkResponseType["cancel"],
-                                   "gtk-save", GtkResponseType["accept"])
+###     dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
+###                                    "gtk-cancel", GtkResponseType["cancel"],
+###                                    "gtk-save", GtkResponseType["accept"])
     
-    if(not.null(crs$dataname))
-      dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
+###     if(not.null(crs$dataname))
+###       dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
 
-    ff <- gtkFileFilterNew()
-    ff$setName("CSV Files")
-    ff$addPattern("*.csv")
-    dialog$addFilter(ff)
+###     ff <- gtkFileFilterNew()
+###     ff$setName("CSV Files")
+###     ff$addPattern("*.csv")
+###     dialog$addFilter(ff)
 
-    ff <- gtkFileFilterNew()
-    ff$setName("All Files")
-    ff$addPattern("*")
-    dialog$addFilter(ff)
+###     ff <- gtkFileFilterNew()
+###     ff$setName("All Files")
+###     ff$addPattern("*")
+###     dialog$addFilter(ff)
     
-    if (dialog$run() == GtkResponseType["accept"])
-    {
-      save.name <- dialog$getFilename()
-      dialog$destroy()
-    }
-    else
-    {
-      dialog$destroy()
-      return()
-    }
+###     if (dialog$run() == GtkResponseType["accept"])
+###     {
+###       save.name <- dialog$getFilename()
+###       dialog$destroy()
+###     }
+###     else
+###     {
+###       dialog$destroy()
+###       return()
+###     }
 
-    if (get.extension(save.name) != "csv")
-      save.name <- sprintf("%s.csv", save.name)
+###     if (get.extension(save.name) != "csv")
+###       save.name <- sprintf("%s.csv", save.name)
     
-    if (file.exists(save.name))
-      if (is.null(questionDialog("A file of the same name as", save.name,
-                                 "already exists. Do you want to overwrite",
-                                 "this file?")))
-        return()
+###     if (file.exists(save.name))
+###       if (is.null(questionDialog("A file of the same name as", save.name,
+###                                  "already exists. Do you want to overwrite",
+###                                  "this file?")))
+###         return()
 
-    ## 080523 No longer used      idents <- getSelectedVariables("ident")
+###     ## 080523 No longer used      idents <- getSelectedVariables("ident")
 
-    # 080523 Output all original data plus the cluster number, taking
-    # missing values into account. This gets a little complex, to say
-    # the least. We need to put the cluster number with each input
-    # record, then add in those that have missing values, giving them
-    # a cluster number of NA, and then make sure we generate the CSV
-    # file in the same numeric order as it was read in.
+###     # 080523 Output all original data plus the cluster number, taking
+###     # missing values into account. This gets a little complex, to say
+###     # the least. We need to put the cluster number with each input
+###     # record, then add in those that have missing values, giving them
+###     # a cluster number of NA, and then make sure we generate the CSV
+###     # file in the same numeric order as it was read in.
 
-    clnm <- "names(crs$kmeans$cluster)"
-    clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
-                    ifelse(theWidget("sample_checkbutton")$getActive(),
-                               "crs$sample", ""), clnm)
-    # Check if there are missing values, and if not we don't need to
-    # be so complex!
+###     clnm <- "names(crs$kmeans$cluster)"
+###     clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
+###                     ifelse(theWidget("sample_checkbutton")$getActive(),
+###                                "crs$sample", ""), clnm)
+###     # Check if there are missing values, and if not we don't need to
+###     # be so complex!
 
-    missing <- length(eval(parse(text=clna))) > 0
+###     missing <- length(eval(parse(text=clna))) > 0
     
-    csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s, ],",
-                              "kmeans=crs$kmeans$cluster)",
-                              "%s", # If non missing this is empty.
-                              ")[as.character(sort(as.integer(",
-                              "rownames(crs$dataset[%s, ])))), ]"),
-                        ifelse(theWidget("sample_checkbutton")$getActive(),
-                               "crs$sample", ""),
-                        clnm,
-                        ifelse(missing,
-                               sprintf(",data.frame(crs$dataset[%s, ][%s,], kmeans=NA)",
-                                       ifelse(theWidget("sample_checkbutton")$
-                                              getActive(), "crs$sample", ""),
-                                       clna),
-                               ""),
-                        ifelse(theWidget("sample_checkbutton")$getActive(),
-                               "crs$sample", "")
-                        ##sprintf('"%s"', paste(idents, collapse='", "'))
-                        )
+###     csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s, ],",
+###                               "kmeans=crs$kmeans$cluster)",
+###                               "%s", # If non missing this is empty.
+###                               ")[as.character(sort(as.integer(",
+###                               "rownames(crs$dataset[%s, ])))), ]"),
+###                         ifelse(theWidget("sample_checkbutton")$getActive(),
+###                                "crs$sample", ""),
+###                         clnm,
+###                         ifelse(missing,
+###                                sprintf(",data.frame(crs$dataset[%s, ][%s,], kmeans=NA)",
+###                                        ifelse(theWidget("sample_checkbutton")$
+###                                               getActive(), "crs$sample", ""),
+###                                        clna),
+###                                ""),
+###                         ifelse(theWidget("sample_checkbutton")$getActive(),
+###                                "crs$sample", "")
+###                         ##sprintf('"%s"', paste(idents, collapse='", "'))
+###                         )
 
-    # We can't pass "\" in a filename to the parse command in
-    # MS/Windows so we have to run the save/write command separately,
-    # i.e., not inside the string thaat is being parsed.
+###     # We can't pass "\" in a filename to the parse command in
+###     # MS/Windows so we have to run the save/write command separately,
+###     # i.e., not inside the string thaat is being parsed.
 
-    appendLog("Generate data frame and export the clusters to CSV.",
-              sprintf('write.csv(%s, file="%s", row.names=FALSE)', csv.cmd, save.name))
-    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
+###     appendLog("Generate data frame and export the clusters to CSV.",
+###               sprintf('write.csv(%s, file="%s", row.names=FALSE)', csv.cmd, save.name))
+###     write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
   
-    setStatusBar("The CSV file", save.name, "has been written.")
-  }
+###     setStatusBar("The CSV file", save.name, "has been written.")
+  # 080718 }
 }
