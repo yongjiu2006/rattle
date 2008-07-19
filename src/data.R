@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-19 07:32:42 Graham Williams>
+# Time-stamp: <2008-07-19 16:16:16 Graham Williams>
 #
 # DATA TAB
 #
@@ -1661,8 +1661,8 @@ executeSelectTab <- function()
   
   # Update MODEL targets
 
-  the.target <- sprintf("Target: %s", ifelse(is.null(crs$target),
-                                             "None", crs$target))
+  the.target <- sprintf("Target: %s", ifelse(is.null(target),
+                                             "None", target))
 
   theWidget("explot_target_label")$setText(the.target)
 
@@ -1671,13 +1671,14 @@ executeSelectTab <- function()
   theWidget("svm_target_label")$setText(the.target)
   # theWidget("gbm_target_label")$setText(the.target)
   theWidget("ada_target_label")$setText(the.target)
+  theWidget("glm_target_label")$setText(the.target)
   theWidget("nnet_target_label")$setText(the.target)
 
   # Update MODEL weights
 
-  if (not.null(crs$weights))
+  if (not.null(weights))
   {
-    weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
+    weights.display <- gsub('crs\\$dataset\\$', '', weights)
     the.weight <- sprintf("Weights: %s", weights.display)
     theWidget("rpart_weights_label")$setText(the.weight)
   }
