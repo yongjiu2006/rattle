@@ -1,0 +1,13 @@
+To cite package 'rattle' in publications use:
+
+  Graham Williams (2008). Rattle: A graphical user interface for data
+  mining in R. http://rattle.togaware.com/
+
+@Manual{R_Rattle_Williams,
+    title = {Rattle: A graphical user interface for data mining in R},
+    author = {Graham Williams},
+    year = {2008},   
+    url = {http://rattle.togaware.com/}}
+
+
+

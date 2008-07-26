@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-26 21:35:54 Graham Williams>
+# Time-stamp: <2008-07-26 21:49:10 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -44,9 +44,7 @@ on_associate_rules_button_clicked <-  function(action, window)
 }
 
 ########################################################################
-#
 # SUPPORT
-#
 
 generateAprioriSummary <- function(ap)
 {

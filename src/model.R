@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-19 17:38:05 Graham Williams>
+# Time-stamp: <2008-07-27 07:53:38 Graham Williams>
 #
 # MODEL TAB
 #
@@ -466,6 +466,8 @@ executeModelGLM <- function()
     family <- "Gaussian"
   else if (theWidget("glm_logistic_radiobutton")$getActive())
     family <- "Logistic"
+  else if (theWidget("glm_probit_radiobutton")$getActive())
+    family <- "Probit"
   else if (theWidget("glm_multinomial_radiobutton")$getActive())
     family <- "Multinomial"
   
@@ -473,7 +475,8 @@ executeModelGLM <- function()
   # numeric target and the target is actually a factor, then covert to
   # a numeric, else the algorithms complain.
 
-  if (family %in% c("Linear", "Gaussian") && "factor" %in% class(crs$dataset[[crs$target]]))
+  if (family %in% c("Linear", "Gaussian")
+      && "factor" %in% class(crs$dataset[[crs$target]]))
     frml <- sprintf("as.numeric(%s) ~ .", crs$target)
   else
     frml <- paste(crs$target, "~ .")
@@ -490,7 +493,7 @@ executeModelGLM <- function()
   
   startLog("REGRESSION")
 
-  if (family == "Logistic")
+  if (family == "Logistic" || family == "Probit")
   {
     # For a categoric variable we usually default to assuming
     # proprtions data, and so we perform logistic regression, which
@@ -507,11 +510,24 @@ executeModelGLM <- function()
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
-                       ", family=binomial(logit)",
+                       sprintf(', family=binomial(link="%s")',
+                               ifelse(family=="Probit", "probit", "logit")),
+                       ", na.action=na.pass",
                        ")", sep="")
 
+    # In addition to the default summary, add the chi-square test of
+    # the difference between the null model and the current model as
+    # presented in http://www.ats.ucla.edu/stat/R/dae/probit.htm.
+    
     summary.cmd <- paste("print(summary(crs$glm))",
-                         "cat('==== ANOVA ====\n\n')",
+                         'cat(sprintf("Log likelihood: %.3f\n", logLik(crs$glm)[1]))',
+                         'cat(sprintf("Null/Residual deviance difference: %.3f (%d df)\n",',
+                         '            crs$glm$null.deviance-crs$glm$deviance,',
+                         '            crs$glm$df.null-crs$glm$df.residual))',
+                         'cat(sprintf("Chi-square p-value: %.8f\n",',
+                         '            dchisq(crs$glm$null.deviance-crs$glm$deviance,',
+                         '                   crs$glm$df.null-crs$glm$df.residual)))',
+                         "cat('\n==== ANOVA ====\n\n')",
                          "print(anova(crs$glm))", sep="\n")
   }
   else if (family == "Linear")
