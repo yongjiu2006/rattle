@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-24 23:34:58 Graham>
+# Time-stamp: <2008-07-26 21:35:54 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -51,11 +51,12 @@ on_associate_rules_button_clicked <-  function(action, window)
 generateAprioriSummary <- function(ap)
 {
  result <- sprintf("Number of Rules: %d\n\n", length(ap))
- result <- paste(result, "Rule Length Distribution (LHS + RHS):\n\n", sep="")
- pp <- table(size(ap@lhs)+size(ap@rhs))
- result <- paste(result, paste(sprintf("\tRules of length %s:  %-4d",
-                                           names(pp), pp), collapse="\n"),
-                 "\n\n", sep="")
+ # 080726 Started failing.... no size for ap@lhs
+ ## result <- paste(result, "Rule Length Distribution (LHS + RHS):\n\n", sep="")
+ ## pp <- table(size(ap@lhs)+size(ap@rhs))
+ ## result <- paste(result, paste(sprintf("\tRules of length %s:  %-4d",
+ ##                                          names(pp), pp), collapse="\n"),
+ ##                "\n\n", sep="")
  return(result)
 }
 
@@ -107,7 +108,8 @@ executeAssociateTab <- function()
       
   # Check that we have only categorical attributes.
 
-  include <- getCategoricalVariables()
+  include <- getCategoricalVariables(TRUE)
+  
   if (!baskets && length(include) == 0)
   {
     errorDialog("Associations are calculated only for categorical data.",
@@ -126,11 +128,11 @@ executeAssociateTab <- function()
 
   if (!baskets && length(include) == 1)
   {
-    errorDialog("Associations can be identified only when there are",
+    errorDialog("Associations (when not using the Baskets option)",
+                "can only be identified when there are",
                 "multiple categoric variables.",
-                "\n\nOnly a categoric variable was found",
-                #sprintf('"%s"', names(crs$dataset)[include[1]]),
-                "in the dataset",
+                "\n\nOnly one categoric variable was found",
+                sprintf('(%s)', include[1]),
                 "from amongst those having an input role.",
                 "\n\nIf you wanted a basket analysis with the Target variable",
                 "listing the items, and the Ident variable identifying",
@@ -160,6 +162,8 @@ executeAssociateTab <- function()
 
   # Transform data into a transactions dataset for arules.
 
+  include <- getCategoricalVariables()
+  
   if (baskets)
     transaction.cmd <- paste("crs$transactions <<- as(split(",
                              sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
@@ -239,15 +243,15 @@ plotAssociateFrequencies <- function()
     return()
   }
 
-  ## Check that we have categorical attributes.
+  # Check that we have categorical attributes.
 
   include <- getCategoricalVariables()
   if (! baskets && length(include) == 0)
   {
-    errorDialog("Associations are calculated only for categorical data.",
+    errorDialog("Associations are calculated only for categoric variables.",
                 "No categorical variables were found in the dataset",
                 "from amongst those having an Input role.",
-                "If you wanted a basket analysis with the Target variable",
+                "\n\nIf instead you wanted a basket analysis with the Target variable",
                 "listing the items, and the Ident variable identifying",
                 "the baskets, then please click the Baskets button.")
     return()

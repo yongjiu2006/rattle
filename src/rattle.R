@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-25 09:34:38 Graham>
+# Time-stamp: <2008-07-26 21:21:07 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Jul 2008"
+VERSION.DATE <- "Released 26 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -662,13 +662,15 @@ gtkmainquit_handler <- function(widget, event)
 
 resetRattle <- function(new.dataset=TRUE)
 {
-  # Cleanup various bits of Rattle, as when a new dataset is loaded
-  # or a project is loaded. Might also be useful for the New button.
-
-  # Initialise CRS
+  # Cleanup various bits of Rattle, as when a new dataset is loaded or
+  # a project is loaded. Might also be useful for the New button. If
+  # new.dataset is FALSE then just reset various textviews and default
+  # options.
 
   if (new.dataset)
   {
+    # Initialise CRS
+
     crs$dataset  <<- NULL
     crs$dataname <<- NULL
     # crs$dwd      <<- NULL
@@ -685,6 +687,8 @@ resetRattle <- function(new.dataset=TRUE)
     crs$testset  <<- NULL
     crs$testname <<- NULL
   }
+
+  # Clear out all current models.
   
   crs$kmeans   <<- NULL
   crs$kmeans.seed <<- NULL
@@ -708,14 +712,16 @@ resetRattle <- function(new.dataset=TRUE)
   setTextview("prcomp_textview")
   setTextview("kmeans_textview")
   setTextview("hclust_textview")
+  setTextview("associate_textview")
   setTextview("rpart_textview")
   setTextview("glm_textview")
-  #setTextview("gbm_textview")
   setTextview("ada_textview")
   setTextview("rf_textview")
   setTextview("esvm_textview")
   setTextview("ksvm_textview")
+  setTextview("nnet_textview")
   setTextview("confusion_textview")
+  setTextview("risk_textview")
   setTextview("roc_textview")
 
   # Reset some textviews back to standard text.
@@ -739,7 +745,7 @@ resetRattle <- function(new.dataset=TRUE)
   
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
-  #theWidget("all_models_radiobutton")$setActive(TRUE)
+  theWidget("all_models_radiobutton")$setActive(TRUE)
 
   .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
@@ -748,9 +754,12 @@ resetRattle <- function(new.dataset=TRUE)
   # resetRattle is called on loading a database table, and this ends
   # up clearing all the widgets!
 
-  theWidget("sample_count_spinbutton")$setValue(0)
-  theWidget("sample_checkbutton")$setActive(FALSE)
-  theWidget("target_type_radiobutton")$setActive(TRUE)
+  if (new.dataset)
+  {
+    theWidget("sample_count_spinbutton")$setValue(0)
+    theWidget("sample_checkbutton")$setActive(FALSE)
+    theWidget("target_type_radiobutton")$setActive(TRUE)
+  }
   
   ## 080520 Don't turn these off - it makes sesne to allow the user to
   ## set these options even before the dataset is loaded.
@@ -764,97 +773,100 @@ resetRattle <- function(new.dataset=TRUE)
 ##   theWidget("odbc_limit_spinbutton")$setValue(0)
 ##   theWidget("odbc_believeNRows_checkbutton")$setActive(FALSE)
   
-  # Clear the treeviews.
-  
-  theWidget("select_treeview")$getModel()$clear()
-  theWidget("impute_treeview")$getModel()$clear()
-  theWidget("categorical_treeview")$getModel()$clear()
-  theWidget("continuous_treeview")$getModel()$clear()
-
-  theWidget("weight_entry")$setText("")
-  theWidget("rpart_weights_label")$setText("Weights:")
-  
-  ## Reset MODEL:RPART
-  
-  theWidget("rpart_priors_entry")$setText("")
-  theWidget("rpart_loss_entry")$setText("")
-  theWidget("rpart_minsplit_spinbutton")$setValue(.RPART.MINSPLIT.DEFAULT)
-  theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
-  theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
-  theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
-  theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
-  showModelRPartExists()
-
-  ## Reset MODEL:ADA
-  
-  showModelAdaExists()
-  setGuiDefaultsAda()
-  
-  ## Reset MODEL:RF
-  
-  showModelRFExists()
-
-  ## Reset MODEL:SVM
-
-  setGuiDefaultsSVM()
-
-  ## Update EXPLORE, MODEL and EVALUATE targets
-
-  theWidget("explot_target_label")$setText("No target selected")
-  theWidget("explot_annotate_checkbutton")$setActive(FALSE)
-  theWidget("summary_find_entry")$setText("")
-  theWidget("benford_bars_checkbutton")$setActive(FALSE)
-  theWidget("benford_abs_radiobutton")$setActive(TRUE)
-  theWidget("benford_digits_spinbutton")$setValue(1)
-
-  theWidget("glm_target_label")$setText("No target selected")
-  theWidget("rpart_target_label")$setText("No target selected")
-  ##theWidget("gbm_target_label")$setText("No target selected")
-  theWidget("ada_target_label")$setText("No target selected")
-  theWidget("rf_target_label")$setText("No target selected")
-  theWidget("svm_target_label")$setText("No target selected")
-  theWidget("nnet_target_label")$setText("No target selected")
-  theWidget("evaluate_risk_label")$setText("No risk variable selected")
-  
-  theWidget("evaluate_training_radiobutton")$setActive(TRUE)
-  theWidget("evaluate_filechooserbutton")$setFilename("")
-  theWidget("evaluate_rdataset_combobox")$setActive(-1)
-
-  # If there is a .RATTLE.SCORE.IN defined, as might be from a .Rattle
-  # file, then use that for the filename of the CSV evaluate option.
-  
-  if (exists(".RATTLE.SCORE.IN"))
+  if (new.dataset)
   {
-    scorename <- .RATTLE.SCORE.IN
-    if (not.null(scorename))
-    {
-      scorename <- path.expand(scorename)
-      
-      # If it does not look like an absolute path then add in the
-      # current location to make it absolute.
-      
-      if (substr(scorename, 1, 1) %notin% c("\\", "/")
-          && substr(scorename, 2, 2) != ":")
-        scorename <- file.path(getwd(), scorename)
-      if (! file.exists(scorename))
-      {
-        errorDialog("The specified SCORE file", sprintf('"%s"', scorename),
-                    "(sourced from the .Rattle file through the",
-                    ".RATTLE.SCORE.IN variable)",
-                    "does not exist. We will continue",
-                    "as if it had not been speficied.")
-        
-        # Remove the variable (from the global environment where the
-        # source command will have plade the bindings) so the rest of
-        # the code continues to work on the assumption that it has not
-        # been supplied.
+    # Clear the treeviews.
 
-        rm(.RATTLE.SCORE.IN, pos=globalenv())
-      }
-      else
+    theWidget("select_treeview")$getModel()$clear()
+    theWidget("impute_treeview")$getModel()$clear()
+    theWidget("categorical_treeview")$getModel()$clear()
+    theWidget("continuous_treeview")$getModel()$clear()
+
+    theWidget("weight_entry")$setText("")
+    theWidget("rpart_weights_label")$setText("Weights:")
+  
+    # Reset MODEL:RPART
+  
+    theWidget("rpart_priors_entry")$setText("")
+    theWidget("rpart_loss_entry")$setText("")
+    theWidget("rpart_minsplit_spinbutton")$setValue(.RPART.MINSPLIT.DEFAULT)
+    theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
+    theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
+    theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
+    theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
+    showModelRPartExists()
+
+    # Reset MODEL:ADA
+  
+    showModelAdaExists()
+    setGuiDefaultsAda()
+  
+    # Reset MODEL:RF
+  
+    showModelRFExists()
+
+    # Reset MODEL:SVM
+
+    setGuiDefaultsSVM()
+
+    # Update EXPLORE, MODEL and EVALUATE targets
+
+    theWidget("explot_target_label")$setText("No target selected")
+    theWidget("explot_annotate_checkbutton")$setActive(FALSE)
+    theWidget("summary_find_entry")$setText("")
+    theWidget("benford_bars_checkbutton")$setActive(FALSE)
+    theWidget("benford_abs_radiobutton")$setActive(TRUE)
+    theWidget("benford_digits_spinbutton")$setValue(1)
+
+    theWidget("glm_target_label")$setText("No target selected")
+    theWidget("rpart_target_label")$setText("No target selected")
+    ##theWidget("gbm_target_label")$setText("No target selected")
+    theWidget("ada_target_label")$setText("No target selected")
+    theWidget("rf_target_label")$setText("No target selected")
+    theWidget("svm_target_label")$setText("No target selected")
+    theWidget("nnet_target_label")$setText("No target selected")
+    theWidget("evaluate_risk_label")$setText("No risk variable selected")
+  
+    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+    theWidget("evaluate_filechooserbutton")$setFilename("")
+    theWidget("evaluate_rdataset_combobox")$setActive(-1)
+
+    # If there is a .RATTLE.SCORE.IN defined, as might be from a .Rattle
+    # file, then use that for the filename of the CSV evaluate option.
+  
+    if (exists(".RATTLE.SCORE.IN"))
+    {
+      scorename <- .RATTLE.SCORE.IN
+      if (not.null(scorename))
       {
-        theWidget("evaluate_filechooserbutton")$setFilename(scorename)
-        theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
+        scorename <- path.expand(scorename)
+      
+        # If it does not look like an absolute path then add in the
+        # current location to make it absolute.
+      
+        if (substr(scorename, 1, 1) %notin% c("\\", "/")
+            && substr(scorename, 2, 2) != ":")
+          scorename <- file.path(getwd(), scorename)
+        if (! file.exists(scorename))
+        {
+          errorDialog("The specified SCORE file", sprintf('"%s"', scorename),
+                      "(sourced from the .Rattle file through the",
+                      ".RATTLE.SCORE.IN variable)",
+                      "does not exist. We will continue",
+                      "as if it had not been speficied.")
+        
+          # Remove the variable (from the global environment where the
+          # source command will have plade the bindings) so the rest of
+          # the code continues to work on the assumption that it has not
+          # been supplied.
+
+          rm(.RATTLE.SCORE.IN, pos=globalenv())
+        }
+        else
+        {
+          theWidget("evaluate_filechooserbutton")$setFilename(scorename)
+          theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
+        }
       }
     }
   }

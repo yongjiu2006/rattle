@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-25 09:44:51 Graham>
+# Time-stamp: <2008-07-26 21:02:09 Graham Williams>
 #
 # DATA TAB
 #
@@ -419,18 +419,27 @@ executeDataTab <- function(csvname=NULL)
     theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   else
-  {
     resetRattle(new.dataset=FALSE)
-    # Just duplicate above for now to get this working.
-    createVariablesModel(colnames(crs$dataset)) # BUT THIS REVERTS TO DEFAULTS
-    nrows <- nrow(crs$dataset)
-    per <- 70
-    srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
-    theWidget("sample_count_spinbutton")$setRange(1,nrows)
-    theWidget("sample_count_spinbutton")$setValue(srows)
-    theWidget("sample_percentage_spinbutton")$setValue(per)
-  }
+  
+#  else
+#  {
+#    resetRattle(new.dataset=FALSE)
+#
+#    if (changedDataTab())
+#    {
+#        
+#      # Just duplicate above for now to get this working.
+#      createVariablesModel(colnames(crs$dataset)) # BUT THIS REVERTS TO DEFAULTS
+#      nrows <- nrow(crs$dataset)
+#      per <- 70
+#      srows <- round(nrows * per / 100)
+#      theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
+#      theWidget("sample_count_spinbutton")$setRange(1,nrows)
+#      theWidget("sample_count_spinbutton")$setValue(srows)
+#      theWidget("sample_percentage_spinbutton")$setValue(per)
+#    }
+#    
+#  }
 
   # TODO 080520 Change the name to updateSample.
   
@@ -2750,17 +2759,21 @@ used.variables <- function(numonly=FALSE)
     return(simplifyNumberList(setdiff(fl, ii)))
 }
 
-getCategoricalVariables <- function()
+getCategoricalVariables <- function(name.list=FALSE)
 {
-  ## Return a list of categorical variables from amongst those with an
-  ## INPUT role.
+  # Return a list of categoric variables from amongst those with an
+  # INPUT role.
   
   include <- NULL
   cats <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.factor))]
   if (length(cats) > 0)
   {
     indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(cats, indicies))
+    included <- intersect(cats, indicies)
+    if (name.list)
+      include <- names(crs$dataset)[included]
+    else
+      include <- simplifyNumberList(included)
   }
   return(include)
 }

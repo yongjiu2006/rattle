@@ -6,14 +6,22 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.54.
+    version is 2.3.56.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-286 080719 Fix bug with no sample when no target.
+287 080726 Review what is "cleaned up" when Execute on Data tab with no new data.
+286 080726 Bug fix in project - no glm_family_combobox any more.
+           Ensure Quit works on About
+           Fix loading of csv file on startup
+           Remove all remenant references to Select Tab - now Data Tab
+           For Linear/Gaussian of a factor, convert to numeric
+           Ensure ARFF loading works with paths with spaces in names
+           Add playwith as a suggestion
+           Fix bug with no sample when no target.
            Alow factor target in numeric regression
 285 080719 Evaluate and regression target label bug fixes
 284 080719 Cluster Export now limited to just PMML - csv "score" now in Evaluate.
