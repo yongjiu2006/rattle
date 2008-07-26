@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-19 16:16:16 Graham Williams>
+# Time-stamp: <2008-07-25 09:44:51 Graham>
 #
 # DATA TAB
 #
@@ -353,7 +353,7 @@ updateRDatasets <- function()
 ########################################################################
 # EXECUTE
 
-executeDataTab <- function()
+executeDataTab <- function(csvname=NULL)
 {
   # Dispatch to the task indicated by the selected radio button within
   # the Data tab. If there is no change to the data source, or the
@@ -362,11 +362,15 @@ executeDataTab <- function()
   # reloading the data.  080520 This is now required as a result of
   # merging the Data and the Select tabs.
 
+#  if (! is.null(csvname))
+#  {    
+#    if (! executeDataCSV(csvname)) return(FALSE)
+#  }
   if (theWidget("data_type_label")$isSensitive() && changedDataTab())
   {
     if (theWidget("data_csv_radiobutton")$getActive())
     {
-      if (! executeDataCSV()) return(FALSE)
+      if (! executeDataCSV(csvname)) return(FALSE)
     }
     else if (theWidget("data_arff_radiobutton")$getActive())
     {
@@ -406,6 +410,19 @@ executeDataTab <- function()
     # change in value is noticed, and thus the count is not
     # automatically updated.
     
+    nrows <- nrow(crs$dataset)
+    per <- 70
+    srows <- round(nrows * per / 100)
+    theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
+    theWidget("sample_count_spinbutton")$setRange(1,nrows)
+    theWidget("sample_count_spinbutton")$setValue(srows)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
+  }
+  else
+  {
+    resetRattle(new.dataset=FALSE)
+    # Just duplicate above for now to get this working.
+    createVariablesModel(colnames(crs$dataset)) # BUT THIS REVERTS TO DEFAULTS
     nrows <- nrow(crs$dataset)
     per <- 70
     srows <- round(nrows * per / 100)
@@ -856,6 +873,8 @@ executeDataARFF <- function()
                 "You must choose one before execution.")
     return(FALSE)
   }
+
+  filename <- URLdecode(filename)
   
   crs$dwd <<- dirname(filename)
   crs$mtime <<- urlModTime(filename)
@@ -1775,7 +1794,7 @@ executeSelectTab <- function()
     theWidget("all_models_radiobutton")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
-    theWidget("sample_checkbutton")$setActive(FALSE)
+    # 080719 - can't sample and cluster!! theWidget("sample_checkbutton")$setActive(FALSE)
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)

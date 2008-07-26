@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-06-30 17:44:38 Graham Williams>
+# Time-stamp: <2008-07-24 23:34:58 Graham>
 #
 # Implement associations functionality.
 #
@@ -60,9 +60,7 @@ generateAprioriSummary <- function(ap)
 }
 
 ########################################################################
-#
 # EXECUTION
-#
 
 executeAssociateTab <- function()
 {
@@ -70,7 +68,7 @@ executeAssociateTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  # If it looks like the VARIABLES page has not been executed, complain..
+  # If it looks like the DATA page has not been executed, complain..
 
   if (variablesHaveChanged()) return()
 
@@ -91,7 +89,7 @@ executeAssociateTab <- function()
   if (baskets && length(crs$ident) != 1)
   {
     errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Select tab to be used as",
+                "in the Data tab to be used as",
                 "the identifier of the transactions.",
                 "I found", length(crs$ident), "variables.",
                 "The entities need to be aggregated by the Ident to",
@@ -100,8 +98,8 @@ executeAssociateTab <- function()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Select tab.",
-                "This vairable then identifies the items associated with each",
+    errorDialog("You need to specify a Target variable in the Data tab.",
+                "This variable then identifies the items associated with each",
                 "basket or transaction in the analysis. Each basket or",
                 "transaction is uniquely identified using the Ident variable.")
     return()
@@ -113,9 +111,28 @@ executeAssociateTab <- function()
   if (!baskets && length(include) == 0)
   {
     errorDialog("Associations are calculated only for categorical data.",
-                "No categorical variables were found in the dataset",
+                "\n\nNo categorical variables were found in the dataset",
                 "from amongst those having an input role.",
-                "If you wanted a basket analysis with the Target variable",
+                "\n\nIf you wanted a basket analysis with the Target variable",
+                "listing the items, and the Ident variable identifying",
+                "the baskets, then please check the Baskets button.")
+    return()
+  }
+
+  # 080724 Check that we have more than just one categoric
+  # variable. With only one we get an error: no method or default for
+  # coercing "factor" to "transactions". Makes sense to need at least
+  # two categorics for associating.
+
+  if (!baskets && length(include) == 1)
+  {
+    errorDialog("Associations can be identified only when there are",
+                "multiple categoric variables.",
+                "\n\nOnly a categoric variable was found",
+                #sprintf('"%s"', names(crs$dataset)[include[1]]),
+                "in the dataset",
+                "from amongst those having an input role.",
+                "\n\nIf you wanted a basket analysis with the Target variable",
                 "listing the items, and the Ident variable identifying",
                 "the baskets, then please check the Baskets button.")
     return()
@@ -206,7 +223,7 @@ plotAssociateFrequencies <- function()
   if (baskets && length(crs$ident) != 1)
   {
     errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Select tab to be used as",
+                "in the Data tab to be used as",
                 "the identifier of the transactions.",
                 "I found", length(crs$ident), "variables.",
                 "The entities need to be aggregated by the Ident to",
@@ -215,7 +232,7 @@ plotAssociateFrequencies <- function()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Select tab.",
+    errorDialog("You need to specify a Target variable in the Data tab.",
                 "This vairable then identifies the items associated with each",
                 "basket or transaction in the analysis. Each basket or",
                 "transaction is uniquely identified using the Ident variable.")
