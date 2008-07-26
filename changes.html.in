@@ -13,6 +13,9 @@
    </p>
 
 <pre>
+286 080719 Fix bug with no sample when no target.
+           Alow factor target in numeric regression
+285 080719 Evaluate and regression target label bug fixes
 284 080719 Cluster Export now limited to just PMML - csv "score" now in Evaluate.
            Add Generalized to Regression options - equivalent to lm but using glm.
            Rename Latticist option to Playwith.

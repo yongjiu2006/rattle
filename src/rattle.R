@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-18 22:58:55 Graham Williams>
+# Time-stamp: <2008-07-25 09:34:38 Graham>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -142,8 +142,10 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   if (! exists("gladeXMLNew"))
     stop("The RGtk2 package did not find libglade installed. ",
          "Please install it.")
+
+  on_aboutdialog_response <<- gtkWidgetDestroy
   
-   # Keep the loading of Hmisc quiet.
+  # Keep the loading of Hmisc quiet.
 
   options(Hverbose=FALSE)
 
@@ -295,7 +297,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
                      hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
   # Create constants naming the MODELLERS (i.e., the model
-  # builders). Note that these are migrating into the crv varaible,
+  # builders). Note that these are migrating into the crv variable,
   # but not all are done yet.
   
   crv$GLM   <<- "glm"
@@ -590,8 +592,9 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   if (not.null(csvname))
   {
     theWidget("data_filechooserbutton")$setFilename(csvname)
-    while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE) # Make sure GUI updates
-    executeDataCSV(csvname)
+    # Make sure GUI updates
+    while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+    executeDataTab(csvname)
   }
 
   # Tune the interface to suit RStat
@@ -657,26 +660,32 @@ gtkmainquit_handler <- function(widget, event)
 #-----------------------------------------------------------------------
 # RESET RATTLE
 
-resetRattle <- function()
+resetRattle <- function(new.dataset=TRUE)
 {
   # Cleanup various bits of Rattle, as when a new dataset is loaded
   # or a project is loaded. Might also be useful for the New button.
 
   # Initialise CRS
 
-  crs$dataset  <<- NULL
-  crs$dataname <<- NULL
-  # crs$dwd      <<- NULL
-  crs$mtime    <<- NULL
-  crs$input    <<- NULL
-  crs$target   <<- NULL
-  crs$weights  <<- NULL
-  crs$risk     <<- NULL
-  crs$ident    <<- NULL
-  crs$ignore   <<- NULL
-  crs$nontargets <<- NULL # 080426 Started but not yet implemented.
-  crs$sample   <<- NULL
-  crs$sample.seed <<- NULL
+  if (new.dataset)
+  {
+    crs$dataset  <<- NULL
+    crs$dataname <<- NULL
+    # crs$dwd      <<- NULL
+    crs$mtime    <<- NULL
+    crs$input    <<- NULL
+    crs$target   <<- NULL
+    crs$weights  <<- NULL
+    crs$risk     <<- NULL
+    crs$ident    <<- NULL
+    crs$ignore   <<- NULL
+    crs$nontargets <<- NULL # 080426 Started but not yet implemented.
+    crs$sample   <<- NULL
+    crs$sample.seed <<- NULL
+    crs$testset  <<- NULL
+    crs$testname <<- NULL
+  }
+  
   crs$kmeans   <<- NULL
   crs$kmeans.seed <<- NULL
   crs$hclust   <<- NULL
@@ -691,8 +700,6 @@ resetRattle <- function()
   crs$nnet     <<- NULL
   crs$perf     <<- NULL
   crs$eval     <<- NULL
-  crs$testset  <<- NULL
-  crs$testname <<- NULL
 
   # Clear all now outdated text views
 
@@ -837,7 +844,7 @@ resetRattle <- function()
                     "does not exist. We will continue",
                     "as if it had not been speficied.")
         
-        # Remove the varaible (from the global environment where the
+        # Remove the variable (from the global environment where the
         # source command will have plade the bindings) so the rest of
         # the code continues to work on the assumption that it has not
         # been supplied.
@@ -1000,7 +1007,7 @@ variablesHaveChanged <- function(action)
   {
     errorDialog("It appears that there have been some changes made",
                 "to the variables in the",
-                "Select tab that have not been Executed.",
+                "Data tab that have not been Executed.",
                 "\n\nPlease click Execute on the Data tab before",
                 paste(action, ".", sep=""))
     return(TRUE)
@@ -5047,14 +5054,16 @@ executeEvaluateTab <- function()
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
     # EVALUATE ON TRAINING DATA
-    
-    infoDialog("You are using the same dataset to evaluate your model as you",
-                "did to build it. This will give you an optimistic estimate",
-                "of the performance of your model. You may want to choose",
-                "to sample the dataset and evaluate the model on the",
-                "test dataset, or else",
-                "load a separate test dataset from a CSV File or a",
-                "pre-existing R Dataset here.")
+
+    if (crv$appname != "RStat")
+      infoDialog("You are using the training dataset to evaluate your model.",
+                 "This will give you an optimistic estimate",
+                 "of the performance of your model.",
+                 "\n\nYou may want to choose",
+                 "to sample the dataset and evaluate the model on the",
+                 "test dataset, or else",
+                 "load a separate test dataset from a CSV File or a",
+                 "pre-existing R Dataset here.")
 
     if (theWidget("sample_checkbutton")$getActive())
       if (is.null(included))
@@ -5578,7 +5587,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   if (is.null(risk))
   {
     errorDialog("No risk variable has been specified.",
-                "From the Select tab please identify one variable as",
+                "From the Data tab please identify one variable as",
                 "a risk variable and rerun the modelling (if the variable",
                 "was previously an input variable).",
                 "The risk variable is a measure of the size of the risk.",
@@ -7348,6 +7357,7 @@ on_about_menu_activate <-  function(action, window)
   about$getWidget("aboutdialog")$setVersion(VERSION)
   about$getWidget("aboutdialog")$
     setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT))
+  gladeXMLSignalAutoconnect(about)
 }
 
 on_paste1_activate <- notImplemented
@@ -7686,7 +7696,7 @@ listed for selection."))
 
 on_help_roles_activate <- function(action, window)
 {
-  showHelp("The Select tab allows you to select roles for the
+  showHelp("The Data tab allows you to select roles for the
 variables.
 <<>>
 By default, all variables have an Input role, except for any variables

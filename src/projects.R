@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-12 07:40:44 Graham Williams>
+# Time-stamp: <2008-07-24 21:43:37 Graham>
 #
 # Project functionality.
 #
@@ -191,8 +191,6 @@ saveProject <- function()
   }
     
   crs$svm.opt$kernel <<- theWidget("svm_kernel_comboboxentry")$getActive()
-
-  crs$glm.opt$family <<- theWidget("glm_family_comboboxentry")$getActive()
 
   set.cursor("watch")
   startLog()
@@ -440,10 +438,7 @@ loadProject <- function()
   if (not.null(crs$svm.opt$kernel))
     theWidget("svm_kernel_comboboxentry")$setActive(crs$svm.opt$kernel)
 
-  if (not.null(crs$glm.opt$family))
-    theWidget("glm_family_comboboxentry")$setActive(crs$glm.opt$family)
-
-  ## EVALUATE
+  # EVALUATE
 
   setTextviewContents("risk_textview", crs$text$risk)
 
