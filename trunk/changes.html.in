@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.56.
+    version is 2.3.57.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+288 080727 Add extra model information for logit
+           Add probit option (but not tested)
+           Add CITATION file
 287 080726 Review what is "cleaned up" when Execute on Data tab with no new data.
 286 080726 Bug fix in project - no glm_family_combobox any more.
            Ensure Quit works on About
