@@ -1,10 +1,10 @@
-## Gnome R Data Miner: GNOME interface to R for Data Mining
-##
-## Time-stamp: <2008-05-03 15:22:59 Graham Williams>
-##
-## Implement functionality associated with the Export button and Menu.
-##
-## Copyright (c) 2008 Togaware Pty Ltd
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-07-27 15:43:22 Graham Williams>
+#
+# Implement functionality associated with the Export button and Menu.
+#
+# Copyright (c) 2008 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -23,8 +23,8 @@
 
 on_export_button_clicked <- function(action, window)
 {
-  ## Wrap the actual call with a "try" so that the watch cursor turns
-  ## off even on error.
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
   
   setStatusBar()
   set.cursor("watch")
