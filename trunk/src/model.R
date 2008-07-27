@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-27 07:53:38 Graham Williams>
+# Time-stamp: <2008-07-27 16:43:02 Graham Williams>
 #
 # MODEL TAB
 #
@@ -512,7 +512,7 @@ executeModelGLM <- function()
                        if (subsetting) "]",
                        sprintf(', family=binomial(link="%s")',
                                ifelse(family=="Probit", "probit", "logit")),
-                       ", na.action=na.pass",
+                       #", na.action=na.pass",
                        ")", sep="")
 
     # In addition to the default summary, add the chi-square test of
@@ -637,17 +637,19 @@ exportRegressionTab <- function()
                 "model.")
     return()
   }
-
-  # Require the pmml package
+  
+  # Require the pmml package for either exporting to PMML or C (via
+  # PMML).
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export regression model")) return(FALSE)
   appendLog("Load the PMML package to export a regression model.", lib.cmd)
   eval(parse(text=lib.cmd))
+
+  # Obtain filename to write the PMML or C code to.
   
-  # Obtain filename to write the PMML to.
-  
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+  dialog <- gtkFileChooserDialog(paste("Export PMML", if (crv$appname=="RStat") "or C"),
+                                 NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
@@ -658,6 +660,14 @@ exportRegressionTab <- function()
   ff$setName("PMML Files")
   ff$addPattern("*.xml")
   dialog$addFilter(ff)
+
+  if (crv$appname == "RStat")
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("C Files")
+    ff$addPattern("*.c")
+    dialog$addFilter(ff)
+  }
 
   ff <- gtkFileFilterNew()
   ff$setName("All Files")
@@ -676,21 +686,44 @@ exportRegressionTab <- function()
   }
 
   if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
-    
+
+  ext <- tolower(get.extension(save.name))
+
+  if (ext == "c" && ! exists("pmmltoc"))
+  {
+    errorDialog("The PMMLtoC functionality does not appear to be available.",
+                "This function needs to be loaded.",
+                if (crv$appname == "Rattle")
+                paste("It is not available in Rattle by default.",
+                      "\n\nContact support@togaware.com for details."))
+    return(FALSE)
+  }
+  
   if (file.exists(save.name))
-    if (is.null(questionDialog("An XML file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+    if (is.null(questionDialog(ifelse(ext=="xml", "An XML", "A C"),
+                               "file of the name", save.name,
+                               "already exists. \n\nDo you want to overwrite",
+                               "this file?")))
       return()
 
+  # Generate appropriate code.
+  
   pmml.cmd <- "pmml(crs$glm)"
-  appendLog("Export a regression model as PMML.",
-            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
-  saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
-
-  setStatusBar("The PMML file", save.name, "has been written.")
+  if (ext == "xml")
+  {
+    appendLog("Export a regression model as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    appendLog("Export a regression model as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s)), file="%s")', pmml.cmd, save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd)))), file=save.name)
+  }
+  
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
   
 }
 
@@ -1013,9 +1046,7 @@ exportSVMTab <- function()
 
 
 ########################################################################
-#
 # EXPORT
-#
 
 exportModelTab <- function()
 {
