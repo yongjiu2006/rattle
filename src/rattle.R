@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-27 16:53:39 Graham Williams>
+# Time-stamp: <2008-07-28 17:43:21 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -762,7 +762,7 @@ resetRattle <- function(new.dataset=TRUE)
   
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
-  theWidget("all_models_radiobutton")$setActive(TRUE)
+  #theWidget("all_models_radiobutton")$setActive(TRUE)
 
   .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)

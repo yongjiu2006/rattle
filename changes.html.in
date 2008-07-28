@@ -6,7 +6,7 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.58.
+    version is 2.3.59.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
