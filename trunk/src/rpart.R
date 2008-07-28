@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-12 08:57:39 Graham Williams>
+# Time-stamp: <2008-07-28 22:09:54 Graham Williams>
 #
 # RPART TAB
 #
@@ -507,6 +507,7 @@ listRPartRules <- function(model, compact=FALSE)
   #
   # Get some information.
   #
+  rtree <- length(attr(model, "ylevels")) == 0
   frm <- model$frame
   names <- row.names(frm)
   ylevels <- attr(model, "ylevels")
@@ -514,16 +515,24 @@ listRPartRules <- function(model, compact=FALSE)
   #
   # Print each leaf node as a rule.
   #
-  ordered <- rev(sort(frm$yval2[,5], index=TRUE)$ix)
+  if (rtree)
+    # Sort rules by coverage
+    ordered <- rev(sort(frm$n, index=TRUE)$ix)
+  else
+    # Sort rules by probabilty of second class (usually the last in binary class)
+    ordered <- rev(sort(frm$yval2[,5], index=TRUE)$ix)
   for (i in ordered)
   {
     if (frm[i,1] == "<leaf>")
     {
       # The following [,5] is hardwired and works on one example....
-      yval <- ylevels[frm[i,]$yval]
+      if (rtree)
+        yval <- frm[i,]$yval
+      else
+        yval <- ylevels[frm[i,]$yval]
       cover <- frm[i,]$n
       pcover <- round(100*cover/ds.size)
-      prob <- frm[i,]$yval2[,5]
+      if (! rtree) prob <- frm[i,]$yval2[,5]
       cat("\n")
       pth <- path.rpart(model, nodes=as.numeric(names[i]), print.it=FALSE)
       pth <- unlist(pth)[-1]
@@ -531,15 +540,21 @@ listRPartRules <- function(model, compact=FALSE)
       if (compact)
       {
         cat(sprintf("R%03s ", names[i]))
-        cat(sprintf("[%2.0f%%,%0.2f]",
-                    pcover, prob))
+        if (rtree)
+          cat(sprintf("[%2.0f%%,%0.2f]", pcover, prob))
+        else
+          cat(sprintf("[%2.0f%%,%0.2f]", pcover, prob))
         cat(sprintf(" %s", pth), sep="")
       }
       else
       {
         cat(sprintf(" Rule number: %s ", names[i]))
-        cat(sprintf("[yval=%s cover=%d (%.0f%%) prob=%0.2f]\n",
-                    yval, cover, pcover, prob))
+        if (rtree)
+          cat(sprintf("[yval=%s cover=%d (%.0f%%)]\n",
+                      yval, cover, pcover))
+        else
+          cat(sprintf("[yval=%s cover=%d (%.0f%%) prob=%0.2f]\n",
+                      yval, cover, pcover, prob))
         cat(sprintf("   %s\n", pth), sep="")
       }
     }
@@ -587,7 +602,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
   rptree <- length(tframe$complexity) > 0
   node <- as.numeric(row.names(tframe))
   leafnode <- node[tframe$var == "<leaf>"]
-  proportions <- sprintf("%0.2f", tframe$yval2[,5])
+  #proportions <- sprintf("%0.2f", tframe$yval2[,5])
   depth <- floor(log(node, base = 2) + 1e-07)
   depth <- as.vector(depth - min(depth))
   maxdepth <- max(depth)
@@ -842,8 +857,9 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
       n <- tframe$n[i]
       text.default(x[i], y[i] - ybx - ychr,
                    paste(n, cases, sep = " "), cex=cex)
-      text.default(x[i], y[i] - 1.6*ybx - ychr,
-                   paste(crate[i], "%", sep = ""), cex=cex)
+      if (! rtree)
+        text.default(x[i], y[i] - 1.6*ybx - ychr,
+                     paste(crate[i], "%", sep = ""), cex=cex)
       #paste(crate[i], "%/", proportions[i], sep = ""), cex = cex)
       if (box != 0)
       {
