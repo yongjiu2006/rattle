@@ -7,6 +7,7 @@
     priorities and especially code.</p>
 
 <pre>
+080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
 080716 Risk Charts for regression by using rank
 080712 Fix RData File and ODBC wrt changedDataTab
 080711 Replace Distributions with laticist/playwith (Felix Andrews)

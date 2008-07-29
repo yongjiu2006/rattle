@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-27 16:43:02 Graham Williams>
+# Time-stamp: <2008-07-30 07:17:33 Graham Williams>
 #
 # MODEL TAB
 #
@@ -205,6 +205,7 @@ deactivateROCRPlots <- function()
   theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
   theWidget("risk_radiobutton")$setSensitive(FALSE)
   theWidget("costcurve_radiobutton")$setSensitive(FALSE)
+  theWidget("pvo_radiobutton")$setSensitive(FALSE)
 
   if (numericTarget())
   {
@@ -228,6 +229,7 @@ activateROCRPlots <- function()
   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
   theWidget("risk_radiobutton")$setSensitive(TRUE)
   theWidget("costcurve_radiobutton")$setSensitive(TRUE)
+  theWidget("pvo_radiobutton")$setSensitive(TRUE)
 }
 
 ########################################################################
@@ -349,23 +351,23 @@ executeModelTab <- function()
   {
     if (theWidget("rpart_build_radiobutton")$getActive())
     {
-      setStatusBar("Building", .RPART, "model ...")
+      setStatusBar("Building", commonName(.RPART), "model ...")
       if (executeModelRPart())
         theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
       else
-        setStatusBar("Building", .RPART, "model ... failed.")
+        setStatusBar("Building", commonName(.RPART), "model ... failed.")
     }
     else if (theWidget("rpart_tune_radiobutton")$getActive())
     {
-      setStatusBar("Tuning", .RPART, "model ...")
+      setStatusBar("Tuning", commonName(.RPART), "model ...")
       if (! executeModelRPart("tune"))
-        setStatusBar("Tuning", .RPART, "model ... failed.")
+        setStatusBar("Tuning", commonName(.RPART), "model ... failed.")
     }
     else if (theWidget("rpart_best_radiobutton")$getActive())
     {
-      setStatusBar("Building best", .RPART, "model ...")
+      setStatusBar("Building best", commonName(.RPART), "model ...")
       if (! executeModelRPart("best"))
-        setStatusBar("Building best", .RPART, "model ... failed.")
+        setStatusBar("Building best", commonName(.RPART), "model ... failed.")
     }
     else # That's all the radio buttons - we should not be here.
     {
@@ -379,7 +381,7 @@ executeModelTab <- function()
   if ((binomialTarget() && build.all)
       || currentModelTab() == .ADA)
   {
-    setStatusBar("Building", .ADA, "model ...")
+    setStatusBar("Building", commonName(.ADA), "model ...")
     crs$ada <<-
       buildModelAda(formula,
                     dataset,
@@ -395,44 +397,44 @@ executeModelTab <- function()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
     }
     else
-      setStatusBar("Building", .ADA, "model ... failed.")
+      setStatusBar("Building", commonName(.ADA), "model ... failed.")
 
   }
   if ((categoricTarget() && build.all)
       || currentModelTab() == .RF)
   {
-    setStatusBar("Building", .RF, "model ...")
+    setStatusBar("Building", commonName(.RF), "model ...")
     if (executeModelRF())
       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", .RF, "model ... failed.")
+      setStatusBar("Building", commonName(.RF), "model ... failed.")
   }
   if ((categoricTarget() && build.all)
       || currentModelTab() %in% c(.SVM, .KSVM))
   {
-    setStatusBar("Building", .KSVM, "model ...")
+    setStatusBar("Building", commonName(.KSVM), "model ...")
     if (executeModelSVM())
       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", .KSVM, "model ... failed.")
+      setStatusBar("Building", commonName(.KSVM), "model ... failed.")
 
   }
   if (build.all || currentModelTab() == crv$GLM)
   {
-    setStatusBar("Building", crv$GLM, "model ...")
+    setStatusBar("Building", commonName(crv$GLM), "model ...")
     if (executeModelGLM())
       theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", crv$GLM, "model ... failed.")
+      setStatusBar("Building", commonName(crv$GLM), "model ... failed.")
   }
   if ((theWidget("nnet_radiobutton")$isSensitive() && build.all)
       || currentModelTab() == crv$NNET)
   {
-    setStatusBar("Building", crv$NNET, "model ...")
+    setStatusBar("Building", commonName(crv$NNET), "model ...")
     if (executeModelNNet())
       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", crv$NNET, "model ... failed.")
+      setStatusBar("Building", commonName(crv$NNET), "model ... failed.")
   }
   
   if (build.all)

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-28 22:09:54 Graham Williams>
+# Time-stamp: <2008-07-29 20:12:31 Graham Williams>
 #
 # RPART TAB
 #
@@ -387,7 +387,7 @@ executeModelRPart <- function(action="build")
                        ifelse(is.null(control), "", control),
                        ")", sep="")
 
-    print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+    print.cmd <- paste("rpart.rattle.print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   }
   else if (action == "tune")
   {
@@ -448,7 +448,7 @@ executeModelRPart <- function(action="build")
     return(FALSE)
   }
 
-  ## Display the resulting model.
+  # Display the resulting model.
 
   appendLog("Generate textual output of the rpart model.", print.cmd)
 
@@ -496,10 +496,59 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
   }    
 }
 
-##----------------------------------------------------------------------
+#------------------------------------------------------------------------
+# Modified version or print.rpart
 #
+
+rpart.rattle.print <- function (x, minlength = 0, spaces = 2, cp,
+                                digits = getOption("digits"), ...) 
+{
+    if (!inherits(x, "rpart")) 
+        stop("Not legitimate rpart object")
+    if (!is.null(x$frame$splits)) 
+        x <- rpconvert(x)
+    if (!missing(cp)) 
+        x <- prune.rpart(x, cp = cp)
+    frame <- x$frame
+    ylevel <- attr(x, "ylevels")
+    node <- as.numeric(row.names(frame))
+    depth <- rpart:::tree.depth(node)
+    indent <- paste(rep(" ", spaces * 32), collapse = "")
+    if (length(node) > 1) {
+        indent <- substring(indent, 1, spaces * seq(depth))
+        indent <- paste(c("", indent[depth]), format(node), ")", 
+            sep = "")
+    }
+    else indent <- paste(format(node), ")", sep = "")
+    tfun <- (x$functions)$print
+    if (!is.null(tfun)) {
+        if (is.null(frame$yval2)) 
+            yval <- tfun(frame$yval, ylevel, digits)
+        else yval <- tfun(frame$yval2, ylevel, digits)
+    }
+    else yval <- format(signif(frame$yval, digits = digits))
+    term <- rep(" ", length(depth))
+    term[frame$var == "<leaf>"] <- "*"
+    z <- labels(x, digits = digits, minlength = minlength, ...)
+    n <- frame$n
+    # DEV is residual sum of squares
+    z <- paste(indent, z, n, format(signif(sqrt(frame$dev), digits = digits)),
+        yval, term)
+    omit <- x$na.action
+    if (length(omit)) 
+        cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
+    else cat("n=", n[1], "\n\n")
+    if (x$method == "class") 
+        cat("node), split, n, loss, yval, (yprob)\n")
+    else cat("node), split, n, SQRT(deviance), yval\n")
+    cat("      * denotes terminal node\n\n")
+    cat(z, sep = "\n")
+    return(invisible(x))
+}
+
+#----------------------------------------------------------------------
 # Print out RPart Rules
-#
+
 listRPartRules <- function(model, compact=FALSE)
 {
   if (!inherits(model, "rpart")) stop("Not a legitimate rpart tree")
