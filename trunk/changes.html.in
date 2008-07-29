@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.59.
+    version is 2.3.60.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+291 080730 Initial look at modifying regression tree output - print.rpart
+           Bug fix - evaluate multinom model should use crs$glm not crs$nnet
+           PrvOb plot only available for binomial models
+           Fix Status Bar message to use "common" model name, not R function name
+           Ensure Probit option only available for Binomial models
+           Put PC labels on prcomp plot
+290 080728 Implement Tree Draw/Rules buttons for regression trees
+           Don't default to All in Model tab.
 289 080727 Support export of models to C (in RStat version only)
 288 080727 Add extra model information for logit
            Add probit option (but not tested)

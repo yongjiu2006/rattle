@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-28 17:43:21 Graham Williams>
+# Time-stamp: <2008-07-30 07:11:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 27 Jul 2008"
+VERSION.DATE <- "Released 28 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -4801,6 +4801,8 @@ executeExplorePrcomp <- function(dataset)
   plot.cmd    <- paste('plot(pc, main="")',
                        genPlotTitleCmd("Principal Components Importance",
                                       crs$dataname),
+                       paste("axis(1, at=seq(0.7, ncol(pc$rotation)*1.2, 1.2),",
+                             "labels=colnames(pc$rotation), lty=0)"),
                        sep="\n")
   biplot.cmd  <- paste('biplot(pc, main="")',
                        genPlotTitleCmd("Principal Components",
@@ -4851,7 +4853,7 @@ executeExplorePlaywith <- function(dataset)
 {
   # Testing for now. This has great potential.
 
-  if (! packageIsAvailable("playwith","visual data exploration")) return()
+  if (! packageIsAvailable("playwith", "explore data")) return()
 
   startLog("EXPLORE DATA.")
 
@@ -5004,18 +5006,20 @@ current.evaluate.tab <- function()
 
 executeEvaluateTab <- function()
 {
-  # Check pre-conditions first.
+  # Perform the requested action from the Execute tab.
+
+  ## Obtain some background information.
+  
+  mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
+  
+  ## Check any pre-conditions.
   
   # Ensure a dataset exists.
 
   if (noDatasetLoaded()) return()
 
-  # Obtain some background information.
-  
-  mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
-  
-  #   Ensure we have at least one model to evaluate, otherwise warn
-  #   the user and do nothing.
+  # Ensure we have at least one model to evaluate, otherwise warn the
+  # user and do nothing.
   
   if (is.null(mtypes))
   {
@@ -5024,7 +5028,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  #   Ensure we recognise the model type.
+  # Ensure we recognise the model type.
   
   if (length(setdiff(mtypes, union(crv$MODELLERS, c("kmeans")))) > 0)
   {
@@ -5036,7 +5040,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  #   Ensure there is a model for each that is selected.
+  # Ensure there is a model for each model type that is selected.
 
   if (sum(sapply(mtypes, function(x) is.null(crs[[x]]))) > 0)
   {
@@ -5054,19 +5058,21 @@ executeEvaluateTab <- function()
   #   and wanting to run predict.svm on new data).
 
   if (.ADA %in%  mtypes &&
-      ! packageIsAvailable("ada", "evaluate an adaboost model"))
+      ! packageIsAvailable("ada", sprintf("evaluate a %s model", commonName(.ADA))))
     return()
   if (.KSVM %in%  mtypes &&
-      ! packageIsAvailable("kernlab", "evaluate this SVM"))
+      ! packageIsAvailable("kernlab", sprintf("evaluate a %s model", commonName(.KSVM))))
     return()
   if (.RF %in%  mtypes &&
-      ! packageIsAvailable("randomForest", "evaluate this rf"))
+      ! packageIsAvailable("randomForest", sprintf("evaluate a %s model",
+                                                   commonName(.RF))))
     return()
   if (crv$GLM %in%  mtypes && "multinom" %in% class(crs$glm) &&
-      ! packageIsAvailable("nnet", "evaluate a multinom model"))
+      ! packageIsAvailable("nnet", sprintf("evaluate a Multinomial %s model",
+                                           commonName(crv$GLM))))
     return()
   if (crv$NNET %in%  mtypes &&
-      ! packageIsAvailable("nnet", "evaluate a neural network model"))
+      ! packageIsAvailable("nnet", sprintf("evaluate a %s model", commonName(crv$NNET))))
     return()
 
   if(theWidget("score_radiobutton")$getActive())
@@ -5388,7 +5394,7 @@ executeEvaluateTab <- function()
     if ("multinom" %in% class(crs$glm))
     {
       testset[[crv$GLM]] <- testset0
-      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
+      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
                                      testset[[crv$GLM]])
       respcmd[[crv$GLM]] <- predcmd[[crv$GLM]]
       probcmd[[crv$GLM]] <- gsub(")$", ', type="prob")', predcmd[[crv$GLM]])
@@ -7131,7 +7137,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
   # This modification to executeEvaluateSave was provided by Ed Cox
   # (080201) to plot predictions vs. observed values. Graham added the
   # logging and some fine tuning. It's not really specifically an R
-  # squared plot, but it does include the pseudo R-sqared, so call it
+  # squared plot, but it does include the pseudo R-squared, so call it
   # that for now.
 
   # Put 1 or 2 charts onto their own plots. Otherwise, put the

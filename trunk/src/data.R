@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-26 21:02:09 Graham Williams>
+# Time-stamp: <2008-07-30 06:59:17 Graham Williams>
 #
 # DATA TAB
 #
@@ -1739,7 +1739,7 @@ executeSelectTab <- function()
     # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
 
 
-    # For linear models, if it is categoricand binomial then assume
+    # For linear models, if it is categoric and binomial then assume
     # logistic regression (default to binmoial distribution and the
     # logit link function) otherwise it is multinomial so assume
     # poisson regression (default o poisson distribution and log link
@@ -1752,6 +1752,7 @@ executeSelectTab <- function()
       theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(TRUE)
       theWidget("glm_logistic_radiobutton")$setActive(TRUE)
+      theWidget("glm_probit_radiobutton")$setSensitive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
     }
     else
@@ -1760,6 +1761,7 @@ executeSelectTab <- function()
       theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
       theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+      theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setActive(TRUE)
     }
@@ -1782,6 +1784,7 @@ executeSelectTab <- function()
     theWidget("glm_linear_radiobutton")$setActive(TRUE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(TRUE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
 
     theWidget("nnet_radiobutton")$setSensitive(TRUE)
@@ -1803,10 +1806,12 @@ executeSelectTab <- function()
     theWidget("all_models_radiobutton")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
-    # 080719 - can't sample and cluster!! theWidget("sample_checkbutton")$setActive(FALSE)
+    # 080719 - remove, or else we can't sample and cluster!!
+    # theWidget("sample_checkbutton")$setActive(FALSE)
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
+    theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
   }
   
