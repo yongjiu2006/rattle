@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-31 13:02:09 Graham Williams>
+# Time-stamp: <2008-08-01 05:43:55 Graham Williams>
 #
 # MODEL TAB
 #
@@ -742,6 +742,7 @@ exportRegressionTab <- function()
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
+    save.type <- dialog$getFilter()$getName()
     dialog$destroy()
   }
   else
@@ -750,7 +751,11 @@ exportRegressionTab <- function()
     return()
   }
 
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+  if (get.extension(save.name) == "")
+    if (save.type == "C Files")
+      save.name <- sprintf("%s.c", save.name)
+    else
+      save.name <- sprintf("%s.xml", save.name)
 
   ext <- tolower(get.extension(save.name))
 
