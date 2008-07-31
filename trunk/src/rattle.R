@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-31 13:05:01 Graham Williams>
+# Time-stamp: <2008-07-31 17:16:39 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 30 Jul 2008"
+VERSION.DATE <- "Released 31 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1984,8 +1984,8 @@ executeTransformNormalisePerform <- function()
   }, TRUE)
 
   # We check here if the action is rescale, and we have any
-  # categorical variables to be normalised. If so put up an info
-  # dialogue and remove the categoricals from the list of variables to
+  # categoric variables to be normalised. If so put up an info
+  # dialogue and remove the categorics from the list of variables to
   # be normalised.
 
   classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
@@ -2005,7 +2005,7 @@ executeTransformNormalisePerform <- function()
       && "factor" %in% classes)
   {
     infoDialog(sprintf(paste('We can not rescale using "%s"',
-                             "on a categorical variable.",
+                             "on a categoric variable.",
                              "Ignoring: %s."),
                        action, paste(variables[which(classes == "factor")],
                                      collapse=", ")))
@@ -2013,11 +2013,11 @@ executeTransformNormalisePerform <- function()
     if (length(variables) == 0) return()
   }
 
-  # Check if, for a BYGROUP, we have at most one categorical and the
-  # others are numeric. Then remove the categorical (if any) from the
+  # Check if, for a BYGROUP, we have at most one categoric and the
+  # others are numeric. Then remove the categoric (if any) from the
   # list of variables and store its name in byvname. This allows us to
   # continue to use the loop below, having just the numeric variables
-  # in the list. TODO Allow multiple categoricals and then group
+  # in the list. TODO Allow multiple categorics and then group
   # across all the cateogircals: MaleMarried MaleDivorced
   # FemaleMarried etc.
 
@@ -2026,14 +2026,14 @@ executeTransformNormalisePerform <- function()
     numfactors <- sum(classes=="factor")
     numnumerics <- sum(classes=="numeric" | classes=="integer")
 
-    # Ensure we have just one categorical variable. [080315 gjw] Allow
-    # the case where we have no categoricals, and do the normalisation
+    # Ensure we have just one categoric variable. [080315 gjw] Allow
+    # the case where we have no categorics, and do the normalisation
     # over the whole population rather than stratifying.
     
     #if (numfactors == 0)
     #{
-    #  infoDialog(paste("We must have a categorical variable to group by for",
-    #                   "the By Group option. Please select one categorical",
+    #  infoDialog(paste("We must have a categoric variable to group by for",
+    #                   "the By Group option. Please select one categoric",
     #                   "variable."))
     #  return()
     #}
@@ -2047,14 +2047,14 @@ executeTransformNormalisePerform <- function()
       return()
     }
 
-    # Currently, only support grouping by a single categorical. TODO
-    # Support a group by of multiple categoricals.
+    # Currently, only support grouping by a single categoric. TODO
+    # Support a group by of multiple categorics.
     
     if (numfactors > 1)
     {
-      infoDialog(paste("We only support By Group with a single categorical",
-                       "variable for now. Please select just one",
-                       "categorical."))
+      infoDialog(paste("We only support By Group with a single categoric",
+                       "variable for now. \n\nPlease select just one",
+                       "categoric."))
       return()
     }
 
@@ -2181,7 +2181,7 @@ executeTransformNormalisePerform <- function()
     else if (action == "bygroup")
     {
       # v <- current numeric variable name from variables
-      # byvname <- categorical variable name (no longer in variables)
+      # byvname <- categoric variable name (no longer in variables)
       # vname <-  the new variable name set up as above
 
       if (is.null(byvname))
@@ -2327,7 +2327,7 @@ executeTransformImputePerform <- function()
     warnDialog(paste("No variables have been selected for imputation.",
                      "Please select some variables and Execute again."))
   # We check here if the action is mean or median, and we have any
-  # categorical variables to be imputed. If so put up an info dialogue
+  # categoric variables to be imputed. If so put up an info dialogue
   # and remove the cateorigcals from the list of variables to be
   # imputed.
 
@@ -2335,7 +2335,7 @@ executeTransformImputePerform <- function()
   if (action %in% c("mean", "median") && "factor" %in% classes)
   {
     infoDialog(sprintf(paste("We can not impute the %s for a",
-                             "categorical variable. Ignoring: %s."),
+                             "categoric variable. Ignoring: %s."),
                        action, paste(imputed[which(classes == "factor")],
                                      collapse=", ")))
     imputed <- imputed[-which(classes == "factor")] # Remove the factors.
@@ -2362,7 +2362,7 @@ executeTransformImputePerform <- function()
   if (length(imputed) > 0) startLog("MISSING VALUE IMPUTATION")
 
   # [TODO 071124] The following code could be tidied up quite a
-  # bit. It has evolved. Bits of the code handling the categoricals
+  # bit. It has evolved. Bits of the code handling the categorics
   # were copied from the numeric parts and vice versa, and they do it
   # different ways. Should try to do it the same way. Works for now!
       
@@ -2378,7 +2378,7 @@ executeTransformImputePerform <- function()
     cl <- class(crs$dataset[[z]])
     if (cl == "factor")
     {
-      # Mean and median are not supported for categoricals!
+      # Mean and median are not supported for categorics!
 
       if (action == "zero")
       {
@@ -2458,7 +2458,7 @@ executeTransformImputePerform <- function()
       }
       else
         infoDialog(sprintf(paste("The option to impute the %s for the",
-                                 "categorical variable (%s) is not (yet)",
+                                 "categoric variable (%s) is not (yet)",
                                  "available."), action, z))
     }
     else
@@ -2748,8 +2748,8 @@ executeTransformRemapPerform <- function()
   }
   
   # Check if the action is one that only works on numeric data, and we
-  # have any categorical variables selected. If so put up an info
-  # dialogue and remove the categoricals from the list of variables to
+  # have any categoric variables selected. If so put up an info
+  # dialogue and remove the categorics from the list of variables to
   # be imputed.
 
   classes <- unlist(lapply(vars, function(x) class(crs$dataset[[x]])))
@@ -2774,7 +2774,7 @@ executeTransformRemapPerform <- function()
 
   # If, as a result of removing variables from consideration we end up
   # with no variables left, silenty exit as we have already popped up
-  # a meassage about removing the categorical variables.
+  # a meassage about removing the categoric variables.
   
   if (length(vars) == 0) return()
 
@@ -2823,7 +2823,7 @@ executeTransformRemapPerform <- function()
   {
     if (length(vars) != 2)
     {
-      infoDialog("We only join two categoricals at a time.",
+      infoDialog("We only join two categorics at a time.",
                  "Please select just two.")
       return()
     }
@@ -3123,7 +3123,7 @@ on_prcomp_radiobutton_toggled <- function(button)
 
 cat_toggled <- function(cell, path.str, model)
 {
-  ## A categorical variable's radio button has been toggled in the
+  ## A categoric variable's radio button has been toggled in the
   ## Explore tab's Distribution option. Handle the choice.
 
   ## The data passed in is the model used in the treeview.
@@ -3171,7 +3171,7 @@ con_toggled <- function(cell, path.str, model)
 
 on_categorical_clear_button_clicked <- function(action, window)
 {
-  ## Ensure categorical all check boxes are unchecked.
+  ## Ensure categoric all check boxes are unchecked.
 
   set.cursor("watch")
 
@@ -3900,7 +3900,7 @@ executeExplorePlot <- function(dataset)
                       sep="")
     rug.cmd <- 'rug(ds[ds$grp=="All",1])'
 
-    # If the data looks more categorical then do a more usual hist
+    # If the data looks more categoric then do a more usual hist
     # plot.
 
     altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1],',
@@ -4299,7 +4299,7 @@ executeExplorePlot <- function(dataset)
 
   if (nbarplots > 0)
   {
-    ## Plot a frequency plot for a categorical variable.
+    ## Plot a frequency plot for a categoric variable.
 
     ## Use barplot2 from gplots.
     
@@ -4701,7 +4701,7 @@ executeExploreHiercor <- function(dataset)
                 "\n\nNo numeric variables were found in the dataset",
                 "from amongst those that are not ignored.",
                 "\n\nYou may want to use the transform tab to transform",
-                "your categorical data into numeric data.")
+                "your categoric data into numeric data.")
     return()
   }
 
@@ -4714,7 +4714,7 @@ executeExploreHiercor <- function(dataset)
                 "\n\nCorrelations are calculated only for numeric data.",
                 "\n\nYou may want to select more numeric variables or",
                 "use the transform tab to transform",
-                "your categorical variables into numeric variables.")
+                "your categoric variables into numeric variables.")
 
     return()
   }
@@ -4820,7 +4820,7 @@ executeExplorePrcomp <- function(dataset)
 
   appendTextview(TV, "Note that principal components on only the numeric\n",
                   "variables is calculated, and so we can not use this\n",
-                  "approach to remove categorical variables from ",
+                  "approach to remove categoric variables from ",
                   "consideration.\n\n",
                   "Any numeric variables with relatively large rotation\n",
                   "values (negative or positive) in any of the first few\n",
@@ -5555,7 +5555,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the predictions",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The predictions can not be made in",
                    "this situation. You may need to either ensure",
@@ -5720,7 +5720,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6182,7 +6182,7 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6318,7 +6318,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6436,7 +6436,7 @@ executeEvaluateROC <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6565,7 +6565,7 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6681,7 +6681,7 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -6994,7 +6994,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("The dataset on which the", mtype,
-                   "model is applied to has a categorical",
+                   "model is applied to has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The model can not be applied in",
                    "this situation. You may need to either ensure",
@@ -7194,7 +7194,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     {
       if (any(grep("has new level", result)) || any(grep("New levels",result)))
         infoDialog("It seems that the dataset on which the probabilities",
-                   "from the", mtype, "model are required has a categorical",
+                   "from the", mtype, "model are required has a categoric",
                    "variable with levels not found in the training",
                    "dataset. The probabilities can not be determined in",
                    "this situation. You may need to either ensure",
@@ -7638,7 +7638,7 @@ consistent nomenclature.
 <<>>
 A dataset consists of entities described using variables,
 which might consist of a mixture of input variables and output variables,
-either of which may be categorical or numeric.
+either of which may be categoric or numeric.
 <<>>
 dataset = A collection of data.
 <<>>
@@ -7655,7 +7655,7 @@ or descriptive variable.
 output variable = A variable possibly influenced by the input variables.
 Also called response or dependent variable.
 <<>>
-categorical variable = A variable that takes on a value from a fixed
+categoric variable = A variable that takes on a value from a fixed
 set of values. In R these are called factors and the possible values
 are refered to as the levels of the factor.
 <<>>
@@ -7745,11 +7745,11 @@ on_help_roles_activate <- function(action, window)
 variables.
 <<>>
 By default, all variables have an Input role, except for any variables
-that have constant value, or categoricals with as many values as there
+that have constant value, or categorics with as many values as there
 are rows (identifier variables). These will be marked as Ignore.
 <<>>
 One variable may also be identified as the Target (the first or last
-categorical by default).
+categoric by default).
 <<>>
     Modify the roles as appropriate for each variable.
 <<>>
@@ -7819,7 +7819,7 @@ on_help_impute_activate <- function(action, window)
 {
   showHelp("Imputation is used to fill in the missing values in the data.
 The Zero/Missing imputation is a very simple method. Any missing numeric data
-is simply assigned 0 and any missing categorical data is put into a new
+is simply assigned 0 and any missing categoric data is put into a new
 category, Missing. Mean, Median and Mode replace missing values with the population
 mean, median, or mode. This is not recommended.")
 }
@@ -7836,7 +7836,7 @@ and the first and third quartiles (25 percent of the data has values
 below the first
 quartile, and another 25 percent of the data has values above the third quartile).
 <<>>
-For categorical data the frequency distribution across the values is listed.
+For categoric data the frequency distribution across the values is listed.
 If there are too many possible values, then only the top few are listed, with
 the remainder counted as Other.
 <<>>

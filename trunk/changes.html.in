@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.61.
+    version is 2.3.62.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+293 080801 Default to export to .c if C File is the filter on export model
 292 080731 If no sample then don't warn user about bias from train eval
            Add class to multinom predictions on saving scores to CSV
            De-activate Eval.Risk when no reisk variable available
