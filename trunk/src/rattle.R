@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-30 07:11:09 Graham Williams>
+# Time-stamp: <2008-07-31 13:05:01 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Jul 2008"
+VERSION.DATE <- "Released 30 Jul 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5090,7 +5090,7 @@ executeEvaluateTab <- function()
   {
     # EVALUATE ON TRAINING DATA
 
-    if (crv$appname != "RStat")
+    if (crv$appname != "RStat" && theWidget("sample_checkbutton")$getActive())
       infoDialog("You are using the training dataset to evaluate your model.",
                  "This will give you an optimistic estimate",
                  "of the performance of your model.",
@@ -5397,7 +5397,17 @@ executeEvaluateTab <- function()
       predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
                                      testset[[crv$GLM]])
       respcmd[[crv$GLM]] <- predcmd[[crv$GLM]]
-      probcmd[[crv$GLM]] <- gsub(")$", ', type="prob")', predcmd[[crv$GLM]])
+      probcmd[[crv$GLM]] <- sub(")$", ', type="prob")', predcmd[[crv$GLM]])
+
+      # Add on the actual class also. This is useful for Score but may
+      # be a problem for other types of evaluations (of whe=ich there
+      # are currently none that that use probcmd for multinom.
+
+      probcmd[[crv$GLM]] <- sub("<<- ", "<<- cbind(",
+                                sub(")$",sprintf("), crs$glm$lab[predict(crs$glm, %s)])",
+                                                  testset[[crv$GLM]]),
+                                    probcmd[[crv$GLM]]))
+      
     }        
     else
     {
@@ -5595,10 +5605,9 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    sprintf(paste("Confusion matrix for the %s model",
                                  "on %s (%%):\n\n"),
                            commonName(mtype), testname),
-                   percentage.output)
-
-    if (binomialTarget())
-      appendTextview(TV, sprintf("Overall error: %s", error.output))
+                   percentage.output,
+                   if (binomialTarget())
+                   sprintf("\n\nOverall error: %s", format(error.output)))
   }
   
   return(sprintf("Generated Confusion Tables.", mtype, testname))
@@ -6848,12 +6857,13 @@ executeEvaluateKmeansScore <- function()
 executeEvaluateScore <- function(probcmd, testset, testname)
 {
   # Apply each selected model to the selected dataset and save the
-  # results to a file with columns containing the score from a
-  # specific model. Other columns depend on the radio button options,
-  # and will either be just the identifiers, or a copy of the full
-  # data, or else, the score columns are written to the original file
-  # (assuming CSV).  TODO: Would this be better as the Export
-  # functionality for the Evaluate tab?
+  # results to a file with columns containing the score (or scores in
+  # the case of a multinomial model) from a specific model. Other
+  # columns depend on the radio button options, and will either be
+  # just the identifiers, or a copy of the full data, or else, the
+  # score columns are written to the original file (assuming CSV).
+  # TODO: Would this be better as the Export functionality for the
+  # Evaluate tab?
 
   # Obtain information from the interface: what other data is to be
   # included with the scores.

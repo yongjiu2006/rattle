@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-29 20:12:31 Graham Williams>
+# Time-stamp: <2008-07-31 13:18:02 Graham Williams>
 #
 # RPART TAB
 #
@@ -387,7 +387,7 @@ executeModelRPart <- function(action="build")
                        ifelse(is.null(control), "", control),
                        ")", sep="")
 
-    print.cmd <- paste("rpart.rattle.print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+    print.cmd <- paste("rattle.print.rpart(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   }
   else if (action == "tune")
   {
@@ -500,7 +500,7 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
 # Modified version or print.rpart
 #
 
-rpart.rattle.print <- function (x, minlength = 0, spaces = 2, cp,
+rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
                                 digits = getOption("digits"), ...) 
 {
     if (!inherits(x, "rpart")) 
