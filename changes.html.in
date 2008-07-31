@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.60.
+    version is 2.3.61.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+292 080731 If no sample then don't warn user about bias from train eval
+           Add class to multinom predictions on saving scores to CSV
+           De-activate Eval.Risk when no reisk variable available
+           Include chisq in logistic regression anova output.
+           Add n, std error, Wald, loglik and Anova to multinom output
 291 080730 Initial look at modifying regression tree output - print.rpart
            Bug fix - evaluate multinom model should use crs$glm not crs$nnet
            PrvOb plot only available for binomial models

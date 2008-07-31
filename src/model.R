@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-30 07:17:33 Graham Williams>
+# Time-stamp: <2008-07-31 13:02:09 Graham Williams>
 #
 # MODEL TAB
 #
@@ -227,15 +227,13 @@ activateROCRPlots <- function()
   theWidget("roc_radiobutton")$setSensitive(TRUE)
   theWidget("precision_radiobutton")$setSensitive(TRUE)
   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-  theWidget("risk_radiobutton")$setSensitive(TRUE)
+  theWidget("risk_radiobutton")$setSensitive(length(getSelectedVariables("risk")) != 0)
   theWidget("costcurve_radiobutton")$setSensitive(TRUE)
   theWidget("pvo_radiobutton")$setSensitive(TRUE)
 }
 
 ########################################################################
-#
 # EXECUTE MODEL TAB
-#
 
 executeModelTab <- function()
 {
@@ -522,15 +520,17 @@ executeModelGLM <- function()
     # presented in http://www.ats.ucla.edu/stat/R/dae/probit.htm.
     
     summary.cmd <- paste("print(summary(crs$glm))",
-                         'cat(sprintf("Log likelihood: %.3f\n", logLik(crs$glm)[1]))',
-                         'cat(sprintf("Null/Residual deviance difference: %.3f (%d df)\n",',
+                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\n",',
+                               'logLik(crs$glm)[1], attr(logLik(crs$glm), "df")))'),
+                         paste('cat(sprintf("Null/Residual deviance difference:',
+                               '%.3f (%d df)\n",'),
                          '            crs$glm$null.deviance-crs$glm$deviance,',
                          '            crs$glm$df.null-crs$glm$df.residual))',
                          'cat(sprintf("Chi-square p-value: %.8f\n",',
                          '            dchisq(crs$glm$null.deviance-crs$glm$deviance,',
                          '                   crs$glm$df.null-crs$glm$df.residual)))',
                          "cat('\n==== ANOVA ====\n\n')",
-                         "print(anova(crs$glm))", sep="\n")
+                         'print(anova(crs$glm, test="Chisq"))', sep="\n")
   }
   else if (family == "Linear")
   {
@@ -580,6 +580,16 @@ executeModelGLM <- function()
     if (! packageIsAvailable("nnet", "build a mulitnomial model")) return(FALSE)
     appendLog("Build a multinomial model using the nnet package.", lib.cmd)
     eval(parse(text=lib.cmd))
+
+    car.available <- TRUE
+    lib.cmd <- "require(car, quietly=TRUE)"
+    if (! packageIsAvailable("car", "evaluate a mulitnomial model"))
+      car.avaiable <- FASLE
+    else
+    {
+      appendLog("Sumarise the a multinomial model using the car package.", lib.cmd)
+      eval(parse(text=lib.cmd))
+    }
     
     model.cmd <- paste("crs$glm <<- ",
                        "multinom",
@@ -592,7 +602,14 @@ executeModelGLM <- function()
                        ", trace=FALSE, maxit=1000",
                        ")", sep="")
 
-    summary.cmd <- "print(crs$glm)"
+    summary.cmd <- paste("rattle.print.summary.multinom(summary(crs$glm,",
+                         "                              Wald.ratios=TRUE))",
+                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\n\n",',
+                               'logLik(crs$glm)[1], attr(logLik(crs$glm), "df")))'),
+                         "cat('==== ANOVA ====')",
+                         "Anova(crs$glm)", # This does nothing...... see Anova below
+                         sep="\n")
+
   }
   
   # Build the model.
@@ -614,17 +631,63 @@ executeModelGLM <- function()
                                  ifelse(family == "Multinomial", "multinom", "glm"))),
               collectOutput(summary.cmd))
 
+  if (family == "Multinomial" && car.available)
+  {
+    # Couldn't get this working within the summary.cmd
+    appendTextview(TV, paste("\n\n",
+                             collectOutput("Anova(crs$glm)", use.print=TRUE)),
+                   tvsep=FALSE)
+  }
+  
+  
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
   
   # Finish up.
   
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+  time.msg <- sprintf("\nTime taken: %0.2f %s", time.taken,
                       attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A Regression model has been generated.", time.msg)
   return(TRUE)
+}
+
+rattle.print.summary.multinom <- function (x, digits = x$digits, ...) 
+{
+  # All I want is to add "n=XXX" here!!!
+  if (!is.null(cl <- x$call)) {
+        cat("Call:\n")
+        dput(cl, control = NULL)
+    }
+    cat(sprintf("\nn=%d\n", nrow(x$weights)))
+    cat("\nCoefficients:\n")
+    if (x$is.binomial) {
+        print(cbind(Values = x$coefficients, "Std. Err." = x$standard.errors, 
+            "Value/SE" = x$Wald.ratios), digits = digits)
+    }
+    else {
+        print(x$coefficients, digits = digits)
+        cat("\nStd. Errors:\n")
+        print(x$standard.errors, digits = digits)
+        if (!is.null(x$Wald.ratios)) {
+            cat("\nValue/SE (Wald statistics):\n")
+            print(x$coefficients/x$standard.errors, digits = digits)
+        }
+    }
+    cat("\nResidual Deviance:", format(x$deviance), "\n")
+    cat("AIC:", format(x$AIC), "\n")
+    if (!is.null(correl <- x$correlation)) {
+        p <- dim(correl)[2]
+        if (p > 1) {
+            cat("\nCorrelation of Coefficients:\n")
+            ll <- lower.tri(correl)
+            correl[ll] <- format(round(correl[ll], digits))
+            correl[!ll] <- ""
+            print(correl[-1, -p], quote = FALSE, ...)
+        }
+    }
+    invisible(x)
 }
 
 exportRegressionTab <- function()
