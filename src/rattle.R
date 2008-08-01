@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-31 17:16:39 Graham Williams>
+# Time-stamp: <2008-08-02 06:10:03 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 31 Jul 2008"
+VERSION.DATE <- "Released 01 Aug 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -132,7 +132,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
 
   crv$max.vars.correlation <<- 40
   
-  if (! packageIsAvailable("RGtk2"))
+  if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
@@ -493,8 +493,9 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   ## How to test if ggobi is actually available?
 
   # If the cairoDevice package is not available then turn off the
-  # option in the settingts menu and make it insensitive.
-  if (! packageIsAvailable("cairoDevice"))
+  # option in the settings menu and make it insensitive.
+  
+  if (! packageIsAvailable("cairoDevice", "enable the cairo device option"))
   {
     theWidget("use_cairo_graphics_device")$setActive(FALSE)
     theWidget("use_cairo_graphics_device")$hide()
@@ -1295,7 +1296,7 @@ newPlot <- function(pcnt=1)
   # revert to the x11() or windows() device.
 
   if (theWidget("use_cairo_graphics_device")$getActive() &&
-      packageIsAvailable("cairoDevice"))
+      packageIsAvailable("cairoDevice", "display plots"))
   {
     require("cairoDevice", quietly=TRUE)
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
@@ -7810,7 +7811,7 @@ is often used.
 <<>>
 The rescaler function from the reshape package is used to normalise data."))
   {
-    if (packageIsAvailable("reshape"))
+    if (packageIsAvailable("reshape", "display information about rescaler"))
       popupTextviewHelpWindow("rescaler")
   }
 }
@@ -7860,12 +7861,12 @@ The fBasics package is used for the Basic summary and
 the kurtosis and skewness."))
     {
       popupTextviewHelpWindow("summary")
-      if (packageIsAvailable("Hmisc"))
+      if (packageIsAvailable("Hmisc", "display help about describe"))
       {
         require(Hmisc, quietly=TRUE)
         popupTextviewHelpWindow("describe")
       }
-      if (packageIsAvailable("fBasics"))
+      if (packageIsAvailable("fBasics", "display help about basic stats"))
       {
         require(fBasics, quietly=TRUE)
         popupTextviewHelpWindow("basicStats")
