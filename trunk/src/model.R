@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-01 05:43:55 Graham Williams>
+# Time-stamp: <2008-08-02 07:51:13 Graham Williams>
 #
 # MODEL TAB
 #
@@ -713,18 +713,14 @@ exportRegressionTab <- function()
 
   # Obtain filename to write the PMML or C code to.
   
-  dialog <- gtkFileChooserDialog(paste("Export PMML", if (crv$appname=="RStat") "or C"),
+  dialog <- gtkFileChooserDialog(paste("Export ", if (crv$appname=="RStat") "C or ",
+                                       "PMML"),
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_glm", sep=""))
-
-  ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
-  ff$addPattern("*.xml")
-  dialog$addFilter(ff)
 
   if (crv$appname == "RStat")
   {
@@ -733,6 +729,11 @@ exportRegressionTab <- function()
     ff$addPattern("*.c")
     dialog$addFilter(ff)
   }
+
+  ff <- gtkFileFilterNew()
+  ff$setName("PMML Files")
+  ff$addPattern("*.xml")
+  dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
   ff$setName("All Files")
@@ -752,10 +753,17 @@ exportRegressionTab <- function()
   }
 
   if (get.extension(save.name) == "")
+  {
     if (save.type == "C Files")
       save.name <- sprintf("%s.c", save.name)
     else
-      save.name <- sprintf("%s.xml", save.name)
+    {
+      if (crv$appname == "RStat")
+        save.name <- sprintf("%s.c", save.name)
+      else
+        save.name <- sprintf("%s.xml", save.name)
+    }
+  }
 
   ext <- tolower(get.extension(save.name))
 

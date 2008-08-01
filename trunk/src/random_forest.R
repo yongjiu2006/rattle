@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-24 23:16:51 Graham>
+# Time-stamp: <2008-08-02 06:11:16 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -500,7 +500,7 @@ ruleset.randomForest <- function(model, n=1, include.class=NULL)
   
   # include.class	Vector of predictions to include
   
-  if (! packageIsAvailable("randomForest"))
+  if (! packageIsAvailable("randomForest", "generate a rule set"))
     stop("randomForest package is required to generate rule sets")
 
   require(randomForest, quietly=TRUE)

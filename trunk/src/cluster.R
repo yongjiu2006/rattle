@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-18 07:11:45 Graham Williams>
+# Time-stamp: <2008-08-02 05:59:47 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -459,7 +459,7 @@ executeClusterHClust <- function(include)
   # seconds!
 
   lib.cmd <- "require(amap, quietly=TRUE)"
-  if (packageIsAvailable("amap"))
+  if (packageIsAvailable("amap", "perform an efficient hcluster"))
   {
     amap.available <- TRUE
     appendLog("The hcluster function is provided by the amap package.",
