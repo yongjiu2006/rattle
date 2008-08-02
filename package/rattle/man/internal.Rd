@@ -11,6 +11,10 @@
 \alias{imp_edited}
 \alias{imp_toggled}
 \alias{load_rdata_set_combo}
+\alias{on_glm_gaussian_radiobutton_toggled}
+\alias{on_glm_linear_radiobutton_toggled}
+\alias{on_glm_logistic_radiobutton_toggled}
+\alias{on_glm_multinomial_radiobutton_toggled}
 \alias{on_about_menu_activate}
 \alias{on_ada_continue_button_clicked}
 \alias{on_ada_defaults_button_clicked}

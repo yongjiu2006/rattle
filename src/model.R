@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 07:51:13 Graham Williams>
+# Time-stamp: <2008-08-02 10:30:24 Graham Williams>
 #
 # MODEL TAB
 #
@@ -696,31 +696,61 @@ exportRegressionTab <- function()
   
   if (is.null(crs$glm))
   {
-    errorDialog("No regression model is available. Be sure to build",
+    errorDialog("No Regression is available. Be sure to build",
                 "the model before trying to export it! You will need",
                 "to press the Execute button (F5) in order to build the",
                 "model.")
     return()
   }
+
+  startLog("EXPORT REGRESSION")
+
+  save.name <- getExportSaveName("glm")
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+
+  # Generate appropriate code.
   
+  pmml.cmd <- "pmml(crs$glm)"
+
+  if (ext == "xml")
+  {
+    appendLog("Export regression as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    appendLog("Export a regression model as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s)), file="%s")', pmml.cmd, save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd)))), file=save.name)
+  }
+  
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  
+}
+
+getExportSaveName <- function(mtype)
+{
   # Require the pmml package for either exporting to PMML or C (via
   # PMML).
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export regression model")) return(FALSE)
-  appendLog("Load the PMML package to export a regression model.", lib.cmd)
+  if (! packageIsAvailable("pmml", paste("export", commonName(mtype), "model")))
+      return(NULL)
+  appendLog("Load the PMML package to export a model.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Obtain filename to write the PMML or C code to.
   
-  dialog <- gtkFileChooserDialog(paste("Export ", if (crv$appname=="RStat") "C or ",
+  dialog <- gtkFileChooserDialog(paste("Export", if (crv$appname=="RStat") "C or",
                                        "PMML"),
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
 
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_glm", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype, sep=""))
 
   if (crv$appname == "RStat")
   {
@@ -749,7 +779,7 @@ exportRegressionTab <- function()
   else
   {
     dialog$destroy()
-    return()
+    return(NULL)
   }
 
   if (get.extension(save.name) == "")
@@ -758,7 +788,9 @@ exportRegressionTab <- function()
       save.name <- sprintf("%s.c", save.name)
     else
     {
-      if (crv$appname == "RStat")
+      if (save.type == "PMML Files")
+        save.name <- sprintf("%s.xml", save.name)
+      else if (crv$appname == "RStat")
         save.name <- sprintf("%s.c", save.name)
       else
         save.name <- sprintf("%s.xml", save.name)
@@ -774,7 +806,7 @@ exportRegressionTab <- function()
                 if (crv$appname == "Rattle")
                 paste("It is not available in Rattle by default.",
                       "\n\nContact support@togaware.com for details."))
-    return(FALSE)
+    return(NULL)
   }
   
   if (file.exists(save.name))
@@ -782,28 +814,11 @@ exportRegressionTab <- function()
                                "file of the name", save.name,
                                "already exists. \n\nDo you want to overwrite",
                                "this file?")))
-      return()
+      return(NULL)
 
-  # Generate appropriate code.
-  
-  pmml.cmd <- "pmml(crs$glm)"
-
-  if (ext == "xml")
-  {
-    appendLog("Export a regression model as PMML.",
-              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
-    saveXML(eval(parse(text=pmml.cmd)), save.name)
-  }
-  else if (ext == "c")
-  {
-    appendLog("Export a regression model as C code for WebFocus.",
-              sprintf('cat(pmmltoc(toString(%s)), file="%s")', pmml.cmd, save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd)))), file=save.name)
-  }
-  
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
-  
+  return(save.name)
 }
+
 
 #------------------------------------------------------------------------
 # MODEL SVM - SUPPORT VECTOR MACHINE
