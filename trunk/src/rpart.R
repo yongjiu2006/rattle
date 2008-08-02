@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-31 13:18:02 Graham Williams>
+# Time-stamp: <2008-08-02 10:01:12 Graham Williams>
 #
 # RPART TAB
 #
@@ -938,7 +938,7 @@ exportRpartTab <- function()
   
   if (is.null(crs$rpart))
   {
-    errorDialog("No decision tree model is available. Be sure to build",
+    errorDialog("No Tree model is available. Be sure to build",
                 "the model before trying to export it! You will need",
                 "to press the Execute button (F5) in order to build the",
                 "model.")
@@ -947,60 +947,28 @@ exportRpartTab <- function()
 
   startLog("EXPORT RPART AS PMML")
 
-  # Require the pmml package
-  
-  lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export decision trees")) return(FALSE)
-  appendLog("Load the PMML package to export a decision tree.", lib.cmd)
-  eval(parse(text=lib.cmd))
-  
-  # Obtain filename to write the PMML to.
-  
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
+   save.name <- getExportSaveName("rpart")
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
 
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_rpart", sep=""))
-
-  ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
-  ff$addPattern("*.xml")
-  dialog$addFilter(ff)
-
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
-  
-  if (dialog$run() == GtkResponseType["accept"])
-  {
-    save.name <- dialog$getFilename()
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return()
-  }
-
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
-    
-  if (file.exists(save.name))
-    if (is.null(questionDialog("An XML file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
-      return()
-  
   # We can't pass "\" in a filename to the parse command in MS/Windows
   # so we have to run the save/write command separately, i.e., not
-  # inside the string thaat is being parsed.
+  # inside the string that is being parsed.
   
   pmml.cmd <- "pmml(crs$rpart)"
-  appendLog("Export a decision tree as PMML.",
-            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
-  eval(parse(text=pmml.cmd))
-  saveXML(eval(parse(text=pmml.cmd)), save.name)
+
+  if (ext == "xml")
+  {
+    appendLog("Export a decision tree as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    appendLog("Export a decision tyree as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s)), file="%s")', pmml.cmd, save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd)))), file=save.name)
+  }
           
-  setStatusBar("The PMML file", save.name, "has been written.")
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
 }
