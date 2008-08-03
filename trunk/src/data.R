@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-30 06:59:17 Graham Williams>
+# Time-stamp: <2008-08-03 17:46:25 Graham Williams>
 #
 # DATA TAB
 #
@@ -2764,10 +2764,11 @@ used.variables <- function(numonly=FALSE)
     return(simplifyNumberList(setdiff(fl, ii)))
 }
 
-getCategoricalVariables <- function(name.list=FALSE)
+getCategoricVariables <- function(type="string")
 {
   # Return a list of categoric variables from amongst those with an
-  # INPUT role.
+  # INPUT role. If type is "names" than return the list of variable
+  # names.
   
   include <- NULL
   cats <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.factor))]
@@ -2775,7 +2776,7 @@ getCategoricalVariables <- function(name.list=FALSE)
   {
     indicies <- getVariableIndicies(crs$input)
     included <- intersect(cats, indicies)
-    if (name.list)
+    if (type=="names")
       include <- names(crs$dataset)[included]
     else
       include <- simplifyNumberList(included)
@@ -2783,19 +2784,22 @@ getCategoricalVariables <- function(name.list=FALSE)
   return(include)
 }
 
-getNumericVariables <- function()
+getNumericVariables <- function(type="string")
 {
-  ## Returns a list of cumeric variables
+  # Returns a list of numeric variables. 080803 Add support to return
+  # a list of indicies rather than the default string that needs to be
+  # executed to identfy the indicies.
   
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
+    indicies <- intersect(nums, getVariableIndicies(crs$input))
+    if (type == "string")
+      indicies <- simplifyNumberList(indicies)
   }
   else
-    inlcude <- NULL
+    indicies <- NULL
 
- return(include)
+ return(indicies)
 }
 

@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.65.
+    version is 2.3.66.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+297 080803 Improve getCatVar and getNumVar to simplify other code
+           Update data_summary report template
 296 080803 Tidy up the version (RStat/Rattle) tuning - do it sooner and cleaner.
            Add experimental Report button.
 295 080802 Export to PMML file chooser packaged as function and shared.

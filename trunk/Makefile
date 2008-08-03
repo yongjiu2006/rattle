@@ -168,6 +168,7 @@ rattle_$(VERSION).tar.gz: revision $(SOURCE)
              src/rattle.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
+	cp odf/data_summary.odt package/rattle/inst/odt/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
 	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	R CMD build $(PACKAGE)
@@ -191,7 +192,6 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	cp audit.csv package/rattle/inst/csv/
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
-	cp odf/data_summary.odt package/rattle/inst/odt/
 
 zip: local plocal
 	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.7; zip -r9 - rattle) \

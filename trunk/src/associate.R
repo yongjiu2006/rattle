@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-26 21:49:10 Graham Williams>
+# Time-stamp: <2008-08-03 17:46:46 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -106,7 +106,7 @@ executeAssociateTab <- function()
       
   # Check that we have only categorical attributes.
 
-  include <- getCategoricalVariables(TRUE)
+  include <- getCategoricVariables("names")
   
   if (!baskets && length(include) == 0)
   {
@@ -160,7 +160,7 @@ executeAssociateTab <- function()
 
   # Transform data into a transactions dataset for arules.
 
-  include <- getCategoricalVariables()
+  include <- getCategoricVariables()
   
   if (baskets)
     transaction.cmd <- paste("crs$transactions <<- as(split(",
@@ -243,7 +243,7 @@ plotAssociateFrequencies <- function()
 
   # Check that we have categorical attributes.
 
-  include <- getCategoricalVariables()
+  include <- getCategoricVariables()
   if (! baskets && length(include) == 0)
   {
     errorDialog("Associations are calculated only for categoric variables.",
