@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 06:10:03 Graham Williams>
+# Time-stamp: <2008-08-03 10:08:41 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -161,24 +161,14 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
     rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                               root="rattle_window")
 
-  # Some default GUI settings
+  # Tune the interface to suit RStat
 
   setRattleTitle()
-
-  if (crv$appname == "Rattle")
-  {
-    id.string <- paste('<span foreground="blue">',
-                       '<i>', crv$appname, '</i> ',
-                       '<i>Version ', VERSION, '</i> ',
-                       '<i><span underline="single">togaware.com</span></i>',
-                       '</span>', sep="")
-
-    rattle.menu <- theWidget("rattle_menu")
-    rattle.menu$SetRightJustified(TRUE)
-    rattle.menu$getChild()$setMarkup(id.string)
-  }
+  
+  if (crv$appname == "RStat")
+    tuneRStat()
   else
-     theWidget("rattle_menu")$hide()
+    tuneRattle()
 
   # 080511 Record the current options and set the scientific penalty
   # to be 5 so we generally get numerics pinted using fixed rather
@@ -598,9 +588,12 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
     executeDataTab(csvname)
   }
 
-  # Tune the interface to suit RStat
+###   # Tune the interface to suit RStat
 
-  if (crv$appname == "RStat") tuneRStat()
+###   if (crv$appname == "RStat")
+###     tuneRStat()
+###   else
+###     tuneOthers()
   
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
   
@@ -609,6 +602,11 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
 
 tuneRStat <- function()
 {
+
+  ## Toolbar
+  
+  theWidget("report_toolbutton")$hide()
+  theWidget("rattle_menu")$hide()
 
   ## Data
   
@@ -642,6 +640,26 @@ tuneRStat <- function()
   
   theWidget("glm_probit_radiobutton")$hide()
 }
+
+tuneRattle <- function()
+{
+  ## Toolbar
+
+  theWidget("report_toolbutton")$show()
+  
+  id.string <- paste('<span foreground="blue">',
+                     '<i>', crv$appname, '</i> ',
+                     '<i>Version ', VERSION, '</i> ',
+                     '<i><span underline="single">togaware.com</span></i>',
+                     '</span>', sep="")
+
+  rattle.menu <- theWidget("rattle_menu")
+  rattle.menu$SetRightJustified(TRUE)
+  rattle.menu$getChild()$setMarkup(id.string)
+
+}
+
+
 
 #-----------------------------------------------------------------------
 # MAINLOOP ITERATION
@@ -5520,7 +5538,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
   {
 
     setStatusBar("Applying the", commonName(mtype),
-                 "model to the dataset to generate a confusion table...")
+                 "model to the dataset to generate a classification table...")
     
     # Generate the command to show the confusion matrix.
     

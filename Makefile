@@ -47,6 +47,7 @@ R_SOURCE = \
 	src/nnet.R \
 	src/projects.R \
 	src/random_forest.R \
+	src/report.R \
 	src/rpart.R \
 	src/textview.R \
 	src/zzz.R
@@ -190,6 +191,7 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	cp audit.csv package/rattle/inst/csv/
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
+	cp odf/data_summary.odt package/rattle/inst/odt/
 
 zip: local plocal
 	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.7; zip -r9 - rattle) \
