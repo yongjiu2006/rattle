@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 10:16:25 Graham Williams>
+# Time-stamp: <2008-08-04 21:19:14 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -359,6 +359,15 @@ on_kmeans_data_plot_button_clicked <- function(button)
   # cluster numbers. Otherwise we get a bad looking plot!!!! But do we
   # always need na.omit. It is not always used on bulding clusters.
 
+  # Alternative plot commands that could be considered:
+  #
+  #    plot3d (rgl) with type="s"
+  #    plotmatrix (ggplot2)
+  #    splom (lattice)
+  #
+  # I think the default plot is quite good. plotmatrix is good, but
+  # does not include the scales and takes a long time to render.
+  
   ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
   plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",
                             "col=crs$kmeans$cluster)\n",
@@ -885,6 +894,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
 exportClusterTab <- function()
 {
+  
   if (noDatasetLoaded()) return()
 
   if (theWidget("kmeans_radiobutton")$getActive())
@@ -919,6 +929,10 @@ exportKMeansTab <- function(file)
 
   # Generate appropriate code.
 
+  # 080804 How to add the transformations? Perhaps generate separately
+  # with pmml.transforms(crs$transforms) and include the result as an optinal
+  # argument to pmml.
+  
   pmml.cmd <- "pmml(crs$kmeans)"
 
   # We can't pass "\" in a filename to the parse command in

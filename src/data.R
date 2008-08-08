@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-03 17:46:25 Graham Williams>
+# Time-stamp: <2008-08-04 20:51:46 Graham Williams>
 #
 # DATA TAB
 #
@@ -347,8 +347,6 @@ updateRDatasets <- function()
   }
   set.cursor(message="")
 }
-
-  
 
 ########################################################################
 # EXECUTE
