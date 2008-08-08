@@ -63,7 +63,8 @@ PSOURCE = \
 	src/pmml.nnet.R \
 	src/pmml.randomForest.R \
 	src/pmml.rpart.R \
-	src/pmml.rsf.R
+	src/pmml.rsf.R \
+	src/pmml.transforms.R
 
 GLADE_SOURCE = src/rattle.glade
 

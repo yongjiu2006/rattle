@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-03 10:08:41 Graham Williams>
+# Time-stamp: <2008-08-04 20:54:30 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -91,7 +91,7 @@ COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 #   variables. The real solution is probably environments, but I
 #   haven't explored these yet.
 #
-#   Be aware that the trick of doingr
+#   Be aware that the trick of doing
 #
 # 	crs <- crs
 #
@@ -354,7 +354,8 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
                eval=NULL,
                testset=NULL,
                testname=NULL,
-               alog=NULL	# Record of interaction - useful?
+               alog=NULL,	# Record of interaction - useful?
+               transforms=NULL  # Record of variable transforms for inclusion in PMML
                )
 
   # Main notebook related constants and widgets.  Track the widgets
@@ -2111,8 +2112,6 @@ executeTransformNormalisePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  ## 080609 - REMOVE if (length(variables) > 0) startLog("Rescale A Variable")
-
   # For MATRIX obtain the matrix totla first and then divide each
   # column by this.
 
@@ -2270,6 +2269,10 @@ executeTransformNormalisePerform <- function()
       input <- union(input, vname)
     }
     ignore <- union(ignore, v)
+
+    # Record the transformation for possible inclusion in PMML.
+
+    crs$transforms <<- union(crs$transform, vname)
   }
   
   if (length(variables) > 0)

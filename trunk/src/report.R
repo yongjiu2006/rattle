@@ -1,0 +1,129 @@
+# Gnome R Data Miner: GNOME interface to R for Data Mining
+#
+# Time-stamp: <2008-08-07 20:58:23 Graham Williams>
+#
+# Reporting support
+#
+# Copyright (c) 2008 Togaware Pty Ltd
+#
+# This files is part of Rattle.
+#
+# Rattle is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Rattle is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+on_report_toolbutton_clicked <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar("Generating report.")
+  set.cursor("watch")
+  try(dispatchReportButton())
+  set.cursor()
+}
+
+dispatchReportButton <- function()
+{
+  # Prerequisites: Can not report on data if there is no dataset.
+
+  if (noDatasetLoaded()) return(FALSE)
+
+  if (is.null(questionDialog("The Report button is very experimental.",
+                             "Please report issues and updates to support@togaware.com.",
+                             "\n\nKnown issues:",
+                             "\n\n\tAlways saves to the same fixed file - need chooser.",
+                             "\n\tA plot is displayed on screen - need to suppress.",
+                             "\n\tToo much generated to the console - how remove?",
+                             "\n\nDo you wish to continue?")))
+    return(FALSE)
+  
+  startLog("GENERATE A REPORT")
+  
+  if (! packageIsAvailable("odfWeave", "generate a report")) return(FALSE)
+  lib.cmd <- "require(odfWeave, quietly=TRUE)"
+  appendLog("The odfWeave packager can process ODT document templates.", lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  # Check which tab of the notebook is active and dispatch to the
+  # appropriate execute action.
+
+  ct <- getCurrentPageLabel(crv$NOTEBOOK)
+
+  if (ct == crv$NOTEBOOK.DATA.NAME ||
+      ct == crv$NOTEBOOK.EXPLORE.NAME)
+  {
+    # For the DATA or EXPLORE tabs generate a dataset summary.
+    
+    reportDataTab()
+  }
+  else if (ct == crv$NOTEBOOK.MODEL.NAME )
+  {
+    if (! is.null(crs$rpart))
+      reportTreeModel(crs$rpart)
+    else
+    {
+      infoDialog("Report functionality is only available for the Tree",
+                 ct, " and no Tree model found.")
+      return(FALSE)
+    }
+  }
+  else
+      
+  {
+    infoDialog("No report functionality is available for the",
+               ct, "tab as yet. Nothing done.")
+    return(FALSE)
+  }
+}
+
+#-----------------------------------------------------------------------
+
+reportDataTab <- function()
+{
+  if (file.exists("../odf/data_summary.odt"))
+  {
+    summary <- "../odf/data_summary.odt" # For Testing
+    warning("Rattle Report is using local template ../odf", immediate.=TRUE)
+  } 
+  else
+    summary <- system.file("odt", "data_summary.odt", package="rattle")
+
+  ofile <- paste(getwd(), "data_summary_rattle.odt", sep="/")
+  
+  odfWeave(summary, ofile, control=odfWeaveControl(verbose=FALSE))
+
+  setStatusBar(sprintf("Report written to %s.", ofile))
+}
+
+  
+#-----------------------------------------------------------------------
+
+reportTreeModel <- function(model)
+{
+  model <<- model
+  if (file.exists("../odf/model_rpart_summary.odt"))
+  {
+    summary <- "../odf/model_rpart_summary.odt" # For Testing
+    warning("Rattle Report is using local template ../odf", immediate.=TRUE)
+  } 
+  else
+    summary <- system.file("odt", "mode_rpart_summary.odt", package="rattle")
+
+  ofile <- paste(getwd(), "model_rpart_summary_rattle.odt", sep="/")
+  
+  odfWeave(summary, ofile, control=odfWeaveControl(verbose=FALSE))
+
+  if (exists("rattleGUI")) setStatusBar(sprintf("Report written to %s.", ofile))
+}
+
+  
