@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-04 20:54:30 Graham Williams>
+# Time-stamp: <2008-08-09 19:20:16 Graham>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 03 Aug 2008"
+VERSION.DATE <- "Released 08 Aug 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5508,8 +5508,15 @@ executeEvaluateTab <- function()
     msg <- executeEvaluatePrecision(probcmd, testset, testname)
   else if (theWidget("sensitivity_radiobutton")$getActive())
     msg <- executeEvaluateSensitivity(probcmd, testset, testname)
+
   else if (theWidget("pvo_radiobutton")$getActive())
-    msg <- executeEvaluatePvOplot(probcmd, testset, testname)
+  {
+    if (categoricTarget())
+      msg <- executeEvaluatePvOplot(probcmd, testset, testname)
+    else if (numericTarget())
+      msg <- executeEvaluatePvOplot(predcmd, testset, testname)
+  }
+
   else if (theWidget("score_radiobutton")$getActive())
   {
     if (theWidget("kmeans_evaluate_checkbutton")$getActive())
@@ -7166,11 +7173,10 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
 {
+  print(probcmd)
   # This modification to executeEvaluateSave was provided by Ed Cox
   # (080201) to plot predictions vs. observed values. Graham added the
-  # logging and some fine tuning. It's not really specifically an R
-  # squared plot, but it does include the pseudo R-squared, so call it
-  # that for now.
+  # logging and some fine tuning. It includes a pseudo R-squared.
 
   # Put 1 or 2 charts onto their own plots. Otherwise, put the
   # multiple charts onto one plot, keeping them all the same size
@@ -7338,10 +7344,15 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     # logistic regression. This is to be interpreted differently to
     # the standard R-square.
     
-    # TODO Add to LOG
-
-    fitpoints <- na.omit(cbind(obs, Predicted=crs$pr))
-    fitcorr <- format(cor(fitpoints[,1], fitpoints[,2]), digits=4)
+    fit.cmd <- "na.omit(cbind(obs, Predicted=crs$pr))"
+    appendLog("Combine the observed values with the predicted",
+              paste("fitpoints <-", fit.cmd))
+    fitpoints <- eval(parse(text=fit.cmd))
+    
+    corr.cmd <- "format(cor(fitpoints[,1], fitpoints[,2]), digits=4)"
+    appendLog("Obtain the pseudo R2 - a correlation",
+              paste("fitcorr <-", corr.cmd))
+    fitcorr <- eval(parse(text=corr.cmd))
 
     # Plot the points - observed versus predicted.
     
@@ -7350,38 +7361,54 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     
     if (numplots == 2 && mtype == model.list[length(model.list)]) newPlot(1)
 
-    # TODO Add to LOG
+    par.cmd <- 'par(c(lty="solid", col="blue"))'
+    appendLog("Plot settings for the true points and best fit",
+              paste("op <-", par.cmd))
+    op <- eval(parse(text=par.cmd))
 
-    op <- par(c(lty="solid", col="blue"))
     # In the plot I originally limited the x and y to (0,1). Not sure
     # why needed. Ed Cox pointed out he was losing values when
     # predicting more than (0,1) (linear regression), so remove the limits 
     # for now (080301).
-    plot(fitpoints, asp=1)#, xlim=c(0,1), ylim=c(0,1))
+
+    vnames <- names(fitpoints)
+    plot.cmd <-sprintf('plot(%s, fitpoints[[2]], asp=1, xlab="%s", ylab="%s")',
+                       ifelse(length(unique(fitpoints[[1]])) < 5,
+                              "jitter(fitpoints[[1]])",
+                              "fitpoints[[1]]"),
+                       ifelse(length(unique(fitpoints[[1]])) < 5,
+                              paste(vnames[1], "(Jittered)"),
+                              vnames[1]),
+                       vnames[2])
+    appendLog("Display the observed (X) versus predicted (Y) points",
+              plot.cmd)
+    eval(parse(text=plot.cmd))
 
     # Fit a linear model Predicted ~ Observed.
-    
-    # TODO Add to LOG
 
-    prline <- lm(fitpoints[,2] ~ fitpoints[,1])
-    abline(prline)
+    lm.cmd <- paste("lm(fitpoints[,2] ~ fitpoints[,1])")
+    appendLog("Generate a simple linear fit between predicted and observed",
+              paste("prline <-", lm.cmd))
+    prline <- eval(parse(text=lm.cmd))
 
-    # Add a diagonal representing perfect correlation.
-    
-    # TODO Add to LOG
+    ab.cmd <- "abline(prline)"
+    appendLog("Add the linear fit to the plot",
+              ab.cmd)
+    eval(parse(text=ab.cmd))
 
-    par(c(lty="dashed", col="black"))
-    abline(0, 1)
-    legend("topleft", legend=c("Best Fit to Points", "Predicted=Observed"),
+    diag.cmd <- paste('par(c(lty="dashed", col="black"))',
+                      'abline(0, 1)', sep="\n")
+    appendLog("Add a diagonal representing perfect correlation",
+              diag.cmd)
+    eval(parse(text=diag.cmd))
+
+    legend("topleft", legend=c("Linear Fit to Points",
+                        "Predicted=Observed"),
            lty=c(1, 2),col=c("blue", "black"), bty="n")
+    
     par(op)
 
     # TODO Add to LOG
-#    appendLog("Write the scores to file.",
-#             paste('write.csv(cbind(scores, predict=crs$pr), file="',
-#                   score.file, '", row.names=FALSE)', sep=""))
-#    
-#    write.csv(cbind(scores, predict=crs$pr), file=score.file, row.names=FALSE)
 
     # Add decorations
     

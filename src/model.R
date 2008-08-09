@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 10:30:24 Graham Williams>
+# Time-stamp: <2008-08-09 19:13:33 Graham>
 #
 # MODEL TAB
 #
@@ -197,40 +197,83 @@ currentModelTab <- function()
   return(lb)
 }
 
-deactivateROCRPlots <- function()
+activateEvaluate <- function(buttons)
 {
-  theWidget("lift_radiobutton")$setSensitive(FALSE)
-  theWidget("roc_radiobutton")$setSensitive(FALSE)
-  theWidget("precision_radiobutton")$setSensitive(FALSE)
-  theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-  theWidget("risk_radiobutton")$setSensitive(FALSE)
-  theWidget("costcurve_radiobutton")$setSensitive(FALSE)
-  theWidget("pvo_radiobutton")$setSensitive(FALSE)
+  # All known Evaluate buttons.
+  
+  all.buttons <- c("confusion", "risk", "costcurve", "lift", "roc",
+                   "precision", "sensitivity", "pvo", "score")
 
-  if (numericTarget())
+  # All "all" to correspond to all buttons.
+
+  if (buttons[1] == "all") buttons <- all.buttons
+  
+  # Need to handle the Risk button specially. Only enable it if there
+  # is a risk variable.
+  
+  if ("risk" %in% buttons)
   {
-    theWidget("score_radiobutton")$setActive(TRUE)
-    theWidget("confusion_radiobutton")$setSensitive(FALSE)
+    theWidget("risk_radiobutton")$
+    setSensitive(length(getSelectedVariables("risk")) != 0)
+    buttons <- setdiff(buttons, "risk")
+    all.buttons <- setdiff(all.buttons, "risk")
   }
-  else if (multinomialTarget())
+
+  # Enable each of the specified evaluate buttons.
+
+  for (b in buttons)
+    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(TRUE)
+
+  # Disable each of the buttons not specified and make sure none are
+  # set as active.
+
+  for (b in setdiff(all.buttons, buttons))
   {
-    theWidget("confusion_radiobutton")$setActive(TRUE)
-    theWidget("confusion_radiobutton")$setSensitive(TRUE)
+    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(FALSE)
+    theWidget(paste(b, "_radiobutton", sep=""))$setActive(FALSE)
   }
+
+  # Need a button to be set as default. Use the first in the list.
+  
+  if (length(buttons) > 0)
+    theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
 }
 
-activateROCRPlots <- function()
-{
-  theWidget("confusion_radiobutton")$setActive(TRUE)
-  theWidget("confusion_radiobutton")$setSensitive(TRUE)
-  theWidget("lift_radiobutton")$setSensitive(TRUE)
-  theWidget("roc_radiobutton")$setSensitive(TRUE)
-  theWidget("precision_radiobutton")$setSensitive(TRUE)
-  theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-  theWidget("risk_radiobutton")$setSensitive(length(getSelectedVariables("risk")) != 0)
-  theWidget("costcurve_radiobutton")$setSensitive(TRUE)
-  theWidget("pvo_radiobutton")$setSensitive(TRUE)
-}
+
+## deactivateROCRPlots <- function()
+## {
+##   theWidget("lift_radiobutton")$setSensitive(FALSE)
+##   theWidget("roc_radiobutton")$setSensitive(FALSE)
+##   theWidget("precision_radiobutton")$setSensitive(FALSE)
+##   theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
+##   theWidget("risk_radiobutton")$setSensitive(FALSE)
+##   theWidget("costcurve_radiobutton")$setSensitive(FALSE)
+
+##   if (numericTarget())
+##   {
+##     theWidget("score_radiobutton")$setActive(TRUE)
+##     theWidget("confusion_radiobutton")$setSensitive(FALSE)
+##   }
+##   else if (multinomialTarget())
+##   {
+##     theWidget("confusion_radiobutton")$setActive(TRUE)
+##     theWidget("confusion_radiobutton")$setSensitive(TRUE)
+##     theWidget("pvo_radiobutton")$setSensitive(FALSE)
+##   }
+## }
+
+## activateROCRPlots <- function()
+## {
+##   theWidget("confusion_radiobutton")$setActive(TRUE)
+##   theWidget("confusion_radiobutton")$setSensitive(TRUE)
+##   theWidget("lift_radiobutton")$setSensitive(TRUE)
+##   theWidget("roc_radiobutton")$setSensitive(TRUE)
+##   theWidget("precision_radiobutton")$setSensitive(TRUE)
+##   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
+##   theWidget("risk_radiobutton")$setSensitive(length(getSelectedVariables("risk")) != 0)
+##   theWidget("costcurve_radiobutton")$setSensitive(TRUE)
+##   theWidget("pvo_radiobutton")$setSensitive(TRUE)
+## }
 
 ########################################################################
 # EXECUTE MODEL TAB
@@ -289,7 +332,7 @@ executeModelTab <- function()
 
   if (multinomialTarget())
   {
-    deactivateROCRPlots()
+    activateEvaluate(c("confusion", "score"))
     theWidget("confusion_textview")$setWrapMode("word")
     resetTextview("confusion_textview")
     appendTextview("confusion_textview",
@@ -302,12 +345,12 @@ executeModelTab <- function()
   }
   else if (numericTarget())
   {
-    deactivateROCRPlots()
+    activateEvaluate(c("pvo", "score"))
     setTextview("confusion_textview") # Clear any confusion table
   }
   else
   {
-    activateROCRPlots()
+    activateEvaluate("all")
     setTextview("confusion_textview") # Clear any confusion table
   }
 
