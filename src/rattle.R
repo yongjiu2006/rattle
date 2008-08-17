@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 05:53:51 Graham>
+# Time-stamp: <2008-08-17 18:21:35 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -474,7 +474,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   if (R.version$minor < "4.0")
     theWidget("arff_radiobutton")$hide()
   
-  theWidget("model_include_include_missing_checkbutton")$setActive(FALSE)
+  theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
   #theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
 
@@ -1663,6 +1663,7 @@ my.savePlot <- function (filename = "Rplot",
 
 genPlotTitleCmd <- function(..., vector=FALSE)
 {
+  # 080817 Use month name rather than number - less ambiguous.
   # 080516 For RStat do not brand the plots.
 
   if (! exists("crv"))
@@ -1677,7 +1678,8 @@ genPlotTitleCmd <- function(..., vector=FALSE)
     if (crv$appname == "RStat")
       sub <- ""
     else
-      sub <- sprintf("%s %s %s", crv$appname, Sys.time(), Sys.info()["user"])
+      sub <- sprintf("%s %s %s", crv$appname,
+                     format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"])
     return(c(main, sub))
   }
   else
@@ -1685,7 +1687,9 @@ genPlotTitleCmd <- function(..., vector=FALSE)
     if (crv$appname == "RStat")
       sub <- ""
     else
-      sub <- sprintf('paste("%s", Sys.time(), Sys.info()["user"])',crv$appname)
+      sub <- sprintf(paste('paste("%s", format(Sys.time(),',
+                           '"%%Y-%%b-%%d %%H:%%M:%%S"), Sys.info()["user"])'),
+                     crv$appname)
     return(sprintf('title(main="%s", sub=%s)', main, sub))
   }
 }
@@ -2876,7 +2880,7 @@ executeTransformRemapPerform <- function()
     }
       
     remap.cmd <- sprintf(paste('crs$dataset[, "%s_%s_%s"] <<- ',
-                               'as.factor(paste(crs$dataset[["%s"]], "_",',
+                               'interaction(paste(crs$dataset[["%s"]], "_",',
                                'crs$dataset[["%s"]], sep=""))',
                                sep=""),
                          remap.prefix, vars[1], vars[2],
@@ -4103,7 +4107,7 @@ executeExplorePlot <- function(dataset)
                               ifelse(posbutton, "positive", "negative")),
                        digspin)
     
-    ## Using barplot2 from gplots
+    # Using barplot2 from gplots
     
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
@@ -4357,111 +4361,91 @@ executeExplorePlot <- function(dataset)
 
   if (nbarplots > 0)
   {
-    ## Plot a frequency plot for a categoric variable.
+    # Plot a frequency plot for a categoric variable.
 
-    ## Use barplot2 from gplots.
+    # 080817 Use barchart from lattice instead of barplot2 from
+    # ggplots.
+
+    lib.cmd <- "require(lattice, quietly=TRUE)"
     
-    lib.cmd <- "require(gplots, quietly=TRUE)"
-
-    ## Construct a generic data command built using the genericDataSet
-    ## values. To generate a barplot we use the output of the summary
-    ## command on each element in the genericDataSet, and bring them
-    ## together into a single structure. The resulting
-    ## generic.data.cmd will have a number of "%s"s (one for the whole
-    ## dataset, then one for each level) from the original
-    ## genericDataSet string that will be replaced with the name of
-    ## each variable as it is being plotted.
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then one
+    # for each level) from the original genericDataSet string that
+    # will be replaced with the name of each variable as it is being
+    # plotted.
 
     generic.data.cmd <- paste(lapply(genericDataSet,
-                                   function(x) sprintf("summary(%s)", x)),
-                            collapse=",\n    ")
-    generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
+                                     function(x) sprintf("summary(%s)", x)),
+                              collapse=",\n    ")
+    generic.data.cmd <- sprintf("cbind(%s)", generic.data.cmd)
 
-    ## If the gplots package is available then generate a plot for
-    ## each chosen vairable.
+    # If the lattice package is available then generate a plot for
+    # each chosen vairable.
     
-    if (packageIsAvailable("gplots", "plot a bar chart"))
+    if (packageIsAvailable("lattice", "plot a bar chart"))
     {
       startLog()
-      appendLog("Use barplot2 from gplots for the barchart.", lib.cmd)
+      appendLog("Load lattice for the barchart function.", lib.cmd)
       eval(parse(text=lib.cmd))
 
       for (s in 1:nbarplots)
       {
-
         startLog()
 
-        ## Construct and evaluate a command string to generate the
-        ## data for the plot.
+        # Construct and evaluate a command string to generate the
+        # data for the plot.
 
         ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
                        paste(paste('"', rep(barplots[s], length(targets)+1),
                                  '"', sep=""), collapse=","), ")")
         ds.cmd <- eval(parse(text=ds.cmd))
-        appendLog("Generate the summary data for plotting.",
+        appendLog(sprintf("Generate the summary data for plotting %s.", barplots[s]),
                  paste("ds <-", ds.cmd))
         ds <- eval(parse(text=ds.cmd))
-        
-        ## Construct and evaluate the command to plot the
-        ## distribution.  Determine maxium value so that the y axis
-        ## can extend to it. We save the output from barplot2 in order
-        ## to add numbers to the plot.
-    
-        if (pcnt %% pmax == 0) newPlot(pmax)
-        pcnt <- pcnt + 1
 
-        #if (is.null(target))
-        #  ord.cmd <- 'order(ds[1,])'
-        #else
-          ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
+        names.cmd <- sprintf('colnames(ds) <- c(%s)',
+                             ifelse(length(targets)==0, '"Frequency"',
+                                    paste('"Frequency"',
+                                          paste(sprintf('"%s"', targets),
+                                                collapse=", "),
+                                          sep=", ")))
+        appendLog("Set the appropriate column names.", names.cmd)
+        eval(parse(text=names.cmd))
+
+        # We don't have multiple plots on the one plot implemented yet
+        # - should we? I would guess there is a simple way to do this
+        # with lattice.
+        
+        #if (pcnt %% pmax == 0) newPlot(pmax)
+        #pcnt <- pcnt + 1
+        newPlot(pmax)
+
+        # Construct and evaluate the command to plot the
+        # distribution.
+        
+        ord.cmd <- 'order(ds[,1])'
         appendLog("Sort the entries.", paste("ord <-", ord.cmd))
         ord <- eval(parse(text=ord.cmd))
 
-        maxFreq <- max(ds)
-        plot.cmd <- sprintf(paste('barplot2(ds[,ord], beside=TRUE,',
-                                 'ylim=c(0, %d), col=rainbow(%d))'),
-                           round(maxFreq+maxFreq*0.20), length(targets)+1)
-        appendLog("Plot the data.", paste("bp <- ", plot.cmd))
-        bp <- eval(parse(text=plot.cmd))
+        plot.cmd <- sprintf(paste('print(barchart(ds[ord,%s]',
+                                  'xlab="Frequency"',
+                                  ifelse(length(targets)==0,
+                                         'groups=NULL', # Just to have something!
+                                         sprintf(paste('auto.key=list(title="%s",',
+                                                       'cex=0.75,', 'columns=%d)'),
+                                                 target, 2)),
+                                  sprintf('sub="%s"', genPlotTitleCmd(vector=TRUE)),
+                                  'main="Distribution of %s%s"))', sep=", "),
+                            ifelse(length(targets)==0, "", "-1"),
+                            barplots[s],
+                            ifelse(sampling," (sample)",""))
+                            
+        appendLog("Plot the data.", plot.cmd)
+        eval(parse(text=plot.cmd))
 
-        ## Construct and evaluate a command to add text to the top of
-        ## the bars in the bar chart. Only do this if there are not
-        ## too many values for the category, otherwise the numbers
-        ## look bad. I could, alternatively, scale the font?
-
-        if (ncol(bp) <= 5)
-        {
-          text.cmd <- sprintf("text(bp, ds[,ord]+%d, ds[,ord])",
-                             round(maxFreq*0.040))
-          appendLog("Add the actual frequencies.", text.cmd)
-          eval(parse(text=text.cmd))
-        }
-
-        ## Construct and evaluate a command to add a legend to the
-        ## plot, but only if there is a target, optherwise it is
-        ## obvious.
-        
-        if (not.null(targets))
-        {
-          legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
-                                     "fill=rainbow(%d), ",
-                                     'title="%s")'),
-                               paste(sprintf('"%s"', c("All", targets)),
-                                     collapse=","),
-                               length(targets)+1,
-                               target)
-          appendLog("Add a legend to the plot.", legend.cmd)
-          eval(parse(text=legend.cmd))
-        }
-        
-        ## Construct and evaluate a command to add the title to the
-        ## plot.
-        
-        title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
-                                            barplots[s],
-                                            ifelse(sampling," (sample)","")))
-        appendLog("Add a title to the plot.", title.cmd)
-        eval(parse(text=title.cmd))
       }
     }
   }
