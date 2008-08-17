@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-27 15:43:22 Graham Williams>
+# Time-stamp: <2008-08-15 18:54:44 Graham>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -163,9 +163,9 @@ dispatchExportButton <- function()
 ##   if (get.extension(save.name) == "") save.name <- sprintf("%s.pdf", save.name)
     
 ##   if (file.exists(save.name))
-##     if (is.null(questionDialog("A Graphics file of the name", save.name,
+##     if ( ! questionDialog("A Graphics file of the name", save.name,
 ##                                 "already exists. Do you want to overwrite",
-##                                 "this file?")))
+##                                 "this file?"))
 ##       return()
   
 ##   cur <- dev.cur()

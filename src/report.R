@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-07 20:58:23 Graham Williams>
+# Time-stamp: <2008-08-15 19:00:53 Graham>
 #
 # Reporting support
 #
@@ -38,13 +38,15 @@ dispatchReportButton <- function()
 
   if (noDatasetLoaded()) return(FALSE)
 
-  if (is.null(questionDialog("The Report button is very experimental.",
-                             "Please report issues and updates to support@togaware.com.",
-                             "\n\nKnown issues:",
-                             "\n\n\tAlways saves to the same fixed file - need chooser.",
-                             "\n\tA plot is displayed on screen - need to suppress.",
-                             "\n\tToo much generated to the console - how remove?",
-                             "\n\nDo you wish to continue?")))
+  if (! questionDialog("The Report button is very experimental.",
+                       "Please report issues and updates to",
+                       "support@togaware.com.",
+                       "\n\nKnown issues:",
+                       "\n\n\tAlways saves to the same fixed file",
+                       "- need chooser.",
+                       "\n\tA plot is displayed on screen - need to suppress.",
+                       "\n\tToo much generated to the console - how remove?",
+                       "\n\nDo you wish to continue?"))
     return(FALSE)
   
   startLog("GENERATE A REPORT")
@@ -103,6 +105,8 @@ reportDataTab <- function()
   odfWeave(summary, ofile, control=odfWeaveControl(verbose=FALSE))
 
   setStatusBar(sprintf("Report written to %s.", ofile))
+
+  system(paste("oowriter", ofile))
 }
 
   

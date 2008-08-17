@@ -6,13 +6,25 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.68.
+    version is 2.3.69.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+300 080811 Fix PrvOb for Regression (Linear/Gaussian)
+           Include all R code in Log for PrvOb
+           Redesign Evaluate radio button activation - for PrvOb fix
+           Improve annotation of CostCurve
+           Add pseudo R2 (correlation) for Logistic Regression
+           Fix bug with display of rpart Weights on Model tab
+           Add support for ctree (party) with ctree.R
+           Change behaviour of questionDialog - return logical
+           Improve naming convention for model_tree in Glade
+           On quit ask confirmation
+           Fix bug re nnet and binomial
+299 080809 Cleanup handling of evaluate radiobuttons and PrvOb
 298 080808 Add Report.R.
 297 080803 Improve getCatVar and getNumVar to simplify other code
            Update data_summary report template

@@ -2,7 +2,7 @@ Package: pmml
 Type: Package
 Title: Generate PMML for various models
 Version: 1.1.9
-Date: 2008-08-08
+Date: 2008-08-10
 Author: Graham Williams, Michael Hahsler (arules), Zementis Inc, 
   Hemant Ishwaran, Udaya B. Kogalur, Rajarshi Guha
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
