@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-04 20:51:46 Graham Williams>
+# Time-stamp: <2008-08-16 00:59:34 Graham>
 #
 # DATA TAB
 #
@@ -38,15 +38,14 @@ overwriteModel <- function()
   # kind of opration that replaces the current model.
   
   if (not.null(listBuiltModels()))
-    return(not.null(questionDialog("You have chosen to load a dataset.",
-                                   "This will clear the old project",
-                                   "(dataset and models) which has not",
-                                   "been saved.",
-                                   "If you choose not to continue",
-                                   "you can save the project, and then load",
-                                   "the new dataset.\n",
-                                   "\nDo you wish to continue, and overwrite",
-                                   "the old project?")))
+    return(questionDialog("You have chosen to load a dataset.",
+                          "This will clear the current project",
+                          "(dataset and models).",
+                          "If you choose not to continue",
+                          "you can save the project, and then load",
+                          "the new dataset.\n",
+                          "\nDo you wish to continue and so overwrite",
+                          "the current project?"))
   else
     return(TRUE)
 }
@@ -495,10 +494,10 @@ executeDataCSV <- function(filename=NULL)
     
   if (is.null(filename))
   {
-    if (is.null(questionDialog("No CSV filename has been provided.\n",
-                               "\nWe require a dataset to be loaded.\n",
-                               "\nWould you like to use the sample audit",
-                               "dataset?")))
+    if (! questionDialog("No CSV filename has been provided.\n",
+                         "\nWe require a dataset to be loaded.\n",
+                         "\nWould you like to use the sample audit",
+                         "dataset?"))
 
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
@@ -1000,11 +999,11 @@ executeDataODBC <- function()
     
     numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
     if (numRows > 50000)
-      if (is.null(questionDialog("You are about to extract", numRows,
-                                 "rows from the table", table,
-                                 "of the", dsn.name, "ODBC connection.",
-                                 "That's quite a few to load into memory.",
-                                 "\n\nDo you wish to continue?")))
+      if (! questionDialog("You are about to extract", numRows,
+                           "rows from the table", table,
+                           "of the", dsn.name, "ODBC connection.",
+                           "That's quite a few to load into memory.",
+                           "\n\nDo you wish to continue?"))
         return()
   }
   
@@ -1359,9 +1358,9 @@ exportDataTab <- function()
     save.name <- sprintf("%s.csv", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("The data file", save.name,
-                                "already exists. Are you sure you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("The data file", save.name,
+                         "already exists. Are you sure you want to overwrite",
+                         "this file?"))
       return()
 
   write.csv(crs$dataset, save.name, row.names=FALSE)
@@ -1706,8 +1705,16 @@ executeSelectTab <- function()
   {
     weights.display <- gsub('crs\\$dataset\\$', '', weights)
     the.weight <- sprintf("Weights: %s", weights.display)
-    theWidget("rpart_weights_label")$setText(the.weight)
+    # 080815 Just display Weights if there is a weights value, and
+    # empty otherwise.
+    # theWidget("model_tree_rpart_weights_label")$setText(the.weight)
+    theWidget("model_tree_rpart_weights_label")$setText("Weights in use.")
   }
+  else
+  {
+    theWidget("model_tree_rpart_weights_label")$
+    setText("")
+  }    
 
   # 080413 Update MODEL types that are available.
 
@@ -1727,12 +1734,7 @@ executeSelectTab <- function()
     theWidget("rf_radiobutton")$setSensitive(TRUE)
     theWidget("svm_radiobutton")$setSensitive(TRUE)
 
-    theWidget("regression_radiobutton")$setSensitive(TRUE)
-
-    theWidget("nnet_radiobutton")$setSensitive(FALSE)
-    theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
-    theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
-    theWidget("nnet_builder_label")$setText("")
+    theWidget("model_linear_radiobutton")$setSensitive(TRUE)
 
     # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
 
@@ -1745,23 +1747,38 @@ executeSelectTab <- function()
 
     if (binomialTarget())
     {
-      theWidget("glm_builder_label")$setText("glm (Logistic)")
+      theWidget("model_linear_builder_label")$setText("glm (Logistic)")
       theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
       theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(TRUE)
       theWidget("glm_logistic_radiobutton")$setActive(TRUE)
-      theWidget("glm_probit_radiobutton")$setSensitive(TRUE)
+      theWidget("model_linear_probit_radiobutton")$setSensitive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
+
+      theWidget("nnet_radiobutton")$setSensitive(TRUE)
+      # I don't think these need tgo be done. We can't see the options
+    # when the nnet button is not sensitive
+    #theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
+    #theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+      theWidget("nnet_builder_label")$setText("nnet (0/1)")
+
     }
     else
     {
-      theWidget("glm_builder_label")$setText("multinom")
+      theWidget("model_linear_builder_label")$setText("multinom")
       theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
       theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
       theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
-      theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
+      theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
       theWidget("glm_multinomial_radiobutton")$setSensitive(TRUE)
       theWidget("glm_multinomial_radiobutton")$setActive(TRUE)
+
+      theWidget("nnet_radiobutton")$setSensitive(FALSE)
+      # I don't think these need tgo be done. We can't see the options
+      # when the nnet button is not sensitive
+      #theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
+      #theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+      #theWidget("nnet_builder_label")$setText("")
     }
   }
   else if (numericTarget())
@@ -1776,13 +1793,13 @@ executeSelectTab <- function()
 
 #    theWidget("glm_family_comboboxentry")$setActive(0)
 
-    theWidget("regression_radiobutton")$setSensitive(TRUE)
-    theWidget("glm_builder_label")$setText("lm (Linear)")
+    theWidget("model_linear_radiobutton")$setSensitive(TRUE)
+    theWidget("model_linear_builder_label")$setText("lm")
     theWidget("glm_linear_radiobutton")$setSensitive(TRUE)
     theWidget("glm_linear_radiobutton")$setActive(TRUE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(TRUE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
-    theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
+    theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
 
     theWidget("nnet_radiobutton")$setSensitive(TRUE)
@@ -1799,7 +1816,7 @@ executeSelectTab <- function()
     theWidget("rpart_radiobutton")$setSensitive(FALSE)
     theWidget("rf_radiobutton")$setSensitive(FALSE)
     theWidget("svm_radiobutton")$setSensitive(FALSE)
-    theWidget("regression_radiobutton")$setSensitive(FALSE)
+    theWidget("model_linear_radiobutton")$setSensitive(FALSE)
     theWidget("nnet_radiobutton")$setSensitive(FALSE)
     theWidget("all_models_radiobutton")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
@@ -1809,7 +1826,7 @@ executeSelectTab <- function()
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
-    theWidget("glm_probit_radiobutton")$setSensitive(FALSE)
+    theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
   }
   
@@ -1831,18 +1848,18 @@ executeSelectTab <- function()
       && categoricTarget()
       && target.levels > 10)
   {
-    if (is.null(questionDialog("The column selected as a Target",
-                               sprintf("(%s)", target),
-                               "will be treated as a categorical variable",
-                               "since Target Type is set to Categoric.",
-                               "\n\nThe variable has more than 10 distinct",
-                               "values",
-                               sprintf("(%d in fact).", target.levels),
-                               "That is unusual and some model builders will",
-                               "take a long time.\n\nConsider using fewer",
-                               "classes for the target categorical variable",
-                               "or select Target Type as Numeric.",
-                               "\n\nDo you want to continue anyhow?")))
+    if (! questionDialog("The column selected as a Target",
+                         sprintf("(%s)", target),
+                         "will be treated as a categorical variable",
+                         "since Target Type is set to Categoric.",
+                         "\n\nThe variable has more than 10 distinct",
+                         "values",
+                         sprintf("(%d in fact).", target.levels),
+                         "That is unusual and some model builders will",
+                         "take a long time.\n\nConsider using fewer",
+                         "classes for the target categorical variable",
+                         "or select Target Type as Numeric.",
+                         "\n\nDo you want to continue anyhow?"))
       return()
   }
 

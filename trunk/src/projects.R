@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-24 21:43:37 Graham>
+# Time-stamp: <2008-08-16 05:50:32 Graham>
 #
 # Project functionality.
 #
@@ -33,14 +33,14 @@ newProject <- function()
 {
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have requested to start a new project.",
-                               "\n\nThis will clear the current project (dataset",
-                               "and models).",
-                               "\n\nIf you choose not to continue you can save",
-                               "the project, and then start a new project.",
-                               "\n\nDo you wish to continue, and overwrite the",
-                               "current project?"
-                               )))
+    if (! questionDialog("You have requested to start a new project.",
+                         "\n\nThis will clear the current project (dataset",
+                         "and models).",
+                         "\n\nIf you choose not to continue you can save",
+                         "the project, and then start a new project.",
+                         "\n\nDo you wish to continue, and overwrite the",
+                         "current project?"
+                         ))
       return()
   }
   resetRattle()
@@ -124,9 +124,9 @@ saveProject <- function()
     save.name <- sprintf("%s.rattle", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("The rattle project file", save.name,
-                                "already exists.\n\nDo you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("The rattle project file", save.name,
+                         "already exists.\n\nDo you want to overwrite",
+                         "this file?"))
       return()
 
   # Save the filename to restore on reloading.
@@ -174,11 +174,11 @@ saveProject <- function()
 
   if (not.null(crs$rpart))
   {
-    crs$rpart.opt$priors <<- theWidget("rpart_priors_entry")$getText()
-    crs$rpart.opt$loss   <<- theWidget("rpart_loss_entry")$getText()
+    crs$rpart.opt$priors <<- theWidget("model_tree_priors_entry")$getText()
+    crs$rpart.opt$loss   <<- theWidget("model_tree_loss_entry")$getText()
     crs$rpart.opt$split  <<- theWidget("rpart_minsplit_spinbutton")$getValue()
     crs$rpart.opt$depth  <<- theWidget("rpart_maxdepth_spinbutton")$getValue()
-    crs$rpart.opt$cp     <<- theWidget("rpart_cp_spinbutton")$getValue()
+    crs$rpart.opt$cp     <<- theWidget("model_tree_cp_spinbutton")$getValue()
     crs$rpart.opt$bucket <<- theWidget("rpart_minbucket_spinbutton")$getValue()
   }
 
@@ -212,15 +212,15 @@ loadProject <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (is.null(questionDialog("You have chosen to load a project.\n\n",
-                               "This will clear the old project (dataset and",
-                               "models) which may not have been saved.",
-                               "If you choose not to continue you can save",
-                               "the project, and then load the new project.",
-                               "\n\n",
-                               "Do you wish to continue, and overwrite the",
-                               "current project?"
-                               )))
+    if (! questionDialog("You have chosen to load a project.\n\n",
+                         "This will clear the old project (dataset and",
+                         "models) which may not have been saved.",
+                         "If you choose not to continue you can save",
+                         "the project, and then load the new project.",
+                         "\n\n",
+                         "Do you wish to continue, and overwrite the",
+                         "current project?"
+                         ))
         
       return()
   }
@@ -260,8 +260,8 @@ loadProject <- function()
   }
 
   if (!file.exists(load.name))
-    if (is.null(questionDialog("The rattle project file", load.name,
-                                "does not exist?")))
+    if (! questionDialog("The rattle project file", load.name,
+                         "does not exist?"))
       return()
   
   # Load the file
@@ -325,7 +325,7 @@ loadProject <- function()
     weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
     theWidget("weight_entry")$setText(weights.display)
     the.weight <- sprintf("Weights: %s",weights.display)
-    theWidget("rpart_weights_label")$setText(the.weight)
+    theWidget("model_tree_rpart_weights_label")$setText(the.weight)
     crs$weights <<- crs$weights
   }
 
@@ -399,15 +399,15 @@ loadProject <- function()
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
   if (not.null(crs$rpart.opt$priors))
-    theWidget("rpart_priors_entry")$setText(crs$rpart.opt$priors)
+    theWidget("model_tree_priors_entry")$setText(crs$rpart.opt$priors)
   if (not.null(crs$rpart.opt$loss))
-    theWidget("rpart_loss_entry")$setText(crs$rpart.opt$loss)
+    theWidget("model_tree_loss_entry")$setText(crs$rpart.opt$loss)
   if (not.null(crs$rpart.opt$split))
     theWidget("rpart_minsplit_spinbutton")$setValue(crs$rpart.opt$split)
   if (not.null(crs$rpart.opt$depth))
     theWidget("rpart_maxdepth_spinbutton")$setValue(crs$rpart.opt$depth)
   if (not.null(crs$rpart.opt$cp))
-    theWidget("rpart_cp_spinbutton")$setValue(crs$rpart.opt$cp)
+    theWidget("model_tree_cp_spinbutton")$setValue(crs$rpart.opt$cp)
   if (not.null(crs$rpart.opt$bucket))
     theWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
 

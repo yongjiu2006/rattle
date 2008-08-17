@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 10:01:12 Graham Williams>
+# Time-stamp: <2008-08-16 05:54:17 Graham>
 #
 # RPART TAB
 #
@@ -66,7 +66,7 @@ on_rpart_loss_comboboxentry_set_focus_child <- function(action, window)
 on_rpart_plot_button_clicked <- function(button)
 {
 
-  ## Make sure there is an rpart object first.
+  # Make sure there is an rpart object first.
 
   if (is.null(crs$rpart))
   {
@@ -75,27 +75,31 @@ on_rpart_plot_button_clicked <- function(button)
     return()
   }
   
-  ## If there is only a root node then there is nothing to plot.
+  # If there is only a root node then there is nothing to plot.
 
-  if (nrow(crs$rpart$frame) == 1)
+  if (theWidget("model_tree_rpart_radiobutton")$getActive() &&
+      nrow(crs$rpart$frame) == 1)
   {
     errorDialog("The tree consists just of a root node. Thus there is",
                 "nothing to plot.")
     return()
   }
 
-  ## PLOT: Log the R command and execute.
+  # PLOT: Log the R command and execute.
 
-  plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
-                    genPlotTitleCmd("Decision Tree",
-                                    crs$dataname, "$", crs$target),
-                    sep="")
+  if (theWidget("model_tree_rpart_radiobutton")$getActive())
+    plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
+                      genPlotTitleCmd("Decision Tree",
+                                      crs$dataname, "$", crs$target),
+                      sep="")
+  else # ctree
+    plot.cmd <- "plot(crs$rpart)"
   
   ##   plotcp.cmd <- paste("\n\n## Plot the cross validation results.\n\n",
   ##                           "plotcp(crs$rpart)\n",
   ##                           genPlotTitleCmd("Cross Validated Error",
   ##                                              crs$dataname, "$", crs$target))
-  appendLog(paste("Plot the resulting rpart tree using Rattle",
+  appendLog(paste("Plot the resulting Tree using Rattle",
                   "and maptools support functions."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
@@ -190,9 +194,9 @@ on_rpart_best_radiobutton_toggled <- function(button)
 }
 
 ########################################################################
-##
-## MODEL RPART
-##
+#
+# MODEL RPART
+#
 
 executeModelRPart <- function(action="build")
 {
@@ -211,7 +215,7 @@ executeModelRPart <- function(action="build")
   # Retrieve the Priors, and check there is the right number and that
   # they add up to 1.
   
-  priors <- theWidget("rpart_priors_entry")$getText()
+  priors <- theWidget("model_tree_priors_entry")$getText()
   if (nchar(priors) > 0)
   {
     pr <- as.numeric(unlist(strsplit(priors, ",")))
@@ -275,7 +279,7 @@ executeModelRPart <- function(action="build")
   # Retrieve the Complexity and check if it is different from the
   # default, and if so then use it.
 
-  cp <- theWidget("rpart_cp_spinbutton")$getValue()
+  cp <- theWidget("model_tree_cp_spinbutton")$getValue()
 
   if (abs(cp-.RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
   {
@@ -288,7 +292,8 @@ executeModelRPart <- function(action="build")
   # Retrieve the Include Missing checkbutton status and if not set
   # then change default beahviour in usesurrogate.
 
-  usesurrogate <- theWidget("rpart_include_missing_checkbutton")$getActive()
+  usesurrogate <- theWidget("model_tree_include_missing_checkbutton")$
+                  getActive()
   if (! usesurrogate)
   {
     if (is.null(control))
@@ -313,7 +318,7 @@ executeModelRPart <- function(action="build")
   # Retrieve the loss matrix and ensure it matches the shape of the
   # data.
 
-  loss <- theWidget("rpart_loss_entry")$getText()
+  loss <- theWidget("model_tree_loss_entry")$getText()
   if (nchar(loss) > 0)
   {
     lo <- as.numeric(unlist(strsplit(loss, ",")))

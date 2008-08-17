@@ -434,9 +434,9 @@ exportAssociateTab <- function()
   if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("An XML file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("An XML file of the name", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
       return()
   
   # We can't pass "\" in a filename to the parse command in

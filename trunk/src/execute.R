@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-20 09:04:17 Graham>
+# Time-stamp: <2008-08-16 01:54:11 Graham>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -69,10 +69,10 @@ dispatchExecuteButton <- function()
   else if (ct == crv$NOTEBOOK.EVALUATE.NAME)
   {
 
-    ## The wrap mode of the confusion_textview may have been set to
-    ## word wrap when a model was Executed if it had more than 2
-    ## classes, since a message is printed about ROCR etc not handling
-    ## any more than 2 classes.
+    # The wrap mode of the confusion_textview may have been set to
+    # word wrap when a model was Executed if it had more than 2
+    # classes, since a message is printed about ROCR etc not handling
+    # any more than 2 classes.
     
     theWidget("confusion_textview")$setWrapMode("none")
     executeEvaluateTab()

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-09 19:20:16 Graham>
+# Time-stamp: <2008-08-16 05:53:51 Graham>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -474,7 +474,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   if (R.version$minor < "4.0")
     theWidget("arff_radiobutton")$hide()
   
-  theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
+  theWidget("model_include_include_missing_checkbutton")$setActive(FALSE)
   #theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
 
@@ -633,13 +633,25 @@ tuneRStat <- function()
   theWidget("summary_find_button")$hide()
   theWidget("summary_next_button")$hide()
 
+  ## Model
+
+  # Model -> Tree
+
+  theWidget("model_tree_rpart_radiobutton")$hide()
+  theWidget("model_tree_ctree_radiobutton")$hide()
+ 
+  # Model -> Regression
+
+  # 080815 I've moved to using the "Linear" label for the lm/glm
+  # family. Regression is perhaps a more general term. I've not
+  # approval for this from IBI so reating Regression there for now.
+  theWidget("model_linear_radiobutton")$setLabel("Regression")
+  theWidget("model_linear_probit_radiobutton")$hide()
+
   # Model -> All
 
   theWidget("all_models_radiobutton")$hide()
 
-  # Model -> Regression
-  
-  theWidget("glm_probit_radiobutton")$hide()
 }
 
 tuneRattle <- function()
@@ -820,17 +832,19 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("continuous_treeview")$getModel()$clear()
 
     theWidget("weight_entry")$setText("")
-    theWidget("rpart_weights_label")$setText("Weights:")
+    theWidget("model_tree_rpart_weights_label")$
+    setText("")
   
-    # Reset MODEL:RPART
+    # Reset Model -> Tree -> RPart
   
-    theWidget("rpart_priors_entry")$setText("")
-    theWidget("rpart_loss_entry")$setText("")
+    theWidget("model_tree_priors_entry")$setText("")
+    theWidget("model_tree_loss_entry")$setText("")
     theWidget("rpart_minsplit_spinbutton")$setValue(.RPART.MINSPLIT.DEFAULT)
     theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
-    theWidget("rpart_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
+    theWidget("model_tree_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
     theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
-    theWidget("rpart_include_missing_checkbutton")$setActive(FALSE)
+    theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
+    theWidget("model_tree_rpart_radiobutton")$setActive(TRUE)
     showModelRPartExists()
 
     # Reset MODEL:ADA
@@ -1004,9 +1018,9 @@ questionDialog <- function(...)
   result <- dialog$run()
   dialog$destroy()
   if (result == GtkResponseType["yes"])
-    return("yes")
+    return(TRUE)
   else
-    return(NULL)
+    return(FALSE)
 }
 
 notImplemented <- function(action, window)
@@ -1467,9 +1481,9 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
     save.name <- sprintf("%s.pdf", save.name)
   
   if (file.exists(save.name))
-    if (is.null(questionDialog("A Graphics file of the name", save.name,
-                               "already exists. \n\nDo you want to",
-                               "overwrite this file?")))
+    if (! questionDialog("A Graphics file of the name", save.name,
+                         "already exists. \n\nDo you want to",
+                         "overwrite this file?"))
       return()
 
   startLog("SAVE PLOT")
@@ -1850,8 +1864,19 @@ close_rattle <- function(action, window)
 
 quit_rattle <- function(action, window)
 {
-  close_rattle(action, window)
-  quit(save="no")
+  # 080815 This function used to return NULL or "yess" and I alwaysed
+  # tested whether it's results was NULL. But why not return a
+  # logical? Start doing that now, by returning TRUE instead of "yes",
+  # and look to return FALSE instead of NULL on a negative response to
+  # the question.
+
+  msg <- sprintf("Do you want to terminate %s?", crv$appname)
+  
+  if (questionDialog(msg))
+  {
+    close_rattle(action, window)
+    quit(save="no")
+  }
 }
 
 ########################################################################
@@ -2981,12 +3006,12 @@ executeTransformCleanupPerform <- function()
                          simplifyNumberList(getVariableIndicies(ignore)))
     }
     
-    if (is.null(questionDialog(sprintf(paste("We are about to delete %d",
-                                             "entites from the dataset."),
-                                       sum(!cases)),
-                               "These have missing values for some of the",
-                               "non-Ignore variables.\n\nAre you sure you",
-                               "want to delete these entites?")))
+    if (! questionDialog(sprintf(paste("We are about to delete %d",
+                                       "entites from the dataset."),
+                                 sum(!cases)),
+                         "These have missing values for some of the",
+                         "non-Ignore variables.\n\nAre you sure you",
+                         "want to delete these entites?"))
       return()
 
     # Perform the deletions.
@@ -2999,15 +3024,18 @@ executeTransformCleanupPerform <- function()
   if (!theWidget("delete_naents_radiobutton")$getActive())
   {
     
-    if (is.null(questionDialog("We are about to delete the following variables.",
-                               "This will permanently remove them from the memory copy",
-                               "of the data, but will not affect any file system copy.\n\n",
-                               "Delete:",
-                               paste(to.delete, collapse=", "),
-                               "\n\nAre you sure you want to delete these variables?")))
+    if (! questionDialog("We are about to delete the following variables.",
+                         "This will permanently remove them from",
+                         "the memory copy of the data, but will not",
+                         "affect any file system copy.\n\n",
+                         "Delete:",
+                         paste(to.delete, collapse=", "),
+                         "\n\nAre you sure you want to delete these",
+                         "variables?"))
       return()
 
-    del.cmd <- paste(sprintf('crs$dataset$%s <<- NULL', to.delete), collapse="\n")
+    del.cmd <- paste(sprintf('crs$dataset$%s <<- NULL', to.delete),
+                     collapse="\n")
     del.comment <- "Remove specific columns from the dataset."
 
     # Perform the deletions.
@@ -3788,12 +3816,12 @@ executeExplorePlot <- function(dataset)
   # variables, ask the user if we want to continue.
 
   if (total.plots > 10 && pmax == 1)
-    if (is.null(questionDialog("We are about to generate", total.plots,
-                               "individual plots. That's quite a few.",
-                               "You could select fewer variables, or you",
-                               "can change the number of plots per page,",
-                               "but you can also proceed if you like.",
-                               "\n\nWould you like to proceed?")))
+    if (! questionDialog("We are about to generate", total.plots,
+                         "individual plots. That's quite a few.",
+                         "You could select fewer variables, or you",
+                         "can change the number of plots per page,",
+                         "but you can also proceed if you like.",
+                         "\n\nWould you like to proceed?"))
       return()
 
   #---------------------------------------------------------------------
@@ -3923,10 +3951,18 @@ executeExplorePlot <- function(dataset)
     rug.cmd <- 'rug(ds[ds$grp=="All",1])'
 
     # If the data looks more categoric then do a more usual hist
-    # plot.
+    # plot. TODO 080811 Add in a density plot - just need to get the
+    # maximum frequency as hs$count above. BUT the density makes no
+    # sense, because the bars are the actual data, there is no
+    # grouping.
 
-    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1],',
-                         'digits=2)), col=rainbow(10))')
+    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1], ',
+                         'digits=2)), col=rainbow(10))\n',
+                         #'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
+                         #'rs<- max(summary(as.factor(round(ds[ds$grp=="All",',
+                         #'1], digits=2))))/max(dens$y)\n',
+                         #'lines(dens$x, dens$y*rs, type="l")',
+                         sep="")
 
     for (s in 1:nhisplots)
     {
@@ -4586,7 +4622,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
               
   ## Start logging and executing the R code.
   
-  if (! packageIsAvailable("rggobi","explore the data using GGobi")) return()
+  if (! packageIsAvailable("rggobi", "explore the data using GGobi")) return()
 
   startLog()
   appendLog("GGobi is accessed using the rggobi package.", lib.cmd)
@@ -4613,14 +4649,14 @@ executeExploreCorrelation <- function(dataset)
   
   nvars <- eval(parse(text=sprintf("ncol(%s)", dataset)))
   if (nvars > crv$max.vars.correlation &&
-      is.null(questionDialog("You have requested a Correlation plot.",
-                             "\n\nWith", nvars, "variables the plot may take",
-                             "some time to display, and the display will",
-                             "be cramped.",
-                             "Consider identifying up to only",
-                             crv$max.vars.correlation,
-                             "input variables.\n\n",
-                             "Would you like to continue anyhow?")))
+      ! questionDialog("You have requested a Correlation plot.",
+                       "\n\nWith", nvars, "variables the plot may take",
+                       "some time to display, and the display will",
+                       "be cramped.",
+                       "Consider identifying up to only",
+                       crv$max.vars.correlation,
+                       "input variables.\n\n",
+                       "Would you like to continue anyhow?"))
     return(FALSE)
   
   # Construct the commands.
@@ -4680,7 +4716,7 @@ executeExploreCorrelation <- function(dataset)
   
   ## Start logging and executing the R code.
 
-  if (! packageIsAvailable("ellipse","display a correlation plot")) return()
+  if (! packageIsAvailable("ellipse", "display a correlation plot")) return()
      
   startLog("Generate a correlation plot for the variables.")
   resetTextview(TV)
@@ -5030,11 +5066,11 @@ executeEvaluateTab <- function()
 {
   # Perform the requested action from the Execute tab.
 
-  ## Obtain some background information.
+  # Obtain some background information.
   
   mtypes <- getEvaluateModels() # The chosen model types in the Evaluate tab.
   
-  ## Check any pre-conditions.
+  # Check any pre-conditions.
   
   # Ensure a dataset exists.
 
@@ -5046,7 +5082,8 @@ executeEvaluateTab <- function()
   if (is.null(mtypes))
   {
     warnDialog("No model has been specified.",
-               "\n\nPlease select one or more from the list of models available.")
+               "\n\nPlease select one or more from the",
+               "list of models available.")
     return()
   }
 
@@ -5080,10 +5117,12 @@ executeEvaluateTab <- function()
   #   and wanting to run predict.svm on new data).
 
   if (.ADA %in%  mtypes &&
-      ! packageIsAvailable("ada", sprintf("evaluate a %s model", commonName(.ADA))))
+      ! packageIsAvailable("ada", sprintf("evaluate a %s model",
+                                          commonName(.ADA))))
     return()
   if (.KSVM %in%  mtypes &&
-      ! packageIsAvailable("kernlab", sprintf("evaluate a %s model", commonName(.KSVM))))
+      ! packageIsAvailable("kernlab", sprintf("evaluate a %s model",
+                                              commonName(.KSVM))))
     return()
   if (.RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", sprintf("evaluate a %s model",
@@ -5094,7 +5133,8 @@ executeEvaluateTab <- function()
                                            commonName(crv$GLM))))
     return()
   if (crv$NNET %in%  mtypes &&
-      ! packageIsAvailable("nnet", sprintf("evaluate a %s model", commonName(crv$NNET))))
+      ! packageIsAvailable("nnet", sprintf("evaluate a %s model",
+                                           commonName(crv$NNET))))
     return()
 
   if(theWidget("score_radiobutton")$getActive())
@@ -5290,7 +5330,10 @@ executeEvaluateTab <- function()
     predcmd[[crv$NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
                                    testset[[crv$NNET]])
     respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
-    probcmd[[crv$NNET]] <- gsub(")$", ', type="prob")', predcmd[[crv$NNET]])
+    if (binomialTarget())
+      probcmd[[crv$NNET]] <- gsub(")$", ', type="raw")', predcmd[[crv$NNET]])
+    else
+      probcmd[[crv$NNET]] <- gsub(")$", ', type="prob")', predcmd[[crv$NNET]])
   }
 
   if (.RPART %in%  mtypes)
@@ -5308,7 +5351,10 @@ executeEvaluateTab <- function()
     # for each class and we assume we are interested in the final class
     # (i.e., for binary classification we are interested in the 1's).
     
-    probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
+    if (theWidget("model_tree_rpart_radiobutton")$getActive())
+      probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
+    else # ctree
+      probcmd[[.RPART]] <- sprintf("%s", predcmd[[.RPART]])
   }
     
   if (.RF %in%  mtypes)
@@ -6132,9 +6178,6 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
   lib.cmd <- "require(ROCR, quietly=TRUE)"
   if (! packageIsAvailable("ROCR", "plot a cost curve")) return()
 
-##  newPlot()
-##  addplot <- "FALSE"
-
   # Put 1 or 2 charts onto their own plots. Otherwise, put the
   # multiple charts onto one plot, keeping them all the same size
   # (thus if numplots is odd, leave a cell of the plot empty.
@@ -6186,16 +6229,16 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
                       '\t}\n}\n',
                       'perf<-performance(pred,"ecost")\n',
                       "plot(perf, lwd=1.5, xlim=c(0,1), ylim=c(0,1), add=T)\n",
+                      "op <- par(xpd=TRUE)\n",
+                      'text(0, 1.07, "FPR")\n',
+                      'text(1, 1.07, "FNR")\n',
+                      "par(op)\n",
+                      'text(0.12, 1, "Predict +ve")\n',
+                      'text(0.88, 1, "Predict -ve")\n',
+                      # TODO 080810 Add text AUC=... to plot
                       genPlotTitleCmd("Cost Curve", commonName(mtype),
                                       testname))
                       
-
-#                      '"tpr", "fpr"), ',
-#                      sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
-#                      sprintf("add=%s)\n", addplot),
-#                      sep="")
-#    addplot <- "TRUE"
-
     appendLog("Plot a cost curve using the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
   
@@ -6823,9 +6866,9 @@ executeEvaluateKmeansScore <- function()
     save.name <- sprintf("%s.csv", save.name)
   
   if (file.exists(save.name))
-    if (is.null(questionDialog("A file of the same name as", save.name,
-                               "already exists. Do you want to overwrite",
-                               "this file?")))
+    if (! questionDialog("A file of the same name as", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
       return()
 
   # 080523 Output all original data plus the cluster number, taking
@@ -7617,10 +7660,10 @@ popupTextviewHelpWindow <- function(topic)
 
 showHelpPlus <- function(msg)
 {
-  if (is.null(questionDialog(paste(gsub(" <<>> ", "\n\n",
-                                         gsub("\n", " ", msg)),
-                                    "Would you like to view the R help?",
-                                    sep="\n\n"))))
+  if (! questionDialog(paste(gsub(" <<>> ", "\n\n",
+                                  gsub("\n", " ", msg)),
+                             "Would you like to view the R help?",
+                             sep="\n\n")))
     return(FALSE)
   else
     return(TRUE)

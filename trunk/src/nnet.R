@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-07-14 05:41:18 Graham Williams>
+# Time-stamp: <2008-08-15 18:56:11 Graham>
 #
 # NNET OPTION 061230
 #
@@ -102,7 +102,8 @@ executeModelNNet <- function()
   # Build a model.
 
   model.cmd <- paste("crs$nnet <<- ",
-                     ifelse(numericTarget(), "nnet", "multinom"),
+                     ifelse(numericTarget() || binomialTarget(),
+                            "nnet", "multinom"),
                      "(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
@@ -110,7 +111,7 @@ executeModelNNet <- function()
                      if (including) included,
                      if (subsetting) "]",
                      # TODO 080427 How to choose a good value for size?
-                     if (numericTarget())
+                     if (numericTarget() || binomialTarget())
                      sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
                      ", trace=FALSE, maxit=1000",
                      ")", sep="")
@@ -125,7 +126,7 @@ executeModelNNet <- function()
   
   # Print the results of the modelling.
 
-  if (numericTarget())
+  if (numericTarget() || binomialTarget())
     print.cmd <- paste("print(crs$nnet)", 'print("\n\nNetwork Weights:\n\n")',
                        "print(summary(crs$nnet))", sep="\n")
   else
@@ -135,7 +136,8 @@ executeModelNNet <- function()
   resetTextview(TV)
   setTextview(TV,
               paste("Summary of the Neural Net model (built using ",
-                    ifelse(numericTarget(), "nnet", "multinom"), "):\n\n",
+                    ifelse(numericTarget() || binomialTarget(),
+                           "nnet", "multinom"), "):\n\n",
                     sep=""),
               collectOutput(print.cmd))
 
@@ -205,9 +207,9 @@ exportNNetTab <- function()
   if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("An XML file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("An XML file of the name", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
       return()
   
 

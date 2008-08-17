@@ -930,8 +930,8 @@ exportKMeansTab <- function(file)
   # Generate appropriate code.
 
   # 080804 How to add the transformations? Perhaps generate separately
-  # with pmml.transforms(crs$transforms) and include the result as an optinal
-  # argument to pmml.
+  # with pmml.transforms(crs$transforms) and include the result as an
+  # optional argument to pmml.
   
   pmml.cmd <- "pmml(crs$kmeans)"
 

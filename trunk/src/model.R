@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-09 19:13:33 Graham>
+# Time-stamp: <2008-08-16 05:55:14 Graham>
 #
 # MODEL TAB
 #
@@ -26,7 +26,7 @@
 
 # When radio button is selected, display appropriate tab page
 
-on_regression_radiobutton_toggled <- function(button)
+on_model_linear_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
@@ -105,27 +105,75 @@ on_kernlab_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+#-----------------------------------------------------------------------
+# Model -> Tree
+#
+# Set the model builder label appropriately.
+
+setTreeOptions <- function(mtype)
+{
+  theWidget("model_tree_priors_label")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_priors_entry")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_loss_label")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_loss_entry")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_cp_label")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_cp_spinbutton")$setSensitive(mtype=="rpart")
+  theWidget("model_tree_include_missing_checkbutton")$
+  setSensitive(mtype=="rpart")
+}
+  
+
+on_model_tree_rpart_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    theWidget("model_tree_builder_label")$setText("rpart")
+    setTreeOptions("rpart")
+  }
+}
+
+on_model_tree_ctree_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    theWidget("model_tree_builder_label")$setText("ctree")
+    setTreeOptions("ctree")
+  }
+}
+
+# Model -> Linear
+#
 # When any of the regression radion buttons change then ensure the
 # Model Builder label is updated to indicate the right model bulder.
 
 on_glm_linear_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) theWidget("glm_builder_label")$setText("lm (Linear)")
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("lm")
 }
 
 on_glm_gaussian_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) theWidget("glm_builder_label")$setText("glm (Gaussian)")
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("glm (gaussian)")
 }
 
 on_glm_logistic_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) theWidget("glm_builder_label")$setText("glm (Logistic)")
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("glm (logit)")
+}
+
+on_model_linear_probit_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("glm (probit)")
 }
 
 on_glm_multinomial_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) theWidget("glm_builder_label")$setText("multinom")
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("multinom")
 }
 
 
@@ -135,11 +183,13 @@ on_glm_multinomial_radiobutton_toggled <- function(button)
 commonName <- function(mtype)
 {
   name.map <- data.frame(rpart="Tree",
+                         ctree="Tree",
                          ada="Boost",
                          rf="Forest",
                          ksvm="SVM",
-                         glm="Regression",
-                         multinom="Regression",
+                         glm="Linear",
+                         linear="Linear",
+                         multinom="Neural Net",
                          nnet="Neural Net")
   return(as.character(name.map[[mtype]]))
 }
@@ -393,10 +443,21 @@ executeModelTab <- function()
     if (theWidget("rpart_build_radiobutton")$getActive())
     {
       setStatusBar("Building", commonName(.RPART), "model ...")
-      if (executeModelRPart())
-        theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+
+      if (theWidget("model_tree_ctree_radiobutton")$getActive())
+      {
+        if (executeModelCTree())
+          theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+        else
+          setStatusBar("Building", commonName("ctree"), "model ... failed.")
+      }
       else
-        setStatusBar("Building", commonName(.RPART), "model ... failed.")
+      {
+        if (executeModelRPart())
+          theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+        else
+          setStatusBar("Building", commonName(.RPART), "model ... failed.")
+      }
     }
     else if (theWidget("rpart_tune_radiobutton")$getActive())
     {
@@ -498,6 +559,7 @@ executeModelGLM <- function()
   # Initial setup. 
   
   TV <- "glm_textview"
+  mtype <- "linear"
 
   # Currently only handling binary classification.
   
@@ -509,7 +571,7 @@ executeModelGLM <- function()
     family <- "Gaussian"
   else if (theWidget("glm_logistic_radiobutton")$getActive())
     family <- "Logistic"
-  else if (theWidget("glm_probit_radiobutton")$getActive())
+  else if (theWidget("model_linear_probit_radiobutton")$getActive())
     family <- "Probit"
   else if (theWidget("glm_multinomial_radiobutton")$getActive())
     family <- "Multinomial"
@@ -561,6 +623,8 @@ executeModelGLM <- function()
     # In addition to the default summary, add the chi-square test of
     # the difference between the null model and the current model as
     # presented in http://www.ats.ucla.edu/stat/R/dae/probit.htm.
+
+    
     
     summary.cmd <- paste("print(summary(crs$glm))",
                          paste('cat(sprintf("Log likelihood: %.3f (%d df)\n",',
@@ -572,6 +636,8 @@ executeModelGLM <- function()
                          'cat(sprintf("Chi-square p-value: %.8f\n",',
                          '            dchisq(crs$glm$null.deviance-crs$glm$deviance,',
                          '                   crs$glm$df.null-crs$glm$df.residual)))',
+                         'cat(sprintf("Pseudo R-Square (optimistic): %.8f\n",',
+                         '             cor(crs$glm$y, crs$glm$fitted.values)))',
                          "cat('\n==== ANOVA ====\n\n')",
                          'print(anova(crs$glm, test="Chisq"))', sep="\n")
   }
@@ -688,11 +754,12 @@ executeModelGLM <- function()
   # Finish up.
   
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("\nTime taken: %0.2f %s", time.taken,
+  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
                       attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
+  addTextview(TV, "\n\n", time.msg, textviewSeparator())
   appendLog(time.msg)
-  setStatusBar("A Regression model has been generated.", time.msg)
+  setStatusBar(sprintf("A %s model has been generated.", commonName(mtype)),
+               time.msg)
   return(TRUE)
 }
 
@@ -853,10 +920,10 @@ getExportSaveName <- function(mtype)
   }
   
   if (file.exists(save.name))
-    if (is.null(questionDialog(ifelse(ext=="xml", "An XML", "A C"),
-                               "file of the name", save.name,
-                               "already exists. \n\nDo you want to overwrite",
-                               "this file?")))
+    if (! questionDialog(ifelse(ext=="xml", "An XML", "A C"),
+                         "file of the name", save.name,
+                         "already exists. \n\nDo you want to overwrite",
+                         "this file?"))
       return(NULL)
 
   return(save.name)
@@ -1115,9 +1182,9 @@ exportSVMTab <- function()
   if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("An XML file of the name", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("An XML file of the name", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
       return()
 
   pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
@@ -1193,7 +1260,7 @@ exportModelTab <- function()
   {
     exportRpartTab()
   }
-  else if (theWidget("regression_radiobutton")$getActive())
+  else if (theWidget("model_linear_radiobutton")$getActive())
   {
     exportRegressionTab()
   }

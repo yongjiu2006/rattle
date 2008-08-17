@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-05-10 19:56:45 Graham Williams>
+# Time-stamp: <2008-08-15 18:55:22 Graham>
 #
 # Implement LOG functionality.
 #
@@ -121,9 +121,9 @@ exportLogTab <- function()
     save.name <- sprintf("%s.R", save.name)
     
   if (file.exists(save.name))
-    if (is.null(questionDialog("The log file", save.name,
-                                "already exists. Do you want to overwrite",
-                                "this file?")))
+    if (! questionDialog("The log file", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
       return()
   write(getTextviewContent("log_textview"), save.name)
 
