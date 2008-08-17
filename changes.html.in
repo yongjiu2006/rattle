@@ -13,10 +13,11 @@
    </p>
 
 <pre>
+303 080817 Use dotplot(lattice) for Dot Plots - eventually move all to lattice
 302 080817 Bug fix: model_include_include should be model_tree_include
            Default plot sub title now use month name instead of number
            Transform -> Join Categoric now uses interactions function
-           
+           Use barchart(lattice) for Bar Plots - eventually move all to lattice
 301 080817 Add ctree.R
 300 080817 Fix PrvOb for Regression (Linear/Gaussian)
            Include all R code in Log for PrvOb
