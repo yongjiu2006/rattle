@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-17 20:59:20 Graham Williams>
+# Time-stamp: <2008-08-18 08:28:50 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -7884,14 +7884,18 @@ testing the sensitivity of modelling with different training sets.")
 
 on_help_normalise_activate <- function(action, window)
 {
-  if (showHelpPlus("Normalisation transforms a variable by remapping its
+  if (showHelpPlus("Rescaling options transforms a variable by remapping its
 values to another set of values, such as a set that has a mean of 0 and
 standard deviation of 1. Often we do this so that all of our variables
 have a very similar spread, and perhaps distribution. This can then avoid
 biases in various algorithms, such as in clustering where a distance measure
 is often used.
 <<>>
-The rescaler function from the reshape package is used to normalise data."))
+Various rescalings are supported, with the rescaler function from the reshape
+package used in a number of cases.
+<<>>
+The Nolan Transform segments and remaps a numeric variable to the 0-100 range.
+"))
   {
     if (packageIsAvailable("reshape", "display information about rescaler"))
       popupTextviewHelpWindow("rescaler")
@@ -7905,6 +7909,18 @@ The Zero/Missing imputation is a very simple method. Any missing numeric data
 is simply assigned 0 and any missing categoric data is put into a new
 category, Missing. Mean, Median and Mode replace missing values with the population
 mean, median, or mode. This is not recommended.")
+}
+
+on_help_nolan_activate <- function(action, window)
+{
+  if (showHelpPlus("The Nolan Group transformation segments the selected numeric variables
+by a selected categoric variable, and then within each segment rescales the numeric
+variable's range to the 0-100 range, using the range option of the rescale(rehsape)
+function."))
+  {
+    if (packageIsAvailable("reshape", "display information about rescaler"))
+      popupTextviewHelpWindow("rescaler")
+  }
 }
 
 on_help_summary_activate <- function(action, window)
