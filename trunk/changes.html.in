@@ -6,14 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.70.
+    version is 2.3.71.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-300 080811 Fix PrvOb for Regression (Linear/Gaussian)
+302 080817 Bug fix: model_include_include should be model_tree_include
+           Default plot sub title now use month name instead of number
+           Transform -> Join Categoric now uses interactions function
+           
+301 080817 Add ctree.R
+300 080817 Fix PrvOb for Regression (Linear/Gaussian)
            Include all R code in Log for PrvOb
            Redesign Evaluate radio button activation - for PrvOb fix
            Improve annotation of CostCurve
