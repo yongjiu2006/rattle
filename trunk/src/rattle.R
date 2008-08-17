@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-17 18:21:35 Graham Williams>
+# Time-stamp: <2008-08-17 20:59:20 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -4385,7 +4385,7 @@ executeExplorePlot <- function(dataset)
     # If the lattice package is available then generate a plot for
     # each chosen vairable.
     
-    if (packageIsAvailable("lattice", "plot a bar chart"))
+    if (packageIsAvailable("lattice", "display a bar chart"))
     {
       startLog()
       appendLog("Load lattice for the barchart function.", lib.cmd)
@@ -4423,9 +4423,10 @@ executeExplorePlot <- function(dataset)
         #pcnt <- pcnt + 1
         newPlot(pmax)
 
-        # Construct and evaluate the command to plot the
-        # distribution.
-        
+        # Construct and evaluate the command to determine the order in
+        # which to print the catgories, from smallest (at the bottom)
+        # to largest.
+
         ord.cmd <- 'order(ds[,1])'
         appendLog("Sort the entries.", paste("ord <-", ord.cmd))
         ord <- eval(parse(text=ord.cmd))
@@ -4455,85 +4456,91 @@ executeExplorePlot <- function(dataset)
   if (ndotplots > 0)
   {
     
-    ## Construct a generic data command built using the genericDataSet
-    ## values. To generate a barplot we use the output of the summary
-    ## command on each element in the genericDataSet, and bring them
-    ## together into a single structure. The resulting generic.data.cmd
-    ## will have a number of "%s"s (one for the whole dataset, then
-    ## one for each level) from the original genericDataSet string
-    ## that will be replaced with the name of each variable as it is
-    ## being plotted.
+    # 080817 Use dotplot(lattice) instead of dotchart.
+
+    lib.cmd <- "require(lattice, quietly=TRUE)"
+
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then
+    # one for each level) from the original genericDataSet string
+    # that will be replaced with the name of each variable as it is
+    # being plotted.
 
     generic.data.cmd <- paste(lapply(genericDataSet,
                                    function(x) sprintf("summary(%s)", x)),
                             collapse=",\n    ")
-    generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
+    generic.data.cmd <- sprintf("cbind(%s)", generic.data.cmd)
 
-    # This should have been removed at some stage! We seem to be using
-    # dotchart from grpahics now.
-    #
-    #    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
-    #    eval(parse(text=lib.cmd))
-
-    for (s in 1:ndotplots)
-    {
-
-      startLog()
-
-      ## Construct and evaluate a command string to generate the
-      ## data for the plot.
-
-      ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
-                     paste(paste('"', rep(dotplots[s], length(targets)+1),
-                                 '"', sep=""), collapse=","), ")")
-      ds.cmd <- eval(parse(text=ds.cmd))
-      appendLog("Generate the summary data for plotting.",
-               paste("ds <-", ds.cmd))
-      ds <- eval(parse(text=ds.cmd))
-
-      ## Construct and evaluate the command to determin the order in
-      ## which to print the catgories, from larges to smallest.
-
-      if (is.null(target))
-        ord.cmd <- 'order(ds[1,])'
-      else
-        ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
-      appendLog("Sort the entries.",
-               paste("ord <-", ord.cmd))
-      ord <- eval(parse(text=ord.cmd))
-        
-      ## Construct and evaluate the command to plot the
-      ## distribution.
+    # If the lattice package is available then generate a plot for
+    # each chosen vairable.
     
-      if (pcnt %% pmax == 0) newPlot(pmax)
-      pcnt <- pcnt + 1
-      
-      titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
-                                        dotplots[s],
-                                        ifelse(sampling," (sample)","")),
-                                vector=TRUE)
+    if (packageIsAvailable("lattice", "display a dot plot"))
+    {
+      startLog()
+      appendLog("Load lattice for the dotplot function.", lib.cmd)
+      eval(parse(text=lib.cmd))
 
-      plot.cmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
-                               'col=rainbow(%d),%s',
-                               'xlab="Frequency", pch=19)'),
-                         "ds[,ord]", titles[1], titles[2], length(targets)+1,
-                         ifelse(is.null(target), "", ' labels="",'))
-      appendLog("Plot the data.", plot.cmd)
-      eval(parse(text=plot.cmd))
-
-      if (not.null(target))
+      for (s in 1:ndotplots)
       {
-        legend.cmd <- sprintf(paste('legend("bottomright", bg="white",',
-                                   'c("All","0","1"), col=rainbow(%d),',
-                                   'pch=19, title="%s")'),
-                             length(targets)+1, target)
-        appendLog("Add a legend.", legend.cmd)
-        eval(parse(text=legend.cmd))
+        startLog()
+
+        # Construct and evaluate a command string to generate the data
+        # for the plot.
+
+        ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
+                        paste(paste('"', rep(dotplots[s], length(targets)+1),
+                                    '"', sep=""), collapse=","), ")")
+        ds.cmd <- eval(parse(text=ds.cmd))
+        appendLog(sprintf("Generate the summary data for plotting %s.", dotplots[s]),
+                  paste("ds <-", ds.cmd))
+        ds <- eval(parse(text=ds.cmd))
+
+        names.cmd <- sprintf('colnames(ds) <- c(%s)',
+                             ifelse(length(targets)==0, '"Frequency"',
+                                    paste('"Frequency"',
+                                          paste(sprintf('"%s"', targets),
+                                                collapse=", "),
+                                          sep=", ")))
+        appendLog("Set the appropriate column names.", names.cmd)
+        eval(parse(text=names.cmd))
+
+        # Construct and evaluate the command to determine the order in
+        # which to print the catgories, from smallest (at the bottom)
+        # to largest.
+
+        ord.cmd <- 'order(ds[,1])'
+        appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+        ord <- eval(parse(text=ord.cmd))
+
+        # Construct and evaluate the command to plot the distribution.
+    
+        #if (pcnt %% pmax == 0) newPlot(pmax)
+        #pcnt <- pcnt + 1
+        newPlot(pmax)
+      
+        plot.cmd <- sprintf(paste('print(dotplot(ds[ord,%s]',
+                                  'xlab="Frequency"',
+                                  'type=c("p", "h", "a")',
+                                  ifelse(length(targets)==0,
+                                         'groups=NULL', # Just to have something!
+                                         sprintf(paste('auto.key=list(title="%s",',
+                                                       'cex=0.75,', 'columns=%d)'),
+                                                 target, 2)),
+                                  sprintf('sub="%s"', genPlotTitleCmd(vector=TRUE)),
+                                  'main="Distribution of %s%s"))', sep=", "),
+                            ifelse(length(targets)==0, "", "-1"),
+                            dotplots[s],
+                            ifelse(sampling," (sample)",""))
+        appendLog("Plot the data.", plot.cmd)
+        eval(parse(text=plot.cmd))
       }
     }
   }
 
-  ##---------------------------------------------------------------------
+  #---------------------------------------------------------------------
 
   if (nmosplots > 0)
   {
