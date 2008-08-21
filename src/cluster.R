@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-04 21:19:14 Graham Williams>
+# Time-stamp: <2008-08-21 22:28:26 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -117,7 +117,11 @@ executeClusterTab <- function()
   # Dispatch.
 
   if (theWidget("kmeans_radiobutton")$getActive())
+  {
     executeClusterKMeans(include)
+    makeEvaluateSensitive()
+    theWidget("kmeans_evaluate_checkbutton")$setActive(TRUE)
+  }
   else if (theWidget("hclust_radiobutton")$getActive())
     executeClusterHClust(include)
 }
@@ -933,7 +937,9 @@ exportKMeansTab <- function(file)
   # with pmml.transforms(crs$transforms) and include the result as an
   # optional argument to pmml.
   
-  pmml.cmd <- "pmml(crs$kmeans)"
+  pmml.cmd <- sprintf("pmml(crs$kmeans%s)",
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""))
 
   # We can't pass "\" in a filename to the parse command in
   # MS/Windows so we have to run the save/write command separately,

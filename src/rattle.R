@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-18 08:28:50 Graham Williams>
+# Time-stamp: <2008-08-21 22:16:19 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Aug 2008"
+VERSION.DATE <- "Released 18 Aug 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -922,16 +922,8 @@ resetRattle <- function(new.dataset=TRUE)
     }
   }
   
-  theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
-
-  theWidget("kmeans_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("hclust_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
-  theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
+  resetEvaluateCheckbuttons("all_inactive")
+  resetEvaluateCheckbuttons("all_insensitive")
 
   #theWidget("rpart_evaluate_checkbutton")$hide()
   #theWidget("rf_evaluate_checkbutton")$hide()
@@ -2209,6 +2201,13 @@ executeTransformNormalisePerform <- function()
                                 'rescaler((crs$dataset[["%s"]]), "range")'),
                           vname, v)
       norm.comment <- "Rescale to [0,1]."
+
+      # Record the transformation for inclusion in PMML.
+
+      crs$transforms <<- union(crs$transform,
+                               paste(vname,
+                                     min(crs$dataset[[vname]]),
+                                     max(crs$dataset[[vname]]), sep="_"))
     }
     else if (action == "rank")
     {
@@ -2301,7 +2300,7 @@ executeTransformNormalisePerform <- function()
 
     # Record the transformation for possible inclusion in PMML.
 
-    crs$transforms <<- union(crs$transform, vname)
+    # crs$transforms <<- union(crs$transform, vname)
   }
   
   if (length(variables) > 0)
@@ -5009,8 +5008,8 @@ on_score_radiobutton_toggled <- function(button)
     theWidget("score_idents_radiobutton")$hide()
     theWidget("score_all_radiobutton")$hide()
 
-    theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
-    theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
+#    theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
+#    theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
 }    
   setStatusBar()
 }
@@ -7913,10 +7912,10 @@ mean, median, or mode. This is not recommended.")
 
 on_help_nolan_activate <- function(action, window)
 {
-  if (showHelpPlus("The Nolan Group transformation segments the selected numeric variables
+  if (showHelpPlus("The Nolan Groups transformation segments the selected numeric variables
 by a selected categoric variable, and then within each segment rescales the numeric
 variable's range to the 0-100 range, using the range option of the rescale(rehsape)
-function."))
+function. This transform was proposed by Anthony Nolan."))
   {
     if (packageIsAvailable("reshape", "display information about rescaler"))
       popupTextviewHelpWindow("rescaler")

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 05:54:17 Graham>
+# Time-stamp: <2008-08-20 19:59:51 Graham Williams>
 #
 # RPART TAB
 #
@@ -537,7 +537,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
     z <- labels(x, digits = digits, minlength = minlength, ...)
     n <- frame$n
     # DEV is residual sum of squares
-    z <- paste(indent, z, n, format(signif(sqrt(frame$dev), digits = digits)),
+    z <- paste(indent, z, n, format(signif(frame$dev, digits = digits)),
         yval, term)
     omit <- x$na.action
     if (length(omit)) 
@@ -545,7 +545,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
     else cat("n=", n[1], "\n\n")
     if (x$method == "class") 
         cat("node), split, n, loss, yval, (yprob)\n")
-    else cat("node), split, n, SQRT(deviance), yval\n")
+    else cat("node), split, n, deviance, yval\n")
     cat("      * denotes terminal node\n\n")
     cat(z, sep = "\n")
     return(invisible(x))
