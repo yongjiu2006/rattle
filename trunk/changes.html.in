@@ -13,6 +13,7 @@
    </p>
 
 <pre>
+306 080821 Add pmml.transforms.R
 305 080821 Fix problems around logic of kmeans/score
            Add initial support for PMML transforms (R01 only)
 304 080818 Update Help
