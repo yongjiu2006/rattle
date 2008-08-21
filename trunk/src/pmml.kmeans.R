@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 14:49:36 Graham Williams>
+# Time-stamp: <2008-08-19 22:40:47 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -24,6 +24,7 @@
 ########################################################################
 
 pmml.kmeans <- function(model,
+                        transforms=NULL,
                         model.name="KMeans_Model",
                         app.name="Rattle/PMML",
                         description="KMeans cluster model",
@@ -56,6 +57,12 @@ pmml.kmeans <- function(model,
   # PMML -> DataDictionary
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+
+  # PMML -> Transforms
+
+  if (! is.null(transforms))
+    for (i in transforms)
+      pmml <- append.XMLNode(pmml, pmml.transform(i))
 
   # PMML -> ClusteringModel
 

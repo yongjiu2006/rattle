@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 05:55:14 Graham>
+# Time-stamp: <2008-08-21 22:31:55 Graham Williams>
 #
 # MODEL TAB
 #
@@ -176,6 +176,15 @@ on_glm_multinomial_radiobutton_toggled <- function(button)
     theWidget("model_linear_builder_label")$setText("multinom")
 }
 
+on_kmeans_evaluate_checkbutton_toggled <- function(button)
+{
+  makeEvaluateSensitive()
+}
+
+on_hclust_evaluate_checkbutton_toggled <- function(button)
+{
+  makeEvaluateSensitive()
+}
 
 ########################################################################
 # UTILITIES
@@ -247,17 +256,41 @@ currentModelTab <- function()
   return(lb)
 }
 
-activateEvaluate <- function(buttons)
+makeEvaluateSensitive <- function(buttons="auto")
 {
+  # 080821 Make sensitive all the specified Evaluate radio buttons. If
+  # "auto" (as might become the default action anyhow) then decide
+  # which buttons to make sensitive.
+  
   # All known Evaluate buttons.
   
   all.buttons <- c("confusion", "risk", "costcurve", "lift", "roc",
                    "precision", "sensitivity", "pvo", "score")
 
+  # Automatically work out what needs to be sensistive, based on data
+  # type of the target plus whether kmeans or hclust is active and
+  # selected.
+
+  if (buttons[1] == "auto")
+  {
+    if (is.null(crs$target))
+      buttons <- c("score")
+    else if (multinomialTarget())
+      buttons <- c("confusion", "score")
+    else if (numericTarget())
+      buttons <- c("pvo", "score")
+    else
+      buttons <- all.buttons
+
+    if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
+        theWidget("hclust_evaluate_checkbutton")$getActive())
+      buttons <- c("score")
+  }
+  
   # All "all" to correspond to all buttons.
 
   if (buttons[1] == "all") buttons <- all.buttons
-  
+
   # Need to handle the Risk button specially. Only enable it if there
   # is a risk variable.
   
@@ -287,6 +320,42 @@ activateEvaluate <- function(buttons)
   
   if (length(buttons) > 0)
     theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
+}
+
+resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
+{
+  if (action %in% c("predictive_inactive", "all_inactive"))
+  {
+    theWidget("rpart_evaluate_checkbutton")$setActive(seton)
+    theWidget("ada_evaluate_checkbutton")$setActive(seton)
+    theWidget("rf_evaluate_checkbutton")$setActive(seton)
+    theWidget("ksvm_evaluate_checkbutton")$setActive(seton)
+    theWidget("glm_evaluate_checkbutton")$setActive(seton)
+    theWidget("nnet_evaluate_checkbutton")$setActive(seton)
+    theWidget("mars_evaluate_checkbutton")$setActive(seton)
+  }
+  if (action %in% c("descriptive_inactive", "all_inactive"))
+  {
+    theWidget("kmeans_evaluate_checkbutton")$setActive(seton)
+    theWidget("hclust_evaluate_checkbutton")$setActive(seton)
+  }
+  if (action %in% c("predictive_insensitive", "all_insensitive"))
+  {
+    theWidget("rpart_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("ada_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("rf_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("ksvm_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("glm_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("nnet_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("mars_evaluate_checkbutton")$setSensitive(seton)
+  }
+  if (action %in% c("descriptive_insensitive", "all_insensitive"))
+  {
+    theWidget("kmeans_evaluate_checkbutton")$setSensitive(seton)
+    theWidget("hclust_evaluate_checkbutton")$setSensitive(seton)
+  }
+  if (!is.null(default))
+    theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
 }
 
 
@@ -380,9 +449,10 @@ executeModelTab <- function()
   # textview of the Evaluate tab. We make this word wrap here and then
   # turn that off once the tab is Executed.
 
+  makeEvaluateSensitive()
+
   if (multinomialTarget())
   {
-    activateEvaluate(c("confusion", "score"))
     theWidget("confusion_textview")$setWrapMode("word")
     resetTextview("confusion_textview")
     appendTextview("confusion_textview",
@@ -395,12 +465,10 @@ executeModelTab <- function()
   }
   else if (numericTarget())
   {
-    activateEvaluate(c("pvo", "score"))
     setTextview("confusion_textview") # Clear any confusion table
   }
   else
   {
-    activateEvaluate("all")
     setTextview("confusion_textview") # Clear any confusion table
   }
 
@@ -409,13 +477,8 @@ executeModelTab <- function()
   build.all <- theWidget("all_models_radiobutton")$getActive()
 
   # Reset all Evaluate options to unchecked.
-  
-  theWidget("rpart_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("ada_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("rf_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("ksvm_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("glm_evaluate_checkbutton")$setActive(FALSE)
-  theWidget("nnet_evaluate_checkbutton")$setActive(FALSE)
+
+  resetEvaluateCheckbuttons("all_inactive")
   
   # The following work for ada, do they work for the rest?
   
