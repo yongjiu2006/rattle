@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.74.
+    version is 2.3.76.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+307 080826 Fix logic behind setting Model/Eval type in Evaluate tab
+           Capture randomForest bug and suggest solution
 306 080821 Add pmml.transforms.R
 305 080821 Fix problems around logic of kmeans/score
            Add initial support for PMML transforms (R01 only)

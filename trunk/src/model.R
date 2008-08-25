@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-21 22:31:55 Graham Williams>
+# Time-stamp: <2008-08-21 23:01:04 Graham Williams>
 #
 # MODEL TAB
 #
@@ -256,11 +256,10 @@ currentModelTab <- function()
   return(lb)
 }
 
-makeEvaluateSensitive <- function(buttons="auto")
+makeEvaluateSensitive <- function()
 {
-  # 080821 Make sensitive all the specified Evaluate radio buttons. If
-  # "auto" (as might become the default action anyhow) then decide
-  # which buttons to make sensitive.
+  # 080821 Make sensitive all the appropriate Evaluate radio
+  # buttons.
   
   # All known Evaluate buttons.
   
@@ -271,26 +270,19 @@ makeEvaluateSensitive <- function(buttons="auto")
   # type of the target plus whether kmeans or hclust is active and
   # selected.
 
-  if (buttons[1] == "auto")
-  {
-    if (is.null(crs$target))
-      buttons <- c("score")
-    else if (multinomialTarget())
-      buttons <- c("confusion", "score")
-    else if (numericTarget())
-      buttons <- c("pvo", "score")
-    else
-      buttons <- all.buttons
+  if (is.null(crs$target))
+    buttons <- c("score")
+  else if (multinomialTarget())
+    buttons <- c("confusion", "score")
+  else if (numericTarget())
+    buttons <- c("pvo", "score")
+  else
+    buttons <- all.buttons
 
-    if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
-        theWidget("hclust_evaluate_checkbutton")$getActive())
-      buttons <- c("score")
-  }
+  if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
+      theWidget("hclust_evaluate_checkbutton")$getActive())
+    buttons <- c("score")
   
-  # All "all" to correspond to all buttons.
-
-  if (buttons[1] == "all") buttons <- all.buttons
-
   # Need to handle the Risk button specially. Only enable it if there
   # is a risk variable.
   

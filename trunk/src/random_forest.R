@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-02 06:11:16 Graham Williams>
+# Time-stamp: <2008-08-25 20:48:02 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -68,7 +68,7 @@ executeModelRF <- function()
 {
   if (! packageIsAvailable("randomForest", "build a random forest model"))
       return(FALSE)
-  
+
   ## Initial setup 
   
   TV <- "rf_textview"
@@ -238,6 +238,20 @@ executeModelRF <- function()
                    "containing Infinite values.",
                    "A quick solution may be to remove columns",
                    "with any Inf or -Inf values.")
+      setTextview(TV)
+    }
+    else if (any(grep('inherits', result)))
+    {
+      # 080825 This is a known error in randomForest 4.5-25 reported
+      # to Andy Liau a few months ago, and acknowledge, but has not
+      # been fixed. Of course i could try to figure it out myself, but
+      # it would probably take some effort!
+      errorDialog("The call to randomForest failed.",
+                  "You probably have version 4.5-25.",
+                  "This is a known problem, and awaits a new version.",
+                  "For now, please install version 4.5-23.\n",
+                  '\ninstall.packages("randomForest",\n',
+                  '    repos="http://rattle.togaware.com")')
       setTextview(TV)
     }
     else 
