@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-08-19 22:40:47 Graham Williams>
+# Time-stamp: <2008-08-27 22:16:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -38,6 +38,9 @@ pmml.kmeans <- function(model,
 
   field <- NULL
   field$name <-  colnames(model$centers)
+  orig.fields <- field$name
+  if (! is.null(transforms))
+    field$name <- unifyTransforms(field$name, transforms)
   number.of.fields <- length(field$name)
 
   field$class <- rep("numeric", number.of.fields) # All fields are numeric
@@ -58,12 +61,6 @@ pmml.kmeans <- function(model,
 
   pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
 
-  # PMML -> Transforms
-
-  if (! is.null(transforms))
-    for (i in transforms)
-      pmml <- append.XMLNode(pmml, pmml.transform(i))
-
   # PMML -> ClusteringModel
 
   cl.model <- xmlNode("ClusteringModel",
@@ -77,12 +74,38 @@ pmml.kmeans <- function(model,
 
   cl.model <- append.XMLNode(cl.model, pmmlMiningSchema(field))
 
+  # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
+
+  if (! is.null(transforms))
+  {
+    ltrans <- xmlNode("LocalTransformations")
+    for (i in transforms)
+    {
+      dfield <- xmlNode("DerivedField",
+                        attrs=c(name=sub("^R01_(.*)_[^_]*_[^_]*$", "R01_\\1", i),
+                          optype="continuous",
+                          dataType="double"))
+      ltrans <- append.XMLNode(ltrans, append.XMLNode(dfield, pmml.transform(i)))
+    }
+    
+    cl.model <- append.XMLNode(cl.model, ltrans)
+  }
+  
   # PMML -> ClusteringModel -> ComparisonMeasure
   
   cl.model <- append.XMLNode(cl.model,
                              append.XMLNode(xmlNode("ComparisonMeasure",
                                                     attrs=c(kind="distance")),
                                             xmlNode("squaredEuclidean")))
+
+  # PMML -> ClusteringField - These exist if there are LocalTransforms
+
+  for (i in orig.fields)
+  {
+    cl.model <- append.xmlNode(cl.model,
+                               xmlNode("ClusteringField",
+                                       attrs=c(field=i)))
+  }
   
   # PMML -> ClusteringModel -> Cluster -> Array
   
@@ -102,5 +125,19 @@ pmml.kmeans <- function(model,
   pmml <- append.XMLNode(pmml, cl.model)
 
   return(pmml)
+}
+
+unifyTransforms <- function(vars, transforms)
+{
+  for (i in transforms)
+  {
+    ibase <- sub("^R01_(.*)_[^_]*_[^_]*$", "R01_\\1", i)
+    if (ibase %in% vars)
+    {
+      index <- which(ibase == vars)
+      vars[index] <- sub("^R01_", "", vars[index])
+    }
+  }
+  return(vars)
 }
 

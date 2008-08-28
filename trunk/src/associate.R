@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-03 17:46:46 Graham Williams>
+# Time-stamp: <2008-08-28 19:57:36 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -339,9 +339,10 @@ listAssociateRules <- function()
 #  if (lift == 0)
     summary1.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
 #  else
-#    summary1.cmd <- paste('SORT(subset(crs$apriori, lift > ',
+#lift<-1
+#      summary1.cmd <- paste('SORT(subset(crs$apriori, lift > ',
 #                          lift, '),  by="confidence")')
-#ORIG    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+#    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
 #                          lift, '),  by="confidence"))')
   appendLog("List rules.", summary1.cmd)
   # print(summary1.cmd)

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-08-20 07:32:43 Graham Williams>
+# Time-stamp: <2008-08-27 22:04:51 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -61,7 +61,7 @@ pmml.R01 <- function(var)
   #    x-min(x)/(abs(max(x)-min(x)))
 
   spl <- strsplit(var, "_")[[1]]
-  var <- paste(spl[1:(length(spl)-2)], collapse="_")
+  var <- paste(spl[2:(length(spl)-2)], collapse="_")
   minvar <- spl[length(spl)-1]
   maxvar <- spl[length(spl)]
   

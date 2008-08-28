@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-21 22:16:19 Graham Williams>
+# Time-stamp: <2008-08-28 20:20:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Aug 2008"
+VERSION.DATE <- "Released 26 Aug 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -735,6 +735,7 @@ resetRattle <- function(new.dataset=TRUE)
     crs$sample.seed <<- NULL
     crs$testset  <<- NULL
     crs$testname <<- NULL
+    crs$transforms <<- NULL
   }
 
   # Clear out all current models.
@@ -1169,11 +1170,23 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
     command <- paste("print(", command, ")", sep="")
   else if (use.cat)
     command <- paste("cat(", command, ")", sep="")
-  zz <- textConnection("commandsink", "w", TRUE)
-  sink(zz)
-  result <- try(eval(parse(text=command), envir=envir))
-  sink()
-  close(zz)
+
+  # 080829 - Let's try out capture.output as a simpler way of doing
+  # sink. Seems to work okay!
+
+  if (FALSE)
+  {
+    zz <- textConnection("commandsink", "w", TRUE)
+    sink(zz)
+    result <- try(eval(parse(text=command), envir=envir))
+    sink()
+    close(zz)
+  }
+  else
+  {
+    result <- try(commandsink <- capture.output(eval(parse(text=command), envir=envir)))
+  }
+  
   if (inherits(result, "try-error"))
   {
     errorDialog(sprintf("A command has failed: %s.", command),
@@ -3045,6 +3058,14 @@ executeTransformCleanupPerform <- function()
   
     appendLog(del.comment, gsub("<<-", "<-", del.cmd))
     eval(parse(text=del.cmd))
+
+    # Ensure any delted variables are no longer included in the list
+    # of transformed variables.
+
+    crs$transforms <<- crs$transforms[! sapply(crs$transforms,
+                                               function(x) sub('_[^_]*_[^_]*$', '', x))
+                                      %in% to.delete]
+
   }
   
   # Reset the dataset views keeping the roles unchanged except for
@@ -3054,7 +3075,7 @@ executeTransformCleanupPerform <- function()
 
   # Update the status bar
 
-  setStatusBar("The deletions from the dataset have been copmleted.")
+  setStatusBar("The deletions from the dataset have been completed.")
 }
 
 
