@@ -18,6 +18,7 @@ export(
        printRandomForests,
        randomForest2Rules,
        rattle,
+       rattle.print.rpart,
        RStat,
        savePlotToFile,
        treeset.randomForest,
