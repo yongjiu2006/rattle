@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.76.
+    version is 2.3.77.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+308 080828 Further work on capturing R01 transforms.
+           Update how transforms are included in kmeans PMML - use ClusteringField
+           Start using capture.output instead of the complexity of using sink.
+           Add callback back into odbc_entry and get ODBC option working again.
 307 080826 Fix logic behind setting Model/Eval type in Evaluate tab
            Capture randomForest bug and suggest solution
 306 080821 Add pmml.transforms.R

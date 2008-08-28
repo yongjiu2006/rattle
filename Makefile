@@ -105,7 +105,7 @@ meld:
 	done
 
 .PHONY: install
-install: build pbuild zip # check pcheck
+install: build pbuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
 	cp changes.html.in /home/gjw/projects/togaware/www/
@@ -163,6 +163,15 @@ devbuild:
 build: data rattle_$(VERSION).tar.gz
 
 pbuild: data pmml_$(PVERSION).tar.gz
+
+rattle_src.zip:
+	cp $(R_SOURCE) zipsrc
+	cp $(PSOURCE) zipsrc
+	cp src/pmmltoc.R src/all.R zipsrc
+	cp $(GLADE_SOURCE) zipsrc
+	zip -r9 rattle_src.zip zipsrc
+	mv rattle_src.zip /var/www/access/
+	chmod go+r /var/www/access/rattle_src.zip
 
 rattle_$(VERSION).tar.gz: revision $(SOURCE)
 	rm -f package/rattle/R/*

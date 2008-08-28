@@ -1,15 +1,15 @@
 Package: rattle
 Type: Package
 Title: A graphical user interface for data mining in R using GTK
-Version: 2.3.76
-Date: 2008-08-25
+Version: 2.3.77
+Date: 2008-08-27
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.2.0)
-Suggests: RGtk2, ada, amap, arules, bitops, cairoDevice, car, cba, combinat, 
+Suggests: RGtk2, ada, amap, arules, bitops, brew, cairoDevice, car, cba, combinat, 
   doBy, e1071, ellipse, fEcofin, fCalendar, fBasics, foreign, fpc, 
   gdata, gtools, gplots, Hmisc, kernlab, MASS, Matrix, mice, network, nnet,
-  odfWeave, playwith, pmml, randomForest, reshape, rggobi, ROCR, RODBC, 
+  odfWeave, party, playwith, pmml, randomForest, reshape, rggobi, ROCR, RODBC, 
   rpart, RSvgDevice, XML
 Description: Rattle (the R Analytic Tool To Learn Easily) provides a 
   Gnome (RGtk2) based interface to R functionality for data mining. 

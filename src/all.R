@@ -1,6 +1,6 @@
-cwd <- getwd()
-setwd("/home/gjw/projects/rattle/src")
-redo <- function() {source("all.R"); rattle(tooltiphack=FALSE)}
+#cwd <- getwd()
+#setwd("/home/gjw/projects/rattle/src")
+#redo <- function() {source("all.R"); rattle(tooltiphack=FALSE)}
 source("rattle.R")
 source("zzz.R")
 source("associate.R")
@@ -30,7 +30,10 @@ source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
 source("pmml.transforms.R")
-setwd(cwd)
+
+source("pmmltoc.R")
+
+#setwd(cwd)
 
 #audit <- read.csv("http://rattle.togaware.com/audit.csv")
 

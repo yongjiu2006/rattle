@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 00:59:34 Graham>
+# Time-stamp: <2008-08-28 20:55:26 Graham Williams>
 #
 # DATA TAB
 #
@@ -723,8 +723,9 @@ updateDataLibrary <- function()
 
 open_odbc_set_combo <- function(button)
 {
-  # This is a callback for when the ODBC DSN name has changed.  Load
-  # the corresponding tables from the specified ODBC database.
+  # This is a callback for when the ODBC DSN name has changed
+  # (associated with "activate").  Load the corresponding tables from
+  # the specified ODBC database.
 
   # Obtain name of the DSN.
 
@@ -776,16 +777,16 @@ open_odbc_set_combo <- function(button)
     return(FALSE)
   }
 
-  ## Add list of tables to the combo box.
+  # Add list of tables to the combo box.
 
-  combobox <- theWidget("odbc_combobox")
+  combobox <- theWidget("data_odbc_table_combobox")
   if (not.null(tables))
   {
     combobox$getModel()$clear()
     lapply(tables, combobox$appendText)
   }
   
-  setStatusBar("Database loaded. Select a table.")
+  setStatusBar("ODBC connection to database established. Now select a table.")
 
   return(TRUE)
 }
