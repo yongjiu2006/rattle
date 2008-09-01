@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-08-27 22:16:09 Graham Williams>
+# Time-stamp: <2008-09-01 20:15:21 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -98,7 +98,7 @@ pmml.kmeans <- function(model,
                                                     attrs=c(kind="distance")),
                                             xmlNode("squaredEuclidean")))
 
-  # PMML -> ClusteringField - These exist if there are LocalTransforms
+  # PMML -> ClusteringField
 
   for (i in orig.fields)
   {
@@ -135,7 +135,11 @@ unifyTransforms <- function(vars, transforms)
     if (ibase %in% vars)
     {
       index <- which(ibase == vars)
-      vars[index] <- sub("^R01_", "", vars[index])
+      new.var <- sub("^R01_", "", vars[index])
+      if (new.var %in% vars)
+        vars <- vars[-index]
+      else
+        vars[index] <- new.var
     }
   }
   return(vars)
