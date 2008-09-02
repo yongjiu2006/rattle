@@ -11,10 +11,6 @@
 \alias{imp_edited}
 \alias{imp_toggled}
 \alias{load_rdata_set_combo}
-\alias{on_glm_gaussian_radiobutton_toggled}
-\alias{on_glm_linear_radiobutton_toggled}
-\alias{on_glm_logistic_radiobutton_toggled}
-\alias{on_glm_multinomial_radiobutton_toggled}
 \alias{on_about_menu_activate}
 \alias{on_ada_continue_button_clicked}
 \alias{on_ada_defaults_button_clicked}
@@ -63,9 +59,14 @@
 \alias{on_export_pmml_activate}
 \alias{on_gbm_importance_button_clicked}
 \alias{on_ggobi_radiobutton_toggled}
+\alias{on_glm_gaussian_radiobutton_toggled}
+\alias{on_glm_linear_radiobutton_toggled}
+\alias{on_glm_logistic_radiobutton_toggled}
+\alias{on_glm_multinomial_radiobutton_toggled}
 \alias{on_hclust_data_plot_button_clicked}
 \alias{on_hclust_dendrogram_button_clicked}
 \alias{on_hclust_discriminant_plot_button_clicked}
+\alias{on_hclust_evaluate_checkbutton_toggled}
 \alias{on_hclust_plot_button_clicked}
 \alias{on_hclust_radiobutton_toggled}
 \alias{on_hclust_stats_button_clicked}
@@ -82,6 +83,7 @@
 \alias{on_help_impute_activate}
 \alias{on_help_kmeans_activate}
 \alias{on_help_log_activate}
+\alias{on_help_nolan_activate}
 \alias{on_help_nomenclature_data_activate}
 \alias{on_help_normalise_activate}
 \alias{on_help_odbc_activate}
@@ -102,6 +104,7 @@
 \alias{on_kernlab_radiobutton_toggled}
 \alias{on_kmeans_data_plot_button_clicked}
 \alias{on_kmeans_discriminant_plot_button_clicked}
+\alias{on_kmeans_evaluate_checkbutton_toggled}
 \alias{on_kmeans_hclust_centers_checkbutton_toggled}
 \alias{on_kmeans_iterate_checkbutton_toggled}
 \alias{on_kmeans_plot_button_clicked}
@@ -111,6 +114,10 @@
 \alias{on_libdata_combobox_changed}
 \alias{on_libdata_radiobutton_toggled}
 \alias{on_lift_radiobutton_toggled}
+\alias{on_model_linear_probit_radiobutton_toggled}
+\alias{on_model_linear_radiobutton_toggled}
+\alias{on_model_tree_ctree_radiobutton_toggled}
+\alias{on_model_tree_rpart_radiobutton_toggled}
 \alias{on_new_activate}
 \alias{on_new_button_clicked}
 \alias{on_nnet_radiobutton_toggled}
@@ -134,6 +141,7 @@
 \alias{on_regression_paradigm_radiobutton_toggled}
 \alias{on_regression_radiobutton_toggled}
 \alias{on_remap_radiobutton_toggled}
+\alias{on_report_toolbutton_clicked}
 \alias{on_rf_errors_button_clicked}
 \alias{on_rf_importance_button_clicked}
 \alias{on_rf_print_tree_button_clicked}
