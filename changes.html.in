@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.80.
+    version is 2.3.81.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+312 080903 Add Ordered + Method to Explore->Correlation/Hier (George Don't)
+           Bug fix: TARGET was overriding saved value in loading a project.
+           Bug fix: Don't use autoroles when loading a project.
 311 080903 Export rattle.print.summary.multinom and document
            Ensure all functions are documented - pass R CMD check
 310 080901 Fine tune export of R01 transform in PMML for kmeans.

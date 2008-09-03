@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-28 20:55:26 Graham Williams>
+# Time-stamp: <2008-09-03 19:29:39 Graham Williams>
 #
 # DATA TAB
 #
@@ -791,10 +791,10 @@ open_odbc_set_combo <- function(button)
   return(TRUE)
 }
 
-##----------------------------------------------------------------------
-##
-## Execution
-##
+#----------------------------------------------------------------------
+#
+# Execution
+#
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
                                risk=NULL, ident=NULL, ignore=NULL,
                                zero=NULL, mean=NULL,
@@ -2343,7 +2343,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                  autoroles=TRUE)
 {
   # Set up initial information about variables throughout Rattle,
-  # including the Variable tab's variable model, the Explore tab's
+  # including the Data tab's variable model, the Explore tab's
   # categorical and continuous models, and the Modelling tab defaults
   # where they depend on the dataset sizes.
   #
@@ -2367,8 +2367,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   # and record it in crs.
 
   given.target <- which(substr(variables, 1, 6) == "TARGET")
-  if (length(given.target) > 0) target <- variables[given.target[1]]
-
+  if (autoroles && length(given.target) > 0) target <- variables[given.target[1]]
+  
   if (autoroles && is.null(target))
   {
     # Find the last variable that is not an IMP (imputed). This is
@@ -2461,7 +2461,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     }
     
     # First check for special variable names. 
-    
+
     if (autoroles)
     {
       if (paste("IMP_", variables[i], sep="") %in% variables)
