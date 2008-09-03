@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-28 20:20:09 Graham Williams>
+# Time-stamp: <2008-09-03 19:16:38 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 Sep 2008"
+VERSION.DATE <- "Released 03 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -869,6 +869,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("benford_bars_checkbutton")$setActive(FALSE)
     theWidget("benford_abs_radiobutton")$setActive(TRUE)
     theWidget("benford_digits_spinbutton")$setValue(1)
+    theWidget("explore_correlation_method_combobox")$setActive(0)
 
     theWidget("glm_target_label")$setText("No target selected")
     theWidget("rpart_target_label")$setText("No target selected")
@@ -3166,24 +3167,45 @@ on_ggobi_radiobutton_toggled <- function(button)
 on_correlation_radiobutton_toggled <- function(button)
 {
   #separator <- theWidget("explore_vseparator")
-  nabutton  <- theWidget("correlation_na_checkbutton")
+  nabutton    <- theWidget("correlation_na_checkbutton")
+  ordbutton   <- theWidget("explore_correlation_ordered_checkbutton")
+  methodlabel <- theWidget("explore_correlation_method_label")
+  methodbox   <- theWidget("explore_correlation_method_combobox")
   if (button$getActive()) 
   {
     .EXPLORE$setCurrentPage(.EXPLORE.CORRELATION.TAB)
     #separator$show()
     nabutton$show()
+    ordbutton$show()
+    methodlabel$show()
+    methodbox$show()
   }
   else
   {
     #separator$hide()
     nabutton$hide()
+    ordbutton$hide()
+    methodlabel$hide()
+    methodbox$hide()
   }
   setStatusBar()
 }
 
 on_hiercor_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.HIERCOR.TAB)
+  methodlabel <- theWidget("explore_correlation_method_label")
+  methodbox   <- theWidget("explore_correlation_method_combobox")
+  if (button$getActive())
+  {
+    .EXPLORE$setCurrentPage(.EXPLORE.HIERCOR.TAB)
+    methodlabel$show()
+    methodbox$show()
+  }
+  else
+  {
+    methodlabel$hide()
+    methodbox$hide()
+  }
   setStatusBar()
 }
 
@@ -4655,6 +4677,11 @@ executeExploreCorrelation <- function(dataset)
     return()
   }
 
+  # Obtain user interface settings.
+
+  ordered <- theWidget("explore_correlation_ordered_checkbutton")$getActive()
+  method <- tolower(theWidget("explore_correlation_method_combobox")$getActiveText())
+  
   # Warn if there are too many variables. An alternative is to offer
   # to just plot the variables with the highest amount of correlation.
   
@@ -4695,15 +4722,18 @@ executeExploreCorrelation <- function(dataset)
   }
 
   lib.cmd <-"require(ellipse, quietly=TRUE)"
-  crscor.cmd  <- sprintf("%scrscor <- cor(%s, use='pairwise')",
+  crscor.cmd  <- sprintf('%scrscor <- cor(%s, use="pairwise", method="%s")',
                          ifelse(nas, naids.cmd, ""),
                          ifelse(nas,
                                 sprintf("is.na(%s[naids])", dataset),
-                                dataset))
-  crsord.cmd  <- paste("crsord <- order(crscor[1,])",
-                       "crsxc  <- crscor[crsord, crsord]",
-                       sep="\n")
-  print.cmd   <- "print(crsxc)"
+                                dataset),
+                         method)
+  if (ordered)
+    crsord.cmd  <- paste("crsord <- order(crscor[1,])",
+                         "crscor  <- crscor[crsord, crsord]",
+                         sep="\n")
+    
+  print.cmd   <- "print(crscor)"
   if (nas)
   {
     print.cmd <- paste(print.cmd,
@@ -4717,15 +4747,15 @@ executeExploreCorrelation <- function(dataset)
                        sep="")
     
   }
-  plot.cmd    <- paste("plotcorr(crsxc, ",
+  plot.cmd    <- paste("plotcorr(crscor, ",
                        'col=colorRampPalette(c("red", "white", "blue"))(11)',
-                       '[5*crsxc + 6])\n',
+                       '[5*crscor + 6])\n',
                        genPlotTitleCmd("Correlation",
                                        ifelse(nas, "of Missing Values", ""),
-                                       crs$dataname),
+                                       crs$dataname, "using", method),
                        sep="")
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   if (! packageIsAvailable("ellipse", "display a correlation plot")) return()
      
@@ -4736,24 +4766,24 @@ executeExploreCorrelation <- function(dataset)
   eval(parse(text=lib.cmd))
 
   appendLog("Correlations work for numeric variables only.", crscor.cmd)
-  appendLog("Order the correlations by their strength.", crsord.cmd)
+  if (ordered) appendLog("Order the correlations by their strength.", crsord.cmd)
   appendLog("Display the actual correlations.", print.cmd)
   appendLog("Graphically display the correlations.", plot.cmd)
 
   appendTextview(TV,
                ifelse(nas,
-                      "Missing Values Correlation Summary.\n\n",
-                      "Correlation Summary.\n\n"),
+                      "Missing Values Correlation Summary:",
+                      "Correlation Summary:"), " Using ", method, " method\n\n",
                "Note that only correlations between numeric variables ",
                "are reported.\n\n",
                collectOutput(paste(crscor.cmd,
-                                    crsord.cmd,
+                                    if (ordered) crsord.cmd,
                                     print.cmd,
                                     sep="\n")))
 
   newPlot()
   eval(parse(text=paste(crscor.cmd,
-               crsord.cmd,
+               if (ordered) crsord.cmd,
                plot.cmd,
                sep="\n")))
   
@@ -4774,6 +4804,10 @@ executeExploreHiercor <- function(dataset)
     return()
   }
 
+  # Obtain user interface settings.
+
+  method <- tolower(theWidget("explore_correlation_method_combobox")$getActiveText())
+
   # Check that we have sufficient data
 
   ncols <- eval(parse(text=sprintf("NCOL(%s)", dataset)))
@@ -4790,7 +4824,7 @@ executeExploreHiercor <- function(dataset)
     
   # Construct the commands.
   
-  cor.cmd    <- sprintf('cc <- cor(%s, use="pairwise")', dataset)
+  cor.cmd    <- sprintf('cc <- cor(%s, use="pairwise", method="%s")', dataset, method)
   hclust.cmd <- 'hc <- hclust(dist(cc), "ave")'
   dend.cmd   <- "dn <- as.dendrogram(hc)"
 
@@ -4811,7 +4845,7 @@ executeExploreHiercor <- function(dataset)
                       'edgePar = list(col = "gray", lwd = 2)',
                       ')\n',
                       genPlotTitleCmd("Variable Correlation Clusters",
-                                     crs$dataname),'\n',
+                                     crs$dataname, "using", method),'\n',
                       'par(op)\n',
                       sep="")
 

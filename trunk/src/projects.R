@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 05:50:32 Graham>
+# Time-stamp: <2008-09-03 19:26:25 Graham Williams>
 #
 # Project functionality.
 #
@@ -300,12 +300,12 @@ loadProject <- function()
   # to be apparently now.
 
   crs$mtime <<- Sys.time()
-  
+
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
                      crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
-                     crs$barplot, crs$dotplot)
+                     crs$barplot, crs$dotplot, autoroles=FALSE)
    executeSelectTab()
   
   if (not.null(crs$risk))
