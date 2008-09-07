@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-25 20:48:02 Graham Williams>
+# Time-stamp: <2008-09-05 21:05:43 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -329,7 +329,7 @@ showModelRFExists <- function(state=!is.null(crs$rf))
 plotRandomForestImportance <- function()
 {
 
-  ## Make sure there is an rf object first.
+  # Make sure there is an rf object first.
 
   if (is.null(crs$rf))
   {

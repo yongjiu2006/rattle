@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-03 19:16:38 Graham Williams>
+# Time-stamp: <2008-09-07 15:53:10 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -108,7 +108,7 @@ RStat <- function(csvname=NULL, ...)
   rattle(csvname, appname="RStat", ...)
 }
 
-rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
+rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="close")
 {
   # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
   # the R console, but at least tooltips work, and on losing focus
@@ -117,16 +117,23 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   # 080705. I notice that to load the supplied audit dataset I need to
   # change focus out of Rattle.
 
+  # 080906 If close="quit" then when the window close is pressed, we
+  # also quit R.
+  
   # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
   # "R CMD check" by adding all hidden variables to it. Previously
   # they all began with "." as in crv$ADA used to be .ADA. "R CMD
   # check" complained a lot, once for each of these, so putting them
   # all into crv means only one complaint each time!
 
-  crv <<- list()
+  if (TRUE) # 080907 Experiment with new.env()
+    crv <<- new.env()
+  else
+    crv <<- list()
   crv$appname <<- appname
   crv$tooltiphack <<- tooltiphack # Record the value globally
   crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
+  crv$close <<- close
   
   # Some global constants
 
@@ -325,7 +332,10 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE)
   # Global variables are generally a bad idea, but until a better idea
   # comes to mind.
 
-  crs <<- list(dataset=NULL,
+  if (TRUE)
+    crs <<- new.env()
+  else
+    crs <<- list(dataset=NULL,
                dataname=NULL,
                dwd=NULL, 	# Data Working Directory
                mtime=NULL,	# Modification time of file
@@ -640,14 +650,15 @@ tuneRStat <- function()
   theWidget("model_tree_rpart_radiobutton")$hide()
   theWidget("model_tree_ctree_radiobutton")$hide()
  
-  # Model -> Regression
+  # Model -> Linear
 
   # 080815 I've moved to using the "Linear" label for the lm/glm
   # family. Regression is perhaps a more general term. I've not
-  # approval for this from IBI so reating Regression there for now.
+  # approval for this from IBI so retaining Regression there for now.
   theWidget("model_linear_radiobutton")$setLabel("Regression")
   theWidget("model_linear_probit_radiobutton")$hide()
-
+  theWidget("model_linear_plot_button")$hide()
+  
   # Model -> All
 
   theWidget("all_models_radiobutton")$hide()
@@ -1841,6 +1852,7 @@ update_comboboxentry_with_dataframes <- function(action, window)
 
 close_rattle <- function(action, window)
 {
+  
   # Don't remove the graphics for now. In moving to the Cairo device,
   # this blanks the device, but does not destroy the containing
   # window. I wonder if there is some way to get a list of the plot
@@ -1870,6 +1882,10 @@ close_rattle <- function(action, window)
   
   # if (crv$tooltiphack) gtkMainQuit() # Only needed if gtkMain is run.
 
+  # 080906 Deal with R not finishing up when rattle is called from
+  # littler or R CMD BATCH and we close rather than quit.
+
+  if (crv$close == "quit") quit(save="no")
 }
 
 quit_rattle <- function(action, window)
@@ -1880,7 +1896,7 @@ quit_rattle <- function(action, window)
   # and look to return FALSE instead of NULL on a negative response to
   # the question.
 
-  msg <- sprintf("Do you want to terminate %s?", crv$appname)
+ msg <- sprintf("Do you want to terminate %s?", crv$appname)
   
   if (questionDialog(msg))
   {
@@ -2218,7 +2234,7 @@ executeTransformNormalisePerform <- function()
 
       # Record the transformation for inclusion in PMML.
 
-      crs$transforms <<- union(crs$transform,
+      crs$transforms <<- union(crs$transforms,
                                paste(vname,
                                      min(crs$dataset[[vname]]),
                                      max(crs$dataset[[vname]]), sep="_"))
@@ -2314,7 +2330,7 @@ executeTransformNormalisePerform <- function()
 
     # Record the transformation for possible inclusion in PMML.
 
-    # crs$transforms <<- union(crs$transform, vname)
+    # crs$transforms <<- union(crs$transforms, vname)
   }
   
   if (length(variables) > 0)

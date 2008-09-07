@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-03 19:26:25 Graham Williams>
+# Time-stamp: <2008-09-06 17:02:42 Graham Williams>
 #
 # Project functionality.
 #
@@ -291,8 +291,21 @@ loadProject <- function()
 
   # Restore the filename options.
   
-  crs$filename <<- crs$filename
-  crs$dwd <<- crs$dwd
+  if (file.exists(crs$filename))
+      crs$filename <<- crs$filename
+  else
+  {
+    crs$filename <- basename(crs$filename)
+    crs$filename <<- basename(crs$filename)
+  }
+
+  if (file.exists(crs$dwd))
+    crs$dwd <<- crs$dwd
+  else
+  {
+    crs$dwd <- ""
+    crs$dwd <<- ""
+  }
 
   # Make sure we don't attempt to reload the file on executing the
   # Data tab, and thereby overwriting the current data, losing all of
