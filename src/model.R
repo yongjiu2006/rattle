@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-21 23:01:04 Graham Williams>
+# Time-stamp: <2008-09-06 16:42:51 Graham Williams>
 #
 # MODEL TAB
 #
@@ -103,6 +103,26 @@ on_kernlab_radiobutton_toggled <- function(button)
     .SVMNB$setCurrentPage(.SVMNB.KSVM.TAB)
   }
   setStatusBar()
+}
+
+on_model_linear_plot_button_clicked <- function(button)
+{
+  # Make sure there is an appropriate model first.
+
+  if (is.null(crs$glm))
+  {
+    errorDialog("There is no GLM and attempting to plot it.",
+                "Please report this error to support@togaware.com")
+    return()
+  }
+  newPlot(4)
+  plot.cmd <- paste('ttl <- genPlotTitleCmd("Linear Model",crs$dataname,vector=TRUE)\n',
+                    'plot(crs$glm, main=ttl[1])',
+                    sep="")
+  appendLog("Plot the model evaluation.", plot.cmd)
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Linear model evaluation has been plotted.")
 }
 
 #-----------------------------------------------------------------------
@@ -790,7 +810,7 @@ executeModelGLM <- function()
   resetTextview(TV)
   setTextview(TV, sprintf(paste("Summary of the %s %s model",
                                 "(built using %s):\n"),
-                          family, commonName("glm"),
+                          family, "Regression",
                           ifelse(family == "Linear", "lm",
                                  ifelse(family == "Multinomial", "multinom", "glm"))),
               collectOutput(summary.cmd))
@@ -805,6 +825,13 @@ executeModelGLM <- function()
   
   
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
+
+  # Enable the plot button
+
+  if (family == "Multinomial")
+    theWidget("model_linear_plot_button")$setSensitive(FALSE)
+  else
+    theWidget("model_linear_plot_button")$setSensitive(TRUE)
   
   # Finish up.
   

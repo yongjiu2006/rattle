@@ -6,13 +6,20 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.81.
+    version is 2.3.82.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+314 080907 Move crs/crv to be envs rather than lists (John Maindonald)
+           Another fix to get Rattle to properly exit.
+           Bug fix in transforms - wasn't getting the full list.
+           Try various approaches to updating R Dataset combobox
+           For now, update it on an Execute.
+           Fix behaviour of close to work with r and R CMD BATCH calls.
+           Add a plot button to Linear models to display the std plots.
 312 080903 Add Ordered + Method to Explore->Correlation/Hier (George Don't)
            Bug fix: TARGET was overriding saved value in loading a project.
            Bug fix: Don't use autoroles when loading a project.

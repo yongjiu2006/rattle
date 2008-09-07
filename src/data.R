@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-03 19:29:39 Graham Williams>
+# Time-stamp: <2008-09-07 15:25:17 Graham Williams>
 #
 # DATA TAB
 #
@@ -293,6 +293,44 @@ on_data_rdataset_radiobutton_toggled <- function(button)
     updateRDatasets()
   }
 }
+
+# 080907 Trying to get an event that will auto update the combobox
+# without having to move to another radio button and then back again.
+
+on_data_name_combobox_button_press_event <- function(button)
+{
+  print("Button Press")
+  updateRDatasets()
+}
+
+on_data_name_combobox_enter_notify_event <- function(button)
+{
+  print("Enter Notify")
+  updateRDatasets()
+}
+
+on_data_name_combobox_focus <- function(button)
+{
+  print("Focus")
+  updateRDatasets()
+}
+
+on_data_name_combobox_set_focus_child<- function(direction, data)
+{
+  print("Focus Child")
+  #print(direction)
+  print(data)
+  #updateRDatasets()
+}
+
+on_data_name_combobox_focus_in_event<- function(direction, data)
+{
+  print("Focus In")
+  #print(direction)
+  #updateRDatasets()
+}
+
+#
 
 on_data_library_radiobutton_toggled <- function(button)
 {
@@ -1095,6 +1133,13 @@ executeDataRdataset <- function()
   # Collect relevant data
 
   dataset <- theWidget("data_name_combobox")$getActiveText()
+
+  # 080907 Can we do this here each time? I haven't work out a way to
+  # update the combobox when it is clicked - this is what would be
+  # best! But at least having it in here means we can update it when
+  # it is executed.
+  
+  updateRDatasets()
   
   if (is.null(dataset))
   {
@@ -2687,34 +2732,37 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
 }
 
-##----------------------------------------------------------------------
-##
-## Support
-##
+#----------------------------------------------------------------------
+#
+# Support
+#
 
-getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE)
+getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE, target=TRUE)
 {
-  ## DESCRIPTION
-  ## Generate a numeric list of variables not ignored.
-  ##
-  ## ARGUMENTS
-  ## numonly = Only include numeric variables
-  ## listall = Don't simplify a full list to NULL
-  ## risk =  Include any risk variable in the returned list
-  ##
-  ## RETURNS
-  ## A string of comma separated numbers
-  ##
-  ## DETAILS Generates a list of input variable indicies and the
-  ## target variable index and, optionally, the risk variable index.
-  ## If the list contains all variables, then return NULL (as the
-  ## dataset does not then need to be indexed to subset the variables).
-  ##
-  ## TODO This last assumption of returning NULL causes problems since we
-  ## don't know whether this means all variables or no variables!
+  # DESCRIPTION
+  # Generate a numeric list of variables not ignored.
+  #
+  # ARGUMENTS
+  # numonly = Only include numeric variables
+  # listall = Don't simplify a full list to NULL
+  # risk =  Include any risk variable in the returned list
+  #
+  # RETURNS
+  # A string of comma separated numbers
+  #
+  # DETAILS Generates a list of input variable indicies and the
+  # target variable index and, optionally, the risk variable index.
+  # If the list contains all variables, then return NULL (as the
+  # dataset does not then need to be indexed to subset the variables).
+  #
+  # TODO This last assumption of returning NULL causes problems since we
+  # don't know whether this means all variables or no variables!
 
   fi <- getVariableIndicies(crs$input)
-  ti <- getVariableIndicies(crs$target)
+  if (target)
+    ti <- getVariableIndicies(crs$target)
+  else
+    ti <- NULL
   if (risk)
     ri <- getVariableIndicies(crs$risk)
   else
