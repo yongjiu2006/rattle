@@ -6,6 +6,7 @@ export(
        drawTreesAda,
        drawTreeNodes,
        evaluateRisk,
+       generateAprioriSummary,
        genPlotTitleCmd,
        listTreesAda,
        listRPartRules,

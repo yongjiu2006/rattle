@@ -6,14 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.82.
+    version is 2.3.83.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-314 080907 Move crs/crv to be envs rather than lists (John Maindonald)
+315 080912 Include model name as file name in exporting to C
+           Handle target heuristic num/cat when exactly 10 levels
+314 080908 Bug fix: generateAprioriSummary needed exporting (George Don't)
+313 080907 Move crs/crv to be envs rather than lists (John Maindonald)
            Another fix to get Rattle to properly exit.
            Bug fix in transforms - wasn't getting the full list.
            Try various approaches to updating R Dataset combobox

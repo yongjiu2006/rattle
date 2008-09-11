@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-06 16:42:51 Graham Williams>
+# Time-stamp: <2008-09-12 06:53:10 Graham Williams>
 #
 # MODEL TAB
 #
@@ -248,7 +248,7 @@ categoricTarget <- function()
     # 080505 TODO we should put 10 as a global CONST
     return(is.factor(crs$dataset[[crs$target]]) ||
            (is.numeric(crs$dataset[[crs$target]]) &&
-            length(levels(as.factor(crs$dataset[[crs$target]]))) < 10))
+            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
   else if (theWidget("target_categoric_radiobutton")$getActive())
     return(TRUE)
   else if (theWidget("target_numeric_radiobutton")$getActive())
@@ -913,9 +913,11 @@ exportRegressionTab <- function()
   }
   else if (ext == "c")
   {
+    model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a regression model as C code for WebFocus.",
-              sprintf('cat(pmmltoc(toString(%s)), file="%s")', pmml.cmd, save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd)))), file=save.name)
+              sprintf('cat(pmmltoc(toString(%s), "%s"), file="%s")',
+                      pmml.cmd, model.name, save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
   }
   
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
