@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-12 06:53:42 Graham Williams>
+# Time-stamp: <2008-09-12 21:24:30 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -191,8 +191,16 @@ executeClusterKMeans <- function(include)
                       ifelse(nruns>1, nruns, "")),
               gsub("<<-", "<-", kmeans.cmd))
     start.time <- Sys.time()
-    eval(parse(text=kmeans.cmd))
+    result <- try(eval(parse(text=kmeans.cmd)), TRUE)
     time.taken <- Sys.time()-start.time
+
+    if (inherits(result, "try-error"))
+    {
+      if (any(grep("more cluster centers than distinct data points", result)))
+        errorDialog("The data does not support the number of clusters",
+                    "requested. Reduce the number of clusters and try again.")
+      return(FALSE)
+    }
 
     # SUMMARY: Show the resulting model.
 
