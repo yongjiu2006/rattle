@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.83.
+    version is 2.3.84.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+316 080912 Catch kmeans error when too few data points.
+           Ensure Transform Indicator variable names are valid.
+	   Deal with root only decision tree in generating PMML.
 315 080912 Include model name as file name in exporting to C
            Handle target heuristic num/cat when exactly 10 levels
 314 080908 Bug fix: generateAprioriSummary needed exporting (George Don't)

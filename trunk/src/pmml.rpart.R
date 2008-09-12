@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 15:48:59 Graham Williams>
+# Time-stamp: <2008-09-12 21:00:33 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -118,29 +118,36 @@ pmml.rpart <- function(model,
 
   # Get the information for the primary predicates
 
-  for (i in 2:length(label))
+  if (length(label) > 1)
   {
-    fieldLabel <-  c(fieldLabel, strsplit(label[i], '>|<|=')[[1]][1])
-    op <- substr(label[i], nchar(fieldLabel[i])+1, nchar(fieldLabel[i])+2)
-    if (op == ">=")
+    for (i in 2:length(label))
     {
-      operator <- c(operator, "greaterOrEqual")
-      value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
+      fieldLabel <-  c(fieldLabel, strsplit(label[i], '>|<|=')[[1]][1])
+      op <- substr(label[i], nchar(fieldLabel[i])+1, nchar(fieldLabel[i])+2)
+      if (op == ">=")
+      {
+        operator <- c(operator, "greaterOrEqual")
+        value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
+      }
+      else if (op == "< ")
+      {
+        operator <- c(operator, "lessThan")
+        value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
+      }
+      else if (substr(op, 1, 1) == "=")
+      {
+        operator <- c(operator, "isIn")
+        value <- c(value, substr(label[i], nchar(fieldLabel[i])+2, nchar(label[i])))
+      }
     }
-    else if (op == "< ")
-    {
-      operator <- c(operator, "lessThan")
-      value <- c(value, substr(label[i], nchar(fieldLabel[i])+3, nchar(label[i])))
-    }
-    else if (substr(op, 1, 1) == "=")
-    {
-      operator <- c(operator, "isIn")
-      value <- c(value, substr(label[i], nchar(fieldLabel[i])+2, nchar(label[i])))
-    }
+    node <- genBinaryTreeNodes(depth, id, count, score, fieldLabel, operator, value,
+                               model, parent_ii, rows,"right")
   }
-
-  node <- genBinaryTreeNodes(depth, id, count, score, fieldLabel, operator, value ,
-                             model, parent_ii, rows,"right")
+  else
+  {
+    node <- genBinaryTreeNodes(depth, id, count, score, fieldLabel, operator, value,
+                               model, parent_ii, rows,"right")
+  }
 
   tree.model <- append.XMLNode(tree.model, node)
 
