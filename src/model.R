@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-12 06:53:10 Graham Williams>
+# Time-stamp: <2008-09-13 07:45:21 Graham Williams>
 #
 # MODEL TAB
 #
@@ -178,6 +178,12 @@ on_glm_gaussian_radiobutton_toggled <- function(button)
     theWidget("model_linear_builder_label")$setText("glm (gaussian)")
 }
 
+on_model_linear_poisson_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+    theWidget("model_linear_builder_label")$setText("glm (poisson)")
+}
+
 on_glm_logistic_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
@@ -238,6 +244,17 @@ numericTarget <- function()
   else
     return(FALSE)
   
+}
+
+countTarget <- function()
+{
+  # 080913 Return TRUE if the target is numeric, and is or looks like
+  # an integer (i.e., no decimal points), and is all positive.
+  
+  return(numericTarget()
+         && (is.integer(crs$dataset[[crs$target]])
+             || ! any(grep("\\.", crs$dataset[[crs$target]])))
+         && ! any(crs$dataset[[crs$target]] < 0))
 }
 
 categoricTarget <- function()
@@ -644,6 +661,8 @@ executeModelGLM <- function()
     family <- "Linear"
   else if (theWidget("glm_gaussian_radiobutton")$getActive())
     family <- "Gaussian"
+  else if (theWidget("model_linear_poisson_radiobutton")$getActive())
+    family <- "Poisson"
   else if (theWidget("glm_logistic_radiobutton")$getActive())
     family <- "Logistic"
   else if (theWidget("model_linear_probit_radiobutton")$getActive())
@@ -655,7 +674,7 @@ executeModelGLM <- function()
   # numeric target and the target is actually a factor, then covert to
   # a numeric, else the algorithms complain.
 
-  if (family %in% c("Linear", "Gaussian")
+  if (family %in% c("Linear", "Gaussian", "Poisson")
       && "factor" %in% class(crs$dataset[[crs$target]]))
     frml <- sprintf("as.numeric(%s) ~ .", crs$target)
   else
@@ -752,6 +771,23 @@ executeModelGLM <- function()
                        if (including) included,
                        if (subsetting) "]",
                        ", family=gaussian(identity)",
+                       ")", sep="")
+
+    summary.cmd <- paste("print(summary(crs$glm))",
+                         "cat('==== ANOVA ====\n\n')",
+                         "print(anova(crs$glm))", sep="\n")
+  }
+  else if (family == "Poisson")
+  {
+    # 080912 Added
+
+    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       ", family=poisson(log)",
                        ")", sep="")
 
     summary.cmd <- paste("print(summary(crs$glm))",

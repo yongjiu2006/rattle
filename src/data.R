@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-07 15:25:17 Graham Williams>
+# Time-stamp: <2008-09-13 07:15:17 Graham Williams>
 #
 # DATA TAB
 #
@@ -1788,8 +1788,10 @@ executeSelectTab <- function()
     # For linear models, if it is categoric and binomial then assume
     # logistic regression (default to binmoial distribution and the
     # logit link function) otherwise it is multinomial so assume
-    # poisson regression (default o poisson distribution and log link
+    # poisson regression (default to poisson distribution and log link
     # function).
+
+    theWidget("model_linear_poisson_radiobutton")$setSensitive(FALSE)
 
     if (binomialTarget())
     {
@@ -1846,6 +1848,13 @@ executeSelectTab <- function()
     theWidget("glm_gaussian_radiobutton")$setSensitive(TRUE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
     theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
+
+    if (countTarget())
+      theWidget("model_linear_poisson_radiobutton")$setSensitive(TRUE)
+    else
+      theWidget("model_linear_poisson_radiobutton")$setSensitive(FALSE)
+
+
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
 
     theWidget("nnet_radiobutton")$setSensitive(TRUE)
@@ -1871,6 +1880,7 @@ executeSelectTab <- function()
     # theWidget("sample_checkbutton")$setActive(FALSE)
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
+    theWidget("model_linear_poisson_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
     theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
