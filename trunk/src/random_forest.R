@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-05 21:05:43 Graham Williams>
+# Time-stamp: <2008-09-13 07:40:41 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -246,10 +246,11 @@ executeModelRF <- function()
       # to Andy Liau a few months ago, and acknowledge, but has not
       # been fixed. Of course i could try to figure it out myself, but
       # it would probably take some effort!
+      
       errorDialog("The call to randomForest failed.",
                   "You probably have version 4.5-25.",
-                  "This is a known problem, and awaits a new version.",
-                  "For now, please install version 4.5-23.\n",
+                  "This is a known problem and is fixed in 4.5-26.",
+                  "Please install a newer version of randomForest.\n",
                   '\ninstall.packages("randomForest",\n',
                   '    repos="http://rattle.togaware.com")')
       setTextview(TV)
