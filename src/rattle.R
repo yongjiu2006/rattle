@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-12 20:40:17 Graham Williams>
+# Time-stamp: <2008-09-16 07:57:39 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 12 Sep 2008"
+VERSION.DATE <- "Released 13 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -377,7 +377,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   crv$NOTEBOOK.DATA.NAME <<- "Data"
 
-  crv$NOTEBOOK.SELECT.NAME <<- "Select"
+  crv$NOTEBOOK.TEST.NAME <<- "Test"
 
   crv$NOTEBOOK.EXPLORE.NAME <<- "Explore"
 
@@ -613,7 +613,10 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
 tuneRStat <- function()
 {
-
+  # Tune the user interface to suit the requirements for RStat. Often,
+  # we have added functionality to Rattle that is not yet we tested
+  # and tuned to for release as RStat.
+  
   ## Toolbar
   
   theWidget("report_toolbutton")$hide()
@@ -663,6 +666,10 @@ tuneRStat <- function()
 
   theWidget("all_models_radiobutton")$hide()
 
+  # Evaluate -> Linear
+
+  theWidget("glm_evaluate_checkbutton")$setLabel("Regression")
+  
 }
 
 tuneRattle <- function()
@@ -833,7 +840,7 @@ resetRattle <- function(new.dataset=TRUE)
 ##   theWidget("odbc_combobox")$setActive(-1)
 ##   theWidget("odbc_limit_spinbutton")$setValue(0)
 ##   theWidget("odbc_believeNRows_checkbutton")$setActive(FALSE)
-  
+
   if (new.dataset)
   {
     # Clear the treeviews.
@@ -7591,11 +7598,11 @@ on_tools_data_activate <- function(action, window)
   switchToPage(crv$NOTEBOOK.DATA.NAME)
 }
 
-on_tools_variables_activate <- function(action, window)
+on_tools_test_activate <- function(action, window)
 {
   crv$NOTEBOOK$setCurrentPage(getNotebookPage(crv$NOTEBOOK,
-                                              crv$NOTEBOOK.SELECT.NAME))
-  switchToPage(crv$NOTEBOOK.SELECT.NAME)
+                                              crv$NOTEBOOK.TEST.NAME))
+  switchToPage(crv$NOTEBOOK.TEST.NAME)
 }
 
 on_tools_transform_activate <- function(action, window)

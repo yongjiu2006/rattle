@@ -50,6 +50,7 @@ R_SOURCE = \
 	src/random_forest.R \
 	src/report.R \
 	src/rpart.R \
+	src/test.R \
 	src/textview.R \
 	src/zzz.R
 

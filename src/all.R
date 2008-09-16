@@ -19,6 +19,7 @@ source("random_forest.R")
 source("textview.R")
 source("data.R")
 source("report.R")
+source("test.R")
 
 source("pmml.R")
 source("pmml.arules.R")

@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.85.
+    version is 2.3.86.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+318 080916 Add a new Test tab for statistical tests
+           Include t-test as example of new Test tab.
 317 080913 Initial support for Poisson model for count data.
            Note release of randomForest-4.5-27.
 316 080912 Catch kmeans error when too few data points.

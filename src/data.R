@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-13 07:15:17 Graham Williams>
+# Time-stamp: <2008-09-16 07:58:37 Graham Williams>
 #
 # DATA TAB
 #
@@ -489,6 +489,8 @@ executeDataTab <- function(csvname=NULL)
   # TODO 080520 Change the name to updateRoles.
   
   executeSelectTab()
+
+  resetTestTab()
 
   # Set the risk label appropriately.
   
