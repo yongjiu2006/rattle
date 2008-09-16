@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-13 07:45:21 Graham Williams>
+# Time-stamp: <2008-09-15 18:54:26 Graham Williams>
 #
 # MODEL TAB
 #
@@ -254,7 +254,7 @@ countTarget <- function()
   return(numericTarget()
          && (is.integer(crs$dataset[[crs$target]])
              || ! any(grep("\\.", crs$dataset[[crs$target]])))
-         && ! any(crs$dataset[[crs$target]] < 0))
+         && ! any(crs$dataset[[crs$target]] < 0, na.rm=TRUE))
 }
 
 categoricTarget <- function()
@@ -1165,7 +1165,7 @@ executeModelSVM <- function()
   including  <- not.null(included)
   subsetting <- sampling || including
 
-  ## Parameters.
+  # Parameters.
 
   parms <- ""
   if (krnl != "")
@@ -1175,7 +1175,7 @@ executeModelSVM <- function()
   if (krnl == "polydot")
     parms <- sprintf('%s, kpar=list("degree"=%s)', parms, degree)
   
-  ## Build the model.
+  # Build the model.
 
   if (useKernlab)
     svmCmd <- paste("crs$ksvm <<- ksvm(", frml, ", data=crs$dataset", sep="")
@@ -1188,11 +1188,16 @@ executeModelSVM <- function()
                    if (including) included,
                    if (subsetting) "]",
                    parms, sep="")
+
+  # We need to add an option to ensure the probabilities are also
+  # recorded.
+
   if (useKernlab)
     svmCmd <- paste(svmCmd, ", prob.model=TRUE", sep="")  # Probabilities
   else
     svmCmd <- paste(svmCmd, ", probability=TRUE", sep="")  # Probabilities
   svmCmd <- paste(svmCmd, ")", sep="")
+
   start.time <- Sys.time()
   appendLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
@@ -1200,13 +1205,11 @@ executeModelSVM <- function()
   {
     if (any(grep("cannot allocate vector", result)))
     {
-      errorDialog("The call to svm appears to have failed.",
-                  "This is often due, as in this case,",
-                  "to running out of memory",
-                  "as svm is rather memory hungry.",
-                  "A quick solution is to sample the dataset, through the",
-                  "Transform tab. On 32 bit machines you may be limited to",
-                   "less than 10000 entities.")
+      errorDialog("The call to svm has failed, running out of memory.",
+                  "The support vector machine algorithm is rather memory hungry.",
+                  "A quick solution is to down sample the dataset, through the",
+                  "Data tab. On 32 bit machines you may be limited to",
+                   "less than 10,000 entities.")
       setTextview(TV)
     }
     else
@@ -1214,11 +1217,11 @@ executeModelSVM <- function()
                   "The error message was:", result,
                   "I am not familiar with this error, and you may",
                   "want to report it to",
-                  "at support@togaware.com")
+                  "support@togaware.com")
     return(FALSE)
   }
 
-  ## Display the resulting model.
+  # Display the resulting model.
 
   if (useKernlab)
     summaryCmd <- "crs$ksvm"
