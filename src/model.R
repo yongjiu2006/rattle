@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-15 18:54:26 Graham Williams>
+# Time-stamp: <2008-09-17 19:36:17 Graham Williams>
 #
 # MODEL TAB
 #
@@ -313,6 +313,8 @@ makeEvaluateSensitive <- function()
     buttons <- c("confusion", "score")
   else if (numericTarget())
     buttons <- c("pvo", "score")
+  else if (crv$appname == "RStat" && binomialTarget())
+    buttons <- setdiff(all.buttons, "pvo")
   else
     buttons <- all.buttons
 
