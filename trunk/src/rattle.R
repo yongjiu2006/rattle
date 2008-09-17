@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-16 07:57:39 Graham Williams>
+# Time-stamp: <2008-09-17 19:42:13 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Sep 2008"
+VERSION.DATE <- "Released 16 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5662,7 +5662,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
   {
 
     setStatusBar("Applying the", commonName(mtype),
-                 "model to the dataset to generate a classification table...")
+                 "model to the dataset to generate an error matrix...")
     
     # Generate the command to show the confusion matrix.
     
@@ -5684,7 +5684,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     
     # Log the R commands and execute them.
 
-    appendLog(sprintf("%sGenerate a Confusion Table for the %s model.",
+    appendLog(sprintf("%sGenerate an Error Matrix for the %s model.",
                      .START.LOG.COMMENT, commonName(mtype)), no.start=TRUE)
     appendLog(sprintf("Obtain the response from the %s model.",
                       commonName(mtype)),
@@ -5715,7 +5715,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    "column included (e.g., when your test dataset",
                    "is meant to be used as a scoring dataset, in which case",
                    "we can't perform an evaluation).",
-                   "For producing a confusion table we need",
+                   "For producing an error matrix we need",
                    "to include the target variable.",
                    "Please load a CSV file which has",
                    "the risk and target variables included.",
@@ -5726,11 +5726,11 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       next()
     }
     
-    appendLog("Now generate the confusion matrix.", confuse.cmd)
+    appendLog("Now generate the error matrix.", confuse.cmd)
 
     confuse.output <- collectOutput(confuse.cmd, TRUE)
   
-    appendLog("Generate confusion matrix showing percentages.", percentage.cmd)
+    appendLog("Generate error matrix showing percentages.", percentage.cmd)
     percentage.output <- collectOutput(percentage.cmd, TRUE)
 
     if (binomialTarget())
@@ -5740,12 +5740,12 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     }
     
     appendTextview(TV,
-                   sprintf(paste("Confusion matrix for the %s model",
+                   sprintf(paste("Error matrix for the %s model",
                                  "on %s (counts):\n\n"),
                            commonName(mtype), testname),
                    confuse.output,
                    "\n\n",
-                   sprintf(paste("Confusion matrix for the %s model",
+                   sprintf(paste("Error matrix for the %s model",
                                  "on %s (%%):\n\n"),
                            commonName(mtype), testname),
                    percentage.output,
@@ -5753,7 +5753,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    sprintf("\n\nOverall error: %s", format(error.output)))
   }
   
-  return(sprintf("Generated Confusion Tables.", mtype, testname))
+  return(sprintf("Generated Error Matrix.", mtype, testname))
 }
 
 #----------------------------------------------------------------------
@@ -8156,10 +8156,10 @@ Rattle deploys ksvm from the kernlab package."))
 
 on_help_confusion_table_activate <- function(action, window)
 {
-  if (showHelpPlus("A confusion table concisely reports the performance
+  if (showHelpPlus("An error matrix concisely reports the performance
 of a model against a testing dataset. Generally, the number of entities
 predicted by the model into each of the classes is presented against the
-actual class to which that entity belongs. Rattle reports two confusion tables.
+actual class to which that entity belongs. Rattle reports two error matricies.
 The first is the raw entity counts whilst the second reports the
 percentages."))
   {
