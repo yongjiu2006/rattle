@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.87.
+    version is 2.3.88.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+220 080918 Bug fix drawing clusters.
+           Improve use of colurs by using the vcd package.
+	   Add explanatory test to Tests.
 219 080917 Fix residual use of "confusion matrix" - now "error matrix".
            Turn PrvOb plots off for binary in RStat
            Further Test tab functionality added.

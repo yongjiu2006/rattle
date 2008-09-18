@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-13 15:11:17 Graham Williams>
+# Time-stamp: <2008-09-18 19:18:30 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -400,9 +400,8 @@ on_kmeans_data_plot_button_clicked <- function(button)
   
   ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
   plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",
-                            "col=crs$kmeans$cluster)\n",
-                            genPlotTitleCmd(""), sep=""),
-                      ifelse(sampling, "crs$sample", ""), include)
+                            "col=crs$kmeans$cluster)\n%s", sep=""),
+                      ifelse(sampling, "crs$sample", ""), include, genPlotTitleCmd(""))
   appendLog("Generate a data plot.", plot.cmd)
 
   set.cursor("watch", "Rendering the plot. Please wait...")

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-16 07:58:37 Graham Williams>
+# Time-stamp: <2008-09-18 05:42:46 Graham Williams>
 #
 # DATA TAB
 #
@@ -82,7 +82,8 @@ showDataViewButtons <- function(action=TRUE)
   # not sensitive. Once data has been loaded we make these tabs
   # sensitive. The ACTION option allows for the case where we might
   # want to make them not sensitive. This option (action=FALSE) is not
-  # currently used.
+  # currently used but cold be in the future, probably when we click
+  # New project.
 
   if (! is.logical(action)) warning("action must be a logical")
     
