@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-17 20:05:44 Graham Williams>
+# Time-stamp: <2008-09-19 06:55:36 Graham Williams>
 #
 # Test Tab
 #
@@ -59,10 +59,21 @@ executeTestTab <- function()
 
   resetTextview(TV)
 
+  test <- NULL
+  preamble <- NULL
+  
   if (theWidget("test_distr_radiobutton")$getActive())
     test <- "ks2Test"
   else if (theWidget("test_ttest_radiobutton")$getActive())
+  {
     test <- "locationTest"
+    preamble <- paste("The t Test is performed on the two samples to test the",
+                      "hypothesis that the difference between the two",
+                      "means is zero.",
+                      "\nThe confidence interval is an interval around",
+                      "the expected difference between the means.\n\n",
+                      sep="\n")
+  }
   else if (theWidget("test_variance_radiobutton")$getActive())
     test <- "varianceTest"
   else if (theWidget("test_correlation_radiobutton")$getActive())
@@ -70,7 +81,9 @@ executeTestTab <- function()
   
   test.cmd <- sprintf('%s(crs$dataset[["%s"]], crs$dataset[["%s"]])', test, v1, v2)
   appendLog("Perform the test.", test.cmd)
-  setTextview(TV, collectOutput(test.cmd))
+  theWidget(TV)$setWrapMode("word")
+  resetTextview(TV, preamble, collectOutput(test.cmd))
+  theWidget(TV)$setWrapMode("none")
 
   setStatusBar("Test performed.")
 }

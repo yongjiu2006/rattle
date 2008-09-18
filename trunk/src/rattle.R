@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-17 19:42:13 Graham Williams>
+# Time-stamp: <2008-09-18 19:56:11 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 16 Sep 2008"
+VERSION.DATE <- "Released 17 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -3907,8 +3907,16 @@ executeExplorePlot <- function(dataset)
     # nocthes do not overlap, then the distribution medians are
     # significantly different.")
 
+    # 080918 Use the vcd package to get a better colour map. See
+    # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87
+    
+    if (packageIsAvailable("vcd"))
+      cols <- "col=rainbow_hcl(%d, start = 270, end = 150),"
+    else
+      cols <- "col=rainbow(%d),"
+    
     plot.cmd <- paste('bp <<- boxplot(dat ~ grp, ds,',
-                     sprintf('col=rainbow(%d),', length(targets)+1),
+                     sprintf(cols, length(targets)+1),
                      ifelse(is.null(targets), "",
                             sprintf('xlab="%s",', target)),
                      'notch=TRUE)')
@@ -4011,8 +4019,13 @@ executeExplorePlot <- function(dataset)
   {
     # Plot a histogram for numeric data.
 
+    if (packageIsAvailable("vcd"))
+      cols <- "col=rainbow_hcl(30, start = 270, end = 150)"
+    else
+      cols <- "col=rainbow(30)"
+    
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
-                      'col=rainbow(10))\n',
+                      cols, ')\n',
                       'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
                       'rs <- max(hs$counts)/max(dens$y)\n',
                       'lines(dens$x, dens$y*rs, type="l")',
@@ -4025,8 +4038,13 @@ executeExplorePlot <- function(dataset)
     # sense, because the bars are the actual data, there is no
     # grouping.
 
+    if (packageIsAvailable("vcd"))
+      cols <- "col=rainbow_hcl(30, start = 270, end = 150)"
+    else
+      cols <- "col=rainbow(30)"
+
     altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1], ',
-                         'digits=2)), col=rainbow(10))\n',
+                         'digits=2)), ', cols, ')\n',
                          #'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
                          #'rs<- max(summary(as.factor(round(ds[ds$grp=="All",',
                          #'1], digits=2))))/max(dens$y)\n',
@@ -4095,7 +4113,11 @@ executeExplorePlot <- function(dataset)
     {
       startLog()
 
-      col <- rainbow(length(targets)+1)
+      if (packageIsAvailable("vcd"))
+        col <- rainbow_hcl(length(targets)+1, start = 30, end = 300)
+      else
+        col <- rainbow(length(targets)+1)
+      
       plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
                        sprintf('col="%s",', col[1]),
                        'xlab="",',
@@ -4110,9 +4132,14 @@ executeExplorePlot <- function(dataset)
                          sep="")
       }
 
+    if (packageIsAvailable("vcd"))
+      cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
+    else
+      cols <- "col=rainbow(%d)"
+
       if (not.null(targets))
         legend.cmd <- sprintf(paste('legend("bottomright", c(%s), ',
-                                   "col=rainbow(%d), lty=1:%d,",
+                                   cols, ", lty=1:%d,",
                                    'title="%s", inset=c(0.05,0.05))'),
                              paste(sprintf('"%s"', c("All", targets)),
                                    collapse=","),
@@ -4647,8 +4674,13 @@ executeExplorePlot <- function(dataset)
                                           ifelse(sampling," (sample)","")),
                                   vector=TRUE)
 
+      if (packageIsAvailable("vcd"))
+        cols <- "color=rainbow_hcl(%d, start = 270, end = 150)"
+      else
+        cols <- "color=rainbow(%d)"
+
       plot.cmd <- sprintf(paste('mosaicplot(ds, main="%s", sub="%s",',
-                                ' color=rainbow(%d), cex=0.7)'),
+                                ' ', cols, ', cex=0.7)'),
                           titles[1], titles[2], length(targets)+1)
       appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
@@ -6270,7 +6302,10 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
   opar <- par(cex=cex)
 
   nummodels <- length(probcmd)
-  mcolors <- rainbow(nummodels, 1, .8)
+  if (packageIsAvailable("vcd"))
+     mcolors <- rainbow_hcl(nummodels, start = 270, end = 150)
+  else
+    mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
   
   model.list <- getEvaluateModels()
