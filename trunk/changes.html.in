@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.88.
+    version is 2.3.89.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+221 080919 Remove Linear model label - too wide
+           Begin adding preambles to Test tab output
+           Use na.omit in Test call to avoid missing value problems.
 220 080918 Bug fix drawing clusters.
            Improve use of colurs by using the vcd package.
 	   Add explanatory test to Tests.
