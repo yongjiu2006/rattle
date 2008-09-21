@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-18 05:42:46 Graham Williams>
+# Time-stamp: <2008-09-21 11:00:36 Graham Williams>
 #
 # DATA TAB
 #
@@ -295,6 +295,18 @@ on_data_rdataset_radiobutton_toggled <- function(button)
   }
 }
 
+on_data_corpus_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    .DATA.NOTEBOOK$setCurrentPage(.DATA.CORPUS.TAB)
+  }
+  else
+  {
+    .DATA.NOTEBOOK$setCurrentPage(.DATA.CSV.TAB)
+  }
+}
+
 # 080907 Trying to get an event that will auto update the combobox
 # without having to move to another radio button and then back again.
 
@@ -393,10 +405,10 @@ executeDataTab <- function(csvname=NULL)
 {
   # Dispatch to the task indicated by the selected radio button within
   # the Data tab. If there is no change to the data source, or the
-  # data type label is not sensisteive (i.e., we have loaded a
-  # project), then simply update the variable roles instead, without
-  # reloading the data.  080520 This is now required as a result of
-  # merging the Data and the Select tabs.
+  # data type label is not sensitive (i.e., we have loaded a project),
+  # then simply update the variable roles instead, without reloading
+  # the data.  080520 This is now required as a result of merging the
+  # Data and the Select tabs.
 
 #  if (! is.null(csvname))
 #  {    
@@ -427,6 +439,10 @@ executeDataTab <- function(csvname=NULL)
     else if (theWidget("data_library_radiobutton")$getActive())
     {
       if (! executeDataLibrary()) return()
+    }
+    else if (theWidget("data_corpus_radiobutton")$getActive())
+    {
+      if (! executeDataCorpus()) return()
     }
 
     # Update the select treeview. This is done on a Data execute only

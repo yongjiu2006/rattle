@@ -6,32 +6,37 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.89.
+    version is 2.3.90.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-221 080919 Remove Linear model label - too wide
+
+321 080921 Initial beta implementation of the Text Mining corpus support
+           Ensure vcd is quietly loaded on startup if it is available.
+           Add a notebook into the Data tab for the corpus options
+           Update the program name in About
+320 080919 Remove Linear model label - too wide
            Begin adding preambles to Test tab output
            Use na.omit in Test call to avoid missing value problems.
-220 080918 Bug fix drawing clusters.
+319 080918 Bug fix drawing clusters.
            Improve use of colurs by using the vcd package.
 	   Add explanatory test to Tests.
-219 080917 Fix residual use of "confusion matrix" - now "error matrix".
+318 080917 Fix residual use of "confusion matrix" - now "error matrix".
            Turn PrvOb plots off for binary in RStat
            Further Test tab functionality added.
-318 080916 Add a new Test tab for statistical tests
+317 080916 Add a new Test tab for statistical tests
            Include t-test as example of new Test tab.
-317 080913 Initial support for Poisson model for count data.
+316 080913 Initial support for Poisson model for count data.
            Note release of randomForest-4.5-27.
-316 080912 Catch kmeans error when too few data points.
+315 080912 Catch kmeans error when too few data points.
            Ensure Transform Indicator variable names are valid.
 	   Deal with root only decision tree in generating PMML.
-315 080912 Include model name as file name in exporting to C
+314 080912 Include model name as file name in exporting to C
            Handle target heuristic num/cat when exactly 10 levels
-314 080908 Bug fix: generateAprioriSummary needed exporting (George Don't)
+           Bug fix: generateAprioriSummary needed exporting (George Don't)
 313 080907 Move crs/crv to be envs rather than lists (John Maindonald)
            Another fix to get Rattle to properly exit.
            Bug fix in transforms - wasn't getting the full list.
