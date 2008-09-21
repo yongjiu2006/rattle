@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-18 19:56:11 Graham Williams>
+# Time-stamp: <2008-09-21 13:17:38 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -138,10 +138,22 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   # Some global constants
 
   crv$max.vars.correlation <<- 40
+
+  # Load gloablly required packages.
   
   if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
+  if (packageIsAvailable("vcd"))
+  {
+    # 080921 Load each individually so we can keep the loading quiet!
+    
+    require("MASS", quietly=TRUE)
+    require("grid", quietly=TRUE)
+    require("colorspace", quietly=TRUE)
+    require("vcd", quietly=TRUE)
+  }
+  
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
   # Check to make sure libglade is available.
@@ -156,7 +168,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   options(Hverbose=FALSE)
 
- # Try firstly to load the glade file from the installed rattle
+  # Try firstly to load the glade file from the installed rattle
   # package, if it exists. Otherwise, look locally.
   
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
@@ -401,6 +413,12 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   crv$NOTEBOOK.LOG.NAME       <<- "Log"
 
+  # 080921 Define the DATA tab pages
+
+  .DATA.NOTEBOOK 	<<- theWidget("data_notebook")
+  .DATA.CORPUS.TAB      <<- getNotebookPage(.DATA.NOTEBOOK, "corpus")
+  .DATA.CSV.TAB         <<- getNotebookPage(.DATA.NOTEBOOK, "csv")
+  
   # Define the TRANSFORM tab pages
   
   crv$TRANSFORM               <<- theWidget("transform_notebook")
@@ -467,7 +485,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   
   # Turn off the sub-notebook tabs.
   
-#  crv$DATA$setShowTabs(FALSE)
+  .DATA.NOTEBOOK$setShowTabs(FALSE)
   .EXPLORE$setShowTabs(FALSE)
   crv$TRANSFORM$setShowTabs(FALSE)
   .CLUSTER$setShowTabs(FALSE)
@@ -627,7 +645,8 @@ tuneRStat <- function()
   # Data -> R Dataset
 
   theWidget("data_rdataset_radiobutton")$hide()
-
+  theWidget("data_corpus_radiobutton")$hide()
+  
   # Data -> Edit
   
   theWidget("data_edit_button")$hide()
@@ -4019,13 +4038,15 @@ executeExplorePlot <- function(dataset)
   {
     # Plot a histogram for numeric data.
 
-    if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(30, start = 270, end = 150)"
-    else
-      cols <- "col=rainbow(30)"
+    nbars <- nclass.scott(ds[ds$grp=="All",1])
     
+    if (packageIsAvailable("vcd"))
+      cols <- sprintf("col=rainbow_hcl(%s, start = 270, end = 150)", nbars)
+    else
+      cols <- sprintf("col=rainbow(%s)", nbars)
+
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
-                      cols, ')\n',
+                      cols, ', breaks="scott", border=FALSE)\n',
                       'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
                       'rs <- max(hs$counts)/max(dens$y)\n',
                       'lines(dens$x, dens$y*rs, type="l")',
@@ -7594,9 +7615,20 @@ on_about_menu_activate <-  function(action, window)
   else
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
+  about <<- about #DEBUG
+
   about$getWidget("aboutdialog")$setVersion(VERSION)
+
+  if (crv$appname == "RStat")
+  {
+    about$getWidget("aboutdialog")$setProgramName("RStat")
+    about$getWidget("aboutdialog")$setWebsite(paste("http://rattle.togaware.com",
+                                                    "\n           http://ibi.com"))
+  }
+  
   about$getWidget("aboutdialog")$
     setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT))
+
   gladeXMLSignalAutoconnect(about)
 }
 

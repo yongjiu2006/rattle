@@ -52,6 +52,7 @@ R_SOURCE = \
 	src/rpart.R \
 	src/test.R \
 	src/textview.R \
+	src/textminer.R \
 	src/zzz.R
 
 # Eventually remove pmml.R from above and put into own package.
