@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.91.
+    version is 2.3.92.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+323 080923 Add additional Help menu items.
+           Restore doc on welcome screen for rattle (Tony Nolan).
 322 080922 Add more information for tests.
 321 080921 Initial beta implementation of the Text Mining corpus support
            Ensure vcd is quietly loaded on startup if it is available.

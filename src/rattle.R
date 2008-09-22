@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-22 18:32:39 Graham Williams>
+# Time-stamp: <2008-09-23 06:35:44 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Sep 2008"
+VERSION.DATE <- "Released 22 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -418,7 +418,11 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   .DATA.NOTEBOOK 	<<- theWidget("data_notebook")
   .DATA.CORPUS.TAB      <<- getNotebookPage(.DATA.NOTEBOOK, "corpus")
   .DATA.CSV.TAB         <<- getNotebookPage(.DATA.NOTEBOOK, "csv")
-  
+
+  .DATA.DISPLAY.NOTEBOOK       <<- theWidget("data_display_notebook")
+  .DATA.DISPLAY.TREEVIEW.TAB   <<- getNotebookPage(.DATA.DISPLAY.NOTEBOOK, "treeview")
+  .DATA.DISPLAY.WELCOME.TAB    <<- getNotebookPage(.DATA.DISPLAY.NOTEBOOK, "welcome")
+
   # Define the TRANSFORM tab pages
   
   crv$TRANSFORM               <<- theWidget("transform_notebook")
@@ -486,6 +490,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   # Turn off the sub-notebook tabs.
   
   .DATA.NOTEBOOK$setShowTabs(FALSE)
+  .DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
   .EXPLORE$setShowTabs(FALSE)
   crv$TRANSFORM$setShowTabs(FALSE)
   .CLUSTER$setShowTabs(FALSE)
@@ -555,6 +560,33 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   # 080510 Display a relevant welcome message in the textview.
 
+  if (crv$appname == "Rattle")
+  {
+    .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.WELCOME.TAB)
+    resetTextview("rattle_welcome_textview",
+                  paste("Welcome to Rattle (rattle.togaware.com).\n",
+                        "\nRattle is a free graphical user",
+                        "interface for Data Mining, developed using R.",
+                        "R is a free software environment",
+                        "for statistical computing and graphics.",
+                        "Together they provide one of the most sophisticated",
+                        "and complete environments for performing data mining,",
+                        "statistical analyses, and data visualisation.",
+                        "\n\nSee the Help menu for extensive support in",
+                        "using Rattle.",
+                        "\n\nTogaware's Desktop Data Mining Survival Guide",
+                        "(under development) includes extensive documentation",
+                        "on using Rattle. It is available from\n\n",
+                        "    datamining.togaware.com",
+                        "\n\nRattle is licensed under the",
+                        "GNU General Public License, Version 2.",
+                        "\nRattle comes with ABSOLUTELY NO WARRANTY.",
+                        "\nSee Help -> About for details.",
+                        "\n\nRattle version", VERSION,
+                        "\nCopyright (C) 2008 Togaware Pty Ltd"),
+                  tvsep=FALSE)
+  }
+  
 ## PUT THE MAIN TEXT HERE INTO THE ABOUT.
 ##
 ##   if (crv$appname == "Rattle")

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-21 11:00:36 Graham Williams>
+# Time-stamp: <2008-09-23 06:38:32 Graham Williams>
 #
 # DATA TAB
 #
@@ -472,6 +472,9 @@ executeDataTab <- function(csvname=NULL)
   }
   else
     resetRattle(new.dataset=FALSE)
+
+  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+
   
 #  else
 #  {
