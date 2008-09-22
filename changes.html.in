@@ -6,14 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.90.
+    version is 2.3.91.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-
+322 080922 Add more information for tests.
 321 080921 Initial beta implementation of the Text Mining corpus support
            Ensure vcd is quietly loaded on startup if it is available.
            Add a notebook into the Data tab for the corpus options

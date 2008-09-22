@@ -7,10 +7,8 @@
     priorities and especially code.</p>
 
 <pre>
-080906 Begin the migration to using caret underneath
 080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
 080716 Risk Charts for regression by using rank
-080712 Fix RData File and ODBC wrt changedDataTab
 080711 Replace Distributions with laticist/playwith (Felix Andrews)
 080629 Capture transformations in PMML
 080627 Allow categorics with hclust
@@ -37,7 +35,6 @@
 080521 Use dprep's ce.impute to impute: mean, median, knn
 080521 Use dprep functionality for feature selection +++
 080521 Use dprep for outlier detection
-080517 Add a Statistics option under Explore (t-test/z-test/chi^2 (Tony Nolan)
 080513 Add a R command console where paradigms were (Tony Nolan)
 080517 Add a macros menu with canned R templates (Tony Nolan)
 080511 Move to using guiDo from plotAndPlayGTK
