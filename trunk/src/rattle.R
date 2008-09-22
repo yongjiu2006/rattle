@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-21 13:17:38 Graham Williams>
+# Time-stamp: <2008-09-22 18:32:39 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Sep 2008"
+VERSION.DATE <- "Released 21 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7615,8 +7615,6 @@ on_about_menu_activate <-  function(action, window)
   else
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
-  about <<- about #DEBUG
-
   about$getWidget("aboutdialog")$setVersion(VERSION)
 
   if (crv$appname == "RStat")
@@ -8057,7 +8055,8 @@ mean, median, or mode. This is not recommended.")
 
 on_help_nolan_activate <- function(action, window)
 {
-  if (showHelpPlus("The Nolan Groups transformation segments the selected numeric variables
+  if (showHelpPlus("The Nolan Groups transformation segments the selected
+numeric variables
 by a selected categoric variable, and then within each segment rescales the numeric
 variable's range to the 0-100 range, using the range option of the rescale(rehsape)
 function. This transform was proposed by Anthony Nolan."))

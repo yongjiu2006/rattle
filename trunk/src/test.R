@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-21 19:17:32 Graham Williams>
+# Time-stamp: <2008-09-22 18:50:27 Graham Williams>
 #
 # Test Tab
 #
@@ -94,16 +94,39 @@ executeTestTab <- function()
   if (theWidget("test_groupby_checkbutton")$getActive())
   {
     v1 <- v2 <- theWidget("test_vars1_combobox")$getActiveText()
+    if (is.null(v1))
+    {
+      errorDialog("Please first choose a column from which the sample",
+                  "will be obtained.")
+      return(FALSE)
+    }
     lvl <- levels(as.factor(crs$dataset[[crs$target]]))
     s1 <- sprintf('[crs$dataset[["%s"]] == %s,]', crs$target, lvl[1])
     s2 <- sprintf('[crs$dataset[["%s"]] == %s,]', crs$target, lvl[2])
+    msg <- sprintf(paste('come from the \n"%s" column, grouped by "%s",',
+                         'with\nvalues "%s" and "%s"'),
+                   v1, crs$target, lvl[1], lvl[2])
   }
   else
   {
     v1 <- theWidget("test_vars1_combobox")$getActiveText()
+    if (is.null(v1))
+    {
+      errorDialog("Please first choose a column from which the first sample",
+                  "will be obtained.")
+      return(FALSE)
+    }
     v2 <- theWidget("test_vars2_combobox")$getActiveText()
+    if (is.null(v2))
+    {
+      errorDialog("Please first choose a column from which the second sample",
+                  "will be obtained.")
+      return(FALSE)
+    }
     s1 <- s2 <- ""
+    msg <- sprintf('are the two\ncolumns, "%s" and "%s"', v1, v2)
   }
+  msg <- sprintf("\nThe two samples being compared %s.\n", msg)
   
 
   # Start the log for this task.
@@ -121,19 +144,33 @@ executeTestTab <- function()
 
   test <- NULL
   preamble <- NULL
+  options <- ""
   
   if (theWidget("test_distr_radiobutton")$getActive())
   {
     test <- "ks2Test"
-    preamble <- paste("The Kolmogorov-Smirnov test indicates whether the two datasets",
-                      "are similarly distributed.\n", sep="\n")
+    preamble <- paste("The Kolmogorov-Smirnov test indicates whether the two",
+                      "samples are similarly distributed.\n", sep="\n")
   }
   else if (theWidget("test_ttest_radiobutton")$getActive())
   {
     test <- "locationTest"
     preamble <- paste("The t Test is performed on the two samples to test the",
                       "hypothesis that the difference between the two",
-                      "means is zero.",
+                      "means is zero. It is assumed the two samples are normally",
+                      "distriubted. Otherwise use the Kruskal-Wallis test.",
+                      "\nThe confidence interval is an interval around",
+                      "the expected difference between the means.\n",
+                      sep="\n")
+  }
+  else if (theWidget("test_kw_radiobutton")$getActive())
+  {
+    test <- "locationTest"
+    options <- ', method="kw"'
+    preamble <- paste("The Kruskal-Wallis test is performed on the two samples",
+                      "to test the hypothesis that the difference between the two",
+                      "means is zero. It does not assume that the two samples",
+                      "are normally distriubted.",
                       "\nThe confidence interval is an interval around",
                       "the expected difference between the means.\n",
                       sep="\n")
@@ -144,10 +181,10 @@ executeTestTab <- function()
     test <- "correlationTest"
   
   test.cmd <- sprintf(paste('%s(na.omit(crs$dataset%s[["%s"]]),',
-                            'na.omit(crs$dataset%s[["%s"]]))'),
-                      test, s1, v1, s2, v2)
+                            'na.omit(crs$dataset%s[["%s"]])%s)'),
+                      test, s1, v1, s2, v2, options)
   appendLog("Perform the test.", test.cmd)
-  resetTextview(TV, preamble, collectOutput(test.cmd))
+  resetTextview(TV, preamble, msg, collectOutput(test.cmd))
 
   setStatusBar("Test completed.")
 }
