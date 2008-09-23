@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-23 06:35:44 Graham Williams>
+# Time-stamp: <2008-09-24 06:51:50 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Sep 2008"
+VERSION.DATE <- "Released 23 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -197,6 +197,11 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   # whilst Rattle is running.
   
   crv$options <<- options(scipen=5)
+
+  # 080924 Load of a supplied data file occurs here, but may take time
+  # and whilst the UI is not fully set up yet, we see the Welcome
+  # screen in Rattle displayed in RStat for 30 seconds or so. So
+  # perhaps move it to later in the process.
   
   # Load data from the file identified by the csvname supplied in the
   # call to Rattle, or from the environment variable RATTLE_DATA if
@@ -466,6 +471,18 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
   .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
   
+  # Turn off the sub-notebook tabs.
+
+  # Sys.sleep(5) 080924 to test delays....
+  
+  .DATA.NOTEBOOK$setShowTabs(FALSE)
+  .DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
+  .EXPLORE$setShowTabs(FALSE)
+  crv$TRANSFORM$setShowTabs(FALSE)
+  .CLUSTER$setShowTabs(FALSE)
+  crv$MODEL$setShowTabs(FALSE)
+  .EVALUATE$setShowTabs(FALSE)
+
   ########################################################################
   # Connect the callbacks.
   
@@ -487,16 +504,6 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   
   initialiseVariableViews()
   
-  # Turn off the sub-notebook tabs.
-  
-  .DATA.NOTEBOOK$setShowTabs(FALSE)
-  .DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
-  .EXPLORE$setShowTabs(FALSE)
-  crv$TRANSFORM$setShowTabs(FALSE)
-  .CLUSTER$setShowTabs(FALSE)
-  crv$MODEL$setShowTabs(FALSE)
-  .EVALUATE$setShowTabs(FALSE)
-
   # Ensure the filechooserbutton by default will filter CSVs.
 
   updateFilenameFilters("data_filechooserbutton", "CSV")
@@ -8263,6 +8270,26 @@ percentages."))
   {
     popupTextviewHelpWindow("table")
   }
+}
+
+on_help_risk_chart_activate <- function(action, window)
+{
+  showHelp("A risk chart plots population proportion along the X axis and a
+perforamnce measure along the Y axis. If a Risk variable is identified in the
+Data tab then the amount of risk covered is included in the chart (the red line).
+The green line indicates the proportion of known targets that are identified
+for any proportion of the population covered. The diagonal black line is a baseline,
+indicating performance if cases were selected randomly.")
+}
+
+on_help_cost_curve_activate <- function(action, window)
+{
+  showHelp("A cost curve ...")
+}
+
+on_help_lift_activate <- function(action, window)
+{
+  showHelp("A lift chart ...")
 }
 
 on_help_sensitivity_activate <- function(action, window)

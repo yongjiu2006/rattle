@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-22 18:50:27 Graham Williams>
+# Time-stamp: <2008-09-23 21:21:28 Graham Williams>
 #
 # Test Tab
 #
@@ -160,7 +160,11 @@ executeTestTab <- function()
                       "means is zero. It is assumed the two samples are normally",
                       "distriubted. Otherwise use the Kruskal-Wallis test.",
                       "\nThe confidence interval is an interval around",
-                      "the expected difference between the means.\n",
+                      "the expected difference between the means.",
+                      "\nA low p-value (less than 0.05) indicates statistically",
+                      "significant results.",
+                      "\nTwo variants are reported: assume equal and unequal variances.",
+                      "\n",
                       sep="\n")
   }
   else if (theWidget("test_kw_radiobutton")$getActive())
