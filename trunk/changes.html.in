@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.92.
+    version is 2.3.93.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+324 080924 Move the notebook tab removals to earlier in the Rattle startup
+           Update some Help menu items.
+           Add further explanation to test outputs
 323 080923 Add additional Help menu items.
            Restore doc on welcome screen for rattle (Tony Nolan).
 322 080922 Add more information for tests.

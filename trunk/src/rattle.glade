@@ -653,11 +653,63 @@
                               </widget>
                             </child>
                             <child>
+                              <widget class="GtkMenuItem" id="menuitem13">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">_Risk Chart</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_risk_chart_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_cost_curve">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">_Cost Curve</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_cost_curve_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_lift">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">_Lift</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_lift_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_roc">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">R_OC</property>
+                                <property name="use_underline">True</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_precision">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">_Precision</property>
+                                <property name="use_underline">True</property>
+                              </widget>
+                            </child>
+                            <child>
                               <widget class="GtkMenuItem" id="sensitivity1">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_Sensitivity</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_help_sensitivity_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_prvob">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Pr _v Ob</property>
+                                <property name="use_underline">True</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_score">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Sc_ore</property>
+                                <property name="use_underline">True</property>
                               </widget>
                             </child>
                           </widget>
@@ -1292,8 +1344,8 @@
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
                             <property name="tooltip" translatable="yes">Folder containing the corpus and optionally a target.csv file.</property>
-                            <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
                             <property name="local_only">False</property>
+                            <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -1738,7 +1790,6 @@ If sampling is enabled, then any clustering and modelling is performed over the 
                   <widget class="GtkNotebook" id="data_display_notebook">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="show_border">False</property>
                     <child>
                       <widget class="GtkScrolledWindow" id="scrolledwindow2">
                         <property name="visible">True</property>
