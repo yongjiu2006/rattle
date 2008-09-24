@@ -6,13 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.93.
+    version is 2.3.94.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+325 080925 Test exist setProgramName for About - not always available.
+           Remove tabs from XML, not programmatically since they flash up
+           On script export, add _script to filename + remove extra infoDialog
+           Bug fix: export script failed - was testing for Select notebook tab
+           Bug fix: hist plot num colour code must be done after ds eval'd
+           Revert from lattice since does not play friendly with multi plots
 324 080924 Move the notebook tab removals to earlier in the Rattle startup
            Update some Help menu items.
            Add further explanation to test outputs
