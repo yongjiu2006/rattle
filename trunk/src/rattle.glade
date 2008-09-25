@@ -2811,6 +2811,22 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkRadioButton" id="test_wilcoxon_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Two sample Wilcoxon rank-sum test, also known as the Mann-Whitney U test, to test whether the two distributions are the same.</property>
+                        <property name="label" translatable="yes">Wilcoxon</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="GtkRadioButton" id="test_ttest_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -2823,15 +2839,15 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="test_kw_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Two sample test of means when distributions are not normal.</property>
-                        <property name="label" translatable="yes">Kruskal-Wallis Test</property>
+                        <property name="tooltip" translatable="yes">Two sample test of means when distributions are not known to be normal.</property>
+                        <property name="label" translatable="yes">Kruskal-Wallis</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
@@ -2839,7 +2855,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -2855,7 +2871,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -2870,11 +2886,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">5</property>
+                        <property name="position">6</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
