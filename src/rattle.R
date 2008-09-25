@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-25 06:54:09 Graham Williams>
+# Time-stamp: <2008-09-26 06:59:35 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Sep 2008"
+VERSION.DATE <- "Released 25 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -162,6 +162,60 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
     stop("The RGtk2 package did not find libglade installed. ",
          "Please install it.")
 
+  # On the Macintosh we seem to need to initialise all of the types
+  # for the GTK widgets. So do that here.
+
+  if (Sys.info()["sysname"] == "Darwin")
+  {
+    # Use the following to extract all widgets from the glade file:
+    #
+    # $ grep '<widget' rattle.glade | sed 's|^.*widget class="||' |\
+    #   sed 's|".*$||' | sort -u | sed 's|^Gtk|gtk|' |\
+    #   awk '{printf("%sGetType()\n", $1)}'
+    
+    gtkAboutDialogGetType()
+    gtkAlignmentGetType()
+    gtkButtonGetType()
+    gtkCheckButtonGetType()
+    gtkCheckMenuItemGetType()
+    gtkComboBoxEntryGetType()
+    gtkComboBoxGetType()
+    gtkDrawingAreaGetType()
+    gtkEntryGetType()
+    gtkFileChooserButtonGetType()
+    gtkFileChooserDialogGetType()
+    gtkHBoxGetType()
+    gtkHButtonBoxGetType()
+    gtkHSeparatorGetType()
+    gtkHandleBoxGetType()
+    gtkImageGetType()
+    gtkImageMenuItemGetType()
+    gtkLabelGetType()
+    gtkMenuBarGetType()
+    gtkMenuGetType()
+    gtkMenuItemGetType()
+    gtkMiscGetType()
+    gtkNotebookGetType()
+    gtkRadioButtonGetType()
+    gtkScrolledWindowGetType()
+    gtkSeparatorMenuItemGetType()
+    gtkSeparatorToolItemGetType()
+    gtkSpinButtonGetType()
+    gtkStatusbarGetType()
+    gtkTableGetType()
+    gtkTextViewGetType()
+    gtkToolButtonGetType()
+    gtkToolItemGetType()
+    gtkToolbarGetType()
+    gtkTreeViewGetType()
+    gtkVBoxGetType()
+    gtkVSeparatorGetType()
+    gtkWidgetGetType()
+    gtkWindowGetType()
+  }
+  
+  # Ensure the About dialog will respond to the Quit button.
+  
   on_aboutdialog_response <<- gtkWidgetDestroy
   
   # Keep the loading of Hmisc quiet.

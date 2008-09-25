@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-23 21:21:28 Graham Williams>
+# Time-stamp: <2008-09-25 19:54:14 Graham Williams>
 #
 # Test Tab
 #
@@ -177,6 +177,15 @@ executeTestTab <- function()
                       "are normally distriubted.",
                       "\nThe confidence interval is an interval around",
                       "the expected difference between the means.\n",
+                      sep="\n")
+  }
+  else if (theWidget("test_wilcoxon_radiobutton")$getActive())
+  {
+    test <- "wilcox.test"
+    preamble <- paste("The two sample non-parametric Wilcoxon test is performed",
+                      "on the two samples to test the hypothesis that the",
+                      "distributions are the same. It does not assume that the",
+                      "two samples are normally distriubted.\n",
                       sep="\n")
   }
   else if (theWidget("test_variance_radiobutton")$getActive())
