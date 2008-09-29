@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-13 07:40:41 Graham Williams>
+# Time-stamp: <2008-09-29 20:39:10 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -352,8 +352,7 @@ plotRandomForestImportance <- function()
   
 plotRandomForestError <- function()
 {
-
-  ## Make sure there is an rf object first.
+  # Make sure there is an rf object first.
 
   if (is.null(crs$rf))
   {
@@ -364,9 +363,13 @@ plotRandomForestError <- function()
   }
   
   newPlot()
-  plot.cmd <- paste('plot(crs$rf, main="")\n',
+  plot.cmd <- paste('plot(crs$rf, main="")',
+                    sprintf(paste('legend("topright", %s, text.col=1:6,',
+                                  'lty=1:3, col=1:3)'),
+                            sprintf("c(%s)", paste('"', colnames(crs$rf$err.rate),
+                                                   '"', sep="", collapse=", "))),
                     genPlotTitleCmd("Error Rates rf", crs$dataname),
-                    sep="")
+                    sep="\n")
 
   appendLog("Plot error rate as we increase the number of trees.", plot.cmd)
   eval(parse(text=plot.cmd))

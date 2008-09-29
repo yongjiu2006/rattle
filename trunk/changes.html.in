@@ -13,6 +13,11 @@
    </p>
 
 <pre>
+327 080930 Retain 'Linear' as label for RStat
+           Add legend to rf Errors plot
+           Bug fix cluster discriminant plot
+326 080926 Add calls to GetType to support Mac OS X with RGtk2.
+           Add Wilcoxon test.
 325 080925 Test exist setProgramName for About - not always available.
            Remove tabs from XML, not programmatically since they flash up
            On script export, add _script to filename + remove extra infoDialog

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-18 19:18:30 Graham Williams>
+# Time-stamp: <2008-09-29 20:08:32 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -347,7 +347,7 @@ on_kmeans_stats_button_clicked <- function(button)
   appendTextview(TV, "General cluster statistics:\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
 
-  setStatusBar("K Means cluster statistics have been generated.")
+  setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
 }
 
 on_kmeans_data_plot_button_clicked <- function(button)
@@ -461,11 +461,11 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
   # PLOT: Log the R command and execute. 080521 Add the na.omit since
   # kmeans is usually built with this.
 
-  plot.cmd <- sprintf(paste("plotcluster(na.omit(crs$dataset[%s,%s]), ",
-                            "crs$kmeans$cluster)\n",
-                            genPlotTitleCmd("Discriminant Coordinates",
-                                            crs$dataname), sep=""),
-                      ifelse(sampling, "crs$sample", ""), include)
+  plot.cmd <- paste(sprintf("plotcluster(na.omit(crs$dataset[%s,%s]), ",
+                            ifelse(sampling, "crs$sample", ""), include),
+                    "crs$kmeans$cluster)\n",
+                    genPlotTitleCmd("Discriminant Coordinates",
+                                    crs$dataname), sep="")
   appendLog("Generate a discriminant coordinates plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
