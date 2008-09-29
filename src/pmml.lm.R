@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 14:49:52 Graham Williams>
+# Time-stamp: <2008-09-27 10:17:07 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -76,7 +76,7 @@ pmml.lm <- function(model,
 
   # Added by Zementis so that code can also export binary logistic
   # regression glm models built with binomial(logit)
-
+  
   if (as.character(model$call[[3]])[1] == "binomial")
   {
     lm.model <- xmlNode("RegressionModel",

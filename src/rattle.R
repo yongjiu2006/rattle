@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-26 06:59:35 Graham Williams>
+# Time-stamp: <2008-09-27 09:02:10 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Sep 2008"
+VERSION.DATE <- "Released 26 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -771,6 +771,7 @@ tuneRStat <- function()
   # family. Regression is perhaps a more general term. I've not
   # approval for this from IBI so retaining Regression there for now.
   theWidget("model_linear_radiobutton")$setLabel("Regression")
+  theWidget("glm_linear_radiobutton")$setLabel("Linear")
   theWidget("model_linear_probit_radiobutton")$hide()
   theWidget("model_linear_plot_button")$hide()
   
