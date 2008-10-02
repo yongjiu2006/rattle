@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-17 19:36:17 Graham Williams>
+# Time-stamp: <2008-10-02 21:13:07 Graham Williams>
 #
 # MODEL TAB
 #
@@ -323,15 +323,17 @@ makeEvaluateSensitive <- function()
     buttons <- c("score")
   
   # Need to handle the Risk button specially. Only enable it if there
-  # is a risk variable.
+  # is a risk variable. 081002 But the plotRisk function actually
+  # works just fine when there is no risk variable, so let it plot
+  # such.
   
-  if ("risk" %in% buttons)
-  {
-    theWidget("risk_radiobutton")$
-    setSensitive(length(getSelectedVariables("risk")) != 0)
-    buttons <- setdiff(buttons, "risk")
-    all.buttons <- setdiff(all.buttons, "risk")
-  }
+###   if ("risk" %in% buttons)
+###   {
+###     theWidget("risk_radiobutton")$
+###     setSensitive(length(getSelectedVariables("risk")) != 0)
+###     buttons <- setdiff(buttons, "risk")
+###     all.buttons <- setdiff(all.buttons, "risk")
+###   }
 
   # Enable each of the specified evaluate buttons.
 
