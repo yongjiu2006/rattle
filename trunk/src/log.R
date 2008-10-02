@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-25 06:41:33 Graham Williams>
+# Time-stamp: <2008-10-01 07:28:14 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -44,7 +44,13 @@ library(rattle)
 # Simply type \"str(crs)\" in the R Console to see a summary of what is
 # stored there!
 
-crs <- NULL"))
+crs <- NULL",
+                 ifelse(packageIsAvailable("vcd"), "
+
+# The vcd package is used to generate the colours used in plots, if
+# it is available.
+
+library(vcd)", "")))
 
 }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-27 09:02:10 Graham Williams>
+# Time-stamp: <2008-10-02 22:04:24 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 26 Sep 2008"
+VERSION.DATE <- "Released 30 Sep 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2985,7 +2985,7 @@ executeTransformRemapPerform <- function()
   if (action == "quantiles")
   {
     remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
-                                     'dataset[["%s"]], %d, method="quantile",',
+                                     'dataset[["%s"]], %d, method="quantile", ',
                                      'ordered=FALSE)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -4193,7 +4193,7 @@ executeExplorePlot <- function(dataset)
       # 080925 Determine the likely number of bars for the plot. This
       # does not always seem to get it correct.
       
-      nbars <- nclass.scott(ds[ds$grp=="All",1])
+      nbars <- nclass.scott(na.omit(ds[ds$grp=="All",1]))
 
       if (length(dsuni) <= 20 && dsmax - dsmin <= 20)
       {
@@ -6124,24 +6124,26 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   TV <- "risk_textview"
   resetTextview(TV)
   
-  # Ensure a risk variable has been specified.
+  # Ensure a risk variable has been specified. 081002 The plotRisk
+  # function still works if no risk variable has been specified, so
+  # let's go with it.
   
   risk <- crs$risk
-  if (is.null(risk))
-  {
-    errorDialog("No risk variable has been specified.",
-                "From the Data tab please identify one variable as",
-                "a risk variable and rerun the modelling (if the variable",
-                "was previously an input variable).",
-                "The risk variable is a measure of the size of the risk.",
-                "For example, it might be the dollar amount of fraud",
-                "that has been recovered for each case.",
-                "TODO: The Risk Variable is not actually required,",
-                "and the requirement will be removed sometime soon,",
-                "essentially giving a ROC type of curve, but with",
-                "coverage on the x axis rather than false positives.")
-    return()
-  }
+###   if (is.null(risk))
+###   {
+###     errorDialog("No risk variable has been specified.",
+###                 "From the Data tab please identify one variable as",
+###                 "a risk variable and rerun the modelling (if the variable",
+###                 "was previously an input variable).",
+###                 "The risk variable is a measure of the size of the risk.",
+###                 "For example, it might be the dollar amount of fraud",
+###                 "that has been recovered for each case.",
+###                 "TODO: The Risk Variable is not actually required,",
+###                 "and the requirement will be removed sometime soon,",
+###                 "essentially giving a ROC type of curve, but with",
+###                 "coverage on the x axis rather than false positives.")
+###     return()
+###   }
 
   # Put 1 or 2 charts onto their own plots. Otherwise, put the
   # multiple charts onto one plot, keeping them all the same size
@@ -6184,27 +6186,42 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     # affect the na.omit function which will omit more rows if these
     # extra columns have NAs.
 
-    testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
-    if (testcols != "")
+    if (! is.null(crs$risk))
     {
-      newcols <- gsub(")", sprintf(",%d)",
-                                   getVariableIndicies(crs$risk)), testcols)
-      testsetr <- gsub(testcols, newcols, testset[[mtype]], fixed=TRUE)
-    }
+      testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
+      if (testcols != "")
+      {
+        newcols <- gsub(")", sprintf(",%d)",
+                                     getVariableIndicies(crs$risk)), testcols)
+        testsetr <- gsub(testcols, newcols, testset[[mtype]], fixed=TRUE)
+      }
   
-    evaluate.cmd <- paste("crs$eval <<- evaluateRisk(crs$pr,",
-                          sprintf("%s$%s,", testset[[mtype]], crs$target),
-                          sprintf("%s$%s)", testsetr, risk))
+      evaluate.cmd <- paste("crs$eval <<- evaluateRisk(crs$pr,",
+                            sprintf("%s$%s,", testset[[mtype]], crs$target),
+                            sprintf("%s$%s)", testsetr, risk))
 
-    plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
-                      "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
-                      'risk.name="', risk, '", recall.name="', crs$target,
-                      '")',
-                      "\n",
-                      genPlotTitleCmd("Risk Chart", commonName(mtype),
-                                      testname, risk),
-                      sep="")
+      plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
+                        "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
+                        'risk.name="', risk, '", recall.name="', crs$target,
+                        '")',
+                        "\n",
+                        genPlotTitleCmd("Risk Chart", commonName(mtype),
+                                        testname, risk),
+                        sep="")
+    }
+    else
+    {
+      evaluate.cmd <- paste("crs$eval <<- evaluateRisk(crs$pr,",
+                            sprintf("%s$%s)", testset[[mtype]], crs$target))
 
+      plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
+                        "crs$eval$Precision, crs$eval$Recall)",
+                        "\n",
+                        genPlotTitleCmd("Performace Chart", commonName(mtype),
+                                        testname),
+                        sep="")
+    }
+    
     appendLog("Generate a Risk Chart",
              "#The Rattle package provides evaluateRisk and plotRisk.\n\n",
              gsub("<<-", "<-", probcmd[[mtype]]), "\n",
@@ -6290,11 +6307,15 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
     #auc <- calculateRiskAUC(crs$eval)
     #print(auc)
-    aucRisk <- calculateAUC(crs$eval$Caseload, crs$eval$Risk)
+    if (! is.null(crs$risk)) aucRisk <- calculateAUC(crs$eval$Caseload, crs$eval$Risk)
     aucRecall <- calculateAUC(crs$eval$Caseload, crs$eval$Recall)
-    appendTextview(TV, paste("The area under the Risk and Recall curves for ",
-                             commonName(mtype), " model\n\n",
+    appendTextview(TV, paste("The area under the ",
+                             if (is.null(crs$risk))
+                             "Recall curve " else "Risk and Recall curves ",
+                             "for ", commonName(mtype), " model\n\n",
+                             if (! is.null(crs$risk))
                              "Area under the Risk   (red)   curve: ",
+                             if (! is.null(crs$risk))
                              sprintf("%d%% (%0.3f)\n",
                                      round(100*aucRisk), aucRisk),
                              "Area under the Recall (green) curve: ",
@@ -6346,8 +6367,10 @@ plotOptimalLine <- function(x, y1, y2, pr=NULL, colour="plum", label=NULL)
   }
 }
 
-evaluateRisk <- function(predicted, actual, risks)
+evaluateRisk <- function(predicted, actual, risks=NULL)
 {
+  # 081002 We allow risk to be not specified.
+  
   if (is.factor(actual))
     actual <- as.integer(actual)-1
 
@@ -6375,8 +6398,12 @@ evaluateRisk <- function(predicted, actual, risks)
   # digits seems okay! We get a good plot.
 
   predicted <- as.factor(round(predicted, 13))
-  
-  ds.actual <- data.frame(Actual=actual,
+
+  if (is.null(risks))
+    ds.actual <- data.frame(Actual=actual,
+                            Predict=as.factor(predicted))
+  else
+    ds.actual <- data.frame(Actual=actual,
                             Risk=as.numeric(risks), # Avoid integer overflow
                             Predict=as.factor(predicted))
   #Predict=as.factor(ds.predict[,2]))
@@ -6387,13 +6414,19 @@ evaluateRisk <- function(predicted, actual, risks)
   ds.evaluation <- as.data.frame(t(rbind(tapply(ds.actual$Actual,
                                                 ds.actual$Predict,
                                                 sum, na.rm=TRUE),
+                                         if (is.null(risks))
+                                         NULL
+                                         else
                                          tapply(ds.actual$Risk,
                                                 ds.actual$Predict,
                                                 sum, na.rm=TRUE),
                                          tapply(ds.actual$Actual,
                                               ds.actual$Predict, length))))
 
-  colnames(ds.evaluation) <- c("Recall", "Risk", "Caseload")
+  if (is.null(risks))
+    colnames(ds.evaluation) <- c("Recall", "Caseload")
+  else
+    colnames(ds.evaluation) <- c("Recall", "Risk", "Caseload")
 
   last <- nrow(ds.evaluation)
   ds.evaluation$Precision[last] <- ds.evaluation$Recall[last]/
@@ -6403,19 +6436,21 @@ evaluateRisk <- function(predicted, actual, risks)
     {
       ds.evaluation$Recall[i] <- ds.evaluation$Recall[i+1] +
         ds.evaluation$Recall[i]
-      ds.evaluation$Risk[i] <- ds.evaluation$Risk[i+1] +
-        ds.evaluation$Risk[i]
+      if (! is.null(risks))
+        ds.evaluation$Risk[i] <- ds.evaluation$Risk[i+1] +
+          ds.evaluation$Risk[i]
       ds.evaluation$Caseload[i] <- ds.evaluation$Caseload[i+1] +
         ds.evaluation$Caseload[i]
       ds.evaluation$Precision[i] <- ds.evaluation$Recall[i] /
         ds.evaluation$Caseload[i]
     }
   ds.evaluation$Recall <- ds.evaluation$Recall/ds.evaluation$Recall[1]
-  ds.evaluation$Risk <- ds.evaluation$Risk/ds.evaluation$Risk[1]
+  if (! is.null(risks)) ds.evaluation$Risk <- ds.evaluation$Risk/ds.evaluation$Risk[1]
   ds.evaluation$Caseload <- ds.evaluation$Caseload/ds.evaluation$Caseload[1]
   # This is Michael's measure of performance.
-  ds.evaluation$Measure <- abs(ds.evaluation$Recall - ds.evaluation$Caseload) +
-    abs(ds.evaluation$Risk - ds.evaluation$Caseload)
+  if (! is.null(risks))
+    ds.evaluation$Measure <- abs(ds.evaluation$Recall - ds.evaluation$Caseload) +
+      abs(ds.evaluation$Risk - ds.evaluation$Caseload)
   return(ds.evaluation)
 }
 
