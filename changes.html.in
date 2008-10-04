@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.97.
+    version is 2.3.98.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+329 081004 Fix RGtk2 issue with setProgramName and GTK version problem
+           Bug fix pmml.lm when logistic with target being categoric.
+328 081002 Fix histplots when there are missing values.
+           Enable plotRisk when no risk variable specified
+           Load vcd package at startup if it is available
 327 080930 Retain 'Linear' as label for RStat
            Add legend to rf Errors plot
            Bug fix cluster discriminant plot

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-02 22:04:24 Graham Williams>
+# Time-stamp: <2008-10-04 15:56:03 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 30 Sep 2008"
+VERSION.DATE <- "Released 02 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7954,11 +7954,17 @@ on_about_menu_activate <-  function(action, window)
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
-
   if (crv$appname == "RStat")
   {
-    if(exists("gtkAboutDialogSetProgramName"))
-      about$getWidget("aboutdialog")$setProgramName("RStat")
+    # 081004 seetProgramName is only available in GTK+ 2.12 and
+    #above. But the MS/Wdinows version of RGtk2 is compiled for 2.10,
+    #and it has a compile time check for version, not run time, and so
+    #even though 2.12 is installed, it won't run the function.
+    #
+    #if(exists("gtkAboutDialogSetProgramName"))
+    #  about$getWidget("aboutdialog")$setProgramName("RStat")
+    ab <- about$getWidget("aboutdialog")
+    ab["program-name"] <- "RStat"
     about$getWidget("aboutdialog")$setWebsite(paste("http://rattle.togaware.com",
                                                     "\n           http://ibi.com"))
   }
