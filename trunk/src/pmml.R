@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-08-19 22:30:55 Graham Williams>
+# Time-stamp: <2008-10-03 22:05:19 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -102,7 +102,9 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.9" # Update rpart/nnet/ksvm from Zementis + many improvements
+  VERSION <- "1.1.11" # Bug fix for pmml.lm - continuing to fix below problem
+  # "1.1.10" # Bug fix for pmml.lm with categorical logistic target
+  # "1.1.9" # Update rpart/nnet/ksvm from Zementis + many improvements
   # "1.1.8" # Increase number of digits extracted for rpart tests.
   # "1.1.7" # Add arules.
   # "1.1.6"

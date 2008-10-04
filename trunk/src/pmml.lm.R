@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-09-27 10:17:07 Graham Williams>
+# Time-stamp: <2008-10-04 16:37:13 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -57,7 +57,15 @@ pmml.lm <- function(model,
     # factor predictions.
       
     if (field$class[[field$name[i]]] == "factor")
-      field$levels[[field$name[i]]] <- model$xlevels[[field$name[i]]]
+      # 081004 Test if the data is available in the model, as it would
+      # be for a glm (but not an lm), since if the target variable is
+      # categoric then the levels are not recorded in xlevels for the
+      # target variable, so we will need to get the levels from the
+      # data itself.
+      if (is.null(model$data))
+        field$levels[[field$name[i]]] <- model$xlevels[[field$name[i]]]
+      else
+        field$levels[[field$name[i]]] <- levels(model$data[[field$name[i]]])
   }
 
   # PMML
