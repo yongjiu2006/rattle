@@ -43,6 +43,7 @@ R_SOURCE = \
 	src/data.R \
 	src/execute.R \
 	src/export.R \
+	src/help.R \
 	src/log.R \
 	src/model.R \
 	src/nnet.R \

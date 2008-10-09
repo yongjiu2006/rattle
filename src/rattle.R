@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-04 15:56:03 Graham Williams>
+# Time-stamp: <2008-10-08 20:06:18 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Oct 2008"
+VERSION.DATE <- "Released 04 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2164,6 +2164,12 @@ executeTransformNormalisePerform <- function()
     action <- "matrix"
     vprefix <- "RMA_"
   }
+    else if (theWidget("rescale_log_radiobutton")$getActive())
+  {
+    action <- "log"
+    vprefix <- "LG_"
+    #remap.comment <- "Log transform."
+  }
   
   # Obtain the list of selected variables from the treeview.
 
@@ -2192,7 +2198,7 @@ executeTransformNormalisePerform <- function()
 
   classes <- classes[classes!="ordered"]
   
-  if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix")
+  if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix", "log")
       && "factor" %in% classes)
   {
     infoDialog(sprintf(paste('We can not rescale using "%s"',
@@ -2411,7 +2417,14 @@ executeTransformNormalisePerform <- function()
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
                                 'crs$dataset[["%s"]]/matrix.total'),
                           vname, v)
-      norm.comment <- "Dvidie column values by matrix total."
+      norm.comment <- "Divide column values by matrix total."
+    }
+    else if (action == "log")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+                                'log(crs$dataset[["%s"]])'),
+                          vname, v)
+      norm.comment <- "Take a log transform of the column."
     }
 
     appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
@@ -2928,12 +2941,6 @@ executeTransformRemapPerform <- function()
     remap.prefix <- "JN"
     remap.comment <- "Turn two factors into one factor"
   }
-  else if (theWidget("remap_log_radiobutton")$getActive())
-  {
-    action <- "log"
-    remap.prefix <- "LG"
-    remap.comment <- "Log transform."
-  }
   else if (theWidget("remap_asfactor_radiobutton")$getActive())
   {
     action <- "asfactor"
@@ -3034,13 +3041,6 @@ executeTransformRemapPerform <- function()
                                sep=""),
                          remap.prefix, vars[1], vars[2],
                          vars[1], vars[2])
-  }
-  else if (action == "log")
-  {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- log(crs$',
-                                     'dataset[["%s"]])', sep=""),
-                               remap.prefix, vars, vars),
-                       collapse="\n")
   }
   else if (action == "asfactor")
   {
@@ -8127,498 +8127,3 @@ switchToPage <- function(page)
 
 }
 
-########################################################################
-#
-# HELP
-
-popupTextviewHelpWindow <- function(topic)
-{
-  collectOutput(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
-}
-
-showHelpPlus <- function(msg)
-{
-  if (! questionDialog(paste(gsub(" <<>> ", "\n\n",
-                                  gsub("\n", " ", msg)),
-                             "Would you like to view the R help?",
-                             sep="\n\n")))
-    return(FALSE)
-  else
-    return(TRUE)
-}
-
-showHelp <- function(msg)
-{
-  infoDialog(paste(gsub(" <<>> ", "\n\n", gsub("\n", " ", msg))))
-}
-
-on_help_general_activate <- function(action, window)
-{
-  showHelp(paste(ifelse(crv$appname=="RStat",
-                  paste("RStat is the WebFOCUS data mining application",
-                        "developed by Information Builders on top of",
-                        "Rattle and R. "),
-                  ""),
-           "Rattle is a graphical user interface for data mining
-written in GNOME and R. R is an environment for statistical computing.
-They are all free software licensed under the GNU General
-Public License (GPL).
-<<>>
-Interaction with Rattle logically proceeds by progressing through the Tabs:
-first load in some Data, select Variables for exploring and mining,
-possibly Sample the data, Explore the data, build your Models,
-and Evaluate them. For any tab, the modus operandi is to configure
-the options available and then click the Execute button (or F5) to perform
-the appropriate tasks. Note that the tasks are NOT performed until
-the Execute button (or F5 or the Execute menu item under Tools) is clicked.
-<<>>
-The Status Bar indicates when the action
-is completed. Messages from R (e.g., error messages. although I do attempt
-to catch them first) will appear in the R console
-from where you started Rattle. The corresponding R Code will
-appear in the Log tab.
-This allows you to review the R commands
-that perform the corresponding data mining tasks. Even better though,
-you can copy the text from here and paste it into the same R Console
-from which Rattle is running, and execute the commands directly.
-This allows you to use Rattle to do the basics, and then where you
-need more sophistication, go into R directly. Rattle uses a variable called
-crs to store its current state, and you can modify this directly.
-<<>>
-Rattle is being extensively tested
-on binary classification problems (with 0/1 or a two level variable
-as the outcomes for the Target variable). It is less well tested on
-mulitnomial classification and regression tasks. but is become stable
-in those areas also, over time.
-<<>>
-The most we can guarantee about this
-code is that there are bugs! When you find one, or a misfeature or
-something else you would like Rattle to do, please do email
-support@togaware.com.
-<<>>
-Enjoy.", sep=""))
-}
-
-on_help_nomenclature_data_activate <- function(action, window)
-{
-  showHelp("There are many
-different nomenclatures being used in data mining, deriving from the many
-different contributory fields. Here, we attempt to stay with a single,
-consistent nomenclature.
-<<>>
-A dataset consists of entities described using variables,
-which might consist of a mixture of input variables and output variables,
-either of which may be categoric or numeric.
-<<>>
-dataset = A collection of data.
-<<>>
-entity = An object of interest, descibed by variables.
-Also called a record, object, row or observation.
-<<>>
-variable = The data items used to describe an enitity.
-Also called an attribute, feature or column.
-<<>>
-input variable = A measured or preset data item.
-Also called predictor, independent variable, observed variable,
-or descriptive variable.
-<<>>
-output variable = A variable possibly influenced by the input variables.
-Also called response or dependent variable.
-<<>>
-categoric variable = A variable that takes on a value from a fixed
-set of values. In R these are called factors and the possible values
-are refered to as the levels of the factor.
-<<>>
-numeric variable = A variable that has values that are integers or real
-numbers.")
-}
-
-on_help_csv_activate <- function(action, window)
-{
-  if (showHelpPlus("Data can be loaded from
-a comma separated value (CSV) file, as might be generated
-by spreadsheets and databases,
-including Excel, Gnumeric, SAS/EM, QueryMan, and many other applications.
-This is a good option for importing data.
-<<>>
-The CSV file is assumed to begin with a header row, listing the names
-of the variables. 
-The remainder of the file is expected to consist of rows of data that record
-information about the entities, with fields generally separated by commas
-recording the values of the variables for this entity.
-<<>>
-Use the Separator box to choose a separator other than the default comma.
-A common alternative is a tab (\\t), or simply leave it blank to have
-any white space act as a separator.
-<<>>
-A URL can be supplied in the Location: text box so that a CSV file can be
-loaded from the network.
-<<>>
-The corresponding R code uses the simple read.csv() function."))
-    popupTextviewHelpWindow("read.csv") }
-
-on_help_arff_activate <- function(action, window)
-{
-  if (showHelpPlus("Data can be loaded from
-an Attribute-Relation File Format, or ARFF, file
-(beginning with version 2.5.0 of R).
-ARFF is an ASCII text file format
-that is essentially a CSV file with a header that describes the
-meta-data. ARFF was developed for use in the Weka machine learning
-software and there are quite a few datasets in this format now.
-<<>>
-The corresponding R code uses the read.arff() function from the
-foreign package."))
-  {
-    require(foreign, quietly=TRUE)
-    popupTextviewHelpWindow("read.arff")
-  }
-}
-
-on_help_rdata_file_activate <- function(action, window)
-{
-  showHelp("Choose this if you have data stored in an R dataset
-(usually with a filename extension of .Rdata).
-The named file will be loaded and any data frames found in there will
-be listed for selection.")
-}
-
-on_help_rdataset_activate <- function(action, window)
-{
-  showHelp("Datasets already loaded into R can be used
-(although a copy is taken, with memory implications).
-Only data frames are currently supported, and 
-the names of all of the available data frames will be lsited.
-<<>>
-The data frames need to be constructed in the same R session
-that is running Rattle (i.e., the same R Console in which you
-sourced the Rattle package). This provides much more flexibility in
-loading data into Rattle, than is provided directly through the actual Rattle
-interface. For example, you may want to use the SQLLite package to load
-data from a database directly.")
-}
-
-on_help_odbc_activate <- function(action, window)
-{
-  if(showHelpPlus("Rattle can establish a connection to a database
-through the RODBC package. Tables avilable in the database will then be
-listed for selection."))
-  {
-    require(RODBC, quietly=TRUE)
-    popupTextviewHelpWindow("RODBC")
-  }
-}
-
-on_help_roles_activate <- function(action, window)
-{
-  showHelp("The Data tab allows you to select roles for the
-variables.
-<<>>
-By default, all variables have an Input role, except for any variables
-that have constant value, or categorics with as many values as there
-are rows (identifier variables). These will be marked as Ignore.
-<<>>
-One variable may also be identified as the Target (the first or last
-categoric by default).
-<<>>
-    Modify the roles as appropriate for each variable.
-<<>>
-    Input: Used for modelling.
-<<>>
-    Target: Output for modelling.
-<<>>
-    Risk: A variable used in the Risk Chart
-<<>>
-    Ident: An identify for unique entities in the data set.
-<<>>
-    Ignore: Do not use this variable
-<<>>
-The Input and Ignore buttons can be used to operate on a selection.
-A Shift-Click in the variable list will select all variables from the
-last click to current variable. A Ctrl-Click will add the current
-variable to those selected.
-<<>>
-The Weights Calculator option allows a weights formula to be specified
-to assign a weight to each entity. See the separate help for details.")
-}
-
-on_help_weight_calculator_activate <- function(action, window)
-{
-  showHelp("Weights are used by variable modellers to identify
-some entities as more important than others. The Weights Calculator
-can be used to specify a formula in terms of the variables in the dataset.
-You can list just a variable name, or
-any formula can be used, as long as it is a valid R formula - R will be
-asked to evaluate the formula.
-<<>>
-An example might be 'abs(Rev)/max(Rev)*10+1' which takes the absolute
-value of a variable called Rev, divides it by the maximum value of Rev in the
-dataset, times 10, adding 1 to it to give numbers from 1 up.")
-}
-
-on_help_sample_activate <- function(action, window)
-{
-  showHelp("Sampling is activated by default, randomly choosing 70%% of the
-data for a training dataset and 30%% for a test dataset. The training dataset
-is used to build models whilst the test dataset is used to evaluate the
-models on otherwise unseen data.
-<<>>
-A new random sample is extracted each time the tab is executed. However,
-you will get the same random sample each time, for a given seed. Changing the
-seed allows different random samples to be extracted. This could be useful in
-testing the sensitivity of modelling with different training sets.")
-}
-
-on_help_normalise_activate <- function(action, window)
-{
-  if (showHelpPlus("Rescaling options transforms a variable by remapping its
-values to another set of values, such as a set that has a mean of 0 and
-standard deviation of 1. Often we do this so that all of our variables
-have a very similar spread, and perhaps distribution. This can then avoid
-biases in various algorithms, such as in clustering where a distance measure
-is often used.
-<<>>
-Various rescalings are supported, with the rescaler function from the reshape
-package used in a number of cases.
-<<>>
-The Nolan Transform segments and remaps a numeric variable to the 0-100 range.
-"))
-  {
-    if (packageIsAvailable("reshape", "display information about rescaler"))
-      popupTextviewHelpWindow("rescaler")
-  }
-}
-
-on_help_impute_activate <- function(action, window)
-{
-  showHelp("Imputation is used to fill in the missing values in the data.
-The Zero/Missing imputation is a very simple method. Any missing numeric data
-is simply assigned 0 and any missing categoric data is put into a new
-category, Missing. Mean, Median and Mode replace missing values with the population
-mean, median, or mode. This is not recommended.")
-}
-
-on_help_nolan_activate <- function(action, window)
-{
-  if (showHelpPlus("The Nolan Groups transformation segments the selected
-numeric variables
-by a selected categoric variable, and then within each segment rescales the numeric
-variable's range to the 0-100 range, using the range option of the rescale(rehsape)
-function. This transform was proposed by Anthony Nolan."))
-  {
-    if (packageIsAvailable("reshape", "display information about rescaler"))
-      popupTextviewHelpWindow("rescaler")
-  }
-}
-
-on_help_summary_activate <- function(action, window)
-{
-  if (showHelpPlus("A summary of the dataset includes various pieces of
-information about each of the variables of the dataset.
-<<>>
-For numeric data, this
-can include the minimum, maximum, median (the value of the variable at the
-midpoint of the dataset), mean (the average value of the variable),
-and the first and third quartiles (25 percent of the data has values
-below the first
-quartile, and another 25 percent of the data has values above the third quartile).
-<<>>
-For categoric data the frequency distribution across the values is listed.
-If there are too many possible values, then only the top few are listed, with
-the remainder counted as Other.
-<<>>
-The R function summary() is used for the summary.
-<<>>
-Additional or differently presented summary information is provided
-through additional options. Describe produces a similar summary presented
-differently. For numeric variables, the Basic statistics can be obtained,
-including kurtosis and skewness.
-<<>>
-The kurtosis is a measure of the nature of the peaks
-in the distribution of the data. A high kurtosis indicates a sharper peak
-and fatter tails while a lower kurtosis indicates a more rounded peak
-with wider shoulders.
-<<>>
-The skewness indicates the assymetry of the distribution. A positive skew
-indicates that the tail to the right is longer, and a negative skew that the
-tail to the left is longer.
-<<>>
-The fBasics package is used for the Basic summary and
-the kurtosis and skewness."))
-    {
-      popupTextviewHelpWindow("summary")
-      if (packageIsAvailable("Hmisc", "display help about describe"))
-      {
-        require(Hmisc, quietly=TRUE)
-        popupTextviewHelpWindow("describe")
-      }
-      if (packageIsAvailable("fBasics", "display help about basic stats"))
-      {
-        require(fBasics, quietly=TRUE)
-        popupTextviewHelpWindow("basicStats")
-      }
-    }
-}
-
-on_help_distributions_activate <- function(action, window)
-{
-  if (showHelpPlus( "Choose from various plot types to display
-information about the distributions of data."))
-    popupTextviewHelpWindow("boxplot")
-}
-
-on_help_ggobi_activate <- function(action, window)
-{
-  if (showHelpPlus( "Run the GGobi application to visually explore
-your data. GGobi is a very powerful interactive visualiser.
-You will need to have the separate GGobi application installed,
-as well as the rggobi R package."))
-    popupTextviewHelpWindow("ggobi")
-}
-
-on_help_correlation_activate <- function(action, window)
-{
-  if (showHelpPlus( "A pairwise correlation between each numeric variable
-is calculated and displayed numerically in the text window whilst
-a graphic plot is also generated. The plot uses circles and colour to
-indicate the strength of any correlation.
-<<>>
-The R function cor() is used to produce the correlation data."))
-    popupTextviewHelpWindow("cor")
-}
-
-on_help_hierarchical_correlation_activate <- function(action, window)
-{
-  if (showHelpPlus( "A hierarchical cluster
-of the correlations between the variables of the dataset is generated, and
-presented pictorially as a dendrogram.  From the dendrogram you can
-see groups of variables that are highly correlated. The code uses the
-cor() function to gnerate the correlations between the variables, the
-hclust() function to perform the hierarchical clustering, and converts
-the result to a dendrogram, using as.dendrogram(), for plotting."))
-  {
-    popupTextviewHelpWindow("cor")
-    popupTextviewHelpWindow("hclust")
-    popupTextviewHelpWindow("dendrogram")
-  }
- 
-}
-
-on_help_principal_components_activate <- function(action, window)
-{
-  if (showHelpPlus("Principal components analysis identifies
-a collection of derived variables (expressed as a linear combination
-of the other variables) that account for the variance
-in the data. Often, the first few components account for the majority
-of the variation. The plot is called a scree plot.
-<<>>
-There will be as many components as there are (numeric) variables in
-the dataset, but by discarding those components contributing very
-little, you may end up with fewer variables for modelling.
-<<>>
-Interpretability may reduce through using the derived variables rather
-than the original variables, so you may like to instead identify those
-variables that contribute most to the first few principal components.
-<<>>
-The prcomp() function is used to generate the principal components
-which are then displayed in the textview and the relative importance
-of the components is plotted.
-<<>>
-Note that only numeric data is included in the analysis."))
-    popupTextviewHelpWindow("prcomp")
-}
-
-on_help_glm_activate <- function(action, window)
-{
-  if (showHelpPlus("A tradition approach to model building is
-regression. Logistic regression (using the binomial family) is used
-to model binary outcomes. Linear regression (using the gaussian family)
-is used to model a linear numeric outcome. For predicting where the
-outcome is a count, the poisson family is used. Further families are
-available, but for now require you to run the glm command directly.
-Please see the additional documentation.
-<<>>
-The R function glm() is used for regression."))
-  {
-    popupTextviewHelpWindow("glm")
-    popupTextviewHelpWindow("family")
-  }
-}
-
-on_help_support_vector_machine_activate <- function(action, window)
-{
-  if (showHelpPlus("SVM (Support Vector Machine) is a modern approach
-to modelling where the data is mapped to a higher dimensional space so
-that it is more likely that we can find vectors separating the classes.
-Rattle deploys ksvm from the kernlab package."))
-  {
-    #if (packageIsAvailable("e1071", "view documentation for e1071"))
-    #{
-    #  require(e1071, quietly=TRUE)
-    #  popupTextviewHelpWindow("svm")
-    #}
-    if (packageIsAvailable("kernlab", "view documentation for kernlab"))
-    {
-      require(kernlab, quietly=TRUE)
-      popupTextviewHelpWindow("ksvm")
-    }
-  }
-}
-
-on_help_confusion_table_activate <- function(action, window)
-{
-  if (showHelpPlus("An error matrix concisely reports the performance
-of a model against a testing dataset. Generally, the number of entities
-predicted by the model into each of the classes is presented against the
-actual class to which that entity belongs. Rattle reports two error matricies.
-The first is the raw entity counts whilst the second reports the
-percentages."))
-  {
-    popupTextviewHelpWindow("table")
-  }
-}
-
-on_help_risk_chart_activate <- function(action, window)
-{
-  showHelp("A risk chart plots population proportion along the X axis and a
-perforamnce measure along the Y axis. If a Risk variable is identified in the
-Data tab then the amount of risk covered is included in the chart (the red line).
-The green line indicates the proportion of known targets that are identified
-for any proportion of the population covered. The diagonal black line is a baseline,
-indicating performance if cases were selected randomly.")
-}
-
-on_help_cost_curve_activate <- function(action, window)
-{
-  showHelp("A cost curve ...")
-}
-
-on_help_lift_activate <- function(action, window)
-{
-  showHelp("A lift chart ...")
-}
-
-on_help_sensitivity_activate <- function(action, window)
-{
-  if (showHelpPlus("The Sensitivity versus Specificity chart
-is simply an alternative ROC curve, with Sensitivity being the
-true positive rate (the count of true positives divided by the
-count of positives) and Specificity being the true negative rate
-(the count of true negatives divided by the count of negatives).
-An ROC curve has the false positive rate instead of Specificity, which
-is simply the count of false positives divided by the number of negatives
-(1-fnr)."))
-  {
-    require(ROCR, quietly=TRUE)
-    popupTextviewHelpWindow("performance")
-  }
-}
-
-on_help_log_activate <- function(action, window)
-{
-  showHelp("The Log tab records the underlying commands that
-Rattle generates and passes over to R to execute.
-You can save the Log commands to file to run at a later stage,
-or you can paste the commands into the current R console to do
-more than Rattle can support.")
-}
