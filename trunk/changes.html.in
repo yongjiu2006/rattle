@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.98.
+    version is 2.3.99.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+330 081009 Move Log transform to rescale from remap where it belongs.
+           Move all help functionality into help.R - rattle.R getting too big.
+           Complete documentation of Transform: tooltips and Help menu.
 329 081004 Fix RGtk2 issue with setProgramName and GTK version problem
            Bug fix pmml.lm when logistic with target being categoric.
 328 081002 Fix histplots when there are missing values.

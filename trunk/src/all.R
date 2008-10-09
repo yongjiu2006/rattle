@@ -21,6 +21,7 @@ source("data.R")
 source("report.R")
 source("test.R")
 source("textminer.R")
+source("help.R")
 
 source("pmml.R")
 source("pmml.arules.R")
