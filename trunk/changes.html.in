@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.99.
+    version is 2.3.100.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+331 081013 Add Wilcoxon signed rank test (Enrico Vera-Cruz)
+           For binomial, non-numeric, nnet, convert to numeric.
+           Ensure the busy icon is on when filechooser popup is active.
 330 081009 Move Log transform to rescale from remap where it belongs.
            Move all help functionality into help.R - rattle.R getting too big.
            Complete documentation of Transform: tooltips and Help menu.

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-15 18:56:11 Graham>
+# Time-stamp: <2008-10-10 07:00:23 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -83,7 +83,13 @@ executeModelNNet <- function()
 
   # Build the formula for the model.
 
-  frml <- paste(crs$target, "~ .")
+  if (binomialTarget() && ! is.numeric(crs$dataset[[crs$target]]))
+    # 081010 Needs to be numeric, but I also subtract 1 so we get a
+    # 0/1 target?
+    frml <- sprintf("as.numeric(%s)-1 ~ .", crs$target)
+  else
+    frml <- sprintf("%s ~ .", crs$target)
+  
 
   # Variables to be included --- a string of indicies.
   
