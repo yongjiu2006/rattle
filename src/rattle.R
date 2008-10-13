@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-08 20:06:18 Graham Williams>
+# Time-stamp: <2008-10-11 13:39:37 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Oct 2008"
+VERSION.DATE <- "Released 09 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7937,7 +7937,6 @@ on_rattle_menu_activate <- function(action, window)
   browseURL("http://rattle.togaware.com")
 }
 
-on_save_menu_activate <- function(action, window) {saveProject()}
 on_delete_menu_activate <- notImplemented
 
 ## Map the unchanged glade defaults

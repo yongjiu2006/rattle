@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-06 17:02:42 Graham Williams>
+# Time-stamp: <2008-10-11 13:39:56 Graham Williams>
 #
 # Project functionality.
 #
@@ -22,12 +22,62 @@
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 on_new_activate <- function(action, window)     { newProject()  }
-on_open_activate <- function(action, window)    { loadProject() }
-on_save_as_activate <- function(action, window) { saveProject() }
-
 on_new_button_clicked <- function(action, window)  { newProject() }
-on_open_button_clicked <- function(action, window) { loadProject() }
-on_save_button_clicked <- function(action, window) { saveProject() }
+
+on_open_activate <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar()
+  set.cursor("watch")
+  try(loadProject())
+  set.cursor()
+}
+
+on_save_menu_activate <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar()
+  set.cursor("watch")
+  try(saveProject())
+  set.cursor()
+}
+
+on_save_as_activate <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar()
+  set.cursor("watch")
+  try(saveProject())
+  set.cursor()
+}
+
+on_open_button_clicked <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar()
+  set.cursor("watch")
+  try(loadProject())
+  set.cursor()
+}
+
+on_save_button_clicked <- function(action, window)
+{
+  # Wrap the actual call with a "try" so that the watch cursor turns
+  # off even on error.
+  
+  setStatusBar()
+  set.cursor("watch")
+  try(saveProject())
+  set.cursor()
+}
 
 newProject <- function()
 {
