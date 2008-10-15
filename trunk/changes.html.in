@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.100.
+    version is 2.3.101.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+332 081016 Ensure tests work for categoric targets
+           Ensure wilcox signed only works for two samples, and handle missing
 331 081013 Add Wilcoxon signed rank test (Enrico Vera-Cruz)
            For binomial, non-numeric, nnet, convert to numeric.
            Ensure the busy icon is on when filechooser popup is active.
@@ -600,6 +602,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sat Mar 29 22:24:10 2008
+<i>Last Modified 2008-10-16 06:42:23 Graham Williams</i>
 <!-- hhmts end -->
   </p>

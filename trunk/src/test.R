@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-13 22:08:33 Graham Williams>
+# Time-stamp: <2008-10-16 06:39:12 Graham Williams>
 #
 # Test Tab
 #
@@ -32,6 +32,7 @@ on_test_groupby_checkbutton_toggled<- function(button)
     theWidget("test_groupby_target_label")$setSensitive(TRUE)
     theWidget("test_vars2_label")$setSensitive(FALSE)
     theWidget("test_vars2_combobox")$setSensitive(FALSE)
+    theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(FALSE)
   }
   else
   {
@@ -39,6 +40,7 @@ on_test_groupby_checkbutton_toggled<- function(button)
     theWidget("test_groupby_target_label")$setSensitive(FALSE)
     theWidget("test_vars2_label")$setSensitive(TRUE)
     theWidget("test_vars2_combobox")$setSensitive(TRUE)
+    theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(TRUE)
   }
 }
 
@@ -100,9 +102,17 @@ executeTestTab <- function()
                   "will be obtained.")
       return(FALSE)
     }
+    if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
+    {
+      errorDialog("The Wilcoxon signed rank test can only be applied to",
+                  "paired popultions. Please de-select Group By and choose",
+                  "two columns that represent observations of the entity at",
+                  "two different times.")
+      return(FALSE)
+    }
     lvl <- levels(as.factor(crs$dataset[[crs$target]]))
-    s1 <- sprintf('[crs$dataset[["%s"]] == %s,]', crs$target, lvl[1])
-    s2 <- sprintf('[crs$dataset[["%s"]] == %s,]', crs$target, lvl[2])
+    s1 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[1])
+    s2 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[2])
     msg <- sprintf(paste('come from the \n"%s" column, grouped by "%s",',
                          'with\nvalues "%s" and "%s"'),
                    v1, crs$target, lvl[1], lvl[2])
@@ -190,8 +200,12 @@ executeTestTab <- function()
   }
   else if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
   {
-    test <- "wilcox.test"
+    test <- paste('miss <- union(',
+                  'attr(na.omit(crs$dataset[,"', v1, '"]), "na.action"), ',
+                  'attr(na.omit(crs$dataset[,"', v2, '"]), "na.action"))\n',
+                  "wilcox.test", sep="")
     options <- ", paired=TRUE"
+    s1 <-  s2 <- "-miss"
     preamble <- paste("The two related sample non-parametric Wilcoxon test is performed",
                       "on the two related samples to test the hypothesis that the",
                       "distributions are the same. It does not assume that the",
@@ -203,8 +217,11 @@ executeTestTab <- function()
   else if (theWidget("test_correlation_radiobutton")$getActive())
     test <- "correlationTest"
 
-  test.cmd <- sprintf(paste('%s(na.omit(crs$dataset%s[["%s"]]),',
-                            'na.omit(crs$dataset%s[["%s"]])%s)'),
+#  test.cmd <- sprintf(paste('%s(na.omit(crs$dataset%s[["%s"]]),',
+#                            'na.omit(crs$dataset%s[["%s"]])%s)'),
+#                      test, s1, v1, s2, v2, options)
+  test.cmd <- sprintf(paste('%s(na.omit(crs$dataset[%s, "%s"]),',
+                            'na.omit(crs$dataset[%s, "%s"])%s)'),
                       test, s1, v1, s2, v2, options)
   appendLog("Perform the test.", test.cmd)
   resetTextview(TV, preamble, msg, collectOutput(test.cmd))
