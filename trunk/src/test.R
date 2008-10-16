@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-16 06:39:12 Graham Williams>
+# Time-stamp: <2008-10-16 09:29:29 Graham Williams>
 #
 # Test Tab
 #
@@ -200,15 +200,21 @@ executeTestTab <- function()
   }
   else if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
   {
-    test <- paste('miss <- union(',
-                  'attr(na.omit(crs$dataset[,"', v1, '"]), "na.action"), ',
-                  'attr(na.omit(crs$dataset[,"', v2, '"]), "na.action"))\n',
-                  "wilcox.test", sep="")
+    test <- "wilcox.test"
     options <- ", paired=TRUE"
-    s1 <-  s2 <- "-miss"
-    preamble <- paste("The two related sample non-parametric Wilcoxon test is performed",
-                      "on the two related samples to test the hypothesis that the",
-                      "distributions are the same. It does not assume that the",
+    if (! is.null(union(attr(na.omit(crs$dataset[,v1]), "na.action"),
+                        attr(na.omit(crs$dataset[,v2]), "na.action"))))
+    {
+      test <- paste('miss <- union(',
+                    'attr(na.omit(crs$dataset[,"', v1, '"]), "na.action"), ',
+                    'attr(na.omit(crs$dataset[,"', v2, '"]), "na.action"))\n',
+                    test, sep="")
+      s1 <- s2 <- "-miss"
+    }
+    preamble <- paste("The two related sample non-parametric Wilcoxon test is",
+                      "performed on the two related samples to test the",
+                      "hypothesis that the distributions are the same.",
+                      "It does not assume that the",
                       "two samples are normally distriubted.\n",
                       sep="\n")
   }

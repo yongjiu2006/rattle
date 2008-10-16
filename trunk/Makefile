@@ -208,9 +208,9 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
 
 zip: local plocal
-	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.7; zip -r9 - rattle) \
+	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.8; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
-	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.7; zip -r9 - pmml) \
+	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.8; zip -r9 - pmml) \
 	>| pmml_$(PVERSION).zip
 
 txt:
