@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-09-12 21:00:33 Graham Williams>
+# Time-stamp: <2008-10-19 18:32:48 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -30,7 +30,7 @@
 #          added ScoreDistribution, missingValueStrategy 
 #          by Zementis, Inc. in June 2008
 #           
-#######################################################################
+
 pmml.rpart <- function(model,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
@@ -405,23 +405,25 @@ getSurrogatePredicates <- function(predicate, model,i,position)
 ########################################################################
 # Function: getSimpleSetPredicate
 #
-# Goal: refator the original code, which creates the simple set predicate
+# Goal: refactor the original code, which creates the simple set predicate
 # 
-# Original by: togaware
-#
+# Original by: Togaware
 # Refactored by: Zementis, Inc.
-#
 # Refactored date: June, 2008
 
 getSimpleSetPredicate <- function(field, op, value)
 {
-  predicate <- xmlNode("SimpleSetPredicate", attrs=c(field=field, booleanOperator=op))
+  predicate <- xmlNode("SimpleSetPredicate", attrs=c(field=field,
+                                               booleanOperator=op))
   value <- strsplit(value[[1]], ",")[[1]]
 
-  # Do we need quotes around the values?
-  # vals <- paste('"', value, '"', collapse=" ", sep="")
-
-  vals <- paste(value, collapse=" ", sep="")
+  # 081019 gjw We need quotes around the values since there may be
+  # embedded spaces. So we ensure they have quotes. In the PMML this
+  # comes out as "&quot;", which when read back into R comes as a '"',
+  # so perhaps that is okay? The SPSS generated PMML has actual
+  # quotes.
+  
+  vals <- paste('"', value, '"', collapse=" ", sep="")
 
   predicate <- append.XMLNode(predicate, xmlNode("Array", vals,
                                                  attrs=c(n=length(value),

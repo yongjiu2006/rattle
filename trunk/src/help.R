@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-09 21:12:46 Graham Williams>
+# Time-stamp: <2008-10-16 21:42:36 Graham Williams>
 #
 # Help Menu
 #
@@ -294,10 +294,14 @@ on_help_transform_scale01_activate <- function(action, window)
 
 on_help_transform_medianmad_activate <- function(action, window)
 {
-  showHelp("The -Median/MAD transformation is a so-caleld robust versions
+  showHelp("The -Median/MAD transformation is a so-caleld robust version
 of the standard z-score transformation.
-The variable's median value is subtracted from each value, and each is then divided
-by the median absolute deviation. The resulting variable will have a median of 0.")
+The variable's median value is subtracted from each value, and each is then
+divided by the median absolute deviation, which is basically the median of
+the residuals
+or deivations from the data's median, as in Xi-median(X). The resulting
+variable will have a median of 0.
+It is more resilient to outliers than the normal z-score.")
 }
 
 on_help_transform_rank_activate <- function(action, window)
