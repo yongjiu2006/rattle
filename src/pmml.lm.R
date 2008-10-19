@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-04 16:37:13 Graham Williams>
+# Time-stamp: <2008-10-19 15:15:03 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -132,7 +132,7 @@ pmml.lm <- function(model,
   # 080620 GJW The PMML spec (at least the Zementis validator)
   # requires NumericPredictors first and then
   # CategoricalPreictors. Simplest approach is to loop twice!!
-  # Hopefully, this is not a computational expense.
+  # Hopefully, this is not a significant computational expense.
 
   for (i in 1:length(field$name))
   {
@@ -156,14 +156,25 @@ pmml.lm <- function(model,
     if (klass == 'factor')
     {
       levs <- model$xlevels[[name]]
-      for (l in levs[-1])
+      # 081019 gjw Add in a zero coefficient for the base level. In
+      # this way, we communicate through the PMML which level is the
+      # base. Can be useful in then comparing with the full list of
+      # levels available for this variable and determining levels that
+      # are just mssing from the training. Note that xlevels does not
+      # include any levels that were not modelled (i.e., missing
+      # levels from the training data). We do this by iterating over
+      # all the modelled levels (levs, i.e., all values in xlevels)
+      # instead of all but the first level (levs[-1], i.e., the base
+      # level). When we have the first level, we simply note the
+      # coefficient as 0.
+      for (l in levs)
       {
         tmp <- paste(name, l, sep='')
+        coefficient <- ifelse(l==levs[1], 0.00,
+                              as.numeric(coeff[which(coeffnames == tmp)]))
         predictorNode <- xmlNode("CategoricalPredictor",
                                  attrs=c(name=name,
-                                   value=l,
-                                   coefficient=as.numeric(
-                                     coeff[which(coeffnames == tmp) ])))
+                                   value=l, coefficient=coefficient))
         regTable <- append.XMLNode(regTable, predictorNode)
       }
     }
@@ -177,4 +188,3 @@ pmml.lm <- function(model,
   
   return(pmml)
 }
-

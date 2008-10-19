@@ -13,6 +13,11 @@
    </p>
 
 <pre>
+334 081019 New PMML version: 1.1.12
+             Regression with categorics - include base case with coefficient 0
+             Add quotes around values in tree/categoric tests within array
+           Update description of MAD in Help (Anthony Nolan)
+333 081016 Bug fix: handle case where there are no missing values in Wilcox signed test
 332 081016 Ensure tests work for categoric targets
            Ensure wilcox signed only works for two samples, and handle missing
 331 081013 Add Wilcoxon signed rank test (Enrico Vera-Cruz)
@@ -602,6 +607,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-16 06:42:23 Graham Williams</i>
+<i>Last Modified 2008-10-19 18:41:05 Graham Williams</i>
 <!-- hhmts end -->
   </p>

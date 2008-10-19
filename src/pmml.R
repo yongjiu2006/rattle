@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-03 22:05:19 Graham Williams>
+# Time-stamp: <2008-10-19 18:37:34 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -102,17 +102,18 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.11" # Bug fix for pmml.lm - continuing to fix below problem
-  # "1.1.10" # Bug fix for pmml.lm with categorical logistic target
-  # "1.1.9" # Update rpart/nnet/ksvm from Zementis + many improvements
-  # "1.1.8" # Increase number of digits extracted for rpart tests.
-  # "1.1.7" # Add arules.
-  # "1.1.6"
-  # "1.1.5" # Add pmml.nnet.
-  # "1.1.4" # Add pmml.ksvm. Fix extensions. 
-  # "1.1.3" # Fixes for new version of randomSurvivalForest.
-  # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
-  # "1.1.1" Add pmml.lm
+  VERSION <- "1.1.12" # Tree Array must have quoted values.
+    # "1.1.11" # Bug fix for pmml.lm - continuing to fix below problem
+    # "1.1.10" # Bug fix for pmml.lm with categorical logistic target
+    # "1.1.9" # Update rpart/nnet/ksvm from Zementis + many improvements
+    # "1.1.8" # Increase number of digits extracted for rpart tests.
+    # "1.1.7" # Add arules.
+    # "1.1.6"
+    # "1.1.5" # Add pmml.nnet.
+    # "1.1.4" # Add pmml.ksvm. Fix extensions. 
+    # "1.1.3" # Fixes for new version of randomSurvivalForest.
+    # "1.1.2" Expose pmml.lm in NAMESPACE - woops.
+    # "1.1.1" Add pmml.lm
 
   if (is.null(copyright)) copyright <- generateCopyright()
   header <- xmlNode("Header",
