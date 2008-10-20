@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.102.
+    version is 2.3.104.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+335 081020 Add file:/// for any supplied csvname so no reload on Execute
 334 081019 New PMML version: 1.1.12
              Regression with categorics - include base case with coefficient 0
              Add quotes around values in tree/categoric tests within array
@@ -607,6 +608,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-19 18:41:05 Graham Williams</i>
+<i>Last Modified 2008-10-20 20:07:37 Graham Williams</i>
 <!-- hhmts end -->
   </p>

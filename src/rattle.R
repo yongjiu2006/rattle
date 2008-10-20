@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-11 13:39:37 Graham Williams>
+# Time-stamp: <2008-10-20 20:05:37 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 16 Oct 2008"
+VERSION.DATE <- "Released 19 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -315,6 +315,16 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
     {
       infoDialog('The supplied CSV file "', csvname, '" does not exist.')
       csvname <- NULL
+    }
+    else
+    {
+      # 081020 gjw If the csvname is supplied then prefix it with file:///
+      # to make it conform to the filename obtained from the file
+      # chooser button. Without doing this crs$dwd does not include
+      # file:/// and when compared in changedDataTab to the filename
+      # obtained with getUri they don;t match, and hence the data is
+      # reloaded!
+      csvname <- paste("file://", csvname, sep="")
     }
   }
     
@@ -704,7 +714,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   if (not.null(csvname))
   {
-    theWidget("data_filechooserbutton")$setFilename(csvname)
+    theWidget("data_filechooserbutton")$setUri(csvname)
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
     executeDataTab(csvname)

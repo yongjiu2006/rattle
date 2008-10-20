@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-19 18:32:48 Graham Williams>
+# Time-stamp: <2008-10-19 18:46:30 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -421,7 +421,8 @@ getSimpleSetPredicate <- function(field, op, value)
   # embedded spaces. So we ensure they have quotes. In the PMML this
   # comes out as "&quot;", which when read back into R comes as a '"',
   # so perhaps that is okay? The SPSS generated PMML has actual
-  # quotes.
+  # quotes. We may need to change this to ensure we get actual quotes
+  # rather than the XML code for a quote.
   
   vals <- paste('"', value, '"', collapse=" ", sep="")
 
