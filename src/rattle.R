@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-20 20:05:37 Graham Williams>
+# Time-stamp: <2008-10-22 22:17:47 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Oct 2008"
+VERSION.DATE <- "Released 20 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -318,13 +318,19 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
     }
     else
     {
-      # 081020 gjw If the csvname is supplied then prefix it with file:///
-      # to make it conform to the filename obtained from the file
-      # chooser button. Without doing this crs$dwd does not include
-      # file:/// and when compared in changedDataTab to the filename
-      # obtained with getUri they don;t match, and hence the data is
-      # reloaded!
-      csvname <- paste("file://", csvname, sep="")
+      # 081020 gjw If the csvname is supplied then prefix it with
+      # file:/// to make it conform to the filename obtained from the
+      # file chooser button. Without doing this crs$dwd does not
+      # include file:/// and when compared in changedDataTab to the
+      # filename obtained with getUri they don't match, and hence the
+      # data is reloaded! Take care of MS/Windows where the csvname
+      # will be prefixed by the drive, so we add three slashes in
+      # front.
+
+      if (isWindows())
+        csvname <- paste("file:///", csvname, sep="")
+      else
+        csvname <- paste("file://", csvname, sep="")
     }
   }
     
@@ -714,7 +720,10 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   if (not.null(csvname))
   {
-    theWidget("data_filechooserbutton")$setUri(csvname)
+    if (!theWidget("data_filechooserbutton")$setUri(csvname))
+      infoDialog("Internal Error: The setting of the filename box",
+                 "failed. This is a Rattle bug.",
+                 "Please report this to support@togaware.com.")
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
     executeDataTab(csvname)

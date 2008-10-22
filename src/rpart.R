@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-12 06:51:45 Graham Williams>
+# Time-stamp: <2008-10-22 19:43:02 Graham Williams>
 #
 # RPART TAB
 #
@@ -970,6 +970,7 @@ exportRpartTab <- function()
   }
   else if (ext == "c")
   {
+    save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a decision tyree as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',

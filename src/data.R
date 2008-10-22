@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-20 19:55:38 Graham Williams>
+# Time-stamp: <2008-10-22 22:11:40 Graham Williams>
 #
 # DATA TAB
 #
@@ -124,10 +124,21 @@ changedDataTab <- function()
 
     if (is.null(filename) || is.null(crs$dwd))
       return(TRUE)
-  
-    if (URLdecode(basename(filename)) != crs$dataname ||
-        dirname(URLdecode(filename)) != crs$dwd)
-      return(TRUE)
+
+    if (isWindows())
+    {
+      # MS/Windows is not case sensitive.
+      if (tolower(URLdecode(basename(filename)))
+          != tolower(crs$dataname) ||
+          tolower(dirname(URLdecode(filename))) != tolower(crs$dwd))
+        return(TRUE)
+    }
+    else
+    {
+      if (URLdecode(basename(filename)) != crs$dataname ||
+          dirname(URLdecode(filename)) != crs$dwd)
+        return(TRUE)
+    }
 
     # 080606 TODO Test if file date has changed, and if so, return
     # TRUE.  file.info does not handle URLs so this is no good at
