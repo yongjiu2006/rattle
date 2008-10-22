@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-29 20:08:32 Graham Williams>
+# Time-stamp: <2008-10-22 19:42:38 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -978,6 +978,7 @@ exportKMeansTab <- function(file)
   }
   else if (ext == "c")
   {
+    save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a regression model as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',
