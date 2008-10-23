@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-22 22:17:47 Graham Williams>
+# Time-stamp: <2008-10-23 22:24:55 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 20 Oct 2008"
+VERSION.DATE <- "Released 22 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2324,6 +2324,8 @@ executeTransformNormalisePerform <- function()
     
   for (v in variables)
   {
+    norm.score.comment <- NULL
+    
     # Create the new name for the variable.
     
     if (action %in% c("bygroup"))
@@ -2379,10 +2381,17 @@ executeTransformNormalisePerform <- function()
 
       # Record the transformation for inclusion in PMML.
 
-      crs$transforms <<- union(crs$transforms,
-                               paste(vname,
-                                     min(crs$dataset[[vname]]),
-                                     max(crs$dataset[[vname]]), sep="_"))
+      lst <- paste(vname,
+                   min(crs$dataset[[vname]]),
+                   max(crs$dataset[[vname]]), sep="_")
+      crs$transforms <<- union(crs$transforms, lst)
+
+      norm.score.comment <- sprintf(paste('# crs$dataset[["%s"]] <-',
+                                          '(crs$dataset[["%s"]] -',
+                                          '%f)/abs(%f - %f)'),
+                                    vname, v, min(crs$dataset[[vname]]),
+                                    max(crs$dataset[[vname]]),
+                                    min(crs$dataset[[vname]]))
     }
     else if (action == "rank")
     {
@@ -2448,7 +2457,10 @@ executeTransformNormalisePerform <- function()
 
     appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
     eval(parse(text=norm.cmd))
-
+    if (! is.null(norm.score.comment))
+      appendLog("For SCORING use the following and not the above:",
+                norm.score.comment)
+    
     # Now update the variable roles.
     
     if (v %in% input)
@@ -3084,6 +3096,27 @@ executeTransformRemapPerform <- function()
   appendLog(remap.comment, gsub("<<-", "<-", remap.cmd))
   eval(parse(text=remap.cmd))
 
+  # Record the transformation as well as repoting it to the log.
+
+  if (action %in% c('kmeans'))
+  {
+    lst <- apply(sapply(paste(remap.prefix, vars, sep="_"),
+                        function(x) levels(crs$dataset[[x]])),
+                 2, function(y) paste(y, collapse="_"))
+    lst <- paste(names(lst), lst, sep="_")
+    crs$transforms <<- union(crs$transforms, lst)
+    appendLog(paste("For SCORING, the following will be useful,",
+                    "(with some work) rather than the above:"),
+              paste("#", lst, collapse="\n"), "\n",
+              paste(sprintf(paste('# crs$dataset[["%s"]] <-',
+                                  'cut(crs$dataset[["%s"]],',
+                                  '%s, %s)'),
+                            paste(remap.prefix, vars, sep="_"),
+                            vars,
+                            "ListOfcutpoints", "listOfLabels"),
+                    collapse="\n"))
+  }
+  
   # Record the new variables as having an INPUT role. No other changes
   # as the original variables are probably still required for
   # modelling.
