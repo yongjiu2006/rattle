@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-01 07:28:14 Graham Williams>
+# Time-stamp: <2008-10-24 19:06:08 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -44,7 +44,15 @@ library(rattle)
 # Simply type \"str(crs)\" in the R Console to see a summary of what is
 # stored there!
 
-crs <- NULL",
+crs <- NULL
+
+# The commands in this log generally record the process of building a model.
+# However, with very little effort the log can be used to score a new dataset.
+# The variable, building, can be used to toggle between these two. For example
+# it is used to toggle between generating transformations, as when building a
+# model, and simply using the transformations, as when scoring a dataset.
+
+building <- TRUE",
                  ifelse(packageIsAvailable("vcd"), "
 
 # The vcd package is used to generate the colours used in plots, if

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-23 22:24:55 Graham Williams>
+# Time-stamp: <2008-10-25 13:26:22 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Oct 2008"
+VERSION.DATE <- "Released 23 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2386,7 +2386,7 @@ executeTransformNormalisePerform <- function()
                    max(crs$dataset[[vname]]), sep="_")
       crs$transforms <<- union(crs$transforms, lst)
 
-      norm.score.comment <- sprintf(paste('# crs$dataset[["%s"]] <-',
+      norm.score.command <- sprintf(paste('crs$dataset[["%s"]] <-',
                                           '(crs$dataset[["%s"]] -',
                                           '%f)/abs(%f - %f)'),
                                     vname, v, min(crs$dataset[[vname]]),
@@ -2455,11 +2455,14 @@ executeTransformNormalisePerform <- function()
       norm.comment <- "Take a log transform of the column."
     }
 
-    appendLog(norm.comment, gsub("<<-", "<-", norm.cmd))
+    appendLog(norm.comment,
+              "if (building)\n{\n  ",
+              gsub("<<-", "<-", norm.cmd),
+              "\n}")
     eval(parse(text=norm.cmd))
-    if (! is.null(norm.score.comment))
-      appendLog("For SCORING use the following and not the above:",
-                norm.score.comment)
+    if (! is.null(norm.score.command))
+      appendLog("For SCORING we transform using the training data parameters.",
+                "else\n{\n  ", norm.score.command, "\n}")
     
     # Now update the variable roles.
     
@@ -2585,14 +2588,6 @@ executeTransformImputePerform <- function()
     imputed <- imputed[-which(classes == "factor")] # Remove the factors.
   }
   
-  # OLD CODE
-  
-  #zero   <- getSelectedVariables("zero")
-  #mean   <- getSelectedVariables("mean")
-  #median <- getSelectedVariables("median")
-
-  #imputed <- union(zero, union(mean, median))
-  
   # Record the current variable roles so that we can maintain these,
   # modified appropriately by ignore'ing the imputed variables, and
   # input'ing the newly imputed variables.
@@ -2707,6 +2702,7 @@ executeTransformImputePerform <- function()
     }
     else
     {
+      imp.val <- "Not Yet Implemented"
       # Take a copy of the variable to be imputed.
     
       appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
@@ -2720,6 +2716,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  " <<- 0", sep=""), vname, z)
         imp.comment <- "Change all NAs to 0."
+        imp.val <- 0
       }
       else if (action == "mean")
       {
@@ -2731,6 +2728,7 @@ executeTransformImputePerform <- function()
                                  ' <<- mean(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the mean value (not advisable)."
+        imp.val <- mean(crs$dataset[[z]], na.rm=TRUE)
       }
       else if (action == "median")
       {
@@ -2739,6 +2737,7 @@ executeTransformImputePerform <- function()
                                  ' <<- median(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the median (not advisable)."
+        imp.val <- median(crs$dataset[[z]], na.rm=TRUE)
       }
       else if (action == "mode")
       {
@@ -2747,6 +2746,7 @@ executeTransformImputePerform <- function()
                                  ' <<- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the modal value (not advisable)."
+        imp.val <- modalvalue(crs$dataset[[z]], na.rm=TRUE)
       }
       else if (action == "constant")
       {
@@ -2762,10 +2762,18 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <<- %s ', sep=""), vname, z, val)
         imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
+        imp.val <- val
       }
         
-      appendLog(imp.comment, gsub("<<-", "<-", imp.cmd))
+      appendLog(imp.comment, "if (building)\n{\n  ",  
+                gsub("<<-", "<-", imp.cmd), "\n}")
       eval(parse(text=imp.cmd))
+      appendLog("For SCORING we transform using the training data parameters:",
+                "else\n{\n",
+                sprintf(paste('  crs$dataset[["%s"]]',
+                              '[is.na(crs$dataset[["%s"]])] <- %s',
+                              sep=""), vname, z, imp.val),
+                "\n}")
     }
     if (z %in% input)
     {
@@ -3022,7 +3030,7 @@ executeTransformRemapPerform <- function()
   
   if (action == "quantiles")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- binning(crs$',
                                      'dataset[["%s"]], %d, method="quantile", ',
                                      'ordered=FALSE)',
                                      sep=""),
@@ -3031,7 +3039,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "kmeans")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- binning(crs$',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- binning(crs$',
                                      'dataset[["%s"]], %d, method="kmeans",',
                                      'ordered=FALSE)',
                                      sep=""),
@@ -3040,7 +3048,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "eqwidth")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- cut(crs$',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- cut(crs$',
                                      'dataset[["%s"]], %d)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -3048,7 +3056,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "indicator")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[, make.names(paste("%s_%s_", levels(',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[, make.names(paste("%s_%s_", levels(',
                                      'crs$dataset[["%s"]]), sep=""))] ',
                                      '<<- diag(nlevels(',
                                      'crs$dataset[["%s"]]))[crs$dataset',
@@ -3066,7 +3074,7 @@ executeTransformRemapPerform <- function()
       return()
     }
       
-    remap.cmd <- sprintf(paste('crs$dataset[, "%s_%s_%s"] <<- ',
+    remap.cmd <- sprintf(paste('  crs$dataset[, "%s_%s_%s"] <<- ',
                                'interaction(paste(crs$dataset[["%s"]], "_",',
                                'crs$dataset[["%s"]], sep=""))',
                                sep=""),
@@ -3075,7 +3083,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "asfactor")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- ',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- ',
                                      'as.factor(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
@@ -3083,7 +3091,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "asnumeric")
   {
-    remap.cmd <- paste(sprintf(paste('crs$dataset[["%s_%s"]] <<- ',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- ',
                                      'as.numeric(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
@@ -3093,28 +3101,44 @@ executeTransformRemapPerform <- function()
   # Perform the remapping.
 
   startLog("REMAP Variables")
-  appendLog(remap.comment, gsub("<<-", "<-", remap.cmd))
+  appendLog(remap.comment,
+            "if (building)\n{\n",
+            gsub("<<-", "<-", remap.cmd),
+            "\n}")
   eval(parse(text=remap.cmd))
 
   # Record the transformation as well as repoting it to the log.
 
   if (action %in% c('kmeans'))
   {
-    lst <- apply(sapply(paste(remap.prefix, vars, sep="_"),
-                        function(x) levels(crs$dataset[[x]])),
-                 2, function(y) paste(y, collapse="_"))
+    lvl <- sapply(paste(remap.prefix, vars, sep="_"),
+                  function(x) levels(crs$dataset[[x]]))
+    lst <- apply(lvl, 2, function(y) paste(y, collapse="_"))
     lst <- paste(names(lst), lst, sep="_")
     crs$transforms <<- union(crs$transforms, lst)
-    appendLog(paste("For SCORING, the following will be useful,",
-                    "(with some work) rather than the above:"),
-              paste("#", lst, collapse="\n"), "\n",
-              paste(sprintf(paste('# crs$dataset[["%s"]] <-',
+    cut <- apply(lvl, 2,
+                 function(x) gsub('\\]', ')',
+                                  gsub('\\[', 'c(',
+                                       gsub("\\] \\([^,]*,",",",
+                                            gsub(",", ", ",
+                                                 paste(x, collapse=" "))))))
+    lbl <- gsub('\\]', ']"',
+                gsub('\\[', '"[',
+                     gsub('\\] ', '], ',
+                          gsub("\\]$", '])',
+                               gsub("^\\[", 'c([',
+                                    gsub('\\(', '"(',
+                                         apply(lvl, 2, paste, collapse=" ")))))))
+    appendLog("For SCORING we transform using the training data parameters:",
+              "else\n{\n",
+              paste(sprintf(paste('  crs$dataset[["%s"]] <-',
                                   'cut(crs$dataset[["%s"]],',
                                   '%s, %s)'),
                             paste(remap.prefix, vars, sep="_"),
                             vars,
-                            "ListOfcutpoints", "listOfLabels"),
-                    collapse="\n"))
+                            cut, lbl),
+                    collapse="\n"),
+              "\n}")
   }
   
   # Record the new variables as having an INPUT role. No other changes
@@ -5969,10 +5993,19 @@ executeEvaluateTab <- function()
       # Simplify this like?
       #    response.cmd <- gsub("predict", "(predict",
       #                         gsub(")$", ")>0.5)*1", response.cmd))
+
+      # 081025 Why do the as.factor? Try just the 0/1 instead. In fact
+      # we have now modified this to use the actual levels.
       
-      respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
-                                 gsub(")$", ', type="response") > 0.5, 1, 0)))',
-                                      predcmd[[crv$GLM]]))
+##      respcmd[[crv$GLM]] <- gsub("predict", "as.factor(as.vector(ifelse(predict",
+##                                  gsub(")$", ', type="response") > 0.5, 1, 0)))',
+##                                       predcmd[[crv$GLM]]))
+
+      lvls <- sprintf(', type="response") > 0.5, "%s", "%s"))',
+                      levels(as.factor(crs$dataset[[crs$target]]))[2],
+                      levels(as.factor(crs$dataset[[crs$target]]))[1])
+      respcmd[[crv$GLM]] <- gsub("predict", "as.vector(ifelse(predict",
+                                 gsub(")$", lvls, predcmd[[crv$GLM]]))
 
       # For GLM, the response is a probability of the class.
       
@@ -6046,7 +6079,9 @@ executeEvaluateTab <- function()
     else
     {
       if (categoricTarget())
-        msg <- executeEvaluateScore(probcmd, testset, testname)
+        # 081025 which is best?
+        # msg <- executeEvaluateScore(probcmd, testset, testname)
+        msg <- executeEvaluateScore(respcmd, testset, testname)
       else if  (numericTarget())
         msg <- executeEvaluateScore(predcmd, testset, testname)
     }
@@ -7548,7 +7583,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   row.names(scores) <- the.names
   names(scores) <- the.models
   
-  # Obtain a list of the identity vartiables and 080713 target to output.
+  # Obtain a list of the identity variables and 080713 target to output.
     
   idents <- union(getSelectedVariables("ident"), getSelectedVariables("target"))
 
@@ -7719,6 +7754,9 @@ executeEvaluateScore <- function(probcmd, testset, testname)
             sprintf("sdata <- %s", scoreset))
   
   sdata <- eval(parse(text=scoreset))
+
+  appendLog("Output the combined data.",
+            sprintf("write.csv(cbind(sdata, scores))"))
   
   write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
 
