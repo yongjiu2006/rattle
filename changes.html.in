@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.106.
+    version is 2.3.107.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+338 081025 Unify score of binary tree and logistic to report level, not prob.
+           Conditionalise transform output in Log for model and scoring.
+           Record R01 transforms and report as conditional code in the Log.
+           Record I.. transforms and report as conditional code in the Log.
+           Record KM. transforms and report as conditional code in the Log.
 337 081023 Add support for capturing RK transforms in Rattle.
 336 081022 For MS/Windows ignore case in comparing filenames (changedDataTab)
            In export to C ensure both filename and modle name are lowercase
@@ -612,6 +617,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-23 22:43:51 Graham Williams</i>
+<i>Last Modified 2008-10-25 13:37:48 Graham Williams</i>
 <!-- hhmts end -->
   </p>
