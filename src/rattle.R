@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-25 13:26:22 Graham Williams>
+# Time-stamp: <2008-10-25 16:53:54 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Oct 2008"
+VERSION.DATE <- "Released 25 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -822,7 +822,19 @@ tuneRattle <- function()
 
 }
 
-
+write.csv.rstat <- function(ds, file)
+{
+  # Replace missing with "." in each factor
+  factors <- which(sapply(1:ncol(ds), function(x) is.factor(ds[,x])))
+  ds[,factors] <- sapply(factors,
+                         function(x)
+                         {
+                           levels(ds[,x]) <- c(levels(ds[,x]), ".")
+                           ds[,x][is.na(ds[,x])] <- "."
+                           ds[,x]
+                         })
+    write.csv(ds, file=file, row.names=FALSE, na="")
+}
 
 #-----------------------------------------------------------------------
 # MAINLOOP ITERATION
@@ -7757,8 +7769,11 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
   appendLog("Output the combined data.",
             sprintf("write.csv(cbind(sdata, scores))"))
-  
-  write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
+
+  if (crv$appname == 'RStat')
+    write.csv.rstat(cbind(sdata, scores), file=fname)
+  else
+    write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
 
   # StatusBar is enough so don't pop up a dialog?
   # infoDialog("The scores have been saved into the file", fname)
