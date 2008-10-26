@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.108.
+    version is 2.3.109.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+340 081027 Introduce write.rstat as a variation on write.csv
 339 081025 Conditional: write CSV numeric missing as "" and categoric as "."
 338 081025 Unify score of binary tree and logistic to report level, not prob.
            Conditionalise transform output in Log for model and scoring.
@@ -618,6 +619,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-25 17:02:25 Graham Williams</i>
+<i>Last Modified 2008-10-27 05:29:49 Graham Williams</i>
 <!-- hhmts end -->
   </p>

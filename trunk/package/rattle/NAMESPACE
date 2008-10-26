@@ -25,6 +25,7 @@ export(
        RStat,
        savePlotToFile,
        treeset.randomForest,
+       write.rstat,
        ada.formula
        )
 

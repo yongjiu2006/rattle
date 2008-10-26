@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-25 16:53:54 Graham Williams>
+# Time-stamp: <2008-10-27 05:40:09 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -822,18 +822,28 @@ tuneRattle <- function()
 
 }
 
-write.csv.rstat <- function(ds, file)
+write.rstat <- function(x, file="", ...)
 {
-  # Replace missing with "." in each factor
-  factors <- which(sapply(1:ncol(ds), function(x) is.factor(ds[,x])))
-  ds[,factors] <- sapply(factors,
-                         function(x)
+  # 081026 The RStat standard for missing values uses "." for
+  # categorics and "" for numeric. The simplest approach to handling
+  # this is to add "." as a new level to categoric variables to
+  # replace the missing values, then to tell write.csv to use "" for
+  # missing, which then should only be numeric variables.
+  
+  # Replace missing with "." in each categoric.
+
+  factors <- which(sapply(1:ncol(x), function(y) is.factor(x[,y])))
+  x[,factors] <- sapply(factors,
+                         function(y)
                          {
-                           levels(ds[,x]) <- c(levels(ds[,x]), ".")
-                           ds[,x][is.na(ds[,x])] <- "."
-                           ds[,x]
+                           levels(x[,y]) <- c(levels(x[,y]), ".")
+                           x[,y][is.na(x[,y])] <- "."
+                           x[,y]
                          })
-    write.csv(ds, file=file, row.names=FALSE, na="")
+
+  # Write to file with missing as "" for the remaining numerics
+  
+  write.csv(x, file=file, row.names=FALSE, na="", ...)
 }
 
 #-----------------------------------------------------------------------
@@ -7480,8 +7490,13 @@ executeEvaluateKmeansScore <- function()
   # i.e., not inside the string thaat is being parsed.
   
   appendLog("Generate data frame and export the clusters to CSV.",
-            sprintf('write.csv(%s, file="%s", row.names=FALSE)', csv.cmd, save.name))
-  write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
+            sprintf('write.%s(%s, file="%s", row.names=FALSE)',
+                    ifelse(crv$appname == "RStat", "rstat", "csv"),
+                    csv.cmd, save.name))
+  if (crv$appname == "RStat")
+    write.rstat(eval(parse(text=csv.cmd)), file=save.name)
+  else
+    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
 
   return(paste("Scores have been saved to the file", save.name))
 }
@@ -7558,6 +7573,12 @@ executeEvaluateScore <- function(probcmd, testset, testname)
       dialog$destroy()
       return()
     }
+
+    if (file.exists(fname))
+      if (! questionDialog("The evaluation result file", fname,
+                           "already exists. Are you sure you want to overwrite",
+                           "this file?"))
+        return()
   }
   
   # Score the data with each model, collect the outputs, and then
@@ -7768,10 +7789,11 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   sdata <- eval(parse(text=scoreset))
 
   appendLog("Output the combined data.",
-            sprintf("write.csv(cbind(sdata, scores))"))
+            sprintf("write.%s(cbind(sdata, scores))",
+                    ifelse(crv$appname=="RStat", "rstat", "csv")))
 
   if (crv$appname == 'RStat')
-    write.csv.rstat(cbind(sdata, scores), file=fname)
+    write.rstat(cbind(sdata, scores), file=fname)
   else
     write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
 
