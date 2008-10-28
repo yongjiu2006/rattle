@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-28 05:38:01 Graham Williams>
+# Time-stamp: <2008-10-28 21:45:49 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 27 Oct 2008"
+VERSION.DATE <- "Released 28 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5669,11 +5669,18 @@ executeEvaluateTab <- function()
 
   testset0 <- "crs$dataset"
   testname <- crs$dataname
-  included <- getIncludedVariables() # Need all vars, including risk.
+
+  # 081028 For included we only need the input variables and perhaps
+  # the risk variable. But after changing the definition of the
+  # arguments to getIncludedVariables, where risk=FALSE by default, I
+  # forgot to set it to TRUE here. However, it seems to be working so
+  # far, at least for glm!
+
+  included <- getIncludedVariables(target=FALSE)
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
-    # EVALUATE ON TRAINING DATA
+    # Evaluate on training data
 
     if (crv$appname != "RStat" && theWidget("sample_checkbutton")$getActive())
       infoDialog("You are using the training dataset to evaluate your model.",
@@ -5764,7 +5771,7 @@ executeEvaluateTab <- function()
     # 2008.) In general, not sure how to handle this, except for now
     # say that the schema must be identical in the scoring dataset to
     # the training dataset (including the target, risk, and ignored
-    # columns). In fact,, if the target etc are the last columns then
+    # columns). In fact, if the target etc are the last columns then
     # we can get away with it.
 
     if (is.null(included)) # || theWidget("score_radiobutton")$getActive())
@@ -5991,12 +5998,13 @@ executeEvaluateTab <- function()
       probcmd[[crv$GLM]] <- sub(")$", ', type="prob")', predcmd[[crv$GLM]])
 
       # Add on the actual class also. This is useful for Score but may
-      # be a problem for other types of evaluations (of whe=ich there
+      # be a problem for other types of evaluations (of which there
       # are currently none that that use probcmd for multinom.
 
       probcmd[[crv$GLM]] <- sub("<<- ", "<<- cbind(",
-                                sub(")$",sprintf("), crs$glm$lab[predict(crs$glm, %s)])",
-                                                  testset[[crv$GLM]]),
+                                sub(")$",
+                                    sprintf("), crs$glm$lab[predict(crs$glm, %s)])",
+                                            testset[[crv$GLM]]),
                                     probcmd[[crv$GLM]]))
       
     }        
@@ -6008,7 +6016,8 @@ executeEvaluateTab <- function()
     
       testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
 
-      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+      predcmd[[crv$GLM]] <- sprintf(paste("crs$pr <<- predict(crs$glm,",
+                                          'type="response", %s)'),
                                     testset[[crv$GLM]])
 
       # For GLM, a response is a figure close to the class, either close
