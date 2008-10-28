@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-19 15:15:03 Graham Williams>
+# Time-stamp: <2008-10-28 21:54:21 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -91,6 +91,14 @@ pmml.lm <- function(model,
                         attrs=c(modelName=model.name,
                           functionName="regression",
                           normalizationMethod="softmax",
+                          targetFieldName=target)) 
+  }
+  else if (as.character(model$call[[3]])[1] == "poisson")
+  {
+    lm.model <- xmlNode("RegressionModel",
+                        attrs=c(modelName=model.name,
+                          functionName="regression",
+                          normalizationMethod="exp",
                           targetFieldName=target)) 
   }
   else # The original code for linear regression models
