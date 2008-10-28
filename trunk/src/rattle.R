@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-28 21:45:49 Graham Williams>
+# Time-stamp: <2008-10-29 06:54:56 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -6033,7 +6033,9 @@ executeEvaluateTab <- function()
 ##                                  gsub(")$", ', type="response") > 0.5, 1, 0)))',
 ##                                       predcmd[[crv$GLM]]))
 
-      lvls <- sprintf(', type="response") > 0.5, "%s", "%s"))',
+      # 081029 No longer need response - already there?
+      # lvls <- sprintf(', type="response") > 0.5, "%s", "%s"))',
+      lvls <- sprintf(') > 0.5, "%s", "%s"))',
                       levels(as.factor(crs$dataset[[crs$target]]))[2],
                       levels(as.factor(crs$dataset[[crs$target]]))[1])
       respcmd[[crv$GLM]] <- gsub("predict", "as.vector(ifelse(predict",
@@ -6041,7 +6043,9 @@ executeEvaluateTab <- function()
 
       # For GLM, the response is a probability of the class.
       
-      probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
+      # 081029 No longer need response - already there?
+      # probcmd[[crv$GLM]] <- gsub(")$", ', type="response")', predcmd[[crv$GLM]])
+      probcmd[[crv$GLM]] <- predcmd[[crv$GLM]]
     }
   }
     
