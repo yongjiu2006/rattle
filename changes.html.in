@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.111.
+    version is 2.3.112.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+343 081029 Bug fix - logisitc had extra type=response
 342 081028 Support pmml export of poisson(log) (pmml Version 1.1.13)
            In evaluation/predict, don;t include the target in the variables list
            For glm always predict with type=response
@@ -623,6 +624,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-28 22:07:27 Graham Williams</i>
+<i>Last Modified 2008-10-29 06:51:33 Graham Williams</i>
 <!-- hhmts end -->
   </p>
