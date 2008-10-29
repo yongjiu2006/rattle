@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-29 06:54:56 Graham Williams>
+# Time-stamp: <2008-10-29 20:29:08 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Oct 2008"
+VERSION.DATE <- "Released 29 Oct 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5674,9 +5674,11 @@ executeEvaluateTab <- function()
   # the risk variable. But after changing the definition of the
   # arguments to getIncludedVariables, where risk=FALSE by default, I
   # forgot to set it to TRUE here. However, it seems to be working so
-  # far, at least for glm!
+  # far, at least for glm! 081029 However, we need the target variable
+  # in the list for error matrix and risk chart, for example. 
 
-  included <- getIncludedVariables(target=FALSE)
+  #included <- getIncludedVariables(target=FALSE)
+  included <- getIncludedVariables()
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
@@ -6013,8 +6015,14 @@ executeEvaluateTab <- function()
         
       # GLM's predict removes rows with missing values, so we also need
       # to ensure we remove rows with missing values here.
-    
-      testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
+
+      # 081029 Try without na.omit since if the target has missing
+      # values the record won't be scored, yet there is no reason not
+      # to score it. Example is w_reg_logistic.
+
+      ## testset[[crv$GLM]] <- sprintf("na.omit(%s)", testset0)
+      
+      testset[[crv$GLM]] <- testset0
 
       predcmd[[crv$GLM]] <- sprintf(paste("crs$pr <<- predict(crs$glm,",
                                           'type="response", %s)'),
@@ -6144,13 +6152,19 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                  "model to the dataset to generate an error matrix...")
     
     # Generate the command to show the confusion matrix.
+
+    # To ensure we get the target variable in the list, remove any
+    # column limits. Doesnot work for na.omit.....
+
+    #ts <- sub(',.*\\]', ', ]', testset[[mtype]])
+    ts <- testset[[mtype]]
     
     confuse.cmd <- paste(sprintf("table(crs$pr, %s$%s, ",
-                                 testset[[mtype]], crs$target),
+                                 ts, crs$target),
                          'dnn=c("Predicted", "Actual"))')
   
     percentage.cmd <- paste("round(100*table(crs$pr, ",
-                            sprintf("%s$%s, ", testset[[mtype]], crs$target),
+                            sprintf("%s$%s, ", ts, crs$target),
                             'dnn=c("Predicted", "Actual"))',
                             "/length(crs$pr))",
                             sep="")
@@ -6158,7 +6172,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     if (binomialTarget()) # 080528 TODO generalise to categoricTarget
       error.cmd <- paste("(function(x){return((x[1,2]+x[2,1])/sum(x))})",
                          "(table(crs$pr,",
-                         sprintf("%s$%s, ", testset[[mtype]], crs$target),
+                         sprintf("%s$%s, ", ts, crs$target),
                          'dnn=c("Predicted", "Actual")))')
     
     # Log the R commands and execute them.
@@ -7819,7 +7833,8 @@ executeEvaluateScore <- function(probcmd, testset, testname)
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
 {
-  print(probcmd)
+  ## print(probcmd)
+  
   # This modification to executeEvaluateSave was provided by Ed Cox
   # (080201) to plot predictions vs. observed values. Graham added the
   # logging and some fine tuning. It includes a pseudo R-squared.
@@ -7949,7 +7964,10 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                       getSelectedVariables("target"),
                       getSelectedVariables("input"),
                       getSelectedVariables("risk"))
-    tmpset <- crs$dataset[-crs$sample, scorevarlist]
+    if (is.null(crs$sample))
+      tmpset <- crs$dataset[, scorevarlist]
+    else
+      tmpset <- crs$dataset[-crs$sample, scorevarlist]
 
     if (substr(scoreset, 1, 7) == "na.omit" &&
         !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
