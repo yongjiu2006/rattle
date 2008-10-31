@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-29 20:29:08 Graham Williams>
+# Time-stamp: <2008-11-01 08:36:10 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -829,21 +829,23 @@ write.rstat <- function(x, file="", ...)
   # this is to add "." as a new level to categoric variables to
   # replace the missing values, then to tell write.csv to use "" for
   # missing, which then should only be numeric variables.
-  
-  # Replace missing with "." in each categoric.
 
-  factors <- which(sapply(1:ncol(x), function(y) is.factor(x[,y])))
-  x[,factors] <- sapply(factors,
-                         function(y)
-                         {
-                           levels(x[,y]) <- c(levels(x[,y]), ".")
-                           x[,y][is.na(x[,y])] <- "."
-                           x[,y]
-                         })
-
-  # Write to file with missing as "" for the remaining numerics
+  # 081101 IBI request "." for all missing!
   
-  write.csv(x, file=file, row.names=FALSE, na="", ...)
+###   # Replace missing with "." in each categoric.
+
+###   factors <- which(sapply(1:ncol(x), function(y) is.factor(x[,y])))
+###   x[,factors] <- sapply(factors,
+###                          function(y)
+###                          {
+###                            levels(x[,y]) <- c(levels(x[,y]), ".")
+###                            x[,y][is.na(x[,y])] <- "."
+###                            x[,y]
+###                          })
+
+###   # Write to file with missing as "" for the remaining numerics
+  
+  write.csv(x, file=file, row.names=FALSE, na=".", ...)
 }
 
 #-----------------------------------------------------------------------
