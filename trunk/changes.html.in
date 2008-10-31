@@ -6,18 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.113.
+    version is 2.3.114.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+345 081101 Change write.rstat back to using "." for missing.
 344 081029 Fix PrvOb bug - fails when no sample
            Do not na.omit in evaluate GLM testset - maybe not required?
 343 081029 Bug fix - logisitc had extra type=response
 342 081028 Support pmml export of poisson(log) (pmml Version 1.1.13)
-           In evaluation/predict, don;t include the target in the variables list
+           In evaluation/predict, don't include the target in the variables list
            For glm always predict with type=response
 341 081028 Bug fix: norm.score.command initialised to NULL
 340 081027 Introduce write.rstat as a variation on write.csv
@@ -626,6 +627,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-10-29 22:01:17 Graham Williams</i>
+<i>Last Modified 2008-11-01 08:35:04 Graham Williams</i>
 <!-- hhmts end -->
   </p>
