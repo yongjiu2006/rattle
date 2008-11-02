@@ -98,6 +98,7 @@ revision:
 
 update:
 	svn update
+	svn update
 
 status:
 	svn status -q

@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.114.
+    version is 2.3.115.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+346 081103 Report singularities in the model output
+           Mark variables causing singularities as inactive in pmml
+           release pmml 1.2.14
+           Include alternative binning options in log for scoring
 345 081101 Change write.rstat back to using "." for missing.
 344 081029 Fix PrvOb bug - fails when no sample
            Do not na.omit in evaluate GLM testset - maybe not required?
@@ -627,6 +631,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-01 08:35:04 Graham Williams</i>
+<i>Last Modified 2008-11-03 10:34:28 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-01 08:36:10 Graham Williams>
+# Time-stamp: <2008-11-02 11:43:38 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Oct 2008"
+VERSION.DATE <- "Released 01 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2486,8 +2486,8 @@ executeTransformNormalisePerform <- function()
               "\n}")
     eval(parse(text=norm.cmd))
     if (! is.null(norm.score.command))
-      appendLog("For SCORING we transform using the training data parameters.",
-                "else\n{\n  ", norm.score.command, "\n}")
+      appendLog("When scoring transform using the training data parameters.",
+                "if (scoring)\n{\n  ", norm.score.command, "\n}")
     
     # Now update the variable roles.
     
@@ -2793,8 +2793,8 @@ executeTransformImputePerform <- function()
       appendLog(imp.comment, "if (building)\n{\n  ",  
                 gsub("<<-", "<-", imp.cmd), "\n}")
       eval(parse(text=imp.cmd))
-      appendLog("For SCORING we transform using the training data parameters:",
-                "else\n{\n",
+      appendLog("When scoring, transform using the training data parameters:",
+                "if (scoring)\n{\n",
                 sprintf(paste('  crs$dataset[["%s"]]',
                               '[is.na(crs$dataset[["%s"]])] <- %s',
                               sep=""), vname, z, imp.val),
@@ -3141,12 +3141,12 @@ executeTransformRemapPerform <- function()
     lst <- apply(lvl, 2, function(y) paste(y, collapse="_"))
     lst <- paste(names(lst), lst, sep="_")
     crs$transforms <<- union(crs$transforms, lst)
-    cut <- apply(lvl, 2,
-                 function(x) gsub('\\]', ')',
-                                  gsub('\\[', 'c(',
-                                       gsub("\\] \\([^,]*,",",",
-                                            gsub(",", ", ",
-                                                 paste(x, collapse=" "))))))
+    cuts <- apply(lvl, 2,
+                  function(x) gsub('\\]', ')',
+                                   gsub('\\[', 'c(',
+                                        gsub("\\] \\([^,]*,",",",
+                                             gsub(",", ", ",
+                                                  paste(x, collapse=" "))))))
     lbl <- gsub('\\]', ']"',
                 gsub('\\[', '"[',
                      gsub('\\] ', '], ',
@@ -3154,14 +3154,30 @@ executeTransformRemapPerform <- function()
                                gsub("^\\[", 'c([',
                                     gsub('\\(', '"(',
                                          apply(lvl, 2, paste, collapse=" ")))))))
-    appendLog("For SCORING we transform using the training data parameters:",
-              "else\n{\n",
-              paste(sprintf(paste('  crs$dataset[["%s"]] <-',
-                                  'cut(crs$dataset[["%s"]],',
-                                  '%s, %s)'),
+    appendLog("When scoring transform using the training data parameters.",
+              "if (scoring)\n{\n",
+              # Print the transforms based on the training parameters
+              paste(sprintf(paste('  crs$dataset[["%s"]] <- ',
+                                  'cut(crs$dataset[["%s"]],\n\t\t',
+                                  '%s,\n\t\t%s,\n\t\tinclude.lowest=TRUE)', sep=""),
                             paste(remap.prefix, vars, sep="_"),
                             vars,
-                            cut, lbl),
+                            cuts, lbl),
+                    collapse="\n"),
+              # Comment the transforms based on the test parameters.
+              '\n\n# Alternatively, use the min/max from the new dataset\n\n',
+              paste(sprintf(paste('#  crs$dataset[["%s"]] <- ',
+                                  'cut(crs$dataset[["%s"]],\n#\t\t',
+                                  '%s,\n#\t\t%s,\n#\t\tinclude.lowest=TRUE)',
+                                  sep=""),
+                            paste(remap.prefix, vars, sep="_"),
+                            vars,
+                            sprintf(sub(',[^),]*)$',
+                                        ', max(crs$dataset[["%s"]], na.rm=TRUE))',
+                                        sub('c\\([^,]*,',
+                                            'c(min(crs$dataset[["%s"]], na.rm=TRUE),',
+                                            cuts)), vars, vars),
+                            lbl),
                     collapse="\n"),
               "\n}")
   }

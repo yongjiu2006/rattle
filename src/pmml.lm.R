@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-28 21:54:21 Graham Williams>
+# Time-stamp: <2008-11-03 07:38:30 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -42,7 +42,8 @@ pmml.lm <- function(model,
   require(XML, quietly=TRUE)
 
   # Collect the required variables information. For a regression, all
-  # variables will have been used.
+  # variables will have been used except those with a NA coefficient
+  # indicating singularities. We mark singularities as inactive.
 
   terms <- attributes(model$terms)
   field <- NULL
@@ -50,6 +51,7 @@ pmml.lm <- function(model,
   number.of.fields <- length(field$name)
   field$class <- terms$dataClasses
   target <- field$name[1]
+  inactive <- names(which(is.na(coef(model))))
 
   for (i in 1:number.of.fields)
   {
@@ -112,7 +114,7 @@ pmml.lm <- function(model,
 
   # PMML -> RegressionModel -> MiningSchema
 
-  lm.model <- append.XMLNode(lm.model, pmmlMiningSchema(field, target))
+  lm.model <- append.XMLNode(lm.model, pmmlMiningSchema(field, target, inactive))
 
   # PMML -> RegressionModel -> RegressionTable
 
@@ -168,7 +170,7 @@ pmml.lm <- function(model,
       # this way, we communicate through the PMML which level is the
       # base. Can be useful in then comparing with the full list of
       # levels available for this variable and determining levels that
-      # are just mssing from the training. Note that xlevels does not
+      # are just missing from the training. Note that xlevels does not
       # include any levels that were not modelled (i.e., missing
       # levels from the training data). We do this by iterating over
       # all the modelled levels (levs, i.e., all values in xlevels)

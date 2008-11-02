@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-28 22:05:11 Graham Williams>
+# Time-stamp: <2008-11-03 10:33:17 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -102,7 +102,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.13" # Support export of poisson(log)
+  VERSION <- "1.1.14" # Handle singularities in lm/glm better.
+    # "1.1.13" # Support export of poisson(log)
     # "1.1.12" # Tree Array have quoted values. 0 for base in regression
     # "1.1.11" # Bug fix for pmml.lm - continuing to fix below problem
     # "1.1.10" # Bug fix for pmml.lm with categorical logistic target
@@ -195,8 +196,14 @@ pmmlDataDictionary <- function(field)
 
 }
 
-pmmlMiningSchema <- function(field, target=NULL)
+pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
 {
+  # 081103 Add inactive to list those variables that should be marked
+  # as inactive in the model. This was added so that singularities can
+  # be identified as inactive for a linear model. It could also be
+  # used to capture ignored variables, if they were to ever be
+  # included in the variable list.
+  
   number.of.fields <- length(field$name)
   mining.fields <- list()
 
@@ -206,6 +213,18 @@ pmmlMiningSchema <- function(field, target=NULL)
       usage <- "active"
     else
       usage <- ifelse(field$name[i] == target, "predicted", "active")
+
+    # 081103 Find out which variables should be marked as
+    # inactive. Currently the inactive list is often supplied from
+    # lm/glm as the variables which result in singularities in the
+    # model. However, for categorics, this is the indicator variable,
+    # like GenderMale. The test for %in% fails! So as a quick fix use
+    # grep. This is not a solution (because the variable Test is a
+    # substring of TestAll, etc)
+    
+    # 081103 if (field$name[i] %in% inactive) usage <- "inactive"
+    if (length(grep(field$name[i], inactive))) usage <- "inactive"
+      
     mining.fields[[i]] <- xmlNode("MiningField",
                                   attrs=c(name=field$name[i],
                                     usageType=usage))
