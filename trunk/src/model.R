@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-22 19:41:59 Graham Williams>
+# Time-stamp: <2008-11-03 07:10:34 Graham Williams>
 #
 # MODEL TAB
 #
@@ -657,8 +657,6 @@ executeModelGLM <- function()
   TV <- "glm_textview"
   mtype <- "linear"
 
-  # Currently only handling binary classification.
-  
   # Obtain the family
 
   if (theWidget("glm_linear_radiobutton")$getActive())
@@ -674,9 +672,9 @@ executeModelGLM <- function()
   else if (theWidget("glm_multinomial_radiobutton")$getActive())
     family <- "Multinomial"
   
-  # Build the formula for the model. 080719 If the user has requested a
-  # numeric target and the target is actually a factor, then covert to
-  # a numeric, else the algorithms complain.
+  # Build the formula for the model. 080719 If the user has requested
+  # a numeric target and the target is actually a factor, then convert
+  # to a numeric, else the algorithms complain.
 
   if (family %in% c("Linear", "Gaussian", "Poisson")
       && "factor" %in% class(crs$dataset[[crs$target]]))
@@ -853,6 +851,14 @@ executeModelGLM <- function()
                           family, "Regression",
                           ifelse(family == "Linear", "lm",
                                  ifelse(family == "Multinomial", "multinom", "glm"))),
+              ifelse(any(is.na(coef(crs$glm))),
+                     paste("\n***Note*** Singularities were found in the modelling.",
+                           "This is often the case when variables are linear",
+                           "combinations of other variables, or the variable has",
+                           "a constant value. The singlularities are those with an",
+                           "NA in the following table. Those variables will be ignored",
+                           "when using the model to score new data.\n",
+                           sep="\n"), ""),
               collectOutput(summary.cmd))
 
   if (family == "Multinomial" && car.available)
@@ -880,7 +886,9 @@ executeModelGLM <- function()
                       attr(time.taken, "units"))
   addTextview(TV, "\n\n", time.msg, textviewSeparator())
   appendLog(time.msg)
-  setStatusBar(sprintf("A %s model has been generated.", commonName(mtype)),
+  setStatusBar(sprintf("A %s model has been generated%s.", commonName(mtype),
+                       ifelse(any(is.na(coef(crs$glm))),
+                              " with singularities", "")),
                time.msg)
   return(TRUE)
 }

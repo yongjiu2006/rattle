@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-24 19:06:08 Graham Williams>
+# Time-stamp: <2008-11-02 11:02:57 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -52,7 +52,8 @@ crs <- NULL
 # it is used to toggle between generating transformations, as when building a
 # model, and simply using the transformations, as when scoring a dataset.
 
-building <- TRUE",
+building <- TRUE
+scoring  <- ! building",
                  ifelse(packageIsAvailable("vcd"), "
 
 # The vcd package is used to generate the colours used in plots, if
