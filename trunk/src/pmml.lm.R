@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-11-03 07:38:30 Graham Williams>
+# Time-stamp: <2008-11-03 14:18:16 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -32,18 +32,19 @@
 # glm.
 
 pmml.lm <- function(model,
-                    model.name="Regression_model",
+                    model.name="Regression_Model",
                     app.name="Rattle/PMML",
                     description="Regression Model",
                     copyright=NULL, ...)
 {
   if (! inherits(model, "lm")) stop("Not a legitimate lm object")
-
   require(XML, quietly=TRUE)
 
-  # Collect the required variables information. For a regression, all
-  # variables will have been used except those with a NA coefficient
-  # indicating singularities. We mark singularities as inactive.
+  # Collect the required variables information.
+
+  # For a regression, all variables will have been used except those
+  # with a NA coefficient indicating singularities. We mark
+  # singularities as inactive.
 
   terms <- attributes(model$terms)
   field <- NULL
@@ -89,23 +90,25 @@ pmml.lm <- function(model,
   
   if (as.character(model$call[[3]])[1] == "binomial")
   {
-    lm.model <- xmlNode("RegressionModel",
+    the.model <- xmlNode("RegressionModel",
                         attrs=c(modelName=model.name,
                           functionName="regression",
+                          algorithmName="glm",
                           normalizationMethod="softmax",
                           targetFieldName=target)) 
   }
   else if (as.character(model$call[[3]])[1] == "poisson")
   {
-    lm.model <- xmlNode("RegressionModel",
+    the.model <- xmlNode("RegressionModel",
                         attrs=c(modelName=model.name,
                           functionName="regression",
+                          algorithmName="glm",
                           normalizationMethod="exp",
                           targetFieldName=target)) 
   }
   else # The original code for linear regression models
   {
-    lm.model <- xmlNode("RegressionModel",
+    the.model <- xmlNode("RegressionModel",
                         attrs=c(modelName=model.name,
                           functionName="regression",
                           algorithmName="least squares",
@@ -114,14 +117,14 @@ pmml.lm <- function(model,
 
   # PMML -> RegressionModel -> MiningSchema
 
-  lm.model <- append.XMLNode(lm.model, pmmlMiningSchema(field, target, inactive))
+  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
   # PMML -> RegressionModel -> RegressionTable
 
   coeff <- coefficients(model)
   coeffnames <- names(coeff)
   
-  # Added by Graham Williams so that code identifies a targetCategroy for binary
+  # Added by Graham Williams so that code identifies a targetCategory for binary
   # logistic regression glm models built with binomial(logit).
 
   if (as.character(model$call[[3]])[1] == "binomial")
@@ -190,11 +193,11 @@ pmml.lm <- function(model,
     }
   }
   
-  lm.model <- append.XMLNode(lm.model, regTable)
+  the.model <- append.XMLNode(the.model, regTable)
   
   # Add to the top level structure.
   
-  pmml <- append.XMLNode(pmml, lm.model)
+  pmml <- append.XMLNode(pmml, the.model)
   
   return(pmml)
 }

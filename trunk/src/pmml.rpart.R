@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-10-19 18:46:30 Graham Williams>
+# Time-stamp: <2008-11-03 14:18:30 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -34,23 +34,22 @@
 pmml.rpart <- function(model,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
-                       description="RPart decision tree model",
+                       description="RPart Decision Tree Model",
                        copyright=NULL, ...)
 {
-  if (! inherits(model, "rpart"))
-    stop("Not a legitimate rpart object")
+  if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
+  require(XML, quietly=TRUE)
+  require(rpart, quietly=TRUE)
 
   functionName <- "classification"
   if (model$method != "class") functionName <- "regression"
   
-  require(XML, quietly=TRUE)
-  require(rpart, quietly=TRUE)
-  
-  # Collect the required information. We list all variables,
-  # irrespective of whether they appear in the final model. This
-  # seems to be the standard thing to do with PMML. It also adds
-  # extra information - i.e., the model did not need these extra
-  # variables!
+  # Collect the required information.
+
+  # We list all variables, irrespective of whether they appear in the
+  # final model. This seems to be the standard thing to do with
+  # PMML. It also adds extra information - i.e., the model did not
+  # need these extra variables!
 
   field <- NULL
   field$name <- as.character(attr(model$terms, "variables"))[-1]
@@ -67,7 +66,7 @@ pmml.rpart <- function(model,
         field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
-  # Start to create the PMML object
+  # PMML
 
   pmml <- pmmlRootNode("3.2")
 
@@ -81,7 +80,7 @@ pmml.rpart <- function(model,
 
   # PMML -> TreeModel
 
-  tree.model <- xmlNode("TreeModel", attrs=c(modelName=model.name,
+  the.model <- xmlNode("TreeModel", attrs=c(modelName=model.name,
                                        functionName=functionName,
                                        algorithmName="rpart",
                                        splitCharacteristic="binarySplit",
@@ -89,7 +88,7 @@ pmml.rpart <- function(model,
 
   # PMML -> TreeModel -> MiningSchema
   
-  tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
+  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target))
 
   # PMML -> TreeModel -> Node
 
@@ -149,11 +148,11 @@ pmml.rpart <- function(model,
                                model, parent_ii, rows,"right")
   }
 
-  tree.model <- append.XMLNode(tree.model, node)
+  the.model <- append.XMLNode(the.model, node)
 
   # Add to the top level structure.
 
-  pmml <- append.XMLNode(pmml, tree.model)
+  pmml <- append.XMLNode(pmml, the.model)
 
   return(pmml)
 }
@@ -502,15 +501,15 @@ pmml.rpart.as.rules <- function(model,
 
   # PMML -> RuleSetModel
   
-  tree.model <- xmlNode("RuleSetModel",
+  the.model <- xmlNode("RuleSetModel",
                         attrs=c(modelName=model.name,
                           functionName="classification",
                           splitCharacteristic="binary",
                           algorithmName="rpart"))
 
-  # MiningSchema
+  # PMML -> MiningSchema
   
-  tree.model <- append.XMLNode(tree.model, pmmlMiningSchema(field, target))
+  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target))
 
   # Add in actual tree nodes.
 
@@ -556,12 +555,11 @@ pmml.rpart.as.rules <- function(model,
     }
   }
 
-  tree.model <- append.XMLNode(tree.model, rule.set)
+  the.model <- append.XMLNode(the.model, rule.set)
   
   # Add to the top level structure.
   
-  pmml <- append.XMLNode(pmml, tree.model)
+  pmml <- append.XMLNode(pmml, the.model)
   
   return(pmml)
 }
-

@@ -64,6 +64,7 @@ PSOURCE = \
 	src/pmml.kmeans.R \
 	src/pmml.ksvm.R \
 	src/pmml.lm.R \
+	src/pmml.multinom.R \
 	src/pmml.nnet.R \
 	src/pmml.randomForest.R \
 	src/pmml.rpart.R \
@@ -96,6 +97,7 @@ checkR:
 revision:
 	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R
 
+.PHONY: update
 update:
 	svn update
 	svn update
@@ -109,7 +111,7 @@ meld:
 	done
 
 .PHONY: install
-install: build pbuild zip rattle_src.zip # check pcheck
+install: update build pbuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
 	cp changes.html.in /home/gjw/projects/togaware/www/
