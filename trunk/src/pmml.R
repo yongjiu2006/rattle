@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-11-03 21:58:23 Graham Williams>
+# Time-stamp: <2008-11-04 10:51:46 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -102,8 +102,9 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.15" # Handle multinomial model.
-    #"1.1.14" # Handle singularities in lm/glm better.
+  VERSION <- "1.1.16" # export pmml.multinom
+    # "1.1.15" # Handle multinomial model.
+    # "1.1.14" # Handle singularities in lm/glm better.
     # "1.1.13" # Support export of poisson(log)
     # "1.1.12" # Tree Array have quoted values. 0 for base in regression
     # "1.1.11" # Bug fix for pmml.lm - continuing to fix below problem
