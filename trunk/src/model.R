@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-03 07:10:34 Graham Williams>
+# Time-stamp: <2008-11-04 21:07:51 Graham Williams>
 #
 # MODEL TAB
 #
@@ -856,7 +856,7 @@ executeModelGLM <- function()
                            "This is often the case when variables are linear",
                            "combinations of other variables, or the variable has",
                            "a constant value. The singlularities are those with an",
-                           "NA in the following table. Those variables will be ignored",
+                           "NA in the following table. These variables will be ignored",
                            "when using the model to score new data.\n",
                            sep="\n"), ""),
               collectOutput(summary.cmd))
