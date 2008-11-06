@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-22 19:42:38 Graham Williams>
+# Time-stamp: <2008-11-04 20:33:14 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -127,9 +127,7 @@ executeClusterTab <- function()
 }
 
 #----------------------------------------------------------------------
-#
 # KMEANS
-#
 
 executeClusterKMeans <- function(include)
 {
@@ -791,11 +789,12 @@ on_hclust_data_plot_button_clicked <- function(button)
 
   ## PLOT: Log the R command and execute.
 
-  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
-                            "col=cutree(crs$hclust, %d))\n",
-                            genPlotTitleCmd(""), sep=""),
-                      ifelse(sampling, "crs$sample", ""), include,
-                      num.clusters)
+  plot.cmd <- paste(sprintf(paste("plot(crs$dataset[%s,%s], ",
+                                  "col=cutree(crs$hclust, %d))\n",
+                                  sep=""),
+                            ifelse (sampling, "crs$sample", ""), include,
+                            num.clusters),
+                    genPlotTitleCmd(""))
   appendLog("Generate a data plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-02 11:43:38 Graham Williams>
+# Time-stamp: <2008-11-06 19:55:51 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 03 Nov 2008"
+VERSION.DATE <- "Released 04 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -5575,21 +5575,33 @@ on_risk_comboboxentry_changed <- function(action, window)
   setStatusBar()
 }
 
-##----------------------------------------------------------------------
-##
-## Support Functions
+#-----------------------------------------------------------------------
+#
+# Support Functions
 
 getEvaluateModels <- function()
 {
-  ## Return a list of models selected for evaluation
+  # Return a list of models selected for evaluation
 
   models <- c()
+
+  # First, check each of the traditional model checkboxes.
+  
   for (m in crv$MODELLERS)
     if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
       models <- c(models, m)
+
+  # Now add in the cluster models, which will eventually be part of
+  # the Model tab.
+  
   if (theWidget("kmeans_evaluate_checkbutton")$isSensitive() &&
       theWidget("kmeans_evaluate_checkbutton")$getActive())
     models <- c(models, "kmeans")
+
+  if (theWidget("hclust_evaluate_checkbutton")$isSensitive() &&
+      theWidget("hclust_evaluate_checkbutton")$getActive())
+    models <- c(models, "hclust")
+
   return(models)
 }
 
@@ -5630,7 +5642,7 @@ executeEvaluateTab <- function()
 
   # Ensure we recognise the model type.
   
-  if (length(setdiff(mtypes, union(crv$MODELLERS, c("kmeans")))) > 0)
+  if (length(setdiff(mtypes, union(crv$MODELLERS, c("kmeans", "hclust")))) > 0)
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
@@ -6138,14 +6150,17 @@ executeEvaluateTab <- function()
   {
     if (theWidget("kmeans_evaluate_checkbutton")$getActive())
       msg <- executeEvaluateKmeansScore()
+    else if (theWidget("hclust_evaluate_checkbutton")$getActive())
+      msg <- executeEvaluateHclustScore()
     else
     {
       if (categoricTarget())
-        # 081025 which is best?
-        # msg <- executeEvaluateScore(probcmd, testset, testname)
-        msg <- executeEvaluateScore(respcmd, testset, testname)
+        # 081025 which is best? For trees, traditionally we return the
+        # class, but for logistic regression we might return the
+        # probability
+        msg <- executeEvaluateScore(probcmd, respcmd, testset, testname)
       else if  (numericTarget())
-        msg <- executeEvaluateScore(predcmd, testset, testname)
+        msg <- executeEvaluateScore(predcmd, predcmd, testset, testname)
     }
   }
   else
@@ -7533,7 +7548,7 @@ executeEvaluateKmeansScore <- function()
   
   # We can't pass "\" in a filename to the parse command in
   # MS/Windows so we have to run the save/write command separately,
-  # i.e., not inside the string thaat is being parsed.
+  # i.e., not inside the string that is being parsed.
   
   appendLog("Generate data frame and export the clusters to CSV.",
             sprintf('write.%s(%s, file="%s", row.names=FALSE)',
@@ -7547,8 +7562,121 @@ executeEvaluateKmeansScore <- function()
   return(paste("Scores have been saved to the file", save.name))
 }
 
+executeEvaluateHclustScore <- function()
+{
 
-executeEvaluateScore <- function(probcmd, testset, testname)
+  # 081104 This is so similar to executeEvaluateKmeansScore that it
+  # should be merged with it.
+  
+  # TODO 081104 As with executeEvaluateKmeansScore, we need to select
+  # the dataset to which we append the "score". Currently, it is the
+  # training dataset ONLY.
+  
+  startLog("EXPORT HIERARCHICAL CLUSTER ASSIGNMENT AS CSV")
+    
+  # Obtain filename to write the clusters to.
+  
+  dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
+                                 "gtk-cancel", GtkResponseType["cancel"],
+                                 "gtk-save", GtkResponseType["accept"])
+    
+  if(not.null(crs$dataname))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_hclust", sep=""))
+
+  ff <- gtkFileFilterNew()
+  ff$setName("CSV Files")
+  ff$addPattern("*.csv")
+  dialog$addFilter(ff)
+
+  ff <- gtkFileFilterNew()
+  ff$setName("All Files")
+  ff$addPattern("*")
+  dialog$addFilter(ff)
+    
+  if (dialog$run() == GtkResponseType["accept"])
+  {
+    save.name <- dialog$getFilename()
+    dialog$destroy()
+  }
+  else
+  {
+    dialog$destroy()
+    return()
+  }
+
+  if (get.extension(save.name) != "csv")
+    save.name <- sprintf("%s.csv", save.name)
+  
+  if (file.exists(save.name))
+    if (! questionDialog("A file of the same name as", save.name,
+                         "already exists. Do you want to overwrite",
+                         "this file?"))
+      return()
+
+  # 080523 Output all original data plus the cluster number, taking
+  # missing values into account. This gets a little complex, to say
+  # the least. We need to put the cluster number with each input
+  # record, then add in those that have missing values, giving them
+  # a cluster number of NA, and then make sure we generate the CSV
+  # file in the same numeric order as it was read in.
+
+  num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
+
+  # XXXX TODO USE cut(crs$hclust, 10) to get the cluster assignment. Maybe not
+  # as complex as kmeans???? Or maybe it is, wrt missing.
+  
+  clnm <- sprintf("names(cutree(crs$hclust, %d))", num.clusters)
+  clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
+                  ifelse(theWidget("sample_checkbutton")$getActive(),
+                         "crs$sample", ""), clnm)
+
+  # Check if there are missing values, and if not we don't need to
+  # be so complex!
+
+  missing <- length(eval(parse(text=clna))) > 0
+
+  if (theWidget("score_idents_radiobutton")$getActive())
+    sinclude <- paste('c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
+                      sep="")
+  else if (theWidget("score_all_radiobutton")$getActive())
+    sinclude <- paste('c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
+
+  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s,%s],",
+                            "hclust=cutree(crs$hclust, %d))",
+                            "%s", # If non missing this is empty.
+                            ")[as.character(sort(as.integer(",
+                            "rownames(crs$dataset[%s, ])))), ]"),
+                      ifelse(theWidget("sample_checkbutton")$getActive(),
+                             "crs$sample", ""),
+                      clnm, sinclude, num.clusters,
+                      ifelse(missing,
+                             sprintf(",data.frame(crs$dataset[%s, ][%s,], hclust=NA)",
+                                     ifelse(theWidget("sample_checkbutton")$
+                                            getActive(), "crs$sample", ""),
+                                     clna),
+                             ""),
+                      ifelse(theWidget("sample_checkbutton")$getActive(),
+                             "crs$sample", "")
+                      ##sprintf('"%s"', paste(idents, collapse='", "'))
+                      )
+  
+  # We can't pass "\" in a filename to the parse command in
+  # MS/Windows so we have to run the save/write command separately,
+  # i.e., not inside the string that is being parsed.
+  
+  appendLog("Generate data frame and export the clusters to CSV.",
+            sprintf('write.%s(%s, file="%s", row.names=FALSE)',
+                    ifelse(crv$appname == "RStat", "rstat", "csv"),
+                    csv.cmd, save.name))
+  if (crv$appname == "RStat")
+    write.rstat(eval(parse(text=csv.cmd)), file=save.name)
+  else
+    write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
+
+  return(paste("Scores have been saved to the file", save.name))
+}
+
+executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
 {
   # Apply each selected model to the selected dataset and save the
   # results to a file with columns containing the score (or scores in
@@ -7671,7 +7799,15 @@ executeEvaluateScore <- function(probcmd, testset, testname)
   for (mtype in the.models)
   {
     setStatusBar("Scoring dataset using", mtype, "...")
-  
+
+    # Determine whether we want the respcmd (for trees and multinom)
+    # or the probcmd (for logistic regression).
+
+    if (mtype == crv$GLM)
+      thecmd <- probcmd
+    else
+      thecmd <- respcmd
+    
     # Apply the model to the dataset.
 
     appendLog(sprintf(paste("%s: Obtain %s",
@@ -7682,9 +7818,9 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                       else if (numericTarget())
                       "predictions",
                       commonName(mtype), testname),
-              gsub("<<-", "<-", probcmd[[mtype]]))
+              gsub("<<-", "<-", thecmd[[mtype]]))
     
-    result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
+    result <- try(eval(parse(text=thecmd[[mtype]])), silent=TRUE)
 
     # Check for errors - in particular, new levels in the testset. If
     # an error is found we skip this mtype and proceed to the
@@ -7704,7 +7840,7 @@ executeEvaluateScore <- function(probcmd, testset, testname)
                    "modelling. \n\n The actual error message was:\n\n",
                    paste(result, "\n"))
       else
-        errorReport(probcmd, result)
+        errorReport(thecmd, result)
       next()
     }
 
