@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.118.
+    version is 2.3.119.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+351 081107 Ensure Multinom Score uses glm and not glm. for colname
 350 081106 Support hclust scoring
            Logistic score gives probability, not class
 349 081104 Implement Score for hclust.
@@ -636,6 +637,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-06 20:30:46 Graham Williams</i>
+<i>Last Modified 2008-11-07 21:24:34 Graham Williams</i>
 <!-- hhmts end -->
   </p>

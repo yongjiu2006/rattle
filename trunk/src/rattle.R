@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-06 19:55:51 Graham Williams>
+# Time-stamp: <2008-11-07 20:36:44 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Nov 2008"
+VERSION.DATE <- "Released 06 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -7933,7 +7933,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     }
 
     # Add the scores into the scores variable.
-
+    
     if (is.null(omitted))
       scores[[mtype]] <- result
     else
@@ -7971,8 +7971,16 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   sdata <- eval(parse(text=scoreset))
 
   appendLog("Output the combined data.",
-            sprintf("write.%s(cbind(sdata, scores))",
+            sprintf("write.%s(cbind(sdata, scores), row.names=FALSE)",
                     ifelse(crv$appname=="RStat", "rstat", "csv")))
+
+  # 081107 Special case: for multinom, multiple probs are saved, plus
+  # the decision. But the decision becomes the column "glm.". Change
+  # that to "glm".
+
+  scores <- as.matrix(scores)
+  gcol <- which(colnames(scores) == "glm.")
+  if (length(gcol)) colnames(scores)[gcol] <- "glm"
 
   if (crv$appname == 'RStat')
     write.rstat(cbind(sdata, scores), file=fname)
