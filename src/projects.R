@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-11 13:39:56 Graham Williams>
+# Time-stamp: <2008-11-11 06:29:54 Graham Williams>
 #
 # Project functionality.
 #
@@ -143,9 +143,17 @@ saveProject <- function()
 
   dialog$setCurrentName(get.stem(crs$dataname))
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
-  
+
+  if (isRStat())
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("RStat Projects")
+    ff$addPattern("*.rstat")
+    dialog$addFilter(ff)
+  }
+
   ff <- gtkFileFilterNew()
-  ff$setName("Rattle Files")
+  ff$setName("Rattle Projects")
   ff$addPattern("*.rattle")
   dialog$addFilter(ff)
 
@@ -162,6 +170,8 @@ saveProject <- function()
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
+    save.ext <- get.extension(save.name)
+    filter.name <- dialog$getFilter()$getName()
     dialog$destroy()
   }
   else
@@ -170,11 +180,42 @@ saveProject <- function()
     return()
   }
 
-  if (get.extension(save.name) != "rattle")
-    save.name <- sprintf("%s.rattle", save.name)
-    
+  # 081111 Deal with the filename extension. We add an extension of
+  # either rstat, rattle, or Rdata if the save.name does not have one
+  # already. The logic of which to add depends on whether one of the
+  # filters is active, or else which guise we are running as.
+  
+  if (! save.ext %in% c("rstat", "rattle", "Rdata"))
+  {
+    if (filter.name == "RStat Projects")
+    {
+      if (save.ext != "rstat")
+        save.name <- sprintf("%s.rstat", save.name)
+    }
+    else if (filter.name == "Rattle Projects")
+    {
+      if (save.ext != "rattle")
+        save.name <- sprintf("%s.rattle", save.name)
+    }
+    else if (filter.name == "RData Files")
+    {
+      if (save.ext != "Rdata")
+        save.name <- sprintf("%s.Rdata", save.name)
+    }
+    else if (isRStat())
+    {
+      if (save.ext != "rstat")
+        save.name <- sprintf("%s.rstat", save.name)
+    }
+    else
+    {
+      if (save.ext != "rattle")
+        save.name <- sprintf("%s.rattle", save.name)
+    }
+  }
+  
   if (file.exists(save.name))
-    if (! questionDialog("The rattle project file", save.name,
+    if (! questionDialog("The project file", save.name,
                          "already exists.\n\nDo you want to overwrite",
                          "this file?"))
       return()
@@ -282,9 +323,17 @@ loadProject <- function()
                                  "gtk-open", GtkResponseType["accept"])
 
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
+
+  if (isRStat())
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("RStat Projects")
+    ff$addPattern("*.rstat")
+    dialog$addFilter(ff)
+  }
   
   ff <- gtkFileFilterNew()
-  ff$setName("Rattle Files")
+  ff$setName("Rattle Projects")
   ff$addPattern("*.rattle")
   dialog$addFilter(ff)
 
@@ -310,7 +359,7 @@ loadProject <- function()
   }
 
   if (!file.exists(load.name))
-    if (! questionDialog("The rattle project file", load.name,
+    if (! questionDialog("The project file", load.name,
                          "does not exist?"))
       return()
   

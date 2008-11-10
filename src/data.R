@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-27 05:30:04 Graham Williams>
+# Time-stamp: <2008-11-11 06:05:10 Graham Williams>
 #
 # DATA TAB
 #
@@ -1442,7 +1442,7 @@ exportDataTab <- function()
                          "this file?"))
       return()
 
-  if (crv$appname == "RStat")
+  if (isRStat())
     write.rstat(crs$dataset, save.name)
   else
     write.csv(crs$dataset, save.name, row.names=FALSE)
