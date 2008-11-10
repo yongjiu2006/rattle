@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-07 20:36:44 Graham Williams>
+# Time-stamp: <2008-11-11 06:03:26 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Nov 2008"
+VERSION.DATE <- "Released 07 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -102,6 +102,16 @@ COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 ########################################################################
 #
 # INITIALISATIONS
+
+isRStat <- function() 
+{
+  return(crv$appname == "RStat")
+}
+
+isRattle <- function() 
+{
+  return(crv$appname == "Rattle")
+}
 
 RStat <- function(csvname=NULL, ...) 
 {
@@ -238,7 +248,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   setRattleTitle()
 
-  if (crv$appname == "RStat")
+  if (isRStat())
     tuneRStat()
   else
     tuneRattle()
@@ -637,7 +647,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
   # 080510 Display a relevant welcome message in the textview.
 
-  if (crv$appname == "Rattle")
+  if (isRattle())
   {
     .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.WELCOME.TAB)
     resetTextview("rattle_welcome_textview",
@@ -646,14 +656,14 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
                         "interface for Data Mining, developed using R.",
                         "R is a free software environment",
                         "for statistical computing and graphics.",
-                        "Together they provide one of the most sophisticated",
-                        "and complete environments for performing data mining,",
+                        "Together they provide a sophisticated",
+                        "environments for data mining,",
                         "statistical analyses, and data visualisation.",
                         "\n\nSee the Help menu for extensive support in",
                         "using Rattle.",
-                        "\n\nTogaware's Desktop Data Mining Survival Guide",
-                        "(under development) includes extensive documentation",
-                        "on using Rattle. It is available from\n\n",
+                        "\n\nThe Togaware Desktop Data Mining Survival Guide",
+                        "includes Rattle documentation",
+                        "and is available from\n\n",
                         "    datamining.togaware.com",
                         "\n\nRattle is licensed under the",
                         "GNU General Public License, Version 2.",
@@ -666,12 +676,12 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   
 ## PUT THE MAIN TEXT HERE INTO THE ABOUT.
 ##
-##   if (crv$appname == "Rattle")
+##   if (isRattle())
 ##   {
 ##     resetTextview("data_textview", "Welcome to Rattle.\n\n", tvsep=FALSE)
 ##     resetTextview("log_textview", "# Rattle Log File.\n\n", tvsep=FALSE)
 ##   }
-##   else if (crv$appname == "RStat")
+##   else if (isRStat())
 ##   {
 ##     resetTextview("data_textview",
 ##                   paste("Welcome to RStat, the WebFOCUS Data Miner,",
@@ -731,7 +741,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
 
 ###   # Tune the interface to suit RStat
 
-###   if (crv$appname == "RStat")
+###   if (isRStat())
 ###     tuneRStat()
 ###   else
 ###     tuneOthers()
@@ -1307,7 +1317,7 @@ sampleNeedsExecute <- function()
 
 setRattleTitle <- function(title=NULL)
 {
-  if (crv$appname == "RStat")
+  if (isRStat())
     standard <- "Developer Studio - [RStat]"
   else
     standard <- "R Data Miner - [Rattle]"
@@ -1855,7 +1865,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   main = paste(...)
   if(vector)
   {
-    if (crv$appname == "RStat")
+    if (isRStat())
       sub <- ""
     else
       sub <- sprintf("%s %s %s", crv$appname,
@@ -1864,7 +1874,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   }
   else
   {  
-    if (crv$appname == "RStat")
+    if (isRStat())
       sub <- ""
     else
       sub <- sprintf(paste('paste("%s", format(Sys.time(),',
@@ -5714,7 +5724,7 @@ executeEvaluateTab <- function()
   {
     # Evaluate on training data
 
-    if (crv$appname != "RStat" && theWidget("sample_checkbutton")$getActive())
+    if (! isRStat() && theWidget("sample_checkbutton")$getActive())
       infoDialog("You are using the training dataset to evaluate your model.",
                  "This will give you an optimistic estimate",
                  "of the performance of your model.",
@@ -7552,9 +7562,9 @@ executeEvaluateKmeansScore <- function()
   
   appendLog("Generate data frame and export the clusters to CSV.",
             sprintf('write.%s(%s, file="%s", row.names=FALSE)',
-                    ifelse(crv$appname == "RStat", "rstat", "csv"),
+                    ifelse(isRStat(), "rstat", "csv"),
                     csv.cmd, save.name))
-  if (crv$appname == "RStat")
+  if (isRStat())
     write.rstat(eval(parse(text=csv.cmd)), file=save.name)
   else
     write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
@@ -7666,9 +7676,9 @@ executeEvaluateHclustScore <- function()
   
   appendLog("Generate data frame and export the clusters to CSV.",
             sprintf('write.%s(%s, file="%s", row.names=FALSE)',
-                    ifelse(crv$appname == "RStat", "rstat", "csv"),
+                    ifelse(isRStat(), "rstat", "csv"),
                     csv.cmd, save.name))
-  if (crv$appname == "RStat")
+  if (isRStat())
     write.rstat(eval(parse(text=csv.cmd)), file=save.name)
   else
     write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
@@ -7972,7 +7982,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
 
   appendLog("Output the combined data.",
             sprintf("write.%s(cbind(sdata, scores), row.names=FALSE)",
-                    ifelse(crv$appname=="RStat", "rstat", "csv")))
+                    ifelse(isRStat(), "rstat", "csv")))
 
   # 081107 Special case: for multinom, multiple probs are saved, plus
   # the decision. But the decision becomes the column "glm.". Change
@@ -7982,7 +7992,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   gcol <- which(colnames(scores) == "glm.")
   if (length(gcol)) colnames(scores)[gcol] <- "glm"
 
-  if (crv$appname == 'RStat')
+  if (isRStat())
     write.rstat(cbind(sdata, scores), file=fname)
   else
     write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
@@ -8274,7 +8284,7 @@ on_about_menu_activate <-  function(action, window)
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
   about$getWidget("aboutdialog")$setVersion(VERSION)
-  if (crv$appname == "RStat")
+  if (isRStat())
   {
     # 081004 seetProgramName is only available in GTK+ 2.12 and
     #above. But the MS/Wdinows version of RGtk2 is compiled for 2.10,

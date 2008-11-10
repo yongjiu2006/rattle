@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-16 21:42:36 Graham Williams>
+# Time-stamp: <2008-11-11 06:05:25 Graham Williams>
 #
 # Help Menu
 #
@@ -44,7 +44,7 @@ showHelp <- function(msg)
 
 on_help_general_activate <- function(action, window)
 {
-  showHelp(paste(ifelse(crv$appname=="RStat",
+  showHelp(paste(ifelse(isRStat(),
                   paste("RStat is the WebFOCUS data mining application",
                         "developed by Information Builders on top of",
                         "Rattle and R. "),

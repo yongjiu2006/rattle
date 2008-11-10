@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-04 21:07:51 Graham Williams>
+# Time-stamp: <2008-11-11 06:04:43 Graham Williams>
 #
 # MODEL TAB
 #
@@ -313,7 +313,7 @@ makeEvaluateSensitive <- function()
     buttons <- c("confusion", "score")
   else if (numericTarget())
     buttons <- c("pvo", "score")
-  else if (crv$appname == "RStat" && binomialTarget())
+  else if (isRStat() && binomialTarget())
     buttons <- setdiff(all.buttons, "pvo")
   else
     buttons <- all.buttons
@@ -986,7 +986,7 @@ getExportSaveName <- function(mtype)
 
   # Obtain filename to write the PMML or C code to.
   
-  dialog <- gtkFileChooserDialog(paste("Export", if (crv$appname=="RStat") "C or",
+  dialog <- gtkFileChooserDialog(paste("Export", if (isRStat()) "C or",
                                        "PMML"),
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
@@ -995,7 +995,7 @@ getExportSaveName <- function(mtype)
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype, sep=""))
 
-  if (crv$appname == "RStat")
+  if (isRStat())
   {
     ff <- gtkFileFilterNew()
     ff$setName("C Files")
@@ -1033,7 +1033,7 @@ getExportSaveName <- function(mtype)
     {
       if (save.type == "PMML Files")
         save.name <- sprintf("%s.xml", save.name)
-      else if (crv$appname == "RStat")
+      else if (isRStat())
         save.name <- sprintf("%s.c", save.name)
       else
         save.name <- sprintf("%s.xml", save.name)
@@ -1046,7 +1046,7 @@ getExportSaveName <- function(mtype)
   {
     errorDialog("The PMMLtoC functionality does not appear to be available.",
                 "This function needs to be loaded.",
-                if (crv$appname == "Rattle")
+                if (isRattle())
                 paste("It is not available in Rattle by default.",
                       "\n\nContact support@togaware.com for details."))
     return(NULL)
