@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2008-05-20 18:59:15 Graham>
+# Time-stamp: <2008-11-11 06:55:14 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -310,8 +310,7 @@ plotImportanceAda <- function()
   {
     errorDialog("E135: Should not be here.",
                 "There is no ADA model and attempting to plot importance.",
-                "The button should not be active.",
-                "Please report this to support@togaware.com")
+                "The button should not be active.", SUPPORT)
     return()
   }
 
@@ -336,8 +335,7 @@ plotErrorsAda <- function()
   {
     errorDialog("E136: Should not be here.",
                 "There is no ADA model and attempting to plot error.",
-                "The button should not be active.",
-                "Please report this to support@togaware.com")
+                "The button should not be active.", SUPPORT)
     return()
   }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:04:43 Graham Williams>
+# Time-stamp: <2008-11-11 06:52:21 Graham Williams>
 #
 # MODEL TAB
 #
@@ -111,8 +111,7 @@ on_model_linear_plot_button_clicked <- function(button)
 
   if (is.null(crs$glm))
   {
-    errorDialog("There is no GLM and attempting to plot it.",
-                "Please report this error to support@togaware.com")
+    errorDialog("There is no GLM and attempting to plot it.", SUPPORT)
     return()
   }
   newPlot(4)
@@ -571,7 +570,7 @@ executeModelTab <- function()
     {
       errorDialog("Tried building an rpart model with option not",
                   "one of build/tune/best. This should not be possible.",
-                  "Let support@togaware.com know.")
+                  SUPPORT)
       return(FALSE)
       
     }
@@ -1048,7 +1047,7 @@ getExportSaveName <- function(mtype)
                 "This function needs to be loaded.",
                 if (isRattle())
                 paste("It is not available in Rattle by default.",
-                      "\n\nContact support@togaware.com for details."))
+                      "\n\n", SUPPORT))
     return(NULL)
   }
   
@@ -1227,10 +1226,7 @@ executeModelSVM <- function()
     }
     else
       errorDialog("The call to svm appears to have failed.",
-                  "The error message was:", result,
-                  "I am not familiar with this error, and you may",
-                  "want to report it to",
-                  "support@togaware.com")
+                  "The error message was:", result, SUPPORT)
     return(FALSE)
   }
 

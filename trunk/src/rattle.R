@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:03:26 Graham Williams>
+# Time-stamp: <2008-11-11 20:34:49 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,8 +15,10 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 07 Nov 2008"
+VERSION.DATE <- "Released 11 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
+
+SUPPORT <- "Contact support@togaware.com."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested the application. Many colleagues at the
@@ -661,16 +663,16 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
                         "statistical analyses, and data visualisation.",
                         "\n\nSee the Help menu for extensive support in",
                         "using Rattle.",
-                        "\n\nThe Togaware Desktop Data Mining Survival Guide",
+                        "The Togaware Desktop Data Mining Survival Guide",
                         "includes Rattle documentation",
-                        "and is available from\n\n",
-                        "    datamining.togaware.com",
+                        "and is available from",
+                        "datamining.togaware.com",
                         "\n\nRattle is licensed under the",
                         "GNU General Public License, Version 2.",
-                        "\nRattle comes with ABSOLUTELY NO WARRANTY.",
-                        "\nSee Help -> About for details.",
+                        "Rattle comes with ABSOLUTELY NO WARRANTY.",
+                        "See Help -> About for details.",
                         "\n\nRattle version", VERSION,
-                        "\nCopyright (C) 2008 Togaware Pty Ltd"),
+                        "Copyright (C) 2008 Togaware Pty Ltd"),
                   tvsep=FALSE)
   }
   
@@ -732,8 +734,7 @@ rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="clo
   {
     if (!theWidget("data_filechooserbutton")$setUri(csvname))
       infoDialog("Internal Error: The setting of the filename box",
-                 "failed. This is a Rattle bug.",
-                 "Please report this to support@togaware.com.")
+                 "failed.", SUPPORT)
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
     executeDataTab(csvname)
@@ -756,6 +757,8 @@ tuneRStat <- function()
   # Tune the user interface to suit the requirements for RStat. Often,
   # we have added functionality to Rattle that is not yet we tested
   # and tuned to for release as RStat.
+
+  SUPPORT <- "Contact Information Builders Technical Support."
   
   ## Toolbar
   
@@ -1183,8 +1186,7 @@ errorReport <- function(cmd, result)
   # Rattle. Eventually, all of these should be identified by Rattle
   # and a sugggestion given as to how to avoid the error.
   
-  errorDialog("An error occured with", cmd,
-              "Please report this to support@togaware.com\n\n",
+  errorDialog("An error occured with", cmd, SUPPORT, "\n\n",
               "The error was:\n\n", result)
 }
 
@@ -1481,7 +1483,7 @@ on_plot_copy_button_clicked <- function(action)
   appendLog(paste("Copy the plot on device", dev.num, "to the clipboard."),
             sprintf('copyPlotToClipboard(%s)', dev.num))
   copyPlotToClipboard(dev.num)
-  infoDialog("The plot has been copied to the clipboard as a PNG.")
+  setStatusBar(sprintf("Plot %d copied to the clipboard as a PNG.", dev.num))
 }
 
 on_plot_print_button_clicked <- function(action)
@@ -1496,7 +1498,8 @@ on_plot_print_button_clicked <- function(action)
   appendLog(paste("Print the plot on device", dev.num),
             sprintf('printPlot(%s)', dev.num))
   printPlot(dev.num)
-  infoDialog(sprintf("Plot %d has been sent to the printer.", dev.num))
+  setStatusBar(sprintf("Plot %d sent to printer: %s", dev.num,
+                       options("printcmd")))
 }
 
 on_plot_close_button_clicked <- function(action)
@@ -1573,10 +1576,10 @@ copyPlotToClipboard <- function(dev.num=dev.cur())
   # Clipboard. It has not been tested on non-Cairo devices.
   #
   # We can place a GdkPixbuf image into the CLIPBOARD using
-  # GtkClipboardSetImage. I've not figure out yet how to get the image
-  # directly from the Cairo device as a GdkPixbuf. So instead I save
-  # to PNG file then load that file as a GdkPixmap then copy that to
-  # the clipboard.
+  # GtkClipboardSetImage. I've not figured out yet how to get the
+  # image directly from the Cairo device as a GdkPixbuf. So instead I
+  # save to PNG file then load that file as a GdkPixmap then copy that
+  # to the clipboard.
   #
   # This works for GNU/Linux and more recent MS/Windows (e.g., on my
   # recent Dell laptop but not on ATOnet computers). It has not been
@@ -1628,7 +1631,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
   # Obtain a filename to save to. Ideally, this would also prompt for
   # the device to export, and the fontsize, etc.
 
-  dialog <- gtkFileChooserDialog(paste("Export Graphics (pdf, png, jpg, svg",
+  dialog <- gtkFileChooserDialog(paste("Export Graphics (.pdf, .png, .jpg, .svg",
                                        ifelse(isWindows(), ", wmf", ""),
                                        ")", sep=""),
                                  NULL, "save",
@@ -1637,7 +1640,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
   
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname),
-                                "_", name, ".pdf", sep=""))
+                                "_", name, sep=""))
   
   ff <- gtkFileFilterNew()
   if (isWindows())
@@ -1681,7 +1684,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
   
   if (savePlotToFile(save.name, dev.num))
-    infoDialog("Plot", dev.num, "has been exported to", save.name)
+    setStatusBar("Plot", dev.num, "exported to", save.name)
 }
 
 savePlotToFile <- function(file.name, dev.num=dev.cur())
@@ -5656,9 +5659,8 @@ executeEvaluateTab <- function()
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
-                "Yet, Rattle only knows about:", crv$MODELLERS,
-                "This is a Rattle bug.",
-                "Please report this to support@togaware.com.")
+                "Known models:", crv$MODELLERS,
+                SUPPORT)
     return()
   }
 
@@ -5670,8 +5672,7 @@ executeEvaluateTab <- function()
                 "We found the model types to be:", mtypes,
                 "The models not built:",
                 sapply(mtypes, function(x) is.null(crs[[x]])),
-                "This is a Rattle bug.",
-                "Please report this to support@togaware.com.")
+                "This is a Rattle bug.", SUPPORT)
     return()
   }
 
@@ -6123,11 +6124,7 @@ executeEvaluateTab <- function()
                 "than 2.",
                 "Currently, Risk charts and the ROCR package",
                 "(which implements the Lift, ROC, Precision, and Specificity",
-                "charts) and Scoring and PrvOb",
-                "apply only to binary classification.",
-                "Either restructure the data for binary classificaiton,",
-                "or else please suggest an alternative method of evaluation",
-                "to support@togaware.com.")
+                "charts) apply only to binary classification.")
     return()
   }
 
@@ -7718,10 +7715,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   {
     # The default filename is the testname with spaces replaced by
     # "_", etc., and then "_score" is appended, and then "_all" or
-    # "_idents" to indicate what other columns are included, and then
-    # ".csv".
+    # "_idents" to indicate what other columns are included.
     
-    default <- sprintf("%s_score_%s.csv",
+    default <- sprintf("%s_score_%s",
                        gsub(" ", "_",
                             gsub("\\.[[:alnum:]]*", "",
                                  gsub("(\\[|\\])", "",
@@ -7757,6 +7753,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
       dialog$destroy()
       return()
     }
+
+    if (get.extension(fname) != "csv")
+      fname <- sprintf("%s.csv", fname)
 
     if (file.exists(fname))
       if (! questionDialog("The evaluation result file", fname,
@@ -7971,7 +7970,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   {
     errorDialog("We should not be here! The value of sinclude should have",
                 "been one of all or idents. We found:", sinclude,
-                "\n\nPlease report this to support@togaware.com")
+                "\n\n", SUPPORT)
     return()
   }
 

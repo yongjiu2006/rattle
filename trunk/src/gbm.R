@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2008-05-03 15:23:21 Graham Williams>
+## Time-stamp: <2008-11-11 06:50:40 Graham Williams>
 ##
 ## GBM TAB
 ##
@@ -181,8 +181,7 @@ plotGBMImportance <- function()
   {
     errorDialog("E134: Should not be here.",
                 "There is no GBM and attempting to plot importance.",
-                "Please report to",
-                "support@togaware.com")
+                SUPPORT)
     return()
   }
   
