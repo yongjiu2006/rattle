@@ -6,16 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.120.
+    version is 2.3.121.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-352 081111 Support additional project extension (rstat)
+352 081111 Standardise error messages.
+           Unify file save dialog behaviour - no extension shown
+           Shorten the Welcome message to better fit the EeePC screen
+           Plot Print/Save/Copy use status bar not ifo dialog
+           Don't show border around model tabs
+351 081111 Support additional project extension (rstat)
            Introduce isRStat and isRattle to distinguish interfaces
-351 081107 Ensure Multinom Score uses glm and not glm. for colname
+           Ensure Multinom Score uses glm and not glm. for colname
 350 081106 Support hclust scoring
            Logistic score gives probability, not class
 349 081104 Implement Score for hclust.
@@ -639,6 +644,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-11 06:37:24 Graham Williams</i>
+<i>Last Modified 2008-11-11 20:59:16 Graham Williams</i>
 <!-- hhmts end -->
   </p>

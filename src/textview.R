@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:03:44 Graham Williams>
+# Time-stamp: <2008-11-11 06:54:34 Graham Williams>
 #
 # Textview widget support
 #
@@ -72,8 +72,7 @@ resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
     errorDialog("E138: Should not be here.",
                 "The textview object supplied to resetTextview",
                 "is neither a GtkTextView nor a string.",
-                "We found a", class(tv)[1],
-                "Please report this to support@togaware.com")
+                "We found a", class(tv)[1], SUPPORT)
     return(FALSE)
   }
   wid$modifyFont(pangoFontDescriptionFromString("monospace 10"))
@@ -99,8 +98,7 @@ appendTextview <- function(tv, ..., sep="", tvsep=TRUE)
     errorDialog("E140: Should not be here.",
                 "The textview object supplied to appendTextview",
                 "is neither a GtkTextView nor a string.",
-                "We found a", class(tv)[1],
-                "Please report this to support@togaware.com")
+                "We found a", class(tv)[1], SUPPORT)
     return(FALSE)
   }
   msg <- paste(sep=sep, ...)
@@ -139,8 +137,7 @@ setTextview <- function(tv, ..., sep="")
     errorDialog("E137: Should not be here.",
                 "The textview object supplied to setTextview",
                 "is neither a GtkTextView nor a string.",
-                "We found a", class(tv)[1],
-                "Please report this to support@togaware.com")
+                "We found a", class(tv)[1], SUPPORT)
     return(FALSE)
   }
   oldopt <- options(useFancyQuotes="utf8") # Bug fix for MSWindows [071128]
@@ -157,8 +154,7 @@ addTextview <- function(tv, ..., sep="")
     errorDialog("E139: Should not be here.",
                 "The textview object supplied to addTextview",
                 "is neither a GtkTextView nor a string.",
-                "We found a", class(tv)[1],
-                "Please report this to support@togaware.com")
+                "We found a", class(tv)[1], SUPPORT)
     return(FALSE)
   }
   msg <- paste(sep=sep, ...)
