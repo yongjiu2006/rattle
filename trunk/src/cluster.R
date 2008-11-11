@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:50:08 Graham Williams>
+# Time-stamp: <2008-11-12 06:53:49 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -409,25 +409,27 @@ on_kmeans_data_plot_button_clicked <- function(button)
 on_kmeans_discriminant_plot_button_clicked <- function(button)
 {
 
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
 
   if (is.null(crs$kmeans))
   {
-    errorDialog("E125: Should not be here.", SUPPORT)
+    errorDialog("E125: No cluster to plot.",
+                "The button should not have been sensitive.",
+                SUPPORT)
     return()
   }
 
-  ## LIBRARY: Ensure the appropriate package is available for the
-  ## plot, and log the R command and execute.
+  # LIBRARY: Ensure the appropriate package is available for the plot,
+  # log the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
-  sampling  <- not.null(crs$sample)
+  sampling <- not.null(crs$sample)
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
@@ -443,7 +445,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  ## We can only plot if there is more than a single variable.
+  # We can only plot if there is more than a single variable.
   
   if (length(intersect(nums, indicies)) == 1)
   {
@@ -468,10 +470,10 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
   setStatusBar("Discriminant coordinates plot has been generated.")
 }
 
-##------------------------------------------------------------------------
-##
-## HCLUST
-##
+#------------------------------------------------------------------------
+#
+# HCLUST
+#
 
 executeClusterHClust <- function(include)
 {
@@ -666,12 +668,14 @@ plotDendrogram <- function()
     eval(parse(text=rect.cmd))
   }
   
-  set.cursor(message="")
+  set.cursor("left-ptr", "")
 }
 
 on_hclust_stats_button_clicked <- function(button)
 {
-  displayHClustStats()
+  set.cursor("watch", "Determining cluster statistics...")
+  try(displayHClustStats())
+  set.cursor("left-ptr", "Cluster stistics displayed. Scroll to see all.")
 }
 
 displayHClustStats <- function()
@@ -684,7 +688,9 @@ displayHClustStats <- function()
   
   if (is.null(crs$hclust))
   {
-    errorDialog("E127: Should not be here.", SUPPORT)
+    errorDialog("E127: No cluster to plot.",
+                "The button should not have been sensitive.",
+                SUPPORT)
     return()
   }
 
@@ -692,7 +698,8 @@ displayHClustStats <- function()
   # the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog("The cluster stats functionality is provided by the fpc package.",
+            lib.cmd)
   eval(parse(text=lib.cmd))
 
   resetTextview(TV)
@@ -741,16 +748,18 @@ displayHClustStats <- function()
 on_hclust_data_plot_button_clicked <- function(button)
 {
 
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E133: Should not be here.", SUPPORT)
+    errorDialog("E133: No cluster to plot.",
+                "The button should not have been sensitive.",
+                SUPPORT)
     return()
   }
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
   sampling  <- not.null(crs$sample)
   num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
@@ -769,7 +778,7 @@ on_hclust_data_plot_button_clicked <- function(button)
     return()
   }
 
-  ## We can only plot if there is more than a single variable.
+  # We can only plot if there is more than a single variable.
   
   if (length(intersect(nums, indicies)) == 1)
   {
@@ -779,8 +788,9 @@ on_hclust_data_plot_button_clicked <- function(button)
     return()
   }
 
-  ## PLOT: Log the R command and execute.
+  # PLOT: Log the R command and execute.
 
+  set.cursor("watch", "Determining cluster statistics...")
   plot.cmd <- paste(sprintf(paste("plot(crs$dataset[%s,%s], ",
                                   "col=cutree(crs$hclust, %d))\n",
                                   sep=""),
@@ -791,29 +801,31 @@ on_hclust_data_plot_button_clicked <- function(button)
   newPlot()
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Data plot has been generated.")
+  set.cursor("left-ptr", "Data plot has been generated.")
 }
 
 on_hclust_discriminant_plot_button_clicked <- function(button)
 {
 
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E128: Should not be here.", SUPPORT)
+    errorDialog("E128: No cluster to plot.",
+                "The button should not have been sensitive.",
+                SUPPORT)
     return()
   }
 
-  ## LIBRARY: Ensure the appropriate package is available for the
-  ## plot, and log the R command and execute.
+  # LIBRARY: Ensure the appropriate package is available for the plot,
+  # and log the R command and execute.
   
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
   sampling  <- not.null(crs$sample)
   num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
@@ -832,7 +844,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  ## We can only plot if there is more than a single variable.
+  # We can only plot if there is more than a single variable.
   
   if (length(intersect(nums, indicies)) == 1)
   {
@@ -842,14 +854,14 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  ## PLOT: Log the R command and execute.
+  # PLOT: Log the R command and execute.
 
-  plot.cmd <- sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
-                            "cutree(crs$hclust, %d))\n",
-                            genPlotTitleCmd("Discriminant Coordinates",
-                                            crs$dataname), sep=""),
-                      ifelse(sampling, "crs$sample", ""), include,
-                      num.clusters)
+  plot.cmd <- paste(sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
+                                  "cutree(crs$hclust, %d))\n"),
+                            ifelse(sampling, "crs$sample", ""), include,
+                            num.clusters),
+                    genPlotTitleCmd("Discriminant Coordinates",
+                                    crs$dataname), sep="")
   appendLog("Generate a discriminant coordinates plot.", plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
