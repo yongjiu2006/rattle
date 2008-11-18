@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-25 06:37:31 Graham Williams>
+# Time-stamp: <2008-11-17 21:49:34 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -38,12 +38,6 @@ dispatchExportButton <- function()
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)
 
-## Am now using the Cairo device with a Save button
-##   if (ct == crv$NOTEBOOK.EXPLORE.NAME)
-##   {  
-##     exportExploreTab()
-##   }
-##   else
   if (ct == crv$NOTEBOOK.CLUSTER.NAME)
   {  
     exportClusterTab()

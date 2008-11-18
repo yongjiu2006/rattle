@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:50:27 Graham Williams>
+# Time-stamp: <2008-11-17 19:50:59 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -27,6 +27,11 @@ on_execute_button_clicked <- function(action, window)
   # turns off even on error.
   
   setStatusBar()
+  # 081117 This ensures spinbuttons, for example, lose focus and hence
+  # their current value is properly noted. Otherwise I was finding the
+  # user had to either press Enter or click somewhere else to ensure
+  # the value is noted.
+  theWidget("rattle_window")$setFocus()
   set.cursor("watch")
   try(dispatchExecuteButton())
   set.cursor()

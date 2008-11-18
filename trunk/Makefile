@@ -62,6 +62,7 @@ PSOURCE = \
 	src/pmml.R \
 	src/pmml.arules.R \
 	src/pmml.kmeans.R \
+	src/pmml.hclust.R \
 	src/pmml.ksvm.R \
 	src/pmml.lm.R \
 	src/pmml.multinom.R \

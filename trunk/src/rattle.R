@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 20:34:49 Graham Williams>
+# Time-stamp: <2008-11-18 20:19:27 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 11 Nov 2008"
+VERSION.DATE <- "Released 12 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -120,7 +120,10 @@ RStat <- function(csvname=NULL, ...)
   rattle(csvname, appname="RStat", ...)
 }
 
-rattle <- function(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="close")
+rattle <- function(csvname=NULL,
+                   appname="Rattle",
+                   tooltiphack=FALSE,
+                   close="close")
 {
   # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
   # the R console, but at least tooltips work, and on losing focus
@@ -3077,8 +3080,9 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "kmeans")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- binning(crs$',
-                                     'dataset[["%s"]], %d, method="kmeans",',
+    remap.cmd <- paste(sprintf(paste('  set.seed(23456)\n',
+                                     '  crs$dataset[["%s_%s"]] <<- binning(crs$',
+                                     'dataset[["%s"]], %d, method="kmeans", ',
                                      'ordered=FALSE)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -5465,16 +5469,19 @@ executeExplorePlaywith <- function(dataset)
 {
   # Testing for now. This has great potential.
 
-  if (! packageIsAvailable("playwith", "explore data")) return()
+  if (! packageIsAvailable("latticist", "explore data")) return()
 
   startLog("EXPLORE DATA.")
 
-  lib.cmd <- "require(playwith)"
-  appendLog("The latticist command comes from the playwith package.", lib.cmd)
+  lib.cmd <- "require(latticist)"
+  appendLog("The latticist command comes from the latticist package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  plot.cmd <- sprintf("latticist(%s)", dataset)
-  appendLog("Call upon the latticist command written for Rattle.", plot.cmd)
+  latopts <- ""
+  if (! is.null(crs$target))
+    latopts <- sprintf(', spec=list(groups = "%s")', crs$target)
+  plot.cmd <- sprintf("latticist(%s%s)", dataset, latopts)
+  appendLog("Call upon latticist.", plot.cmd)
   eval(parse(text=plot.cmd))
 }
 
@@ -6157,9 +6164,10 @@ executeEvaluateTab <- function()
   {
     if (theWidget("kmeans_evaluate_checkbutton")$getActive())
       msg <- executeEvaluateKmeansScore()
-    else if (theWidget("hclust_evaluate_checkbutton")$getActive())
+    if (theWidget("hclust_evaluate_checkbutton")$getActive())
       msg <- executeEvaluateHclustScore()
-    else
+    if (! (theWidget("kmeans_evaluate_checkbutton")$getActive()
+           || theWidget("hclust_evaluate_checkbutton")$getActive()))
     {
       if (categoricTarget())
         # 081025 which is best? For trees, traditionally we return the

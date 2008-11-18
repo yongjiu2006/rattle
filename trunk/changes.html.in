@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.122.
+    version is 2.3.123.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+354 081119 Ensure hclust Evaluate button is sensitive as appropriate
+           Deal with missing values for hclust
+           Support export of hclust to pmml as kmeans
+           On transform/remap/kmeans set the seed for repeatablity
+           Update to new version of latticist
+           Add a setFocus on Execute to ensure textfield changes are noticed
+           Use maxsurrogate rather than usesurrogate for no missing handling
+           Bump pmml version to 1.1.17
 353 081112 Fix hclust discriminant plot and stats
 352 081111 Standardise error messages.
            Unify file save dialog behaviour - no extension shown
@@ -645,6 +653,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-12 07:02:44 Graham Williams</i>
+<i>Last Modified 2008-11-19 05:42:39 Graham Williams</i>
 <!-- hhmts end -->
   </p>
