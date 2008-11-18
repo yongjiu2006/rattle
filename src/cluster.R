@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-12 06:53:49 Graham Williams>
+# Time-stamp: <2008-11-17 22:00:59 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -89,21 +89,21 @@ on_kmeans_iterate_checkbutton_toggled <- function(button)
 
 executeClusterTab <- function()
 {
-  ## Can not cluster without a dataset.
+  # Can not cluster without a dataset.
 
   if (noDatasetLoaded()) return()
 
-  ## If it looks like the VARIABLES page has not been executed, complain..
+  # If it looks like the VARIABLES page has not been executed, complain..
 
   if (variablesHaveChanged()) return()
 
-  ## Check if sampling needs executing.
+  # Check if sampling needs executing.
 
   if (sampleNeedsExecute()) return()
     
-  ## Kmeans only works for numeric data, so identify variables to
-  ## include.  Only work with the INPUT/TARGET/RISK
-  ## variables. That is, only exclude the IGNORE and IDENT variables.
+  # Kmeans and hclust only work for numeric data, so identify
+  # variables to include.  Only work with the INPUT/TARGET/RISK
+  # variables. That is, only exclude the IGNORE and IDENT variables.
 
   include <- getNumericVariables()
   if (length(include) == 0)
@@ -120,10 +120,16 @@ executeClusterTab <- function()
   {
     executeClusterKMeans(include)
     makeEvaluateSensitive()
+    theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
     theWidget("kmeans_evaluate_checkbutton")$setActive(TRUE)
   }
   else if (theWidget("hclust_radiobutton")$getActive())
+  {
     executeClusterHClust(include)
+    makeEvaluateSensitive()
+    theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
+    theWidget("hclust_evaluate_checkbutton")$setActive(TRUE)
+  }
 }
 
 #----------------------------------------------------------------------
@@ -530,7 +536,7 @@ executeClusterHClust <- function(include)
     # Use the more efficient hcluster for clustering.
   
     hclust.cmd <- paste("crs$hclust <<- ",
-                        sprintf(paste('hclusterpar(crs$dataset[%s,%s],',
+                        sprintf(paste('hclusterpar(na.omit(crs$dataset[%s,%s]),',
                                       'method="%s", link="%s",',
                                       'nbproc=%d)'),
                                 ifelse(sampling, "crs$sample", ""),
@@ -931,6 +937,10 @@ exportClusterTab <- function()
   {
     exportKMeansTab()
   }
+  else if (theWidget("hclust_radiobutton")$getActive())
+  {
+    exportHClustTab()
+  }
   else
   {
     errorDialog("PMML export for this model is not yet implemented.")
@@ -973,7 +983,7 @@ exportKMeansTab <- function(file)
 
   if (ext == "xml")
   {
-    appendLog("Export regression as PMML.",
+    appendLog("Export cluster as PMML.",
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -981,7 +991,68 @@ exportKMeansTab <- function(file)
   {
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a regression model as C code for WebFocus.",
+    appendLog("Export a cluster model as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',
+                      pmml.cmd, model.name, save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
+  }
+  
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+
+}
+
+exportHClustTab <- function(file)
+{
+  # Make sure we have a model first!
+  
+  if (is.null(crs$hclust))
+  {
+    errorDialog("No hierarchical cluster model is available. Be sure to build",
+                "the model before trying to export it! You will need",
+                "to press the Execute button (F5) in order to build the",
+                "model.")
+    return()
+  }
+
+  # Get some required information
+
+  sampling  <- not.null(crs$sample)
+  nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
+  include <- getNumericVariables()
+  
+  startLog("EXPORT HCLUST")
+  
+  save.name <- getExportSaveName("hclust")
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+
+  # Generate appropriate code.
+
+  # 080804 How to add the transformations? Perhaps generate separately
+  # with pmml.transforms(crs$transforms) and include the result as an
+  # optional argument to pmml.
+  
+  pmml.cmd <- sprintf(cons("pmml(crs$hclust, centers=centers.hclust(",
+                           "crs$dataset[%s,%s], crs$hclust, %d)%s)"),
+                      ifelse(sampling, "crs$sample", ""), include, nclust,
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""))
+
+  # We can't pass "\" in a filename to the parse command in
+  # MS/Windows so we have to run the save/write command separately,
+  # i.e., not inside the string that is being parsed.
+
+  if (ext == "xml")
+  {
+    appendLog("Export hierarchical cluster as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    save.name <- tolower(save.name)
+    model.name <- sub("\\.c", "", basename(save.name))
+    appendLog("Export hieracrchical cluster model as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',
                       pmml.cmd, model.name, save.name))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
