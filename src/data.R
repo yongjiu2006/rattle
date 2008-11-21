@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:05:10 Graham Williams>
+# Time-stamp: <2008-11-18 19:03:20 Graham Williams>
 #
 # DATA TAB
 #
@@ -1958,7 +1958,8 @@ executeSelectTab <- function()
   # Finished - update the status bar.
   
   setStatusBar("Variable roles noted.",
-               "There are", length(crs$input), "input variables.",
+               "Data:", nrow(crs$dataset), "rows by",
+               length(crs$input), "input variables.",
                ifelse(length(crs$target) == 0,
                       paste("NO target thus no predictive modelling enabled",
                             "and no sampling."),
@@ -2615,7 +2616,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         }
         else if (sd(crs$dataset[[variables[i]]], na.rm=TRUE) %in% c(NA, 0))
         {
-          ## sd is NA if all data items  are NA.
+          # sd is NA if all data items are NA.
           cl <- "constant"
           ignore <- c(ignore, variables[i])
         }
@@ -2642,6 +2643,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
 
     unique.count <- length(unique(crs$dataset[[variables[i]]]))
+    unique.value <- unique(crs$dataset[[variables[i]]])
 
     numeric.var <- is.numeric(crs$dataset[[variables[i]]])
     possible.categoric <- (unique.count <= 10 ||
@@ -2675,6 +2677,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                                #possible.categoric,
                                                sprintf("Unique: %d ",
                                                        unique.count), ""),
+                                        ifelse(prcl == "constant",
+                                               sprintf("Value: %s ",
+                                                       unique.value), ""),
                                         sep=""))
 
     # Selected variables go into the other treeviews.

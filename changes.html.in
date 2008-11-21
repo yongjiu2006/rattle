@@ -6,13 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.123.
+    version is 2.3.124.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+355 081121 Introduce Global_rattleGUI (IBI)
+           Tidy up closing.
+           Add nrows to status bar on Execute data tab
+           Report any constant values in Data tab display
+           Add usesurrogate back in as well as maxsurrogate
+           Update latticist dependency and add gWidgetsRGtk2 suggest
 354 081119 Ensure hclust Evaluate button is sensitive as appropriate
            Deal with missing values for hclust
            Support export of hclust to pmml as kmeans
@@ -653,6 +659,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-19 05:42:39 Graham Williams</i>
+<i>Last Modified 2008-11-21 20:40:39 Graham Williams</i>
 <!-- hhmts end -->
   </p>
