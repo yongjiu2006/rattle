@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-15 20:29:37 Graham Williams>
+# Time-stamp: <2008-11-21 20:26:13 Graham Williams>
 #
 # RPART TAB
 #
@@ -294,9 +294,9 @@ executeModelRPart <- function(action="build")
   if (! usesurrogate)
   {
     if (is.null(control))
-      control <- ", control=rpart.control(maxsurrogate=0)"
+      control <- ", control=rpart.control(usesurrogate=0, maxsurrogate=0)"
     else
-      control <- gsub(")$", ", usesurrogate=0)", control)
+      control <- gsub(")$", ", usesurrogate=0, maxsurrogate=0)", control)
   }
 
   # Retrieve the Cross Validation value and if different from

@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 12 Nov 2008"
+VERSION.DATE <- "Released 19 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -249,7 +249,11 @@ rattle <- function(csvname=NULL,
     rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                               root="rattle_window")
 
-    # Tune the interface to suit RStat
+  # Really need an second untouched rattleGUI
+  
+  Global_rattleGUI <<-rattleGUI
+    
+  # Tune the interface to suit RStat
 
   setRattleTitle()
 
@@ -1395,7 +1399,7 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
 
 theWidget <- function(widget)
 {
-  rattleGUI <- rattleGUI # Global - to avoid a "NOTE" from "R CMD check"
+  rattleGUI <- Global_rattleGUI # Global - to avoid a "NOTE" from "R CMD check"
   
   return(rattleGUI$getWidget(widget))
 }
@@ -2079,8 +2083,8 @@ quit_rattle <- function(action, window)
   
   if (questionDialog(msg))
   {
+    crv$close <- "quit"
     close_rattle(action, window)
-    quit(save="no")
   }
 }
 
