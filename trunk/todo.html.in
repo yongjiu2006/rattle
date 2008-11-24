@@ -6,6 +6,13 @@
     suggested by users. Feel free to email me with suggestions and
     priorities and especially code.</p>
 
+<h2>General Suggestions</h2>
+
+081122 Move to using ggplot2 - the plots are more standardised,
+modern, simpler to generate, and much more powerfull than plot and
+lattice.
+
+<h2>Specific Suggestions</h2>
 <pre>
 080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
 080716 Risk Charts for regression by using rank
@@ -133,6 +140,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-Last modified: Sun Mar 30 09:35:32 2008
+<i>Last Modified 2008-11-22 06:19:43 Graham Williams</i>
 <!-- hhmts end -->
   </p>
