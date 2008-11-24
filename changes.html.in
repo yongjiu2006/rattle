@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.124.
+    version is 2.3.125.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+356 081124 Add pseudo R square (cor) to Mulitnomial model
 355 081121 Introduce Global_rattleGUI (IBI)
            Tidy up closing.
            Add nrows to status bar on Execute data tab
@@ -659,6 +660,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-21 20:40:39 Graham Williams</i>
+<i>Last Modified 2008-11-24 22:44:10 Graham Williams</i>
 <!-- hhmts end -->
   </p>

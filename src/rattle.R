@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-18 20:19:27 Graham Williams>
+# Time-stamp: <2008-11-22 07:27:26 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Nov 2008"
+VERSION.DATE <- "Released 21 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -4158,6 +4158,30 @@ executeExplorePlot <- function(dataset)
     # nocthes do not overlap, then the distribution medians are
     # significantly different.")
 
+    # 081122 TODO ggplot2 will simplify this substantially:
+    #
+    # p <- ggplot(crs$dataset, aes(factor(TARGET_Adjusted), Age))
+    # p + geom_boxplot(aes(fill=factor(TARGET_Adjusted)))
+    #
+    # Thus, no deriving the ds dataset, and no playing with colours.
+
+#    if (crv$appname == "Rattle")
+#    {
+#      lib.cmd <- "require(ggplot2, quietly=TRUE)"
+#      for (s in 1:nboxplots)
+#      {
+#        plot.cmd <- sprintf(paste("p <- ggplot(crs$dataset,",
+#                                  "aes(factor(TARGET_Adjusted), %s))\n",
+#                                  "p + geom_boxplot(aes(fill=",
+#                                  "factor(TARGET_Adjusted)))"),
+#                            boxplots[s])
+#        eval(parse(text=lib.cmd))
+#        print(eval(parse(text=plot.cmd))) # Very slow and not in Cairo device!!!!
+#      }
+#    }
+#    else
+#    {
+    
     # 080918 Use the vcd package to get a better colour map. See
     # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87
     
@@ -4263,6 +4287,8 @@ executeExplorePlot <- function(dataset)
       eval(parse(text=title.cmd))
     }
   }
+#  }
+  
 
   ##--------------------------------------------------------------------
   
@@ -4486,7 +4512,7 @@ executeExplorePlot <- function(dataset)
       plot.cmd <- paste('plot(', ifelse(digspin==1, "1", "0"),
                         ':9, ds[1,], type="b", pch=19, col=rainbow(1), ',
                        'ylim=c(0,max(ds)), axes=FALSE, ',
-                       'xlab="Distribtuion of the ',
+                       'xlab="Distribution of the ',
                         paste(digspin, c("st", "nd",
                                          "rd", "th")[min(4, digspin)],
                               sep = ""),

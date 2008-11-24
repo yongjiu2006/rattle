@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:52:21 Graham Williams>
+# Time-stamp: <2008-11-24 19:39:34 Graham Williams>
 #
 # MODEL TAB
 #
@@ -825,9 +825,18 @@ executeModelGLM <- function()
 
     summary.cmd <- paste("rattle.print.summary.multinom(summary(crs$glm,",
                          "                              Wald.ratios=TRUE))",
-                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\n\n",',
+                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\n",',
                                'logLik(crs$glm)[1], attr(logLik(crs$glm), "df")))'),
-                         "cat('==== ANOVA ====')",
+                         paste('if (is.null(crs$glm$na.action)) omitted <- TRUE',
+                               'else omitted <- -crs$glm$na.action'),
+                         paste('cat(sprintf("Pseudo R-Square: %.8f\n\n",',
+                               'cor(apply(crs$glm$fitted.values, 1, ',
+                               'function(x) which(x == max(x))),\n',
+                               'as.integer(crs$dataset',
+                               ifelse(sampling, '[crs$sample,]', ''),
+                               '[omitted,]$',
+                               crs$target, '))))\n', sep=""),
+                         "cat('==== ANOVA ====\n')",
                          "Anova(crs$glm)", # This does nothing...... see Anova below
                          sep="\n")
 
