@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.125.
+    version is 2.3.126.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+357 081130 Fix hclust - handle na.omit for Stats/Plot
+           Ensure fpc package is available for cutree in hclust
+           Fix binning using quantile when missing values present
+           Update message for singularities
 356 081124 Add pseudo R square (cor) to Mulitnomial model
 355 081121 Introduce Global_rattleGUI (IBI)
            Tidy up closing.
@@ -660,6 +664,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-24 22:44:10 Graham Williams</i>
+<i>Last Modified 2008-11-30 22:20:43 Graham Williams</i>
 <!-- hhmts end -->
   </p>

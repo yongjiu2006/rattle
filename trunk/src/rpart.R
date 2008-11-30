@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-21 20:26:13 Graham Williams>
+# Time-stamp: <2008-11-26 06:58:47 Graham Williams>
 #
 # RPART TAB
 #
@@ -949,7 +949,7 @@ exportRpartTab <- function()
 
   startLog("EXPORT RPART AS PMML")
 
-   save.name <- getExportSaveName("rpart")
+  save.name <- getExportSaveName("rpart")
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 

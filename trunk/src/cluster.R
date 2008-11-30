@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-17 22:00:59 Graham Williams>
+# Time-stamp: <2008-11-30 21:32:02 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -159,7 +159,7 @@ executeClusterKMeans <- function(include)
   # Calculate the centers
 
   if (usehclust)
-    centers <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
+    centers <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
   else
     centers <- nclust
@@ -320,6 +320,7 @@ on_kmeans_stats_button_clicked <- function(button)
   ## LIBRARY: Ensure the appropriate package is available for the
   ## plot, and log the R command and execute.
   
+  if (!packageIsAvailable("fpc", "plot a cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
@@ -425,9 +426,9 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  # LIBRARY: Ensure the appropriate package is available for the plot,
-  # log the R command and execute.
+  # The fpc package provides the plotcluster command execute.
   
+  if (!packageIsAvailable("fpc", "plot a cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
@@ -700,12 +701,11 @@ displayHClustStats <- function()
     return()
   }
 
-  # Ensure the appropriate package is available for the plot, and log
-  # the R command and execute.
+  # The fpc package provides is available for cluster.stats function.
   
+  if (!packageIsAvailable("fpc", "calculate cluster statistics")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The cluster stats functionality is provided by the fpc package.",
-            lib.cmd)
+  appendLog("Cluster stats is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
   resetTextview(TV)
@@ -732,7 +732,7 @@ displayHClustStats <- function()
 
   # Cluster centers.
 
-  centers.cmd <- sprintf("centers.hclust(crs$dataset[%s,%s], crs$hclust, %d)",
+  centers.cmd <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
   appendLog("List the suggested cluster centers for each cluster", centers.cmd)
   appendTextview(TV, "Cluster means:\n\n",
@@ -740,7 +740,7 @@ displayHClustStats <- function()
   
   # STATS: Log the R command and execute.
 
-  stats.cmd <- sprintf(paste("cluster.stats(dist(crs$dataset[%s,%s]),",
+  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
                              "cutree(crs$hclust, %d))\n"),
                        ifelse(sampling, "crs$sample", ""), include,
                        nclust)
@@ -823,9 +823,9 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
     return()
   }
 
-  # LIBRARY: Ensure the appropriate package is available for the plot,
-  # and log the R command and execute.
+  # The fpc package provides the plotcluster command.
   
+  if (!packageIsAvailable("fpc", "plot the cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
@@ -862,7 +862,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
   # PLOT: Log the R command and execute.
 
-  plot.cmd <- paste(sprintf(paste("plotcluster(crs$dataset[%s,%s], ",
+  plot.cmd <- paste(sprintf(paste("plotcluster(na.omit(crs$dataset[%s,%s]), ",
                                   "cutree(crs$hclust, %d))\n"),
                             ifelse(sampling, "crs$sample", ""), include,
                             num.clusters),
@@ -1032,8 +1032,9 @@ exportHClustTab <- function(file)
   # with pmml.transforms(crs$transforms) and include the result as an
   # optional argument to pmml.
   
-  pmml.cmd <- sprintf(cons("pmml(crs$hclust, centers=centers.hclust(",
-                           "crs$dataset[%s,%s], crs$hclust, %d)%s)"),
+  pmml.cmd <- sprintf(paste("pmml(crs$hclust, centers=centers.hclust(",
+                           "na.omit(crs$dataset[%s,%s]), crs$hclust, %d)%s)",
+                            sep=""),
                       ifelse(sampling, "crs$sample", ""), include, nclust,
                       ifelse(length(crs$transforms) > 0,
                              ", transforms=crs$transforms", ""))
