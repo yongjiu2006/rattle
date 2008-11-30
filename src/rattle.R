@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-22 07:27:26 Graham Williams>
+# Time-stamp: <2008-11-30 21:49:28 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Nov 2008"
+VERSION.DATE <- "Released 24 Nov 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -2914,8 +2914,8 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
   {
     breaks <- c(quantile(x, probs = seq(0, 1, 1/bins), na.rm = TRUE, type=8))
     breaks <- unique(breaks)
-    breaks[1] <- min(x)
-    breaks[length(breaks)] <- max(x)
+    breaks[1] <- min(x, na.rm=TRUE)
+    breaks[length(breaks)] <- max(x, na.rm=TRUE)
     # quantiles from quantile() can be non-unique, which cut() doesn't
     # like. This is handled above through unique(). The function
     # cut2() in Hmisc handles this situation gracefully and it could
@@ -5187,16 +5187,25 @@ executeExplorePlot <- function(dataset)
   
 executeExploreGGobi <- function(dataset, name=NULL)
 {
-  ## Based on code from Marco Lo
+  # Based on code from Marco Lo
+
+  # 081128 Obtain info from a collection of radio buttons as to
+  # whether to brush the data.  E.g., if hclust then:
+  #
+  # brush.cmd <- "glyph_colour(gg[1]) <- cutree(crs$hclust, 10)"
+  #
+  # Note also the embed=TRUE option of the ggobi display
+  # function. This allows the display to be embedded within a RGtk
+  # window, and hence seemlessly become part of Rattle.  
   
-  ## Construct the commands.
+  # Construct the commands.
 
   lib.cmd <- "require(rggobi, quietly=TRUE)"
   ggobi.cmd <- paste('gg <<- ggobi(', dataset,
                      ifelse(not.null(name), sprintf(', name="%s"', name), ""),
                      ')')
-              
-  ## Start logging and executing the R code.
+
+  # Start logging and executing the R code.
   
   if (! packageIsAvailable("rggobi", "explore the data using GGobi")) return()
 

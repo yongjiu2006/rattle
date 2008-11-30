@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-24 19:39:34 Graham Williams>
+# Time-stamp: <2008-11-30 21:42:27 Graham Williams>
 #
 # MODEL TAB
 #
@@ -219,6 +219,7 @@ commonName <- function(mtype)
   name.map <- data.frame(rpart="Tree",
                          ctree="Tree",
                          ada="Boost",
+                         hclust="Hierarchical Cluster",
                          rf="Forest",
                          ksvm="SVM",
                          glm="Linear",
@@ -860,12 +861,13 @@ executeModelGLM <- function()
                           ifelse(family == "Linear", "lm",
                                  ifelse(family == "Multinomial", "multinom", "glm"))),
               ifelse(any(is.na(coef(crs$glm))),
-                     paste("\n***Note*** Singularities were found in the modelling.",
-                           "This is often the case when variables are linear",
-                           "combinations of other variables, or the variable has",
-                           "a constant value. The singlularities are those with an",
-                           "NA in the following table. These variables will be ignored",
-                           "when using the model to score new data.\n",
+                     paste("\n***Note*** Singularities were found in the modeling
+and are indicated by an NA in the following table.
+This is often the case when variables are linear
+combinations of other variables, or the variable
+has a constant value.  These variables will be ignored
+when using the model to score new data and will not be
+included as parameters in the exported scoring routine.\n",
                            sep="\n"), ""),
               collectOutput(summary.cmd))
 
@@ -987,7 +989,8 @@ getExportSaveName <- function(mtype)
   # PMML).
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", paste("export", commonName(mtype), "model")))
+  if (! (exists("pmml") ||
+         packageIsAvailable("pmml", paste("export a", commonName(mtype), "model"))))
       return(NULL)
   appendLog("Load the PMML package to export a model.", lib.cmd)
   eval(parse(text=lib.cmd))
