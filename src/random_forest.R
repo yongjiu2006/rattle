@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:52:54 Graham Williams>
+# Time-stamp: <2008-12-04 06:02:56 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -69,16 +69,16 @@ executeModelRF <- function()
   if (! packageIsAvailable("randomForest", "build a random forest model"))
       return(FALSE)
 
-  ## Initial setup 
+  # Initial setup 
   
   TV <- "rf_textview"
   
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   parms <- ""
 
-  ## Make sure there are no included variables which have more than 32
-  ## levels, which can not be handled by randomForest (perhaps a limit
-  ## only on 32 bit machines)
+  # Make sure there are no included variables which have more than 32
+  # levels, which can not be handled by randomForest (perhaps a limit
+  # only on 32 bit machines)
   
   categoricals <- crs$input[unlist(lapply(crs$input,
                             function(x) is.factor(crs$dataset[,x])))]
@@ -87,14 +87,16 @@ executeModelRF <- function()
     if (length(levels(crs$dataset[,i])) > 32)
     {
       errorDialog("This implementation of randomForest does not handle",
-                   "categorical variables with more than 32 levels.",
-                   "The variable", i, "has", length(levels(crs$dataset[,i])),
-                   "levels. \n\nPlease choose to ignore it in the",
-                   "Data tab if you wish to build a randomForest model.")
+                  "categorical variables with more than 32 levels.",
+                  "Having a large number of levels tends to introduce bias",
+                  "into the tree algorithms.",
+                  "The variable", i, "has", length(levels(crs$dataset[,i])),
+                  "levels. \n\nPlease choose to ignore it in the",
+                  "Data tab if you wish to build a randomForest model.")
       return(FALSE)
     }
 
-  ## Retrieve options and set up parms.
+  # Retrieve options and set up parms.
 
   ntree <- theWidget("rf_ntree_spinbutton")$getValue()
   if (ntree != .RF.NTREE.DEFAULT)
@@ -181,11 +183,11 @@ executeModelRF <- function()
     return()
   }
     
-  ## Start the log
+  # Start the log
   
   startLog("RANDOM FOREST")
 
-  ## Load the required library.
+  # Load the required library.
 
   library.cmd <- "require(randomForest, quietly=TRUE)"
 
@@ -193,7 +195,7 @@ executeModelRF <- function()
           library.cmd)
   eval(parse(text=library.cmd))
 
-  ## Build the model.
+  # Build the model.
 
   rf.cmd <- paste("set.seed(123)\n",
                   "crs$rf <<- randomForest(", frml, ", data=crs$dataset",

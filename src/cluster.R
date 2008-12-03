@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-30 21:32:02 Graham Williams>
+# Time-stamp: <2008-12-03 06:41:17 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -1017,7 +1017,7 @@ exportHClustTab <- function(file)
   # Get some required information
 
   sampling  <- not.null(crs$sample)
-  nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
+  nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   include <- getNumericVariables()
   
   startLog("EXPORT HCLUST")

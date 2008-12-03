@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-30 21:49:28 Graham Williams>
+# Time-stamp: <2008-12-04 06:39:39 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 30 Nov 2008"
+VERSION.DATE <- "Released 02 Dec 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -5604,6 +5604,9 @@ on_score_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
+    theWidget("score_report_label")$show()
+    theWidget("score_class_radiobutton")$show()
+    theWidget("score_probability_radiobutton")$show()
     theWidget("score_include_label")$show()
     theWidget("score_idents_radiobutton")$show()
     theWidget("score_all_radiobutton")$show()
@@ -5614,13 +5617,16 @@ on_score_radiobutton_toggled <- function(button)
   }
   else
   {
+    theWidget("score_report_label")$hide()
+    theWidget("score_class_radiobutton")$hide()
+    theWidget("score_probability_radiobutton")$hide()
     theWidget("score_include_label")$hide()
     theWidget("score_idents_radiobutton")$hide()
     theWidget("score_all_radiobutton")$hide()
 
 #    theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
 #    theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
-}    
+  }    
   setStatusBar()
 }
 
@@ -5902,7 +5908,8 @@ executeEvaluateTab <- function()
   # model that uses the variable and does not find the particular
   # level, although it is okay if it is missing levels. TODO this
   # might need to check for the former and error out if it is the
-  # case.
+  # case. TODO 081204 I don't need to do this for every factor, just
+  # those with different levels.
 
   if (not.null(crs$testname) && crs$testname != crs$dataname)
     for (c in colnames(crs$dataset))
@@ -6088,7 +6095,7 @@ executeEvaluateTab <- function()
 
       # Add on the actual class also. This is useful for Score but may
       # be a problem for other types of evaluations (of which there
-      # are currently none that that use probcmd for multinom.
+      # are currently none that use probcmd for multinom).
 
       probcmd[[crv$GLM]] <- sub("<<- ", "<<- cbind(",
                                 sub(")$",
@@ -6209,9 +6216,10 @@ executeEvaluateTab <- function()
            || theWidget("hclust_evaluate_checkbutton")$getActive()))
     {
       if (categoricTarget())
-        # 081025 which is best? For trees, traditionally we return the
+        # 081025 Which is best? For trees, traditionally we return the
         # class, but for logistic regression we might return the
-        # probability
+        # probability. 081204 So we pass both to the function and decide in
+        # there based on a radiobutton setting.
         msg <- executeEvaluateScore(probcmd, respcmd, testset, testname)
       else if  (numericTarget())
         msg <- executeEvaluateScore(predcmd, predcmd, testset, testname)
@@ -7857,9 +7865,12 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     setStatusBar("Scoring dataset using", mtype, "...")
 
     # Determine whether we want the respcmd (for trees and multinom)
-    # or the probcmd (for logistic regression).
-
-    if (mtype == crv$GLM)
+    # or the probcmd (for logistic regression). 081204 Originally we
+    # returned probabilities for glm and class for everything
+    # else. But users want one or the other, so add a radiobutton
+    # option to choose Class or Probability.
+    if (theWidget("score_probability_radiobutton")$getActive())
+    # if (mtype == crv$GLM) # This was RStat original approach.
       thecmd <- probcmd
     else
       thecmd <- respcmd
