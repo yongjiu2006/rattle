@@ -6,14 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.128.
+    version is 2.3.129.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
-359 081204 Allow score to report either prob/class for binary.
+360 081206 Reset hclust options on new project
+359 081204 Allow score to report either prob/class for binary (Linda Clayton).
            Bug fix hclust export - was using num clusters from kmeans!
 358 081202 Include pmml.hclust in NAMESPACE
 357 081130 Fix hclust - handle na.omit for Stats/Plot
@@ -667,6 +668,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-04 06:48:23 Graham Williams</i>
+<i>Last Modified 2008-12-06 06:26:08 Graham Williams</i>
 <!-- hhmts end -->
   </p>
