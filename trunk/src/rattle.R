@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-04 06:39:39 Graham Williams>
+# Time-stamp: <2008-12-04 19:07:29 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Dec 2008"
+VERSION.DATE <- "Released 04 Dec 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -1029,7 +1029,24 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("weight_entry")$setText("")
     theWidget("model_tree_rpart_weights_label")$
     setText("")
-  
+
+    # Reset Cluster
+
+    theWidget("kmeans_clusters_spinbutton")$setValue(10)
+    theWidget("kmeans_seed_spinbutton")$setValue(123)
+    theWidget("kmeans_runs_spinbutton")$setValue(1)
+    theWidget("kmeans_stats_button")$setSensitive(FALSE)
+    theWidget("kmeans_data_plot_button")$setSensitive(FALSE)
+    theWidget("kmeans_discriminant_plot_button")$setSensitive(FALSE)
+
+    theWidget("hclust_clusters_spinbutton")$setValue(10)
+    theWidget("hclust_nbproc_spinbutton")$setValue(1)
+    theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
+    theWidget("hclust_stats_button")$setSensitive(FALSE)
+    theWidget("hclust_data_plot_button")$setSensitive(FALSE)
+    theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
+
+    
     # Reset Model -> Tree -> RPart
   
     theWidget("model_tree_priors_entry")$setText("")
