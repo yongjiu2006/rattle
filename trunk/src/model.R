@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-30 21:42:27 Graham Williams>
+# Time-stamp: <2008-12-06 22:48:12 Graham Williams>
 #
 # MODEL TAB
 #
@@ -321,7 +321,7 @@ makeEvaluateSensitive <- function()
   if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
       theWidget("hclust_evaluate_checkbutton")$getActive())
     buttons <- c("score")
-  
+
   # Need to handle the Risk button specially. Only enable it if there
   # is a risk variable. 081002 But the plotRisk function actually
   # works just fine when there is no risk variable, so let it plot
@@ -353,6 +353,29 @@ makeEvaluateSensitive <- function()
   
   if (length(buttons) > 0)
     theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
+
+  # 081206 Handle the sensitivity of the new Report options: Class and
+  # Probability. These are only available if one of the non-cluster
+  # models is active.
+
+  if (theWidget("rpart_evaluate_checkbutton")$isSensitive() ||
+      theWidget("ada_evaluate_checkbutton")$isSensitive() ||
+      theWidget("rf_evaluate_checkbutton")$isSensitive() ||
+      theWidget("ksvm_evaluate_checkbutton")$isSensitive() ||
+      theWidget("glm_evaluate_checkbutton")$isSensitive() ||
+      theWidget("nnet_evaluate_checkbutton")$isSensitive() ||
+      theWidget("mars_evaluate_checkbutton")$isSensitive())
+  {
+    theWidget("score_report_label")$setSensitive(TRUE)
+    theWidget("score_class_radiobutton")$setSensitive(TRUE)
+    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+  }
+  else
+  {
+    theWidget("score_report_label")$setSensitive(FALSE)
+    theWidget("score_class_radiobutton")$setSensitive(FALSE)
+    theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+  }
 }
 
 resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
@@ -389,6 +412,7 @@ resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
   }
   if (!is.null(default))
     theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
+
 }
 
 
@@ -550,7 +574,7 @@ executeModelTab <- function()
       else
       {
         if (executeModelRPart())
-          theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+            theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
         else
           setStatusBar("Building", commonName(.RPART), "model ... failed.")
       }
@@ -643,6 +667,40 @@ executeModelTab <- function()
     setStatusBar("All models have been generated.", time.msg)
   }
   
+  # 081206 Handle the sensitivity of the new Report options: Class and
+  # Probability. These are only available if one of the non-cluster
+  # models is active.
+
+  if (theWidget("rpart_evaluate_checkbutton")$isSensitive() ||
+      theWidget("ada_evaluate_checkbutton")$isSensitive() ||
+      theWidget("rf_evaluate_checkbutton")$isSensitive() ||
+      theWidget("ksvm_evaluate_checkbutton")$isSensitive() ||
+      theWidget("glm_evaluate_checkbutton")$isSensitive() ||
+      theWidget("nnet_evaluate_checkbutton")$isSensitive() ||
+      theWidget("mars_evaluate_checkbutton")$isSensitive())
+  {
+    theWidget("score_report_label")$setSensitive(TRUE)
+    theWidget("score_class_radiobutton")$setSensitive(TRUE)
+    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+
+    if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
+        theWidget("ada_evaluate_checkbutton")$getActive() ||
+        theWidget("rf_evaluate_checkbutton")$getActive() ||
+        theWidget("ksvm_evaluate_checkbutton")$getActive())
+    {
+      theWidget("score_class_radiobutton")$setActive(TRUE)
+    }
+    else
+    {
+      theWidget("score_probability_radiobutton")$setActive(TRUE)
+    }
+  }
+  else
+  {
+    theWidget("score_report_label")$setSensitive(FALSE)
+    theWidget("score_class_radiobutton")$setSensitive(FALSE)
+    theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+  }
 }
 
 #----------------------------------------------------------------------
