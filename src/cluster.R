@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-03 06:41:17 Graham Williams>
+# Time-stamp: <2008-12-06 16:59:08 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -122,6 +122,7 @@ executeClusterTab <- function()
     makeEvaluateSensitive()
     theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
     theWidget("kmeans_evaluate_checkbutton")$setActive(TRUE)
+    theWidget("hclust_evaluate_checkbutton")$setActive(FALSE)
   }
   else if (theWidget("hclust_radiobutton")$getActive())
   {
@@ -129,6 +130,7 @@ executeClusterTab <- function()
     makeEvaluateSensitive()
     theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
     theWidget("hclust_evaluate_checkbutton")$setActive(TRUE)
+    theWidget("kmeans_evaluate_checkbutton")$setActive(FALSE)
   }
 }
 
