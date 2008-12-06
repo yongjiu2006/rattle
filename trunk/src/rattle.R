@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-04 19:07:29 Graham Williams>
+# Time-stamp: <2008-12-06 16:40:50 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Dec 2008"
+VERSION.DATE <- "Released 06 Dec 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -7605,20 +7605,19 @@ executeEvaluateKmeansScore <- function()
   else if (theWidget("score_all_radiobutton")$getActive())
     sinclude <- paste('c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
 
-  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s,%s],",
+  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s,][%s,][%s],",
                             "kmeans=crs$kmeans$cluster)",
                             "%s", # If non missing this is empty.
                             ")[as.character(sort(as.integer(",
                             "rownames(crs$dataset[%s, ])))), ]"),
                       ifelse(theWidget("sample_checkbutton")$getActive(),
                              "crs$sample", ""),
-                      clnm,
-                      sinclude,
+                      clnm, sinclude,
                       ifelse(missing,
-                             sprintf(",data.frame(crs$dataset[%s, ][%s,], kmeans=NA)",
+                             sprintf(",data.frame(crs$dataset[%s,][%s,][%s], kmeans=NA)",
                                      ifelse(theWidget("sample_checkbutton")$
                                             getActive(), "crs$sample", ""),
-                                     clna),
+                                     clna, sinclude),
                              ""),
                       ifelse(theWidget("sample_checkbutton")$getActive(),
                              "crs$sample", "")
@@ -7644,8 +7643,8 @@ executeEvaluateKmeansScore <- function()
 executeEvaluateHclustScore <- function()
 {
 
-  # 081104 This is so similar to executeEvaluateKmeansScore that it
-  # should be merged with it.
+  # TODO 081104 This is so similar to executeEvaluateKmeansScore that
+  # it should be merged with it.
   
   # TODO 081104 As with executeEvaluateKmeansScore, we need to select
   # the dataset to which we append the "score". Currently, it is the
@@ -7715,30 +7714,29 @@ executeEvaluateHclustScore <- function()
   missing <- length(eval(parse(text=clna))) > 0
 
   if (theWidget("score_idents_radiobutton")$getActive())
-    sinclude <- paste('c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
+    sinclude <- paste(' c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
                       sep="")
   else if (theWidget("score_all_radiobutton")$getActive())
-    sinclude <- paste('c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
+    sinclude <- paste(' c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
 
-  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s, ][%s,%s],",
-                            "hclust=cutree(crs$hclust, %d))",
-                            "%s", # If non missing this is empty.
+  csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s,][%s,][%s],",
+                            "hclust=cutree(crs$hclust, %d))%s",
                             ")[as.character(sort(as.integer(",
-                            "rownames(crs$dataset[%s, ])))), ]"),
+                            "rownames(crs$dataset[%s, ])))),]"),
                       ifelse(theWidget("sample_checkbutton")$getActive(),
                              "crs$sample", ""),
                       clnm, sinclude, num.clusters,
                       ifelse(missing,
-                             sprintf(",data.frame(crs$dataset[%s, ][%s,], hclust=NA)",
+                             sprintf(",data.frame(crs$dataset[%s, ][%s,][%s], hclust=NA)",
                                      ifelse(theWidget("sample_checkbutton")$
                                             getActive(), "crs$sample", ""),
-                                     clna),
+                                     clna, sinclude),
                              ""),
                       ifelse(theWidget("sample_checkbutton")$getActive(),
                              "crs$sample", "")
                       ##sprintf('"%s"', paste(idents, collapse='", "'))
                       )
-  
+
   # We can't pass "\" in a filename to the parse command in
   # MS/Windows so we have to run the save/write command separately,
   # i.e., not inside the string that is being parsed.
