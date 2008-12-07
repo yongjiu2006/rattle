@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-06 22:48:12 Graham Williams>
+# Time-stamp: <2008-12-07 21:19:43 Graham Williams>
 #
 # MODEL TAB
 #
@@ -293,6 +293,16 @@ currentModelTab <- function()
   return(lb)
 }
 
+existsCategoricModel <- function()
+{
+  # kmeans and hclust are not listed in listBuiltModels, so this is
+  # all that is needed to know if we have at least one predictive
+  # model.
+  
+  return(categoricTarget() && ! is.null(listBuiltModels))
+}
+
+
 makeEvaluateSensitive <- function()
 {
   # 080821 Make sensitive all the appropriate Evaluate radio
@@ -354,28 +364,22 @@ makeEvaluateSensitive <- function()
   if (length(buttons) > 0)
     theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
 
-  # 081206 Handle the sensitivity of the new Report options: Class and
-  # Probability. These are only available if one of the non-cluster
-  # models is active.
+###   # 081206 Handle the sensitivity of the new Report options: Class and
+###   # Probability. These are only available if one of the non-cluster
+###   # models is active.
 
-  if (theWidget("rpart_evaluate_checkbutton")$isSensitive() ||
-      theWidget("ada_evaluate_checkbutton")$isSensitive() ||
-      theWidget("rf_evaluate_checkbutton")$isSensitive() ||
-      theWidget("ksvm_evaluate_checkbutton")$isSensitive() ||
-      theWidget("glm_evaluate_checkbutton")$isSensitive() ||
-      theWidget("nnet_evaluate_checkbutton")$isSensitive() ||
-      theWidget("mars_evaluate_checkbutton")$isSensitive())
-  {
-    theWidget("score_report_label")$setSensitive(TRUE)
-    theWidget("score_class_radiobutton")$setSensitive(TRUE)
-    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-  }
-  else
-  {
-    theWidget("score_report_label")$setSensitive(FALSE)
-    theWidget("score_class_radiobutton")$setSensitive(FALSE)
-    theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-  }
+###   if (existsCategoricModel())
+###   {
+###     theWidget("score_report_label")$setSensitive(TRUE)
+###     theWidget("score_class_radiobutton")$setSensitive(TRUE)
+###     theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+###   }
+###   else
+###   {
+###     theWidget("score_report_label")$setSensitive(FALSE)
+###     theWidget("score_class_radiobutton")$setSensitive(FALSE)
+###     theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+###   }
 }
 
 resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
@@ -412,7 +416,6 @@ resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
   }
   if (!is.null(default))
     theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
-
 }
 
 
@@ -666,41 +669,34 @@ executeModelTab <- function()
                         attr(time.taken, "units"))
     setStatusBar("All models have been generated.", time.msg)
   }
+      # 081206 Handle the sensitivity of the new Report options: Class
+      # and Probability. These are only available if one of the
+      # non-cluster models is active.
   
-  # 081206 Handle the sensitivity of the new Report options: Class and
-  # Probability. These are only available if one of the non-cluster
-  # models is active.
+      if (existsCategoricModel())
+      {
+        theWidget("score_report_label")$setSensitive(TRUE)
+        theWidget("score_class_radiobutton")$setSensitive(TRUE)
+        theWidget("score_probability_radiobutton")$setSensitive(TRUE)
 
-  if (theWidget("rpart_evaluate_checkbutton")$isSensitive() ||
-      theWidget("ada_evaluate_checkbutton")$isSensitive() ||
-      theWidget("rf_evaluate_checkbutton")$isSensitive() ||
-      theWidget("ksvm_evaluate_checkbutton")$isSensitive() ||
-      theWidget("glm_evaluate_checkbutton")$isSensitive() ||
-      theWidget("nnet_evaluate_checkbutton")$isSensitive() ||
-      theWidget("mars_evaluate_checkbutton")$isSensitive())
-  {
-    theWidget("score_report_label")$setSensitive(TRUE)
-    theWidget("score_class_radiobutton")$setSensitive(TRUE)
-    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-
-    if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
-        theWidget("ada_evaluate_checkbutton")$getActive() ||
-        theWidget("rf_evaluate_checkbutton")$getActive() ||
-        theWidget("ksvm_evaluate_checkbutton")$getActive())
-    {
-      theWidget("score_class_radiobutton")$setActive(TRUE)
-    }
-    else
-    {
-      theWidget("score_probability_radiobutton")$setActive(TRUE)
-    }
-  }
-  else
-  {
-    theWidget("score_report_label")$setSensitive(FALSE)
-    theWidget("score_class_radiobutton")$setSensitive(FALSE)
-    theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-  }
+        if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
+            theWidget("ada_evaluate_checkbutton")$getActive() ||
+            theWidget("rf_evaluate_checkbutton")$getActive() ||
+            theWidget("ksvm_evaluate_checkbutton")$getActive())
+        {
+          theWidget("score_class_radiobutton")$setActive(TRUE)
+        }
+        else
+        {
+          theWidget("score_probability_radiobutton")$setActive(TRUE)
+        }
+      }
+      else
+      {
+        theWidget("score_report_label")$setSensitive(FALSE)
+        theWidget("score_class_radiobutton")$setSensitive(FALSE)
+        theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+      }
 }
 
 #----------------------------------------------------------------------
