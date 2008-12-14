@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-07 21:29:10 Graham Williams>
+# Time-stamp: <2008-12-14 13:59:04 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -996,9 +996,16 @@ exportKMeansTab <- function(file)
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a cluster model as C code for WebFocus.",
-              sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',
-                      pmml.cmd, model.name, save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
+              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
+                      pmml.cmd, model.name,
+                      attr(save.name, "includePMML"),
+                      attr(save.name, "includeMetaData"),
+                      attr(save.name, "exportClass"),
+                      save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+                attr(save.name, "includePMML"),
+                attr(save.name, "includeMetaData"),
+                attr(save.name, "exportClass")), file=save.name)
   }
   
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
@@ -1058,9 +1065,16 @@ exportHClustTab <- function(file)
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export hieracrchical cluster model as C code for WebFocus.",
-              sprintf('cat(pmmltoc(toString(%s), name="%s"), file="%s")',
-                      pmml.cmd, model.name, save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
+              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
+                      pmml.cmd, model.name, 
+                      attr(save.name, "includePMML"),
+                      attr(save.name, "includeMetaData"),
+                      attr(save.name, "exportClass"),
+                      save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+                attr(save.name, "includePMML"),
+                attr(save.name, "includeMetaData"),
+                attr(save.name, "exportClass")), file=save.name)
   }
   
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
