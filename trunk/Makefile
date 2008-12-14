@@ -143,9 +143,9 @@ install: update build pbuild zip rattle_src.zip # check pcheck
 	 make local; lftp -f .lftp-rattle)
 	(cd /home/gjw/projects/dmsurvivor/;\
 	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
-			dmsurvivor.tex;\
+			dmsurvivor.Rnw;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
-			dmsurvivor.tex)
+			dmsurvivor.Rnw)
 	mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
 	mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R

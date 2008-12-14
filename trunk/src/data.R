@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-07 20:58:13 Graham Williams>
+# Time-stamp: <2008-12-14 10:05:26 Graham Williams>
 #
 # DATA TAB
 #
@@ -190,7 +190,7 @@ updateFilenameFilters <- function(button, fname)
 {
   # Add the filters appropriate to the filter name (fname) supplied.
 
-  button <- theWidget(button)
+  if (is.character(button)) button <- theWidget(button)
   filters <- button$listFilters()
 
   if (fname == "CSV")

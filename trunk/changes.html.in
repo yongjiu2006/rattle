@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.132.
+    version is 2.3.133.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+364 081213 RStat option for export info/pmml: clusters/regression/
+           Allow updateFilenameFilters accept object/string - for Rnw
+           Add contents function from Hmisc to default Summary
 363 081207 Ensure Evaluate/preditive models deslected when cluster model built
            Logic of Evaluate/Score/Report availability working correctly
            Shorten status message on Execute data tab
@@ -674,6 +677,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-07 21:33:14 Graham Williams</i>
+<i>Last Modified 2008-12-14 14:13:00 Graham Williams</i>
 <!-- hhmts end -->
   </p>

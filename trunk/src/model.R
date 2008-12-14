@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-07 21:19:43 Graham Williams>
+# Time-stamp: <2008-12-14 14:07:03 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1028,9 +1028,16 @@ exportRegressionTab <- function()
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a regression model as C code for WebFocus.",
-              sprintf('cat(pmmltoc(toString(%s), "%s"), file="%s")',
-                      pmml.cmd, model.name, save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name), file=save.name)
+              sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
+                      pmml.cmd, model.name, 
+                      attr(save.name, "includePMML"),
+                      attr(save.name, "includeMetaData"),
+                      attr(save.name, "exportClass"),
+                      save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+                attr(save.name, "includePMML"),
+                attr(save.name, "includeMetaData"),
+                attr(save.name, "exportClass")), file=save.name)
   }
   
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
@@ -1077,11 +1084,37 @@ getExportSaveName <- function(mtype)
   ff$setName("All Files")
   ff$addPattern("*")
   dialog$addFilter(ff)
+
+  if (isRStat())
+  {
+    # 081213 Add some buttons to the file chooser.
+    
+    hb <- gtkHBoxNew()
+    pmml.cb <- gtkCheckButtonNewWithLabel("Include PMML")
+    pmml.cb$setActive(TRUE)
+    meta.cb <- gtkCheckButtonNewWithLabel("Include Meta Data")
+    meta.cb$setActive(TRUE)
+    class.rb <- gtkRadioButtonNewWithLabel(NULL, "Export Class")
+    probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb), "Export Probabilities")
+    hb$add(pmml.cb)
+    hb$add(meta.cb)
+    hb$add(class.rb)
+    hb$add(probs.rb)
+    dialog$setExtraWidget(hb)
+  }
   
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
     save.type <- dialog$getFilter()$getName()
+    if (isRStat())
+    {
+      # Return the options as attributes.
+      
+      includePMML <- pmml.cb$getActive()
+      includeMetaData <- meta.cb$getActive()
+      exportClass <- class.rb$getActive()
+    }
     dialog$destroy()
   }
   else
@@ -1124,6 +1157,9 @@ getExportSaveName <- function(mtype)
                          "this file?"))
       return(NULL)
 
+  attr(save.name, "includePMML") <- includePMML
+  attr(save.name, "includeMetaData") <- includeMetaData
+  attr(save.name, "exportClass") <- exportClass
   return(save.name)
 }
 

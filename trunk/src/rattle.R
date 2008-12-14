@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-07 21:15:53 Graham Williams>
+# Time-stamp: <2008-12-13 08:16:59 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Dec 2008"
+VERSION.DATE <- "Released 07 Dec 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -3757,7 +3757,7 @@ executeExploreSummary <- function(dataset)
   do.skewness <- theWidget("skewness_checkbutton")$getActive()
   do.missing  <- theWidget("missing_checkbutton")$getActive()
 
-  ## Make sure something has been selected.
+  # Make sure something has been selected.
   
   if (! (do.summary || do.describe || do.basics ||
          do.kurtosis || do.skewness || do.missing))
@@ -3767,9 +3767,9 @@ executeExploreSummary <- function(dataset)
     return()
   }
     
-  ## Other useful information:
-  ##   is there a sample
-  ##   list of numeric variables
+  # Other useful information:
+  #   is there a sample
+  #   list of numeric variables
   
   sampling  <- not.null(crs$sample)
 
@@ -3778,36 +3778,52 @@ executeExploreSummary <- function(dataset)
                                sep=""), dataset, dataset)
   nvars <- simplifyNumberList(eval(parse(text=numeric.cmd)))
 
-  ## Start the trace to the log.
+  # Start the trace to the log.
   
   startLog()
   theWidget(TV)$setWrapMode("none")
   resetTextview(TV)
 
-  ## Construct and execute the requested commands.
+  # Construct and execute the requested commands.
 
   if (do.summary)
   {
-    ## Find the number of entities with any missing value for the
-    ## non-ignored variables.
+    # Find the number of entities with any missing value for the
+    # non-ignored variables.
     
     missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
     result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
     if (inherits(result, "try-error")) missing <- 0
     
-    ## A basic summary.
+    # Use Hmisc's contents to summarise the data frame, if Hmisc is
+    # available.
 
+    contents.cmd <- ""
+    if (packageIsAvailable("Hmisc", "describe the contents of a data frame"))
+    {
+      lib.cmd <- "require(Hmisc, quietly=TRUE)"
+      appendLog("The contents command comes from Hmisc.", lib.cmd)
+      eval(parse(text=lib.cmd))
+      contents.cmd <- sprintf("contents(%s)", dataset)
+    }
     summary.cmd <- sprintf("summary(%s)", dataset)
-    appendLog("SUMMARY OF DATASET.", summary.cmd)
+    
+    appendLog("SUMMARISE THE DATASET", contents.cmd, summary.cmd)
     appendTextview(TV,
-                   paste("Summary of the ",
-                         ifelse(use.sample && sampling, "** sample **", "full"),
-                         " dataset.\n\n", sep=""),
-                   sprintf(paste("The data contains %d entities",
-                                 "with missing values."),
-                           missing),
-                   "\n\n(Hint: 25% of values are below 1st Quartile.)\n\n",
-                   collectOutput(summary.cmd, TRUE))
+                   paste("Below is a summary of ",
+                         ifelse(use.sample && sampling, "a SAMPLE of ", ""),
+                         "the dataset.\n\n", sep=""),
+                   "In reading the simple distribution tables the 1st and 3rd Qu.\n",
+                   "refer to the first and third quartiles, indicating that 25% of\n",
+                   "the entities have values of that variable which are less than\n",
+                   "or greater than (respectively) the value listed.\n\n",
+                   if (missing > 0)
+                   paste("We also note that the data contains", missing, "entities",
+                         "with missing values.\nCheck",
+                         "the Show Missing check box for details.\n\n"),
+                   collectOutput(contents.cmd),
+                   "\n\n",
+                   collectOutput(summary.cmd))
   }
 
   if (do.describe)
