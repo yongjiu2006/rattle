@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-14 14:07:03 Graham Williams>
+# Time-stamp: <2008-12-16 12:58:20 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1089,17 +1089,47 @@ getExportSaveName <- function(mtype)
   {
     # 081213 Add some buttons to the file chooser.
     
+###     tb <- gtkTableNew(3, 3, FALSE)
+
+###     label.cb <- gtkLabelNew("Include:")
+###     pmml.cb <- gtkCheckButtonNewWithLabel("Include PMML")
+###     pmml.cb$setActive(TRUE)
+###     meta.cb <- gtkCheckButtonNewWithLabel("Include Meta Data")
+###     meta.cb$setActive(TRUE)
+
+###     label.rb <- gtkLabelNew("Export:")
+###     class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
+###     probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb), "Probabilities")
+
+###     tb$attach(label.rb, 0, 1, 0, 1, 1)
+###     tb$attach(class.rb, 1, 2, 0, 1, 1)
+###     tb$attach(probs.rb, 2, 3, 0, 1, 1)
+
+###     tb$attach(label.cb, 0, 1, 1, 2, 1)
+###     tb$attach(pmml.cb, 1, 2, 1, 2, 1)
+###     tb$attach(meta.cb, 2, 3, 1, 2, 1)
+
+###     dialog$setExtraWidget(tb)
+   
     hb <- gtkHBoxNew()
-    pmml.cb <- gtkCheckButtonNewWithLabel("Include PMML")
+
+    label.cb <- gtkLabelNew("Include:")
+    pmml.cb <- gtkCheckButtonNewWithLabel("PMML")
     pmml.cb$setActive(TRUE)
-    meta.cb <- gtkCheckButtonNewWithLabel("Include Meta Data")
+    meta.cb <- gtkCheckButtonNewWithLabel("Meta Data")
     meta.cb$setActive(TRUE)
-    class.rb <- gtkRadioButtonNewWithLabel(NULL, "Export Class")
-    probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb), "Export Probabilities")
-    hb$add(pmml.cb)
-    hb$add(meta.cb)
+
+    label.rb <- gtkLabelNew("Export:")
+    class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
+    probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb),
+                                           "Probabilities           ")
+
+    hb$add(label.rb)
     hb$add(class.rb)
     hb$add(probs.rb)
+    hb$add(label.cb)
+    hb$add(pmml.cb)
+    hb$add(meta.cb)
     dialog$setExtraWidget(hb)
   }
   
