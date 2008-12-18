@@ -14,6 +14,8 @@ lattice.
 
 <h2>Specific Suggestions</h2>
 <pre>
+080416 Log transform +ve/-ve (Linday Clayton)
+080416 C-stat eval for interval target (Linda Clayton)
 080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
 080716 Risk Charts for regression by using rank
 080711 Replace Distributions with laticist/playwith (Felix Andrews)
@@ -140,6 +142,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-11-22 06:19:43 Graham Williams</i>
+<i>Last Modified 2008-12-18 09:40:27 Graham Williams</i>
 <!-- hhmts end -->
   </p>

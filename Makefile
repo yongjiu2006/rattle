@@ -199,7 +199,7 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
 
-data: package/rattle/data/audit.RData
+data: package/rattle/data/audit.RData package/rattle/data/weather.RData
 
 package/rattle/data/audit.RData: support/audit.R Makefile
 	R --no-save --quiet < support/audit.R
@@ -211,10 +211,20 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
 
+package/rattle/data/weather.RData: support/weather.R Makefile
+	R --no-save --quiet < support/weather.R
+	chmod go+r weather.RData weather.csv weather.arff weather_missing.csv
+	cp weather.RData weather.csv weather.arff weather_missing.csv data/
+	cp weather.RData weather.csv weather.arff weather_missing.csv src/
+	cp weather.RData package/rattle/data/
+	cp weather.csv package/rattle/inst/csv/
+	cp weather.arff package/rattle/inst/arff/
+	cp weather.csv /home/gjw/projects/togaware/www/site/rattle/
+
 zip: local plocal
-	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.8; zip -r9 - rattle) \
+	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
-	(cd /home/gjw/R/x86_64-pc-linux-gnu-library/2.8; zip -r9 - pmml) \
+	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
 	>| pmml_$(PVERSION).zip
 
 txt:
@@ -228,10 +238,10 @@ html:
 	done
 
 local: rattle_$(VERSION).tar.gz
-	R CMD INSTALL $^
+	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 plocal: pmml_$(PVERSION).tar.gz
-	R CMD INSTALL $^
+	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 access:
 	grep 'rattle' /home/gjw/projects/ilisys/log
@@ -253,4 +263,5 @@ clean:
 
 realclean: clean
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
+	rm -f package/rattle/data/weather.RData package/rattle/inst/csv/weather.csv
 	rm -rf rattle.Rcheck rattle_$(VERSION).tar.gz

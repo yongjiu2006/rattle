@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-14 10:05:26 Graham Williams>
+# Time-stamp: <2008-12-17 19:30:23 Graham Williams>
 #
 # DATA TAB
 #
@@ -567,7 +567,7 @@ executeDataCSV <- function(filename=NULL)
   {
     if (! questionDialog("No CSV filename has been provided.\n",
                          "\nWe require a dataset to be loaded.\n",
-                         "\nWould you like to use the sample audit",
+                         "\nWould you like to use the sample weather",
                          "dataset?"))
 
       # If no filename is given and the user decides not to go with
@@ -579,7 +579,7 @@ executeDataCSV <- function(filename=NULL)
     {
       # 080515 Use the Rattle provided sample dataset.
       
-      filename <- system.file("csv", "audit.csv", package="rattle")
+      filename <- system.file("csv", "weather.csv", package="rattle")
       theWidget("data_filechooserbutton")$setFilename(filename)
 
       # Make sure we end up with a URI since a URI is otherwise used
@@ -2642,7 +2642,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
 
-    unique.count <- length(unique(crs$dataset[[variables[i]]]))
+    unique.count <- length(unique(na.omit(crs$dataset[[variables[i]]])))
     unique.value <- unique(crs$dataset[[variables[i]]])
 
     numeric.var <- is.numeric(crs$dataset[[variables[i]]])

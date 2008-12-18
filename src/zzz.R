@@ -13,8 +13,8 @@
   # annoying, just like fBasics. randomForest seems to do it
   # correctly? Maybe not....
   
-  cat(sprintf(paste("Rattle, Graphical interface for data mining using R, ",
-                    "Version %s.\n", COPYRIGHT, "\n", sep=""), VERSION))
+  cat(sprintf(paste("Rattle, Graphical interface for data mining using R\n",
+                    "Version %s. ", COPYRIGHT, "\n", sep=""), VERSION))
   if ("rattle" %in% getOption("defaultPackages"))
     rattle()
   else
