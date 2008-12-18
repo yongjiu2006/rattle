@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.134.
+    version is 2.3.135.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+366 081218 Add weather data as default in place of audit
+           Fix unique count on Data tab (ignore NA)
+           Tidy up welcome message on loading library.
 365 081216 Improve layout of RStat option for export
            Improve UI for hclust: distinguish build from cluster
 364 081213 RStat option for export info/pmml: clusters/regression/tree
@@ -679,6 +682,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-16 13:07:47 Graham Williams</i>
+<i>Last Modified 2008-12-18 19:40:06 Graham Williams</i>
 <!-- hhmts end -->
   </p>
