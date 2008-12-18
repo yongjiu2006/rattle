@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-16 12:58:20 Graham Williams>
+# Time-stamp: <2008-12-18 22:13:47 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1130,6 +1130,18 @@ getExportSaveName <- function(mtype)
     hb$add(label.cb)
     hb$add(pmml.cb)
     hb$add(meta.cb)
+
+    if (mtype %in% c("glm")) probs.rb$setActive(TRUE)
+    
+    # 081218 Add glm when implemented.
+    
+    if (!binomialTarget() || ! mtype %in% c("rpart"))
+    {
+      label.rb$setSensitive(FALSE)
+      class.rb$setSensitive(FALSE)
+      probs.rb$setSensitive(FALSE)
+    }
+    
     dialog$setExtraWidget(hb)
   }
   

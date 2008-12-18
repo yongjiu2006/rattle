@@ -52,6 +52,10 @@ rattle(csvname=NULL, appname="Rattle", tooltiphack=FALSE, close="close")
 # You can start rattle with a path to a csv file to pre-specify the
 # dataset. You then need to click Execute to load the data.
 
-rattle(system.file("csv", "audit.csv", package = "rattle"))
+rattle(system.file("csv", "weather.csv", package = "rattle"))
+
+# Upgrade rattle to the latest beta version.
+
+install.packages("rattle", repos="http://rattle.togaware.com")
 }
 \keyword{environment}
