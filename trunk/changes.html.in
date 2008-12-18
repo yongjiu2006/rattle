@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.135.
+    version is 2.3.136.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+367 081218 For C export, default is Probs for glm and Class for rpart
+           Make this export option not sensitive for glm for now
 366 081218 Add weather data as default in place of audit
            Fix unique count on Data tab (ignore NA)
            Tidy up welcome message on loading library.
@@ -682,6 +684,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-18 19:40:06 Graham Williams</i>
+<i>Last Modified 2008-12-18 22:16:58 Graham Williams</i>
 <!-- hhmts end -->
   </p>
