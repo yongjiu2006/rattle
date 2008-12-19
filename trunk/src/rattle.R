@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-17 07:34:12 Graham Williams>
+# Time-stamp: <2008-12-19 08:12:08 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -803,6 +803,7 @@ tuneRStat <- function()
 
   theWidget("model_tree_rpart_radiobutton")$hide()
   theWidget("model_tree_ctree_radiobutton")$hide()
+  theWidget("model_tree_include_missing_checkbutton")$hide()
  
   # Model -> Linear
 
