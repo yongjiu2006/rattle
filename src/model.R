@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-18 22:13:47 Graham Williams>
+# Time-stamp: <2008-12-19 14:29:04 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1057,13 +1057,33 @@ getExportSaveName <- function(mtype)
   eval(parse(text=lib.cmd))
 
   # Obtain filename to write the PMML or C code to.
-  
-  dialog <- gtkFileChooserDialog(paste("Export", if (isRStat()) "C or",
-                                       "PMML"),
-                                 NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
 
+  # 081218 Use the glade generated rather than hand-coded one. It is
+  # much simpler to handle the formatting.
+
+  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                silent=TRUE)
+  if (inherits(result, "try-error"))
+    dialogGUI <- gladeXMLNew("rattle.glade", root="export_filechooserdialog")
+  else
+    dialogGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="export_filechooserdialog")
+
+  if (! isRStat())
+    dialogGUI$getWidget("export_filechooser_options_table")$hide()
+
+  dialog <- dialogGUI$getWidget("export_filechooserdialog")
+
+  if (isRStat()) dialog$setTitle("Export C or PMML")
+
+###     # 081219 This is the old way of doing it - remove this once the
+###     # new approavh using glade works.
+###    
+###     dialog <- gtkFileChooserDialog(paste("Export", if (isRStat()) "C or",
+###                                          "PMML"),
+###                                    NULL, "save",
+###                                    "gtk-cancel", GtkResponseType["cancel"],
+###                                  "gtk-save", GtkResponseType["accept"])
+  
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype, sep=""))
 
@@ -1085,8 +1105,6 @@ getExportSaveName <- function(mtype)
   ff$addPattern("*")
   dialog$addFilter(ff)
 
-  if (isRStat())
-  {
     # 081213 Add some buttons to the file chooser.
     
 ###     tb <- gtkTableNew(3, 3, FALSE)
@@ -1111,51 +1129,59 @@ getExportSaveName <- function(mtype)
 
 ###     dialog$setExtraWidget(tb)
    
-    hb <- gtkHBoxNew()
+###     hb <- gtkHBoxNew()
 
-    label.cb <- gtkLabelNew("Include:")
-    pmml.cb <- gtkCheckButtonNewWithLabel("PMML")
-    pmml.cb$setActive(TRUE)
-    meta.cb <- gtkCheckButtonNewWithLabel("Meta Data")
-    meta.cb$setActive(TRUE)
+###     label.cb <- gtkLabelNew("Include:")
+###     pmml.cb <- gtkCheckButtonNewWithLabel("PMML")
+###     pmml.cb$setActive(TRUE)
+###     meta.cb <- gtkCheckButtonNewWithLabel("Meta Data")
+###     meta.cb$setActive(TRUE)
 
-    label.rb <- gtkLabelNew("Export:")
-    class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
-    probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb),
-                                           "Probabilities           ")
+###     label.rb <- gtkLabelNew("Export:")
+###     class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
+###     probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb),
+###                                            "Probabilities           ")
 
-    hb$add(label.rb)
-    hb$add(class.rb)
-    hb$add(probs.rb)
-    hb$add(label.cb)
-    hb$add(pmml.cb)
-    hb$add(meta.cb)
+###     hb$add(label.rb)
+###     hb$add(class.rb)
+###     hb$add(probs.rb)
+###     hb$add(label.cb)
+###     hb$add(pmml.cb)
+###     hb$add(meta.cb)
 
+  if ( isRStat())
+  {
     if (mtype %in% c("glm")) probs.rb$setActive(TRUE)
     
     # 081218 Add glm when implemented.
     
     if (!binomialTarget() || ! mtype %in% c("rpart"))
     {
-      label.rb$setSensitive(FALSE)
-      class.rb$setSensitive(FALSE)
-      probs.rb$setSensitive(FALSE)
+      dialogGUI$
+      getWidget("export_filechooser_target_label")$setSensitive(FALSE)
+
+      dialogGUI$
+      getWidget("export_filechooser_class_radiobutton")$setSensitive(FALSE)
+
+      dialogGUI$
+      getWidget("export_filechooser_probabilities_radiobutton")$setSensitive(FALSE)
     }
-    
-    dialog$setExtraWidget(hb)
   }
-  
+
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
     save.type <- dialog$getFilter()$getName()
     if (isRStat())
     {
-      # Return the options as attributes.
-      
-      includePMML <- pmml.cb$getActive()
-      includeMetaData <- meta.cb$getActive()
-      exportClass <- class.rb$getActive()
+      includePMML <- dialogGUI$
+      getWidget("export_filechooser_pmml_checkbutton")$getActive()
+
+      includeMetaData <- dialogGUI$
+      getWidget("export_filechooser_metadata_checkbutton")$getActive()
+
+      exportClass <- dialogGUI$
+      getWidget("export_filechooser_class_radiobutton")$getActive()
     }
     dialog$destroy()
   }
