@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-16 09:29:29 Graham Williams>
+# Time-stamp: <2008-12-24 07:01:37 Graham Williams>
 #
 # Test Tab
 #
@@ -32,6 +32,7 @@ on_test_groupby_checkbutton_toggled<- function(button)
     theWidget("test_groupby_target_label")$setSensitive(TRUE)
     theWidget("test_vars2_label")$setSensitive(FALSE)
     theWidget("test_vars2_combobox")$setSensitive(FALSE)
+    theWidget("test_correlation_radiobutton")$setSensitive(FALSE)
     theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(FALSE)
   }
   else
@@ -40,6 +41,7 @@ on_test_groupby_checkbutton_toggled<- function(button)
     theWidget("test_groupby_target_label")$setSensitive(FALSE)
     theWidget("test_vars2_label")$setSensitive(TRUE)
     theWidget("test_vars2_combobox")$setSensitive(TRUE)
+    theWidget("test_correlation_radiobutton")$setSensitive(TRUE)
     theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(TRUE)
   }
 }
