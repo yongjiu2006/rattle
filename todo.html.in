@@ -36,7 +36,6 @@ lattice.
 080518 Implement knn regression as in
        http://cheminfo.informatics.indiana.edu/~rguha/code/R/
 080512 Fix scoring for multiple class classification
-080517 Review Tony Nolan's weather dataset for demo inclusion
 080513 Introduce Ensemble scoring to add scores together (see NetFlix).
 080504 Allow risk charts without a RISK identified
 080427 Fix Draw of decision tree for Regression
@@ -142,6 +141,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-18 09:40:27 Graham Williams</i>
+<i>Last Modified 2008-12-21 21:23:08 Graham Williams</i>
 <!-- hhmts end -->
   </p>

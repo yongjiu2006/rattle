@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-02 11:02:57 Graham Williams>
+# Time-stamp: <2008-12-22 16:11:00 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -103,9 +103,10 @@ exportLogTab <- function()
   dialog <- gtkFileChooserDialog("Export Log", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
+  dialog$setDoOverwriteConfirmation(TRUE)
 
   if(not.null(crs$dataname))
-    dialog$setCurrentName(sprintf("%s_script", get.stem(crs$dataname)))
+    dialog$setCurrentName(sprintf("%s_script.R", get.stem(crs$dataname)))
 
   ff <- gtkFileFilterNew()
   ff$setName("R Files")
@@ -130,12 +131,7 @@ exportLogTab <- function()
 
   if (get.extension(save.name) != "R")
     save.name <- sprintf("%s.R", save.name)
-    
-  if (file.exists(save.name))
-    if (! questionDialog("The log file", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
+
   write(getTextviewContent("log_textview"), save.name)
 
   setStatusBar("The log has been exported to", save.name)

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-19 08:12:08 Graham Williams>
+# Time-stamp: <2008-12-23 06:36:05 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 18 Dec 2008"
+VERSION.DATE <- "Released 19 Dec 2008"
 COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -1662,10 +1662,11 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
                                  NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
+  dialog$setDoOverwriteConfirmation(TRUE)
   
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname),
-                                "_", name, sep=""))
+                                "_", name, ".pdf", sep=""))
   
   ff <- gtkFileFilterNew()
   if (isWindows())
@@ -1695,15 +1696,9 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
     return()
   }
   
-  if (get.extension(save.name) == "")
-    save.name <- sprintf("%s.pdf", save.name)
+#  if (get.extension(save.name) == "")
+#    save.name <- sprintf("%s.pdf", save.name)
   
-  if (file.exists(save.name))
-    if (! questionDialog("A Graphics file of the name", save.name,
-                         "already exists. \n\nDo you want to",
-                         "overwrite this file?"))
-      return()
-
   startLog("SAVE PLOT")
   appendLog(paste("Save the plot on device", dev.num, "to file."),
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
@@ -1996,7 +1991,7 @@ plotNetwork <- function(flow)
 
   heat <- rev(heat.colors(max(flow.mag)))
   flow.col <- flow.mag
-  for (i in 1:length(heat)) flow.col[flow.col==i] <- heat[i]
+  for (i in seq_along(heat)) flow.col[flow.col==i] <- heat[i]
   flow.col <- sapply(flow.col, as.character)
   
   # Record the magnitude of flow coming into any label and use this to
@@ -2187,7 +2182,7 @@ modalvalue <- function(x, na.rm=FALSE)
     u = unique(x);
     n = length(u);
     frequencies = rep(0, n);
-    for(i in 1:n)
+    for(i in seq_len(n))
     {
         if(is.na(u[i]))
         {
@@ -2905,7 +2900,7 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
       x <- data.frame(new.x=x)
     }
     KM <- kmeans(x=x, centers=centers, iter.max=iter.max)
-    for (i in 1:num.seeds)
+    for (i in seq_len(num.seeds))
     {
       newKM <- kmeans(x=x, centers=centers, iter.max=iter.max)
       if (sum(newKM$withinss) < sum(KM$withinss))
@@ -4111,18 +4106,15 @@ executeExplorePlot <- function(dataset)
 
   bind.cmd <- sprintf('rbind(data.frame(dat=%s[,"%%s"], grp="All")', dataset)
 
-  if (not.null(targets))
+  for (i in seq_along(targets))
   {
-    for (i in 1:length(targets))
-    {
-      bind.cmd <- sprintf("%s,\n            data.frame(dat=%s",
-                         bind.cmd, dataset)
-
-      bind.cmd <- sprintf('%s[crs$dataset%s$%s=="%s","%%s"], grp="%s")',
-                         bind.cmd,
-                         ifelse(sampling, "[crs$sample,]", ""),
-                         target, targets[i], targets[i])
-    }
+    bind.cmd <- sprintf("%s,\n            data.frame(dat=%s",
+                        bind.cmd, dataset)
+    
+    bind.cmd <- sprintf('%s[crs$dataset%s$%s=="%s","%%s"], grp="%s")',
+                        bind.cmd,
+                        ifelse(sampling, "[crs$sample,]", ""),
+                        target, targets[i], targets[i])
   }
   
   # Finish off the command to create the dataset for plotting.
@@ -4155,16 +4147,15 @@ executeExplorePlot <- function(dataset)
   # this approach rather than using bind.cmd.
 
   genericDataSet <- data.frame(All=sprintf('%s$%%s', dataset))
-  if (not.null(targets))
-    for (i in 1:length(targets))
-    {
-      tmpDataSet <- data.frame(New=sprintf('%s[crs$dataset%s$%s=="%s",]$%%s',
-                                 dataset,
-                                 ifelse(sampling, "[crs$sample,]", ""),
-                                 target, targets[i]))
-      colnames(tmpDataSet) <-  c(targets[i])
-      genericDataSet <- cbind(genericDataSet, tmpDataSet)
-    }
+  for (i in seq_along(targets))
+  {
+    tmpDataSet <- data.frame(New=sprintf('%s[crs$dataset%s$%s=="%s",]$%%s',
+                               dataset,
+                               ifelse(sampling, "[crs$sample,]", ""),
+                               target, targets[i]))
+    colnames(tmpDataSet) <-  c(targets[i])
+    genericDataSet <- cbind(genericDataSet, tmpDataSet)
+  }
 
   # Generate a plot for each variable. If there are too many
   # variables, ask the user if we want to continue.
@@ -4268,7 +4259,7 @@ executeExplorePlot <- function(dataset)
                         "mean(ds$dat, na.rm=TRUE),",
                         "pch=8)")
     
-    for (s in 1:nboxplots)
+    for (s in seq_len(nboxplots))
     {
 
       startLog()
@@ -4362,7 +4353,7 @@ executeExplorePlot <- function(dataset)
                          #'lines(dens$x, dens$y*rs, type="l")',
                          sep="")
 
-    for (s in 1:nhisplots)
+    for (s in seq_len(nhisplots))
     {
       startLog()
       appendLog("HISTOGRAM")
@@ -4425,7 +4416,7 @@ executeExplorePlot <- function(dataset)
 
     lib.cmd <- "require(Hmisc, quietly=TRUE)"
     
-    for (s in 1:nplots)
+    for (s in seq_len(nplots))
     {
       startLog()
 
@@ -4439,7 +4430,7 @@ executeExplorePlot <- function(dataset)
                        'xlab="",',
                        'subtitles=FALSE)\n')
       if (not.null(targets))
-      for (t in 1:length(targets))
+      for (t in seq_len(targets))
       {
         plot.cmd <- paste(plot.cmd,
                          sprintf('Ecdf(ds[ds$grp=="%s",1], ', targets[t]),
@@ -4563,7 +4554,7 @@ executeExplorePlot <- function(dataset)
                                               length(targets)+2))),
                        sep="")
       if (not.null(targets))
-        for (i in 1:length(targets))
+        for (i in 1:seq_along(targets))
         {
           plot.cmd <- sprintf(paste('%s\npoints(%d:9, ds[%d,],',
                                    'col=%s, pch=%d, type="b")'),
@@ -4600,7 +4591,7 @@ executeExplorePlot <- function(dataset)
                          'xlab="Initial Digit", ylab="Probability")\n',
                          'axis(1, at=1:9)\n', 'axis(2)\n',
                          sep="")
-        for (s in 1:nbenplots)
+        for (s in seq_len(nbenplots))
         {
           new.bind.cmd <- paste(new.bind.cmd, 
                            sprintf(bc, benplots[s], benplots[s]),
@@ -4664,7 +4655,7 @@ executeExplorePlot <- function(dataset)
         # Plot multiple graphs since we have a target, and will split
         # each graph according to the target values.
         
-        for (s in 1:nbenplots)
+        for (s in seq_len(nbenplots))
         {
           startLog()
           #
@@ -4678,7 +4669,7 @@ executeExplorePlot <- function(dataset)
                             benopts, ')')
         
           if (not.null(targets))
-            for (t in 1:length(targets))
+            for (t in seq_along(targets))
               data.cmd <- paste(data.cmd, ",\n     ",
                                sprintf('"%s"=', targets[t]),
                                'calcInitialDigitDistr(ds[ds$grp==',
@@ -4798,7 +4789,7 @@ executeExplorePlot <- function(dataset)
       appendLog("Use barplot2 from gplots for the barchart.", lib.cmd)
       eval(parse(text=lib.cmd))
 
-      for (s in 1:nbarplots)
+      for (s in seq_len(nbarplots))
       {
 
         startLog()
@@ -5091,7 +5082,7 @@ executeExplorePlot <- function(dataset)
     #    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
     #    eval(parse(text=lib.cmd))
 
-    for (s in 1:ndotplots)
+    for (s in seq_len(ndotplots))
     {
 
       startLog()
@@ -5156,57 +5147,53 @@ executeExplorePlot <- function(dataset)
 
   #---------------------------------------------------------------------
 
-  if (nmosplots > 0)
+  for (s in seq_len(nmosplots))
   {
 
-    for (s in 1:nmosplots)
-    {
+    startLog()
 
-      startLog()
+    # Construct and evaluate a command string to generate the
+    # data for the plot.
 
-      # Construct and evaluate a command string to generate the
-      # data for the plot.
-
-      if (is.null(target))
-        ds.cmd <- sprintf("table(crs$dataset$%s)", mosplots[s])
-      else
-        ds.cmd <- paste(sprintf(paste("table(crs$dataset$%s,",
+    if (is.null(target))
+      ds.cmd <- sprintf("table(crs$dataset$%s)", mosplots[s])
+    else
+      ds.cmd <- paste(sprintf(paste("table(crs$dataset$%s,",
                                       "crs$dataset$%s)"), mosplots[s], target))
-      appendLog("Generate the table data for plotting.",
-                paste("ds <-", ds.cmd))
-      ds <- eval(parse(text=ds.cmd))
+    appendLog("Generate the table data for plotting.",
+              paste("ds <-", ds.cmd))
+    ds <- eval(parse(text=ds.cmd))
 
-      # Construct and evaluate the command to determin the order in
-      # which to print the catgories, from larges to smallest.
+    # Construct and evaluate the command to determin the order in
+    # which to print the catgories, from larges to smallest.
 
-      # Construct and evaluate the command to plot the
-      # distribution.
+    # Construct and evaluate the command to plot the
+    # distribution.
     
-      if (pcnt %% pmax == 0) newPlot(pmax)
-      pcnt <- pcnt + 1
+    if (pcnt %% pmax == 0) newPlot(pmax)
+    pcnt <- pcnt + 1
 
-      if (is.null(target))
-        titles <- genPlotTitleCmd(sprintf("Mosaic of %s",
-                                          mosplots[s],
-                                          ifelse(sampling," (sample)","")),
-                                  vector=TRUE)
-      else
-        titles <- genPlotTitleCmd(sprintf("%s by %s%s",
-                                          mosplots[s], target,
-                                          ifelse(sampling," (sample)","")),
-                                  vector=TRUE)
+    if (is.null(target))
+      titles <- genPlotTitleCmd(sprintf("Mosaic of %s",
+                                        mosplots[s],
+                                        ifelse(sampling," (sample)","")),
+                                vector=TRUE)
+    else
+      titles <- genPlotTitleCmd(sprintf("%s by %s%s",
+                                        mosplots[s], target,
+                                        ifelse(sampling," (sample)","")),
+                                vector=TRUE)
 
-      if (packageIsAvailable("vcd"))
-        cols <- "color=rainbow_hcl(%d, start = 270, end = 150)"
-      else
-        cols <- "color=rainbow(%d)"
+    if (packageIsAvailable("vcd"))
+      cols <- "color=rainbow_hcl(%d, start = 270, end = 150)"
+    else
+      cols <- "color=rainbow(%d)"
 
-      plot.cmd <- sprintf(paste('mosaicplot(ds, main="%s", sub="%s",',
-                                ' ', cols, ', cex=0.7)'),
-                          titles[1], titles[2], length(targets)+1)
-      appendLog("Plot the data.", plot.cmd)
-      eval(parse(text=plot.cmd))
-    }
+    plot.cmd <- sprintf(paste('mosaicplot(ds, main="%s", sub="%s",',
+                              ' ', cols, ', cex=0.7)'),
+                        titles[1], titles[2], length(targets)+1)
+    appendLog("Plot the data.", plot.cmd)
+    eval(parse(text=plot.cmd))
   }
   
   # Update the status bar.
@@ -6559,7 +6546,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     }
     else
     {
-      id <- 1:ne
+      id <- seq_len(ne)
       msg <- ""
     }
     id <- sprintf("c(%s)", paste(id, collapse=","))
@@ -6949,8 +6936,8 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
                       'pred <- prediction(crs$pr,',
                       sprintf("%s$%s)\n", testset[[mtype]], crs$target),
                       'perf1 <- performance(pred, "fpr", "fnr")\n',
-                      'for (i in 1:length(perf1@x.values))\n{\n',
-                      '\tfor (j in 1:length(perf1@x.values[[i]]))\n\t{\n',
+                      'for (i in seq_along(perf1@x.values))\n{\n',
+                      '\tfor (j in seq_along(perf1@x.values[[i]]))\n\t{\n',
                       '\t\tlines(c(0,1),c(perf1@y.values[[i]][j],\n',
                       '\t\t\t\tperf1@x.values[[i]][j]),\n',
                       '\t\t\t\tcol=terrain.colors(10)[i],lty=3)\n',
@@ -7565,9 +7552,10 @@ executeEvaluateKmeansScore <- function()
   dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
+  dialog$setDoOverwriteConfirmation(TRUE)
     
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans.csv", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("CSV Files")
@@ -7590,15 +7578,9 @@ executeEvaluateKmeansScore <- function()
     return()
   }
 
-  if (get.extension(save.name) != "csv")
-    save.name <- sprintf("%s.csv", save.name)
+#  if (get.extension(save.name) != "csv")
+#    save.name <- sprintf("%s.csv", save.name)
   
-  if (file.exists(save.name))
-    if (! questionDialog("A file of the same name as", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
-
   # 080523 Output all original data plus the cluster number, taking
   # missing values into account. This gets a little complex, to say
   # the least. We need to put the cluster number with each input
@@ -7674,9 +7656,10 @@ executeEvaluateHclustScore <- function()
   dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
-    
+  dialog$setDoOverwriteConfirmation(TRUE)
+  
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_hclust", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_hclust.csv", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("CSV Files")
@@ -7699,15 +7682,9 @@ executeEvaluateHclustScore <- function()
     return()
   }
 
-  if (get.extension(save.name) != "csv")
-    save.name <- sprintf("%s.csv", save.name)
+#  if (get.extension(save.name) != "csv")
+#    save.name <- sprintf("%s.csv", save.name)
   
-  if (file.exists(save.name))
-    if (! questionDialog("A file of the same name as", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
-
   # 080523 Output all original data plus the cluster number, taking
   # missing values into account. This gets a little complex, to say
   # the least. We need to put the cluster number with each input
@@ -7804,7 +7781,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     # "_", etc., and then "_score" is appended, and then "_all" or
     # "_idents" to indicate what other columns are included.
     
-    default <- sprintf("%s_score_%s",
+    default <- sprintf("%s_score_%s.csv",
                        gsub(" ", "_",
                             gsub("\\.[[:alnum:]]*", "",
                                  gsub("(\\[|\\])", "",
@@ -7815,10 +7792,11 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
                                    "gtk-cancel", GtkResponseType["cancel"],
                                    "gtk-save", GtkResponseType["accept"])
+    dialog$setDoOverwriteConfirmation(TRUE)
     
     if(not.null(testname)) dialog$setCurrentName(default)
     
-    dialog$setCurrentFolder(crs$dwd)
+    #dialog$setCurrentFolder(crs$dwd) Generates errors.
     
     ff <- gtkFileFilterNew()
     ff$setName("CSV Files")
@@ -7841,14 +7819,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
       return()
     }
 
-    if (get.extension(fname) != "csv")
-      fname <- sprintf("%s.csv", fname)
+#    if (get.extension(fname) != "csv")
+#      fname <- sprintf("%s.csv", fname)
 
-    if (file.exists(fname))
-      if (! questionDialog("The evaluation result file", fname,
-                           "already exists. Are you sure you want to overwrite",
-                           "this file?"))
-        return()
   }
   
   # Score the data with each model, collect the outputs, and then

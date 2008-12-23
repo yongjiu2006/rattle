@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-10-10 07:00:23 Graham Williams>
+# Time-stamp: <2008-12-22 16:25:41 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -185,9 +185,10 @@ exportNNetTab <- function()
   dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
-
+  dialog$setDoOverwriteConfirmation(TRUE)
+  
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_nnet", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_nnet.xml", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("PMML Files")
@@ -210,15 +211,8 @@ exportNNetTab <- function()
     return()
   }
 
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+  #if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
-  if (file.exists(save.name))
-    if (! questionDialog("An XML file of the name", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
-  
-
   pmml.cmd <- "pmml(crs$nnet)"
   appendLog("Export a neural net as PMML.",
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))

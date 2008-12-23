@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-28 19:57:36 Graham Williams>
+# Time-stamp: <2008-12-22 16:22:38 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -407,9 +407,10 @@ exportAssociateTab <- function()
   dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
+  dialog$setDoOverwriteConfirmation(TRUE)
 
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_arules", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_arules.xml", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("PMML Files")
@@ -432,14 +433,8 @@ exportAssociateTab <- function()
     return()
   }
 
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+  # if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
-  if (file.exists(save.name))
-    if (! questionDialog("An XML file of the name", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
-  
   # We can't pass "\" in a filename to the parse command in
   # MS/Windows so we have to run the save/write command separately,
   # i.e., not inside the string thaat is being parsed.
