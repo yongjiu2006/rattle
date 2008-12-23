@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-22 16:24:14 Graham Williams>
+# Time-stamp: <2008-12-24 09:02:53 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1099,7 +1099,9 @@ getExportSaveName <- function(mtype)
 
   if ( isRStat())
   {
-    if (mtype %in% c("glm")) probs.rb$setActive(TRUE)
+    if (mtype %in% c("glm"))
+      dialogGUI$
+      getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
     
     # 081218 Add glm when implemented.
     
