@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-04 06:02:56 Graham Williams>
+# Time-stamp: <2008-12-23 07:09:21 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -268,7 +268,9 @@ executeModelRF <- function()
   summary.cmd <- "crs$rf"
   appendLog("Generate textual output of randomForest model.", summary.cmd)
 
-  importance.cmd <- "round(importance(crs$rf), 2)"
+  importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
+                          "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
+                          sep="\n")
   appendLog("List the importance of the variables.", importance.cmd)
 
   resetTextview(TV)
@@ -277,7 +279,7 @@ executeModelRF <- function()
               collectOutput(summary.cmd, TRUE))
 
   addTextview(TV, "\n\nVARIABLE IMPORTANCE:\n\n",
-              collectOutput(importance.cmd, TRUE))
+              collectOutput(importance.cmd))
 
   addTextview(TV, "\n\nDISPLAY THE MODEL\n\n",
               "To view model 5, for example, run ",
@@ -535,7 +537,7 @@ ruleset.randomForest <- function(model, n=1, include.class=NULL)
   
   ## Generate a simple form for each rule.
 
-  for (i in 1:length(tr.paths))
+  for (i in seq_along(tr.paths))
   {
     tr.path <- tr.paths[[i]]
     nodenum <- as.integer(names(tr.paths[i]))
@@ -634,7 +636,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
 
   nrules <- 0
   
-  for (i in 1:length(tr.paths))
+  for (i in seq_along(tr.paths))
   {
     tr.path <- tr.paths[[i]]
     nodenum <- as.integer(names(tr.paths[i]))
@@ -741,7 +743,7 @@ getRFRuleSet <- function(model, n)
 
   ## Generate rpart form for each rule.
 
-  for (i in 1:length(tr.paths))
+  for (i in seq_along(tr.paths))
   {
     tr.path <- tr.paths[[i]]
 
@@ -753,7 +755,7 @@ getRFRuleSet <- function(model, n)
     
     tr.rule <- c("root")
 
-    for (j in 1:length(tr.path))
+    for (j in seq_along(tr.path))
     {
       var.class <- tr.vars[var.index[j]]
       if (var.class == "character" | var.class == "factor")
@@ -864,7 +866,7 @@ getRFPathNodes <- function(tree.matrix)
 
   # Process each leaf's path back to the root node.
   
-  for (i in 1:length(lnodes))
+  for (i in seq_along(lnodes))
   {
     # Initialise the node to the leaf index
     

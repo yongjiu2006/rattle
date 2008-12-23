@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-17 19:30:23 Graham Williams>
+# Time-stamp: <2008-12-23 07:01:46 Graham Williams>
 #
 # DATA TAB
 #
@@ -1401,16 +1401,27 @@ editData <- function()
 
 exportDataTab <- function()
 {
-  # Obtain filename to write the dataaset to.
+  # Obtain filename to write the dataset as CSV to.
   
   dialog <- gtkFileChooserDialog("Export Dataset", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
-
+  dialog$setDoOverwriteConfirmation(TRUE)
+  
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_saved", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_saved.csv", sep=""))
 
-  dialog$setCurrentFolder(crs$dwd)
+  # 081222 I get an error on doing the following:
+  #
+  ### dialog$setCurrentFolder(crs$dwd)
+  #
+  # (R:14058): libgnomevfs-CRITICAL **:
+  # gnome_vfs_get_uri_from_local_path: assertion `g_path_is_absolute
+  # (local_full_path)' failed
+  #
+  # I note that crs$dwd is
+  # "file:///usr/local/lib/R/site-library/rattle/csv" which is not
+  # what I want anyhow!
 
   ff <- gtkFileFilterNew()
   ff$setName("CSV Files")
@@ -1435,12 +1446,13 @@ exportDataTab <- function()
 
   if (get.extension(save.name) != "csv")
     save.name <- sprintf("%s.csv", save.name)
-    
-  if (file.exists(save.name))
-    if (! questionDialog("The data file", save.name,
-                         "already exists. Are you sure you want to overwrite",
-                         "this file?"))
-      return()
+
+  # 081222 Do this with the OverwriteConfirmation of the widget.
+###   if (file.exists(save.name))
+###     if (! questionDialog("The data file", save.name,
+###                          "already exists. Are you sure you want to overwrite",
+###                          "this file?"))
+###       return()
 
   if (isRStat())
     write.rstat(crs$dataset, save.name)
@@ -1722,7 +1734,7 @@ executeSelectTab <- function()
     vars <- ! funs
 
     allvars <- union(input, union(target, union(risk, union(ident, ignore))))
-    for (i in 1:sum(vars))
+    for (i in seq_len(sum(vars)))
     {
       # Check for any missing variables
 
@@ -2488,7 +2500,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                  && length(levels(as.factor(crs$dataset[,1]))) > 1))
       target <- 1
     else
-      for (i in 2:length(variables)-1)
+      for (i in 2:(length(variables)-1))
       {
         if ((is.factor(crs$dataset[,i]) &&
              length(levels(crs$dataset[,i])) > 1 &&
@@ -2539,7 +2551,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   ## as many distinct values as there are rows, then also default to
   ## IGNORE.
 
-  for (i in 1:length(variables))
+  for (i in seq_along(variables))
   {
     #used <- union(target, union(risk, union(ident, ignore)))
     

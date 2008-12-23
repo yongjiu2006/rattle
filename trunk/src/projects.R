@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:29:54 Graham Williams>
+# Time-stamp: <2008-12-22 16:26:35 Graham Williams>
 #
 # Project functionality.
 #
@@ -140,7 +140,8 @@ saveProject <- function()
   dialog <- gtkFileChooserDialog("Save Project", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
-
+  dialog$setDoOverwriteConfirmation(TRUE)
+  
   dialog$setCurrentName(get.stem(crs$dataname))
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
@@ -214,12 +215,6 @@ saveProject <- function()
     }
   }
   
-  if (file.exists(save.name))
-    if (! questionDialog("The project file", save.name,
-                         "already exists.\n\nDo you want to overwrite",
-                         "this file?"))
-      return()
-
   # Save the filename to restore on reloading.
 
   crs$filename <<- theWidget("data_filechooserbutton")$getUri()

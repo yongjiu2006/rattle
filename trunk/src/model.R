@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-19 14:29:04 Graham Williams>
+# Time-stamp: <2008-12-22 16:24:14 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1075,17 +1075,9 @@ getExportSaveName <- function(mtype)
 
   if (isRStat()) dialog$setTitle("Export C or PMML")
 
-###     # 081219 This is the old way of doing it - remove this once the
-###     # new approavh using glade works.
-###    
-###     dialog <- gtkFileChooserDialog(paste("Export", if (isRStat()) "C or",
-###                                          "PMML"),
-###                                    NULL, "save",
-###                                    "gtk-cancel", GtkResponseType["cancel"],
-###                                  "gtk-save", GtkResponseType["accept"])
-  
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype, sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype,
+                                ifelse(isRStat(), ".c", ".xml"), sep=""))
 
   if (isRStat())
   {
@@ -1104,50 +1096,6 @@ getExportSaveName <- function(mtype)
   ff$setName("All Files")
   ff$addPattern("*")
   dialog$addFilter(ff)
-
-    # 081213 Add some buttons to the file chooser.
-    
-###     tb <- gtkTableNew(3, 3, FALSE)
-
-###     label.cb <- gtkLabelNew("Include:")
-###     pmml.cb <- gtkCheckButtonNewWithLabel("Include PMML")
-###     pmml.cb$setActive(TRUE)
-###     meta.cb <- gtkCheckButtonNewWithLabel("Include Meta Data")
-###     meta.cb$setActive(TRUE)
-
-###     label.rb <- gtkLabelNew("Export:")
-###     class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
-###     probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb), "Probabilities")
-
-###     tb$attach(label.rb, 0, 1, 0, 1, 1)
-###     tb$attach(class.rb, 1, 2, 0, 1, 1)
-###     tb$attach(probs.rb, 2, 3, 0, 1, 1)
-
-###     tb$attach(label.cb, 0, 1, 1, 2, 1)
-###     tb$attach(pmml.cb, 1, 2, 1, 2, 1)
-###     tb$attach(meta.cb, 2, 3, 1, 2, 1)
-
-###     dialog$setExtraWidget(tb)
-   
-###     hb <- gtkHBoxNew()
-
-###     label.cb <- gtkLabelNew("Include:")
-###     pmml.cb <- gtkCheckButtonNewWithLabel("PMML")
-###     pmml.cb$setActive(TRUE)
-###     meta.cb <- gtkCheckButtonNewWithLabel("Meta Data")
-###     meta.cb$setActive(TRUE)
-
-###     label.rb <- gtkLabelNew("Export:")
-###     class.rb <- gtkRadioButtonNewWithLabel(NULL, "Class")
-###     probs.rb <- gtkRadioButtonNewWithLabel(list(class.rb),
-###                                            "Probabilities           ")
-
-###     hb$add(label.rb)
-###     hb$add(class.rb)
-###     hb$add(probs.rb)
-###     hb$add(label.cb)
-###     hb$add(pmml.cb)
-###     hb$add(meta.cb)
 
   if ( isRStat())
   {
@@ -1191,20 +1139,22 @@ getExportSaveName <- function(mtype)
     return(NULL)
   }
 
-  if (get.extension(save.name) == "")
-  {
-    if (save.type == "C Files")
-      save.name <- sprintf("%s.c", save.name)
-    else
-    {
-      if (save.type == "PMML Files")
-        save.name <- sprintf("%s.xml", save.name)
-      else if (isRStat())
-        save.name <- sprintf("%s.c", save.name)
-      else
-        save.name <- sprintf("%s.xml", save.name)
-    }
-  }
+  # 081222 Maybe assume now that we need to get an extension specified
+  # by the user - don't do things behind their back.
+###   if (get.extension(save.name) == "")
+###   {
+###     if (save.type == "C Files")
+###       save.name <- sprintf("%s.c", save.name)
+###     else
+###     {
+###       if (save.type == "PMML Files")
+###         save.name <- sprintf("%s.xml", save.name)
+###       else if (isRStat())
+###         save.name <- sprintf("%s.c", save.name)
+###       else
+###         save.name <- sprintf("%s.xml", save.name)
+###     }
+###   }
 
   ext <- tolower(get.extension(save.name))
 
@@ -1217,17 +1167,14 @@ getExportSaveName <- function(mtype)
                       "\n\n", SUPPORT))
     return(NULL)
   }
-  
-  if (file.exists(save.name))
-    if (! questionDialog(ifelse(ext=="xml", "An XML", "A C"),
-                         "file of the name", save.name,
-                         "already exists. \n\nDo you want to overwrite",
-                         "this file?"))
-      return(NULL)
 
-  attr(save.name, "includePMML") <- includePMML
-  attr(save.name, "includeMetaData") <- includeMetaData
-  attr(save.name, "exportClass") <- exportClass
+  if (isRStat())
+  {
+    attr(save.name, "includePMML") <- includePMML
+    attr(save.name, "includeMetaData") <- includeMetaData
+    attr(save.name, "exportClass") <- exportClass
+  }
+  
   return(save.name)
 }
 
@@ -1456,9 +1403,10 @@ exportSVMTab <- function()
   dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
+  dialog$setDoOverwriteConfirmation(TRUE)
 
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_ksvm", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_ksvm.xml", sep=""))
 
   ff <- gtkFileFilterNew()
   ff$setName("PMML Files")
@@ -1481,14 +1429,8 @@ exportSVMTab <- function()
     return()
   }
 
-  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+#  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
-  if (file.exists(save.name))
-    if (! questionDialog("An XML file of the name", save.name,
-                         "already exists. Do you want to overwrite",
-                         "this file?"))
-      return()
-
   pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
   appendLog("Export a SVM model as PMML.",
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
