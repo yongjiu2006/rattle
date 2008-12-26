@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-14 13:59:04 Graham Williams>
+# Time-stamp: <2008-12-26 20:29:15 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -575,12 +575,12 @@ executeClusterHClust <- function(include)
     if (any(grep("[cC]annot allocate (vector|memory)", result)))
     {
       errorDialog("The call to hclust appears to have failed.",
-                   "This is often due, as in this case,",
-                   "to running out of memory",
-                   "as hclust is rather memory hungry.",
-                   "A quick solution is to sample the dataset, through the",
-                   "Transform tab. On 32bit machines you may be limited to",
-                   "less than 2000 entities.")
+                  "This is often due, as is the case here,",
+                  "to running out of memory",
+                  "as hclust is rather memory hungry.",
+                  "A quick solution is to sample the dataset, through the",
+                  "Data tab. On 32bit machines you may be limited to",
+                  "less than 2000 entities.")
       setTextview(TV)
     }
     else

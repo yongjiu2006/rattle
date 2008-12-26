@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-23 06:36:05 Graham Williams>
+# Time-stamp: <2008-12-26 22:38:27 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -5999,9 +5999,25 @@ executeEvaluateTab <- function()
     # (i.e., for binary classification we are interested in the 1's).
     
     if (theWidget("model_tree_rpart_radiobutton")$getActive())
-      probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
+      if (binomialTarget())
+        probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
+      else
+        probcmd[[.RPART]] <- sprintf("%s", predcmd[[.RPART]])
     else # ctree
       probcmd[[.RPART]] <- sprintf("%s", predcmd[[.RPART]])
+
+    if (multinomialTarget())
+    {
+      # 081226 Add on the actual class also. This is useful for Score
+      # but may be a problem for other types of evaluations (of which
+      # there are currently none that use probcmd for multinom).
+
+      probcmd[[.RPART]] <- sub("<<- ", "<<- data.frame(",
+                               sub(")$",
+                                   sprintf("), rpart=predict(crs$rpart, %s, type='class'))",
+                                           testset[[.RPART]]),
+                                   probcmd[[.RPART]]))
+    }
   }
     
   if (.RF %in%  mtypes)
@@ -8047,12 +8063,18 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
                     ifelse(isRStat(), "rstat", "csv")))
 
   # 081107 Special case: for multinom, multiple probs are saved, plus
-  # the decision. But the decision becomes the column "glm.". Change
-  # that to "glm".
+  # the decision. But the decision as a dataframe used to become the
+  # column "glm.glm". I used to change that to "glm" but using a cbind
+  # results in a column with no name, so things work out for
+  # multinom. The cbinding seems to play a role when we have multiple
+  # models? 081226 For rpart needed to use a data frame, and so need
+  # to hanle the rpart.rpart column label problem.
 
   scores <- as.matrix(scores)
   gcol <- which(colnames(scores) == "glm.")
   if (length(gcol)) colnames(scores)[gcol] <- "glm"
+  rcol <- grep("rpart.", colnames(scores))
+  if (length(rcol)) colnames(scores)[rcol[length(rcol)]] <- "rpart"
 
   if (isRStat())
     write.rstat(cbind(sdata, scores), file=fname)
