@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-24 09:02:53 Graham Williams>
+# Time-stamp: <2008-12-26 21:39:46 Graham Williams>
 #
 # MODEL TAB
 #
@@ -671,7 +671,8 @@ executeModelTab <- function()
   }
       # 081206 Handle the sensitivity of the new Report options: Class
       # and Probability. These are only available if one of the
-      # non-cluster models is active.
+      # non-cluster models is active but not if it is a multinomial
+      # target.
   
       if (existsCategoricModel())
       {
@@ -691,7 +692,7 @@ executeModelTab <- function()
           theWidget("score_probability_radiobutton")$setActive(TRUE)
         }
       }
-      else
+      if (! existsCategoricModel() || multinomialTarget())
       {
         theWidget("score_report_label")$setSensitive(FALSE)
         theWidget("score_class_radiobutton")$setSensitive(FALSE)
@@ -1058,15 +1059,17 @@ getExportSaveName <- function(mtype)
 
   # Obtain filename to write the PMML or C code to.
 
-  # 081218 Use the glade generated rather than hand-coded one. It is
-  # much simpler to handle the formatting.
+  # 081218 Use the glade generated filechooser rather than my original
+  # hand-coded one. It is much simpler to handle the formatting.
 
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
-    dialogGUI <- gladeXMLNew("rattle.glade", root="export_filechooserdialog")
+    dialogGUI <- gladeXMLNew("rattle.glade",
+                             root="export_filechooserdialog")
   else
-    dialogGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="export_filechooserdialog")
+    dialogGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+                             root="export_filechooserdialog")
 
   if (! isRStat())
     dialogGUI$getWidget("export_filechooser_options_table")$hide()
