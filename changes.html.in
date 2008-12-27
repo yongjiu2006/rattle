@@ -13,7 +13,16 @@
    </p>
 
 <pre>
-371 081226 hclust Info dialog metnioed Transform - should be Data
+372 081227 Split cluster.R into kmeans.R and hclust.R
+           Split evaluate.R out of rattle.R
+           Add new predict.kmeans - add kmeans to standard model framework
+           Add clustering models to the list of built models.
+           Improve the logic for Evaluate/Score/ReportType availability.
+           Fix spelling error in Associate's textview
+           Fix correlation test so that the observations are paired.
+371 081226 hclust Info dialog mentioned Transform - should be Data
+           For multinomial target with tree score, generate probs + class
+           Do not allow options of class/prob for multinomial scoring
 370 081224 Improve layout of Export file chooser
            Bug fix export of glm - retrieve the correct widget
            Desensitise Test/Correlation option when using Group By
@@ -694,6 +703,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-26 22:40:52 Graham Williams</i>
+<i>Last Modified 2008-12-27 18:22:26 Graham Williams</i>
 <!-- hhmts end -->
   </p>

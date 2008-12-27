@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2008-11-11 06:55:14 Graham Williams>
+# Time-stamp: <2008-12-27 17:37:25 Graham Williams>
 #
 # Copyright (c) 2008 Togaware Pty Ltd
 #
@@ -277,24 +277,24 @@ continueModelAda <- function(niter)
 
 genPredictAda <- function(dataset)
 {
-  ## Generate a command to obtain the prediction results when applying
-  ## the model to new data.
+  # Generate a command to obtain the prediction results when applying
+  # the model to new data.
   
   return(sprintf("crs$pr <<- predict(crs$ada, %s)", dataset))
 }
 
 genResponseAda <- function(dataset)
 {
-  ## Generate a command to obtain the response when applying the model
-  ## to new data.
+  # Generate a command to obtain the response when applying the model
+  # to new data.
   
   return(genPredictAda(dataset))
 }
 
 genProbabilityAda <- function(dataset)
 {
-  ## Generate a command to obtain the probability when applying the
-  ## model to new data.
+  # Generate a command to obtain the probability when applying the
+  # model to new data.
   
   return(sprintf("%s[,2]", gsub(")$", ', type="prob")',
                                 genPredictAda(dataset))))

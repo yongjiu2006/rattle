@@ -7072,6 +7072,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="confusion_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">An error matrix simply lists in tabular form the number of predicted cases that are correct (true positives and true negatives) and incorrect (false positives and false negatives). Both the raw numbers and the proporations will be displayed in two tables.</property>
                         <property name="label" translatable="yes">Error Matrix</property>
@@ -7090,6 +7091,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="risk_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">A risk chart is used in Analytics to plot caseload versus performance data. While traditional plots (e.g., ROC Curves) plot false positives against true positives, this Risk Chart plots additional information, replacing the x-axis with Caseload (the number of cases predicted as hits by the model) and the y-axis with Performance. A Risk Variable is idetified from the dataset. This is a measure of the amount of risk associated with each case (e.g., dollars recovered from a fraudulent claim) and the plot shows how much of the total risk is recevered for any particular caseload. The number of cases recovered (the precision) and the strike rate are also shown.</property>
                         <property name="label" translatable="yes">Risk</property>
@@ -7109,6 +7111,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="costcurve_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Cost Curve</property>
                         <property name="response_id">0</property>
@@ -7125,6 +7128,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="lift_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">A lift chart plots the lift against the rate of positive predictions (TP+FP)/TOTAL.</property>
                         <property name="label" translatable="yes">Lift</property>
@@ -7144,6 +7148,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="roc_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">An ROC curve plots the true positive rate against the false positive rate. A better model is one with largeer area under the curve (better AUC).</property>
                         <property name="label" translatable="yes">ROC</property>
@@ -7163,6 +7168,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="precision_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">Plot precision (the positive predictive value) against recall (the true positive rate).</property>
                         <property name="label" translatable="yes">Precision</property>
@@ -7182,6 +7188,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="sensitivity_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">This plots sensitivity (the true positive rate, also called recall) against the specificity (the true negative rate</property>
                         <property name="label" translatable="yes">Sensitivity</property>
@@ -7201,6 +7208,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="pvo_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="label" translatable="yes">Pr v Ob</property>
@@ -7218,6 +7226,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="score_radiobutton">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip" translatable="yes">Score the data and save to file.</property>
                         <property name="label" translatable="yes">Score</property>
@@ -7264,6 +7273,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_rpart_evaluate_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7328,6 +7338,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_glm_evaluate_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
