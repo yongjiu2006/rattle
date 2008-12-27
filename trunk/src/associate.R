@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-22 16:22:38 Graham Williams>
+# Time-stamp: <2008-12-27 11:30:09 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -198,7 +198,7 @@ executeAssociateTab <- function()
   summary.cmd <- "summary(crs$apriori@quality)"
   appendTextview(TV, "Summary of the Apriori Association Rules\n\n",
                  collectOutput(mysummary.cmd, use.cat=TRUE),
-                 "\nSummary of the Intersting Measures\n\n",
+                 "\nSummary of the Measures of Interestingness\n\n",
                  collectOutput(summary.cmd, use.print=TRUE))
   
   appendTextview(TV, "Summary of the execution of the apriori command.\n",

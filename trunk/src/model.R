@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-26 21:39:46 Graham Williams>
+# Time-stamp: <2008-12-27 18:00:41 Graham Williams>
 #
 # MODEL TAB
 #
@@ -201,26 +201,40 @@ on_glm_multinomial_radiobutton_toggled <- function(button)
     theWidget("model_linear_builder_label")$setText("multinom")
 }
 
+on_rpart_evaluate_checkbutton_toggled <- function(button)
+{
+  resetReportType()
+}
+
+on_glm_evaluate_checkbutton_toggled <- function(button)
+{
+  resetReportType()
+}
+
 on_kmeans_evaluate_checkbutton_toggled <- function(button)
 {
   makeEvaluateSensitive()
+  resetReportType()
 }
 
 on_hclust_evaluate_checkbutton_toggled <- function(button)
 {
   makeEvaluateSensitive()
+  resetReportType()
 }
+
 
 ########################################################################
 # UTILITIES
 
 commonName <- function(mtype)
 {
-  name.map <- data.frame(rpart="Tree",
+  name.map <- data.frame(ada="Boost",
                          ctree="Tree",
-                         ada="Boost",
                          hclust="Hierarchical Cluster",
+                         kmeans="K-Means Cluster",
                          rf="Forest",
+                         rpart="Tree",
                          ksvm="SVM",
                          glm="Linear",
                          linear="Linear",
@@ -295,18 +309,88 @@ currentModelTab <- function()
 
 existsCategoricModel <- function()
 {
-  # kmeans and hclust are not listed in listBuiltModels, so this is
-  # all that is needed to know if we have at least one predictive
+  # TRUE if there is a classification model - i.e., a model to predict
+  # a class.
+  return(categoricTarget() && existsPredictiveModel())
+}
+
+existsPredictiveModel <- function()
+{
+  # TRUE if there is a predictive model as distinct from a descriptive
   # model.
-  
-  return(categoricTarget() && ! is.null(listBuiltModels))
+  return(! is.null(listBuiltModels(c(crv$KMEANS, crv$HCLUST, crv$APRIORI))))
 }
 
 
+resetReportType <- function()
+{
+  # This should be called whenever anyone of the the model type check
+  # buttons of the Evaluate tab are toggled.
+
+  # 081206 Handle the sensitivity of the new Report options: Class
+  # and Probability. These are only available if one of the
+  # non-cluster models is active but not if it is a multinomial
+  # target.
+
+  predictive.model <- (theWidget("rpart_evaluate_checkbutton")$getActive() ||
+                       theWidget("ada_evaluate_checkbutton")$getActive() ||
+                       theWidget("rf_evaluate_checkbutton")$getActive() ||
+                       theWidget("ksvm_evaluate_checkbutton")$getActive() ||
+                       theWidget("glm_evaluate_checkbutton")$getActive() ||
+                       theWidget("nnet_evaluate_checkbutton")$getActive())
+  
+  make.sensitive <- (existsCategoricModel()
+                     && predictive.model
+                     && ! multinomialTarget())
+
+  theWidget("score_report_label")$setSensitive(make.sensitive)
+  theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
+  theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
+
+  default.to.class <- (theWidget("rpart_evaluate_checkbutton")$getActive() ||
+                       theWidget("ada_evaluate_checkbutton")$getActive() ||
+                       theWidget("rf_evaluate_checkbutton")$getActive() ||
+                       theWidget("ksvm_evaluate_checkbutton")$getActive())
+
+  if (default.to.class)
+    theWidget("score_class_radiobutton")$setActive(TRUE)
+  else
+    theWidget("score_probability_radiobutton")$setActive(TRUE)
+  
+  
+  
+  ## if (existsCategoricModel())
+  ## {
+  ##   theWidget("score_report_label")$setSensitive(TRUE)
+  ##   theWidget("score_class_radiobutton")$setSensitive(TRUE)
+  ##   theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+
+  ##   if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
+  ##       theWidget("ada_evaluate_checkbutton")$getActive() ||
+  ##       theWidget("rf_evaluate_checkbutton")$getActive() ||
+  ##       theWidget("ksvm_evaluate_checkbutton")$getActive())
+  ##   {
+  ##     theWidget("score_class_radiobutton")$setActive(TRUE)
+  ##   }
+  ##   else
+  ##   {
+  ##     theWidget("score_probability_radiobutton")$setActive(TRUE)
+  ##   }
+  ## }
+  ## if (! existsCategoricModel() || multinomialTarget())
+  ## {
+  ##   theWidget("score_report_label")$setSensitive(FALSE)
+  ##   theWidget("score_class_radiobutton")$setSensitive(FALSE)
+  ##   theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+  ## }
+}
+
 makeEvaluateSensitive <- function()
 {
-  # 080821 Make sensitive all the appropriate Evaluate radio
-  # buttons.
+  # 080821 Make all the appropriate Evaluate options sensitive. This
+  # should be the one place where this is decided, and this is then
+  # called from the callbacks whenever any of the model type buttons
+  # is toggled.
   
   # All known Evaluate buttons.
   
@@ -669,35 +753,6 @@ executeModelTab <- function()
                         attr(time.taken, "units"))
     setStatusBar("All models have been generated.", time.msg)
   }
-      # 081206 Handle the sensitivity of the new Report options: Class
-      # and Probability. These are only available if one of the
-      # non-cluster models is active but not if it is a multinomial
-      # target.
-  
-      if (existsCategoricModel())
-      {
-        theWidget("score_report_label")$setSensitive(TRUE)
-        theWidget("score_class_radiobutton")$setSensitive(TRUE)
-        theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-
-        if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
-            theWidget("ada_evaluate_checkbutton")$getActive() ||
-            theWidget("rf_evaluate_checkbutton")$getActive() ||
-            theWidget("ksvm_evaluate_checkbutton")$getActive())
-        {
-          theWidget("score_class_radiobutton")$setActive(TRUE)
-        }
-        else
-        {
-          theWidget("score_probability_radiobutton")$setActive(TRUE)
-        }
-      }
-      if (! existsCategoricModel() || multinomialTarget())
-      {
-        theWidget("score_report_label")$setSensitive(FALSE)
-        theWidget("score_class_radiobutton")$setSensitive(FALSE)
-        theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-      }
 }
 
 #----------------------------------------------------------------------
@@ -1527,4 +1582,3 @@ exportModelTab <- function()
     return()
   }
 }
-

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-24 07:01:37 Graham Williams>
+# Time-stamp: <2008-12-27 08:45:37 Graham Williams>
 #
 # Test Tab
 #
@@ -223,8 +223,20 @@ executeTestTab <- function()
   else if (theWidget("test_variance_radiobutton")$getActive())
     test <- "varianceTest"
   else if (theWidget("test_correlation_radiobutton")$getActive())
+  {
     test <- "correlationTest"
 
+    if (! is.null(union(attr(na.omit(crs$dataset[,v1]), "na.action"),
+                        attr(na.omit(crs$dataset[,v2]), "na.action"))))
+    {
+      test <- paste('miss <- union(',
+                    'attr(na.omit(crs$dataset[,"', v1, '"]), "na.action"), ',
+                    'attr(na.omit(crs$dataset[,"', v2, '"]), "na.action"))\n',
+                    test, sep="")
+      s1 <- s2 <- "-miss"
+    }
+  }
+  
 #  test.cmd <- sprintf(paste('%s(na.omit(crs$dataset%s[["%s"]]),',
 #                            'na.omit(crs$dataset%s[["%s"]])%s)'),
 #                      test, s1, v1, s2, v2, options)

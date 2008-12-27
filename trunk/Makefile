@@ -41,9 +41,12 @@ R_SOURCE = \
 	src/cluster.R \
 	src/ctree.R \
 	src/data.R \
+	src/evaluate.R \
 	src/execute.R \
 	src/export.R \
+	src/hclust.R \
 	src/help.R \
+	src/kmeans.R \
 	src/log.R \
 	src/model.R \
 	src/nnet.R \
