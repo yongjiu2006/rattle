@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 18:02:35 Graham Williams>
+# Time-stamp: <2008-12-27 20:25:18 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -456,7 +456,7 @@ executeEvaluateTab <- function()
     
     predcmd[[crv$KMEANS]] <- genPredictKmeans(testset[[crv$KMEANS]])
     respcmd[[crv$KMEANS]] <- genResponseKmeans(testset[[crv$KMEANS]])
-    predcmd[[crv$KMEANS]] <- genProbabilityKmeans(testset[[crv$KMEANS]])
+    probcmd[[crv$KMEANS]] <- genProbabilityKmeans(testset[[crv$KMEANS]])
   }
   
   if (crv$NNET %in%  mtypes)
@@ -2681,7 +2681,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                             "for %s model on %s."),
                       toupper(mtype), mtype, testname),
               gsub("<<-", "<-", probcmd[[mtype]]))
-    
+
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
     # Check for errors - in particular, new levels in the test
