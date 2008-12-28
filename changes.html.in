@@ -13,6 +13,8 @@
    </p>
 
 <pre>
+374 081228 Update predict.kmeans - handle missing, and correct row names.
+373 081227 Bug fix - kmeans probcmd was not being set.
 372 081227 Split cluster.R into kmeans.R and hclust.R
            Split evaluate.R out of rattle.R
            Add new predict.kmeans - add kmeans to standard model framework
@@ -703,6 +705,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-27 18:22:26 Graham Williams</i>
+<i>Last Modified 2008-12-28 12:39:45 Graham Williams</i>
 <!-- hhmts end -->
   </p>
