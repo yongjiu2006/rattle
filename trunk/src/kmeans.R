@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 17:51:18 Graham Williams>
+# Time-stamp: <2008-12-28 12:42:07 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -489,11 +489,33 @@ exportKMeansTab <- function(file)
 
 predict.kmeans <- function(model, data)
 {
-  k <- nrow(model$centers)
-  cn <- colnames(model$centers)
-  n <- nrow(data)
-  d <- as.matrix(dist(rbind(model$centers, data[cn])))[-(1:k),1:k]
+  # 081228 Initial work on a predict.kmeans function, to allow using a
+  # kmeans model to allocate new data to pre-existing clusters using
+  # the common model interface function, predict. This makes it easy
+  # to use the Rattle modelling code on kmeans. TODO Currently, no
+  # support for alternative distance measures. This will be needed
+  # eventually
+  
+  num.clusters <- nrow(model$centers)
+  cluster.names <- rownames(model$centers)
+  cluster.vars <- colnames(model$centers)
+  num.rows <- nrow(data)
+  cluster.row.nums <- seq(num.rows+1, num.rows+num.clusters)
+
+  # 081228 Put the data first, to maintain rownames. If there are
+  # conflicts in rownames then rbind creates new rownames, and this
+  # will be a surprise for the rownames of the returned data. We avoid
+  # this by having the original data first, thus its rownames are
+  # maintained. This may well change the cluster names, which we then
+  # need to change back correctly.
+
+  d <- as.matrix(dist(rbind(data[cluster.vars], model$centers)))
+  d <- d[-cluster.row.nums,cluster.row.nums]
+  colnames(d) <- cluster.names
+  
   out <- apply(d, 1, which.min)
+  miss <- attr(na.omit(data), "na.action")
+  out[miss] <- NA
   return(out)
 }
 
