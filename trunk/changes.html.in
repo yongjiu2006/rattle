@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.142.
+    version is 2.3.144.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+375 081228 Bug fix: predict.kmeans NA handling now limited to columns used!
 374 081228 Update predict.kmeans - handle missing, and correct row names.
 373 081227 Bug fix - kmeans probcmd was not being set.
 372 081227 Split cluster.R into kmeans.R and hclust.R
@@ -705,6 +706,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-28 12:39:45 Graham Williams</i>
+<i>Last Modified 2008-12-28 15:19:05 Graham Williams</i>
 <!-- hhmts end -->
   </p>
