@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 13:19:54 Graham Williams>
+# Time-stamp: <2009-01-02 18:49:08 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -38,6 +38,7 @@ pmml.kmeans <- function(model,
 
   field <- NULL
   field$name <-  colnames(model$centers)
+  
   orig.fields <- field$name
   if (exists("pmml.transforms") && ! is.null(transforms))
     field$name <- unifyTransforms(field$name, transforms)
@@ -63,7 +64,7 @@ pmml.kmeans <- function(model,
 
   # PMML -> ClusteringModel
 
-  cl.model <- xmlNode("ClusteringModel",
+  the.model <- xmlNode("ClusteringModel",
                       attrs=c(modelName=model.name,
                         functionName="clustering", # Required
                         algorithmName="KMeans: Hartigan and Wong",
@@ -72,16 +73,16 @@ pmml.kmeans <- function(model,
 
   # PMML -> ClusteringModel -> MiningSchema
 
-  cl.model <- append.XMLNode(cl.model, pmmlMiningSchema(field))
+  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field))
 
   # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
 
   if (exists("pmml.transforms") && ! is.null(transforms))
-    cl.model <- append.XMLNode(cl.model, pmml.transforms(transforms))
+    the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
   
   # PMML -> ClusteringModel -> ComparisonMeasure
   
-  cl.model <- append.XMLNode(cl.model,
+  the.model <- append.XMLNode(the.model,
                              append.XMLNode(xmlNode("ComparisonMeasure",
                                                     attrs=c(kind="distance")),
                                             xmlNode("squaredEuclidean")))
@@ -90,7 +91,7 @@ pmml.kmeans <- function(model,
 
   for (i in orig.fields)
   {
-    cl.model <- append.xmlNode(cl.model,
+    the.model <- append.xmlNode(the.model,
                                xmlNode("ClusteringField",
                                        attrs=c(field=i,
                                          compareFunction="absDiff")))
@@ -101,7 +102,7 @@ pmml.kmeans <- function(model,
   clusters <- list()
   for (i in 1:number.of.clusters)
   {
-    cl.model <- append.XMLNode(cl.model,
+    the.model <- append.XMLNode(the.model,
                                xmlNode("Cluster",
                                        attrs=c(name=cluster.names[i],
                                          size=model$size[i]),
@@ -111,7 +112,7 @@ pmml.kmeans <- function(model,
                                                paste(model$centers[i,],
                                                      collapse=" "))))
   }
-  pmml <- append.XMLNode(pmml, cl.model)
+  pmml <- append.XMLNode(pmml, the.model)
 
   return(pmml)
 }
