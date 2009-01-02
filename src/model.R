@@ -4,7 +4,7 @@
 #
 # MODEL TAB
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This file is part of Rattle.
 #

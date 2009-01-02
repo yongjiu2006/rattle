@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-11-03 14:18:30 Graham Williams>
+# Time-stamp: <2009-01-02 12:34:18 Graham Williams>
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -32,6 +32,7 @@
 #           
 
 pmml.rpart <- function(model,
+                       transforms=NULL,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
                        description="RPart Decision Tree Model",
@@ -53,10 +54,19 @@ pmml.rpart <- function(model,
 
   field <- NULL
   field$name <- as.character(attr(model$terms, "variables"))[-1]
+
+  # 081229 Our names and types get out of sync for multiple transforms
+  # on the one variable. How to fix?
+
+  #print(field$name)
+  if (! is.null(transforms))
+    field$name <- unifyTransforms(field$name, transforms)
   number.of.fields <- length(field$name)
   field$class <- attr(model$terms, "dataClasses")
   target <- field$name[1]
-
+  #print(field$name)
+  #print(field$class)
+  
   for (i in 1:number.of.fields)
   {
     if (field$class[[field$name[i]]] == "factor")
@@ -90,6 +100,11 @@ pmml.rpart <- function(model,
   
   the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target))
 
+  # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
+
+  if (exists("pmml.transforms") && ! is.null(transforms))
+    the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
+  
   # PMML -> TreeModel -> Node
 
   # Collect information to create nodes.

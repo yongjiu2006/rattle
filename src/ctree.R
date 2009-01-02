@@ -4,7 +4,7 @@
 #
 # CTREE OPTION OF THE TREE TAB
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #

@@ -1,8 +1,8 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 17:53:15 Graham Williams>
+# Time-stamp: <2009-01-02 12:57:37 Graham Williams>
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # The Rattle package is made of the following R source files:
 #
@@ -16,7 +16,7 @@ MINOR <- "3"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 VERSION.DATE <- "Released 28 Dec 2008"
-COPYRIGHT <- "Copyright (C) 2008 Togaware Pty Ltd"
+COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
 
@@ -686,7 +686,7 @@ rattle <- function(csvname=NULL,
                         "Rattle comes with ABSOLUTELY NO WARRANTY.",
                         "See Help -> About for details.",
                         "\n\nRattle version", VERSION,
-                        "Copyright (C) 2008 Togaware Pty Ltd"),
+                        "Copyright (C) 2009 Togaware Pty Ltd"),
                   tvsep=FALSE)
   }
   
@@ -729,10 +729,10 @@ rattle <- function(csvname=NULL,
 ##                        "\nRattle comes with ABSOLUTELY NO WARRANTY.",
 ##                        "\nSee Help -> About for details.",
 ##                        "\n\nRattle version", VERSION,
-##                        "\nCopyright (C) 2008 Togaware Pty Ltd"),
+##                        "\nCopyright (C) 2009 Togaware Pty Ltd"),
 ##                  tvsep=FALSE)
   appendTextview("log_textview",
-                 paste("# Rattle is Copyright (C) 2008",
+                 paste("# Rattle is Copyright (C) 2009",
                        "Togaware Pty Ltd"),
                  tvsep=FALSE)
 
@@ -2436,6 +2436,22 @@ executeTransformNormalisePerform <- function()
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<-',
                                 'scale(crs$dataset[["%s"]])[,1]'), vname, v)
       norm.comment <- "Recenter and rescale the data around 0."
+
+      # Record the transformation for inclusion in PMML.
+      
+      lst <- paste(vname,
+                   mean(crs$dataset[[vname]], na.rm=TRUE),
+                   sd(crs$dataset[[vname]], na.rm=TRUE), sep="_")
+      crs$transforms <<- union(crs$transforms, lst)
+
+      # For the log, record the command to use when scoring the data.
+      
+      norm.score.command <- sprintf(paste('crs$dataset[["%s"]] <-',
+                                          '(crs$dataset[["%s"]] -',
+                                          '%f)/%f'),
+                                    vname, v,
+                                    mean(crs$dataset[[vname]], na.rm=TRUE),
+                                    sd(crs$dataset[[vname]], na.rm=TRUE))
     }
     else if (action == "scale01")
     {
@@ -2447,16 +2463,19 @@ executeTransformNormalisePerform <- function()
       # Record the transformation for inclusion in PMML.
 
       lst <- paste(vname,
-                   min(crs$dataset[[vname]]),
-                   max(crs$dataset[[vname]]), sep="_")
+                   min(crs$dataset[[vname]], na.rm=TRUE),
+                   max(crs$dataset[[vname]], na.rm=TRUE), sep="_")
       crs$transforms <<- union(crs$transforms, lst)
 
+      # For the log, record the command to use when scoring the data.
+      
       norm.score.command <- sprintf(paste('crs$dataset[["%s"]] <-',
                                           '(crs$dataset[["%s"]] -',
                                           '%f)/abs(%f - %f)'),
-                                    vname, v, min(crs$dataset[[vname]]),
-                                    max(crs$dataset[[vname]]),
-                                    min(crs$dataset[[vname]]))
+                                    vname, v,
+                                    min(crs$dataset[[vname]], na.rm=TRUE),
+                                    max(crs$dataset[[vname]], na.rm=TRUE),
+                                    min(crs$dataset[[vname]], na.rm=TRUE))
     }
     else if (action == "rank")
     {
@@ -2464,6 +2483,10 @@ executeTransformNormalisePerform <- function()
                                 'rescaler((crs$dataset[["%s"]]), "rank")'),
                           vname, v)
       norm.comment <- "Convert values to ranks."
+
+      # How would we rank a new item? Thus, can we actually use a rank
+      # in a transform?
+
     }
     else if (action == "medianad")
     {
@@ -2472,6 +2495,21 @@ executeTransformNormalisePerform <- function()
                           vname, v)
       norm.comment <- paste("Rescale by subtracting median and dividing",
                             "by median abs deviation.")
+      # Record the transformation for inclusion in PMML.
+      
+      lst <- paste(vname,
+                   median(crs$dataset[[vname]], na.rm=TRUE),
+                   mad(crs$dataset[[vname]], na.rm=TRUE), sep="_")
+      crs$transforms <<- union(crs$transforms, lst)
+
+      # For the log, record the command to use when scoring the data.
+      
+      norm.score.command <- sprintf(paste('crs$dataset[["%s"]] <-',
+                                          '(crs$dataset[["%s"]] -',
+                                          '%f)/%f'),
+                                    vname, v,
+                                    median(crs$dataset[[vname]], na.rm=TRUE),
+                                    mad(crs$dataset[[vname]], na.rm=TRUE))
     }
     else if (action == "bygroup")
     {
@@ -5580,7 +5618,7 @@ on_about_menu_activate <-  function(action, window)
   about$getWidget("aboutdialog")$setVersion(VERSION)
   if (isRStat())
   {
-    # 081004 seetProgramName is only available in GTK+ 2.12 and
+    # 081004 setProgramName is only available in GTK+ 2.12 and
     #above. But the MS/Wdinows version of RGtk2 is compiled for 2.10,
     #and it has a compile time check for version, not run time, and so
     #even though 2.12 is installed, it won't run the function.

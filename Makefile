@@ -72,8 +72,7 @@ PSOURCE = \
 	src/pmml.nnet.R \
 	src/pmml.randomForest.R \
 	src/pmml.rpart.R \
-	src/pmml.rsf.R \
-	src/pmml.transforms.R
+	src/pmml.rsf.R
 
 GLADE_SOURCE = src/rattle.glade
 
@@ -201,6 +200,9 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
+
+R4X:
+	R CMD build support/r4x/pkg/R4X
 
 data: package/rattle/data/audit.RData package/rattle/data/weather.RData
 

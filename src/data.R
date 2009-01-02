@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-23 07:01:46 Graham Williams>
+# Time-stamp: <2008-12-28 20:17:27 Graham Williams>
 #
 # DATA TAB
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This file is part of Rattle.
 #
@@ -78,12 +78,12 @@ dataTabShow <- function(...)
 
 showDataViewButtons <- function(action=TRUE)
 {
-  # Rattle starts up with the View and Edit buttons of the Data tab
-  # not sensitive. Once data has been loaded we make these tabs
-  # sensitive. The ACTION option allows for the case where we might
-  # want to make them not sensitive. This option (action=FALSE) is not
-  # currently used but cold be in the future, probably when we click
-  # New project.
+  # Rattle starts up with the View (081228 but not now the Edit)
+  # buttons of the Data tab not sensitive. Once data has been loaded
+  # we make these tabs sensitive. The ACTION option allows for the
+  # case where we might want to make them not sensitive. This option
+  # (action=FALSE) is not currently used but cold be in the future,
+  # probably when we click New project.
 
   if (! is.logical(action)) warning("action must be a logical")
     
@@ -1356,8 +1356,10 @@ editData <- function()
 
   # Generate commands.
 
-  assign.cmd <- 'crs$dataset <<- edit(crs$dataset)'
-  str.cmd <- "str(crs$dataset)"
+  if (is.null(crs$dataset))
+    assign.cmd <- 'crs$dataset <<- edit(data.frame())'
+  else
+    assign.cmd <- 'crs$dataset <<- edit(crs$dataset)'
   
   # Start logging and executing the R code.
 
@@ -1379,22 +1381,18 @@ editData <- function()
   crs$dataname <<- "dataset"
   # TODO fn <- theWidget("data_filechooserbutton")$getValue()
 
-
   setRattleTitle(crs$dataname)
-  
-  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  ##setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
-  ##             collectOutput(str.cmd), sep="")
 
   # Update the select treeview and samples.
 
   ## resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
   createVariablesModel(colnames(crs$dataset)) 
 
-  # Enable the Data View button.
-
-##  showDataViewButtons()
+  # Ensure we are viewing the treevie tab rather than the Welcome
+  # message.
   
+  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+
   setStatusBar("The supplied data is now available.")
 
 }

@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-14 10:27:46 Graham Williams>
+# Time-stamp: <2008-12-29 16:10:57 Graham Williams>
 #
 # RPART TAB
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -957,7 +957,9 @@ exportRpartTab <- function()
   # so we have to run the save/write command separately, i.e., not
   # inside the string that is being parsed.
   
-  pmml.cmd <- "pmml(crs$rpart)"
+  pmml.cmd <- sprintf("pmml(crs$rpart%s)",
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""))
 
   if (ext == "xml")
   {

@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 17:46:52 Graham Williams>
+# Time-stamp: <2009-01-02 12:36:04 Graham Williams>
 #
 # Implement hclust functionality.
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -509,10 +509,6 @@ exportHClustTab <- function(file)
 
   # Generate appropriate code.
 
-  # 080804 How to add the transformations? Perhaps generate separately
-  # with pmml.transforms(crs$transforms) and include the result as an
-  # optional argument to pmml.
-  
   pmml.cmd <- sprintf(paste("pmml(crs$hclust, centers=centers.hclust(",
                            "na.omit(crs$dataset[%s,%s]), crs$hclust, %d)%s)",
                             sep=""),

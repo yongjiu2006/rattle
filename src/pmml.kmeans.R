@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-09-01 20:15:21 Graham Williams>
+# Time-stamp: <2009-01-02 12:32:40 Graham Williams>
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -76,20 +76,8 @@ pmml.kmeans <- function(model,
 
   # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if (! is.null(transforms))
-  {
-    ltrans <- xmlNode("LocalTransformations")
-    for (i in transforms)
-    {
-      dfield <- xmlNode("DerivedField",
-                        attrs=c(name=sub("^R01_(.*)_[^_]*_[^_]*$", "R01_\\1", i),
-                          optype="continuous",
-                          dataType="double"))
-      ltrans <- append.XMLNode(ltrans, append.XMLNode(dfield, pmml.transform(i)))
-    }
-    
-    cl.model <- append.XMLNode(cl.model, ltrans)
-  }
+  if (exists("pmml.transforms") && ! is.null(transforms))
+    cl.model <- append.XMLNode(cl.model, pmml.transforms(transforms))
   
   # PMML -> ClusteringModel -> ComparisonMeasure
   
@@ -104,7 +92,8 @@ pmml.kmeans <- function(model,
   {
     cl.model <- append.xmlNode(cl.model,
                                xmlNode("ClusteringField",
-                                       attrs=c(field=i)))
+                                       attrs=c(field=i,
+                                         compareFunction="absDiff")))
   }
   
   # PMML -> ClusteringModel -> Cluster -> Array
@@ -125,23 +114,5 @@ pmml.kmeans <- function(model,
   pmml <- append.XMLNode(pmml, cl.model)
 
   return(pmml)
-}
-
-unifyTransforms <- function(vars, transforms)
-{
-  for (i in transforms)
-  {
-    ibase <- sub("^R01_(.*)_[^_]*_[^_]*$", "R01_\\1", i)
-    if (ibase %in% vars)
-    {
-      index <- which(ibase == vars)
-      new.var <- sub("^R01_", "", vars[index])
-      if (new.var %in% vars)
-        vars <- vars[-index]
-      else
-        vars[index] <- new.var
-    }
-  }
-  return(vars)
 }
 

@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 11:30:09 Graham Williams>
+# Time-stamp: <2009-01-02 12:55:31 Graham Williams>
 #
 # Implement associations functionality.
 #
-# Copyright (c) 2008 Graham Williams, Togaware.com, GPL Version 2
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
