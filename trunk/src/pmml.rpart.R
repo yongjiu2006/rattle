@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 12:34:18 Graham Williams>
+# Time-stamp: <2009-01-02 13:20:03 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -59,7 +59,7 @@ pmml.rpart <- function(model,
   # on the one variable. How to fix?
 
   #print(field$name)
-  if (! is.null(transforms))
+  if (exists("pmml.transforms") && ! is.null(transforms))
     field$name <- unifyTransforms(field$name, transforms)
   number.of.fields <- length(field$name)
   field$class <- attr(model$terms, "dataClasses")
