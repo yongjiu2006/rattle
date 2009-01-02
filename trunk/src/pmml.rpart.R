@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 13:20:03 Graham Williams>
+# Time-stamp: <2009-01-02 17:55:38 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -54,18 +54,25 @@ pmml.rpart <- function(model,
 
   field <- NULL
   field$name <- as.character(attr(model$terms, "variables"))[-1]
+  field$class <- attr(model$terms, "dataClasses")
 
   # 081229 Our names and types get out of sync for multiple transforms
-  # on the one variable. How to fix?
+  # on the one variable. TODO How to fix? For now, we will assume a
+  # single transform on each variable.
 
-  #print(field$name)
   if (exists("pmml.transforms") && ! is.null(transforms))
+  {
     field$name <- unifyTransforms(field$name, transforms)
+
+    # 090102 Reset the field$class names to correspond to the new
+    # variables.
+    
+    names(field$class) <- field$name
+  }
+    
   number.of.fields <- length(field$name)
-  field$class <- attr(model$terms, "dataClasses")
+  
   target <- field$name[1]
-  #print(field$name)
-  #print(field$class)
   
   for (i in 1:number.of.fields)
   {
