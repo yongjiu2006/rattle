@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 12:32:56 Graham Williams>
+# Time-stamp: <2009-01-02 13:19:40 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -40,7 +40,7 @@ pmml.hclust <- function(model, centers,
   field$name <-  colnames(centers)
   orig.fields <- field$name
 
-  if (! is.null(transforms))
+  if (exists("pmml.transforms") && ! is.null(transforms))
     field$name <- unifyTransforms(field$name, transforms)
 
   number.of.fields <- length(field$name)
@@ -78,7 +78,7 @@ pmml.hclust <- function(model, centers,
 
   # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if ((exists("pmml.transforms") && ! is.null(transforms))
+  if (exists("pmml.transforms") && ! is.null(transforms))
     cl.model <- append.XMLNode(cl.model, pmml.transforms(transforms))
   
   # PMML -> ClusteringModel -> ComparisonMeasure

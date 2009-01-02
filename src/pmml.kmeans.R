@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 12:32:40 Graham Williams>
+# Time-stamp: <2009-01-02 13:19:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -39,7 +39,7 @@ pmml.kmeans <- function(model,
   field <- NULL
   field$name <-  colnames(model$centers)
   orig.fields <- field$name
-  if (! is.null(transforms))
+  if (exists("pmml.transforms") && ! is.null(transforms))
     field$name <- unifyTransforms(field$name, transforms)
   number.of.fields <- length(field$name)
 

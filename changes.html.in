@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.145.
+    version is 2.3.146.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+377 090102 Bug fixes: spurious ( and need conditional unifyTranforms 
 376 090102 Release pmml 1.1.19 - tidy up PMML and kmeans export
            Check for pluggable pmml.transforms - use it if it exists
            Record rattle transforms: RRC, R01, and RMD
@@ -713,6 +714,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-02 13:08:54 Graham Williams</i>
+<i>Last Modified 2009-01-02 13:21:19 Graham Williams</i>
 <!-- hhmts end -->
   </p>
