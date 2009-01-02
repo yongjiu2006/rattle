@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-17 19:50:59 Graham Williams>
+# Time-stamp: <2008-12-28 19:59:32 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -53,7 +53,7 @@ dispatchExecuteButton <- function()
   }
   else if (ct == crv$NOTEBOOK.TEST.NAME)
   {
-     executeTestTab()
+    executeTestTab()
   }
   else if (ct == crv$NOTEBOOK.TRANSFORM.NAME)
   {

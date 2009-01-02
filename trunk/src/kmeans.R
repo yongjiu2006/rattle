@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-28 15:13:58 Graham Williams>
+# Time-stamp: <2009-01-02 12:35:59 Graham Williams>
 #
 # Implement kmeans functionality.
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
@@ -445,10 +445,6 @@ exportKMeansTab <- function(file)
 
   # Generate appropriate code.
 
-  # 080804 How to add the transformations? Perhaps generate separately
-  # with pmml.transforms(crs$transforms) and include the result as an
-  # optional argument to pmml.
-  
   pmml.cmd <- sprintf("pmml(crs$kmeans%s)",
                       ifelse(length(crs$transforms) > 0,
                              ", transforms=crs$transforms", ""))

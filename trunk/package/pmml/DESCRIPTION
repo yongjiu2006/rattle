@@ -2,11 +2,11 @@ Package: pmml
 Type: Package
 Title: Generate PMML for various models
 Version: 1.1.18
-Date: 2008-12-28
+Date: 2009-01-01
 Author: Graham Williams, Michael Hahsler (arules), Zementis Inc, 
   Hemant Ishwaran, Udaya B. Kogalur, Rajarshi Guha
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
-Depends: XML, R4X
+Depends: XML
 Suggests: arules, nnet, rpart, randomSurvivalForest, randomForest, kernlab
 License: GPL (>= 2)
 Description: The Predictive Modelling Markup Language (PMML) is a language

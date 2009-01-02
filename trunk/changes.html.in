@@ -6,13 +6,20 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.144.
+    version is 2.3.145.
 
    The version number is determined as 2.3.n where n is the current
    revision identified below minus 230.
    </p>
 
 <pre>
+376 090102 Release pmml 1.1.19 - tidy up PMML and kmeans export
+           Check for pluggable pmml.transforms - use it if it exists
+           Record rattle transforms: RRC, R01, and RMD
+           Bug fix: use na.rm in max/min etc for recording transforms
+           Update log to include build/score code for transforms
+           Add ability to start with manually editted data.frame
+           Add transforms option to pmml call to rpart
 375 081228 Bug fix: predict.kmeans NA handling now limited to columns used!
 374 081228 Update predict.kmeans - handle missing, and correct row names.
 373 081227 Bug fix - kmeans probcmd was not being set.
@@ -706,6 +713,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-28 15:19:05 Graham Williams</i>
+<i>Last Modified 2009-01-02 13:08:54 Graham Williams</i>
 <!-- hhmts end -->
   </p>

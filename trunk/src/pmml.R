@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-12-02 06:03:35 Graham Williams>
+# Time-stamp: <2009-01-02 13:01:47 Graham Williams>
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -102,7 +102,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.1.18" # Include pmml.hclust in NAMESPACE
+  VERSION <- "1.1.19" # Tidyup and update ClusterField
+    # "1.1.18" # Include pmml.hclust in NAMESPACE
     # "1.1.17" # Export hclust as kmeans.
     # "1.1.16" # export pmml.multinom
     # "1.1.15" # Handle multinomial model.

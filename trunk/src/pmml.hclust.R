@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-12-22 21:57:14 Graham Williams>
+# Time-stamp: <2009-01-02 12:32:56 Graham Williams>
 #
-# Copyright (c) 2008 Togaware Pty Ltd
+# Copyright (c) 2009 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -39,8 +39,10 @@ pmml.hclust <- function(model, centers,
   field <- NULL
   field$name <-  colnames(centers)
   orig.fields <- field$name
+
   if (! is.null(transforms))
     field$name <- unifyTransforms(field$name, transforms)
+
   number.of.fields <- length(field$name)
 
   field$class <- rep("numeric", number.of.fields) # All fields are numeric
@@ -76,20 +78,8 @@ pmml.hclust <- function(model, centers,
 
   # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if (! is.null(transforms))
-  {
-    ltrans <- xmlNode("LocalTransformations")
-    for (i in transforms)
-    {
-      dfield <- xmlNode("DerivedField",
-                        attrs=c(name=sub("^R01_(.*)_[^_]*_[^_]*$", "R01_\\1", i),
-                          optype="continuous",
-                          dataType="double"))
-      ltrans <- append.XMLNode(ltrans, append.XMLNode(dfield, pmml.transform(i)))
-    }
-    
-    cl.model <- append.XMLNode(cl.model, ltrans)
-  }
+  if ((exists("pmml.transforms") && ! is.null(transforms))
+    cl.model <- append.XMLNode(cl.model, pmml.transforms(transforms))
   
   # PMML -> ClusteringModel -> ComparisonMeasure
   
