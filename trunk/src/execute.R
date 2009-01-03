@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-28 19:59:32 Graham Williams>
+# Time-stamp: <2009-01-03 12:34:37 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -27,14 +27,29 @@ on_execute_button_clicked <- function(action, window)
   # turns off even on error.
   
   setStatusBar()
+
   # 081117 This ensures spinbuttons, for example, lose focus and hence
   # their current value is properly noted. Otherwise I was finding the
   # user had to either press Enter or click somewhere else to ensure
   # the value is noted.
+
   theWidget("rattle_window")$setFocus()
+
+  # 090102 Set the cursor to busy, and make sure on failure or
+  # interrupt we set it back. TODO Currently, I can interrupt with
+  # Ctrl-C in the console, and that does interrupt the Rattle process,
+  # but I can't work out how to get a Ctrl-C (or perhaps an ESC) in
+  # the Rattle GUI to cause an interrupt.
+  
   set.cursor("watch")
-  try(dispatchExecuteButton())
-  set.cursor()
+  tryCatch(dispatchExecuteButton(),
+           interrupt=function(m) setStatusBar("Processing interrupted by user."),
+           finally=set.cursor())
+
+  # 090103 Return nothing, otherwise we get the results from the
+  # tryCatch above.
+  
+  return()
 }
 
 dispatchExecuteButton <- function()
