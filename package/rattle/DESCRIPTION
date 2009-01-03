@@ -1,7 +1,7 @@
 Package: rattle
 Type: Package
 Title: A graphical user interface for data mining in R using GTK
-Version: 2.3.147
+Version: 2.3.148
 Date: 2009-01-02
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
