@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-11-03 14:18:16 Graham Williams>
+# Time-stamp: <2009-01-03 17:33:47 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -24,14 +24,16 @@
 ########################################################################
 # LM
 #
-# Author: rguha@indiana.edu
-# Date: 28 May 2007
+# Implemented: 070528 rguha@indiana.edu based on Graham's template for
+# handling rpart trees.
 #
-# Modified: 01 Feb 2008 by Zementis, Inc. (info@zementis.com) to add
-# the capability to export binary logistic regression models using
-# glm.
+# Modified: 080201 by Zementis, Inc. (info@zementis.com) to add the
+# capability to export binary logistic regression models using glm.
+#
+# Modified: 090103 by Graham Williams to add transforms framework.
 
 pmml.lm <- function(model,
+                    transforms=NULL,
                     model.name="Regression_Model",
                     app.name="Rattle/PMML",
                     description="Regression Model",
@@ -40,18 +42,36 @@ pmml.lm <- function(model,
   if (! inherits(model, "lm")) stop("Not a legitimate lm object")
   require(XML, quietly=TRUE)
 
-  # Collect the required variables information.
+  # Collect the required information.
 
   # For a regression, all variables will have been used except those
   # with a NA coefficient indicating singularities. We mark
   # singularities as inactive.
 
   terms <- attributes(model$terms)
+  
   field <- NULL
   field$name <- names(terms$dataClasses)
-  number.of.fields <- length(field$name)
+  orig.names <- field$name
   field$class <- terms$dataClasses
+  orig.class <- field$class
+
+  # 090103 gjw Support transforms if available.
+  
+  if (exists("pmml.transforms") && ! is.null(transforms))
+  {
+    field$name <- unifyTransforms(field$name, transforms)
+
+    # 090102 Reset the field$class names to correspond to the new
+    # variables.
+    
+    names(field$class) <- field$name
+  }
+
+  number.of.fields <- length(field$name)
+  
   target <- field$name[1]
+  
   inactive <- names(which(is.na(coef(model))))
 
   for (i in 1:number.of.fields)
@@ -60,11 +80,11 @@ pmml.lm <- function(model,
     # factor predictions.
       
     if (field$class[[field$name[i]]] == "factor")
-      # 081004 Test if the data is available in the model, as it would
-      # be for a glm (but not an lm), since if the target variable is
-      # categoric then the levels are not recorded in xlevels for the
-      # target variable, so we will need to get the levels from the
-      # data itself.
+      # 081004 gjw Test if the data is available in the model, as it
+      # would be for a glm (but not an lm), since if the target
+      # variable is categoric then the levels are not recorded in
+      # xlevels for the target variable, so we will need to get the
+      # levels from the data itself.
       if (is.null(model$data))
         field$levels[[field$name[i]]] <- model$xlevels[[field$name[i]]]
       else
@@ -119,6 +139,11 @@ pmml.lm <- function(model,
 
   the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
+  # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
+
+  if (exists("pmml.transforms") && ! is.null(transforms))
+    the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
+  
   # PMML -> RegressionModel -> RegressionTable
 
   coeff <- coefficients(model)
@@ -142,16 +167,19 @@ pmml.lm <- function(model,
                         attrs=c(intercept=as.numeric(coeff[1])))
   }
   
-  # 080620 GJW The PMML spec (at least the Zementis validator)
+  # 080620 gjw The PMML spec (at least the Zementis validator)
   # requires NumericPredictors first and then
   # CategoricalPreictors. Simplest approach is to loop twice!!
   # Hopefully, this is not a significant computational expense.
 
-  for (i in 1:length(field$name))
+#  for (i in 1:length(field$name))
+  for (i in 1:length(orig.names))
   {
-    name <- field$name[[i]]
+#    name <- field$name[[i]]
+    name <- orig.names[[i]]
     if (name == target) next
-    klass <- field$class[[name]]
+#    klass <- field$class[[name]]
+    klass <- orig.class[[name]]
     if (klass == 'numeric')
     {
       predictorNode <- xmlNode("NumericPredictor",
@@ -161,11 +189,14 @@ pmml.lm <- function(model,
       regTable <- append.XMLNode(regTable, predictorNode)
     }
   }
-  for (i in 1:length(field$name))
+#  for (i in 1:length(field$name))
+  for (i in 1:length(orig.names))
   {
-    name <- field$name[[i]]
+#    name <- field$name[[i]]
+    name <- orig.names[[i]]
     if (name == target) next
-    klass <- field$class[[name]]
+#    klass <- field$class[[name]]
+    klass <- orig.class[[name]]
     if (klass == 'factor')
     {
       levs <- model$xlevels[[name]]
