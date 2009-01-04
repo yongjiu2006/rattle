@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-11-11 06:05:25 Graham Williams>
+# Time-stamp: <2009-01-03 16:23:08 Graham Williams>
 #
 # Help Menu
 #
@@ -281,27 +281,28 @@ The Nolan Transform segments and remaps a numeric variable to the 0-100 range.
 
 on_help_transform_recenter_activate <- function(action, window)
 {
-  showHelp("The Recenter transformation is a standard z-score transformation
-where the variable's mean value is subtracted from each value, and each is then divided
+  showHelp("Recenter performs a standard z-score transformation.
+The variable's mean value is subtracted from each value, and each is then divided
 by the standard deviation. The resulting variable will have a mean of 0 and a
-standard deviation of 1.")
+standard deviation of 1. The new variable will have a prefix of RRC_.")
 }
 
 on_help_transform_scale01_activate <- function(action, window)
 {
-  showHelp("The Scale [0-1] transformation maps the variable into the 0-1 range.")
+  showHelp("Scale [0-1] maps the variable into the 0-1 range.
+The new variable will have a prefix of R01_.")
 }
 
 on_help_transform_medianmad_activate <- function(action, window)
 {
-  showHelp("The -Median/MAD transformation is a so-caleld robust version
-of the standard z-score transformation.
+  showHelp("-Median/MAD is a robust version of the standard z-score transform.
 The variable's median value is subtracted from each value, and each is then
 divided by the median absolute deviation, which is basically the median of
 the residuals
 or deivations from the data's median, as in Xi-median(X). The resulting
 variable will have a median of 0.
-It is more resilient to outliers than the normal z-score.")
+It is more resilient to outliers than the normal z-score.
+The new variable will have a prefix of RMD_.")
 }
 
 on_help_transform_rank_activate <- function(action, window)

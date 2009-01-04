@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-02 12:57:37 Graham Williams>
+# Time-stamp: <2009-01-04 16:11:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -12,10 +12,10 @@
 #
 
 MAJOR <- "2"
-MINOR <- "3"
+MINOR <- "4"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Jan 2009"
+VERSION.DATE <- "Released 03 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 18:00:41 Graham Williams>
+# Time-stamp: <2009-01-03 16:42:50 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1071,7 +1071,9 @@ exportRegressionTab <- function()
 
   # Generate appropriate code.
   
-  pmml.cmd <- "pmml(crs$glm)"
+  pmml.cmd <- sprintf("pmml(crs$glm%s)",
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""))
 
   if (ext == "xml")
   {
@@ -1081,6 +1083,7 @@ exportRegressionTab <- function()
   }
   else if (ext == "c")
   {
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "regression")
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a regression model as C code for WebFocus.",
