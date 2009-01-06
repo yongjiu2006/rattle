@@ -114,7 +114,7 @@ dispatchExportButton <- function()
 ##   {
 ##     warnDialog("There are currently no active graphics devices.",
 ##                "So there is nothing to export!",
-##                "Please Execute (F5) to obtain a plot to export.")
+##                "Please Execute (F2) to obtain a plot to export.")
 ##     return()
 ##   }
 

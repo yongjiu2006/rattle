@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 17:55:38 Graham Williams>
+# Time-stamp: <2009-01-05 10:34:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,11 +32,12 @@
 #           
 
 pmml.rpart <- function(model,
-                       transforms=NULL,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
                        description="RPart Decision Tree Model",
-                       copyright=NULL, ...)
+                       copyright=NULL,
+                       transforms=NULL,
+                        ...)
 {
   if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
   require(XML, quietly=TRUE)

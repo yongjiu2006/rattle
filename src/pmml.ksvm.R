@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-22 09:32:09 Graham Williams>
+# Time-stamp: <2009-01-05 10:39:43 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -162,6 +162,7 @@ pmml.ksvm <- function(model,
                       app.name="Rattle/PMML",
                       description="Support Vector Machine PMML Model",
                       copyright=NULL,
+                      transforms=NULL,
                       data.name,
                       ...)
 {

@@ -6,13 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.3.149.
+    version is 2.4.0.
 
-   The version number is determined as 2.3.n where n is the current
-   revision identified below minus 230.
+   The version number is determined as 2.4.n where n is the current
+   revision identified below minus 380.
    </p>
 
 <pre>
+381 090107 Split out transforms.R from rattle.R
+           Correct spelling of distributed
+           Release pmml 1.2.0
+           Clean up all pmml documentation for R CMD check
+           Implement verbose option - label plots with timestamps
+           F2 rather than F5 for Execute
 380 090104 Add transform framework for pmml export of regression
 379 090103 Handle Ctrl-C in Console (Interrupt)
 378 090102 Release pmml 1.1.20 - Bug fix rpart var names in transforms
@@ -717,6 +723,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-04 17:09:44 Graham Williams</i>
+<i>Last Modified 2009-01-07 06:58:54 Graham Williams</i>
 <!-- hhmts end -->
   </p>

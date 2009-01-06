@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-03 17:33:47 Graham Williams>
+# Time-stamp: <2009-01-05 17:16:38 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -33,11 +33,12 @@
 # Modified: 090103 by Graham Williams to add transforms framework.
 
 pmml.lm <- function(model,
-                    transforms=NULL,
-                    model.name="Regression_Model",
+                    model.name="Linear_Regression_Model",
                     app.name="Rattle/PMML",
-                    description="Regression Model",
-                    copyright=NULL, ...)
+                    description="Linear Regression Model",
+                    copyright=NULL,
+                    transforms=NULL,
+                    ...)
 {
   if (! inherits(model, "lm")) stop("Not a legitimate lm object")
   require(XML, quietly=TRUE)

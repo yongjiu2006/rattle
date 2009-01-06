@@ -10,7 +10,7 @@
   
 }
 \usage{
-write.rstat(x, file="")
+write.rstat(x, file="", ...)
 }
 \arguments{
   

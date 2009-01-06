@@ -14,7 +14,7 @@ binning(x, bins=4, method=c("quantile", "kmeans"),
 }
 \arguments{
   
-  \item{}{data.}
+  \item{x}{data.}
 
   \item{bins}{number of bins.}
 

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-02 18:49:08 Graham Williams>
+# Time-stamp: <2009-01-05 10:33:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -24,11 +24,12 @@
 ########################################################################
 
 pmml.kmeans <- function(model,
-                        transforms=NULL,
                         model.name="KMeans_Model",
                         app.name="Rattle/PMML",
                         description="KMeans cluster model",
-                        copyright=NULL, ...)
+                        copyright=NULL,
+                        transforms=NULL,
+                        ...)
 {
   require(XML, quietly=TRUE)
   
