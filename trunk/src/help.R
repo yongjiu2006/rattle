@@ -58,9 +58,9 @@ Interaction with Rattle logically proceeds by progressing through the Tabs:
 first load in some Data, select Variables for exploring and mining,
 possibly Sample the data, Explore the data, build your Models,
 and Evaluate them. For any tab, the modus operandi is to configure
-the options available and then click the Execute button (or F5) to perform
+the options available and then click the Execute button (or F2) to perform
 the appropriate tasks. Note that the tasks are NOT performed until
-the Execute button (or F5 or the Execute menu item under Tools) is clicked.
+the Execute button (or F2 or the Execute menu item under Tools) is clicked.
 <<>>
 The Status Bar indicates when the action
 is completed. Messages from R (e.g., error messages. although I do attempt

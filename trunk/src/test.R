@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 08:45:37 Graham Williams>
+# Time-stamp: <2009-01-06 07:36:40 Graham Williams>
 #
 # Test Tab
 #
@@ -170,7 +170,7 @@ executeTestTab <- function()
     preamble <- paste("The t Test is performed on the two samples to test the",
                       "hypothesis that the difference between the two",
                       "means is zero. It is assumed the two samples are normally",
-                      "distriubted. Otherwise use the Kruskal-Wallis test.",
+                      "distributed. Otherwise use the Kruskal-Wallis test.",
                       "\nThe confidence interval is an interval around",
                       "the expected difference between the means.",
                       "\nA low p-value (less than 0.05) indicates statistically",
@@ -186,7 +186,7 @@ executeTestTab <- function()
     preamble <- paste("The Kruskal-Wallis test is performed on the two samples",
                       "to test the hypothesis that the difference between the two",
                       "means is zero. It does not assume that the two samples",
-                      "are normally distriubted.",
+                      "are normally distributed.",
                       "\nThe confidence interval is an interval around",
                       "the expected difference between the means.\n",
                       sep="\n")
@@ -197,7 +197,7 @@ executeTestTab <- function()
     preamble <- paste("The two sample non-parametric Wilcoxon test is performed",
                       "on the two samples to test the hypothesis that the",
                       "distributions are the same. It does not assume that the",
-                      "two samples are normally distriubted.\n",
+                      "two samples are normally distributed.\n",
                       sep="\n")
   }
   else if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
@@ -217,7 +217,7 @@ executeTestTab <- function()
                       "performed on the two related samples to test the",
                       "hypothesis that the distributions are the same.",
                       "It does not assume that the",
-                      "two samples are normally distriubted.\n",
+                      "two samples are normally distributed.\n",
                       sep="\n")
   }
   else if (theWidget("test_variance_radiobutton")$getActive())

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-03 16:43:36 Graham Williams>
+# Time-stamp: <2009-01-05 16:00:36 Graham Williams>
 #
 # RPART TAB
 #
@@ -942,7 +942,7 @@ exportRpartTab <- function()
   {
     errorDialog("No Tree model is available. Be sure to build",
                 "the model before trying to export it! You will need",
-                "to press the Execute button (F5) in order to build the",
+                "to press the Execute button (F2) in order to build the",
                 "model.")
     return()
   }

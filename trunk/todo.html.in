@@ -14,6 +14,9 @@ lattice.
 
 <h2>Specific Suggestions</h2>
 <pre>
+090105 Use F1 for getting Help (Gabor Grothendieck)
+090105 Implement Log as separate window (Gabor Grothendieck)
+
 080416 Log transform +ve/-ve (Linday Clayton)
 080416 C-stat eval for interval target (Linda Clayton)
 080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
@@ -141,6 +144,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2008-12-21 21:23:08 Graham Williams</i>
+<i>Last Modified 2009-01-06 08:45:41 Graham Williams</i>
 <!-- hhmts end -->
   </p>

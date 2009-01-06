@@ -168,7 +168,7 @@ exportNNetTab <- function()
   {
     errorDialog("No neural net model is available. Be sure to build",
                 "the model before trying to export it! You will need",
-                "to press the Execute button (F5) in order to build the",
+                "to press the Execute button (F2) in order to build the",
                 "model.")
     return()
   }
