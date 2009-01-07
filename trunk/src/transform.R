@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-07 12:23:13 Graham Williams>
+# Time-stamp: <2009-01-07 16:40:14 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -21,9 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
-
-
-# Interface Actions
+########################################################################
+# CALLBACKS
 
 # When a radio button on the TRANSFORM tab is selected, display the
 # appropriate option.
@@ -73,21 +72,45 @@ on_impute_constant_radiobutton_toggled <- function(button)
 ########################################################################
 # UTILITIES
 
+
+modalvalue <- function(x, na.rm=FALSE)
+{
+  # Determine the modal value of the data x.
+  
+  x = unlist(x)
+  if(na.rm) x = x[!is.na(x)]
+  u = unique(x)
+  n = length(u)
+  frequencies = rep(0, n)
+  for(i in seq_len(n))
+  {
+    if(is.na(u[i]))
+    {
+      frequencies[i] = sum(is.na(x))
+    } else
+    {
+      frequencies[i] = sum(x==u[i], na.rm=TRUE)
+    }
+  }
+  u[which.max(frequencies)]
+}
+
 supportTransformExport <- function(transforms=NULL)
 {
-  # 090107 Make sure the required functions for generating transforms
-  # in the PMML are available in some form (either packaged with
-  # Rattle or else loaded afterwards) and that there are transforms to
-  # be handled. Another alternative would be to define dummy functions
-  # that can be overridden, but that requires more design.
+  # 090107 Returns TRUE/FALSE. Make sure the required functions for
+  # generating transforms in the PMML are available in some form
+  # (either packaged with Rattle or else loaded afterwards) and that
+  # there are transforms to be handled. Another alternative would be
+  # to define dummy functions that can be overridden, but that
+  # requires more design.
   
   return(length(getAnywhere("pmml.transforms")$objs) > 0 &&
          length(getAnywhere("unifyTransforms")$objs) > 0 &&
          ! is.null(transforms))
 }
 
-#----------------------------------------------------------------------
-# Execution
+########################################################################
+# DISPATCH
 
 executeTransformTab <- function()
 {
@@ -109,25 +132,8 @@ executeTransformTab <- function()
     executeTransformCleanupPerform()
 }
 
-modalvalue <- function(x, na.rm=FALSE)
-{
-    x = unlist(x);
-    if(na.rm) x = x[!is.na(x)]
-    u = unique(x);
-    n = length(u);
-    frequencies = rep(0, n);
-    for(i in seq_len(n))
-    {
-        if(is.na(u[i]))
-        {
-            frequencies[i] = sum(is.na(x))
-        } else
-        {
-            frequencies[i] = sum(x==u[i], na.rm=TRUE)
-        }
-    }
-    u[which.max(frequencies)]
-}
+########################################################################
+# RESCALE
 
 executeTransformNormalisePerform <- function()
 {
@@ -139,8 +145,9 @@ executeTransformNormalisePerform <- function()
   # NULL in the hope of picking up an error if something has gone wrong.
 
   # TODO 071124 The radio buttons could be checkbuttons, and we do
-  # multiple imputations for the selected variables, but for now, stay
-  # with radio buttons as it is simple, without loss of functionality.
+  # multiple transformations for the selected variables, but for now,
+  # stay with radio buttons as it is simple, without loss of
+  # functionality.
   
   action <- NULL
   vprefix <- NULL
@@ -324,6 +331,7 @@ executeTransformNormalisePerform <- function()
       vname <- paste(vprefix, byvname, v, sep="_")
     else
       vname <- paste(vprefix, v, sep="")
+    
     # Check variable specific preconditions, and if we fail then
     # proceed to next variable.
 
@@ -532,10 +540,6 @@ executeTransformNormalisePerform <- function()
       input <- union(input, vname)
     }
     ignore <- union(ignore, v)
-
-    # Record the transformation for possible inclusion in PMML.
-
-    # crs$transforms <<- union(crs$transforms, vname)
   }
   
   if (length(variables) > 0)
@@ -560,6 +564,9 @@ executeTransformNormalisePerform <- function()
   }
 }  
 
+########################################################################
+# IMPUTE
+
 executeTransformImputePerform <- function()
 {
   # First determine which imputation option has been chosen and the
@@ -567,7 +574,7 @@ executeTransformImputePerform <- function()
   # NULL so that if the value is not changed, we may get error (it
   # should be an error if the value is not changed).
 
-  # [TODO 071124] The rdaio buttons could be checkbuttons, and we do
+  # TODO 071124 The rdaio buttons could be checkbuttons, and we do
   # multiple imputations for the selected variables, but for now, stay
   # with radio buttons as it is simply, without loss of functionality.
   
@@ -611,12 +618,15 @@ executeTransformImputePerform <- function()
   if (is.null(imputed)) 
     warnDialog(paste("No variables have been selected for imputation.",
                      "Please select some variables and Execute again."))
+
   # We check here if the action is mean or median, and we have any
   # categoric variables to be imputed. If so put up an info dialogue
   # and remove the cateorigcals from the list of variables to be
-  # imputed.
+  # imputed. We can't impute a mean or median for a categoric
+  # variable.
 
   classes <- unlist(lapply(imputed, function(x) class(crs$dataset[[x]])))
+
   if (action %in% c("mean", "median") && "factor" %in% classes)
   {
     infoDialog(sprintf(paste("We can not impute the %s for a",
@@ -644,15 +654,18 @@ executeTransformImputePerform <- function()
   # different ways. Should try to do it the same way. Works for now!
       
   startLog("IMPUTE Missing Values")
+  
   for (z in imputed)
   {
     # Generate the command to copy the current variable into a new
     # variable, prefixed appropraitely.
     
     vname <- paste(vprefix, z, sep="_")
+    
     copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
                             vname, z)
     cl <- class(crs$dataset[[z]])
+    
     if (cl == "factor")
     {
       # Mean and median are not supported for categorics!
@@ -741,6 +754,7 @@ executeTransformImputePerform <- function()
     else
     {
       imp.val <- "Not Yet Implemented"
+      
       # Take a copy of the variable to be imputed.
     
       appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
@@ -755,6 +769,11 @@ executeTransformImputePerform <- function()
                                  " <<- 0", sep=""), vname, z)
         imp.comment <- "Change all NAs to 0."
         imp.val <- 0
+
+        # Record the transformation for inclusion in PMML.
+
+        lst <- paste(vname, imp.val, sep="_")
+        crs$transforms <<- union(crs$transforms, lst)
       }
       else if (action == "mean")
       {
@@ -767,6 +786,11 @@ executeTransformImputePerform <- function()
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the mean value (not advisable)."
         imp.val <- mean(crs$dataset[[z]], na.rm=TRUE)
+
+        # Record the transformation for inclusion in PMML.
+
+        lst <- paste(vname, imp.val, sep="_")
+        crs$transforms <<- union(crs$transforms, lst)
       }
       else if (action == "median")
       {
@@ -776,6 +800,11 @@ executeTransformImputePerform <- function()
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the median (not advisable)."
         imp.val <- median(crs$dataset[[z]], na.rm=TRUE)
+
+        # Record the transformation for inclusion in PMML.
+
+        lst <- paste(vname, imp.val, sep="_")
+        crs$transforms <<- union(crs$transforms, lst)
       }
       else if (action == "mode")
       {
@@ -785,6 +814,11 @@ executeTransformImputePerform <- function()
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the modal value (not advisable)."
         imp.val <- modalvalue(crs$dataset[[z]], na.rm=TRUE)
+
+        # Record the transformation for inclusion in PMML.
+
+        lst <- paste(vname, imp.val, sep="_")
+        crs$transforms <<- union(crs$transforms, lst)
       }
       else if (action == "constant")
       {
@@ -801,6 +835,11 @@ executeTransformImputePerform <- function()
                                  ' <<- %s ', sep=""), vname, z, val)
         imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
         imp.val <- val
+
+        # Record the transformation for inclusion in PMML.
+
+        lst <- paste(vname, imp.val, sep="_")
+        crs$transforms <<- union(crs$transforms, lst)
       }
         
       appendLog(imp.comment, "if (building)\n{\n  ",  
