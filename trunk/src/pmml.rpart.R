@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-05 10:34:42 Graham Williams>
+# Time-stamp: <2009-01-07 12:18:04 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -61,7 +61,7 @@ pmml.rpart <- function(model,
   # on the one variable. TODO How to fix? For now, we will assume a
   # single transform on each variable.
 
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
   {
     field$name <- unifyTransforms(field$name, transforms)
 
@@ -110,7 +110,7 @@ pmml.rpart <- function(model,
 
   # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
     the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
   
   # PMML -> TreeModel -> Node

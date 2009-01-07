@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-05 17:16:38 Graham Williams>
+# Time-stamp: <2009-01-07 12:18:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -59,7 +59,7 @@ pmml.lm <- function(model,
 
   # 090103 gjw Support transforms if available.
   
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
   {
     field$name <- unifyTransforms(field$name, transforms)
 
@@ -142,7 +142,7 @@ pmml.lm <- function(model,
 
   # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
     the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
   
   # PMML -> RegressionModel -> RegressionTable

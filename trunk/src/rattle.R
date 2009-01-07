@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-07 08:00:55 Graham Williams>
+# Time-stamp: <2009-01-07 10:46:24 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -763,7 +763,7 @@ rattle <- function(csvname=NULL,
 ###     tuneOthers()
   
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
-  
+
   invisible()
 }
 

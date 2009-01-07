@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-05 10:33:49 Graham Williams>
+# Time-stamp: <2009-01-07 12:11:51 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -41,7 +41,7 @@ pmml.kmeans <- function(model,
   field$name <-  colnames(model$centers)
   
   orig.fields <- field$name
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
     field$name <- unifyTransforms(field$name, transforms)
   number.of.fields <- length(field$name)
 
@@ -78,7 +78,7 @@ pmml.kmeans <- function(model,
 
   # PMML -> ClusteringModel -> LocalTransformations -> DerivedField -> NormContiuous
 
-  if (exists("pmml.transforms") && ! is.null(transforms))
+  if (supportTransformExport(transforms))
     the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
   
   # PMML -> ClusteringModel -> ComparisonMeasure

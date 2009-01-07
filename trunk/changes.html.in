@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.2.
+    version is 2.4.3.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+384 080107 Streamline conditional handling of transforms.
+383 080107 For RStat remove the about comments
 382 080107 Conditionally remove load time welcome message
 381 090107 Split out transforms.R from rattle.R
            Correct spelling of distributed
@@ -724,6 +726,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-07 07:47:10 Graham Williams</i>
+<i>Last Modified 2009-01-07 12:28:20 Graham Williams</i>
 <!-- hhmts end -->
   </p>
