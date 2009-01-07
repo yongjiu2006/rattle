@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-05 10:32:55 Graham Williams>
+# Time-stamp: <2009-01-07 12:27:48 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.0" # Fix documentation and packaing and release to CRAN
+  VERSION <- "1.2.1" # Streamline conditional handling of transforms.
+    # "1.2.0" # Fix documentation and packaing and release to CRAN
     # "1.1.20" # Bug - fix rpart var names with transforms
     # "1.1.19" # Tidyup and update ClusterField
     # "1.1.18" # Include pmml.hclust in NAMESPACE
