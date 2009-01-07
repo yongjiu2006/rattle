@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-07 12:27:48 Graham Williams>
+# Time-stamp: <2009-01-08 07:47:16 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.1" # Streamline conditional handling of transforms.
+  VERSION <- "1.2.2" # Add test for transform support.
+    # "1.2.1" # Streamline conditional handling of transforms.
     # "1.2.0" # Fix documentation and packaing and release to CRAN
     # "1.1.20" # Bug - fix rpart var names with transforms
     # "1.1.19" # Tidyup and update ClusterField
@@ -244,3 +245,18 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
   mining.schema$children <- mining.fields
   return(mining.schema)
 }
+
+supportTransformExport <- function(transforms=NULL)
+{
+  # 090107 Returns TRUE/FALSE. Make sure the required functions for
+  # generating transforms in the PMML are available in some form
+  # (either packaged with Rattle or else loaded afterwards) and that
+  # there are transforms to be handled. Another alternative would be
+  # to define dummy functions that can be overridden, but that
+  # requires more design.
+  
+  return(length(getAnywhere("pmml.transforms")$objs) > 0 &&
+         length(getAnywhere("unifyTransforms")$objs) > 0 &&
+         ! is.null(transforms))
+}
+
