@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-07 16:40:14 Graham Williams>
+# Time-stamp: <2009-01-08 07:46:09 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -93,20 +93,6 @@ modalvalue <- function(x, na.rm=FALSE)
     }
   }
   u[which.max(frequencies)]
-}
-
-supportTransformExport <- function(transforms=NULL)
-{
-  # 090107 Returns TRUE/FALSE. Make sure the required functions for
-  # generating transforms in the PMML are available in some form
-  # (either packaged with Rattle or else loaded afterwards) and that
-  # there are transforms to be handled. Another alternative would be
-  # to define dummy functions that can be overridden, but that
-  # requires more design.
-  
-  return(length(getAnywhere("pmml.transforms")$objs) > 0 &&
-         length(getAnywhere("unifyTransforms")$objs) > 0 &&
-         ! is.null(transforms))
 }
 
 ########################################################################
