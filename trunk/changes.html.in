@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.5.
+    version is 2.4.6.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+387 080109 Function binning adds an attribute which records the breaks.
+           Framework for handling binning transforms
 386 080108 Add test for transform support to pmml - release 1.2.2
 385 080107 Framework for handling export of imputation transforms.
 384 080107 Streamline conditional handling of transforms.
@@ -728,6 +730,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-08 07:47:49 Graham Williams</i>
+<i>Last Modified 2009-01-09 09:38:04 Graham Williams</i>
 <!-- hhmts end -->
   </p>

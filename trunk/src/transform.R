@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-08 07:46:09 Graham Williams>
+# Time-stamp: <2009-01-09 09:30:54 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -886,7 +886,8 @@ executeTransformImputePerform <- function()
   }
 }  
 
-#-----------------------------------------------------------------------
+########################################################################
+# BINNING
 
 binning <- function (x, bins=4, method=c("quantile", "kmeans"),
                      labels=NULL, ordered=TRUE)
@@ -967,14 +968,14 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
       return(NULL)	
     }
   }
+
   if(ordered == TRUE)
-  {
-    ordered(factor(x))
-  }
+    result <- ordered(factor(x))
   else
-  {
-    factor(x)
-  }
+    result <- factor(x)
+
+  attr(result, "breaks") <- breaks
+  return(result)
 }
 
 executeTransformRemapPerform <- function()
@@ -1012,7 +1013,7 @@ executeTransformRemapPerform <- function()
     action <- "quantiles"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
     remap.prefix <- sprintf("BQ%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
                                    "using quantiles."), num.bins)
   }
   else if (theWidget("remap_kmeans_radiobutton")$getActive())
@@ -1020,7 +1021,7 @@ executeTransformRemapPerform <- function()
     action <- "kmeans"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
     remap.prefix <- sprintf("BK%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
                                    "using kmeans."), num.bins)
   }
   else if (theWidget("remap_eqwidth_radiobutton")$getActive())
@@ -1028,7 +1029,7 @@ executeTransformRemapPerform <- function()
     action <- "eqwidth"
     num.bins <- theWidget("remap_bins_spinbutton")$getValue()
     remap.prefix <- sprintf("BE%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable into %d bins",
+    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
                                    "using equal widths."), num.bins)
   }
   else if (theWidget("remap_indicator_radiobutton")$getActive())
@@ -1171,43 +1172,44 @@ executeTransformRemapPerform <- function()
             "\n}")
   eval(parse(text=remap.cmd))
 
-  # Record the transformation as well as repoting it to the log.
+  # Record the transformation as well as reporting to the log.
 
-  if (action %in% c('kmeans'))
+  if (action %in% c('quantiles', 'kmeans'))
   {
-    lvl <- sapply(paste(remap.prefix, vars, sep="_"),
-                  function(x) levels(crs$dataset[[x]]))
-    lst <- apply(lvl, 2, function(y) paste(y, collapse="_"))
-    lst <- paste(names(lst), lst, sep="_")
+    # 090108 The binning command returns as an attribute the
+    # breaks. We extract the breaks, add that to the crs$transforms.
+
+    lst <- paste(remap.prefix, vars, sep="_")
+    ## if (action == "eqwidth")
+    ## {
+
+    ##   THIS NEEDS WORK
+    ##   breaks <- sort(unique(as.numeric(unlist(strsplit(gsub(",", " ",
+    ##                                                         gsub("\\(|\\]", "", paste(levels(cut(crs$dataset[["WRAIN"]], 4)), collapse=" "))), " ")))))
+    ## }
+    
+    ## else
+      breaks <- sapply(lst, function(x) sort(attr(crs$dataset[[x]], "breaks")))
+    lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
     crs$transforms <<- union(crs$transforms, lst)
-    cuts <- apply(lvl, 2,
-                  function(x) gsub('\\]', ')',
-                                   gsub('\\[', 'c(',
-                                        gsub("\\] \\([^,]*,",",",
-                                             gsub(",", ", ",
-                                                  paste(x, collapse=" "))))))
-    lbl <- gsub('\\]', ']"',
-                gsub('\\[', '"[',
-                     gsub('\\] ', '], ',
-                          gsub("\\]$", '])',
-                               gsub("^\\[", 'c([',
-                                    gsub('\\(', '"(',
-                                         apply(lvl, 2, paste, collapse=" ")))))))
-    appendLog("When scoring transform using the training data parameters.",
+
+    appendLog("When scoring, use the training data parameters to bin new data.",
               "if (scoring)\n{\n",
               # Print the transforms based on the training parameters
               paste(sprintf(paste('  crs$dataset[["%s"]] <- ',
-                                  'cut(crs$dataset[["%s"]],\n\t\t',
-                                  '%s,\n\t\t%s,\n\t\tinclude.lowest=TRUE)', sep=""),
+                                  'cut(crs$dataset[["%s"]],\n    ',
+                                  '%s,\n    include.lowest=TRUE)', sep=""),
                             paste(remap.prefix, vars, sep="_"),
                             vars,
-                            cuts, lbl),
+                            paste("c(", apply(breaks, 2, paste,
+                                              collapse=','),
+                                  ")", sep="")),
                     collapse="\n"),
               # Comment the transforms based on the test parameters.
-              '\n\n# Alternatively, use the min/max from the new dataset\n\n',
+              '\n\n# Alternatively, use the min/max from the new data\n\n',
               paste(sprintf(paste('#  crs$dataset[["%s"]] <- ',
-                                  'cut(crs$dataset[["%s"]],\n#\t\t',
-                                  '%s,\n#\t\t%s,\n#\t\tinclude.lowest=TRUE)',
+                                  'cut(crs$dataset[["%s"]],\n#    ',
+                                  '%s,\n#    include.lowest=TRUE)',
                                   sep=""),
                             paste(remap.prefix, vars, sep="_"),
                             vars,
@@ -1215,10 +1217,12 @@ executeTransformRemapPerform <- function()
                                         ', max(crs$dataset[["%s"]], na.rm=TRUE))',
                                         sub('c\\([^,]*,',
                                             'c(min(crs$dataset[["%s"]], na.rm=TRUE),',
-                                            cuts)), vars, vars),
-                            lbl),
+                                            paste("c(", apply(breaks, 2, paste,
+                                                              collapse=','),
+                                                  ")", sep=""))), vars, vars)),
                     collapse="\n"),
               "\n}")
+    
   }
   
   # Record the new variables as having an INPUT role. No other changes
