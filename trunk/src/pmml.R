@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-08 07:47:16 Graham Williams>
+# Time-stamp: <2009-01-12 21:42:24 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.2" # Add test for transform support.
+  VERSION <- "1.2.3" # Bug fixes
+    # "1.2.2" # Add test for transform support.
     # "1.2.1" # Streamline conditional handling of transforms.
     # "1.2.0" # Fix documentation and packaing and release to CRAN
     # "1.1.20" # Bug - fix rpart var names with transforms
@@ -197,7 +198,7 @@ pmmlDataDictionary <- function(field)
     # DataDictionary -> DataField -> Value
 
     if (optype == "categorical")
-      for (j in 1:length(field$levels[[field$name[i]]]))
+      for (j in seq_along(field$levels[[field$name[i]]]))
         data.fields[[i]][[j]] <- xmlNode("Value",
                                          attrs=c(value=
                                            field$levels[[field$name[i]]][j]))
@@ -205,7 +206,6 @@ pmmlDataDictionary <- function(field)
   data.dictionary$children <- data.fields
 
   return(data.dictionary)
-
 }
 
 pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)

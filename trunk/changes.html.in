@@ -6,13 +6,26 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.6.
+    version is 2.4.7.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+388 080112 Release pmml 1.2.3
+           Fix bug in pmml.kmeans - unify before fields caused problems
+           Centre urls in the about.
+           Fix DataDictionary bug in pmml - use seq_along rather than seq.
+           Show in data tab transforms that don't carry through to scoring.
+           In data tab, show Unique count for all, including Categoric
+           In transform tab include unique count - useful for binning.
+           The .TRANSFORMS variables moved to transform.R
+           Ditto for general transform functions.
+           Change remap transform codes to start with T
+           Framework for quantiles, kmeans, eqwidth binning
+           When doing a binning transform make original vars ignore
+           Various interface cleanups
 387 080109 Function binning adds an attribute which records the breaks.
            Framework for handling binning transforms
 386 080108 Add test for transform support to pmml - release 1.2.2
@@ -730,6 +743,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-09 09:38:04 Graham Williams</i>
+<i>Last Modified 2009-01-12 21:50:57 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -2,7 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-07 12:18:49 Graham Williams>
+# Handle lm and glm models.
+#
+# Time-stamp: <2009-01-11 09:41:47 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -22,7 +24,7 @@
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-# LM
+# ENTRY
 #
 # Implemented: 070528 rguha@indiana.edu based on Graham's template for
 # handling rpart trees.
@@ -60,15 +62,7 @@ pmml.lm <- function(model,
   # 090103 gjw Support transforms if available.
   
   if (supportTransformExport(transforms))
-  {
-    field$name <- unifyTransforms(field$name, transforms)
-
-    # 090102 Reset the field$class names to correspond to the new
-    # variables.
-    
-    names(field$class) <- field$name
-  }
-
+    field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)
   
   target <- field$name[1]

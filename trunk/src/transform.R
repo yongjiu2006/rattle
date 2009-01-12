@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-09 09:30:54 Graham Williams>
+# Time-stamp: <2009-01-10 16:09:34 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -20,6 +20,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+# GLOBAL CONSTANTS
+
+.TRANSFORMS.NORM.CONTINUOUS <- c("RRC_", "R01_", "RMD_")
+.TRANSFORMS.IMPUTE <- paste(c("IZR", "IMN", "IMD", "IMO", "ICN"), "_", sep="")
+.TRANSFORMS.APPLY <- c("RLG_")
+.TRANSFORMS.BIN <- c("BQ_", "BK_", "BE_")
+.TRANSFORMS <- c(.TRANSFORMS.NORM.CONTINUOUS,
+                 .TRANSFORMS.APPLY,
+                 .TRANSFORMS.IMPUTE,
+                 .TRANSFORMS.BIN)
 
 ########################################################################
 # CALLBACKS
@@ -72,6 +84,57 @@ on_impute_constant_radiobutton_toggled <- function(button)
 ########################################################################
 # UTILITIES
 
+isTransformVar <- function(var.name)
+{
+  return(transformToCode(var.name) %in% .TRANSFORMS)
+}
+
+transformToCode <- function(var)
+{
+  code <- sub("^([^_]*_).*$", "\\1", var)
+  if (sprintf("%s_", substr(code, 1, 2)) %in% .TRANSFORMS.BIN)
+    code <- sprintf("%s_", substr(code, 1, 2))
+      
+  return(code)
+}
+
+transformToDerived <- function(var)
+{
+  if (transformToCode(var) %in% .TRANSFORMS.APPLY)
+    # No args
+    return(var) 
+  else if (transformToCode(var) %in% .TRANSFORMS.IMPUTE)
+    # One arg
+    return(sub("^([^_]*_)(.*)(_[^_]*)$", "\\1\\2", var))
+  else if (transformToCode(var) %in% .TRANSFORMS.NORM.CONTINUOUS)
+    # two args
+    return(sub("^([^_]*_)(.*)(_[^_]*){2}$", "\\1\\2", var))
+  else if (transformToCode(var) %in% .TRANSFORMS.BIN)
+  {
+    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
+    return(sub(sprintf("^([^_]*_)(.*)(_[^_]*){%s}$", nparms), "\\1\\2", var))
+  }
+  else
+    return(NULL)
+}
+
+transformToOriginal <- function(var)
+{
+  return(sub("^[^_]*_", "", transformToDerived(var)))
+}
+
+transformToParms <- function(var)
+{
+  if (transformToCode(var) %in% .TRANSFORMS.BIN)
+  {
+    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
+    return(unlist(strsplit(
+           sub("^ ", "",
+           gsub("_", " ",
+           sub(sprintf("^([^_]*_)(.*)((_[^_]*){%s})$",
+                       nparms), "\\3", var))), " ")))
+  }
+}
 
 modalvalue <- function(x, na.rm=FALSE)
 {
@@ -838,6 +901,7 @@ executeTransformImputePerform <- function()
                               sep=""), vname, z, imp.val),
                 "\n}")
     }
+
     if (z %in% input)
     {
       input <- setdiff(input, z)
@@ -997,8 +1061,9 @@ executeTransformRemapPerform <- function()
     return()
   }
 
-  # Record the current variable roles so that we can maintain
-  # these, modified appropriately.
+  # Record the current variable roles so that we can maintain these,
+  # modified appropriately by ignore'ing the binned variables, and
+  # input'ing the newly binned variables.
   
   input <- getSelectedVariables("input")
   target <- getSelectedVariables("target")
@@ -1035,25 +1100,25 @@ executeTransformRemapPerform <- function()
   else if (theWidget("remap_indicator_radiobutton")$getActive())
   {
     action <- "indicator"
-    remap.prefix <- "IN"
+    remap.prefix <- "TIN"
     remap.comment <- "Turn a factor into indicator variables"
   }
   else if (theWidget("remap_joincat_radiobutton")$getActive())
   {
     action <- "joincat"
-    remap.prefix <- "JN"
+    remap.prefix <- "TJN"
     remap.comment <- "Turn two factors into one factor"
   }
   else if (theWidget("remap_asfactor_radiobutton")$getActive())
   {
     action <- "asfactor"
-    remap.prefix <- "FC"
+    remap.prefix <- "TFC"
     remap.comment <- "Transform into a Factor."
   }
   else if (theWidget("remap_asnumeric_radiobutton")$getActive())
   {
     action <- "asnumeric"
-    remap.prefix <- "NM"
+    remap.prefix <- "TNM"
     remap.comment <- "Transform into a Numeric."
   }
   
@@ -1174,22 +1239,33 @@ executeTransformRemapPerform <- function()
 
   # Record the transformation as well as reporting to the log.
 
-  if (action %in% c('quantiles', 'kmeans'))
+  if (action %in% c('quantiles', 'kmeans', "eqwidth"))
   {
+    # 090109 At this stage the remapping has been performed. Why not
+    # get the breaks from the levels of the variables instead of
+    # relying on other information.
+
+    lst <- paste(remap.prefix, vars, sep="_")
+    breaks <- sapply(lst, function(x)
+                      sort(unique(as.numeric(unlist(strsplit(
+                      gsub(",", " ",
+                      gsub("\\(|\\]|\\[", "",
+                      paste(levels(crs$dataset[[x]]),
+                            collapse=" "))), " "))))))
+
     # 090108 The binning command returns as an attribute the
     # breaks. We extract the breaks, add that to the crs$transforms.
 
-    lst <- paste(remap.prefix, vars, sep="_")
+    ## lst <- paste(remap.prefix, vars, sep="_")
     ## if (action == "eqwidth")
-    ## {
-
-    ##   THIS NEEDS WORK
-    ##   breaks <- sort(unique(as.numeric(unlist(strsplit(gsub(",", " ",
-    ##                                                         gsub("\\(|\\]", "", paste(levels(cut(crs$dataset[["WRAIN"]], 4)), collapse=" "))), " ")))))
-    ## }
-    
+    ##   breaks <- sapply(vars, function(x)
+    ##                   sort(unique(as.numeric(unlist(strsplit(
+    ##                   gsub(",", " ",
+    ##                   gsub("\\(|\\]|\\[", "",
+    ##                   paste(levels(cut(crs$dataset[[x]], num.bins)),
+    ##                         collapse=" "))), " "))))))
     ## else
-      breaks <- sapply(lst, function(x) sort(attr(crs$dataset[[x]], "breaks")))
+    ##   breaks <- sapply(lst, function(x) sort(attr(crs$dataset[[x]], "breaks")))
     lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
     crs$transforms <<- union(crs$transforms, lst)
 
@@ -1225,15 +1301,24 @@ executeTransformRemapPerform <- function()
     
   }
   
-  # Record the new variables as having an INPUT role. No other changes
-  # as the original variables are probably still required for
-  # modelling.
+  # Record the new variables as having an INPUT role. 090110
+  # Previously implemented no other changes as the original variables
+  # are probably still required for modelling, but that was
+  # "suprising" so now ignore the originals, like the other
+  # transforms. Particularly because the new and old variables will be
+  # correlated, and so lead to singularities in regression models.
 
   if (action == "joincat")
     input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
   else if (action == "indicator")
     input <- union(input, paste(remap.prefix, vars,
                                 levels(crs$dataset[[vars]]), sep="_"))
+  else if (action %in% c('quantiles', 'kmeans', "eqwidth"))
+  {
+    input <- setdiff(input, vars) # 090110 Added
+    ignore <- union(ignore, vars) # 090110 Added
+    input <- union(input, paste(remap.prefix, vars, sep="_"))
+  }
   else
     input <- union(input, paste(remap.prefix, vars, sep="_"))
 

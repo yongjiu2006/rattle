@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-07 12:11:51 Graham Williams>
+# Time-stamp: <2009-01-11 20:11:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -39,14 +39,13 @@ pmml.kmeans <- function(model,
 
   field <- NULL
   field$name <-  colnames(model$centers)
+  number.of.fields <- length(field$name)
+  field$class <- rep("numeric", number.of.fields) # All fields are numeric
+  names(field$class) <- field$name
   
   orig.fields <- field$name
   if (supportTransformExport(transforms))
-    field$name <- unifyTransforms(field$name, transforms)
-  number.of.fields <- length(field$name)
-
-  field$class <- rep("numeric", number.of.fields) # All fields are numeric
-  names(field$class) <- field$name
+    field <- unifyTransforms(field, transforms)
 
   number.of.clusters <- length(model$size)
   cluster.names <- rownames(model$centers)

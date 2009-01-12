@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-28 20:17:27 Graham Williams>
+# Time-stamp: <2009-01-10 11:42:59 Graham Williams>
 #
 # DATA TAB
 #
@@ -2639,14 +2639,16 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     if (length(target) > 0 && length(ident) > 0 && target %in% ident)
       target <- NULL
     
-    # Always change a "factor" to "factor lvls"
+    # 090110 We used to include the number of levels in the Dat Type
+    # column, but since we now include Unique in the comment column,
+    # no longer include this redundant information.
     
-    if ("factor" %in% cl)
-    {
-      lv <- length(levels(crs$dataset[[variables[i]]]))
-      if (lv > 1)
-        cl <- paste(cl, lv)
-    }
+    ## if ("factor" %in% cl)
+    ## {
+    ##   lv <- length(levels(crs$dataset[[variables[i]]]))
+    ##   if (lv > 1)
+    ##     cl <- paste(cl, lv)
+    ## }
     
     input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
 
@@ -2680,13 +2682,17 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               .COLUMN["risk"], variables[i] %in% risk,
               .COLUMN["ident"], variables[i] %in% ident,
               .COLUMN["ignore"], variables[i] %in% ignore,
-              .COLUMN["comment"], paste(ifelse(missing.count > 0,
-                                               sprintf("Missing: %d ",
-                                                       missing.count), ""),
-                                        ifelse(numeric.var,# &&
+              .COLUMN["comment"], paste(ifelse(transformToCode(variables[i])
+                                               %in% c("RRK_", "RBG_", "RMA_"),
+                                               "*", ""),
+                                        ## 090110 Show unique for all ifelse(numeric.var,# &&
                                                #possible.categoric,
                                                sprintf("Unique: %d ",
-                                                       unique.count), ""),
+                                                       unique.count),## ""),
+                                        ifelse(missing.count > 0,
+                                               sprintf("Missing: %d ",
+                                                       missing.count), ""),
+                                       
                                         ifelse(prcl == "constant",
                                                sprintf("Value: %s ",
                                                        unique.value), ""),
@@ -2705,17 +2711,19 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Integer [%d to %d; mean=%d; median=%d]",
+        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         unique.count,
                          as.integer(mean(crs$dataset[[variables[i]]],
                                          na.rm=TRUE)),
                          as.integer(median(crs$dataset[[variables[i]]],
                                          na.rm=TRUE)))
       else if (cl == "numeric")
-        dtype <- sprintf("Numeric [%.2f to %.2f; mean=%.2f; median=%.2f]",
+        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         unique.count,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE),
                          median(crs$dataset[[variables[i]]], na.rm=TRUE))
       else if (substr(cl, 1, 6) == "factor")

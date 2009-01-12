@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-07 10:46:24 Graham Williams>
+# Time-stamp: <2009-01-10 08:30:05 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "4"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 08 Jan 2009"
+VERSION.DATE <- "Released 09 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -4327,7 +4327,7 @@ on_about_menu_activate <-  function(action, window)
     ab["program-name"] <- "RStat"
     ab["comments"] <- NULL
     about$getWidget("aboutdialog")$setWebsite(paste("http://www.togaware.com",
-                                                    "\n           http://www.ibi.com"))
+                                                    "\n     http://www.ibi.com"))
   }
   
   about$getWidget("aboutdialog")$

@@ -1557,8 +1557,8 @@
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
                             <property name="tooltip" translatable="yes">Folder containing the corpus and optionally a target.csv file.</property>
-                            <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
                             <property name="local_only">False</property>
+                            <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -3002,7 +3002,31 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                     <property name="n_rows">2</property>
                     <property name="n_columns">7</property>
                     <child>
-                      <placeholder/>
+                      <widget class="GtkLabel" id="label38">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Paired Two SampleTests:</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_correlation_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="label" translatable="yes">Correlation</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>
@@ -3030,25 +3054,10 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="group">test_distr_radiobutton</property>
                       </widget>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_correlation_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Correlation</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">6</property>
-                        <property name="right_attach">7</property>
                       </packing>
                     </child>
                     <child>
@@ -3429,11 +3438,10 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                         <property name="visible">True</property>
                         <child>
                           <widget class="GtkLabel" id="label9">
-                            <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="xalign">0</property>
                             <property name="ypad">10</property>
-                            <property name="label" translatable="yes">Select the required rescaling method and the variables to apply this to, then click Execute:</property>
+                            <property name="label" translatable="yes">REMOVED 090110 Select the required rescaling method and the variables to apply this to, then click Execute:</property>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -3444,6 +3452,16 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                           <widget class="GtkHBox" id="hbox6">
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <child>
+                              <widget class="GtkLabel" id="label36">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Normalise:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="padding">5</property>
+                              </packing>
+                            </child>
                             <child>
                               <widget class="GtkRadioButton" id="normalise_recenter_radiobutton">
                                 <property name="visible">True</property>
@@ -3457,6 +3475,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>
@@ -3466,23 +3485,6 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="tooltip" translatable="yes">Rescale to the range 0-1.</property>
                                 <property name="label" translatable="yes">Scale [0-1]</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="normalise_rank_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Change the values into a rank order.</property>
-                                <property name="label" translatable="yes">Rank</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
@@ -3530,6 +3532,63 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkRadioButton" id="rescale_matrix_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">For the selected numeric columns (considered as a matrix) divide each cell by the matrix total.</property>
+                                <property name="label" translatable="yes">Matrix</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHBox" id="hbox38">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkLabel" id="label35">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Rank:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="padding">20</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="normalise_rank_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="tooltip" translatable="yes">Change the values into a rank order.</property>
+                                <property name="label" translatable="yes">Single Variable</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkRadioButton" id="normalise_bygroup_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -3543,23 +3602,20 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="position">5</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="rescale_matrix_radiobutton">
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label37">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">For the selected numeric columns (considered as a matrix) divide each cell by the matrix total.</property>
-                                <property name="label" translatable="yes">Matrix</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
+                                <property name="xalign">1</property>
+                                <property name="label" translatable="yes">Note: Rank transforms do not carry through to scoring.</property>
                               </widget>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="position">6</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                             <child>
@@ -3567,7 +3623,7 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                             </child>
                           </widget>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </widget>
@@ -7898,6 +7954,16 @@ The default chart displays caseload versus performance.</property>
               <widget class="GtkVBox" id="vbox7">
                 <property name="visible">True</property>
                 <child>
+                  <widget class="GtkLabel" id="label33">
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow4">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -7908,6 +7974,9 @@ The default chart displays caseload versus performance.</property>
                       </widget>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
@@ -8234,7 +8303,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</property>
-    <property name="authors">Graham.Williams@togaware.com</property>
+    <property name="authors">Graham Williams</property>
     <signal name="response" handler="on_aboutdialog_response"/>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">
