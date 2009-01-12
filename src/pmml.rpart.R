@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-07 12:18:04 Graham Williams>
+# Time-stamp: <2009-01-12 07:01:52 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -61,16 +61,9 @@ pmml.rpart <- function(model,
   # on the one variable. TODO How to fix? For now, we will assume a
   # single transform on each variable.
 
+  ofield <- field
   if (supportTransformExport(transforms))
-  {
-    field$name <- unifyTransforms(field$name, transforms)
-
-    # 090102 Reset the field$class names to correspond to the new
-    # variables.
-    
-    names(field$class) <- field$name
-  }
-    
+    field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)
   
   target <- field$name[1]
@@ -119,7 +112,7 @@ pmml.rpart <- function(model,
   
   depth <- rpart:::tree.depth(as.numeric(row.names(model$frame)))
   count <- model$frame$n
-  label <- labels(model, pretty=0, digits=7)
+  label <- labels(model, minlength=0, digits=7)
   fieldLabel <- label[1]
   operator <- ""
   value <- "" #list("")
@@ -181,12 +174,12 @@ pmml.rpart <- function(model,
 }
 
 ############################################################################
-# FUNCTION: getBinaryTreeNodes
+# FUNCTION: genBinaryTreeNodes
 #
 # Goal: create nodes for the tree (a recursive function)
 
 genBinaryTreeNodes <- function(depths, ids, counts, scores, fieldLabels,
-                               ops, values,model, parent_ii, rows,position)
+                               ops, values, model, parent_ii, rows,position)
 {
   depth <- depths[1]
   count <- counts[1]
@@ -437,7 +430,21 @@ getSimpleSetPredicate <- function(field, op, value)
 {
   predicate <- xmlNode("SimpleSetPredicate", attrs=c(field=field,
                                                booleanOperator=op))
-  value <- strsplit(value[[1]], ",")[[1]]
+  # 090112 gjw We need to account for embedded commans in the
+  # values. This comes up when we have R generated bins which will
+  # have a list of valeus like "[402,602],(602,697],(697,763]" or
+  # "(101,165],(229,292]". This is getting split incorrectly when
+  # splitting on commas. I should get the values directly, using the
+  # variable levels, but for now, look out for this special case and
+  # deal with it. Another solution would be to change how the values
+  # are represented in the binning, replacing the embedded "," with a
+  # "-"
+
+  value <- value[[1]]
+  if (length(grep("^[[(][[:digit:]\\.]*", value))>0)
+    value <- sub(']]', ']', paste(strsplit(value, "],")[[1]], "]", sep=""))
+  else
+    value <- strsplit(value, ",")[[1]]
 
   # 081019 gjw We need quotes around the values since there may be
   # embedded spaces. So we ensure they have quotes. In the PMML this

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-07 12:19:15 Graham Williams>
+# Time-stamp: <2009-01-11 09:41:51 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -43,8 +43,7 @@ pmml.hclust <- function(model,
   orig.fields <- field$name
 
   if (supportTransformExport(transforms))
-    field$name <- unifyTransforms(field$name, transforms)
-
+    field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)
 
   field$class <- rep("numeric", number.of.fields) # All fields are numeric
