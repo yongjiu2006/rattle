@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.8.
+    version is 2.4.9.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+390 090114 Check for pmmltoc functionality in pmmltoc and pmml:::pmmltoc.
 389 090114 Put utility transforms functions into pmml.R
            Remove rattle reliance on utility transform functions
            Release pmml 1.2.4
@@ -746,6 +747,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-14 08:42:16 Graham Williams</i>
+<i>Last Modified 2009-01-14 10:38:45 Graham Williams</i>
 <!-- hhmts end -->
   </p>

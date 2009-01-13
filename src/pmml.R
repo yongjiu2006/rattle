@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-14 08:31:10 Graham Williams>
+# Time-stamp: <2009-01-14 08:43:46 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.3" # Bug fixes
+  VERSION <- "1.2.4" # Include collection of utility transform functions.
+    # "1.2.3" # Bug fixes
     # "1.2.2" # Add test for transform support.
     # "1.2.1" # Streamline conditional handling of transforms.
     # "1.2.0" # Fix documentation and packaing and release to CRAN
