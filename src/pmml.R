@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-12 21:42:24 Graham Williams>
+# Time-stamp: <2009-01-14 08:31:10 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -246,6 +246,9 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
   return(mining.schema)
 }
 
+########################################################################
+# TRANSFORMS FRAMEWORK
+
 supportTransformExport <- function(transforms=NULL)
 {
   # 090107 Returns TRUE/FALSE. Make sure the required functions for
@@ -258,5 +261,118 @@ supportTransformExport <- function(transforms=NULL)
   return(length(getAnywhere("pmml.transforms")$objs) > 0 &&
          length(getAnywhere("unifyTransforms")$objs) > 0 &&
          ! is.null(transforms))
+}
+
+unifyTransforms <- function(field, transforms)
+{
+  # 090102 Clean up the list of variables in field based on the known
+  # transforms. The variable transforms is a list of strings,
+  # generally of the form "A_B_C_D_E", at least for the transforms I
+  # am working with at present (see .TRANSFORMS). A is the type of
+  # transform, and D and E are the two (more or less, dependingon the
+  # type, A) parameters of the transform. We make sure "B_C" (which
+  # might have more than a single underscore) is included in the list
+  # of vars and that "A_B_C_D_E" is not included in the list.
+
+  # 090111 We also make sure that the field class is reset
+  # appropriately, in special cases. So a binning transform, which is
+  # now a categoric, was originally a numeric! Change it back.
+
+  for (i in transforms)
+  {
+
+    tr.type <- transformToCode(i)
+    ibase <- transformToDerived(i)
+
+    # 090102 The name ibase should be in the list of vars, where we
+    # replace it with the the same name, but remove the first
+    # component, to give B_C.
+
+    if (ibase %in% field$name)
+    {
+      index <- which(ibase == field$name)
+      
+      # 081229 I should probably be testing if index is NULL
+
+      new.var <- sub("^([^_]*)_", "", field$name[index])
+
+      # 090111 For the binning operations, be sure to change the class
+      # from categoric back to numeric.
+
+      if (tr.type %in% .TRANSFORMS.BIN)
+        field$class[index] <- "numeric"
+
+      # 090102 If the new var is already in the input variables, then
+      # simply remove the entry naming the transformed var, otherwise
+      # replace the entry naming the transformed var with the new var.
+      
+      if (new.var %in% field$name)
+      {
+        field$name <- field$name[-index]
+        field$class <- field$class[-index]
+      }
+      else
+        field$name[index] <- new.var
+    }
+  }
+
+  # 090102 Reset the field$class names to correspond to the new
+  # variables.
+
+  names(field$class) <- field$name
+  
+  return(field)
+}
+
+isTransformVar <- function(var.name)
+{
+  return(transformToCode(var.name) %in% .TRANSFORMS)
+}
+
+transformToCode <- function(var)
+{
+  code <- sub("^([^_]*_).*$", "\\1", var)
+  if (sprintf("%s_", substr(code, 1, 2)) %in% .TRANSFORMS.BIN)
+    code <- sprintf("%s_", substr(code, 1, 2))
+      
+  return(code)
+}
+
+transformToDerived <- function(var)
+{
+  if (transformToCode(var) %in% .TRANSFORMS.APPLY)
+    # No args
+    return(var) 
+  else if (transformToCode(var) %in% .TRANSFORMS.IMPUTE)
+    # One arg
+    return(sub("^([^_]*_)(.*)(_[^_]*)$", "\\1\\2", var))
+  else if (transformToCode(var) %in% .TRANSFORMS.NORM.CONTINUOUS)
+    # two args
+    return(sub("^([^_]*_)(.*)(_[^_]*){2}$", "\\1\\2", var))
+  else if (transformToCode(var) %in% .TRANSFORMS.BIN)
+  {
+    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
+    return(sub(sprintf("^([^_]*_)(.*)(_[^_]*){%s}$", nparms), "\\1\\2", var))
+  }
+  else
+    return(NULL)
+}
+
+transformToOriginal <- function(var)
+{
+  return(sub("^[^_]*_", "", transformToDerived(var)))
+}
+
+transformToParms <- function(var)
+{
+  if (transformToCode(var) %in% .TRANSFORMS.BIN)
+  {
+    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
+    return(unlist(strsplit(
+           sub("^ ", "",
+           gsub("_", " ",
+           sub(sprintf("^([^_]*_)(.*)((_[^_]*){%s})$",
+                       nparms), "\\3", var))), " ")))
+  }
 }
 

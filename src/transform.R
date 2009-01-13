@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-10 16:09:34 Graham Williams>
+# Time-stamp: <2009-01-14 08:29:18 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -83,58 +83,6 @@ on_impute_constant_radiobutton_toggled <- function(button)
 
 ########################################################################
 # UTILITIES
-
-isTransformVar <- function(var.name)
-{
-  return(transformToCode(var.name) %in% .TRANSFORMS)
-}
-
-transformToCode <- function(var)
-{
-  code <- sub("^([^_]*_).*$", "\\1", var)
-  if (sprintf("%s_", substr(code, 1, 2)) %in% .TRANSFORMS.BIN)
-    code <- sprintf("%s_", substr(code, 1, 2))
-      
-  return(code)
-}
-
-transformToDerived <- function(var)
-{
-  if (transformToCode(var) %in% .TRANSFORMS.APPLY)
-    # No args
-    return(var) 
-  else if (transformToCode(var) %in% .TRANSFORMS.IMPUTE)
-    # One arg
-    return(sub("^([^_]*_)(.*)(_[^_]*)$", "\\1\\2", var))
-  else if (transformToCode(var) %in% .TRANSFORMS.NORM.CONTINUOUS)
-    # two args
-    return(sub("^([^_]*_)(.*)(_[^_]*){2}$", "\\1\\2", var))
-  else if (transformToCode(var) %in% .TRANSFORMS.BIN)
-  {
-    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
-    return(sub(sprintf("^([^_]*_)(.*)(_[^_]*){%s}$", nparms), "\\1\\2", var))
-  }
-  else
-    return(NULL)
-}
-
-transformToOriginal <- function(var)
-{
-  return(sub("^[^_]*_", "", transformToDerived(var)))
-}
-
-transformToParms <- function(var)
-{
-  if (transformToCode(var) %in% .TRANSFORMS.BIN)
-  {
-    nparms <- as.integer(sub("^..([^_]*)_.*$", "\\1", var)) + 1
-    return(unlist(strsplit(
-           sub("^ ", "",
-           gsub("_", " ",
-           sub(sprintf("^([^_]*_)(.*)((_[^_]*){%s})$",
-                       nparms), "\\3", var))), " ")))
-  }
-}
 
 modalvalue <- function(x, na.rm=FALSE)
 {
