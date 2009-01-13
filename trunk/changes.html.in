@@ -6,14 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.7.
+    version is 2.4.8.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
-388 080112 Release pmml 1.2.3
+389 090114 Put utility transforms functions into pmml.R
+           Remove rattle reliance on utility transform functions
+           Release pmml 1.2.4
+388 090112 Release pmml 1.2.3
            Fix bug in pmml.kmeans - unify before fields caused problems
            Centre urls in the about.
            Fix DataDictionary bug in pmml - use seq_along rather than seq.
@@ -26,13 +29,13 @@
            Framework for quantiles, kmeans, eqwidth binning
            When doing a binning transform make original vars ignore
            Various interface cleanups
-387 080109 Function binning adds an attribute which records the breaks.
+387 090109 Function binning adds an attribute which records the breaks.
            Framework for handling binning transforms
-386 080108 Add test for transform support to pmml - release 1.2.2
-385 080107 Framework for handling export of imputation transforms.
-384 080107 Streamline conditional handling of transforms.
-383 080107 For RStat remove the about comments
-382 080107 Conditionally remove load time welcome message
+386 090108 Add test for transform support to pmml - release 1.2.2
+385 090107 Framework for handling export of imputation transforms.
+384 090107 Streamline conditional handling of transforms.
+383 090107 For RStat remove the about comments
+382 090107 Conditionally remove load time welcome message
 381 090107 Split out transforms.R from rattle.R
            Correct spelling of distributed
            Release pmml 1.2.0
@@ -743,6 +746,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-12 21:50:57 Graham Williams</i>
+<i>Last Modified 2009-01-14 08:42:16 Graham Williams</i>
 <!-- hhmts end -->
   </p>
