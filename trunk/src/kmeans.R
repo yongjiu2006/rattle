@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-02 12:35:59 Graham Williams>
+# Time-stamp: <2009-01-15 07:08:14 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -353,9 +353,13 @@ executeClusterKMeans <- function(include)
 
     if (inherits(result, "try-error"))
     {
-      if (any(grep("more cluster centers than distinct data points", result)))
+      if (any(grep("more cluster centers than distinct data points", result))||
+          any(grep("cannot take a sample larger than the population", result)))
         errorDialog("The data does not support the number of clusters",
                     "requested. Reduce the number of clusters and try again.")
+      else
+        errorDialog("The cluster build failed.",
+                    "The error was:", result)
       return(FALSE)
     }
 

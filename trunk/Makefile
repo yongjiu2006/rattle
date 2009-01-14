@@ -71,6 +71,7 @@ PSOURCE = \
 	src/pmml.lm.R \
 	src/pmml.multinom.R \
 	src/pmml.nnet.R \
+	src/pmmltoc.R \
 	src/pmml.randomForest.R \
 	src/pmml.rpart.R \
 	src/pmml.rsf.R
@@ -177,7 +178,7 @@ pbuild: data pmml_$(PVERSION).tar.gz
 rattle_src.zip:
 	cp $(R_SOURCE) zipsrc
 	cp $(PSOURCE) zipsrc
-	cp src/pmmltoc.R src/all.R zipsrc
+	cp src/pmmltocibi.R src/all.R zipsrc
 	cp $(GLADE_SOURCE) zipsrc
 	zip -r9 rattle_src.zip zipsrc
 	mv rattle_src.zip /var/www/access/

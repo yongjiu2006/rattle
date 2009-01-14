@@ -13,7 +13,10 @@
    </p>
 
 <pre>
-392 090114 Include .TRANSFORM constants within pmml package.
+393 090115 Add pmmltoc dummy function to pmml and export.
+           Release pmml 1.2.6
+           Update kmeans message when more centers than data. 
+392 090114 Include .TRANSFORM constants within pmml package rather than rattle.
            Release pmml 1.2.5
 391 090114 Add weather.csv to repository.
 390 090114 Check for pmmltoc functionality in pmmltoc and pmml:::pmmltoc.
@@ -750,6 +753,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-14 10:56:52 Graham Williams</i>
+<i>Last Modified 2009-01-15 07:34:36 Graham Williams</i>
 <!-- hhmts end -->
   </p>

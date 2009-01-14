@@ -35,12 +35,13 @@ source("pmml.ksvm.R")
 source("pmml.lm.R")
 source("pmml.multinom.R")
 source("pmml.nnet.R")
+source("pmmltoc.R")
 source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
 source("pmml.transforms.R")
 
-source("pmmltoc.R")
+source("pmmltocibi.R")
 
 #setwd(cwd)
 
