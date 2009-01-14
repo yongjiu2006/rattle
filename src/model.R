@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-14 10:35:50 Graham Williams>
+# Time-stamp: <2009-01-15 07:08:57 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1221,15 +1221,15 @@ getExportSaveName <- function(mtype)
 
   ext <- tolower(get.extension(save.name))
 
-  if (ext == "c" && ! (exists("pmmltoc") || exists("pmml:::pmmltoc")))
-  {
-    errorDialog("The PMMLtoC functionality does not appear to be available.",
-                "This function needs to be loaded.",
-                if (isRattle())
-                paste("It is not available in Rattle by default.",
-                      "\n\n", SUPPORT))
-    return(NULL)
-  }
+  ## if (ext == "c" && length(getAnywhere("pmmltoc")$where) == 0)
+  ## {
+  ##   errorDialog("The PMMLtoC functionality does not appear to be available.",
+  ##               "This function needs to be loaded.",
+  ##               if (isRattle())
+  ##               paste("It is not available in Rattle by default.",
+  ##                     "\n\n", SUPPORT))
+  ##   return(NULL)
+  ## }
 
   if (isRStat())
   {
