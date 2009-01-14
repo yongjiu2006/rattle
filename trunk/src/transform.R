@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-14 08:29:18 Graham Williams>
+# Time-stamp: <2009-01-14 10:57:36 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -20,18 +20,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
-
-########################################################################
-# GLOBAL CONSTANTS
-
-.TRANSFORMS.NORM.CONTINUOUS <- c("RRC_", "R01_", "RMD_")
-.TRANSFORMS.IMPUTE <- paste(c("IZR", "IMN", "IMD", "IMO", "ICN"), "_", sep="")
-.TRANSFORMS.APPLY <- c("RLG_")
-.TRANSFORMS.BIN <- c("BQ_", "BK_", "BE_")
-.TRANSFORMS <- c(.TRANSFORMS.NORM.CONTINUOUS,
-                 .TRANSFORMS.APPLY,
-                 .TRANSFORMS.IMPUTE,
-                 .TRANSFORMS.BIN)
 
 ########################################################################
 # CALLBACKS
