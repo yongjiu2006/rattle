@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.11.
+    version is 2.4.13.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+394 090115 Add a textview explanation for Latticist
+           Normalise -> Normalize!
+           Ensure transforms are restored on a project load.
+           GUI changes to improve widget alignments
 393 090115 Add pmmltoc dummy function to pmml and export.
            Release pmml 1.2.6
            Update kmeans message when more centers than data. 
@@ -753,6 +757,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-15 07:34:36 Graham Williams</i>
+<i>Last Modified 2009-01-15 22:14:04 gjw</i>
 <!-- hhmts end -->
   </p>

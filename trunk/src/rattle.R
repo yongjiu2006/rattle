@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-10 08:30:05 Graham Williams>
+# Time-stamp: <2009-01-15 15:21:34 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "4"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Jan 2009"
+VERSION.DATE <- "Released 15 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."
@@ -542,6 +542,7 @@ rattle <- function(csvname=NULL,
   .EXPLORE.CORRELATION.TAB <<- getNotebookPage(.EXPLORE, "correlation")
   .EXPLORE.HIERCOR.TAB     <<- getNotebookPage(.EXPLORE, "hiercor")
   .EXPLORE.PRCOMP.TAB      <<- getNotebookPage(.EXPLORE, "prcomp")
+  .EXPLORE.PLAYWITH.TAB    <<- getNotebookPage(.EXPLORE, "playwith")
   
   .CLUSTER            <<- theWidget("cluster_notebook")
   .CLUSTER.KMEANS.TAB <<- getNotebookPage(.CLUSTER, "kmeans")
@@ -2191,6 +2192,12 @@ on_explot_radiobutton_toggled <- function(button)
 on_ggobi_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.GGOBI.TAB)
+  setStatusBar()
+}
+
+on_playwith_radiobutton_toggled <- function(button)
+{
+  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.PLAYWITH.TAB)
   setStatusBar()
 }
 

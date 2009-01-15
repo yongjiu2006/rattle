@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-22 16:26:35 Graham Williams>
+# Time-stamp: <2009-01-15 21:02:55 Graham Williams>
 #
 # Project functionality.
 #
@@ -20,6 +20,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+# CALLBACKS
 
 on_new_activate <- function(action, window)     { newProject()  }
 on_new_button_clicked <- function(action, window)  { newProject() }
@@ -79,6 +82,9 @@ on_save_button_clicked <- function(action, window)
   set.cursor()
 }
 
+########################################################################
+# NEW PROJECT
+
 newProject <- function()
 {
   if ( not.null(listBuiltModels()) )
@@ -126,6 +132,8 @@ enableDataSourceFunctions <- function(enable=TRUE)
   for (w in widgets) theWidget(w)$setSensitive(enable)
 }
 
+########################################################################
+# SAVE PROJECT
 
 saveProject <- function()
 {
@@ -436,7 +444,7 @@ loadProject <- function()
     crs$weights <<- crs$weights
   }
 
-  ## SAMPLE
+  # SAMPLE
 
   crs$sample      <<- crs$sample
   crs$sample.seed <<- crs$sample.seed
@@ -456,13 +464,17 @@ loadProject <- function()
     theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   
-  ## EXPLORE
+  # EXPLORE
   
   setTextviewContents("summary_textview", crs$text$summary)
   setTextviewContents("correlation_textview", crs$text$correlation)
   setTextviewContents("prcomp_textview", crs$text$prcomp)
 
-  ## CLUSTER
+  # TRANSFORM
+
+  crs$transforms <<- crs$transforms
+  
+  # CLUSTER
   
   crs$kmeans      <<- crs$kmeans
   crs$kmeans.seed <<- crs$kmeans.seed
