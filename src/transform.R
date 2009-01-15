@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-14 10:57:36 Graham Williams>
+# Time-stamp: <2009-01-15 15:11:42 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -241,7 +241,7 @@ executeTransformNormalisePerform <- function()
     
     if (numnumerics == 0)
     {
-      infoDialog(paste("We must have a numeric variable to normalise for the",
+      infoDialog(paste("We must have a numeric variable to normalize for the",
                        "By Group option. Please select one numeric variable."))
       return()
     }
@@ -275,7 +275,7 @@ executeTransformNormalisePerform <- function()
   
   if (action %in% c("scale01", "rank", "medianad", "bygroup"))
   {
-    if (! packageIsAvailable("reshape", "normalise data")) return()
+    if (! packageIsAvailable("reshape", "normalize data")) return()
     lib.cmd <- "require(reshape, quietly=TRUE)"
     appendLog("The reshape package provides the rescaler function.", lib.cmd)
     eval(parse(text=lib.cmd))
@@ -538,14 +538,14 @@ executeTransformNormalisePerform <- function()
 
     # Update the status bar
 
-    setStatusBar(sprintf(paste("Normalised variables added to the dataset",
+    setStatusBar(sprintf(paste("Normalized variables added to the dataset",
                                "with '%s' prefix."), vprefix))
   }
   else
   {
-    warnDialog(paste("No variables have been selected for normalisation.",
+    warnDialog(paste("No variables have been selected for normalization.",
                      "Please select some variables and Execute again."))
-    setStatusBar("No variables selected to be normalised.")
+    setStatusBar("No variables selected to be normalized.")
   }
 }  
 
