@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-01-14 10:57:30 Graham Williams>
+# Time-stamp: <2009-01-17 09:44:33 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.5" # Include .TRANSFORM constants within pmml package.
+  VERSION <- "1.2.6" # Support RMA transforms.
+    # "1.2.5" # Include .TRANSFORM constants within pmml package.
     # "1.2.4" # Include collection of utility transform functions.
     # "1.2.3" # Bug fixes
     # "1.2.2" # Add test for transform support.
@@ -253,7 +254,7 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
 
 # GLOBAL CONSTANTS
 
-.TRANSFORMS.NORM.CONTINUOUS <- c("RRC_", "R01_", "RMD_")
+.TRANSFORMS.NORM.CONTINUOUS <- c("RRC_", "R01_", "RMD_", "RMA_")
 .TRANSFORMS.IMPUTE <- paste(c("IZR", "IMN", "IMD", "IMO", "ICN"), "_", sep="")
 .TRANSFORMS.APPLY <- c("RLG_")
 .TRANSFORMS.BIN <- c("BQ_", "BK_", "BE_")

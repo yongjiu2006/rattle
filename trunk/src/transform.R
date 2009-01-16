@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-15 15:11:42 Graham Williams>
+# Time-stamp: <2009-01-17 09:39:09 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -415,6 +415,7 @@ executeTransformNormalisePerform <- function()
                           vname, v)
       norm.comment <- paste("Rescale by subtracting median and dividing",
                             "by median abs deviation.")
+
       # Record the transformation for inclusion in PMML.
       
       lst <- paste(vname,
@@ -469,6 +470,26 @@ executeTransformNormalisePerform <- function()
                                 'crs$dataset[["%s"]]/matrix.total'),
                           vname, v)
       norm.comment <- "Divide column values by matrix total."
+
+      # 090117 Remove any old instances of the same transform. Could
+      # this be a general test outside the loop?
+
+      present <- grep(vname, crs$transforms)
+      if (length(present) >0) crs$transforms <<- crs$transforms[-present]
+      
+      # 090117 Record the transformation for inclusion in PMML. Note
+      # that we only need matrix.total, but all other members of
+      # .TRANSFORMS.NORM.CONTINUOUS have two paramters, so include the
+      # 1 to keep the group consistent.
+
+      lst <- paste(vname, matrix.total, 1, sep="_")
+      crs$transforms <<- union(crs$transforms, lst)
+
+      # For the log, record the command to use when scoring the data.
+      
+      norm.score.command <- sprintf(paste('crs$dataset[["%s"]] <-',
+                                          'crs$dataset[["%s"]]/%f'),
+                                    vname, v, matrix.total)
     }
     else if (action == "log")
     {

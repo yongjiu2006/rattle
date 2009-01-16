@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-14 08:28:23 Graham Williams>
+# Time-stamp: <2009-01-17 09:27:14 Graham Williams>
 #
 # DATA TAB
 #
@@ -2683,7 +2683,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               .COLUMN["ident"], variables[i] %in% ident,
               .COLUMN["ignore"], variables[i] %in% ignore,
               .COLUMN["comment"], paste(ifelse(substr(variables[i], 1, 4)
-                                               %in% c("RRK_", "RBG_", "RMA_"),
+                                               %in% c("RRK_", "RBG_"),
                                                "*", ""),
                                         ## 090110 Show unique for all ifelse(numeric.var,# &&
                                                #possible.categoric,
