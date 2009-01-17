@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-02 12:55:31 Graham Williams>
+# Time-stamp: <2009-01-18 07:36:17 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -400,7 +400,8 @@ exportAssociateTab <- function()
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export associate rules")) return(FALSE)
   appendLog("Load the PMML package to export association rules.", lib.cmd)
-  eval(parse(text=lib.cmd))
+  # Load the package unless we already have a pmml defined (through source).
+  if (! exists("pmml")) eval(parse(text=lib.cmd))
   
   # Obtain filename to write the PMML to.
   

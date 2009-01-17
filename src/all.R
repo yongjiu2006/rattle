@@ -1,6 +1,3 @@
-#cwd <- getwd()
-#setwd("/home/gjw/projects/rattle/src")
-#redo <- function() {source("all.R"); rattle(tooltiphack=FALSE)}
 source("rattle.R")
 source("zzz.R")
 source("associate.R")
@@ -42,13 +39,3 @@ source("pmml.rsf.R")
 source("pmml.transforms.R")
 
 source("pmmltocibi.R")
-
-#setwd(cwd)
-
-#audit <- read.csv("http://rattle.togaware.com/audit.csv")
-
-#library(playwith)
-#latticist(audit)
-
-#rattle(tooltiphack=TRUE)
-#rattle()

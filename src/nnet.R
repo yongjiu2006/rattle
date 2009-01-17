@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-22 16:25:41 Graham Williams>
+# Time-stamp: <2009-01-18 07:37:46 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -178,7 +178,8 @@ exportNNetTab <- function()
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export neural net")) return(FALSE)
   appendLog("Load the PMML package to export a neural net.", lib.cmd)
-  eval(parse(text=lib.cmd))
+  # Load the package unless we already have a pmml defined (through source).
+  if (! exists("pmml")) eval(parse(text=lib.cmd))
   
   # Obtain filename to write the PMML to.
   

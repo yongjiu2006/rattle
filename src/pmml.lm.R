@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-01-11 09:41:47 Graham Williams>
+# Time-stamp: <2009-01-17 20:16:14 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -149,11 +149,17 @@ pmml.lm <- function(model,
 
   if (as.character(model$call[[3]])[1] == "binomial")
   {
-    # 080620 TODO The YES here should be the actual class value that
-    # is being predicted.
-    
+    # 090117 Identify the two possible values for the target variable,
+    # and select the second as the target. Extend the PMML specs so I
+    # can add the other value as well, since I need that when
+    # generating C code to return a class rather than a probability.
+
+    values <- sort(unique(model$data[[target]]))
+    alternative.value <- as.character(values[1])
+    target.value <- as.character(values[2])
     regTable <- xmlNode("RegressionTable",
-                        attrs=c(targetCategory="YES",
+                        attrs=c(targetCategory=target.value,
+                          alternativeCategory=alternative.value,
                           intercept=as.numeric(coeff[1])))
   }
   else

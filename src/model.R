@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-15 07:08:57 Graham Williams>
+# Time-stamp: <2009-01-18 07:37:12 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1103,145 +1103,6 @@ exportRegressionTab <- function()
   
 }
 
-getExportSaveName <- function(mtype)
-{
-  # Require the pmml package for either exporting to PMML or C (via
-  # PMML).
-  
-  lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! (exists("pmml") ||
-         packageIsAvailable("pmml", paste("export a", commonName(mtype), "model"))))
-      return(NULL)
-  appendLog("Load the PMML package to export a model.", lib.cmd)
-  eval(parse(text=lib.cmd))
-
-  # Obtain filename to write the PMML or C code to.
-
-  # 081218 Use the glade generated filechooser rather than my original
-  # hand-coded one. It is much simpler to handle the formatting.
-
-  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
-                silent=TRUE)
-  if (inherits(result, "try-error"))
-    dialogGUI <- gladeXMLNew("rattle.glade",
-                             root="export_filechooserdialog")
-  else
-    dialogGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
-                             root="export_filechooserdialog")
-
-  if (! isRStat())
-    dialogGUI$getWidget("export_filechooser_options_table")$hide()
-
-  dialog <- dialogGUI$getWidget("export_filechooserdialog")
-
-  if (isRStat()) dialog$setTitle("Export C or PMML")
-
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype,
-                                ifelse(isRStat(), ".c", ".xml"), sep=""))
-
-  if (isRStat())
-  {
-    ff <- gtkFileFilterNew()
-    ff$setName("C Files")
-    ff$addPattern("*.c")
-    dialog$addFilter(ff)
-  }
-
-  ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
-  ff$addPattern("*.xml")
-  dialog$addFilter(ff)
-
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
-
-  if ( isRStat())
-  {
-    if (mtype %in% c("glm"))
-      dialogGUI$
-      getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
-    
-    # 081218 Add glm when implemented.
-    
-    if (!binomialTarget() || ! mtype %in% c("rpart"))
-    {
-      dialogGUI$
-      getWidget("export_filechooser_target_label")$setSensitive(FALSE)
-
-      dialogGUI$
-      getWidget("export_filechooser_class_radiobutton")$setSensitive(FALSE)
-
-      dialogGUI$
-      getWidget("export_filechooser_probabilities_radiobutton")$setSensitive(FALSE)
-    }
-  }
-
-  if (dialog$run() == GtkResponseType["accept"])
-  {
-    save.name <- dialog$getFilename()
-    save.type <- dialog$getFilter()$getName()
-    if (isRStat())
-    {
-      includePMML <- dialogGUI$
-      getWidget("export_filechooser_pmml_checkbutton")$getActive()
-
-      includeMetaData <- dialogGUI$
-      getWidget("export_filechooser_metadata_checkbutton")$getActive()
-
-      exportClass <- dialogGUI$
-      getWidget("export_filechooser_class_radiobutton")$getActive()
-    }
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return(NULL)
-  }
-
-  # 081222 Maybe assume now that we need to get an extension specified
-  # by the user - don't do things behind their back.
-###   if (get.extension(save.name) == "")
-###   {
-###     if (save.type == "C Files")
-###       save.name <- sprintf("%s.c", save.name)
-###     else
-###     {
-###       if (save.type == "PMML Files")
-###         save.name <- sprintf("%s.xml", save.name)
-###       else if (isRStat())
-###         save.name <- sprintf("%s.c", save.name)
-###       else
-###         save.name <- sprintf("%s.xml", save.name)
-###     }
-###   }
-
-  ext <- tolower(get.extension(save.name))
-
-  ## if (ext == "c" && length(getAnywhere("pmmltoc")$where) == 0)
-  ## {
-  ##   errorDialog("The PMMLtoC functionality does not appear to be available.",
-  ##               "This function needs to be loaded.",
-  ##               if (isRattle())
-  ##               paste("It is not available in Rattle by default.",
-  ##                     "\n\n", SUPPORT))
-  ##   return(NULL)
-  ## }
-
-  if (isRStat())
-  {
-    attr(save.name, "includePMML") <- includePMML
-    attr(save.name, "includeMetaData") <- includeMetaData
-    attr(save.name, "exportClass") <- exportClass
-  }
-  
-  return(save.name)
-}
-
-
 #------------------------------------------------------------------------
 # MODEL SVM - SUPPORT VECTOR MACHINE
 #
@@ -1459,7 +1320,8 @@ exportSVMTab <- function()
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! packageIsAvailable("pmml", "export SVM model")) return(FALSE)
   appendLog("Load the PMML package to export a SVM model.", lib.cmd)
-  eval(parse(text=lib.cmd))
+  # Load the package unless we already have a pmml defined (through source).
+  if (! exists("pmml")) eval(parse(text=lib.cmd))
   
   # Obtain filename to write the PMML to.
   

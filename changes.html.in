@@ -6,14 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.14.
+    version is 2.4.15.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
-395 091117 Add support for RMA transforms.
+396 090118 Conditionally require pmml if pmml not defined.
+           Handle logistic regression categories for pmml export
+           Release pmml 1.2.7
+395 090117 Add support for RMA transforms.
            Release pmml 1.2.6
 394 090115 Add a textview explanation for Latticist
            Normalise -> Normalize!
@@ -758,6 +761,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-17 09:43:47 Graham Williams</i>
+<i>Last Modified 2009-01-18 08:45:16 Graham Williams</i>
 <!-- hhmts end -->
   </p>
