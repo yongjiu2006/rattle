@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 09:12:51 Graham Williams>
+# Time-stamp: <2009-01-20 20:12:40 Graham Williams>
 #
 # RPART TAB
 #
@@ -587,7 +587,7 @@ listRPartRules <- function(model, compact=FALSE)
       cat("\n")
       pth <- path.rpart(model, nodes=as.numeric(names[i]), print.it=FALSE)
       pth <- unlist(pth)[-1]
-      if (length(pth) == 0) pth <- "True"
+      if (! length(pth)) pth <- "True"
       if (compact)
       {
         cat(sprintf("R%03s ", names[i]))
@@ -958,7 +958,7 @@ exportRpartTab <- function()
   # inside the string that is being parsed.
   
   pmml.cmd <- sprintf("pmml(crs$rpart%s)",
-                      ifelse(length(crs$transforms) > 0,
+                      ifelse(length(crs$transforms),
                              ", transforms=crs$transforms", ""))
 
   if (ext == "xml")

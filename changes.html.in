@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.16.
+    version is 2.4.17.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+398 090122 Minor "length" test cleanup
+           Minor GUI spacing (Test Tab)
 397 090118 Add a require(XML) into export of RPart model
 396 090118 Conditionally require pmml if pmml not defined.
            Handle logistic regression categories for pmml export
@@ -762,6 +764,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-18 09:45:13 Graham Williams</i>
+<i>Last Modified 2009-01-22 06:38:04 Graham Williams</i>
 <!-- hhmts end -->
   </p>

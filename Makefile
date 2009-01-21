@@ -115,6 +115,9 @@ meld:
 	  meld $$i;\
 	done
 
+diff:
+	svn diff
+
 .PHONY: install
 install: update build pbuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
