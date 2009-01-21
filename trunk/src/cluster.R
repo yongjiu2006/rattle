@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 17:43:05 Graham Williams>
+# Time-stamp: <2009-01-20 20:13:01 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -43,7 +43,7 @@ executeClusterTab <- function()
   # variables. That is, only exclude the IGNORE and IDENT variables.
 
   include <- getNumericVariables()
-  if (length(include) == 0)
+  if (! length(include))
   {
     errorDialog("Clusters are currently calculated only for numeric data.",
                 "No numeric variables were found in the dataset",

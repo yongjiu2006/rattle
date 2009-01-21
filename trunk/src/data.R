@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-17 09:27:14 Graham Williams>
+# Time-stamp: <2009-01-20 20:13:59 Graham Williams>
 #
 # DATA TAB
 #
@@ -195,7 +195,7 @@ updateFilenameFilters <- function(button, fname)
 
   if (fname == "CSV")
   {
-    if (! (length(filters) > 0 && filters[[1]]$getName() == "CSV Files"))
+    if (! (length(filters) && filters[[1]]$getName() == "CSV Files"))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
@@ -217,7 +217,7 @@ updateFilenameFilters <- function(button, fname)
   }
   else if (fname == "ARFF")
   {
-    if (! (length(filters) > 0 && filters[[1]]$getName() == "ARFF Files"))
+    if (! (length(filters) && filters[[1]]$getName() == "ARFF Files"))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
@@ -234,7 +234,7 @@ updateFilenameFilters <- function(button, fname)
   }
   else if (fname == "Rdata")
   {
-    if (! (length(filters) > 0 && filters[[1]]$getName() == "Rdata Files"))
+    if (! (length(filters) && filters[[1]]$getName() == "Rdata Files"))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
