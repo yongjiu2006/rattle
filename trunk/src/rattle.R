@@ -15,7 +15,7 @@ MAJOR <- "2"
 MINOR <- "4"
 REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 18 Jan 2009"
+VERSION.DATE <- "Released 22 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 SUPPORT <- "Contact support@togaware.com."

@@ -1557,8 +1557,8 @@
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
                             <property name="tooltip" translatable="yes">Folder containing the corpus and optionally a target.csv file.</property>
-                            <property name="local_only">False</property>
                             <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -2540,9 +2540,9 @@ Spearman</property>
                                     <property name="can_focus">True</property>
                                     <property name="editable">False</property>
                                     <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                    <property name="text" translatable="yes">This textview will include a summary of each of the variables in the dataset once you click the Execute button (or the F2 shortcut). 
+                                    <property name="text" translatable="yes">It is useful to understand how our data is distributed
 
-The summary will include more details depending on which check buttons you choose. 
+The summary here will include more details depending on which check buttons you choose. 
 
 The Summary option provides a very brief summary.
 
@@ -2850,17 +2850,8 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                <property name="text" translatable="yes">GGobi is an open source visualization program for exploring high-dimensional data. 
-
-GGobi provides highly dynamic and interactive graphics such as tours, as well as familiar graphics such as the scatterplot, barchart and parallel coordinates plots. Plots are interactive and linked with brushing and identification.
-
-We can recreate the plots presented in GGobi by selecting the Save Display Description item of the Tools menu of GGobi. This will prompt for a file name to save to. We can then load the resulting R script file using the DescribeDisplay package in the R Console and generate the plot:
-
-    library(DescribeDisplay)
-    pd &lt;- dd_load("ggobi-saved-display-description.R")
-    plot(pd)
-
-Click the Execute button (or F2) to run GGobi.</property>
+                                <property name="text" translatable="yes">GGobi provides highly dynamic and interactive graphics such as tours, as well as familiar graphics such as the scatterplot, barchart and parallel coordinates plots. Plots are interactive and linked with brushing and identification.
+</property>
                               </widget>
                             </child>
                           </widget>
@@ -2889,6 +2880,7 @@ Click the Execute button (or F2) to run GGobi.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
+                                <property name="text" translatable="yes">A correlation analysis will provide insights into how independent the input variables are. Modelling often assumes independence, and better models will result for independent input variables.</property>
                               </widget>
                             </child>
                           </widget>
@@ -2952,6 +2944,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                               <widget class="GtkTextView" id="prcomp_textview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="wrap_mode">GTK_WRAP_WORD</property>
+                                <property name="text" translatable="yes">Principal Components Analysis can provide insights into the importance of variables in explaining the variation found within the dataset.</property>
                               </widget>
                             </child>
                           </widget>
@@ -2986,11 +2980,8 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
                                 <property name="text" translatable="yes">Latticist provides a graphical user interface for exploratory visualisation. 
 
-Latticist is primarily an interface to R's Lattice graphics system, but also produces displays from the vcd package for categorical data. For the loaded dataset latticist attempts to produce useful displays based on the properties of the data.
-
-Latticist was written by Felix Andrews.
-
-Click the Execute button (or F2) to load the Latticist visualiser. This will start up a separate window with which you can intereact to explore the data.</property>
+For the loaded dataset latticist attempts to produce useful displays based on the properties of the data.
+</property>
                               </widget>
                             </child>
                           </widget>
