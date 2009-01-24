@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-15 15:21:34 Graham Williams>
+# Time-stamp: <2009-01-24 15:39:58 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -18,10 +18,12 @@ VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 VERSION.DATE <- "Released 22 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
+PACKAGEID <- "11_012108" # RStat
+
 SUPPORT <- "Contact support@togaware.com."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
-# extensively tested the application. Many colleagues at the
+# extensively tested early versions of Rattle. Many colleagues at the
 # Australian Taxation Office have used Rattle and made many and
 # varied suggestions. These include Anthony Nolan, Stuart Hamilton,
 # Liyin Zue, Weiqiang Lin, Robert Williams, Shawn Wicks, Ray Lindsay.
@@ -771,16 +773,20 @@ rattle <- function(csvname=NULL,
 tuneRStat <- function()
 {
   # Tune the user interface to suit the requirements for RStat. Often,
-  # we have added functionality to Rattle that is not yet we tested
-  # and tuned to for release as RStat.
+  # we have added functionality to Rattle that is not yet well tested
+  # and tuned for release as RStat.
 
-  SUPPORT <- "Contact Information Builders Technical Support."
+  SUPPORT <<- "Contact Information Builders Technical Support."
+  VERSION <<- 1.1
   
   ## Toolbar
   
   theWidget("report_toolbutton")$hide()
   theWidget("rattle_menu")$hide()
 
+  theWidget("help_data_weight_calculator")$hide()
+  theWidget("help_data_odbc")$hide()
+  
   ## Data
   
   # Data -> R Dataset
@@ -1211,7 +1217,9 @@ errorDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
                                 ...,
-                                sprintf("\n\n[%s Version %s]", crv$appname, VERSION))
+                                ifelse(isRStat(),
+                                       sprintf("\n\n%s %s", crv$appname, VERSION),
+                                       sprintf("\n\n[%s %s]", crv$appname, VERSION)))
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1257,8 +1265,8 @@ notImplemented <- function(action, window)
 
 noDatasetLoaded <- function()
 {
-  ## Popup an error dialog if no dataset has been loaded, and return
-  ## TRUE, otherwise return FALSE.
+  # Popup an error dialog if no dataset has been loaded, and return
+  # TRUE, otherwise return FALSE.
 
   if (is.null(crs$dataset))
   {
@@ -4038,7 +4046,7 @@ executeExploreCorrelation <- function(dataset)
     }
     if (length(naids) == 1)
     {
-      errorDialog("The data contains only one column with missing values,",
+      errorDialog("The data contains only one variable with missing values,",
                   "and so no missing value correlation plot can be generated.")
       return()
     }
@@ -4332,13 +4340,14 @@ on_about_menu_activate <-  function(action, window)
     #  about$getWidget("aboutdialog")$setProgramName("RStat")
     ab <- about$getWidget("aboutdialog")
     ab["program-name"] <- "RStat"
-    ab["comments"] <- NULL
+    ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
+                              REVISION, PACKAGEID)
     about$getWidget("aboutdialog")$setWebsite(paste("http://www.togaware.com",
                                                     "\n     http://www.ibi.com"))
   }
   
   about$getWidget("aboutdialog")$
-    setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT))
+    setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" , "All rights reserved."))
 
   gladeXMLSignalAutoconnect(about)
 }

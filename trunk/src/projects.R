@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-15 21:02:55 Graham Williams>
+# Time-stamp: <2009-01-24 11:27:00 Graham Williams>
 #
 # Project functionality.
 #
@@ -158,13 +158,17 @@ saveProject <- function()
     ff <- gtkFileFilterNew()
     ff$setName("RStat Projects")
     ff$addPattern("*.rstat")
+    ff$addPattern("*.rattle")
     dialog$addFilter(ff)
   }
-
-  ff <- gtkFileFilterNew()
-  ff$setName("Rattle Projects")
-  ff$addPattern("*.rattle")
-  dialog$addFilter(ff)
+  else
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("Rattle Projects")
+    ff$addPattern("*.rattle")
+    ff$addPattern("*.rstat")
+    dialog$addFilter(ff)
+  }
 
   ff <- gtkFileFilterNew()
   ff$setName("RData Files")
@@ -332,13 +336,17 @@ loadProject <- function()
     ff <- gtkFileFilterNew()
     ff$setName("RStat Projects")
     ff$addPattern("*.rstat")
+    ff$addPattern("*.rattle")
     dialog$addFilter(ff)
   }
-  
-  ff <- gtkFileFilterNew()
-  ff$setName("Rattle Projects")
-  ff$addPattern("*.rattle")
-  dialog$addFilter(ff)
+  else
+  {
+    ff <- gtkFileFilterNew()
+    ff$setName("Rattle Projects")
+    ff$addPattern("*.rattle")
+    ff$addPattern("*.rstat")
+    dialog$addFilter(ff)
+  }
 
   ff <- gtkFileFilterNew()
   ff$setName("RData Files")

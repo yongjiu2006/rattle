@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-06 07:36:40 Graham Williams>
+# Time-stamp: <2009-01-24 13:23:41 Graham Williams>
 #
 # Test Tab
 #
@@ -100,7 +100,7 @@ executeTestTab <- function()
     v1 <- v2 <- theWidget("test_vars1_combobox")$getActiveText()
     if (is.null(v1))
     {
-      errorDialog("Please first choose a column from which the sample",
+      errorDialog("Please first choose a variable from which the sample",
                   "will be obtained.")
       return(FALSE)
     }
@@ -108,14 +108,14 @@ executeTestTab <- function()
     {
       errorDialog("The Wilcoxon signed rank test can only be applied to",
                   "paired popultions. Please de-select Group By and choose",
-                  "two columns that represent observations of the entity at",
+                  "two variables that represent observations of the entity at",
                   "two different times.")
       return(FALSE)
     }
     lvl <- levels(as.factor(crs$dataset[[crs$target]]))
     s1 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[1])
     s2 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[2])
-    msg <- sprintf(paste('come from the \n"%s" column, grouped by "%s",',
+    msg <- sprintf(paste('come from the \n"%s" variable, grouped by "%s",',
                          'with\nvalues "%s" and "%s"'),
                    v1, crs$target, lvl[1], lvl[2])
   }
@@ -124,19 +124,19 @@ executeTestTab <- function()
     v1 <- theWidget("test_vars1_combobox")$getActiveText()
     if (is.null(v1))
     {
-      errorDialog("Please first choose a column from which the first sample",
+      errorDialog("Please first choose a variable from which the first sample",
                   "will be obtained.")
       return(FALSE)
     }
     v2 <- theWidget("test_vars2_combobox")$getActiveText()
     if (is.null(v2))
     {
-      errorDialog("Please first choose a column from which the second sample",
+      errorDialog("Please first choose a variable from which the second sample",
                   "will be obtained.")
       return(FALSE)
     }
     s1 <- s2 <- ""
-    msg <- sprintf('are the two\ncolumns, "%s" and "%s"', v1, v2)
+    msg <- sprintf('are the two\nvariables, "%s" and "%s"', v1, v2)
   }
   msg <- sprintf("\nThe two samples being compared %s.\n", msg)
   
@@ -148,7 +148,7 @@ executeTestTab <- function()
   # Ensure the package is available.
 
   lib.cmd <- "require(fBasics, quietly=TRUE)"
-  if (! packageIsAvailable("fBasics", "location t-test")) return(FALSE)
+  if (! packageIsAvailable("fBasics", "location T-Test")) return(FALSE)
   appendLog("Use the fBasics package for tests.", lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -167,7 +167,7 @@ executeTestTab <- function()
   else if (theWidget("test_ttest_radiobutton")$getActive())
   {
     test <- "locationTest"
-    preamble <- paste("The t Test is performed on the two samples to test the",
+    preamble <- paste("The T-Test is performed on the two samples to test the",
                       "hypothesis that the difference between the two",
                       "means is zero. It is assumed the two samples are normally",
                       "distributed. Otherwise use the Kruskal-Wallis test.",
@@ -197,7 +197,8 @@ executeTestTab <- function()
     preamble <- paste("The two sample non-parametric Wilcoxon test is performed",
                       "on the two samples to test the hypothesis that the",
                       "distributions are the same. It does not assume that the",
-                      "two samples are normally distributed.\n",
+                      "two samples are normally distributed but does assume they",
+                      "have the distributions have the same shape.\n",
                       sep="\n")
   }
   else if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
@@ -221,7 +222,14 @@ executeTestTab <- function()
                       sep="\n")
   }
   else if (theWidget("test_variance_radiobutton")$getActive())
+  {
     test <- "varianceTest"
+    preamble <- paste("The F-Test is performed on the two normally distributed",
+                      "samples to test the null hypothesis that the ratio of the",
+                      "variances of the populations from which they were drawn is",
+                      "equal to one.\n",
+                      sep="\n")
+  }
   else if (theWidget("test_correlation_radiobutton")$getActive())
   {
     test <- "correlationTest"

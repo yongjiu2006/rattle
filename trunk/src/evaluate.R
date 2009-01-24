@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-27 20:25:18 Graham Williams>
+# Time-stamp: <2009-01-24 13:28:33 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -314,7 +314,7 @@ executeEvaluateTab <- function()
     # EVALUATE ON CSV DATA
 
     # We need to allow for the case where the loaded csv data does not
-    # have the risk and target columns when we are scoring the data
+    # have the risk and target variables when we are scoring the data
     # (i.e., not when we are generating confusion charts and other
     # evaluations. For scoring, it is only natural that we do not have
     # the risk and target variables.
@@ -823,10 +823,10 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    paste(result, "\n"))
       else if (any(grep("undefined columns", result)))
         infoDialog("It seems that the dataset on which the predictions",
-                   "from the", mtype, "model are required has some columns",
+                   "from the", mtype, "model are required has some variables",
                    "missing. This is often the case when your CSV",
                    "dataset does not have the target",
-                   "column included (e.g., when your test dataset",
+                   "variable included (e.g., when your test dataset",
                    "is meant to be used as a scoring dataset, in which case",
                    "we can't perform an evaluation).",
                    "For producing an error matrix we need",
@@ -1005,10 +1005,10 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                    paste(result, "\n"))
       else if (any(grep("undefined columns", result)))
         infoDialog("It seems that the dataset on which the predictions",
-                   "from the", mtype, "model are required has some columns",
+                   "from the", mtype, "model are required has some variables",
                    "missing. This is often the case when your CSV",
                    "dataset does not have the risk or target",
-                   "columns included (e.g., when your test dataset",
+                   "variables included (e.g., when your test dataset",
                    "is meant to be used as a scoring dataset, in which case",
                    "we can't perform an evaluation).",
                    "For producing a risk chart we need",
@@ -2607,7 +2607,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     return()
   }
 
-  appendLog("Extract the relevant columns from the dataset.",
+  appendLog("Extract the relevant variables from the dataset.",
             sprintf("sdata <- %s", scoreset))
   
   sdata <- eval(parse(text=scoreset))

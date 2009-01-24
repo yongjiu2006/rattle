@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-03 16:23:08 Graham Williams>
+# Time-stamp: <2009-01-24 17:34:45 Graham Williams>
 #
 # Help Menu
 #
@@ -211,7 +211,7 @@ are rows (identifier variables). These will be marked as Ignore.
 One variable may also be identified as the Target (the first or last
 categoric by default).
 <<>>
-    Modify the roles as appropriate for each variable.
+Modify the roles as appropriate for each variable.
 <<>>
     Input: Used for modelling.
 <<>>
@@ -226,10 +226,7 @@ categoric by default).
 The Input and Ignore buttons can be used to operate on a selection.
 A Shift-Click in the variable list will select all variables from the
 last click to current variable. A Ctrl-Click will add the current
-variable to those selected.
-<<>>
-The Weights Calculator option allows a weights formula to be specified
-to assign a weight to each entity. See the separate help for details.")
+variable to those selected.")
 }
 
 on_help_weight_calculator_activate <- function(action, window)
@@ -258,6 +255,233 @@ you will get the same random sample each time, for a given seed. Changing the
 seed allows different random samples to be extracted. This could be useful in
 testing the sensitivity of modelling with different training sets.")
 }
+
+########################################################################
+# EXPLORE TAB
+
+on_help_summary_activate <- function(action, window)
+{
+  if (showHelpPlus("A summary of the dataset includes various pieces of
+information about each of the variables of the dataset.
+<<>>
+For numeric data, this
+can include the minimum, maximum, median (the value of the variable at the
+midpoint of the dataset), mean (the average value of the variable),
+and the first and third quartiles (25 percent of the data has values
+below the first
+quartile, and another 25 percent of the data has values above the third quartile).
+<<>>
+For categoric data the frequency distribution across the values is listed.
+If there are too many possible values, then only the top few are listed, with
+the remainder counted as Other.
+<<>>
+The R function summary() is used for the summary.
+<<>>
+Additional or differently presented summary information is provided
+through additional options. Describe produces a similar summary presented
+differently. For numeric variables, the Basic statistics can be obtained,
+including kurtosis and skewness.
+<<>>
+The kurtosis is a measure of the nature of the peaks
+in the distribution of the data. A high kurtosis indicates a sharper peak
+and fatter tails while a lower kurtosis indicates a more rounded peak
+with wider shoulders.
+<<>>
+The skewness indicates the assymetry of the distribution. A positive skew
+indicates that the tail to the right is longer, and a negative skew that the
+tail to the left is longer.
+<<>>
+The fBasics package is used for the Basic summary and
+the kurtosis and skewness."))
+    {
+      popupTextviewHelpWindow("summary")
+      if (packageIsAvailable("Hmisc", "display help about describe"))
+      {
+        require(Hmisc, quietly=TRUE)
+        popupTextviewHelpWindow("describe")
+      }
+      if (packageIsAvailable("fBasics", "display help about basic stats"))
+      {
+        require(fBasics, quietly=TRUE)
+        popupTextviewHelpWindow("basicStats")
+      }
+    }
+}
+
+on_help_distributions_activate <- function(action, window)
+{
+  if (showHelpPlus( "Choose from various plot types to display
+information about the distributions of data."))
+    popupTextviewHelpWindow("boxplot")
+}
+
+on_help_ggobi_activate <- function(action, window)
+{
+  if (showHelpPlus( "Run the GGobi application to visually explore
+your data. GGobi is a very powerful interactive visualiser.
+You will need to have the separate GGobi application installed,
+as well as the rggobi R package."))
+    popupTextviewHelpWindow("ggobi")
+}
+
+on_help_correlation_activate <- function(action, window)
+{
+  if (showHelpPlus( "A pairwise correlation between each numeric variable
+is calculated and displayed numerically in the text window whilst
+a graphic plot is also generated. The plot uses circles and colour to
+indicate the strength of any correlation.
+<<>>
+The R function cor() is used to produce the correlation data."))
+    popupTextviewHelpWindow("cor")
+}
+
+on_help_hierarchical_correlation_activate <- function(action, window)
+{
+  if (showHelpPlus( "A hierarchical cluster
+of the correlations between the variables of the dataset is generated, and
+presented pictorially as a dendrogram.  From the dendrogram you can
+see groups of variables that are highly correlated. The code uses the
+cor() function to gnerate the correlations between the variables, the
+hclust() function to perform the hierarchical clustering, and converts
+the result to a dendrogram, using as.dendrogram(), for plotting."))
+  {
+    popupTextviewHelpWindow("cor")
+    popupTextviewHelpWindow("hclust")
+    popupTextviewHelpWindow("dendrogram")
+  }
+ 
+}
+
+on_help_principal_components_activate <- function(action, window)
+{
+  if (showHelpPlus("Principal components analysis identifies
+a collection of derived variables (expressed as a linear combination
+of the other variables) that account for the variance
+in the data. Often, the first few components account for the majority
+of the variation.
+<<>>
+After performing the analysis two plots will appear. The bar chart or scree plot
+shows the importance of each component. The importance is based on how much
+variance each component explains. Generally, we can use this plot to how many
+prinicple components we may want to keep if we were to use them in modelling.
+<<>>
+The second plot (a biplot) remaps the data points from their original
+coordinates to coordinates of the first two principal coordinates.
+The vectors drawn give an indication of how much
+of a role each variable plays in each of the two components, showing their correlation
+to the components. The axis are labelled with the correlation, to be
+interpreted for the variables, and the values of the principal
+components, to be interpreted for the data points.
+<<>>
+There will be as many components as there are (numeric) variables in
+the dataset, but by discarding those components contributing very
+little, you may end up with fewer variables for modelling.
+<<>>
+Interpretability may reduce through using the derived variables rather
+than the original variables, so you may like to instead identify those
+variables that contribute most to the first few principal components.
+<<>>
+The prcomp() function is used to generate the principal components
+which are then displayed in the textview and the relative importance
+of the components is plotted.
+<<>>
+Note that only numeric data is included in the analysis."))
+    popupTextviewHelpWindow("prcomp")
+}
+
+########################################################################
+# TEST TAB
+
+on_help_test_kolmogorov_smirnov_activate <- function(action, window)
+{
+  if (showHelpPlus("The Kolmogorov-Smirnov test is a test to determine whether
+the two samples are similarly distributed, without saying what kind of distriubtion
+they have.
+<<>>
+The fBasics package provides the ks2Test function to perform the
+Kolmogorov-Smirnov Test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about Kolmogorov-Smirnov test"))
+      popupTextviewHelpWindow("ks2Test")
+  }
+}
+
+on_help_test_wilcoxon_activate <- function(action, window)
+{
+  if (showHelpPlus("The Wilcoxon test, also known as the Mann­Whitney test,
+is analogous to the two-sample t-test, but performed on the rankings of the
+combined data sets instead of on the actual measure. If the observations
+rankings are not different, then the samples are not different. Because it is
+performed on the rankings, it is more sensitive about the location of the
+distribution, i.e. to the median (not the mean as in the T-Test).
+<<>>
+The fBasics package provides the wilcox.test function to perform the
+Wilcoxon Test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about the Wilcoxon test"))
+      popupTextviewHelpWindow("wilcox.test")
+  }
+}
+
+on_help_test_t_activate <- function(action, window)
+{
+  if (showHelpPlus("The T-test is the most commonly used test to determine whether
+the means of two normally distributed samples are of equal sizes. The mean is a
+measure of the location of the distribution. If the two populations are normal
+(bell shaped) and their means are different, then the two bell shapes will be
+offset from one another, indicating that the two samples are different. If the
+means are equal the bell shapes will overlap.
+<<>>
+The fBasics package provides the locationTest function with the 't' method
+to perform the T-test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about the T-test"))
+      popupTextviewHelpWindow("locationTest")
+  }
+}
+on_help_test_f_activate <- function(action, window)
+{
+  if (showHelpPlus("The F-test is used to test whether the variance of the data
+from two normally distributed samples is the same.
+<<>>
+The fBasics package provides the varianceTest function with the 'varf' method
+to perform the F-test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about the F-test"))
+      popupTextviewHelpWindow("varianceTest")
+  }
+}
+
+on_help_test_correlation_activate <- function(action, window)
+{
+  if (showHelpPlus("The Correlation test is used to test for the existence of
+a linear relationship between the two variables. Only Pearson's Correlation Test
+is performed in the Test tab.
+<<>>
+The fBasics package provides the correlationTest function
+to perform the correlation test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about the Correlation test"))
+      popupTextviewHelpWindow("correlationTest")
+  }
+}
+
+on_help_test_wilcoxon_signed_rank_activate <- function(action, window)
+{
+  if (showHelpPlus("The Wilcoxon signed rank test is used to test two related
+samples, such as matched pairs or before and after tests, to determine if the
+repeated measurements on the same individuals are the same.
+<<>>
+The fBasics package provides the wilcox.test function with the paired option
+to perform the Wilcoxon signed rank test."))
+  {
+    if (packageIsAvailable("fBasics", "display help about the Correlation test"))
+      popupTextviewHelpWindow("wilcox.test")
+  }
+}
+
+########################################################################
+# TRANSFORM TAB
 
 on_help_normalise_activate <- function(action, window)
 {
@@ -469,125 +693,41 @@ on_help_transform_cleanup_emissing_activate <- function(action, window)
   showHelp("Remove any entities (rows) that have any mising values.")
 }
 
+########################################################################
+# CLUSTER TAB
+
+on_help_kmeans_activate <- function(action, window)
+{
+  if (showHelpPlus("KMeans is a traditional approach to clustering.
+In addition to building a cluster, a discriminant coordinates plot
+can be generated, using the package fpc, as a display of the clusters."))
+  {
+    popupTextviewHelpWindow("kmeans")
+    if (packageIsAvailable("fpc", "view documentation for plotcluster"))
+    {
+      require(fpc, quietly=TRUE)
+      popupTextviewHelpWindow("plotcluster")
+    }
+  }
+}
+
+on_help_cluster_hclust_activate <- function(action, window)
+{
+  if (showHelpPlus("A hierarchical cluster is build as a hierachy of clusters,
+starting with each entity defining its own cluster. The two closest clusters are then
+cobined to generate a new cluster. This is repeated until all entities are in the
+one cluster. Thus a hierachy is generated.
+<<>>
+A complete clustering is built. After building, we can choose a specific number of
+clusters that appear 'right' by viewing the dendrogram. Statistics about the chosen
+number of clusters can then be produced."))
+  {
+    popupTextviewHelpWindow("hclust")
+  }
+}
 
 ########################################################################
-
-on_help_summary_activate <- function(action, window)
-{
-  if (showHelpPlus("A summary of the dataset includes various pieces of
-information about each of the variables of the dataset.
-<<>>
-For numeric data, this
-can include the minimum, maximum, median (the value of the variable at the
-midpoint of the dataset), mean (the average value of the variable),
-and the first and third quartiles (25 percent of the data has values
-below the first
-quartile, and another 25 percent of the data has values above the third quartile).
-<<>>
-For categoric data the frequency distribution across the values is listed.
-If there are too many possible values, then only the top few are listed, with
-the remainder counted as Other.
-<<>>
-The R function summary() is used for the summary.
-<<>>
-Additional or differently presented summary information is provided
-through additional options. Describe produces a similar summary presented
-differently. For numeric variables, the Basic statistics can be obtained,
-including kurtosis and skewness.
-<<>>
-The kurtosis is a measure of the nature of the peaks
-in the distribution of the data. A high kurtosis indicates a sharper peak
-and fatter tails while a lower kurtosis indicates a more rounded peak
-with wider shoulders.
-<<>>
-The skewness indicates the assymetry of the distribution. A positive skew
-indicates that the tail to the right is longer, and a negative skew that the
-tail to the left is longer.
-<<>>
-The fBasics package is used for the Basic summary and
-the kurtosis and skewness."))
-    {
-      popupTextviewHelpWindow("summary")
-      if (packageIsAvailable("Hmisc", "display help about describe"))
-      {
-        require(Hmisc, quietly=TRUE)
-        popupTextviewHelpWindow("describe")
-      }
-      if (packageIsAvailable("fBasics", "display help about basic stats"))
-      {
-        require(fBasics, quietly=TRUE)
-        popupTextviewHelpWindow("basicStats")
-      }
-    }
-}
-
-on_help_distributions_activate <- function(action, window)
-{
-  if (showHelpPlus( "Choose from various plot types to display
-information about the distributions of data."))
-    popupTextviewHelpWindow("boxplot")
-}
-
-on_help_ggobi_activate <- function(action, window)
-{
-  if (showHelpPlus( "Run the GGobi application to visually explore
-your data. GGobi is a very powerful interactive visualiser.
-You will need to have the separate GGobi application installed,
-as well as the rggobi R package."))
-    popupTextviewHelpWindow("ggobi")
-}
-
-on_help_correlation_activate <- function(action, window)
-{
-  if (showHelpPlus( "A pairwise correlation between each numeric variable
-is calculated and displayed numerically in the text window whilst
-a graphic plot is also generated. The plot uses circles and colour to
-indicate the strength of any correlation.
-<<>>
-The R function cor() is used to produce the correlation data."))
-    popupTextviewHelpWindow("cor")
-}
-
-on_help_hierarchical_correlation_activate <- function(action, window)
-{
-  if (showHelpPlus( "A hierarchical cluster
-of the correlations between the variables of the dataset is generated, and
-presented pictorially as a dendrogram.  From the dendrogram you can
-see groups of variables that are highly correlated. The code uses the
-cor() function to gnerate the correlations between the variables, the
-hclust() function to perform the hierarchical clustering, and converts
-the result to a dendrogram, using as.dendrogram(), for plotting."))
-  {
-    popupTextviewHelpWindow("cor")
-    popupTextviewHelpWindow("hclust")
-    popupTextviewHelpWindow("dendrogram")
-  }
- 
-}
-
-on_help_principal_components_activate <- function(action, window)
-{
-  if (showHelpPlus("Principal components analysis identifies
-a collection of derived variables (expressed as a linear combination
-of the other variables) that account for the variance
-in the data. Often, the first few components account for the majority
-of the variation. The plot is called a scree plot.
-<<>>
-There will be as many components as there are (numeric) variables in
-the dataset, but by discarding those components contributing very
-little, you may end up with fewer variables for modelling.
-<<>>
-Interpretability may reduce through using the derived variables rather
-than the original variables, so you may like to instead identify those
-variables that contribute most to the first few principal components.
-<<>>
-The prcomp() function is used to generate the principal components
-which are then displayed in the textview and the relative importance
-of the components is plotted.
-<<>>
-Note that only numeric data is included in the analysis."))
-    popupTextviewHelpWindow("prcomp")
-}
+# MODEL TAB
 
 on_help_glm_activate <- function(action, window)
 {
