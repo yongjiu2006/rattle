@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 20:20:11 Graham Williams>
+# Time-stamp: <2009-01-24 13:24:54 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -291,8 +291,8 @@ executeTransformNormalisePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  # For MATRIX obtain the matrix totla first and then divide each
-  # column by this.
+  # For MATRIX obtain the matrix total first and then divide each
+  # variable by this.
 
   if (action == "matrix")
   {
@@ -469,7 +469,7 @@ executeTransformNormalisePerform <- function()
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
                                 'crs$dataset[["%s"]]/matrix.total'),
                           vname, v)
-      norm.comment <- "Divide column values by matrix total."
+      norm.comment <- "Divide variable values by matrix total."
 
       # 090117 Remove any old instances of the same transform. Could
       # this be a general test outside the loop?
@@ -496,7 +496,7 @@ executeTransformNormalisePerform <- function()
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
                                 'log(crs$dataset[["%s"]])'),
                           vname, v)
-      norm.comment <- "Take a log transform of the column."
+      norm.comment <- "Take a log transform of the variable."
 
       # Record the transformation for inclusion in PMML.
       
@@ -784,7 +784,7 @@ executeTransformImputePerform <- function()
       else if (action == "mean")
       {
         # Note that if z is an integer (e.g. audit$Age) then the
-        # imputed column will be numeric.
+        # imputed variable will be numeric.
         
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
@@ -1391,7 +1391,7 @@ executeTransformCleanupPerform <- function()
 
     del.cmd <- paste(sprintf('crs$dataset$%s <<- NULL', to.delete),
                      collapse="\n")
-    del.comment <- "Remove specific columns from the dataset."
+    del.comment <- "Remove specific variables from the dataset."
 
     # Perform the deletions.
   

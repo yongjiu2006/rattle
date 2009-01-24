@@ -20,6 +20,7 @@ lattice.
 090109 Support PostgreSQL (RdbiPgSQL) and MySQL (RMySQL) (Eberhard W. Lisse)
 090105 Use F1 for getting Help (Gabor Grothendieck)
 090105 Implement Log as separate window (Gabor Grothendieck)
+090124 Explore using igraph (Rado)
 
 080416 Log transform +ve/-ve (Linday Clayton)
 080416 C-stat eval for interval target (Linda Clayton)
@@ -148,6 +149,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-09 22:42:39 Graham Williams</i>
+<i>Last Modified 2009-01-24 11:10:34 Graham Williams</i>
 <!-- hhmts end -->
   </p>

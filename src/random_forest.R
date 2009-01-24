@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-12-23 07:09:21 Graham Williams>
+# Time-stamp: <2009-01-24 13:26:35 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -229,7 +229,7 @@ executeModelRF <- function()
     {
       # TODO 080520 This error arose when a log transform is done on
       # Deductions where there are many 0's (hence -Inf). To be more
-      # helpful, find the column with the -Inf and suggest ignoring
+      # helpful, find the variable with the -Inf and suggest ignoring
       # it. We can test this is the error if the following returns
       # non-zero:
       #
@@ -238,7 +238,7 @@ executeModelRF <- function()
       errorDialog("The call to randomForest failed.",
                    "The problem may be with the data",
                    "containing Infinite values.",
-                   "A quick solution may be to remove columns",
+                   "A quick solution may be to remove variables",
                    "with any Inf or -Inf values.")
       setTextview(TV)
     }
