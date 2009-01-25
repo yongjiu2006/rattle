@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 13:24:54 Graham Williams>
+# Time-stamp: <2009-01-25 07:40:40 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1362,7 +1362,7 @@ executeTransformCleanupPerform <- function()
     }
     
     if (! questionDialog(sprintf(paste("We are about to delete %d",
-                                       "entites from the dataset."),
+                                       "entites from the in-memory dataset."),
                                  sum(!cases)),
                          "These have missing values for some of the",
                          "non-Ignore variables.\n\nAre you sure you",
@@ -1379,7 +1379,8 @@ executeTransformCleanupPerform <- function()
   if (!theWidget("delete_naents_radiobutton")$getActive())
   {
     
-    if (! questionDialog("We are about to delete the following variables.",
+    if (! questionDialog("We are about to delete the following variables",
+                         "from the in-memory dataset.",
                          "This will permanently remove them from",
                          "the memory copy of the data, but will not",
                          "affect any file system copy.\n\n",

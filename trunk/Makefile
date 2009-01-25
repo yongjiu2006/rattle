@@ -99,8 +99,8 @@ checkR:
 	meld TMPlocal TMPlib
 	rm -f TMPloca TMPlib
 
-revision:
-	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R
+#revision:
+#	perl -pi -e "s|Revision: \d* |Revision: $(REVISION) |" src/rattle.R
 
 .PHONY: update
 update:
@@ -187,7 +187,7 @@ rattle_src.zip:
 	mv rattle_src.zip /var/www/access/
 	chmod go+r /var/www/access/rattle_src.zip
 
-rattle_$(VERSION).tar.gz: revision $(SOURCE)
+rattle_$(VERSION).tar.gz: $(SOURCE)
 	rm -f package/rattle/R/*
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
              src/rattle.R

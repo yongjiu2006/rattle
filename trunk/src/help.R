@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 17:34:45 Graham Williams>
+# Time-stamp: <2009-01-25 07:23:34 Graham Williams>
 #
 # Help Menu
 #
@@ -89,6 +89,9 @@ support@togaware.com.
 Enjoy.", sep=""))
 }
 
+########################################################################
+# DATA
+
 on_help_nomenclature_data_activate <- function(action, window)
 {
   showHelp("There are many
@@ -121,6 +124,12 @@ are refered to as the levels of the factor.
 <<>>
 numeric variable = A variable that has values that are integers or real
 numbers.")
+}
+
+on_help_data_fex_activate <- function(action, window)
+{
+  showHelp("The FEX option of the Data tab provides a direct linkage to Web Focus
+as the source of our dataset for analysis.")
 }
 
 on_help_csv_activate <- function(action, window)
@@ -173,6 +182,14 @@ The named file will be loaded and any data frames found in there will
 be listed for selection.")
 }
 
+on_help_data_library_activate <- function(action, window)
+{
+  showHelp("The Library option of the Data tab provides access to all sample datasets
+provided by the various R packages in your installation. When selected, all of the
+packages are scanned for the datasets they provide. You can then choose a dataset
+from the drop down menu.")
+}
+
 on_help_rdataset_activate <- function(action, window)
 {
   showHelp("Datasets already loaded into R can be used
@@ -197,6 +214,18 @@ listed for selection."))
     require(RODBC, quietly=TRUE)
     popupTextviewHelpWindow("RODBC")
   }
+}
+
+on_help_data_corpus_activate <- function(action, window)
+{
+  showHelp("The Corpus option of the Data tab will load and process a folder of
+documents, referred to as a corpus. Each document will be processed according to the
+options specified, to end up with a dataset with, in the simplest case, variables
+corresponding to the keywords identified in the documents, and the entities
+corresponding to each documents. The full functionality of Rattle can then be deployed
+on this dataset.
+<<>>
+The tm package of R provides the underlying functionality to process a corpus.")
 }
 
 on_help_roles_activate <- function(action, window)
@@ -375,7 +404,10 @@ components, to be interpreted for the data points.
 <<>>
 There will be as many components as there are (numeric) variables in
 the dataset, but by discarding those components contributing very
-little, you may end up with fewer variables for modelling.
+little, you may end up with fewer variables for modelling. The textual information
+provided can be used to guide the choice of which variables are included.
+The final table will clearly identify how much of the variation in the data
+is accounted for by each component.
 <<>>
 Interpretability may reduce through using the derived variables rather
 than the original variables, so you may like to instead identify those

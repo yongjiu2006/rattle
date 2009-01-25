@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 15:39:58 Graham Williams>
+# Time-stamp: <2009-01-25 17:56:12 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -13,9 +13,10 @@
 
 MAJOR <- "2"
 MINOR <- "4"
-REVISION <- unlist(strsplit("$Revision$", split=" "))[2]
+GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
+REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Jan 2009"
+VERSION.DATE <- "Released 24 Jan 2009"
 COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
 
 PACKAGEID <- "11_012108" # RStat
@@ -776,8 +777,8 @@ tuneRStat <- function()
   # we have added functionality to Rattle that is not yet well tested
   # and tuned for release as RStat.
 
-  SUPPORT <<- "Contact Information Builders Technical Support."
-  VERSION <<- 1.1
+  crv$SUPPORT <<- "Contact Information Builders Technical Support."
+  crv$VERSION <<- 1.1
   
   ## Toolbar
   
@@ -785,13 +786,19 @@ tuneRStat <- function()
   theWidget("rattle_menu")$hide()
 
   theWidget("help_data_weight_calculator")$hide()
+  theWidget("help_data_fex")$show()
+  theWidget("help_data_arff")$hide()
+  theWidget("help_data_rdataset")$hide()
   theWidget("help_data_odbc")$hide()
+  theWidget("help_data_corpus")$hide()
   
   ## Data
   
   # Data -> R Dataset
 
+  theWidget("data_arff_radiobutton")$hide()
   theWidget("data_rdataset_radiobutton")$hide()
+  theWidget("data_odbc_radiobutton")$hide()
   theWidget("data_corpus_radiobutton")$hide()
   
   # Data -> Edit
@@ -842,13 +849,19 @@ tuneRStat <- function()
 
 tuneRattle <- function()
 {
-  ## Toolbar
+  # When running source code, after running RStat we will be stuck
+  # with RStat's version, so reset it here.
+
+  crv$SUPPORT <<- SUPPORT
+  crv$VERSION <<- VERSION
+
+  # Toolbar
 
   theWidget("report_toolbutton")$show()
   
   id.string <- paste('<span foreground="blue">',
                      '<i>', crv$appname, '</i> ',
-                     '<i>Version ', VERSION, '</i> ',
+                     '<i>Version ', crv$VERSION, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
 
@@ -1218,8 +1231,8 @@ errorDialog <- function(...)
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
                                 ...,
                                 ifelse(isRStat(),
-                                       sprintf("\n\n%s %s", crv$appname, VERSION),
-                                       sprintf("\n\n[%s %s]", crv$appname, VERSION)))
+                                       sprintf("\n\n%s %s", crv$appname, crv$VERSION),
+                                       sprintf("\n\n[%s %s]", crv$appname, crv$VERSION)))
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -3188,19 +3201,19 @@ executeExplorePlot <- function(dataset)
                        'xlab="",',
                        'subtitles=FALSE)\n')
       if (not.null(targets))
-      for (t in seq_len(targets))
-      {
-        plot.cmd <- paste(plot.cmd,
-                         sprintf('Ecdf(ds[ds$grp=="%s",1], ', targets[t]),
-                         sprintf('col="%s", lty=%d, ', col[t+1], t+1),
-                         'xlab="", subtitles=FALSE, add=TRUE)\n',
-                         sep="")
-      }
+        for (t in seq_along(targets))
+        {
+          plot.cmd <- paste(plot.cmd,
+                            sprintf('Ecdf(ds[ds$grp=="%s",1], ', targets[t]),
+                            sprintf('col="%s", lty=%d, ', col[t+1], t+1),
+                            'xlab="", subtitles=FALSE, add=TRUE)\n',
+                            sep="")
+        }
 
-    if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
-    else
-      cols <- "col=rainbow(%d)"
+      if (packageIsAvailable("vcd"))
+        cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
+      else
+        cols <- "col=rainbow(%d)"
 
       if (not.null(targets))
         legend.cmd <- sprintf(paste('legend("bottomright", c(%s), ',
@@ -3268,7 +3281,13 @@ executeExplorePlot <- function(dataset)
     
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
-    ## Calculate the expected distribution according to Benford's Law
+    if (packageIsAvailable("vcd"))
+      cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
+    else
+      cols <- "col=rainbow(%d)"
+    eval(parse(text=sprintf(cols, length(targets)+1)))
+
+    # Calculate the expected distribution according to Benford's Law
 
     if (digspin == 1)
       expect.cmd <- paste('unlist(lapply(1:9, function(x) log10(1 + 1/x)))')
@@ -3279,7 +3298,7 @@ executeExplorePlot <- function(dataset)
                                   '(10^(%d-1))-1)) + x)))}))'),
                             digspin, digspin)
 
-    ## Construct the command to plot the distribution.
+    # Construct the command to plot the distribution.
 
     if (barbutton)
     {
@@ -4328,7 +4347,9 @@ on_about_menu_activate <-  function(action, window)
   else
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
-  about$getWidget("aboutdialog")$setVersion(VERSION)
+  ab <- about$getWidget("aboutdialog")
+  ab$setVersion(crv$VERSION)
+
   if (isRStat())
   {
     # 081004 setProgramName is only available in GTK+ 2.12 and
@@ -4338,16 +4359,17 @@ on_about_menu_activate <-  function(action, window)
     #
     #if(exists("gtkAboutDialogSetProgramName"))
     #  about$getWidget("aboutdialog")$setProgramName("RStat")
-    ab <- about$getWidget("aboutdialog")
+
     ab["program-name"] <- "RStat"
     ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
-                              REVISION, PACKAGEID)
-    about$getWidget("aboutdialog")$setWebsite(paste("http://www.togaware.com",
-                                                    "\n     http://www.ibi.com"))
+                              GENERATION, PACKAGEID)
+    ab$setWebsite(paste("http://www.togaware.com",
+                        "\n     http://www.ibi.com"))
+    ab$setCopyright(paste(COPYRIGHT, "\n" , "All rights reserved."))
   }
-  
-  about$getWidget("aboutdialog")$
-    setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" , "All rights reserved."))
+  else
+    ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
+                          "All rights reserved."))
 
   gladeXMLSignalAutoconnect(about)
 }
