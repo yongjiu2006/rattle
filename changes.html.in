@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.19.
+    version is 2.4.20.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+401 090125 Place VERSION and SUPPORT into crv.
+           Show/remove help items depending on Rattle/RStat
+           Bug fix Cumulative plot - show all plots.
+           Record GENERATION (revision) number for RStat About.
 400 090124 RStat tuning - PACKAGEID, VERSION 1.1
            Review help menus - only display what is current for each flavour
            Add info to textview on F-test.
@@ -771,6 +775,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-24 19:18:23 Graham Williams</i>
+<i>Last Modified 2009-01-25 18:03:44 Graham Williams</i>
 <!-- hhmts end -->
   </p>

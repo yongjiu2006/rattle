@@ -355,6 +355,13 @@
                               </widget>
                             </child>
                             <child>
+                              <widget class="GtkMenuItem" id="help_data_fex">
+                                <property name="label" translatable="yes">_FEX</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_data_fex_activate"/>
+                              </widget>
+                            </child>
+                            <child>
                               <widget class="GtkMenuItem" id="csv1">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_CSV</property>
@@ -363,7 +370,7 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkMenuItem" id="arff1">
+                              <widget class="GtkMenuItem" id="help_data_arff">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_ARFF</property>
                                 <property name="use_underline">True</property>
@@ -371,27 +378,43 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkMenuItem" id="help_data_odbc">
+                              <widget class="GtkMenuItem" id="help_data_rdataset">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">ODBC</property>
+                                <property name="label" translatable="yes">R _Dataset</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_help_odbc_activate"/>
+                                <signal name="activate" handler="on_help_rdataset_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_data_library">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Li_brary</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_data_library_activate"/>
                               </widget>
                             </child>
                             <child>
                               <widget class="GtkMenuItem" id="rdata_file1">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">RData File</property>
+                                <property name="label" translatable="yes">_RData File</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_help_rdata_file_activate"/>
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkMenuItem" id="r_dataset1">
+                              <widget class="GtkMenuItem" id="help_data_odbc">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">R Dataset</property>
+                                <property name="label" translatable="yes">_ODBC</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_help_rdataset_activate"/>
+                                <signal name="activate" handler="on_help_odbc_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_data_corpus">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Cor_pus</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_data_corpus_activate"/>
                               </widget>
                             </child>
                             <child>
@@ -411,9 +434,9 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkMenuItem" id="roles1">
+                              <widget class="GtkMenuItem" id="help_data_roles">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">_Roles</property>
+                                <property name="label" translatable="yes">Ro_les</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_help_roles_activate"/>
                               </widget>
