@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-25 17:56:12 Graham Williams>
+# Time-stamp: <2009-01-26 16:42:02 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,8 +16,8 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Jan 2009"
-COPYRIGHT <- "Copyright (C) 2009 Togaware Pty Ltd"
+VERSION.DATE <- "Released 25 Jan 2009"
+COPYRIGHT <- "Copyright © 2009 Togaware Pty Ltd"
 
 PACKAGEID <- "11_012108" # RStat
 
@@ -1075,7 +1075,6 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("hclust_stats_button")$setSensitive(FALSE)
     theWidget("hclust_data_plot_button")$setSensitive(FALSE)
     theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
-
     
     # Reset Model -> Tree -> RPart
   
@@ -1178,7 +1177,7 @@ resetRattle <- function(new.dataset=TRUE)
 
   theWidget("kmeans_hclust_centers_checkbutton")$setActive(FALSE)
   theWidget("hclust_distance_combobox")$setActive(FALSE)
-  theWidget("hclust_link_combobox")$setActive(FALSE)
+  theWidget("hclust_link_combobox")$setActive(1)
   theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
   theWidget("hclust_clusters_label")$setSensitive(FALSE)
   theWidget("hclust_clusters_spinbutton")$setSensitive(FALSE)
@@ -2855,6 +2854,8 @@ executeExplorePlot <- function(dataset)
   else
     targets <- levels(as.factor(crs$dataset[[crs$target]]))
 
+  if (length(targets) > 10) targets <- NULL
+
   # For now, let's plot always, since I was wondering why the Benford
   # plot was not showing all the targets!
   
@@ -3103,6 +3104,20 @@ executeExplorePlot <- function(dataset)
                       'rs <- max(hs$counts)/max(dens$y)\n',
                       'lines(dens$x, dens$y*rs, type="l")',
                       sep="")
+    if (length(targets))
+      plot.cmd <- paste(plot.cmd, "\n",
+                        paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
+                                            '1], na.rm=TRUE)\n',
+                                            'lines(dens$x, dens$y*rs, ',
+                                            'type="l", ',
+                                            'col=rainbow(%s)[%s])', sep=""),
+                                      targets,
+                                      length(targets)+1,
+                                      seq_along(targets)),
+                                      #eval(parse(text=sprintf(cols,
+                                      #             length(targets))))),
+                              collapse="\n"),
+                        sep="")
     rug.cmd <- 'rug(ds[ds$grp=="All",1])'
 
     # If the data looks more categoric then do a more usual hist
@@ -3167,6 +3182,16 @@ executeExplorePlot <- function(dataset)
         eval(parse(text=plot.cmd))
         appendLog("Add a rug to illustrate density.", rug.cmd)
         eval(parse(text=rug.cmd))
+        if (length(targets))
+        {
+          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
+                                      'fill=c("black", rainbow(%s)))'),
+                                paste(sprintf('"%s"', c("All", targets)),
+                                      collapse=","),
+                                length(targets)+1)
+          appendLog("Add a legend to the plot.", legend.cmd)
+          eval(parse(text=legend.cmd))
+        }
       }
       
       title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
@@ -3282,10 +3307,9 @@ executeExplorePlot <- function(dataset)
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
     if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
+      cols <- "rainbow_hcl(%d, start = 30, end = 300)"
     else
-      cols <- "col=rainbow(%d)"
-    eval(parse(text=sprintf(cols, length(targets)+1)))
+      cols <- "rainbow(%d)"
 
     # Calculate the expected distribution according to Benford's Law
 
@@ -3312,7 +3336,8 @@ executeExplorePlot <- function(dataset)
     else
     {
       plot.cmd <- paste('plot(', ifelse(digspin==1, "1", "0"),
-                        ':9, ds[1,], type="b", pch=19, col=rainbow(1), ',
+                        ':9, ds[1,], type="b", pch=19, col=',
+                        sprintf(cols, 1), ', ',
                        'ylim=c(0,max(ds)), axes=FALSE, ',
                        'xlab="Distribution of the ',
                         paste(digspin, c("st", "nd",
@@ -3324,21 +3349,20 @@ executeExplorePlot <- function(dataset)
                         ifelse(digspin==1, "1", "0"),
                         ':9)\n', 'axis(2)\n',
                        sprintf(paste('points(%d:9, ds[2,],',
-                                     'col=%s, pch=19, type="b")\n'),
+                                     'col=%s[2], pch=19, type="b")\n'),
                                ifelse(digspin==1, 1, 0),
-                               ifelse(is.null(target), "rainbow(2)[2]",
-                                      sprintf("rainbow(%d)[2]",
-                                              length(targets)+2))),
+                               ifelse(is.null(target),
+                                      sprintf(cols, 2),
+                                      sprintf(cols, length(targets)+2))),
                        sep="")
       if (not.null(targets))
-        for (i in 1:seq_along(targets))
+        for (i in seq_along(targets))
         {
           plot.cmd <- sprintf(paste('%s\npoints(%d:9, ds[%d,],',
-                                   'col=%s, pch=%d, type="b")'),
+                                   'col=%s[%d], pch=%d, type="b")'),
                              plot.cmd, ifelse(digspin==1, 1, 0), i+2,
-                             sprintf("rainbow(%d)[%d]",
-                                     length(targets)+2, i+2),
-                             19)
+                             sprintf(cols, length(targets)+2),
+                             i+2, 19)
         }
     }
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
@@ -3363,7 +3387,9 @@ executeExplorePlot <- function(dataset)
         new.bind.cmd <- substr(bind.cmd, 1, 6)
         data.cmd <- 't(as.matrix(data.frame(expect=expect'
         plot.cmd <- paste('plot(1:9, ds[1,], type="b", ',
-                         'pch=19, col=rainbow(1), ',
+                         'pch=19, col=',
+                          sprintf(cols, 1),
+                          ', ',
                          'ylim=c(0,max(ds)), axes=FALSE, ',
                          'xlab="Initial Digit", ylab="Probability")\n',
                          'axis(1, at=1:9)\n', 'axis(2)\n',
@@ -3381,9 +3407,8 @@ executeExplorePlot <- function(dataset)
                            sep="")
           plot.cmd <- paste(plot.cmd,
                            sprintf(paste('points(1:9, ds[%d,],',
-                                         'col=%s, pch=19, type="b")\n'),
-                                   s+1, sprintf("rainbow(%d)[%d]",
-                                                nbenplots+1, s+1)),
+                                         'col=%s[%d], pch=19, type="b")\n'),
+                                   s+1, sprintf(cols, nbenplots+1), s+1),
                            sep="")
         }
         new.bind.cmd <- paste(substr(new.bind.cmd, 1,
@@ -3392,12 +3417,12 @@ executeExplorePlot <- function(dataset)
         data.cmd <- paste(data.cmd, ")))", sep="")
 
         legend.cmd <- sprintf(paste('legend("%s", c(%s), ',
-                                   'fill=rainbow(%d), title="%s")'),
+                                   'fill=%s, title="%s")'),
                               ifelse(digspin>2, "botright", "topright"),
                               paste(sprintf('"%s"',
                                             c("Benford", benplots)),
                                     collapse=","),
-                              nbenplots+1, "Variables")
+                              sprintf(cols, nbenplots+1), "Variables")
 
         appendLog("Generate the required data.",
                  paste("ds <-", new.bind.cmd))
@@ -3465,21 +3490,21 @@ executeExplorePlot <- function(dataset)
                                    length(targets)+2, target)
             else
               legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05,',
-                                         'fill=rainbow(%d), title="%s")'),
+                                         'fill=%s, title="%s")'),
                                     ifelse(digspin>2, "bottomright",
                                            "topright"),
                                     '"Benfords", sizes',
 #                                   paste(sprintf('"%s"',
 #                                                c("Benford", "All", targets)),
 #                                         collapse=","),
-                                   length(targets)+2, target)
+                                   sprintf(cols, length(targets)+2), target)
           else
             if (barbutton)
               legend.cmd <- paste('legend("topright", c("Benford", "All"),',
                                  'fill=heat.colors(2))')
             else
               legend.cmd <- paste('legend("topright", c("Benford", "All"), ',
-                                 'fill=rainbow(2))')
+                                  'fill=', sprintf(cols, 2), sep="")
           
           cmd <- paste("sprintf(bind.cmd,",
                        paste(paste('"', rep(benplots[s], length(targets)+1),
@@ -4360,7 +4385,7 @@ on_about_menu_activate <-  function(action, window)
     #if(exists("gtkAboutDialogSetProgramName"))
     #  about$getWidget("aboutdialog")$setProgramName("RStat")
 
-    ab["program-name"] <- "RStat"
+    ab["program-name"] <- "RStat®"
     ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
                               GENERATION, PACKAGEID)
     ab$setWebsite(paste("http://www.togaware.com",
@@ -4368,9 +4393,12 @@ on_about_menu_activate <-  function(action, window)
     ab$setCopyright(paste(COPYRIGHT, "\n" , "All rights reserved."))
   }
   else
+  {
+    ab["program-name"] <- "Rattle®"
     ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
                           "All rights reserved."))
-
+  }
+  
   gladeXMLSignalAutoconnect(about)
 }
 
