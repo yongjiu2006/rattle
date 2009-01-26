@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-15 07:08:25 Graham Williams>
+# Time-stamp: <2009-01-26 17:10:17 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -550,8 +550,48 @@ exportHClustTab <- function(file)
 ########################################################################
 # SCORE
 
-predict.hclust <- function(model, data)
+predict.hclust <- function(model, data, x, nclust=10)
 {
-  return(NULL)
+  # 090126 Initial work on a predict.hclust function, to allow using a
+  # hclust model to allocate new data to pre-existing clusters using
+  # the common model interface function, predict. This makes it easy
+  # to use the Rattle modelling code on kmeans. We use a kmeans
+  # encoding to generate the clusters. This is only an
+  # approximation. Gets pretty close for ward link and euclidean
+  # distance.
+
+  model$centers <- centers.hclust(x, model, nclust=nclust, use.median=FALSE)
+  return(predict.kmeans(model, data))
 }
 
+genPredictHclust <- function(dataset)
+{
+  # 081227 Generate a command to obtain the prediction results when
+  # applying the model to new data.
+
+  nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
+  sampling  <- not.null(crs$sample)
+  include <- getNumericVariables()
+
+  return(sprintf("crs$pr <<- predict(crs$hclust, %s, na.omit(crs$dataset[%s,%s]), %s)",
+                 dataset, ifelse(sampling, "crs$sample", ""), include, nclust))
+}
+
+genResponseHclust <- function(dataset)
+{
+  # 081227 Generate a command to obtain the response when applying the
+  # model to new data.
+  
+  return(genPredictHclust(dataset))
+}
+
+genProbabilityHclust <- function(dataset)
+{
+  # 081227 Generate a command to obtain the probability when applying
+  # the model to new data. There is probably a prblem with simply
+  # using the cluster label as the output, since it won't be a
+  # probability or even look like it. Let's do it for now though -
+  # should be okay.
+  
+  return(genPredictHclust(dataset))
+}
