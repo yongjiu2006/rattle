@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-26 16:42:02 Graham Williams>
+# Time-stamp: <2009-01-31 20:33:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 25 Jan 2009"
+VERSION.DATE <- "Released 26 Jan 2009"
 COPYRIGHT <- "Copyright © 2009 Togaware Pty Ltd"
 
 PACKAGEID <- "11_012108" # RStat
@@ -759,15 +759,12 @@ rattle <- function(csvname=NULL,
     executeDataTab(csvname)
   }
 
-###   # Tune the interface to suit RStat
-
-###   if (isRStat())
-###     tuneRStat()
-###   else
-###     tuneOthers()
-  
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
 
+  # Call resetRattle to ensure all textviews get their default texts
+  
+  resetRattle(FALSE)
+  
   invisible()
 }
 
@@ -981,24 +978,118 @@ resetRattle <- function(new.dataset=TRUE)
 
   # Clear all now outdated text views
 
-  setTextview("summary_textview")
-  setTextview("correlation_textview")
-  setTextview("prcomp_textview")
-  setTextview("kmeans_textview")
-  setTextview("hclust_textview")
-  setTextview("associate_textview")
-  setTextview("rpart_textview")
-  setTextview("glm_textview")
-  setTextview("ada_textview")
-  setTextview("rf_textview")
-  setTextview("esvm_textview")
-  setTextview("ksvm_textview")
-  setTextview("nnet_textview")
-  setTextview("confusion_textview")
-  setTextview("risk_textview")
-  setTextview("roc_textview")
+  resetTextview("summary_textview", "UNIVARIATE DATASET SUMMARY
 
-  # Reset some textviews back to standard text.
+It is useful to understand how our data is distributed
+
+The summary here will include more details depending on
+which check buttons you choose. 
+
+The Summary option provides a very brief summary.
+
+The Describe option provides comprehensive summaries of each variable.
+
+Kurtosis and Skewness allow these measure to be compared across
+the available numeric variables.", tvsep=FALSE)
+
+  resetTextview("playwith_textview", "LATTICIST DATA VISUALISER
+
+Latticist provides a graphical user interface for exploratory data visualisation. 
+
+For the loaded dataset latticist attempts to produce useful displays
+based on the properties of the data.", tvsep=FALSE)
+
+  resetTextview("ggobi_textview", "GGOBI DATA ANALYSIS
+
+GGobi provides a separate interface to perform highly dynamic and
+interactive data visualisation.
+
+Specialist tools include tours, scatterplots, barcharts and
+parallel coordinates plots. 
+
+Plots allow points to be identified and linked with
+brushing across multiple plots.", tvsep=FALSE)
+
+
+  
+  resetTextview("correlation_textview", "NUMERIC VARIABLE CORRELATION
+
+A correlation analysis will provide insights into how independent
+the input variables are.
+
+Modelling often assumes independence, and better models will
+result when using independent input variables.
+
+A table of the correlations between each of the numeric variables
+will be listed, and a correlation plot will be displayed.", tvsep=FALSE)
+
+  resetTextview("hiercor_textview", "NUMERIC VARIABLE HIERARCHICAL CORRELATION
+
+Dendrograms provide a visual clue to the degree of closeness between variables.
+
+The hierarchical correlation dendrogram produced here presents a view
+of the variables of the dataset showing their relationships (correlations).
+Depending on the data, you may find groupings of variables that are highly
+correlated. These will be fairly obvious in most cases.
+
+The length of the lines in the dendrogram provide a visual indication of
+the degree of correlation (or the tightness of the correlation - shorter
+lines indicate more tighly correlated variables).
+
+Once you have identified the groups of variables that are correlated,
+you may want to reduce the number of variables you are including in your
+modelling.
+
+Note that only numeric data is processed to produce the plot. Categoricals
+are not handled by this analysis.", tvsep=FALSE)
+  
+  resetTextview("prcomp_textview", tvsep=FALSE, "PRINCIPAL COMPONENTS ANALYSIS
+
+Principal Components Analysis can provide insights into the importance
+of variables in explaining the variation found within the dataset.
+
+Two plots will be displayed. The bar chart shows to significance of
+each component, whilst the biplot remaps the data points from their
+original coordinates to coordinates of the first two principal
+coordinates.")
+
+  resetTextview("test_textview", tvsep=FALSE, "STATISTICAL TESTS
+
+These tests apply to two samples. The paired two sample tests assume
+that we have two samples or observations for each entity, and that we
+are testing for a change, usually from one time period to another.
+
+DISTRIBUTION OF THE DATA
+
+  Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
+  Wilcoxon Signe Rank     Non-parametric    Do paired samples have the same distribution?
+
+LOCATION OF THE AVERAGE
+
+  T-test               Parametric        Are the means the same?
+  Wilcoxon Rank-Sum    Non-parametric    Are the medians the same?
+
+VARIATION IN THE DATA
+
+  F-test    Parametric    Are the variances the same?
+
+CORRELATION
+
+  Correlation    Pearsons    Are the values from the paired samples correlated?")
+  
+  resetTextview("kmeans_textview")
+  resetTextview("hclust_textview")
+  resetTextview("associate_textview")
+  resetTextview("rpart_textview")
+  resetTextview("glm_textview")
+  resetTextview("ada_textview")
+  resetTextview("rf_textview")
+  resetTextview("esvm_textview")
+  resetTextview("ksvm_textview")
+  resetTextview("nnet_textview")
+  resetTextview("confusion_textview")
+  resetTextview("risk_textview")
+  resetTextview("roc_textview")
 
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 13:23:41 Graham Williams>
+# Time-stamp: <2009-01-31 16:36:44 Graham Williams>
 #
 # Test Tab
 #
@@ -115,8 +115,8 @@ executeTestTab <- function()
     lvl <- levels(as.factor(crs$dataset[[crs$target]]))
     s1 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[1])
     s2 <- sprintf('crs$dataset[["%s"]] == "%s"', crs$target, lvl[2])
-    msg <- sprintf(paste('come from the \n"%s" variable, grouped by "%s",',
-                         'with\nvalues "%s" and "%s"'),
+    msg <- sprintf(paste('come from the "%s" variable, grouped by \n"%s",',
+                         'with values "%s" and "%s"'),
                    v1, crs$target, lvl[1], lvl[2])
   }
   else
@@ -136,7 +136,7 @@ executeTestTab <- function()
       return(FALSE)
     }
     s1 <- s2 <- ""
-    msg <- sprintf('are the two\nvariables, "%s" and "%s"', v1, v2)
+    msg <- sprintf('are the two variables, "%s" and "%s"', v1, v2)
   }
   msg <- sprintf("\nThe two samples being compared %s.\n", msg)
   
@@ -161,23 +161,37 @@ executeTestTab <- function()
   if (theWidget("test_distr_radiobutton")$getActive())
   {
     test <- "ks2Test"
-    preamble <- paste("The Kolmogorov-Smirnov test indicates whether the two",
-                      "samples are similarly distributed.\n", sep="\n")
+    preamble <- "The Kolmogorov-Smirnov test is a non-parametric test of the
+similarity of two distributions. The null hypothesis is that the
+two samples are drawn from the same distribution. The two-sided and
+the two one-sided tests are performed.
+
+The STATISTIC calculated is the so called D statsitic.
+For similar distributions the statistic converges to zero.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accpet the alternative hypothesis, that the distributions differ, at the
+95% level of confidence.
+"
   }
   else if (theWidget("test_ttest_radiobutton")$getActive())
   {
     test <- "locationTest"
-    preamble <- paste("The T-Test is performed on the two samples to test the",
-                      "hypothesis that the difference between the two",
-                      "means is zero. It is assumed the two samples are normally",
-                      "distributed. Otherwise use the Kruskal-Wallis test.",
-                      "\nThe confidence interval is an interval around",
-                      "the expected difference between the means.",
-                      "\nA low p-value (less than 0.05) indicates statistically",
-                      "significant results.",
-                      "\nTwo variants are reported: assume equal and unequal variances.",
-                      "\n",
-                      sep="\n")
+    preamble <- "The two-sample T-test is performed on the two specified samples. The
+null hypothesis is that the difference between the two means is zero.
+
+This test assumes that the two samples are normally distributed. If not,
+use the Wilcoxon Rank-Sum test.
+
+The confidence interval is an interval around the expected difference
+between the means.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accpet the alternative hypothesis, that the means differ, at the 95% level
+of confidence.
+
+Two variants of the test are reported: for equal and unequal variances.
+"
   }
   else if (theWidget("test_kw_radiobutton")$getActive())
   {
@@ -194,12 +208,20 @@ executeTestTab <- function()
   else if (theWidget("test_wilcoxon_radiobutton")$getActive())
   {
     test <- "wilcox.test"
-    preamble <- paste("The two sample non-parametric Wilcoxon test is performed",
-                      "on the two samples to test the hypothesis that the",
-                      "distributions are the same. It does not assume that the",
-                      "two samples are normally distributed but does assume they",
-                      "have the distributions have the same shape.\n",
-                      sep="\n")
+    # options <- ", conf.int=TRUE" Could do this but needs more explanation
+    preamble <- "The two-sample non-parametric Wilcoxon rank sum test (equivalent to
+the Mann-Whitney test) is performed on the two specified samples. The null
+hypothesis is that the distributions are the same (i.e., there is no
+shift in the location of the two distributions) with an alternative
+hypothesis that they differ on location (based on median).
+
+This test does not assume that the two samples are normally distributed
+but does assume they have distributions of the same shape.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accept the alternative hypothesis, that the two samples have different medians,
+at the 95% level of confidence.
+"
   }
   else if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
   {
@@ -214,21 +236,31 @@ executeTestTab <- function()
                     test, sep="")
       s1 <- s2 <- "-miss"
     }
-    preamble <- paste("The two related sample non-parametric Wilcoxon test is",
-                      "performed on the two related samples to test the",
-                      "hypothesis that the distributions are the same.",
-                      "It does not assume that the",
-                      "two samples are normally distributed.\n",
-                      sep="\n")
+    preamble <- "The paired sample non-parametric Wilcoxon signed rank test is
+performed on the two specified samples. The two samples are expected to be
+paired (two observations for the same entity). The null hypothesis is that
+the distributions are the same.
+
+This test does not assume that the two samples are are normally distributed.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accept the alternative hypothesis, that the distributions differ, at the
+95% level of confidence.
+"
   }
   else if (theWidget("test_variance_radiobutton")$getActive())
   {
     test <- "varianceTest"
-    preamble <- paste("The F-Test is performed on the two normally distributed",
-                      "samples to test the null hypothesis that the ratio of the",
-                      "variances of the populations from which they were drawn is",
-                      "equal to one.\n",
-                      sep="\n")
+    preamble <- "The two sample F-test is performed on the two specified samples. The
+null hypothesis is that the ratio of the variances of the populations from
+which they were drawn is equal to one.
+
+This test assumes that the two samples are normally distributed.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accept the alternative hypothesis, that the two samples have different
+variances, at the 95% level of confidence.
+"
   }
   else if (theWidget("test_correlation_radiobutton")$getActive())
   {
@@ -243,6 +275,16 @@ executeTestTab <- function()
                     test, sep="")
       s1 <- s2 <- "-miss"
     }
+
+    preamble <- "The paired sample correlation test is performed on the specified two
+samples. The two samples are expected to be paired (two observations
+for the same entity). The null hypothesis is that the two samples
+are correlated. Pearson's product moment correlation coefficient is used.
+
+If the p-value is less than 0.05 then we reject the null hypothesis and
+accept the alternative hypothesis that the samples are not correlated,
+at the 95% level of confidence.
+"
   }
   
 #  test.cmd <- sprintf(paste('%s(na.omit(crs$dataset%s[["%s"]]),',
