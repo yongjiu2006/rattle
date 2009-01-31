@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-26 17:01:15 Graham Williams>
+# Time-stamp: <2009-01-26 17:58:22 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -116,9 +116,6 @@ on_score_radiobutton_toggled <- function(button)
     theWidget("score_include_label")$hide()
     theWidget("score_idents_radiobutton")$hide()
     theWidget("score_all_radiobutton")$hide()
-
-#    theWidget("kmeans_evaluate_checkbutton")$setSensitive(FALSE)
-#    theWidget("hclust_evaluate_checkbutton")$setSensitive(FALSE)
   }    
   setStatusBar()
 }
@@ -745,26 +742,14 @@ executeEvaluateTab <- function()
 
   else if (theWidget("score_radiobutton")$getActive())
   {
-#    if (theWidget("kmeans_evaluate_checkbutton")$getActive())
-#      msg <- executeEvaluateKmeansScore()
-##    if (theWidget("hclust_evaluate_checkbutton")$getActive())
-##      msg <- executeEvaluateHclustScore()
-#    if (! (theWidget("kmeans_evaluate_checkbutton")$getActive()
-#           || theWidget("hclust_evaluate_checkbutton")$getActive()))
-#    {
-##    print(getEvaluateModels())
-##    if (length(setdiff(getEvaluateModels(), 'hclust')))
-##    {
-
-      if (categoricTarget())
-        # 081025 Which is best? For trees, traditionally we return the
-        # class, but for logistic regression we might return the
-        # probability. 081204 So we pass both to the function and decide in
-        # there based on a radiobutton setting.
-        msg <- executeEvaluateScore(probcmd, respcmd, testset, testname)
-      else
-        msg <- executeEvaluateScore(predcmd, predcmd, testset, testname)
-##    }
+    if (categoricTarget())
+      # 081025 Which is best? For trees, traditionally we return the
+      # class, but for logistic regression we might return the
+      # probability. 081204 So we pass both to the function and decide in
+      # there based on a radiobutton setting.
+      msg <- executeEvaluateScore(probcmd, respcmd, testset, testname)
+    else
+      msg <- executeEvaluateScore(predcmd, predcmd, testset, testname)
   }
   else
     msg <- "No appropriate evaluator found."
@@ -2057,219 +2042,7 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
   return(sprintf("Generated Sensitivity/Specificity Plot on %s.", testname))
 }
 
-#----------------------------------------------------------------------
-
-## 081227 This functionality is now part of the mainstream model
-## processing for evaluate using my own predict.kmeans. Eventually
-## predict.hclust will do the same for hclust.
-
-## executeEvaluateKmeansScore <- function()
-## {
-
-##   # TODO 080718 Need to select the dataset to which we append the
-##   # "score". Currently, it is the training dataset ONLY.
-  
-##   startLog("EXPORT KMEANS CLUSTER ASSIGNMENT AS CSV")
-    
-##   # Obtain filename to write the clusters to.
-  
-##   dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
-##                                  "gtk-cancel", GtkResponseType["cancel"],
-##                                  "gtk-save", GtkResponseType["accept"])
-##   dialog$setDoOverwriteConfirmation(TRUE)
-    
-##   if(not.null(crs$dataname))
-##     dialog$setCurrentName(paste(get.stem(crs$dataname), "_kmeans.csv", sep=""))
-
-##   ff <- gtkFileFilterNew()
-##   ff$setName("CSV Files")
-##   ff$addPattern("*.csv")
-##   dialog$addFilter(ff)
-
-##   ff <- gtkFileFilterNew()
-##   ff$setName("All Files")
-##   ff$addPattern("*")
-##   dialog$addFilter(ff)
-    
-##   if (dialog$run() == GtkResponseType["accept"])
-##   {
-##     save.name <- dialog$getFilename()
-##     dialog$destroy()
-##   }
-##   else
-##   {
-##     dialog$destroy()
-##     return()
-##   }
-
-## #  if (get.extension(save.name) != "csv")
-## #    save.name <- sprintf("%s.csv", save.name)
-  
-##   # 080523 Output all original data plus the cluster number, taking
-##   # missing values into account. This gets a little complex, to say
-##   # the least. We need to put the cluster number with each input
-##   # record, then add in those that have missing values, giving them
-##   # a cluster number of NA, and then make sure we generate the CSV
-##   # file in the same numeric order as it was read in.
-
-##   clnm <- "names(crs$kmeans$cluster)"
-##   clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
-##                   ifelse(theWidget("sample_checkbutton")$getActive(),
-##                          "crs$sample", ""), clnm)
-
-##   # Check if there are missing values, and if not we don't need to
-##   # be so complex!
-
-##   missing <- length(eval(parse(text=clna))) > 0
-
-##   if (theWidget("score_idents_radiobutton")$getActive())
-##     sinclude <- paste('c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
-##                       sep="")
-##   else if (theWidget("score_all_radiobutton")$getActive())
-##     sinclude <- paste('c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
-
-##   csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s,][%s,][%s],",
-##                             "kmeans=crs$kmeans$cluster)",
-##                             "%s", # If non missing this is empty.
-##                             ")[as.character(sort(as.integer(",
-##                             "rownames(crs$dataset[%s, ])))), ]"),
-##                       ifelse(theWidget("sample_checkbutton")$getActive(),
-##                              "crs$sample", ""),
-##                       clnm, sinclude,
-##                       ifelse(missing,
-##                              sprintf(",data.frame(crs$dataset[%s,][%s,][%s], kmeans=NA)",
-##                                      ifelse(theWidget("sample_checkbutton")$
-##                                             getActive(), "crs$sample", ""),
-##                                      clna, sinclude),
-##                              ""),
-##                       ifelse(theWidget("sample_checkbutton")$getActive(),
-##                              "crs$sample", "")
-##                       ##sprintf('"%s"', paste(idents, collapse='", "'))
-##                       )
-  
-##   # We can't pass "\" in a filename to the parse command in
-##   # MS/Windows so we have to run the save/write command separately,
-##   # i.e., not inside the string that is being parsed.
-  
-##   appendLog("Generate data frame and export the clusters to CSV.",
-##             sprintf('write.%s(%s, file="%s", row.names=FALSE)',
-##                     ifelse(isRStat(), "rstat", "csv"),
-##                     csv.cmd, save.name))
-##   if (isRStat())
-##     write.rstat(eval(parse(text=csv.cmd)), file=save.name)
-##   else
-##     write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
-
-##   return(paste("Scores have been saved to the file", save.name))
-## }
-
-## executeEvaluateHclustScore <- function()
-## {
-
-##   # TODO 081104 This is so similar to executeEvaluateKmeansScore that
-##   # it should be merged with it.
-  
-##   # TODO 081104 As with executeEvaluateKmeansScore, we need to select
-##   # the dataset to which we append the "score". Currently, it is the
-##   # training dataset ONLY.
-  
-##   startLog("EXPORT HIERARCHICAL CLUSTER ASSIGNMENT AS CSV")
-    
-##   # Obtain filename to write the clusters to.
-  
-##   dialog <- gtkFileChooserDialog("Export CSV", NULL, "save",
-##                                  "gtk-cancel", GtkResponseType["cancel"],
-##                                  "gtk-save", GtkResponseType["accept"])
-##   dialog$setDoOverwriteConfirmation(TRUE)
-  
-##   if(not.null(crs$dataname))
-##     dialog$setCurrentName(paste(get.stem(crs$dataname), "_hclust.csv", sep=""))
-
-##   ff <- gtkFileFilterNew()
-##   ff$setName("CSV Files")
-##   ff$addPattern("*.csv")
-##   dialog$addFilter(ff)
-
-##   ff <- gtkFileFilterNew()
-##   ff$setName("All Files")
-##   ff$addPattern("*")
-##   dialog$addFilter(ff)
-    
-##   if (dialog$run() == GtkResponseType["accept"])
-##   {
-##     save.name <- dialog$getFilename()
-##     dialog$destroy()
-##   }
-##   else
-##   {
-##     dialog$destroy()
-##     return()
-##   }
-
-## #  if (get.extension(save.name) != "csv")
-## #    save.name <- sprintf("%s.csv", save.name)
-  
-##   # 080523 Output all original data plus the cluster number, taking
-##   # missing values into account. This gets a little complex, to say
-##   # the least. We need to put the cluster number with each input
-##   # record, then add in those that have missing values, giving them
-##   # a cluster number of NA, and then make sure we generate the CSV
-##   # file in the same numeric order as it was read in.
-
-##   num.clusters <- theWidget("hclust_clusters_spinbutton")$getValue()
-
-##   # XXXX TODO USE cut(crs$hclust, 10) to get the cluster assignment. Maybe not
-##   # as complex as kmeans???? Or maybe it is, wrt missing.
-  
-##   clnm <- sprintf("names(cutree(crs$hclust, %d))", num.clusters)
-##   clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
-##                   ifelse(theWidget("sample_checkbutton")$getActive(),
-##                          "crs$sample", ""), clnm)
-
-##   # Check if there are missing values, and if not we don't need to
-##   # be so complex!
-
-##   missing <- length(eval(parse(text=clna))) > 0
-
-##   if (theWidget("score_idents_radiobutton")$getActive())
-##     sinclude <- paste(' c("', paste(getSelectedVariables("ident"), collapse='", "'), '")',
-##                       sep="")
-##   else if (theWidget("score_all_radiobutton")$getActive())
-##     sinclude <- paste(' c("', paste(names(crs$dataset), collapse='", "'), '")', sep="")
-
-##   csv.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s,][%s,][%s],",
-##                             "hclust=cutree(crs$hclust, %d))%s",
-##                             ")[as.character(sort(as.integer(",
-##                             "rownames(crs$dataset[%s, ])))),]"),
-##                       ifelse(theWidget("sample_checkbutton")$getActive(),
-##                              "crs$sample", ""),
-##                       clnm, sinclude, num.clusters,
-##                       ifelse(missing,
-##                              sprintf(",data.frame(crs$dataset[%s, ][%s,][%s], hclust=NA)",
-##                                      ifelse(theWidget("sample_checkbutton")$
-##                                             getActive(), "crs$sample", ""),
-##                                      clna, sinclude),
-##                              ""),
-##                       ifelse(theWidget("sample_checkbutton")$getActive(),
-##                              "crs$sample", "")
-##                       ##sprintf('"%s"', paste(idents, collapse='", "'))
-##                       )
-
-##   # We can't pass "\" in a filename to the parse command in
-##   # MS/Windows so we have to run the save/write command separately,
-##   # i.e., not inside the string that is being parsed.
-  
-##   appendLog("Generate data frame and export the clusters to CSV.",
-##             sprintf('write.%s(%s, file="%s", row.names=FALSE)',
-##                     ifelse(isRStat(), "rstat", "csv"),
-##                     csv.cmd, save.name))
-##   if (isRStat())
-##     write.rstat(eval(parse(text=csv.cmd)), file=save.name)
-##   else
-##     write.csv(eval(parse(text=csv.cmd)), file=save.name, row.names=FALSE)
-
-##   return(paste("Scores have been saved to the file", save.name))
-## }
+########################################################################
 
 executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
 {
@@ -2388,68 +2161,6 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   for (mtype in the.models)
   {
     setStatusBar("Scoring dataset using", mtype, "...")
-
-    ## REMOVE
-    ## if (mtype == "kmeans")
-    ## {
-    ##   # 081227 TODO I started to include kmeans (and then plan to proceed
-    ##   # on to hclust) scoring into here. But kmeans will score all the
-    ##   # data in the sample, not the testset, since it was built on the
-    ##   # sample, and that is what scores are saved. I really need a
-    ##   # score function for a kmeans model (and a hclust model - using
-    ##   # the same idea as the generated hclust c code) to score any new
-    ##   # data, then use that as the predcmd or classcmd - will be the
-    ##   # same. Perhaps implement predict.kmeans and predict.hclust.
-    ##   # The simplest of predict.kmeans is:
-      
-    ##   # 081227 We want to obtain the cluster number, taking missing
-    ##   # values into account. This gets a little complex, to say the
-    ##   # least. We need to put the cluster number with each input
-    ##   # record, then add in those that have missing values, giving
-    ##   # them a cluster number of NA, and then make sure we add these
-    ##   # into the scores properly, in the same numeric order.
-
-    ##  clnm <- "names(crs$kmeans$cluster)"
-    ##  clna <- sprintf("setdiff(rownames(crs$dataset[%s, ]), %s)",
-    ##                  ifelse(theWidget("sample_checkbutton")$getActive(),
-    ##                         "crs$sample", ""), clnm)
-
-    ##  # Check if there are missing values, and if not we don't need to
-    ##  # be so complex!
-
-    ##  missing <- length(eval(parse(text=clna))) > 0
-
-    ##  score.cmd <-  sprintf(paste("rbind(data.frame(crs$dataset[%s,][%s,NULL],",
-    ##                              "kmeans=crs$kmeans$cluster)",
-    ##                              "%s", # If non missing this is empty.
-    ##                              ")[as.character(sort(as.integer(",
-    ##                              "rownames(crs$dataset[%s, ])))), ]"),
-    ##                        ifelse(theWidget("sample_checkbutton")$getActive(),
-    ##                               "crs$sample", ""),
-    ##                        clnm,
-    ##                        ifelse(missing,
-    ##                               sprintf(",cbind(crs$dataset[%s,][%s,NULL], kmeans=NA)",
-    ##                                       ifelse(theWidget("sample_checkbutton")$
-    ##                                              getActive(), "crs$sample", ""),
-    ##                                       clna),
-    ##                               ""),
-    ##                        ifelse(theWidget("sample_checkbutton")$getActive(),
-    ##                               "crs$sample", "")
-    ##                        ##sprintf('"%s"', paste(idents, collapse='", "'))
-    ##                        )
-  
-    ##  appendLog("Generate cluster labels for the data.", score.cmd)
-
-    ##  result <- try(eval(parse(text=score.cmd)))
-    ##  if (inherits(result, "try-error"))
-    ##  {
-    ##    errorReport(score.cmd, result)
-    ##    next()
-    ##  }
-    ##  scores[[mtype]] <- result
-    ## }
-    ## else
-    ## {
         
     # Determine whether we want the respcmd (for trees and multinom)
     # or the probcmd (for logistic regression). 081204 Originally we

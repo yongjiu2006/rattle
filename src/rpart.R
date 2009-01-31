@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-20 20:12:40 Graham Williams>
+# Time-stamp: <2009-01-28 21:13:14 Graham Williams>
 #
 # RPART TAB
 #
@@ -23,12 +23,6 @@
 
 ########################################################################
 #
-# TODO
-#
-# Add a Rules button to  print the rules.
-
-########################################################################
-#
 # CALLBACKS
 #
 
@@ -37,14 +31,14 @@ on_priors_entry_changed <- function(action, window)
   setStatusBar()
 }
 
-## When the rpart loss combobox is entered, retrieve the list of
-## matrix objects in R and populate the choices. This is the simplest
-## approach to handling the loss matrix at present and may be
-## sufficient.
-
 on_rpart_loss_comboboxentry_set_focus_child <- function(action, window)
 {
-  ## Generate a list of suitable (matrix) R objects
+  # When the rpart loss combobox is entered, retrieve the list of
+  # matrix objects in R and populate the choices. This is the simplest
+  # approach to handling the loss matrix at present and may be
+  # sufficient.
+
+  # Generate a list of suitable (matrix) R objects
 
   ml <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
@@ -390,6 +384,10 @@ executeModelRPart <- function(action="build")
                        ")", sep="")
 
     print.cmd <- paste("rattle.print.rpart(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+
+    # 090126 Add error matrix.
+    
+    
   }
   else if (action == "tune")
   {

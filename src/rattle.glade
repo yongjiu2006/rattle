@@ -1601,8 +1601,8 @@
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
                             <property name="tooltip" translatable="yes">Folder containing the corpus and optionally a target.csv file.</property>
-                            <property name="local_only">False</property>
                             <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -2584,15 +2584,6 @@ Spearman</property>
                                     <property name="can_focus">True</property>
                                     <property name="editable">False</property>
                                     <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                    <property name="text" translatable="yes">It is useful to understand how our data is distributed
-
-The summary here will include more details depending on which check buttons you choose. 
-
-The Summary option provides a very brief summary.
-
-The Describe option provides comprehensive summaries of each variable.
-
-Kurtosis and Skewness allow these measure to be compared across the available numeric variables.</property>
                                   </widget>
                                 </child>
                               </widget>
@@ -2889,13 +2880,11 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                             <property name="shadow_type">GTK_SHADOW_IN</property>
                             <child>
-                              <widget class="GtkTextView" id="textview1">
+                              <widget class="GtkTextView" id="ggobi_textview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                <property name="text" translatable="yes">GGobi provides highly dynamic and interactive graphics such as tours, as well as familiar graphics such as the scatterplot, barchart and parallel coordinates plots. Plots are interactive and linked with brushing and identification.
-</property>
                               </widget>
                             </child>
                           </widget>
@@ -2924,7 +2913,6 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
-                                <property name="text" translatable="yes">A correlation analysis will provide insights into how independent the input variables are. Modelling often assumes independence, and better models will result for independent input variables.</property>
                               </widget>
                             </child>
                           </widget>
@@ -2954,13 +2942,6 @@ Kurtosis and Skewness allow these measure to be compared across the available nu
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                <property name="text" translatable="yes">Dendrograms provide a visual clue to  the degree of closeness between variables.
-
-The hierarchical correlation dendrogram produced here presents a view of the variables of the dataset showing their relationships (correlations). Depending on the data, you may find groupings of variables that are highly correlated. These will be fairly obvious in most cases. The length of the lines in the dendrogram provide a visual indication of the degree of correlation (or perhaps the tightness of the correlation - shorter lines indicate more tighly correlated variables).
-
-Once you have identified the groups of variables that are correlated, you may want to reduce the number of variables you are including in your modelling.
-
-Note that only numeric data is processed to produce the plot. Categoricals are not handled by this analysis.</property>
                               </widget>
                             </child>
                           </widget>
@@ -2989,7 +2970,6 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                <property name="text" translatable="yes">Principal Components Analysis can provide insights into the importance of variables in explaining the variation found within the dataset.</property>
                               </widget>
                             </child>
                           </widget>
@@ -3017,15 +2997,11 @@ Note that only numeric data is processed to produce the plot. Categoricals are n
                             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                             <property name="shadow_type">GTK_SHADOW_IN</property>
                             <child>
-                              <widget class="GtkTextView" id="textview3">
+                              <widget class="GtkTextView" id="playwith_textview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="wrap_mode">GTK_WRAP_WORD</property>
-                                <property name="text" translatable="yes">Latticist provides a graphical user interface for exploratory visualisation. 
-
-For the loaded dataset latticist attempts to produce useful displays based on the properties of the data.
-</property>
                               </widget>
                             </child>
                           </widget>
@@ -3093,12 +3069,103 @@ For the loaded dataset latticist attempts to produce useful displays based on th
                       <placeholder/>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label38">
+                      <widget class="GtkLabel" id="label12">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes"> Paired Two SampleTests:</property>
+                        <property name="label" translatable="yes"> Two-Sample Tests:</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_distr_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Test whether the two distributions are different.</property>
+                        <property name="label" translatable="yes">Kolmogorov-Smirnov</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_wilcoxon_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Two sample Wilcoxon rank-sum test, also known as the Mann-Whitney U test, to test whether the two distributions are the same.</property>
+                        <property name="label" translatable="yes">Wilcoxon Rank-Sum</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_ttest_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Two sample t-test to test whether the means are different.</property>
+                        <property name="label" translatable="yes">T-test</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_kw_radiobutton">
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Two sample test of means when distributions are not known to be normal.</property>
+                        <property name="label" translatable="yes">Kruskal-Wallis</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">4</property>
+                        <property name="right_attach">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_variance_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Two sample t-test to test whether the variances are different.</property>
+                        <property name="label" translatable="yes">F-test</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">5</property>
+                        <property name="right_attach">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="test_wilcoxon_signed_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="label" translatable="yes">Wilcoxon Signed Rank</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">test_distr_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                       </packing>
@@ -3121,106 +3188,15 @@ For the loaded dataset latticist attempts to produce useful displays based on th
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="test_wilcoxon_signed_radiobutton">
+                      <widget class="GtkLabel" id="label38">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Wilcoxon Signed Rank</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes"> Paired Two-SampleTests:</property>
                       </widget>
                       <packing>
-                        <property name="left_attach">2</property>
-                        <property name="right_attach">3</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                       </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_variance_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Two sample t-test to test whether the variances are different.</property>
-                        <property name="label" translatable="yes">F-test</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">5</property>
-                        <property name="right_attach">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_kw_radiobutton">
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Two sample test of means when distributions are not known to be normal.</property>
-                        <property name="label" translatable="yes">Kruskal-Wallis</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">4</property>
-                        <property name="right_attach">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_ttest_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Two sample t-test to test whether the means are different.</property>
-                        <property name="label" translatable="yes">T-test</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_wilcoxon_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Two sample Wilcoxon rank-sum test, also known as the Mann-Whitney U test, to test whether the two distributions are the same.</property>
-                        <property name="label" translatable="yes">Wilcoxon</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">test_distr_radiobutton</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">2</property>
-                        <property name="right_attach">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="test_distr_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Test whether the two distributions are different.</property>
-                        <property name="label" translatable="yes">Kolmogorov-Smirnov</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label12">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes"> Two Sample Tests:</property>
-                      </widget>
                     </child>
                   </widget>
                   <packing>
@@ -3531,102 +3507,43 @@ For the loaded dataset latticist attempts to produce useful displays based on th
                               <placeholder/>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label37">
+                              <widget class="GtkLabel" id="label36">
+                                <property name="width_request">65</property>
                                 <property name="visible">True</property>
-                                <property name="xalign">1</property>
-                                <property name="label" translatable="yes">Note: Rank transforms do not carry through to scoring.</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Normalize:</property>
                               </widget>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="right_attach">6</property>
+                                <property name="x_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label35">
+                                <property name="width_request">65</property>
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Order:</property>
+                              </widget>
+                              <packing>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
+                                <property name="x_options"></property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="rescale_matrix_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">For the selected numeric variables (one or more variables, considered as a matrix) divide each cell by the matrix total.</property>
-                                <property name="label" translatable="yes">Matrix</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">5</property>
-                                <property name="right_attach">6</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="rescale_log_radiobutton">
+                              <widget class="GtkRadioButton" id="normalise_recenter_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Rescale variables using a natural log transform.</property>
-                                <property name="label" translatable="yes">Natural Log</property>
+                                <property name="tooltip" translatable="yes">Rescale so that the mean is 0 and the standard deviation is 1.</property>
+                                <property name="label" translatable="yes">Recenter</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
                               </widget>
                               <packing>
-                                <property name="left_attach">4</property>
-                                <property name="right_attach">5</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="normalise_medianad_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Rescale (robustly) so that the median is 0 and the median absolute deviation is 1.</property>
-                                <property name="label" translatable="yes">-Median/MAD</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">3</property>
-                                <property name="right_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="normalise_scale01_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Rescale to the range 0-1.</property>
-                                <property name="label" translatable="yes">Scale [0-1]</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkRadioButton" id="normalise_bygroup_radiobutton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Specify two variables (numerical + categorical) and group by the categorical to normalise the numeric between 0 and 100.</property>
-                                <property name="label" translatable="yes">Nolan Groups</property>
-                                <property name="response_id">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">normalise_recenter_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -3649,43 +3566,102 @@ For the loaded dataset latticist attempts to produce useful displays based on th
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="normalise_recenter_radiobutton">
+                              <widget class="GtkRadioButton" id="normalise_bygroup_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="tooltip" translatable="yes">Rescale so that the mean is 0 and the standard deviation is 1.</property>
-                                <property name="label" translatable="yes">Recenter</property>
+                                <property name="tooltip" translatable="yes">Specify two variables (numerical + categorical) and group by the categorical to normalise the numeric between 0 and 100.</property>
+                                <property name="label" translatable="yes">Nolan Groups</property>
                                 <property name="response_id">0</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
                               </widget>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label35">
-                                <property name="width_request">65</property>
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Order:</property>
-                              </widget>
-                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label36">
-                                <property name="width_request">65</property>
+                              <widget class="GtkRadioButton" id="normalise_scale01_radiobutton">
                                 <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Normalize:</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="tooltip" translatable="yes">Rescale to the range 0-1.</property>
+                                <property name="label" translatable="yes">Scale [0-1]</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
                               </widget>
                               <packing>
-                                <property name="x_options"></property>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="normalise_medianad_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="tooltip" translatable="yes">Rescale (robustly) so that the median is 0 and the median absolute deviation is 1.</property>
+                                <property name="label" translatable="yes">-Median/MAD</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">3</property>
+                                <property name="right_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="rescale_log_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="tooltip" translatable="yes">Rescale variables using a natural log transform.</property>
+                                <property name="label" translatable="yes">Natural Log</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">4</property>
+                                <property name="right_attach">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="rescale_matrix_radiobutton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">For the selected numeric variables (one or more variables, considered as a matrix) divide each cell by the matrix total.</property>
+                                <property name="label" translatable="yes">Matrix</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">normalise_recenter_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">5</property>
+                                <property name="right_attach">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label37">
+                                <property name="visible">True</property>
+                                <property name="xalign">1</property>
+                                <property name="label" translatable="yes">Note: Rank transforms do not carry through to scoring.</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">3</property>
+                                <property name="right_attach">6</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
                               </packing>
                             </child>
                           </widget>
@@ -5059,90 +5035,57 @@ centroid</property>
                     <property name="n_rows">1</property>
                     <property name="n_columns">9</property>
                     <child>
-                      <widget class="GtkLabel" id="label23">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">Type:</property>
-                      </widget>
-                      <packing>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="rpart_radiobutton">
+                      <widget class="GtkRadioButton" id="boost_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build a model using the popular decision tree algorithm.</property>
-                        <property name="label" translatable="yes">Tree</property>
+                        <property name="tooltip" translatable="yes">Build multiple simple models, boosting entities hard to classify, combined into an ensemble.</property>
+                        <property name="label" translatable="yes">Boost</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
-                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_dtree_radiobutton_toggled"/>
+                        <property name="group">rpart_radiobutton</property>
+                        <signal name="toggled" handler="on_boost_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="rf_radiobutton">
+                      <widget class="GtkRadioButton" id="all_models_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build many decision trees using random subsets of data and variables.</property>
-                        <property name="label" translatable="yes">Forest</property>
+                        <property name="tooltip" translatable="yes">Build one model of each type using the specified parameters.</property>
+                        <property name="label" translatable="yes">All</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
-                        <signal name="toggled" handler="on_rf_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
+                        <property name="left_attach">8</property>
+                        <property name="right_attach">9</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="svm_radiobutton">
-                        <property name="visible">True</property>
+                      <widget class="GtkRadioButton" id="mars_radiobutton">
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build a support vector machine model.</property>
-                        <property name="label" translatable="yes">SVM</property>
+                        <property name="label" translatable="yes">MARS</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
-                        <signal name="toggled" handler="on_svm_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">4</property>
-                        <property name="right_attach">5</property>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
-                        <property name="x_padding">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="model_linear_radiobutton">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build a Linear (numeric target) or Logist (binary target) model with lm/glm respectively.</property>
-                        <property name="label" translatable="yes">Linear</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">rpart_radiobutton</property>
-                        <signal name="toggled" handler="on_model_linear_radiobutton_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">5</property>
-                        <property name="right_attach">6</property>
+                        <property name="left_attach">7</property>
+                        <property name="right_attach">8</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
@@ -5169,60 +5112,93 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="mars_radiobutton">
-                        <property name="sensitive">False</property>
+                      <widget class="GtkRadioButton" id="model_linear_radiobutton">
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">MARS</property>
+                        <property name="tooltip" translatable="yes">Build a Linear (numeric target) or Logist (binary target) model with lm/glm respectively.</property>
+                        <property name="label" translatable="yes">Linear</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
+                        <signal name="toggled" handler="on_model_linear_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">7</property>
-                        <property name="right_attach">8</property>
+                        <property name="left_attach">5</property>
+                        <property name="right_attach">6</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="all_models_radiobutton">
+                      <widget class="GtkRadioButton" id="svm_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build one model of each type using the specified parameters.</property>
-                        <property name="label" translatable="yes">All</property>
+                        <property name="tooltip" translatable="yes">Build a support vector machine model.</property>
+                        <property name="label" translatable="yes">SVM</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
+                        <signal name="toggled" handler="on_svm_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">8</property>
-                        <property name="right_attach">9</property>
+                        <property name="left_attach">4</property>
+                        <property name="right_attach">5</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="boost_radiobutton">
+                      <widget class="GtkRadioButton" id="rf_radiobutton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">Build multiple simple models, boosting entities hard to classify, combined into an ensemble.</property>
-                        <property name="label" translatable="yes">Boost</property>
+                        <property name="tooltip" translatable="yes">Build many decision trees using random subsets of data and variables.</property>
+                        <property name="label" translatable="yes">Forest</property>
                         <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rpart_radiobutton</property>
-                        <signal name="toggled" handler="on_boost_radiobutton_toggled"/>
+                        <signal name="toggled" handler="on_rf_radiobutton_toggled"/>
                       </widget>
                       <packing>
-                        <property name="left_attach">2</property>
-                        <property name="right_attach">3</property>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                         <property name="x_padding">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="rpart_radiobutton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Build a model using the popular decision tree algorithm.</property>
+                        <property name="label" translatable="yes">Tree</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_dtree_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options"></property>
+                        <property name="x_padding">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label23">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Type:</property>
+                      </widget>
+                      <packing>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                   </widget>
@@ -5359,6 +5335,245 @@ centroid</property>
                                   <placeholder/>
                                 </child>
                                 <child>
+                                  <widget class="GtkCheckButton" id="model_tree_include_missing_checkbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Check this box to use surrogate variables when confronted with missing values.</property>
+                                    <property name="label" translatable="yes">Include Missing</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">7</property>
+                                    <property name="right_attach">8</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkHBox" id="hbox1">
+                                    <property name="visible">True</property>
+                                    <child>
+                                      <widget class="GtkButton" id="rpart_rules_button">
+                                        <property name="can_focus">True</property>
+                                        <property name="label" translatable="yes">Rules</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="response_id">0</property>
+                                        <signal name="clicked" handler="on_rpart_rules_button_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="padding">5</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkButton" id="rpart_plot_button">
+                                        <property name="can_focus">True</property>
+                                        <property name="tooltip" translatable="yes">Draw the decision tree as a plot.</property>
+                                        <property name="label" translatable="yes">Draw</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="response_id">0</property>
+                                        <signal name="clicked" handler="on_rpart_plot_button_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="padding">5</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">7</property>
+                                    <property name="right_attach">8</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="rpart_maxdepth_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">This is the maximum depth of any node of the final tree. The root node is considered to be depth 0. Note that a depth beyond 30 will give nonsense results on 32-bit machines. The default is 30.</property>
+                                    <property name="adjustment">20 1 30 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="numeric">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">5</property>
+                                    <property name="right_attach">6</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="model_tree_cp_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">The complexity parameter (cp) is used to control the size of the decision tree and to select the optimal tree size. If the cost of adding another variable to the decision tree from the current node is above the value of cp, then tree building does not continue. We could also say that  tree construction does not continue unless it would decrease the overall lack of fit by a factor of cp.
+
+Setting this to zero will build a tree to its maximum depth (and perhaps will build a very, very, large tree). This is useful if you want to look at the values for CP for various tree sizes. This information will be in the text view window. You will look for the number of splits where the sum of the xerror (cross validation error, relative to the root node error) and xstd is minimum. This is usually early in the list.</property>
+                                    <property name="adjustment">0.01 9.9999997473799998e-05 1 9.9999997473799998e-05 0.0010000000475 0.0010000000475</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="digits">4</property>
+                                    <property name="numeric">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">5</property>
+                                    <property name="right_attach">6</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label57">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">maxdepth</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Max Depth:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">4</property>
+                                    <property name="right_attach">5</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="model_tree_cp_label">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">cp</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Complexity:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">4</property>
+                                    <property name="right_attach">5</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="rpart_minbucket_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">This is the minimum number of entities allowed in any leaf node of the decision tree. The default value is one thrid of the Min Split.</property>
+                                    <property name="adjustment">7 1 10000 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="right_attach">4</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label84">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">minbucket</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Min Bucket:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="right_attach">3</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkEntry" id="model_tree_loss_entry">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Weight the outcome classes differently. E.g., 0,10,1,0 (TN, FN, FP, TP).</property>
+                                    <property name="invisible_char">*</property>
+                                    <property name="width_chars">10</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkEntry" id="model_tree_priors_entry">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Set the prior probabilities for each class. E.g. for two classes: 0.5,0.5. Must add up to 1.</property>
+                                    <property name="invisible_char">*</property>
+                                    <property name="width_chars">10</property>
+                                    <signal name="changed" handler="on_priors_entry_changed"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="rpart_minsplit_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">This is the minimum number of entities that must exist in a dataset at any node in order for a split of that node to be attempted. The default is 20.</property>
+                                    <property name="adjustment">20 0 1000000 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="right_attach">4</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label39">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">minsplit</property>
+                                    <property name="label" translatable="yes">Min Split:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="right_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="model_tree_loss_label">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">loss</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Loss Matrix:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="model_tree_priors_label">
+                                    <property name="visible">True</property>
+                                    <property name="tooltip" translatable="yes">prior</property>
+                                    <property name="label" translatable="yes">Priors:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <widget class="GtkHBox" id="hbox3">
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -5430,245 +5645,6 @@ centroid</property>
                                     <property name="right_attach">7</property>
                                     <property name="top_attach">2</property>
                                     <property name="bottom_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="model_tree_priors_label">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">prior</property>
-                                    <property name="label" translatable="yes">Priors:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="model_tree_loss_label">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">loss</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Loss Matrix:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label39">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">minsplit</property>
-                                    <property name="label" translatable="yes">Min Split:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="rpart_minsplit_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">This is the minimum number of entities that must exist in a dataset at any node in order for a split of that node to be attempted. The default is 20.</property>
-                                    <property name="adjustment">20 0 1000000 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="right_attach">4</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkEntry" id="model_tree_priors_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Set the prior probabilities for each class. E.g. for two classes: 0.5,0.5. Must add up to 1.</property>
-                                    <property name="invisible_char">*</property>
-                                    <property name="width_chars">10</property>
-                                    <signal name="changed" handler="on_priors_entry_changed"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkEntry" id="model_tree_loss_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Weight the outcome classes differently. E.g., 0,10,1,0 (TN, FN, FP, TP).</property>
-                                    <property name="invisible_char">*</property>
-                                    <property name="width_chars">10</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label84">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">minbucket</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Min Bucket:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="rpart_minbucket_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">This is the minimum number of entities allowed in any leaf node of the decision tree. The default value is one thrid of the Min Split.</property>
-                                    <property name="adjustment">7 1 10000 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="right_attach">4</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="model_tree_cp_label">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">cp</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Complexity:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="right_attach">5</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label57">
-                                    <property name="visible">True</property>
-                                    <property name="tooltip" translatable="yes">maxdepth</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Max Depth:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="right_attach">5</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="model_tree_cp_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">The complexity parameter (cp) is used to control the size of the decision tree and to select the optimal tree size. If the cost of adding another variable to the decision tree from the current node is above the value of cp, then tree building does not continue. We could also say that  tree construction does not continue unless it would decrease the overall lack of fit by a factor of cp.
-
-Setting this to zero will build a tree to its maximum depth (and perhaps will build a very, very, large tree). This is useful if you want to look at the values for CP for various tree sizes. This information will be in the text view window. You will look for the number of splits where the sum of the xerror (cross validation error, relative to the root node error) and xstd is minimum. This is usually early in the list.</property>
-                                    <property name="adjustment">0.01 9.9999997473799998e-05 1 9.9999997473799998e-05 0.0010000000475 0.0010000000475</property>
-                                    <property name="climb_rate">1</property>
-                                    <property name="digits">4</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">5</property>
-                                    <property name="right_attach">6</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="rpart_maxdepth_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">This is the maximum depth of any node of the final tree. The root node is considered to be depth 0. Note that a depth beyond 30 will give nonsense results on 32-bit machines. The default is 30.</property>
-                                    <property name="adjustment">20 1 30 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">5</property>
-                                    <property name="right_attach">6</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkHBox" id="hbox1">
-                                    <property name="visible">True</property>
-                                    <child>
-                                      <widget class="GtkButton" id="rpart_rules_button">
-                                        <property name="can_focus">True</property>
-                                        <property name="label" translatable="yes">Rules</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="response_id">0</property>
-                                        <signal name="clicked" handler="on_rpart_rules_button_clicked"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="padding">5</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkButton" id="rpart_plot_button">
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip" translatable="yes">Draw the decision tree as a plot.</property>
-                                        <property name="label" translatable="yes">Draw</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="response_id">0</property>
-                                        <signal name="clicked" handler="on_rpart_plot_button_clicked"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="padding">5</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">7</property>
-                                    <property name="right_attach">8</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkCheckButton" id="model_tree_include_missing_checkbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Check this box to use surrogate variables when confronted with missing values.</property>
-                                    <property name="label" translatable="yes">Include Missing</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">7</property>
-                                    <property name="right_attach">8</property>
                                   </packing>
                                 </child>
                               </widget>
@@ -5772,56 +5748,17 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                 <property name="column_spacing">11</property>
                                 <property name="row_spacing">5</property>
                                 <child>
-                                  <widget class="GtkCheckButton" id="ada_stumps_checkbutton">
-                                    <property name="visible">True</property>
+                                  <widget class="GtkButton" id="ada_continue_button">
                                     <property name="can_focus">True</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="tooltip" translatable="yes">When active, build stumps. Deactivating results in default values.</property>
-                                    <property name="label" translatable="yes">Stumps</property>
+                                    <property name="tooltip" translatable="yes">You can build further trees by increasing the number of trees to build then click here.</property>
+                                    <property name="label" translatable="yes">Continue</property>
+                                    <property name="use_underline">True</property>
                                     <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_ada_stumps_checkbutton_toggled"/>
+                                    <signal name="clicked" handler="on_ada_continue_button_clicked"/>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label149">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Number of Trees:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="ada_ntree_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">The number of trees to build. Generally 500 (the default) is good, and the resulting model is fairly insensitive to changes here.</property>
-                                    <property name="adjustment">50 0 10000 10 50 50</property>
-                                    <property name="climb_rate">10</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="ada_max_depth_label">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Max Depth:</property>
-                                  </widget>
-                                  <packing>
+                                    <property name="left_attach">8</property>
+                                    <property name="right_attach">9</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -5829,48 +5766,110 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkSpinButton" id="ada_maxdepth_spinbutton">
+                                  <widget class="GtkButton" id="ada_defaults_button">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">This is the maximum depth of any node of the final tree. The root node is considered to be depth 0. Note that a depth beyond 30 will give nonsense results on 32-bit machines. The default is 30.</property>
-                                    <property name="adjustment">30 1 30 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="ada_min_split_label">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Min Split:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="ada_minsplit_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">This is the minimum number of entities that must exist in a dataset at any node in order for a split of that node to be attempted. The default is 20.</property>
-                                    <property name="adjustment">20 0 1000000 1 10 10</property>
-                                    <property name="climb_rate">1</property>
+                                    <property name="tooltip" translatable="yes">Reset the options to correspond to the default values.</property>
+                                    <property name="label" translatable="yes">Defaults</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_ada_defaults_button_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">3</property>
                                     <property name="right_attach">4</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="ada_importance_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles in the model.</property>
+                                    <property name="label" translatable="yes">Importance</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_ada_importance_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">4</property>
+                                    <property name="right_attach">5</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="ada_errors_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
+                                    <property name="label" translatable="yes">Errors</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_ada_errors_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">5</property>
+                                    <property name="right_attach">6</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="ada_list_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">List the decision trees in the textview.</property>
+                                    <property name="label" translatable="yes">List</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_ada_list_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">6</property>
+                                    <property name="right_attach">7</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="ada_draw_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">Draw</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_ada_draw_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">7</property>
+                                    <property name="right_attach">8</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="ada_draw_spinbutton">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Which tree to display.</property>
+                                    <property name="adjustment">1 0 1000 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="numeric">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">8</property>
+                                    <property name="right_attach">9</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="ada_xval_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="adjustment">10 0 100 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">7</property>
+                                    <property name="right_attach">8</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -5878,14 +5877,14 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="ada_complexity_label">
+                                  <widget class="GtkLabel" id="ada_xval_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Complexity:</property>
+                                    <property name="label" translatable="yes">X Val:</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="right_attach">5</property>
+                                    <property name="left_attach">6</property>
+                                    <property name="right_attach">7</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -5914,147 +5913,124 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="ada_xval_label">
+                                  <widget class="GtkLabel" id="ada_complexity_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">X Val:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">6</property>
-                                    <property name="right_attach">7</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="ada_xval_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="adjustment">10 0 100 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">7</property>
-                                    <property name="right_attach">8</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="ada_draw_spinbutton">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Which tree to display.</property>
-                                    <property name="adjustment">1 0 1000 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">8</property>
-                                    <property name="right_attach">9</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_draw_button">
-                                    <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Draw</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_draw_button_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">7</property>
-                                    <property name="right_attach">8</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_list_button">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">List the decision trees in the textview.</property>
-                                    <property name="label" translatable="yes">List</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_list_button_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">6</property>
-                                    <property name="right_attach">7</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_errors_button">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
-                                    <property name="label" translatable="yes">Errors</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_errors_button_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">5</property>
-                                    <property name="right_attach">6</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_importance_button">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles in the model.</property>
-                                    <property name="label" translatable="yes">Importance</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_importance_button_clicked"/>
+                                    <property name="label" translatable="yes">Complexity:</property>
                                   </widget>
                                   <packing>
                                     <property name="left_attach">4</property>
                                     <property name="right_attach">5</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_defaults_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Reset the options to correspond to the default values.</property>
-                                    <property name="label" translatable="yes">Defaults</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_defaults_button_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="right_attach">4</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="ada_continue_button">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">You can build further trees by increasing the number of trees to build then click here.</property>
-                                    <property name="label" translatable="yes">Continue</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_ada_continue_button_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">8</property>
-                                    <property name="right_attach">9</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
                                     <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="ada_minsplit_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">This is the minimum number of entities that must exist in a dataset at any node in order for a split of that node to be attempted. The default is 20.</property>
+                                    <property name="adjustment">20 0 1000000 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="right_attach">4</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="ada_min_split_label">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Min Split:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="right_attach">3</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="ada_maxdepth_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">This is the maximum depth of any node of the final tree. The root node is considered to be depth 0. Note that a depth beyond 30 will give nonsense results on 32-bit machines. The default is 30.</property>
+                                    <property name="adjustment">30 1 30 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="numeric">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="ada_max_depth_label">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Max Depth:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkSpinButton" id="ada_ntree_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">The number of trees to build. Generally 500 (the default) is good, and the resulting model is fairly insensitive to changes here.</property>
+                                    <property name="adjustment">50 0 10000 10 50 50</property>
+                                    <property name="climb_rate">10</property>
+                                    <property name="numeric">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label149">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Number of Trees:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="ada_stumps_checkbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip" translatable="yes">When active, build stumps. Deactivating results in default values.</property>
+                                    <property name="label" translatable="yes">Stumps</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_ada_stumps_checkbutton_toggled"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="right_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
                                   </packing>
                                 </child>
                               </widget>
@@ -6168,70 +6144,48 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                   <placeholder/>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="label99">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Number of Variables:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label98">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Number of Trees:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label100">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Sample Size:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="rf_ntree_spinbutton">
-                                    <property name="visible">True</property>
+                                  <widget class="GtkSpinButton" id="rf_print_tree_spinbutton">
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">The number of trees to build. Generally 500 (the default) is good, and the resulting model is fairly insensitive to changes here.</property>
-                                    <property name="adjustment">500 0 10000 10 50 50</property>
-                                    <property name="climb_rate">10</property>
-                                    <property name="numeric">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkSpinButton" id="rf_mtry_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">The number of variables that will be considered at any time in deciding how to partition the dataset. For classificaiton the default is the square root of the number of variables. The model is generally not very sensitive to this value.</property>
-                                    <property name="adjustment">10 1 1000 1 10 10</property>
+                                    <property name="tooltip" translatable="yes">Which tree to display.</property>
+                                    <property name="adjustment">1 1 1000 1 10 10</property>
                                     <property name="climb_rate">1</property>
                                     <property name="numeric">True</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
+                                    <property name="left_attach">6</property>
+                                    <property name="right_attach">7</property>
+                                    <property name="x_options"></property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="rf_print_tree_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Display a specific tree.</property>
+                                    <property name="label" translatable="yes">Rules</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_rf_print_tree_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">5</property>
+                                    <property name="right_attach">6</property>
+                                    <property name="x_options"></property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="rf_errors_button">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
+                                    <property name="label" translatable="yes">Errors</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_rf_errors_button_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">4</property>
+                                    <property name="right_attach">5</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -6239,15 +6193,17 @@ Setting this to zero will build a tree to its maximum depth (and perhaps will bu
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkEntry" id="rf_sampsize_entry">
-                                    <property name="visible">True</property>
+                                  <widget class="GtkButton" id="rf_importance_button">
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Specify sample size for each class (e.g., "500,500") which may be useful in balancing classes.</property>
-                                    <property name="invisible_char">*</property>
+                                    <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles.</property>
+                                    <property name="label" translatable="yes">Importance</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_rf_importance_button_clicked"/>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="right_attach">4</property>
+                                    <property name="left_attach">4</property>
+                                    <property name="right_attach">5</property>
                                     <property name="x_options">GTK_FILL</property>
                                     <property name="y_options"></property>
                                   </packing>
@@ -6302,33 +6258,31 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkButton" id="rf_importance_button">
+                                  <widget class="GtkEntry" id="rf_sampsize_entry">
+                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Show the relative impartance of variabels. Useful to see which variables play the most important roles.</property>
-                                    <property name="label" translatable="yes">Importance</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_rf_importance_button_clicked"/>
+                                    <property name="tooltip" translatable="yes">Specify sample size for each class (e.g., "500,500") which may be useful in balancing classes.</property>
+                                    <property name="invisible_char">*</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="right_attach">5</property>
+                                    <property name="left_attach">3</property>
+                                    <property name="right_attach">4</property>
                                     <property name="x_options">GTK_FILL</property>
                                     <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkButton" id="rf_errors_button">
+                                  <widget class="GtkSpinButton" id="rf_mtry_spinbutton">
+                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Plot error rate prgressively for the number of trees built. Useful for deciding the optimal number of trees to build. </property>
-                                    <property name="label" translatable="yes">Errors</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_rf_errors_button_clicked"/>
+                                    <property name="tooltip" translatable="yes">The number of variables that will be considered at any time in deciding how to partition the dataset. For classificaiton the default is the square root of the number of variables. The model is generally not very sensitive to this value.</property>
+                                    <property name="adjustment">10 1 1000 1 10 10</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="numeric">True</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="right_attach">5</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -6336,33 +6290,55 @@ THIS IS BEING REPLACED BY A Importance Button</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkButton" id="rf_print_tree_button">
+                                  <widget class="GtkSpinButton" id="rf_ntree_spinbutton">
+                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Display a specific tree.</property>
-                                    <property name="label" translatable="yes">Rules</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_rf_print_tree_button_clicked"/>
+                                    <property name="tooltip" translatable="yes">The number of trees to build. Generally 500 (the default) is good, and the resulting model is fairly insensitive to changes here.</property>
+                                    <property name="adjustment">500 0 10000 10 50 50</property>
+                                    <property name="climb_rate">10</property>
+                                    <property name="numeric">True</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">5</property>
-                                    <property name="right_attach">6</property>
-                                    <property name="x_options"></property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
                                     <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkSpinButton" id="rf_print_tree_spinbutton">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">Which tree to display.</property>
-                                    <property name="adjustment">1 1 1000 1 10 10</property>
-                                    <property name="climb_rate">1</property>
-                                    <property name="numeric">True</property>
+                                  <widget class="GtkLabel" id="label100">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Sample Size:</property>
                                   </widget>
                                   <packing>
-                                    <property name="left_attach">6</property>
-                                    <property name="right_attach">7</property>
-                                    <property name="x_options"></property>
+                                    <property name="left_attach">2</property>
+                                    <property name="right_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label98">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Number of Trees:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label99">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Number of Variables:</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
                                     <property name="y_options"></property>
                                   </packing>
                                 </child>
@@ -6528,6 +6504,16 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 2</property>
@@ -6536,16 +6522,6 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -6965,17 +6941,6 @@ ANOVA RBF (anovadot)</property>
                                   <placeholder/>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="nnet_hidden_nodes_label">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Hidden Layer Nodes:</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <widget class="GtkSpinButton" id="nnet_hidden_nodes_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -6984,6 +6949,17 @@ ANOVA RBF (anovadot)</property>
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="nnet_hidden_nodes_label">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Hidden Layer Nodes:</property>
+                                  </widget>
+                                  <packing>
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
@@ -7065,30 +7041,13 @@ ANOVA RBF (anovadot)</property>
                               <placeholder/>
                             </child>
                             <child>
-                              <widget class="GtkButton" id="gbm_importance_button">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="border_width">5</property>
-                                <property name="label" translatable="yes">Importance</property>
-                                <property name="use_underline">True</property>
-                                <property name="response_id">0</property>
-                              </widget>
-                              <packing>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label127">
+                              <widget class="GtkLabel" id="gbm_target_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">gbm</property>
+                                <property name="xpad">5</property>
+                                <property name="label" translatable="yes">No target selected</property>
                               </widget>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
@@ -7108,14 +7067,31 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="gbm_target_label">
+                              <widget class="GtkLabel" id="label127">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="xpad">5</property>
-                                <property name="label" translatable="yes">No target selected</property>
+                                <property name="label" translatable="yes">gbm</property>
                               </widget>
                               <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkButton" id="gbm_importance_button">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="border_width">5</property>
+                                <property name="label" translatable="yes">Importance</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                              </widget>
+                              <packing>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options"></property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
@@ -8408,8 +8384,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
+    <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
@@ -8426,19 +8402,55 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                 <property name="column_spacing">5</property>
                 <property name="row_spacing">5</property>
                 <child>
-                  <widget class="GtkCheckButton" id="export_filechooser_metadata_checkbutton">
+                  <widget class="GtkLabel" id="export_filechooser_target_label">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Export Target Type:</property>
+                  </widget>
+                  <packing>
+                    <property name="x_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label34">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Include:</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkRadioButton" id="export_filechooser_class_radiobutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Meta Data</property>
+                    <property name="label" translatable="yes">Class</property>
                     <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkRadioButton" id="export_filechooser_probabilities_radiobutton">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label" translatable="yes">Probabilities</property>
+                    <property name="response_id">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">export_filechooser_class_radiobutton</property>
+                  </widget>
+                  <packing>
                     <property name="left_attach">2</property>
                     <property name="right_attach">3</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
                     <property name="x_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -8460,55 +8472,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkRadioButton" id="export_filechooser_probabilities_radiobutton">
+                  <widget class="GtkCheckButton" id="export_filechooser_metadata_checkbutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Probabilities</property>
+                    <property name="label" translatable="yes">Meta Data</property>
                     <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">export_filechooser_class_radiobutton</property>
                   </widget>
                   <packing>
                     <property name="left_attach">2</property>
                     <property name="right_attach">3</property>
-                    <property name="x_options">GTK_FILL</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkRadioButton" id="export_filechooser_class_radiobutton">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Class</property>
-                    <property name="response_id">0</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label34">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Include:</property>
-                  </widget>
-                  <packing>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="export_filechooser_target_label">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Export Target Type:</property>
-                  </widget>
-                  <packing>
                     <property name="x_options">GTK_FILL</property>
                   </packing>
                 </child>
