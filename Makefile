@@ -26,6 +26,7 @@ REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
 	   | sed 's|^.*, ||')
+IDATE=$(shell date +%m%d%y)
 
 PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
@@ -190,6 +191,8 @@ rattle_src.zip:
 rattle_$(VERSION).tar.gz: $(SOURCE)
 	rm -f package/rattle/R/*
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
+             src/rattle.R
+	perl -pi -e "s|^PACKAGEID <- \"11_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \
              src/rattle.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/

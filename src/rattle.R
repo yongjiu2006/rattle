@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-31 20:33:07 Graham Williams>
+# Time-stamp: <2009-02-01 09:22:52 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,10 +16,10 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 26 Jan 2009"
-COPYRIGHT <- "Copyright © 2009 Togaware Pty Ltd"
+VERSION.DATE <- "Released 31 Jan 2009"
+COPYRIGHT <- "Copyright © 2006-2009 Togaware Pty Ltd"
 
-PACKAGEID <- "11_012108" # RStat
+PACKAGEID <- "11_013109"
 
 SUPPORT <- "Contact support@togaware.com."
 
@@ -691,7 +691,7 @@ rattle <- function(csvname=NULL,
                         "Rattle comes with ABSOLUTELY NO WARRANTY.",
                         "See Help -> About for details.",
                         "\n\nRattle version", VERSION,
-                        "Copyright (C) 2009 Togaware Pty Ltd"),
+                        "Copyright (C) 2006-2009 Togaware Pty Ltd"),
                   tvsep=FALSE)
   }
   
@@ -737,7 +737,7 @@ rattle <- function(csvname=NULL,
 ##                        "\nCopyright (C) 2009 Togaware Pty Ltd"),
 ##                  tvsep=FALSE)
   appendTextview("log_textview",
-                 paste("# Rattle is Copyright (C) 2009",
+                 paste("# Rattle is Copyright (C) 2006-2009",
                        "Togaware Pty Ltd"),
                  tvsep=FALSE)
 
@@ -4478,10 +4478,13 @@ on_about_menu_activate <-  function(action, window)
 
     ab["program-name"] <- "RStat®"
     ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
-                              GENERATION, PACKAGEID)
-    ab$setWebsite(paste("http://www.togaware.com",
-                        "\n     http://www.ibi.com"))
-    ab$setCopyright(paste(COPYRIGHT, "\n" , "All rights reserved."))
+                              VERSION, PACKAGEID)
+    #ab$setWebsite(paste("http://www.togaware.com",
+    #                    "\n     http://www.ibi.com"))
+    ab$setWebsite("")
+    ab$setCopyright(paste(COPYRIGHT,
+                          #"Portions Copyright © 2009 Information Builders, Inc",
+                          "All rights reserved.", sep="\n"))
   }
   else
   {
