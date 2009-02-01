@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-20 20:13:59 Graham Williams>
+# Time-stamp: <2009-02-02 06:22:00 Graham Williams>
 #
 # DATA TAB
 #
@@ -1968,7 +1968,7 @@ executeSelectTab <- function()
   # Finished - update the status bar.
   
   setStatusBar("Roles noted.",
-               nrow(crs$dataset), "rows by",
+               nrow(crs$dataset), "entites by",
                length(crs$input), "input variables.",
                ifelse(length(crs$target) == 0,
                       paste("NO target thus no predictive modelling nor",

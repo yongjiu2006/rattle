@@ -212,7 +212,10 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 R4X:
 	R CMD build support/r4x/pkg/R4X
 
-data: package/rattle/data/audit.RData package/rattle/data/weather.RData
+# 090201 Keep the weather data static - keeps changing my book details
+# otherwise!
+
+data: package/rattle/data/audit.RData # package/rattle/data/weather.RData
 
 package/rattle/data/audit.RData: support/audit.R Makefile
 	R --no-save --quiet < support/audit.R

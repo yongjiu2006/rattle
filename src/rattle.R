@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-01 09:22:52 Graham Williams>
+# Time-stamp: <2009-02-02 06:45:28 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,10 +16,10 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 31 Jan 2009"
-COPYRIGHT <- "Copyright © 2006-2009 Togaware Pty Ltd"
+VERSION.DATE <- "Released 01 Feb 2009"
+COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
-PACKAGEID <- "11_013109"
+PACKAGEID <- "11_020109"
 
 SUPPORT <- "Contact support@togaware.com."
 
@@ -259,7 +259,7 @@ rattle <- function(csvname=NULL,
     
   # Tune the interface to suit RStat
 
-  setRattleTitle()
+  # 090202 Now done in resetRattle setRattleTitle()
 
   if (isRStat())
     tuneRStat()
@@ -936,6 +936,8 @@ resetRattle <- function(new.dataset=TRUE)
   # new.dataset is FALSE then just reset various textviews and default
   # options.
 
+  if (new.dataset) setRattleTitle()
+  
   if (new.dataset)
   {
     # Initialise CRS
@@ -978,118 +980,7 @@ resetRattle <- function(new.dataset=TRUE)
 
   # Clear all now outdated text views
 
-  resetTextview("summary_textview", "UNIVARIATE DATASET SUMMARY
-
-It is useful to understand how our data is distributed
-
-The summary here will include more details depending on
-which check buttons you choose. 
-
-The Summary option provides a very brief summary.
-
-The Describe option provides comprehensive summaries of each variable.
-
-Kurtosis and Skewness allow these measure to be compared across
-the available numeric variables.", tvsep=FALSE)
-
-  resetTextview("playwith_textview", "LATTICIST DATA VISUALISER
-
-Latticist provides a graphical user interface for exploratory data visualisation. 
-
-For the loaded dataset latticist attempts to produce useful displays
-based on the properties of the data.", tvsep=FALSE)
-
-  resetTextview("ggobi_textview", "GGOBI DATA ANALYSIS
-
-GGobi provides a separate interface to perform highly dynamic and
-interactive data visualisation.
-
-Specialist tools include tours, scatterplots, barcharts and
-parallel coordinates plots. 
-
-Plots allow points to be identified and linked with
-brushing across multiple plots.", tvsep=FALSE)
-
-
-  
-  resetTextview("correlation_textview", "NUMERIC VARIABLE CORRELATION
-
-A correlation analysis will provide insights into how independent
-the input variables are.
-
-Modelling often assumes independence, and better models will
-result when using independent input variables.
-
-A table of the correlations between each of the numeric variables
-will be listed, and a correlation plot will be displayed.", tvsep=FALSE)
-
-  resetTextview("hiercor_textview", "NUMERIC VARIABLE HIERARCHICAL CORRELATION
-
-Dendrograms provide a visual clue to the degree of closeness between variables.
-
-The hierarchical correlation dendrogram produced here presents a view
-of the variables of the dataset showing their relationships (correlations).
-Depending on the data, you may find groupings of variables that are highly
-correlated. These will be fairly obvious in most cases.
-
-The length of the lines in the dendrogram provide a visual indication of
-the degree of correlation (or the tightness of the correlation - shorter
-lines indicate more tighly correlated variables).
-
-Once you have identified the groups of variables that are correlated,
-you may want to reduce the number of variables you are including in your
-modelling.
-
-Note that only numeric data is processed to produce the plot. Categoricals
-are not handled by this analysis.", tvsep=FALSE)
-  
-  resetTextview("prcomp_textview", tvsep=FALSE, "PRINCIPAL COMPONENTS ANALYSIS
-
-Principal Components Analysis can provide insights into the importance
-of variables in explaining the variation found within the dataset.
-
-Two plots will be displayed. The bar chart shows to significance of
-each component, whilst the biplot remaps the data points from their
-original coordinates to coordinates of the first two principal
-coordinates.")
-
-  resetTextview("test_textview", tvsep=FALSE, "STATISTICAL TESTS
-
-These tests apply to two samples. The paired two sample tests assume
-that we have two samples or observations for each entity, and that we
-are testing for a change, usually from one time period to another.
-
-DISTRIBUTION OF THE DATA
-
-  Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
-  Wilcoxon Signe Rank     Non-parametric    Do paired samples have the same distribution?
-
-LOCATION OF THE AVERAGE
-
-  T-test               Parametric        Are the means the same?
-  Wilcoxon Rank-Sum    Non-parametric    Are the medians the same?
-
-VARIATION IN THE DATA
-
-  F-test    Parametric    Are the variances the same?
-
-CORRELATION
-
-  Correlation    Pearsons    Are the values from the paired samples correlated?")
-  
-  resetTextview("kmeans_textview")
-  resetTextview("hclust_textview")
-  resetTextview("associate_textview")
-  resetTextview("rpart_textview")
-  resetTextview("glm_textview")
-  resetTextview("ada_textview")
-  resetTextview("rf_textview")
-  resetTextview("esvm_textview")
-  resetTextview("ksvm_textview")
-  resetTextview("nnet_textview")
-  resetTextview("confusion_textview")
-  resetTextview("risk_textview")
-  resetTextview("roc_textview")
+  resetTextviews()
 
   # Set all sub tabs back to the default tab page and reflect this in
   # the appropriate radio button.
@@ -1151,6 +1042,14 @@ CORRELATION
     theWidget("model_tree_rpart_weights_label")$
     setText("")
 
+    # Reset Test tab
+
+    theWidget("test_distr_radiobutton")$setActive(TRUE)
+    theWidget("test_vars1_combobox")$setActive(-1)
+    theWidget("test_vars2_combobox")$setActive(-1)
+    theWidget("test_groupby_checkbutton")$setActive(TRUE)
+    theWidget("test_groupby_target_label")$setText("No Target")
+    
     # Reset Cluster
 
     theWidget("kmeans_clusters_spinbutton")$setValue(10)
@@ -4476,19 +4375,19 @@ on_about_menu_activate <-  function(action, window)
     #if(exists("gtkAboutDialogSetProgramName"))
     #  about$getWidget("aboutdialog")$setProgramName("RStat")
 
-    ab["program-name"] <- "RStat®"
+    ab["program-name"] <- "RStat (TM)"
     ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
                               VERSION, PACKAGEID)
     #ab$setWebsite(paste("http://www.togaware.com",
     #                    "\n     http://www.ibi.com"))
     ab$setWebsite("")
     ab$setCopyright(paste(COPYRIGHT,
-                          #"Portions Copyright © 2009 Information Builders, Inc",
+                          #"Portions Copyright (C) 2009 Information Builders, Inc",
                           "All rights reserved.", sep="\n"))
   }
   else
   {
-    ab["program-name"] <- "Rattle®"
+    ab["program-name"] <- "Rattle (TM)"
     ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
                           "All rights reserved."))
   }
