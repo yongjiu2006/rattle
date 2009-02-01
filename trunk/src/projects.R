@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 11:27:00 Graham Williams>
+# Time-stamp: <2009-02-02 06:27:01 Graham Williams>
 #
 # Project functionality.
 #
@@ -99,8 +99,9 @@ newProject <- function()
                          ))
       return()
   }
-  resetRattle()
 
+  resetRattle()
+  
   # Ensure data sources are enabled again.
   
   enableDataSourceFunctions()

@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.23.
+    version is 2.4.24.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+405 090202 On resetRattle, reset Test tab and reset window title.
+           Move textview resets to textview module.
+           Add error matrix to rpart model build output.
 404 090201 Test/Correlation - ensure catch when group by is not enabled.
 403 090131 Make Explore and Test textviews informative and consistent.
 402 090126 Add audit.csv back to repository
@@ -782,6 +785,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-01 15:00:09 Graham Williams</i>
+<i>Last Modified 2009-02-02 07:02:01 Graham Williams</i>
 <!-- hhmts end -->
   </p>
