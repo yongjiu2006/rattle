@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-25 17:44:46 Graham Williams>
+# Time-stamp: <2009-01-31 21:07:15 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -23,6 +23,8 @@
 
 initiateLog <- function()
 {
+  if (isRStat()) resetTextview("log_textview")
+  
   startLog(paste(sprintf("%s version %s User %s",
                          crv$appname, crv$VERSION, Sys.info()["user"]),
            #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),

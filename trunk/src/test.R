@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-31 16:36:44 Graham Williams>
+# Time-stamp: <2009-02-01 07:52:22 Graham Williams>
 #
 # Test Tab
 #
@@ -104,12 +104,17 @@ executeTestTab <- function()
                   "will be obtained.")
       return(FALSE)
     }
-    if (theWidget("test_wilcoxon_signed_radiobutton")$getActive())
+    if (theWidget("test_correlation_radiobutton")$getActive()
+        || theWidget("test_wilcoxon_signed_radiobutton")$getActive())
     {
-      errorDialog("The Wilcoxon signed rank test can only be applied to",
-                  "paired popultions. Please de-select Group By and choose",
+      errorDialog("The Correlation and Wilcoxon Signed Rank tests",
+                  "can only be applied to paired populations.",
+                  "The Group By option is not likely to give paired populations",
+                  "(requiring the same number of observations in each sample).",
+                  "Please de-select Group By and choose",
                   "two variables that represent observations of the entity at",
-                  "two different times.")
+                  "two different times. Alternatively, choose a two sample",
+                  "(non-paired) test if that is appropriate.")
       return(FALSE)
     }
     lvl <- levels(as.factor(crs$dataset[[crs$target]]))
