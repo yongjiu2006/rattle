@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-02 06:45:28 Graham Williams>
+# Time-stamp: <2009-02-03 06:15:47 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,10 +16,10 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 Feb 2009"
+VERSION.DATE <- "Released 02 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
-PACKAGEID <- "11_020109"
+PACKAGEID <- "11_020209"
 
 SUPPORT <- "Contact support@togaware.com."
 
@@ -777,11 +777,12 @@ tuneRStat <- function()
   crv$SUPPORT <<- "Contact Information Builders Technical Support."
   crv$VERSION <<- 1.1
   
-  ## Toolbar
+  # Toolbar
   
   theWidget("report_toolbutton")$hide()
   theWidget("rattle_menu")$hide()
-
+  theWidget("general_menu")$hide()
+  
   theWidget("help_data_weight_calculator")$hide()
   theWidget("help_data_fex")$show()
   theWidget("help_data_arff")$hide()
