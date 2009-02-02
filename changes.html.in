@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.24.
+    version is 2.4.25.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+406 090203 Conditonalise general menu
 405 090202 On resetRattle, reset Test tab and reset window title.
            Move textview resets to textview module.
            Add error matrix to rpart model build output.
@@ -785,6 +786,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-02 07:02:01 Graham Williams</i>
+<i>Last Modified 2009-02-03 06:39:30 Graham Williams</i>
 <!-- hhmts end -->
   </p>
