@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-01 07:52:22 Graham Williams>
+# Time-stamp: <2009-02-05 05:55:15 Graham Williams>
 #
 # Test Tab
 #
@@ -24,25 +24,43 @@
 ########################################################################
 # Callbacks
 
-on_test_groupby_checkbutton_toggled<- function(button)
+# 090205 Now leave all Test radio buttons active, always. The user
+# selects one and the Group By option may disappear if they select one
+# of the Paired tests. This is more logical than using the Group By
+# option to toggle the sensitivity of the Paired tests.
+
+on_test_correlation_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    #theWidget("test_groupby_combobox")$setSensitive(TRUE)
-    theWidget("test_groupby_target_label")$setSensitive(TRUE)
-    theWidget("test_vars2_label")$setSensitive(FALSE)
-    theWidget("test_vars2_combobox")$setSensitive(FALSE)
-    theWidget("test_correlation_radiobutton")$setSensitive(FALSE)
-    theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(FALSE)
+    theWidget("test_groupby_checkbutton")$setActive(FALSE)
+    theWidget("test_groupby_checkbutton")$setSensitive(FALSE)
+    theWidget("test_groupby_target_label")$setSensitive(FALSE)
   }
   else
   {
-    #theWidget("test_groupby_combobox")$setSensitive(FALSE)
-    theWidget("test_groupby_target_label")$setSensitive(FALSE)
+    theWidget("test_groupby_checkbutton")$setSensitive(TRUE)
+    theWidget("test_groupby_target_label")$setSensitive(TRUE)
+  }
+}
+
+on_test_wilcoxon_signed_radiobutton_toggled <- on_test_correlation_radiobutton_toggled
+
+
+on_test_groupby_checkbutton_toggled<- function(button)
+{
+  # 090205 Only deal with enabling/disabling the var2 box on this bing
+  # toggled.
+  
+  if (button$getActive())
+  {
+    theWidget("test_vars2_label")$setSensitive(FALSE)
+    theWidget("test_vars2_combobox")$setSensitive(FALSE)
+  }
+  else
+  {
     theWidget("test_vars2_label")$setSensitive(TRUE)
     theWidget("test_vars2_combobox")$setSensitive(TRUE)
-    theWidget("test_correlation_radiobutton")$setSensitive(TRUE)
-    theWidget("test_wilcoxon_signed_radiobutton")$setSensitive(TRUE)
   }
 }
 
