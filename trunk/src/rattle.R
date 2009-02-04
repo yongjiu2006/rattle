@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-03 06:15:47 Graham Williams>
+# Time-stamp: <2009-02-04 05:59:35 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,10 +16,10 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Feb 2009"
-COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
+VERSION.DATE <- "Released 03 Feb 2009"
+COPYRIGHT <- "Copyright © 2006-2009 Togaware Pty Ltd"
 
-PACKAGEID <- "11_020209"
+PACKAGEID <- "11_020309"
 
 SUPPORT <- "Contact support@togaware.com."
 
@@ -259,7 +259,7 @@ rattle <- function(csvname=NULL,
     
   # Tune the interface to suit RStat
 
-  # 090202 Now done in resetRattle setRattleTitle()
+  setRattleTitle()
 
   if (isRStat())
     tuneRStat()
@@ -691,7 +691,7 @@ rattle <- function(csvname=NULL,
                         "Rattle comes with ABSOLUTELY NO WARRANTY.",
                         "See Help -> About for details.",
                         "\n\nRattle version", VERSION,
-                        "Copyright (C) 2006-2009 Togaware Pty Ltd"),
+                        "Copyright © 2006-2009 Togaware Pty Ltd"),
                   tvsep=FALSE)
   }
   
@@ -4376,19 +4376,19 @@ on_about_menu_activate <-  function(action, window)
     #if(exists("gtkAboutDialogSetProgramName"))
     #  about$getWidget("aboutdialog")$setProgramName("RStat")
 
-    ab["program-name"] <- "RStat (TM)"
+    ab["program-name"] <- "RStat®"
     ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
                               VERSION, PACKAGEID)
-    #ab$setWebsite(paste("http://www.togaware.com",
-    #                    "\n     http://www.ibi.com"))
-    ab$setWebsite("")
+    ab$setWebsite(paste("www.togaware.com",
+                        "\n       www.ibi.com"))
+    #ab$setWebsite("")
     ab$setCopyright(paste(COPYRIGHT,
                           #"Portions Copyright (C) 2009 Information Builders, Inc",
                           "All rights reserved.", sep="\n"))
   }
   else
   {
-    ab["program-name"] <- "Rattle (TM)"
+    ab["program-name"] <- "Rattle®"
     ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
                           "All rights reserved."))
   }
