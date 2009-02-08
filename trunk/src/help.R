@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-25 07:23:34 Graham Williams>
+# Time-stamp: <2009-02-07 17:04:01 Graham Williams>
 #
 # Help Menu
 #
@@ -44,12 +44,7 @@ showHelp <- function(msg)
 
 on_help_general_activate <- function(action, window)
 {
-  showHelp(paste(ifelse(isRStat(),
-                  paste("RStat is the WebFOCUS data mining application",
-                        "developed by Information Builders on top of",
-                        "Rattle and R. "),
-                  ""),
-           "Rattle is a graphical user interface for data mining
+  showHelp("Rattle is a graphical user interface for data mining
 written in GNOME and R. R is an environment for statistical computing.
 They are all free software licensed under the GNU General
 Public License (GPL).
@@ -86,7 +81,7 @@ code is that there are bugs! When you find one, or a misfeature or
 something else you would like Rattle to do, please do email
 support@togaware.com.
 <<>>
-Enjoy.", sep=""))
+Enjoy.")
 }
 
 ########################################################################

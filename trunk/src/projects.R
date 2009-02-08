@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-02 06:27:01 Graham Williams>
+# Time-stamp: <2009-02-07 19:20:11 Graham Williams>
 #
 # Project functionality.
 #
@@ -154,23 +154,14 @@ saveProject <- function()
   dialog$setCurrentName(get.stem(crs$dataname))
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
-  if (isRStat())
+  if (length(crv$project.extensions))
   {
     ff <- gtkFileFilterNew()
-    ff$setName("RStat Projects")
-    ff$addPattern("*.rstat")
-    ff$addPattern("*.rattle")
+    ff$setName("Projects")
+    lapply(crv$project.extensions, ff$addPattern)
     dialog$addFilter(ff)
   }
-  else
-  {
-    ff <- gtkFileFilterNew()
-    ff$setName("Rattle Projects")
-    ff$addPattern("*.rattle")
-    ff$addPattern("*.rstat")
-    dialog$addFilter(ff)
-  }
-
+ 
   ff <- gtkFileFilterNew()
   ff$setName("RData Files")
   ff$addPattern("*.Rdata")
@@ -195,36 +186,28 @@ saveProject <- function()
   }
 
   # 081111 Deal with the filename extension. We add an extension of
-  # either rstat, rattle, or Rdata if the save.name does not have one
+  # either rattle or Rdata (or other extensions that might be listed
+  # in crv$project.extensions) if the save.name does not have one
   # already. The logic of which to add depends on whether one of the
-  # filters is active, or else which guise we are running as.
+  # filters is active, or else the first extension in the list
+  # crv$project.extensions.
   
-  if (! save.ext %in% c("rstat", "rattle", "Rdata"))
+  if (! save.ext %in% c(crv$project.extensions, "Rdata"))
   {
-    if (filter.name == "RStat Projects")
+    if (filter.name == "Projects")
     {
-      if (save.ext != "rstat")
-        save.name <- sprintf("%s.rstat", save.name)
-    }
-    else if (filter.name == "Rattle Projects")
-    {
-      if (save.ext != "rattle")
-        save.name <- sprintf("%s.rattle", save.name)
+      if (save.ext != crv$project.extensions[1])
+        save.name <- sprintf("%s.%s", save.name, project.extensions[1])
     }
     else if (filter.name == "RData Files")
     {
       if (save.ext != "Rdata")
         save.name <- sprintf("%s.Rdata", save.name)
     }
-    else if (isRStat())
-    {
-      if (save.ext != "rstat")
-        save.name <- sprintf("%s.rstat", save.name)
-    }
     else
     {
-      if (save.ext != "rattle")
-        save.name <- sprintf("%s.rattle", save.name)
+      if (save.ext != crv$project.extensions[1])
+        save.name <- sprintf("%s.%s", save.name, crv$project.extensions[1])
     }
   }
   
@@ -332,23 +315,14 @@ loadProject <- function()
 
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
-  if (isRStat())
+  if (length(crv$project.extensions))
   {
     ff <- gtkFileFilterNew()
-    ff$setName("RStat Projects")
-    ff$addPattern("*.rstat")
-    ff$addPattern("*.rattle")
+    ff$setName("Projects")
+    lapply(crv$project.extensions, ff$addPattern)
     dialog$addFilter(ff)
   }
-  else
-  {
-    ff <- gtkFileFilterNew()
-    ff$setName("Rattle Projects")
-    ff$addPattern("*.rattle")
-    ff$addPattern("*.rstat")
-    dialog$addFilter(ff)
-  }
-
+  
   ff <- gtkFileFilterNew()
   ff$setName("RData Files")
   ff$addPattern("*.Rdata")
@@ -389,7 +363,7 @@ loadProject <- function()
   # Now update all appropriate textviews and associated data.
 
   resetRattle()  # Seems appropriate to clear out the crs
-  setRattleTitle(basename(load.name))
+  setMainTitle(basename(load.name))
 
   # DATA
 

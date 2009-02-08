@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 15:54:47 Graham Williams>
+# Time-stamp: <2009-02-07 07:40:53 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -88,7 +88,7 @@ on_kmeans_stats_button_clicked <- function(button)
   
   if (is.null(crs$kmeans))
   {
-    errorDialog("E124: Should not be here.", SUPPORT)
+    errorDialog("E124: Should not be here.", crv$support.msg)
     return()
   }
 
@@ -136,7 +136,7 @@ on_kmeans_data_plot_button_clicked <- function(button)
 
   if (is.null(crs$kmeans))
   {
-    errorDialog("E132: Should not be here.", SUPPORT)
+    errorDialog("E132: Should not be here.", crv$support.msg)
     return()
   }
 
@@ -197,7 +197,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
   {
     errorDialog("E125: No cluster to plot.",
                 "The button should not have been sensitive.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
 

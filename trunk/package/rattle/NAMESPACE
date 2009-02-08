@@ -16,16 +16,17 @@ export(
        plotNetwork,
        plotOptimalLine,
        plotRisk,
+       predict.kmeans,
+       predict.hclust,
        printPlot,
        printRandomForests,
        randomForest2Rules,
        rattle,
        rattle.print.rpart,
        rattle.print.summary.multinom,
-       RStat,
+       overwriteInternalFunction,
        savePlotToFile,
        treeset.randomForest,
-       write.rstat,
        ada.formula
        )
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-02 06:22:00 Graham Williams>
+# Time-stamp: <2009-02-08 09:23:59 Graham Williams>
 #
 # DATA TAB
 #
@@ -664,7 +664,7 @@ executeDataCSV <- function(filename=NULL)
   }
     
   crs$dataname <<- basename(filename)
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   # Update the Data Tab Treeview and Samples.
 
@@ -988,7 +988,7 @@ executeDataARFF <- function()
   resetRattle()
   eval(parse(text=read.cmd))
   crs$dataname <<- basename(filename)
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   ##appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
@@ -1087,7 +1087,7 @@ executeDataODBC <- function()
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- table
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   
@@ -1153,7 +1153,7 @@ executeDataRdata <- function()
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   setStatusBar("The data has been loaded:", crs$dataname)
 
@@ -1203,7 +1203,7 @@ executeDataRdataset <- function()
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- dataset
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   # 080328 Fix up any non-supported characters in the column names,
   # otherwise they cause problems, e.g. "a-b" when used as ds$a-b is
@@ -1279,7 +1279,7 @@ executeDataLibrary <- function()
   
   crs$dataname <<- adsname
   crs$datapkg <<- dspkg
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
   
   setStatusBar("The R package data is now available.")
 
@@ -1312,7 +1312,7 @@ executeDataEntry <- function()
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <<- "dataset"
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
   
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
@@ -1381,7 +1381,7 @@ editData <- function()
   crs$dataname <<- "dataset"
   # TODO fn <- theWidget("data_filechooserbutton")$getValue()
 
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   # Update the select treeview and samples.
 
@@ -1452,10 +1452,7 @@ exportDataTab <- function()
 ###                          "this file?"))
 ###       return()
 
-  if (isRStat())
-    write.rstat(crs$dataset, save.name)
-  else
-    write.csv(crs$dataset, save.name, row.names=FALSE)
+  writeCSV(crs$dataset, save.name)
 
   setStatusBar("The dataset has been exported to", save.name)
 

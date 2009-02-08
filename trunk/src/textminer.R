@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-09-21 12:19:50 Graham Williams>
+# Time-stamp: <2009-02-06 17:47:04 Graham Williams>
 #
 # 080921 TEXT MINING DATA
 #
@@ -155,7 +155,7 @@ executeDataCorpus <- function()
   # Set the title and dataname correctly.
 
   crs$dataname <<- basename(location)
-  setRattleTitle(crs$dataname)
+  setMainTitle(crs$dataname)
 
   # For now, always succeed.
   

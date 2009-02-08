@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 07:37:12 Graham Williams>
+# Time-stamp: <2009-02-07 16:20:27 Graham Williams>
 #
 # MODEL TAB
 #
@@ -111,7 +111,7 @@ on_model_linear_plot_button_clicked <- function(button)
 
   if (is.null(crs$glm))
   {
-    errorDialog("There is no GLM and attempting to plot it.", SUPPORT)
+    errorDialog("There is no GLM and attempting to plot it.", crv$support.msg)
     return()
   }
   newPlot(4)
@@ -407,8 +407,9 @@ makeEvaluateSensitive <- function()
     buttons <- c("confusion", "score")
   else if (numericTarget())
     buttons <- c("pvo", "score")
-  else if (isRStat() && binomialTarget())
-    buttons <- setdiff(all.buttons, "pvo")
+  # 090207 Why was pvo not enabled for binonmials in RStat?
+  #  else if (isRStat() && binomialTarget())
+  #    buttons <- setdiff(all.buttons, "pvo")
   else
     buttons <- all.buttons
 
@@ -682,7 +683,7 @@ executeModelTab <- function()
     {
       errorDialog("Tried building an rpart model with option not",
                   "one of build/tune/best. This should not be possible.",
-                  SUPPORT)
+                  crv$support.msg)
       return(FALSE)
       
     }
@@ -1267,7 +1268,7 @@ executeModelSVM <- function()
     }
     else
       errorDialog("The call to svm appears to have failed.",
-                  "The error message was:", result, SUPPORT)
+                  "The error message was:", result, crv$support.msg)
     return(FALSE)
   }
 

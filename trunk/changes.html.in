@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.26.
+    version is 2.4.27.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+408 090208 Major cleanup to support generic "plugin" package architecture
+           New overwriteInternalFunction to overwrite a package function
+           Add setMainTitle, configureGUI, displayWelcomMessage, configureAbout,
+           writeCSV, to allow tuning by a "plugin" package
+           Add crv variables to record options
+           Add test for pmml.transform, in case a plugin supports this.
+           Remove appname argument to call to rattle- use plugin architecture
+           Export predict.kmeans and predict.hclust from rattle.
 407 090205 Ensure window title is reset on startup
            Revert to copyright and registered symbols.
            Test: radio buttons always sensitive - toggle Group By for Paired
@@ -789,6 +797,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-05 05:57:29 Graham Williams</i>
+<i>Last Modified 2009-02-08 13:43:48 Graham Williams</i>
 <!-- hhmts end -->
   </p>

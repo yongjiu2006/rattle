@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-26 17:10:17 Graham Williams>
+# Time-stamp: <2009-02-07 07:40:40 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -54,7 +54,7 @@ on_hclust_data_plot_button_clicked <- function(button)
   {
     errorDialog("E133: No cluster to plot.",
                 "The button should not have been sensitive.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
 
@@ -113,7 +113,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   {
     errorDialog("E128: No cluster to plot.",
                 "The button should not have been sensitive.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
 
@@ -271,7 +271,7 @@ executeClusterHClust <- function(include)
     }
     else
       errorDialog("The call to hclust appears to have failed.",
-                   "The error message was:", result, SUPPORT)
+                   "The error message was:", result, crv$support.msg)
     return()
   }
 
@@ -316,7 +316,7 @@ plotDendrogram <- function()
   {
     errorDialog("E126: Should not be here.",
                 "There is no Hierarchical Cluster yet we are",
-                "trying to plot it.", SUPPORT)
+                "trying to plot it.", crv$support.msg)
     return()
   }
 
@@ -375,7 +375,7 @@ displayHClustStats <- function()
   {
     errorDialog("E127: No cluster to plot.",
                 "The button should not have been sensitive.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
 
@@ -438,7 +438,7 @@ displayHClustStats <- function()
 
 ##   if (is.null(crs$hclust))
 ##   {
-##     errorDialog("SHOULD NOT BE HERE.", SUPPORT)
+##     errorDialog("SHOULD NOT BE HERE.", crv$support.msg)
 ##     return()
 ##   }
 

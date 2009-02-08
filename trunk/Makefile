@@ -14,6 +14,9 @@ NAMESPACE=$(PACKAGE)/NAMESPACE
 PPACKAGE=package/pmml
 PDESCRIPTION=$(PPACKAGE)/DESCRIPTION
 
+IPACKAGE=package/rstat
+IDESCRIPTION=$(IPACKAGE)/DESCRIPTION
+
 RVER=$(shell R --version | head -1 | cut -d" " -f3 | sed 's|\..$||')
 REPOSITORY=repository
 
@@ -29,6 +32,8 @@ VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
 IDATE=$(shell date +%m%d%y)
 
 PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
+
+IVERSION=$(shell egrep 'VERSION <-' src/rstat.R | cut -d \" -f 2)
 
 DATE=$(shell date +%F)
 
@@ -61,8 +66,6 @@ R_SOURCE = \
 	src/transform.R \
 	src/zzz.R
 
-# Eventually remove pmml.R from above and put into own package.
-
 PSOURCE = \
 	src/pmml.R \
 	src/pmml.arules.R \
@@ -77,6 +80,11 @@ PSOURCE = \
 	src/pmml.rpart.R \
 	src/pmml.rsf.R
 
+ISOURCE = \
+	src/rstat.R \
+	src/pmmltocibi.R \
+	src/pmml.transforms.R
+
 GLADE_SOURCE = src/rattle.glade
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
@@ -88,7 +96,7 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 #temp:
 #	grep REVISION src/rattle.R
 
-default: local plocal
+default: local plocal ilocal
 
 # This one checks the R installations for overlap of packages
 # installed. If they are in both local and lib, should remove the
@@ -120,7 +128,7 @@ diff:
 	svn diff
 
 .PHONY: install
-install: update build pbuild zip rattle_src.zip # check pcheck
+install: update build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
 	cp changes.html.in /home/gjw/projects/togaware/www/
@@ -166,6 +174,9 @@ check: build
 pcheck: pbuild
 	R CMD check $(PPACKAGE)
 
+icheck: ibuild
+	R CMD check $(IPACKAGE)
+
 # For development, temporarily remove the NAMESPACE so all is exposed.
 
 devbuild:
@@ -178,6 +189,8 @@ devbuild:
 build: data rattle_$(VERSION).tar.gz
 
 pbuild: data pmml_$(PVERSION).tar.gz
+
+ibuild: data rstat_$(IVERSION).tar.gz
 
 rattle_src.zip:
 	cp $(R_SOURCE) zipsrc
@@ -209,6 +222,13 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
 
+rstat_$(IVERSION).tar.gz: $(ISOURCE)
+	cp $(ISOURCE) package/rstat/R/
+	perl -pi -e "s|^Version: .*$$|Version: $(IVERSION)|" $(IDESCRIPTION)
+	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(IDESCRIPTION)
+	R CMD build $(IPACKAGE)
+	chmod -R go+rX $(IPACKAGE)
+
 R4X:
 	R CMD build support/r4x/pkg/R4X
 
@@ -237,11 +257,13 @@ package/rattle/data/weather.RData: support/weather.R Makefile
 	cp weather.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/projects/togaware/www/site/rattle/
 
-zip: local plocal
+zip: local plocal ilocal
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
 	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
 	>| pmml_$(PVERSION).zip
+	(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
+	>| rstat_$(IVERSION).zip
 
 txt:
 	R CMD Rd2txt package/rattle/man/rattle.Rd
@@ -253,10 +275,15 @@ html:
 	  rm -f $$m.html;\
 	done
 
+locals: clean local plocal ilocal
+
 local: rattle_$(VERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 plocal: pmml_$(PVERSION).tar.gz
+	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
+
+ilocal: rstat_$(IVERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 access:
@@ -276,6 +303,7 @@ clean:
 	rm -f package/rattle/R/rattle.R package/rattle/inst/etc/rattle.glade
 	rm -f package/rattle/DESCRIPTION
 	rm -f pmml_*.tar.gz pmml_*.zip
+	rm -f rstat_*.tar.gz rstat_*.zip
 
 realclean: clean
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
