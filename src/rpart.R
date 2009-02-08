@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-01 16:39:32 Graham Williams>
+# Time-stamp: <2009-02-07 07:43:32 Graham Williams>
 #
 # RPART TAB
 #
@@ -64,7 +64,7 @@ on_rpart_plot_button_clicked <- function(button)
 
   if (is.null(crs$rpart))
   {
-    errorDialog("E122: This is an unexpected error.", SUPPORT)
+    errorDialog("E122: This is an unexpected error.", crv$support.msg)
     return()
   }
   
@@ -114,7 +114,7 @@ on_rpart_rules_button_clicked <- function(button)
 
   if (is.null(crs$rpart))
   {
-    errorDialog("E130: There is no rpart model yet.", SUPPORT)
+    errorDialog("E130: There is no rpart model yet.", crv$support.msg)
     return()
   }
 

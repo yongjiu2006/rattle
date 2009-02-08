@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-24 13:26:35 Graham Williams>
+# Time-stamp: <2009-02-07 07:41:40 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -259,7 +259,7 @@ executeModelRF <- function()
     }
     else 
       errorDialog("The call to randomForest appears to have failed.",
-                  "The error message was:", result, SUPPORT)
+                  "The error message was:", result, crv$support.msg)
     return(FALSE)
   }
 
@@ -338,7 +338,7 @@ plotRandomForestImportance <- function()
   {
     errorDialog("E123: This is an unexpected error.",
                 "There is no RF and attempting to plot importance.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
   
@@ -360,7 +360,7 @@ plotRandomForestError <- function()
   {
     errorDialog("E129: This is an unexpected error.",
                 "There is no RF and attempting to plot errors.",
-                SUPPORT)
+                crv$support.msg)
     return()
   }
   

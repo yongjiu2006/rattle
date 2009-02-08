@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 07:35:39 Graham Williams>
+# Time-stamp: <2009-02-07 07:50:35 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -207,18 +207,19 @@ getExportSaveName <- function(mtype)
     dialogGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
                              root="export_filechooserdialog")
 
-  if (! isRStat())
+  if (! crv$export.to.c.available)
     dialogGUI$getWidget("export_filechooser_options_table")$hide()
 
   dialog <- dialogGUI$getWidget("export_filechooserdialog")
 
-  if (isRStat()) dialog$setTitle("Export C or PMML")
+  if (crv$export.to.c.available) dialog$setTitle("Export C or PMML")
 
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype,
-                                ifelse(isRStat(), ".c", ".xml"), sep=""))
+                                ifelse(crv$export.to.c.available, ".c", ".xml"),
+                                sep=""))
 
-  if (isRStat())
+  if (crv$export.to.c.available)
   {
     ff <- gtkFileFilterNew()
     ff$setName("C Files")
@@ -236,10 +237,8 @@ getExportSaveName <- function(mtype)
   ff$addPattern("*")
   dialog$addFilter(ff)
 
-  if ( isRStat())
+  if (crv$export.to.c.available)
   {
-    # 090117 RStat offers transform export and generation of C code.
-
     if (mtype %in% c("glm"))
       dialogGUI$
       getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
@@ -263,7 +262,7 @@ getExportSaveName <- function(mtype)
   {
     save.name <- dialog$getFilename()
     save.type <- dialog$getFilter()$getName()
-    if (isRStat())
+    if (crv$export.to.c.available)
     {
       includePMML <- dialogGUI$
       getWidget("export_filechooser_pmml_checkbutton")$getActive()
@@ -311,7 +310,7 @@ getExportSaveName <- function(mtype)
   ##   return(NULL)
   ## }
 
-  if (isRStat())
+  if (crv$export.to.c.available)
   {
     attr(save.name, "includePMML") <- includePMML
     attr(save.name, "includeMetaData") <- includeMetaData

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-26 17:58:22 Graham Williams>
+# Time-stamp: <2009-02-08 09:24:20 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -273,7 +273,7 @@ executeEvaluateTab <- function()
   {
     # Evaluate on training data
 
-    if (! isRStat() && theWidget("sample_checkbutton")$getActive())
+    if (crv$show.warnings && theWidget("sample_checkbutton")$getActive())
       infoDialog("You are using the training dataset to evaluate your model.",
                  "This will give you an optimistic estimate",
                  "of the performance of your model.",
@@ -2329,7 +2329,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   {
     errorDialog("We should not be here! The value of sinclude should have",
                 "been one of all or idents. We found:", sinclude,
-                "\n\n", SUPPORT)
+                "\n\n", crv$support.msg)
     return()
   }
 
@@ -2339,8 +2339,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   sdata <- eval(parse(text=scoreset))
 
   appendLog("Output the combined data.",
-            sprintf("write.%s(cbind(sdata, scores), row.names=FALSE)",
-                    ifelse(isRStat(), "rstat", "csv")))
+            "write.csv(cbind(sdata, scores), row.names=FALSE)")
 
   # 081107 Special case: for multinom, multiple probs are saved, plus
   # the decision. But the decision as a dataframe used to become the
@@ -2356,10 +2355,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   rcol <- grep("rpart.", colnames(scores))
   if (length(rcol)) colnames(scores)[rcol[length(rcol)]] <- "rpart"
 
-  if (isRStat())
-    write.rstat(cbind(sdata, scores), file=fname)
-  else
-    write.csv(cbind(sdata, scores), file=fname, row.names=FALSE)
+  writeCSV(cbind(sdata, scores), file=fname)
 
   # StatusBar is enough so don't pop up a dialog?
   # infoDialog("The scores have been saved into the file", fname)

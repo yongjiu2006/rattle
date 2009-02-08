@@ -36,6 +36,12 @@ source("pmmltoc.R")
 source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
-source("pmml.transforms.R")
 
-source("pmmltocibi.R")
+.onLoad()
+.onAttach()
+
+#source("rstat.R")
+#source("pmml.transforms.R")
+#source("pmmltocibi.R")
+
+

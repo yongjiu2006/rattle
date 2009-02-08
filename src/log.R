@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-31 21:07:15 Graham Williams>
+# Time-stamp: <2009-02-07 08:10:21 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -23,10 +23,14 @@
 
 initiateLog <- function()
 {
-  if (isRStat()) resetTextview("log_textview")
-  
+  appendTextview("log_textview",
+                 paste("# Rattle is Copyright (C) 2006-2009",
+                       "Togaware Pty Ltd"),
+                 tvsep=FALSE)
+
+
   startLog(paste(sprintf("%s version %s User %s",
-                         crv$appname, crv$VERSION, Sys.info()["user"]),
+                         crv$appname, crv$version, Sys.info()["user"]),
            #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
           "\n\n# We can export the contents of this log textview to file using
 # the export button or Tools menu. This will save a log of what we have done,

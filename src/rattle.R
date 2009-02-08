@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-04 05:59:35 Graham Williams>
+# Time-stamp: <2009-02-08 09:27:22 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,12 +16,8 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 03 Feb 2009"
-COPYRIGHT <- "Copyright © 2006-2009 Togaware Pty Ltd"
-
-PACKAGEID <- "11_020309"
-
-SUPPORT <- "Contact support@togaware.com."
+VERSION.DATE <- "Released 05 Feb 2009"
+COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested early versions of Rattle. Many colleagues at the
@@ -108,23 +104,19 @@ SUPPORT <- "Contact support@togaware.com."
 #
 # INITIALISATIONS
 
-isRStat <- function() 
+overwriteInternalFunction <- function(fname, fun, pkg="rattle")
 {
-  return(exists("crv") && crv$appname == "RStat")
-}
-
-isRattle <- function() 
-{
-  return(crv$appname == "Rattle")
-}
-
-RStat <- function(csvname=NULL, ...) 
-{
-  rattle(csvname, appname="RStat", ...)
+  # 090207 This allows a plugin to easily overwrite any Rattle funtion
+  # with their own functionality. Simply define your own FUN that is
+  # to overwrite the Rattle defined function FNAME.
+  
+  re <- eval(parse(text=sprintf("environment(%s)", pkg)))
+  unlockBinding(fname, re)
+  assign(fname, fun, re)
+  lockBinding(fname, re)
 }
 
 rattle <- function(csvname=NULL,
-                   appname="Rattle",
                    tooltiphack=FALSE,
                    close="close")
 {
@@ -144,20 +136,10 @@ rattle <- function(csvname=NULL,
   # check" complained a lot, once for each of these, so putting them
   # all into crv means only one complaint each time!
 
-  if (TRUE) # 080907 Experiment with new.env()
-    crv <<- new.env()
-  else
-    crv <<- list()
-  crv$appname <<- appname
   crv$tooltiphack <<- tooltiphack # Record the value globally
   crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
   crv$close <<- close
-  crv$verbose <<- TRUE
   
-  # Some global constants
-
-  crv$max.vars.correlation <<- 40
-
   # Load gloablly required packages.
   
   if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
@@ -256,15 +238,13 @@ rattle <- function(csvname=NULL,
   # Really need an second untouched rattleGUI
   
   Global_rattleGUI <<-rattleGUI
-    
-  # Tune the interface to suit RStat
 
-  setRattleTitle()
+  # 090206 Tune the interface to suit needs, and in particular allow
+  # packages to overwrite these functions so that the interface can be
+  # tuned to suit plugins.
 
-  if (isRStat())
-    tuneRStat()
-  else
-    tuneRattle()
+  setMainTitle()
+  configureGUI()
 
   # 080511 Record the current options and set the scientific penalty
   # to be 5 so we generally get numerics pinted using fixed rather
@@ -277,7 +257,7 @@ rattle <- function(csvname=NULL,
 
   # 080924 Load of a supplied data file occurs here, but may take time
   # and whilst the UI is not fully set up yet, we see the Welcome
-  # screen in Rattle displayed in RStat for 30 seconds or so. So
+  # screen in Rattle displayed in plugins for 30 seconds or so. So
   # perhaps move it to later in the process.
   
   # Load data from the file identified by the csvname supplied in the
@@ -668,79 +648,8 @@ rattle <- function(csvname=NULL,
 
   # 080510 Display a relevant welcome message in the textview.
 
-  if (isRattle())
-  {
-    .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.WELCOME.TAB)
-    resetTextview("rattle_welcome_textview",
-                  paste("Welcome to Rattle (rattle.togaware.com).\n",
-                        "\nRattle is a free graphical user",
-                        "interface for Data Mining, developed using R.",
-                        "R is a free software environment",
-                        "for statistical computing and graphics.",
-                        "Together they provide a sophisticated",
-                        "environments for data mining,",
-                        "statistical analyses, and data visualisation.",
-                        "\n\nSee the Help menu for extensive support in",
-                        "using Rattle.",
-                        "The Togaware Desktop Data Mining Survival Guide",
-                        "includes Rattle documentation",
-                        "and is available from",
-                        "datamining.togaware.com",
-                        "\n\nRattle is licensed under the",
-                        "GNU General Public License, Version 2.",
-                        "Rattle comes with ABSOLUTELY NO WARRANTY.",
-                        "See Help -> About for details.",
-                        "\n\nRattle version", VERSION,
-                        "Copyright © 2006-2009 Togaware Pty Ltd"),
-                  tvsep=FALSE)
-  }
+  displayWelcomeTabMessage()
   
-## PUT THE MAIN TEXT HERE INTO THE ABOUT.
-##
-##   if (isRattle())
-##   {
-##     resetTextview("data_textview", "Welcome to Rattle.\n\n", tvsep=FALSE)
-##     resetTextview("log_textview", "# Rattle Log File.\n\n", tvsep=FALSE)
-##   }
-##   else if (isRStat())
-##   {
-##     resetTextview("data_textview",
-##                   paste("Welcome to RStat, the WebFOCUS Data Miner,",
-##                         "built on Rattle and R.\n\n"),
-##                   tvsep=FALSE)
-##     resetTextview("log_textview",
-##                   paste("# RStat Log File.\n",
-##                         "\n# RStat is built on Rattle and R.",
-##                         "\n# This file is an R script.\n\n"),
-##                   tvsep=FALSE)
-##   }
-  
-##   appendTextview("data_textview",
-##                  paste("Rattle is a free graphical user",
-##                        "interface for Data Mining, developed using R.",
-##                        "R is a free software environment",
-##                        "for statistical computing and graphics.",
-##                        "Together they provide one of the most sophisticated",
-##                        "and complete environments for performing data mining,",
-##                        "statistical analyses, and data visualisation.",
-##                        "\n\nSee the Help menu for extensive support in",
-##                        "using Rattle.",
-##                        "\n\nTogaware's Desktop Data Mining Survival Guide",
-##                        "(under development) includes extensive documentation",
-##                        "on using Rattle. It is available from\n\n",
-##                        "    http://datamining.togaware.com",
-##                        "\n\nRattle is licensed under the",
-##                        "GNU General Public License, Version 2.",
-##                        "\nRattle comes with ABSOLUTELY NO WARRANTY.",
-##                        "\nSee Help -> About for details.",
-##                        "\n\nRattle version", VERSION,
-##                        "\nCopyright (C) 2009 Togaware Pty Ltd"),
-##                  tvsep=FALSE)
-  appendTextview("log_textview",
-                 paste("# Rattle is Copyright (C) 2006-2009",
-                       "Togaware Pty Ltd"),
-                 tvsep=FALSE)
-
   initiateLog()
   
   # Make sure the text is shown on startup.
@@ -753,7 +662,7 @@ rattle <- function(csvname=NULL,
   {
     if (!theWidget("data_filechooserbutton")$setUri(csvname))
       infoDialog("Internal Error: The setting of the filename box",
-                 "failed.", SUPPORT)
+                 "failed.", crv$support.msg)
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
     executeDataTab(csvname)
@@ -768,90 +677,12 @@ rattle <- function(csvname=NULL,
   invisible()
 }
 
-tuneRStat <- function()
+########################################################################
+# Configurable functions - these are here because plugins may want to
+# overwrite them.
+
+configureGUI <- function()
 {
-  # Tune the user interface to suit the requirements for RStat. Often,
-  # we have added functionality to Rattle that is not yet well tested
-  # and tuned for release as RStat.
-
-  crv$SUPPORT <<- "Contact Information Builders Technical Support."
-  crv$VERSION <<- 1.1
-  
-  # Toolbar
-  
-  theWidget("report_toolbutton")$hide()
-  theWidget("rattle_menu")$hide()
-  theWidget("general_menu")$hide()
-  
-  theWidget("help_data_weight_calculator")$hide()
-  theWidget("help_data_fex")$show()
-  theWidget("help_data_arff")$hide()
-  theWidget("help_data_rdataset")$hide()
-  theWidget("help_data_odbc")$hide()
-  theWidget("help_data_corpus")$hide()
-  
-  ## Data
-  
-  # Data -> R Dataset
-
-  theWidget("data_arff_radiobutton")$hide()
-  theWidget("data_rdataset_radiobutton")$hide()
-  theWidget("data_odbc_radiobutton")$hide()
-  theWidget("data_corpus_radiobutton")$hide()
-  
-  # Data -> Edit
-  
-  theWidget("data_edit_button")$hide()
-
-  # Data -> Weight
-  
-  theWidget("weight_label")$hide()
-  theWidget("weight_entry")$hide()
-
-  ## Explore
-  
-  # Explore -> Summary -> Find
-  
-  theWidget("summary_find_label")$hide()
-  theWidget("summary_find_entry")$hide()
-  theWidget("summary_find_button")$hide()
-  theWidget("summary_next_button")$hide()
-
-  ## Model
-
-  # Model -> Tree
-
-  theWidget("model_tree_rpart_radiobutton")$hide()
-  theWidget("model_tree_ctree_radiobutton")$hide()
-  theWidget("model_tree_include_missing_checkbutton")$hide()
- 
-  # Model -> Linear
-
-  # 080815 I've moved to using the "Linear" label for the lm/glm
-  # family. Regression is perhaps a more general term. I've not
-  # approval for this from IBI so retaining Regression there for now.
-  theWidget("model_linear_radiobutton")$setLabel("Regression")
-  theWidget("glm_linear_radiobutton")$setLabel("Linear")
-  theWidget("model_linear_probit_radiobutton")$hide()
-  theWidget("model_linear_plot_button")$hide()
-  
-  # Model -> All
-
-  theWidget("all_models_radiobutton")$hide()
-
-  # Evaluate -> Linear
-
-  theWidget("glm_evaluate_checkbutton")$setLabel("Regression")
-  
-}
-
-tuneRattle <- function()
-{
-  # When running source code, after running RStat we will be stuck
-  # with RStat's version, so reset it here.
-
-  crv$SUPPORT <<- SUPPORT
-  crv$VERSION <<- VERSION
 
   # Toolbar
 
@@ -859,7 +690,7 @@ tuneRattle <- function()
   
   id.string <- paste('<span foreground="blue">',
                      '<i>', crv$appname, '</i> ',
-                     '<i>Version ', crv$VERSION, '</i> ',
+                     '<i>Version ', crv$version, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
 
@@ -869,30 +700,36 @@ tuneRattle <- function()
 
 }
 
-write.rstat <- function(x, file="", ...)
+displayWelcomeTabMessage <- function()
 {
-  # 081026 The RStat standard for missing values uses "." for
-  # categorics and "" for numeric. The simplest approach to handling
-  # this is to add "." as a new level to categoric variables to
-  # replace the missing values, then to tell write.csv to use "" for
-  # missing, which then should only be numeric variables.
+  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.WELCOME.TAB)
+  resetTextview("rattle_welcome_textview",
+                paste("Welcome to Rattle (rattle.togaware.com).\n",
+                      "\nRattle is a free graphical user",
+                      "interface for Data Mining, developed using R.",
+                      "R is a free software environment",
+                      "for statistical computing and graphics.",
+                      "Together they provide a sophisticated",
+                      "environments for data mining,",
+                      "statistical analyses, and data visualisation.",
+                      "\n\nSee the Help menu for extensive support in",
+                      "using Rattle.",
+                      "The Togaware Desktop Data Mining Survival Guide",
+                      "includes Rattle documentation",
+                      "and is available from",
+                      "datamining.togaware.com",
+                      "\n\nRattle is licensed under the",
+                      "GNU General Public License, Version 2.",
+                      "Rattle comes with ABSOLUTELY NO WARRANTY.",
+                      "See Help -> About for details.",
+                      "\n\nRattle version", crv$version,
+                      "Copyright (C) 2006-2009 Togaware Pty Ltd"),
+                tvsep=FALSE)
+}
 
-  # 081101 IBI request "." for all missing!
-  
-###   # Replace missing with "." in each categoric.
-
-###   factors <- which(sapply(1:ncol(x), function(y) is.factor(x[,y])))
-###   x[,factors] <- sapply(factors,
-###                          function(y)
-###                          {
-###                            levels(x[,y]) <- c(levels(x[,y]), ".")
-###                            x[,y][is.na(x[,y])] <- "."
-###                            x[,y]
-###                          })
-
-###   # Write to file with missing as "" for the remaining numerics
-  
-  write.csv(x, file=file, row.names=FALSE, na=".", ...)
+writeCSV <- function(x, file="", ...)
+{
+  write.csv(x, file=file, row.names=FALSE, ...)
 }
 
 #-----------------------------------------------------------------------
@@ -937,7 +774,7 @@ resetRattle <- function(new.dataset=TRUE)
   # new.dataset is FALSE then just reset various textviews and default
   # options.
 
-  if (new.dataset) setRattleTitle()
+  if (new.dataset) setMainTitle()
   
   if (new.dataset)
   {
@@ -1220,9 +1057,7 @@ errorDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
                                 ...,
-                                ifelse(isRStat(),
-                                       sprintf("\n\n%s %s", crv$appname, crv$VERSION),
-                                       sprintf("\n\n[%s %s]", crv$appname, crv$VERSION)))
+                                sprintf("\n\n%s %s", crv$appname, crv$version))
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1232,7 +1067,7 @@ errorReport <- function(cmd, result)
   # Rattle. Eventually, all of these should be identified by Rattle
   # and a sugggestion given as to how to avoid the error.
   
-  errorDialog("An error occured with", cmd, SUPPORT, "\n\n",
+  errorDialog("An error occured with", cmd, crv$support.msg, "\n\n",
               "The error was:\n\n", result)
 }
 
@@ -1363,12 +1198,9 @@ sampleNeedsExecute <- function()
 ## Simplify updates to status bar
 ##
 
-setRattleTitle <- function(title=NULL)
+setMainTitle <- function(title=NULL)
 {
-  if (isRStat())
-    standard <- "Developer Studio - [RStat]"
-  else
-    standard <- "R Data Miner - [Rattle]"
+  standard <- "R Data Miner - [Rattle]"
   if (is.null(title))
     theWidget("rattle_window")$setTitle(standard)
   else
@@ -1897,7 +1729,6 @@ my.savePlot <- function (filename = "Rplot",
 genPlotTitleCmd <- function(..., vector=FALSE)
 {
   # 080817 Use month name rather than number - less ambiguous.
-  # 080516 For RStat do not brand the plots.
 
   if (! exists("crv"))
   {
@@ -1909,7 +1740,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   main = paste(...)
   if(vector)
   {
-    if (isRStat() || ! crv$verbose)
+    if (! crv$verbose)
       sub <- ""
     else
       sub <- sprintf("%s %s %s", crv$appname,
@@ -1918,7 +1749,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
   }
   else
   {  
-    if (isRStat() || ! crv$verbose)
+    if (! crv$verbose)
       sub <- ""
     else
       sub <- sprintf(paste('paste("%s", format(Sys.time(),',
@@ -4364,37 +4195,20 @@ on_about_menu_activate <-  function(action, window)
     about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
 
   ab <- about$getWidget("aboutdialog")
-  ab$setVersion(crv$VERSION)
+  ab$setVersion(crv$version)
 
-  if (isRStat())
-  {
-    # 081004 setProgramName is only available in GTK+ 2.12 and
-    #above. But the MS/Wdinows version of RGtk2 is compiled for 2.10,
-    #and it has a compile time check for version, not run time, and so
-    #even though 2.12 is installed, it won't run the function.
-    #
-    #if(exists("gtkAboutDialogSetProgramName"))
-    #  about$getWidget("aboutdialog")$setProgramName("RStat")
-
-    ab["program-name"] <- "RStat®"
-    ab["comments"] <- sprintf("Gen: %s\nPackaging ID: %s",
-                              VERSION, PACKAGEID)
-    ab$setWebsite(paste("www.togaware.com",
-                        "\n       www.ibi.com"))
-    #ab$setWebsite("")
-    ab$setCopyright(paste(COPYRIGHT,
-                          #"Portions Copyright (C) 2009 Information Builders, Inc",
-                          "All rights reserved.", sep="\n"))
-  }
-  else
-  {
-    ab["program-name"] <- "Rattle®"
-    ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
-                          "All rights reserved."))
-  }
+  configureAbout(ab)
   
   gladeXMLSignalAutoconnect(about)
 }
+
+configureAbout <- function(ab)
+{
+  ab["program-name"] <- "Rattle"
+  ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
+                        "All rights reserved."))
+}
+ 
 
 on_paste1_activate <- notImplemented
 on_copy1_activate <- notImplemented

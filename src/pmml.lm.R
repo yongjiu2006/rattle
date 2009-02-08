@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-01-17 20:16:14 Graham Williams>
+# Time-stamp: <2009-02-08 08:23:22 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
