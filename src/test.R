@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-05 05:55:15 Graham Williams>
+# Time-stamp: <2009-02-11 07:17:16 Graham Williams>
 #
 # Test Tab
 #
@@ -111,6 +111,8 @@ executeTestTab <- function()
 
   TV <- "test_textview"
 
+  if (noDatasetLoaded()) return(FALSE)
+  
   # Obtain interface information.
   
   if (theWidget("test_groupby_checkbutton")$getActive())
@@ -184,7 +186,9 @@ executeTestTab <- function()
   if (theWidget("test_distr_radiobutton")$getActive())
   {
     test <- "ks2Test"
-    preamble <- "The Kolmogorov-Smirnov test is a non-parametric test of the
+    preamble <- "KOLMOGOROV-SMIRNOV TEST
+
+The Kolmogorov-Smirnov test is a non-parametric test of the
 similarity of two distributions. The null hypothesis is that the
 two samples are drawn from the same distribution. The two-sided and
 the two one-sided tests are performed.
@@ -200,7 +204,9 @@ accpet the alternative hypothesis, that the distributions differ, at the
   else if (theWidget("test_ttest_radiobutton")$getActive())
   {
     test <- "locationTest"
-    preamble <- "The two-sample T-test is performed on the two specified samples. The
+    preamble <- "TWO-SAMPLE T-TEST
+
+The two-sample T-test is performed on the two specified samples. The
 null hypothesis is that the difference between the two means is zero.
 
 This test assumes that the two samples are normally distributed. If not,
@@ -220,7 +226,9 @@ Two variants of the test are reported: for equal and unequal variances.
   {
     test <- "locationTest"
     options <- ', method="kw"'
-    preamble <- paste("The Kruskal-Wallis test is performed on the two samples",
+    preamble <- paste("KRUSKAL-WALLIS TEST
+
+The Kruskal-Wallis test is performed on the two samples",
                       "to test the hypothesis that the difference between the two",
                       "means is zero. It does not assume that the two samples",
                       "are normally distributed.",
@@ -232,7 +240,9 @@ Two variants of the test are reported: for equal and unequal variances.
   {
     test <- "wilcox.test"
     # options <- ", conf.int=TRUE" Could do this but needs more explanation
-    preamble <- "The two-sample non-parametric Wilcoxon rank sum test (equivalent to
+    preamble <- "WILCOXON RANK SUM TEST
+
+The two-sample non-parametric Wilcoxon rank sum test (equivalent to
 the Mann-Whitney test) is performed on the two specified samples. The null
 hypothesis is that the distributions are the same (i.e., there is no
 shift in the location of the two distributions) with an alternative
@@ -259,7 +269,9 @@ at the 95% level of confidence.
                     test, sep="")
       s1 <- s2 <- "-miss"
     }
-    preamble <- "The paired sample non-parametric Wilcoxon signed rank test is
+    preamble <- "WILCOXON SIGNED RANK TEST
+
+The paired sample non-parametric Wilcoxon signed rank test is
 performed on the two specified samples. The two samples are expected to be
 paired (two observations for the same entity). The null hypothesis is that
 the distributions are the same.
@@ -274,7 +286,9 @@ accept the alternative hypothesis, that the distributions differ, at the
   else if (theWidget("test_variance_radiobutton")$getActive())
   {
     test <- "varianceTest"
-    preamble <- "The two sample F-test is performed on the two specified samples. The
+    preamble <- "TWO SAMPLE F-TEST
+
+The two sample F-test is performed on the two specified samples. The
 null hypothesis is that the ratio of the variances of the populations from
 which they were drawn is equal to one.
 
@@ -299,7 +313,9 @@ variances, at the 95% level of confidence.
       s1 <- s2 <- "-miss"
     }
 
-    preamble <- "The paired sample correlation test is performed on the specified two
+    preamble <- "CORRELATION TEST
+
+The paired sample correlation test is performed on the specified two
 samples. The two samples are expected to be paired (two observations
 for the same entity). The null hypothesis is that the two samples
 are correlated. Pearson's product moment correlation coefficient is used.

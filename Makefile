@@ -98,6 +98,12 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 default: local plocal ilocal
 
+.PHONY: kathy
+kathy: zip
+	zip $@`date +%y%m%d%H%M`.zip \
+	rattle_$(VERSION).zip pmml_$(PVERSION).zip rstat_$(IVERSION).zip \
+	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R
+
 # This one checks the R installations for overlap of packages
 # installed. If they are in both local and lib, should remove the
 # local one.

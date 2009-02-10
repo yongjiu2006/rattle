@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-08 09:23:59 Graham Williams>
+# Time-stamp: <2009-02-11 05:56:41 Graham Williams>
 #
 # DATA TAB
 #
@@ -180,7 +180,11 @@ changedDataTab <- function()
 
    if (is.null(table) || crs$dataname != table) return(TRUE)
   }
-
+  else if (theWidget("data_script_radiobutton")$getActive())
+  {
+    return(TRUE)
+  }
+  
   # Return FALSE if we did not detect any changes.
 
   return(FALSE)
@@ -455,7 +459,13 @@ executeDataTab <- function(csvname=NULL)
     {
       if (! executeDataCorpus()) return()
     }
-
+    else if (theWidget("data_script_radiobutton")$getActive())
+    {
+      if (! executeDataScript()) return()
+    }
+    else
+      return()
+    
     # Update the select treeview. This is done on a Data execute only
     # when a new dataset has been loaded. If the user has simply
     # changed some of the roles or the sampling then we do not do a
@@ -928,6 +938,12 @@ resetDatasetViews <- function(input, target, risk, ident, ignore)
                      ident=ident, ignore=ignore,
                      resample=FALSE, autoroles=FALSE)
 
+}
+
+executeDataScript <- function()
+{
+  setStatusBar("The script option is not yet implemented.")
+  return(FALSE)
 }
 
 executeDataARFF <- function()
@@ -1780,6 +1796,8 @@ executeSelectTab <- function()
 
   theWidget("explot_target_label")$setText(the.target)
 
+  theWidget("test_groupby_target_label")$setText(the.target)
+  
   theWidget("rpart_target_label")$setText(the.target)
   theWidget("rf_target_label")$setText(the.target)
   theWidget("svm_target_label")$setText(the.target)

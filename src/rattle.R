@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-08 09:27:22 Graham Williams>
+# Time-stamp: <2009-02-11 07:11:50 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 05 Feb 2009"
+VERSION.DATE <- "Released 08 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -117,8 +117,7 @@ overwriteInternalFunction <- function(fname, fun, pkg="rattle")
 }
 
 rattle <- function(csvname=NULL,
-                   tooltiphack=FALSE,
-                   close="close")
+                   tooltiphack=FALSE)
 {
   # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
   # the R console, but at least tooltips work, and on losing focus
@@ -138,7 +137,6 @@ rattle <- function(csvname=NULL,
 
   crv$tooltiphack <<- tooltiphack # Record the value globally
   crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
-  crv$close <<- close
   
   # Load gloablly required packages.
   
@@ -883,10 +881,14 @@ resetRattle <- function(new.dataset=TRUE)
     # Reset Test tab
 
     theWidget("test_distr_radiobutton")$setActive(TRUE)
-    theWidget("test_vars1_combobox")$setActive(-1)
-    theWidget("test_vars2_combobox")$setActive(-1)
+    theWidget("test_vars1_combobox")$getModel()$clear()
+    theWidget("test_vars2_combobox")$getModel()$clear()
+    #theWidget("test_vars1_combobox")$setActive(-1)
+    #theWidget("test_vars2_combobox")$setActive(-1)
     theWidget("test_groupby_checkbutton")$setActive(TRUE)
     theWidget("test_groupby_target_label")$setText("No Target")
+    theWidget("test_groupby_checkbutton")$setSensitive(TRUE)
+    theWidget("test_groupby_target_label")$setSensitive(TRUE)
     
     # Reset Cluster
 
