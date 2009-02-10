@@ -10,12 +10,11 @@
 
 }
 \usage{
-rattle(csvname=NULL, tooltiphack=FALSE, close="close")
+rattle(csvname=NULL, tooltiphack=FALSE)
 }
 \arguments{
   \item{csvname}{the name of a CSV file to load into Rattle on startup.}
   \item{tooltiphack}{attempt to enable tooltips on GNU/Linux.}
-  \item{close}{if is "quit" then a close will also quit R.}
 }
 \details{
 

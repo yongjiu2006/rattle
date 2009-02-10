@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 19:20:11 Graham Williams>
+# Time-stamp: <2009-02-11 07:00:42 Graham Williams>
 #
 # Project functionality.
 #
@@ -364,12 +364,18 @@ loadProject <- function()
 
   resetRattle()  # Seems appropriate to clear out the crs
   setMainTitle(basename(load.name))
-
+  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+  
   # DATA
 
-  # Reset the file chooser button.
-  
-  theWidget("data_filechooserbutton")$setUri(crs$filename)
+  # Reset the file chooser button. 090211 What should happen if the
+  # file does not exist? This is most likely when the project comes
+  # from another user or another system. Leaving it set as empty seems
+  # to work in that we can make changes to the roles and they get
+  # effected.
+
+  if (file.exists(crs$filename))
+    theWidget("data_filechooserbutton")$setUri(crs$filename)
   
   crs$dataname <<- crs$dataname
   crs$dataset <<- crs$dataset
@@ -404,7 +410,8 @@ loadProject <- function()
                      crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
                      crs$barplot, crs$dotplot, autoroles=FALSE)
-   executeSelectTab()
+  executeSelectTab()
+  resetTestTab()
   
   if (not.null(crs$risk))
     theWidget("evaluate_risk_label")$setText(crs$risk)

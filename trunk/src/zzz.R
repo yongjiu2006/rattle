@@ -12,6 +12,7 @@
 
   # Some global constants
 
+  crv$close <<- "close"
   crv$verbose <<- TRUE # Add sub titles to plots ...
   crv$max.vars.correlation <<- 40 # Correlation slows down too much
   crv$export.to.c.available <<- FALSE # No export to C implemented yet
