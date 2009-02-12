@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-11 07:11:50 Graham Williams>
+# Time-stamp: <2009-02-12 19:09:35 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 08 Feb 2009"
+VERSION.DATE <- "Released 11 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -243,7 +243,8 @@ rattle <- function(csvname=NULL,
 
   setMainTitle()
   configureGUI()
-
+  loadTooltips()
+  
   # 080511 Record the current options and set the scientific penalty
   # to be 5 so we generally get numerics pinted using fixed rather
   # than exponential notation. We reset all options to what they were

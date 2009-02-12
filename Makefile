@@ -63,6 +63,7 @@ R_SOURCE = \
 	src/test.R \
 	src/textview.R \
 	src/textminer.R \
+	src/tooltips.R \
 	src/transform.R \
 	src/zzz.R
 
@@ -85,7 +86,7 @@ ISOURCE = \
 	src/pmmltocibi.R \
 	src/pmml.transforms.R
 
-GLADE_SOURCE = src/rattle.glade
+GLADE_SOURCE = src/rattle.glade src/tooltips.xml
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
@@ -212,7 +213,7 @@ rattle_$(VERSION).tar.gz: $(SOURCE)
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
              src/rattle.R
 	perl -pi -e "s|^PACKAGEID <- \"11_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \
-             src/rattle.R
+             src/rstat.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	cp odf/data_summary.odt package/rattle/inst/odt/

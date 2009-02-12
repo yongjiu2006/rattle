@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-11 07:00:42 Graham Williams>
+# Time-stamp: <2009-02-12 17:35:43 Graham Williams>
 #
 # Project functionality.
 #
@@ -158,7 +158,7 @@ saveProject <- function()
   {
     ff <- gtkFileFilterNew()
     ff$setName("Projects")
-    lapply(crv$project.extensions, ff$addPattern)
+    lapply(paste("*.", crv$project.extensions, sep=""), ff$addPattern)
     dialog$addFilter(ff)
   }
  
@@ -197,7 +197,7 @@ saveProject <- function()
     if (filter.name == "Projects")
     {
       if (save.ext != crv$project.extensions[1])
-        save.name <- sprintf("%s.%s", save.name, project.extensions[1])
+        save.name <- sprintf("%s.%s", save.name, crv$project.extensions[1])
     }
     else if (filter.name == "RData Files")
     {
@@ -319,7 +319,7 @@ loadProject <- function()
   {
     ff <- gtkFileFilterNew()
     ff$setName("Projects")
-    lapply(crv$project.extensions, ff$addPattern)
+    lapply(paste("*.", crv$project.extensions, sep=""), ff$addPattern)
     dialog$addFilter(ff)
   }
   

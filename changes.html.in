@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.28.
+    version is 2.4.29.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+410 090212 Extract tooltips from glade into tooltips.xml to better maintain.
+           Bug fix - tunable crv$project.extensions not consitently used.
 409 090211 Move close option of rattle() to be an option variable.
            Improve Test GUI reset.
            Show Target in Test when loading project
@@ -804,6 +806,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-11 07:26:52 Graham Williams</i>
+<i>Last Modified 2009-02-12 19:22:18 Graham Williams</i>
 <!-- hhmts end -->
   </p>
