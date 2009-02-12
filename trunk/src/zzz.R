@@ -17,7 +17,7 @@
   crv$max.vars.correlation <<- 40 # Correlation slows down too much
   crv$export.to.c.available <<- FALSE # No export to C implemented yet
   crv$show.warnings <<- TRUE # 090207 Show test/train warning.
-  crv$project.extensions <<- c("*.rattle", "*.rstat") # Extensions for projects  
+  crv$project.extensions <<- c("rattle", "rstat") # Extensions for projects  
 
 }
 
