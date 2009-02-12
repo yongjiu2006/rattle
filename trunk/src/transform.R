@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-25 07:40:40 Graham Williams>
+# Time-stamp: <2009-02-12 22:57:03 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -494,9 +494,11 @@ executeTransformNormalisePerform <- function()
     else if (action == "log")
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
-                                'log(crs$dataset[["%s"]])'),
-                          vname, v)
-      norm.comment <- "Take a log transform of the variable."
+                                'log(crs$dataset[["%s"]])',
+                                '\n  crs$dataset[crs$dataset[["%s"]] == -Inf &',
+                                '! is.na(crs$dataset[["%s"]]), "%s"] <- NA'),
+                          vname, v, vname, vname, vname)
+      norm.comment <- "Take a log transform of the variable - treat -Inf as NA."
 
       # Record the transformation for inclusion in PMML.
       
@@ -552,11 +554,12 @@ executeTransformNormalisePerform <- function()
   {
     
     # Reset the dataset views keeping the roles unchanged except for
-    # those that have been normalised, wich have just been added as
+    # those that have been normalised, which have just been added as
     # inputs, with the originals now ignored.
 
     resetDatasetViews(input, target, risk, ident, ignore)
-
+    resetTestTab()
+    
     # Update the status bar
 
     setStatusBar(sprintf(paste("Normalized variables added to the dataset",
@@ -895,6 +898,7 @@ executeTransformImputePerform <- function()
     # inputs, with the originals now ignored.
 
     resetDatasetViews(input, target, risk, ident, ignore)
+    resetTestTab()
 
     # Update the status bar
 
@@ -1283,6 +1287,7 @@ executeTransformRemapPerform <- function()
   # those that have been created, wich have just been added as inputs.
 
   resetDatasetViews(input, target, risk, ident, ignore)
+  resetTestTab()
   
   # Update the status bar
   
@@ -1412,6 +1417,7 @@ executeTransformCleanupPerform <- function()
   # those that have been delete.
 
   resetDatasetViews(input, target, risk, ident, ignore)
+  resetTestTab()
 
   # Update the status bar
 

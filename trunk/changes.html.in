@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.29.
+    version is 2.4.30.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+411 090212 After transforms call resetTestTab to update the var lists.
+           After a log transform convert -Inf to NA so model building works.
+           Bug fix export of hclust pmml with transforms - use same as kmeans.
 410 090212 Extract tooltips from glade into tooltips.xml to better maintain.
            Bug fix - tunable crv$project.extensions not consitently used.
 409 090211 Move close option of rattle() to be an option variable.
@@ -806,6 +809,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-12 19:22:18 Graham Williams</i>
+<i>Last Modified 2009-02-12 23:01:14 Graham Williams</i>
 <!-- hhmts end -->
   </p>
