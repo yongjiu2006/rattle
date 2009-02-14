@@ -21,6 +21,7 @@ source("data.R")
 source("report.R")
 source("test.R")
 source("textminer.R")
+source("tooltips.R")
 source("transform.R")
 source("help.R")
 

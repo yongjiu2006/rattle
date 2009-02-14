@@ -7065,6 +7065,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_costcurve_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7159,6 +7160,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_pvo_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7779,9 +7781,6 @@ ANOVA RBF (anovadot)</property>
                                   <widget class="GtkTextView" id="risk_textview">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="text" translatable="yes">A risk chart provides an effective approach to presenting the performance of a model. 
-
-The default chart displays caseload versus performance.</property>
                                   </widget>
                                 </child>
                               </widget>
@@ -7799,6 +7798,93 @@ The default chart displays caseload versus performance.</property>
                           <packing>
                             <property name="type">tab</property>
                             <property name="position">5</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkScrolledWindow" id="scrolledwindow6">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="shadow_type">GTK_SHADOW_IN</property>
+                            <child>
+                              <widget class="GtkTextView" id="pvo_textview">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label40">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">pvo</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">6</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkScrolledWindow" id="scrolledwindow8">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="shadow_type">GTK_SHADOW_IN</property>
+                            <child>
+                              <widget class="GtkTextView" id="score_textview">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label41">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">score</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">7</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkScrolledWindow" id="scrolledwindow10">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                            <property name="shadow_type">GTK_SHADOW_IN</property>
+                            <child>
+                              <widget class="GtkTextView" id="costcurve_textview">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label42">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">costcurve</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">8</property>
                             <property name="tab_fill">False</property>
                           </packing>
                         </child>

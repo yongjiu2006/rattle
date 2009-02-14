@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-08 09:24:20 Graham Williams>
+# Time-stamp: <2009-02-14 16:30:10 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -97,6 +97,7 @@ on_score_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
+    .EVALUATE$setCurrentPage(.EVALUATE.SCORE.TAB)
     theWidget("score_report_label")$show()
     theWidget("score_class_radiobutton")$show()
     theWidget("score_probability_radiobutton")$show()
@@ -117,6 +118,20 @@ on_score_radiobutton_toggled <- function(button)
     theWidget("score_idents_radiobutton")$hide()
     theWidget("score_all_radiobutton")$hide()
   }    
+  setStatusBar()
+}
+
+on_pvo_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+    .EVALUATE$setCurrentPage(.EVALUATE.PVO.TAB)
+  setStatusBar()
+}
+
+on_costcurve_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+    .EVALUATE$setCurrentPage(.EVALUATE.COSTCURVE.TAB)
   setStatusBar()
 }
 

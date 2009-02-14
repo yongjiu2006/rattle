@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-11 05:56:41 Graham Williams>
+# Time-stamp: <2009-02-14 15:19:12 Graham Williams>
 #
 # DATA TAB
 #
@@ -596,10 +596,15 @@ executeDataCSV <- function(filename=NULL)
       # when retrieving the information from the filechooserbutton
       # widget. If we don't do this then the crs$dwd does not include
       # the "file://" bit, and thus changedDataTab returns TRUE the
-      # next time, which is not right! 080520 TODO This may not work
-      # for MS/Windows.
+      # next time, which is not right! 090214 This does not work for
+      # MS/Windows. The filename is something like "C:/..." and this
+      # ends up adding "file://" but it should be "file:///". So check
+      # for this.
 
-      filename <- paste("file://", filename, sep="")
+      if (substr(filename, 1, 1) == "/")
+        filename <- paste("file://", filename, sep="")
+      else
+        filename <- paste("file:///", filename, sep="")
       
       # 080713 We still need the events flush with tootiphack set
       # since otherwise we have to lose focus before the screen gets
@@ -2615,7 +2620,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       else if ("factor" %in% cl)
       {
         lv <- length(levels(crs$dataset[[variables[i]]]))
-        if (lv == nrow(crs$dataset))
+        if (nrow(crs$dataset) > crv$ident.min.rows && lv == nrow(crs$dataset))
         {
           cl <- "ident"
           ident <- c(ident, variables[i])
@@ -2629,7 +2634,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       else
       {
         lv <- length(levels(as.factor(crs$dataset[[variables[i]]])))
-        if ("integer" %in% cl && lv == nrow(crs$dataset))
+        if ("integer" %in% cl &&
+            nrow(crs$dataset) > crv$ident.min.rows &&
+            lv == nrow(crs$dataset))
         {
           cl <- "ident"
           ident <- c(ident, variables[i])
