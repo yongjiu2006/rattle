@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.30.
+    version is 2.4.31.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+412 090214 For ident heuristic, only select ident if num rows > ident.min.rows
+           Bug fix: on MS/Windows, auto load dataset, add extra / to crs$dwd
+           Use propertyies not setTooltipText (not available in older GTK)
+           Add extra tabs for all evaluate radio buttons (so can have text)
+           Move text for initial textviews into textviews.xml and load from there.
 411 090212 After transforms call resetTestTab to update the var lists.
            After a log transform convert -Inf to NA so model building works.
            Bug fix export of hclust pmml with transforms - use same as kmeans.
@@ -809,6 +814,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-12 23:01:14 Graham Williams</i>
+<i>Last Modified 2009-02-14 16:46:13 Graham Williams</i>
 <!-- hhmts end -->
   </p>

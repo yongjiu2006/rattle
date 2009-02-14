@@ -16,5 +16,15 @@ loadTooltips <- function()
     doc <- xmlTreeParse(file.path(etc, "tooltips.xml"), useInternalNodes=TRUE)
 
   for (tt in getNodeSet(doc, "//tooltip"))
-    theWidget(xmlGetAttr(tt, 'widget'))$setTooltipText(xmlValue(tt))
+  {
+    wd <- theWidget(xmlGetAttr(tt, 'widget'))
+    wd["tooltip-text"] <- xmlValue(tt)
+
+    # 090214 The MS/Windows RGtk2 is compiled with an older GTK, even
+    # though a user might have GTK 2.12.8 installed.  Thus,
+    # setTooltipText is not avilable and so we use the above setting
+    # of the property rather than using the function.
+    
+    # theWidget(xmlGetAttr(tt, 'widget'))$setTooltipText(xmlValue(tt))
+  }
 }

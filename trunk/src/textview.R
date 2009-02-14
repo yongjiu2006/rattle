@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 07:43:45 Graham Williams>
+# Time-stamp: <2009-02-14 15:40:32 Graham Williams>
 #
 # Textview widget support
 #
@@ -181,120 +181,37 @@ resetTextviews <- function()
 {
   # 090202 Reset all text views to default content, as when Rattle
   # starts up or the user has selected New Project, or has loaded a
-  # new dataset.
+  # new dataset. The text for the texviews come from textviews.xml.
   
-  resetTextview("summary_textview", "UNIVARIATE DATASET SUMMARY
+  # 090214 I probably actually just want to go through a clear each of
+  # the textviews first, and then population with the text from
+  # textviews.xml if there is one and XML package is available!
 
-It is useful to understand how our data is distributed
-
-The summary here will include more details depending on
-which check buttons you choose. 
-
-The Summary option provides a very brief summary.
-
-The Describe option provides comprehensive summaries of each variable.
-
-Kurtosis and Skewness allow these measure to be compared across
-the available numeric variables.", tvsep=FALSE)
-
-  resetTextview("playwith_textview", "LATTICIST DATA VISUALISER
-
-Latticist provides a graphical user interface for exploratory data visualisation. 
-
-For the loaded dataset latticist attempts to produce useful displays
-based on the properties of the data.", tvsep=FALSE)
-
-  resetTextview("ggobi_textview", "GGOBI DATA ANALYSIS
-
-GGobi provides a separate interface to perform highly dynamic and
-interactive data visualisation.
-
-Specialist tools include tours, scatterplots, barcharts and
-parallel coordinates plots. 
-
-Plots allow points to be identified and linked with
-brushing across multiple plots.", tvsep=FALSE)
-
-
+  sapply(c("summary_textview", "playwith_textview", "ggobi_textview",
+           "correlation_textview", "hiercor_textview",
+           "prcomp_textview", "test_textview", "kmeans_textview",
+           "hclust_textview", "associate_textview", "rpart_textview",
+           "glm_textview", "ada_textview", "rf_textview",
+           "esvm_textview", "ksvm_textview", "nnet_textview",
+           "confusion_textview", "risk_textview", "roc_textview"),
+         resetTextview)
   
-  resetTextview("correlation_textview", "NUMERIC VARIABLE CORRELATION
+  if (! packageIsAvailable("XML", "load textview texts"))
+  {
+    warning("The XML package is not available. Textview texts will not be available.")
+    return(FALSE)
+  }
 
-A correlation analysis will provide insights into how independent
-the input variables are.
+  require(XML, quietly=TRUE)
 
-Modelling often assumes independence, and better models will
-result when using independent input variables.
+  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                silent=TRUE)
+  if (inherits(result, "try-error"))
+    doc <- xmlTreeParse("textviews.xml", useInternalNodes=TRUE)
+  else
+    doc <- xmlTreeParse(file.path(etc, "textviews.xml"), useInternalNodes=TRUE)
 
-A table of the correlations between each of the numeric variables
-will be listed, and a correlation plot will be displayed.", tvsep=FALSE)
-
-  resetTextview("hiercor_textview", "NUMERIC VARIABLE HIERARCHICAL CORRELATION
-
-Dendrograms provide a visual clue to the degree of closeness between variables.
-
-The hierarchical correlation dendrogram produced here presents a view
-of the variables of the dataset showing their relationships (correlations).
-Depending on the data, you may find groupings of variables that are highly
-correlated. These will be fairly obvious in most cases.
-
-The length of the lines in the dendrogram provide a visual indication of
-the degree of correlation (or the tightness of the correlation - shorter
-lines indicate more tighly correlated variables).
-
-Once you have identified the groups of variables that are correlated,
-you may want to reduce the number of variables you are including in your
-modelling.
-
-Note that only numeric data is processed to produce the plot. Categoricals
-are not handled by this analysis.", tvsep=FALSE)
-  
-  resetTextview("prcomp_textview", tvsep=FALSE, "PRINCIPAL COMPONENTS ANALYSIS
-
-Principal Components Analysis can provide insights into the importance
-of variables in explaining the variation found within the dataset.
-
-Two plots will be displayed. The bar chart shows to significance of
-each component, whilst the biplot remaps the data points from their
-original coordinates to coordinates of the first two principal
-coordinates.")
-
-  resetTextview("test_textview", tvsep=FALSE, "STATISTICAL TESTS
-
-These tests apply to two samples. The paired two sample tests assume
-that we have two samples or observations for each entity, and that we
-are testing for a change, usually from one time period to another.
-
-DISTRIBUTION OF THE DATA
-
-  Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
-  Wilcoxon Signe Rank     Non-parametric    Do paired samples have the same distribution?
-
-LOCATION OF THE AVERAGE
-
-  T-test               Parametric        Are the means the same?
-  Wilcoxon Rank-Sum    Non-parametric    Are the medians the same?
-
-VARIATION IN THE DATA
-
-  F-test    Parametric    Are the variances the same?
-
-CORRELATION
-
-  Correlation    Pearsons    Are the values from the paired samples correlated?")
-  
-  resetTextview("kmeans_textview")
-  resetTextview("hclust_textview")
-  resetTextview("associate_textview")
-  resetTextview("rpart_textview")
-  resetTextview("glm_textview")
-  resetTextview("ada_textview")
-  resetTextview("rf_textview")
-  resetTextview("esvm_textview")
-  resetTextview("ksvm_textview")
-  resetTextview("nnet_textview")
-  resetTextview("confusion_textview")
-  resetTextview("risk_textview")
-  resetTextview("roc_textview")
-
-  return(TRUE)
-}  
+  sapply(getNodeSet(doc, "//textview"),
+         function(tt) resetTextview(xmlGetAttr(tt, 'widget'),
+                                    xmlValue(tt), tvsep=FALSE))
+}

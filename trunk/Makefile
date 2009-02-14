@@ -86,7 +86,7 @@ ISOURCE = \
 	src/pmmltocibi.R \
 	src/pmml.transforms.R
 
-GLADE_SOURCE = src/rattle.glade src/tooltips.xml
+GLADE_SOURCE = src/rattle.glade src/tooltips.xml src/textviews.xml
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
@@ -282,7 +282,7 @@ html:
 	  rm -f $$m.html;\
 	done
 
-locals: clean local plocal ilocal
+locals: clean local plocal ilocal zip
 
 local: rattle_$(VERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^

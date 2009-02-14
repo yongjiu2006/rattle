@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-12 19:09:35 Graham Williams>
+# Time-stamp: <2009-02-14 16:30:33 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -550,6 +550,9 @@ rattle <- function(csvname=NULL,
   .EVALUATE.ROC.TAB         <<- getNotebookPage(.EVALUATE, "roc")
   .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
   .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
+  .EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(.EVALUATE, "cost")
+  .EVALUATE.PVO.TAB         <<- getNotebookPage(.EVALUATE, "pvo")
+  .EVALUATE.SCORE.TAB       <<- getNotebookPage(.EVALUATE, "score")
   
   # Turn off the sub-notebook tabs.
 
