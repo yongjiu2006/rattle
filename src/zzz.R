@@ -13,6 +13,11 @@
   # Some global constants
 
   crv$close <<- "close"
+  crv$sample.dataset <<- "audit"
+  if (.Platform$OS.type == "unix")
+    crv$load.tooltips <<- FALSE
+  else
+    crv$load.tooltips <<- TRUE
   crv$verbose <<- TRUE # Add sub titles to plots ...
   crv$max.vars.correlation <<- 40 # Correlation slows down too much
   crv$export.to.c.available <<- FALSE # No export to C implemented yet

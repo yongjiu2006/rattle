@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-14 16:30:33 Graham Williams>
+# Time-stamp: <2009-02-16 17:44:38 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 12 Feb 2009"
+VERSION.DATE <- "Released 14 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -104,7 +104,7 @@ COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 #
 # INITIALISATIONS
 
-overwriteInternalFunction <- function(fname, fun, pkg="rattle")
+overwritePackageFunction <- function(fname, fun, pkg)
 {
   # 090207 This allows a plugin to easily overwrite any Rattle funtion
   # with their own functionality. Simply define your own FUN that is
@@ -136,6 +136,7 @@ rattle <- function(csvname=NULL,
   # all into crv means only one complaint each time!
 
   crv$tooltiphack <<- tooltiphack # Record the value globally
+  if (tooltiphack) crv$load.tooltips <<- TRUE
   crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
   
   # Load gloablly required packages.
@@ -243,7 +244,7 @@ rattle <- function(csvname=NULL,
 
   setMainTitle()
   configureGUI()
-  loadTooltips()
+  if (crv$load.tooltips) loadTooltips()
   
   # 080511 Record the current options and set the scientific penalty
   # to be 5 so we generally get numerics pinted using fixed rather

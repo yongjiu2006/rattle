@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-14 15:19:12 Graham Williams>
+# Time-stamp: <2009-02-14 17:20:15 Graham Williams>
 #
 # DATA TAB
 #
@@ -577,8 +577,8 @@ executeDataCSV <- function(filename=NULL)
   {
     if (! questionDialog("No CSV filename has been provided.\n",
                          "\nWe require a dataset to be loaded.\n",
-                         "\nWould you like to use the sample weather",
-                         "dataset?"))
+                         "\nWould you like to use the sample",
+                         crv$sample.dataset, "dataset?"))
 
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
@@ -589,7 +589,8 @@ executeDataCSV <- function(filename=NULL)
     {
       # 080515 Use the Rattle provided sample dataset.
       
-      filename <- system.file("csv", "weather.csv", package="rattle")
+      filename <- system.file("csv", paste(crv$sample.dataset, ".csv", sep=""),
+                              package="rattle")
       theWidget("data_filechooserbutton")$setFilename(filename)
 
       # Make sure we end up with a URI since a URI is otherwise used

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-02-08 08:24:31 Graham Williams>
+# Time-stamp: <2009-02-15 22:43:35 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -57,6 +57,26 @@ pmml.rpart <- function(model,
   field$name <- as.character(attr(model$terms, "variables"))[-1]
   field$class <- attr(model$terms, "dataClasses")
 
+  # 090215 Remove from transforms any transforms that are not used in
+  # the model. No point unneccessarily passing a transform on to the
+  # PMML and then to the C code for calculating.
+
+  if (supportTransformExport(transforms))
+  {
+    frame <- model$frame
+    leaves <- frame$var == "<leaf>"
+    used <- unique(frame$var[!leaves])
+
+    trs <- sapply(transforms, transformToDerived)
+    unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == trs)))
+
+    transforms <- transforms[-unused]
+
+    unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == field$name)))
+    field$name <- field$name[-unused]
+    field$class <- field$class[-unused]
+  }
+  
   # 081229 Our names and types get out of sync for multiple transforms
   # on the one variable. TODO How to fix? For now, we will assume a
   # single transform on each variable.

@@ -105,13 +105,75 @@ CORRELATION
   Correlation    Pearsons    Are the values from the paired samples correlated?</textview>
   <textview widget="kmeans_textview">KMEANS CLUSTERING</textview>
   <textview widget="hclust_textview">HIERARCHICAL CLUSTERING</textview>
-  <textview widget="associate_textview">ASSOCIATION RULE ANALYSIS</textview>
-  <textview widget="rpart_textview">DECISION TREE MODEL</textview>
-  <textview widget="glm_textview">LINEAR AND GENERALISED LINEAR MODELS</textview>
-  <textview widget="ada_textview">ADAPTIVE BOOSTING MODEL</textview>
-  <textview widget="rf_textview">RANDOM FOREST MODEL</textview>
+  <textview widget="associate_textview">ASSOCIATION RULE ANALYSIS
+
+Association analysis identifies relationships or affinities between
+entities and/or between variables. These relationships are then
+expressed as a collection of association rules. The approach has been
+particularly successful in mining very large transaction databases. It
+is also often referred to as basket (as in shopping basket) analysis.
+</textview>
+  <textview widget="rpart_textview">DECISION TREE MODEL
+
+A decision tree model is one of the most common data mining models. It
+is popular because the resulting model is easy to understand. However,
+the ensemble approaches (boosting and random forests) tend to produce
+models that exhibit less bias and variance than a single decision tree
+</textview>
+  <textview widget="glm_textview">LINEAR AND GENERALISED LINEAR MODELS
+
+A linear regression model is the traditional method for fitting a
+statistical model to data. It is appropriate when the target variable
+is numeric and continuous.
+
+The family of generalized linear models generalises the applicability
+of the traditional linear regression to target variables with
+distributions different to the assumed normal (gaussian)
+distribution. The algorithm iteratively fits linear regression models
+to the data after transforming the target variable to make it numeric
+and continuous.
+
+Generalized linear regression, applied to dataset with a numeric,
+continuous target variable, will build the same model, using a
+different algorithm.
+
+The generalised linear regression algorithm is parameterised by the
+distribution of the target variable and a link function which relates
+the mean of the target variable to the input variables. Together,
+these two parameters describe what we often refer to as a family. We
+see in the interface a choice of families.
+
+If the target variable has just two possible outcomes the target is
+transformed using a logistic or probit function.  A probit regression
+gives similar results to the logistic regression, but often
+with smaller coefficients.
+</textview>
+  <textview widget="ada_textview">ADAPTIVE BOOSTING MODEL
+
+The basic idea of boosting is to associate a weight with each entity
+in the dataset. A series of models are built and the weights are
+increased (boosted) if a model incorrectly classifies the entity.
+</textview>
+  <textview widget="rf_textview">RANDOM FOREST MODEL
+
+A random forest is an ensemble (i.e., a collection) of un-pruned
+decision trees. Random forests are often used when we have very large
+training datasets and a very large number of input variables (hundreds
+or even thousands of input variables). A random forest model is
+typically made up of tens or hundreds of decision trees.
+</textview>
   <textview widget="esvm_textview">SUPPORT VECTOR MACHINE MODEL</textview>
-  <textview widget="ksvm_textview">SUPPORT VECTOR MACHINE MODEL</textview>
+  <textview widget="ksvm_textview">SUPPORT VECTOR MACHINE MODEL
+
+A Support Vector Machine (SVM) searches for so called support vectors
+which are data points that are found to lie at the edge of an area in
+space which is a boundary from one class of points to another. In the
+terminology of SVM we talk about the space between regions containing
+data points in different classes as being the margin between those
+classes. The support vectors are used to identify a hyperplane (when
+we are talking about many dimensions in the data, or a line if we were
+talking about only two dimensional data) that separates the classes.
+</textview>
   <textview widget="nnet_textview">NEURAL NETWORK MODEL</textview>
   <textview widget="confusion_textview">ERROR MATRIX</textview>
   <textview widget="risk_textview">RISK CHART

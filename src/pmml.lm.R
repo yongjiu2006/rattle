@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-02-08 08:23:22 Graham Williams>
+# Time-stamp: <2009-02-16 06:35:19 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -24,7 +24,7 @@
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-# ENTRY
+# Linear Model PMML exporter
 #
 # Implemented: 070528 rguha@indiana.edu based on Graham's template for
 # handling rpart trees.
@@ -59,7 +59,7 @@ pmml.lm <- function(model,
   field$class <- terms$dataClasses
   orig.class <- field$class
 
-  # 090103 gjw Support transforms if available.
+  # 090103 Support transforms if available.
   
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)

@@ -24,7 +24,7 @@ export(
        rattle,
        rattle.print.rpart,
        rattle.print.summary.multinom,
-       overwriteInternalFunction,
+       overwritePackageFunction,
        savePlotToFile,
        treeset.randomForest,
        ada.formula

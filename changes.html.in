@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.31.
+    version is 2.4.32.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+413 090216 Extend multinom to support transforms if supported.
+           Generalise load of default dataset to allow package overrides.
+           Include training error matrix in rpart and also whow percentages.
+           In rpart remove from transforms any that are not used.
+           For unix turn tooltips off by default. Turn on if set tooltiphack.
 412 090214 For ident heuristic, only select ident if num rows > ident.min.rows
            Bug fix: on MS/Windows, auto load dataset, add extra / to crs$dwd
            Use propertyies not setTooltipText (not available in older GTK)
@@ -814,6 +819,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-14 16:46:13 Graham Williams</i>
+<i>Last Modified 2009-02-16 20:14:18 Graham Williams</i>
 <!-- hhmts end -->
   </p>
