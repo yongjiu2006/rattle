@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 07:43:32 Graham Williams>
+# Time-stamp: <2009-02-16 20:09:14 Graham Williams>
 #
 # RPART TAB
 #
@@ -369,9 +369,9 @@ executeModelRPart <- function(action="build")
     ds.string <- paste("crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$sample",
-                       if (subsetting) ",",
+                       if (subsetting) ", ",
                        if (including) included,
-                       if (subsetting) "]")
+                       if (subsetting) "]", sep="")
                        
     rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=", ds.string,
                        ifelse(is.null(crs$weights), "",
@@ -390,13 +390,32 @@ executeModelRPart <- function(action="build")
     # 090126 Add error matrix.
     
     if (categoricTarget())
+    {
+      pds.string <- paste("crs$dataset",
+                          if (subsetting) "[",
+                          if (sampling) "-crs$sample",
+                          if (subsetting) ", ",
+                          if (including) included,
+                          if (subsetting) "]", sep="")
       print.cmd <- paste(print.cmd, "\n",
-                         'cat("\\nTRAINING DATA Error Matrix\\n\\n")\n',
-                         "table(predict(crs$rpart, ",
-                         ds.string, ', type="class"),', 
-                         ds.string, '$', crs$target,
-                         ', dnn=c("Predicted", "Actual"))',
+                         'cat("\\n',
+                         ifelse(sampling, "TEST ", "TRAINING "),
+                         'DATA Error Matrix\\n\\n")\n',
+                         "print(table(predict(crs$rpart, ",
+                         pds.string, ', type="class"),', 
+                         pds.string, '$', crs$target,
+                         ', dnn=c("Predicted", "Actual")))\n',
+                         'cat("\n")\n',
                          sep="")
+      print.cmd <- paste(print.cmd, "\n",
+                         "print(round(100*table(predict(crs$rpart, ",
+                         pds.string, ', type="class"),', 
+                         pds.string, '$', crs$target,
+                         ', dnn=c("Predicted", "Actual"))/nrow(',
+                         pds.string, ")))\n",
+                         'cat("\n")\n',
+                         sep="")
+    }
   }
   else if (action == "tune")
   {
