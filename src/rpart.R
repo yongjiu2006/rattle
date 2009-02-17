@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-16 20:09:14 Graham Williams>
+# Time-stamp: <2009-02-18 06:01:20 Graham Williams>
 #
 # RPART TAB
 #
@@ -400,7 +400,7 @@ executeModelRPart <- function(action="build")
       print.cmd <- paste(print.cmd, "\n",
                          'cat("\\n',
                          ifelse(sampling, "TEST ", "TRAINING "),
-                         'DATA Error Matrix\\n\\n")\n',
+                         'DATA Error Matrix - Counts\\n\\n")\n',
                          "print(table(predict(crs$rpart, ",
                          pds.string, ', type="class"),', 
                          pds.string, '$', crs$target,
@@ -408,6 +408,9 @@ executeModelRPart <- function(action="build")
                          'cat("\n")\n',
                          sep="")
       print.cmd <- paste(print.cmd, "\n",
+                         'cat("\\n',
+                         ifelse(sampling, "TEST ", "TRAINING "),
+                         'DATA Error Matrix - Percentages\\n\\n")\n',
                          "print(round(100*table(predict(crs$rpart, ",
                          pds.string, ', type="class"),', 
                          pds.string, '$', crs$target,

@@ -89,7 +89,7 @@ are testing for a change, usually from one time period to another.
 DISTRIBUTION OF THE DATA
 
   Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
-  Wilcoxon Signe Rank     Non-parametric    Do paired samples have the same distribution?
+  Wilcoxon Signed Rank    Non-parametric    Do paired samples have the same distribution?
 
 LOCATION OF THE AVERAGE
 
@@ -188,5 +188,25 @@ The default chart displays caseload versus performance.</textview>
   <textview widget="sensitivity_textview">SENSITIVITY CHART</textview>
   <textview widget="costcurve_textview">COST CURVE</textview>
   <textview widget="pvo_textview">PROBABILITY VERSUS OBSERVED</textview>
-  <textview widget="score_textview">SCORE</textview>
+  <textview widget="score_textview">SCORE
+
+A model can be deployed on a dataset to obtain scores or
+classifications for each entity in the dataset.
+
+By default the testing dataset (if any) will be scored. Otherwise the
+training dataset is scored. As an alternative, a CSV file can be
+loaded and scored. This choice of what is scored is controlled by the
+radio button options.
+
+For binary models a probability score can be recorded. For regression
+models a value is recorded for each entity. Otherwise a class will be
+recorded for each entity. This can be controlled by the Class and
+Probability radio buttons.
+
+The resulting CSV file can include just those variables having a role
+as Identifier, or else all of the variables.
+
+The name of a CSV file into which the results will be written will be
+prompted for.
+</textview>
 </rattle-textviews>

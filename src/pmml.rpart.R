@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-02-15 22:43:35 Graham Williams>
+# Time-stamp: <2009-02-18 06:45:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -68,13 +68,17 @@ pmml.rpart <- function(model,
     used <- unique(frame$var[!leaves])
 
     trs <- sapply(transforms, transformToDerived)
+    trs <- intersect(trs, field$name)
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == trs)))
 
-    transforms <- transforms[-unused]
+    if (length(unused)) transforms <- transforms[-unused]
 
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == field$name)))
-    field$name <- field$name[-unused]
-    field$class <- field$class[-unused]
+    if (length(unused))
+    {
+      field$name <- field$name[-unused]
+      field$class <- field$class[-unused]
+    }
   }
   
   # 081229 Our names and types get out of sync for multiple transforms
