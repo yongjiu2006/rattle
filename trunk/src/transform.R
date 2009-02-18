@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-12 22:57:03 Graham Williams>
+# Time-stamp: <2009-02-18 18:33:07 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -212,6 +212,15 @@ executeTransformNormalisePerform <- function()
     if (length(variables) == 0) return()
   }
 
+  if (!length(variables))
+  {
+    warnDialog(paste("No variables have been selected for rescaling.",
+                     "Please select some variables and Execute again."))
+    setStatusBar("No variables selected to be rescaling.")
+    return(FALSE)
+  }
+
+  
   # Check if, for a BYGROUP, we have at most one categoric and the
   # others are numeric. Then remove the categoric (if any) from the
   # list of variables and store its name in byvname. This allows us to
@@ -567,9 +576,9 @@ executeTransformNormalisePerform <- function()
   }
   else
   {
-    warnDialog(paste("No variables have been selected for normalization.",
+    warnDialog(paste("No variables have been selected for rescaling.",
                      "Please select some variables and Execute again."))
-    setStatusBar("No variables selected to be normalized.")
+    setStatusBar("No variables selected to be rescaling.")
   }
 }  
 
