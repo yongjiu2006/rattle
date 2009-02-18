@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-02-18 06:45:54 Graham Williams>
+# Time-stamp: <2009-02-19 07:30:10 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -68,11 +68,11 @@ pmml.rpart <- function(model,
     used <- unique(frame$var[!leaves])
 
     trs <- sapply(transforms, transformToDerived)
-    trs <- intersect(trs, field$name)
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == trs)))
 
     if (length(unused)) transforms <- transforms[-unused]
 
+    trs <- intersect(trs, field$name)
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == field$name)))
     if (length(unused))
     {

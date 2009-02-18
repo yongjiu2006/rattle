@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.33.
+    version is 2.4.34.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+415 090219 Bug fix in transform handling whensome are ignored.
+           Check for no variables selected when transforming, earlier.
 414 090218 Bug fix in excluding unused transforms from epxorted transforms.
            Update scores text in textviews.
 413 090216 Extend multinom to support transforms if supported.
@@ -821,6 +823,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-18 06:52:13 Graham Williams</i>
+<i>Last Modified 2009-02-19 07:35:39 Graham Williams</i>
 <!-- hhmts end -->
   </p>
