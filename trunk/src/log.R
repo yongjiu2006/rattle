@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 08:10:21 Graham Williams>
+# Time-stamp: <2009-02-19 17:38:51 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -23,10 +23,7 @@
 
 initiateLog <- function()
 {
-  appendTextview("log_textview",
-                 paste("# Rattle is Copyright (C) 2006-2009",
-                       "Togaware Pty Ltd"),
-                 tvsep=FALSE)
+  if (! is.null(crv$log.intro)) appendTextview("log_textview", crv$log.intro, tvsep=FALSE)
 
 
   startLog(paste(sprintf("%s version %s User %s",
@@ -43,7 +40,9 @@ initiateLog <- function()
 #
 # Saving and loading projects also retains this log.
 
-library(rattle)
+",
+                 crv$library.command,
+                 "
 
 # The variable crs is used by Rattle to store the Current Rattle State.
 # We initialise it here to be empty and Rattle then starts populating it.
