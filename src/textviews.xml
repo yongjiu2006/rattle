@@ -203,8 +203,9 @@ models a value is recorded for each entity. Otherwise a class will be
 recorded for each entity. This can be controlled by the Class and
 Probability radio buttons.
 
-The resulting CSV file can include just those variables having a role
-as Identifier, or else all of the variables.
+The resulting CSV file will include just those variables having a role
+as Identifier (plus the Target and the Score), or else all of the
+variables.
 
 The name of a CSV file into which the results will be written will be
 prompted for.

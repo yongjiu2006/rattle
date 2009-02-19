@@ -7,7 +7,9 @@
   crv <<- new.env()
 
   crv$appname <<- "Rattle"
+  crv$log.intro <<- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
   crv$support.msg <<- "Contact support@togaware.com."
+  crv$library.command <<- "library(rattle)"
   crv$version <<- VERSION
 
   # Some global constants
