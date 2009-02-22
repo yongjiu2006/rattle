@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.35.
+    version is 2.4.36.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+417 090222 Bug fix - display costcurve textview.
+           Allow argument to resetTextview to specify which to reset.
+           No Pr v Ob in Evaluate for binary categorics
 416 090220 Use crv variables for log messages - support plugins.
 415 090219 Bug fix in transform handling whensome are ignored.
            Check for no variables selected when transforming, earlier.
@@ -824,6 +827,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-20 07:02:58 Graham Williams</i>
+<i>Last Modified 2009-02-22 22:43:05 Graham Williams</i>
 <!-- hhmts end -->
   </p>

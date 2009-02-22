@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 16:20:27 Graham Williams>
+# Time-stamp: <2009-02-22 19:56:12 Graham Williams>
 #
 # MODEL TAB
 #
@@ -31,7 +31,11 @@ on_model_linear_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$MODEL$setCurrentPage(crv$MODEL.GLM.TAB)
-    setTextview("confusion_textview")
+    # 090222 Do we really want to reset the textview? Obviously I
+    # decided to do so some time ago, so continut to do so, but call
+    # resetTextviews for this textview).
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -41,7 +45,8 @@ on_dtree_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
-    setTextview("confusion_textview")
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -52,7 +57,8 @@ on_boost_radiobutton_toggled <- function(button)
   {
     ## crv$MODEL$setCurrentPage(crv$MODEL.GBM.TAB)
     crv$MODEL$setCurrentPage(crv$MODEL.ADA.TAB)
-    setTextview("confusion_textview")
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -62,7 +68,8 @@ on_nnet_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$MODEL$setCurrentPage(crv$MODEL.NNET.TAB)
-    setTextview("confusion_textview")
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -72,7 +79,8 @@ on_rf_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$MODEL$setCurrentPage(crv$MODEL.RF.TAB)
-    setTextview("confusion_textview")
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -82,7 +90,8 @@ on_svm_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$MODEL$setCurrentPage(crv$MODEL.SVM.TAB)
-    setTextview("confusion_textview")
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }
@@ -407,9 +416,11 @@ makeEvaluateSensitive <- function()
     buttons <- c("confusion", "score")
   else if (numericTarget())
     buttons <- c("pvo", "score")
-  # 090207 Why was pvo not enabled for binonmials in RStat?
-  #  else if (isRStat() && binomialTarget())
-  #    buttons <- setdiff(all.buttons, "pvo")
+  # 090222 If it is a binomial target then do not allow Pr v Ob since
+  #  the target might be categoric and the display makes no sense (and
+  #  fails with the jitter function.
+  else if (binomialTarget() && is.factor(crs$dataset[,crs$target]))
+    buttons <- setdiff(all.buttons, "pvo")
   else
     buttons <- all.buttons
 
@@ -610,11 +621,13 @@ executeModelTab <- function()
   }
   else if (numericTarget())
   {
-    setTextview("confusion_textview") # Clear any confusion table
+    ## setTextview("confusion_textview") # Clear any confusion table
+    resetTextviews("confusion_textview")
   }
   else
   {
-    setTextview("confusion_textview") # Clear any confusion table
+    ## setTextview("confusion_textview") # Clear any confusion table
+    resetTextviews("confusion_textview")
   }
 
   # DISPATCH

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-19 17:38:51 Graham Williams>
+# Time-stamp: <2009-02-22 08:17:08 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -44,8 +44,8 @@ initiateLog <- function()
                  crv$library.command,
                  "
 
-# The variable crs is used by Rattle to store the Current Rattle State.
-# We initialise it here to be empty and Rattle then starts populating it.
+# The variable crs is used to store the current state.
+# We initialise it here to be empty and then we start populating it.
 # Simply type \"str(crs)\" in the R Console to see a summary of what is
 # stored there!
 
