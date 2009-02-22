@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-14 16:30:10 Graham Williams>
+# Time-stamp: <2009-02-22 07:57:05 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -526,7 +526,8 @@ executeEvaluateTab <- function()
 
       probcmd[[.RPART]] <- sub("<<- ", "<<- data.frame(",
                                sub(")$",
-                                   sprintf("), rpart=predict(crs$rpart, %s, type='class'))",
+                                   sprintf(paste("), rpart=predict(crs$rpart,",
+                                                 "%s, type='class'))"),
                                            testset[[.RPART]]),
                                    probcmd[[.RPART]]))
     }

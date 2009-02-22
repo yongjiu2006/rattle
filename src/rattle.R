@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-16 17:44:38 Graham Williams>
+# Time-stamp: <2009-02-22 19:41:44 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Feb 2009"
+VERSION.DATE <- "Released 20 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -551,7 +551,7 @@ rattle <- function(csvname=NULL,
   .EVALUATE.ROC.TAB         <<- getNotebookPage(.EVALUATE, "roc")
   .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
   .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
-  .EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(.EVALUATE, "cost")
+  .EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(.EVALUATE, "costcurve")
   .EVALUATE.PVO.TAB         <<- getNotebookPage(.EVALUATE, "pvo")
   .EVALUATE.SCORE.TAB       <<- getNotebookPage(.EVALUATE, "score")
   
@@ -726,7 +726,8 @@ displayWelcomeTabMessage <- function()
                       "Rattle comes with ABSOLUTELY NO WARRANTY.",
                       "See Help -> About for details.",
                       "\n\nRattle version", crv$version,
-                      "Copyright (C) 2006-2009 Togaware Pty Ltd"),
+                      "Copyright (C) 2006-2009 Togaware Pty Ltd",
+                      "\nRattle is a registered trademark of Togaware Pty Ltd"),
                 tvsep=FALSE)
 }
 

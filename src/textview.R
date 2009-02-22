@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-14 15:40:32 Graham Williams>
+# Time-stamp: <2009-02-22 19:52:20 Graham Williams>
 #
 # Textview widget support
 #
@@ -177,24 +177,25 @@ setTextviewContents <- function(TV, text)
     theWidget(TV)$getBuffer()$setText(text)
 }
 
-resetTextviews <- function()
+resetTextviews <- function(tv=NULL)
 {
   # 090202 Reset all text views to default content, as when Rattle
   # starts up or the user has selected New Project, or has loaded a
   # new dataset. The text for the texviews come from textviews.xml.
   
   # 090214 I probably actually just want to go through a clear each of
-  # the textviews first, and then population with the text from
+  # the textviews first, and then populate with the text from
   # textviews.xml if there is one and XML package is available!
 
-  sapply(c("summary_textview", "playwith_textview", "ggobi_textview",
-           "correlation_textview", "hiercor_textview",
-           "prcomp_textview", "test_textview", "kmeans_textview",
-           "hclust_textview", "associate_textview", "rpart_textview",
-           "glm_textview", "ada_textview", "rf_textview",
-           "esvm_textview", "ksvm_textview", "nnet_textview",
-           "confusion_textview", "risk_textview", "roc_textview"),
-         resetTextview)
+  if (is.null(tv))
+    sapply(c("summary_textview", "playwith_textview", "ggobi_textview",
+             "correlation_textview", "hiercor_textview",
+             "prcomp_textview", "test_textview", "kmeans_textview",
+             "hclust_textview", "associate_textview", "rpart_textview",
+             "glm_textview", "ada_textview", "rf_textview",
+             "esvm_textview", "ksvm_textview", "nnet_textview",
+             "confusion_textview", "risk_textview", "roc_textview"),
+           resetTextview)
   
   if (! packageIsAvailable("XML", "load textview texts"))
   {
@@ -211,7 +212,18 @@ resetTextviews <- function()
   else
     doc <- xmlTreeParse(file.path(etc, "textviews.xml"), useInternalNodes=TRUE)
 
-  sapply(getNodeSet(doc, "//textview"),
-         function(tt) resetTextview(xmlGetAttr(tt, 'widget'),
-                                    xmlValue(tt), tvsep=FALSE))
+  if (is.null(tv))
+    sapply(getNodeSet(doc, "//textview"),
+           function(tt)
+           {
+             wd <- xmlGetAttr(tt, 'widget')
+             resetTextview(wd, xmlValue(tt), tvsep=FALSE)
+           })
+  else
+    sapply(getNodeSet(doc, "//textview"),
+           function(tt)
+           {
+             wd <- xmlGetAttr(tt, 'widget')
+             if (wd %in% tv) resetTextview(wd, xmlValue(tt), tvsep=FALSE)
+           })
 }
