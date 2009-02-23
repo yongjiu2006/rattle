@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-22 19:56:12 Graham Williams>
+# Time-stamp: <2009-02-23 21:38:43 Graham Williams>
 #
 # MODEL TAB
 #
@@ -962,7 +962,7 @@ executeModelGLM <- function()
                                '[omitted,]$',
                                crs$target, '))))\n', sep=""),
                          "cat('==== ANOVA ====\n')",
-                         "Anova(crs$glm)", # This does nothing...... see Anova below
+                         "print(Anova(crs$glm))",
                          sep="\n")
 
   }
@@ -995,13 +995,15 @@ included as parameters in the exported scoring routine.\n",
                            sep="\n"), ""),
               collectOutput(summary.cmd))
 
-  if (family == "Multinomial" && car.available)
-  {
-    # Couldn't get this working within the summary.cmd
-    appendTextview(TV, paste("\n\n",
-                             collectOutput("Anova(crs$glm)", use.print=TRUE)),
-                   tvsep=FALSE)
-  }
+# 090223 Got it working above - just wrap a print around it?
+#
+#  if (family == "Multinomial" && car.available)
+#  {
+#    # Couldn't get this working within the summary.cmd
+#    appendTextview(TV, paste("\n\n",
+#                             collectOutput("Anova(crs$glm)", use.print=TRUE)),
+#                   tvsep=FALSE)
+#  }
   
   
   if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
@@ -1098,7 +1100,12 @@ exportRegressionTab <- function()
   else if (ext == "c")
   {
     # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "regression")
-    save.name <- tolower(save.name)
+
+    # 090223 Why is this tolower being used? Unde GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+    
+    if (isWindows()) save.name <- tolower(save.name)
+    
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a regression model as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
