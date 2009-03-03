@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-23 21:38:43 Graham Williams>
+# Time-stamp: <2009-03-01 10:46:11 Graham Williams>
 #
 # MODEL TAB
 #
@@ -724,13 +724,13 @@ executeModelTab <- function()
 
   }
   if ((categoricTarget() && build.all)
-      || currentModelTab() == .RF)
+      || currentModelTab() == crv$RF)
   {
-    setStatusBar("Building", commonName(.RF), "model ...")
+    setStatusBar("Building", commonName(crv$RF), "model ...")
     if (executeModelRF())
       theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(.RF), "model ... failed.")
+      setStatusBar("Building", commonName(crv$RF), "model ... failed.")
   }
   if ((categoricTarget() && build.all)
       || currentModelTab() %in% c(.SVM, .KSVM))

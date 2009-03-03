@@ -38,8 +38,11 @@ source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
 
-.onLoad()
-.onAttach()
+if (! exists("crv"))
+{
+  .onLoad()
+  .onAttach()
+}
 
 #source("rstat.R")
 #source("pmml.transforms.R")

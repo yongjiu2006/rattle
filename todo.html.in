@@ -14,7 +14,6 @@ lattice.
 
 <h2>Specific Suggestions</h2>
 <pre>
-090109 Support randomForest regression (Gabriel Ibarra)
 090109 Add RVM (as cf SVM) (Gabriel Ibarra)
 090109 Allow a SQL select to choose the data you want (Eberhard W. Lisse)
 090109 Support PostgreSQL (RdbiPgSQL) and MySQL (RMySQL) (Eberhard W. Lisse)
@@ -149,6 +148,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-01-24 11:10:34 Graham Williams</i>
+<i>Last Modified 2009-03-01 11:48:23 Graham Williams</i>
 <!-- hhmts end -->
   </p>

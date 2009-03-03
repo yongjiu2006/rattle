@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-02-16 06:35:19 Graham Williams>
+# Time-stamp: <2009-03-03 18:41:14 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -101,9 +101,17 @@ pmml.lm <- function(model,
   # PMML -> RegressionModel
 
   # Added by Zementis so that code can also export binary logistic
-  # regression glm models built with binomial(logit)
+  # regression glm models built with binomial(logit). 090303 gjw This
+  # looks dangerous, assumingthe third argument is the model type. For
+  # now, go with it, but set a default model type in case the call has
+  # less than two arguments.
+
+  model.type <- if (length(model$call) > 2)
+    as.character(model$call[[3]])[1]
+  else
+    ""
   
-  if (as.character(model$call[[3]])[1] == "binomial")
+  if (model.type == "binomial")
   {
     the.model <- xmlNode("RegressionModel",
                         attrs=c(modelName=model.name,
@@ -112,7 +120,7 @@ pmml.lm <- function(model,
                           normalizationMethod="softmax",
                           targetFieldName=target)) 
   }
-  else if (as.character(model$call[[3]])[1] == "poisson")
+  else if (model.type == "poisson")
   {
     the.model <- xmlNode("RegressionModel",
                         attrs=c(modelName=model.name,
@@ -147,7 +155,7 @@ pmml.lm <- function(model,
   # Added by Graham Williams so that code identifies a targetCategory for binary
   # logistic regression glm models built with binomial(logit).
 
-  if (as.character(model$call[[3]])[1] == "binomial")
+  if (model.type == "binomial")
   {
     # 090117 Identify the two possible values for the target variable,
     # and select the second as the target. Extend the PMML specs so I
