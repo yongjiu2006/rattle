@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-14 17:20:15 Graham Williams>
+# Time-stamp: <2009-03-01 10:44:51 Graham Williams>
 #
 # DATA TAB
 #
@@ -1572,16 +1572,15 @@ item.toggled <- function(cell, path.str, model)
   {
     model$set(iter, column, !current)
 
-    ## Uncheck all other Roles for this row, acting like radio buttons.
+    # Uncheck all other Roles for this row, acting like radio buttons.
     
     columns <- .COLUMN[["input"]]:.COLUMN[["ignore"]]
     lapply(setdiff(columns, column), function(x) model$set(iter, x, FALSE))
 
-    ## TODO Now fix up other buttons. Any in the same column, if it is
-    ## Target, must be unchecked and the corresponding row
-    ## made Ignore. Currently, just check this on Execute and
-    ## complain. Can we use groups?
-
+    # TODO Now fix up other buttons. Any in the same column, if it is
+    # Target, must be unchecked and the corresponding row made
+    # Ignore. Currently, just check this on Execute and complain. Can
+    # we use groups?
 
   }
 }
@@ -1603,8 +1602,8 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   
   # theWidget("rattle_window")$getWindow()$freezeUpdates()
 
-  # Use the data parameter to avoid an RGtk2 bug in 2.12.1, fixed in
-  # next release. 071113
+  # 071113 Use the data parameter to avoid an RGtk2 bug in 2.12.1,
+  # fixed in next release.
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
     model$set(iter, .COLUMN[["ignore"]], TRUE)
@@ -1899,7 +1898,7 @@ executeSelectTab <- function()
   else if (numericTarget())
   {
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
-    theWidget("rf_radiobutton")$setSensitive(FALSE)
+    theWidget("rf_radiobutton")$setSensitive(TRUE) # 090301 Support regression
     theWidget("svm_radiobutton")$setSensitive(FALSE)
 
     # For linear models, if it is numeric we are probably going to use
@@ -1959,8 +1958,8 @@ executeSelectTab <- function()
 
   # Update defaults that rely on the number of variables.
   
-  .RF.MTRY.DEFAULT <<- floor(sqrt(length(crs$input)))
-  theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
+  crv$rf.mtry.default <<- floor(sqrt(length(crs$input)))
+  theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
   
   # 080505 We auto decide whether the target looks like a categorical
   # or numeric, but if it ends up being a categoric (the user
@@ -2062,10 +2061,10 @@ executeSelectSample <- function()
   ## Set some defaults that depend on sample size.
   
   #if (is.null(crs$sample))
-  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$dataset)
+  #  crv$rf.sampsize.default <<- length(crs$dataset)
   #else
-  #  .RF.SAMPSIZE.DEFAULT <<- length(crs$sample)
-  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
+  #  crv$rf.sampsize.default <<- length(crs$sample)
+  #theWidget("rf_sampsize_spinbutton")$setValue(crv$rf.sampsize.default)
 
   ## 080520 Don't set the status bar - it is overwritten by the
   ## message about variable roles being noted.
@@ -2602,9 +2601,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       {
         ident <- c(ident, variables[i])
       }
-      # No longer needed as this is handled prior to the target
-      # heuristics. Remove this code eventually if all looks
-      # okay. (080303)
+      # 080303 No longer needed as this is handled prior to the target
+      # heuristics. Remove this code eventually if all looks okay.
       #
       # else if (substr(variables[i], 1, 6) == "TARGET")
       # {
@@ -2818,10 +2816,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   
   ## Perform other setups associated with a new dataset
 
-  .RF.MTRY.DEFAULT <<- floor(sqrt(ncol(crs$dataset)))
-  theWidget("rf_mtry_spinbutton")$setValue(.RF.MTRY.DEFAULT)
-  #.RF.SAMPSIZE.DEFAULT <<- nrow(crs$dataset)
-  #theWidget("rf_sampsize_spinbutton")$setValue(.RF.SAMPSIZE.DEFAULT)
+  crv$rf.mtry.default <<- floor(sqrt(ncol(crs$dataset)))
+  theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
+  #crv$rf.sampsize.default <<- nrow(crs$dataset)
+  #theWidget("rf_sampsize_spinbutton")$setValue(crv$rf.sampsize.default)
 }
 
 #----------------------------------------------------------------------

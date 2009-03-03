@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-22 07:57:05 Graham Williams>
+# Time-stamp: <2009-03-01 11:49:09 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -251,9 +251,9 @@ executeEvaluateTab <- function()
       ! packageIsAvailable("kernlab", sprintf("evaluate a %s model",
                                               commonName(.KSVM))))
     return()
-  if (.RF %in%  mtypes &&
+  if (crv$RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", sprintf("evaluate a %s model",
-                                                   commonName(.RF))))
+                                                   commonName(crv$RF))))
     return()
   if (crv$GLM %in%  mtypes && "multinom" %in% class(crs$glm) &&
       ! packageIsAvailable("nnet", sprintf("evaluate a Multinomial %s model",
@@ -533,22 +533,31 @@ executeEvaluateTab <- function()
     }
   }
     
-  if (.RF %in%  mtypes)
+  if (crv$RF %in%  mtypes)
   {
-    testset[[.RF]] <- testset0
-    predcmd[[.RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
-                             testset[[.RF]])
+    # 090301 Having added support for random forest regression seems
+    # like we need to take into acocunt missing for PvO and scoring
+    # with numeric targets. Infact, we can probably add na.omit also
+    # for categoric targets, since randomForest also does na.omit
+    # internally. So it won't help, and will keep in line with other
+    # algorithms that actually need the na.omit to be done here.
+    
+    # 090301 testset[[crv$RF]] <- testset0
+    testset[[crv$RF]] <- sprintf("na.omit(%s)", testset0)
 
-    ## The default for .RF is to predict the class, so no
-    ## modification of the predict command is required.
+    predcmd[[crv$RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
+                             testset[[crv$RF]])
 
-    respcmd[[.RF]] <- predcmd[[.RF]]
+    # The default for crv$RF is to predict the class, so no
+    # modification of the predict command is required.
 
-    ## For RF we request a probability with the type argument, and as
-    ## with RPART we extract the column of interest (the last column).
+    respcmd[[crv$RF]] <- predcmd[[crv$RF]]
+
+    # For RF we request a probability with the type argument, and as
+    # with RPART we extract the column of interest (the last column).
   
-    probcmd[[.RF]] <- sprintf("%s[,2]",
-                             gsub(")$", ', type="prob")', predcmd[[.RF]]))
+    probcmd[[crv$RF]] <- sprintf("%s[,2]",
+                             gsub(")$", ', type="prob")', predcmd[[crv$RF]]))
 
   }
     
@@ -2519,9 +2528,8 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
 
     if (substr(scoreset, 1, 7) == "na.omit" &&
         !dim(tmpset)[1]==dim(na.omit(tmpset))[1])
-
-    # End of Ed's modification.
-    # if (substr(scoreset, 1, 7) == "na.omit")
+      # End of Ed's modification.
+      # if (substr(scoreset, 1, 7) == "na.omit")
     {
       omit.cmd <- paste("omitted <- attr(", scoreset, ', "na.action")', sep="")
       appendLog("Record rows omitted from predict command.", omit.cmd)

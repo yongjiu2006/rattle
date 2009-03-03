@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 07:41:40 Graham Williams>
+# Time-stamp: <2009-03-01 10:46:51 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -99,11 +99,11 @@ executeModelRF <- function()
   # Retrieve options and set up parms.
 
   ntree <- theWidget("rf_ntree_spinbutton")$getValue()
-  if (ntree != .RF.NTREE.DEFAULT)
+  if (ntree != crv$rf.ntree.default)
     parms <- sprintf("%s, ntree=%d", parms, ntree)
   
   mtry <- theWidget("rf_mtry_spinbutton")$getValue()
-  if (mtry != .RF.MTRY.DEFAULT)
+  if (mtry != crv$rf.mtry.default)
     parms <- sprintf("%s, mtry=%d", parms, mtry)
 
   sampsize <- theWidget("rf_sampsize_entry")$getText()
@@ -141,7 +141,8 @@ executeModelRF <- function()
 
   frml <- paste(ifelse(is.factor(crs$dataset[[crs$target]]),
                        crs$target,
-                       sprintf("as.factor(%s)", crs$target)),
+                       sprintf(ifelse(numericTarget(), "%s", "as.factor(%s)"),
+                               crs$target)),
                 "~ .")
 
   ## List, as a string of indicies, the variables to be included. 
@@ -268,9 +269,14 @@ executeModelRF <- function()
   summary.cmd <- "crs$rf"
   appendLog("Generate textual output of randomForest model.", summary.cmd)
 
-  importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
-                          "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
-                          sep="\n")
+  if (numericTarget())
+    importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
+                            "rn[order(rn[,1], decreasing=TRUE),]",
+                            sep="\n")
+  else
+    importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
+                            "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
+                            sep="\n")
   appendLog("List the importance of the variables.", importance.cmd)
 
   resetTextview(TV)
@@ -287,7 +293,7 @@ executeModelRF <- function()
               "\nin the R console. Generating all 500 models takes ",
               "quite some time.\n")
 
-  if (sampling) crs$smodel <<- union(crs$smodel, .RF)
+  if (sampling) crs$smodel <<- union(crs$smodel, crv$RF)
 
   # Now that we have a model, make sure the buttons are sensitive.
 

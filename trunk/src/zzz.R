@@ -25,7 +25,14 @@
   crv$export.to.c.available <<- FALSE # No export to C implemented yet
   crv$show.warnings <<- TRUE # 090207 Show test/train warning.
   crv$project.extensions <<- c("rattle", "rstat") # Extensions for projects  
-  crv$ident.min.rows <<- 1000 # Unique factors/ints larger than this are idents.
+  crv$ident.min.rows <<- 300 # Unique factors/ints larger than this are idents.
+
+  # Model defaults
+
+  crv$rf.ntree.default    <<- 500
+  crv$rf.mtry.default     <<- 10
+  crv$rf.sampsize.default <<- ""
+
 }
 
 # 080417 The R manual for .onLoad says to use .onAttach for startup

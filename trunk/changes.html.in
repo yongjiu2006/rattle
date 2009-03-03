@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.37.
+    version is 2.4.38.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+419 090303 Support randomForest regression (Gabriel Ibarra)
+           Fix a pmml problem when the lm model call has no second argument.
+           Clean up the handling of RF variables.
+           Prepare new release of pmml - 1.2.8
 418 090223 Fix extraneous call to Anova for multinom
            Bug fix in export to C - savename was being tolower'd
 417 090222 Bug fix - display costcurve textview.
@@ -829,6 +833,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-02-23 22:04:42 Graham Williams</i>
+<i>Last Modified 2009-03-03 18:59:32 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-22 19:41:44 Graham Williams>
+# Time-stamp: <2009-03-01 10:47:46 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Feb 2009"
+VERSION.DATE <- "Released 23 Feb 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -397,12 +397,12 @@ rattle <- function(csvname=NULL,
   .RPART <<- "rpart"
   #GBM <<- "gbm"
   .ADA   <<- "ada"
-  .RF    <<- "rf"
+  crv$RF    <<- "rf"
   .SVM   <<- "svm"
   .KSVM  <<- "ksvm"
   crv$NNET  <<- "nnet"
 
-  crv$MODELLERS <<- c(.RPART, .ADA, .RF, .KSVM, crv$GLM, crv$NNET)
+  crv$MODELLERS <<- c(.RPART, .ADA, crv$RF, .KSVM, crv$GLM, crv$NNET)
   
   # RPART
   
@@ -412,10 +412,6 @@ rattle <- function(csvname=NULL,
   .RPART.MAXDEPTH.DEFAULT  <<- 30
 
   .ADA.NTREE.DEFAULT   <<- 50
-  
-  .RF.NTREE.DEFAULT    <<- 500
-  .RF.MTRY.DEFAULT     <<- 10
-  .RF.SAMPSIZE.DEFAULT <<- ""
   
   # MISC
   
