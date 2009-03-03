@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-01 10:47:46 Graham Williams>
+# Time-stamp: <2009-03-03 21:31:30 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Feb 2009"
+VERSION.DATE <- "Released 03 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -116,8 +116,7 @@ overwritePackageFunction <- function(fname, fun, pkg)
   lockBinding(fname, re)
 }
 
-rattle <- function(csvname=NULL,
-                   tooltiphack=FALSE)
+rattle <- function(csvname=NULL)
 {
   # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
   # the R console, but at least tooltips work, and on losing focus
@@ -135,8 +134,17 @@ rattle <- function(csvname=NULL,
   # check" complained a lot, once for each of these, so putting them
   # all into crv means only one complaint each time!
 
-  crv$tooltiphack <<- tooltiphack # Record the value globally
-  if (tooltiphack) crv$load.tooltips <<- TRUE
+  # 090303 Make sure crv has been defined. This was necessitated
+  # because CHECK does not run .onLoad in checking.
+
+  if (! exists("crv")) 
+  {
+    .onLoad()
+    .onAttach()
+  }
+
+  # crv$tooltiphack <<- tooltiphack # Record the value globally
+  if (crv$tooltiphack) crv$load.tooltips <<- TRUE
   crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
   
   # Load gloablly required packages.
@@ -532,7 +540,7 @@ rattle <- function(csvname=NULL,
   crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, crv$GLM)
   crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, .ADA)
   ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
-  crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, .RF)
+  crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, crv$RF)
   crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, .SVM)
   crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, crv$NNET)
 
@@ -570,7 +578,7 @@ rattle <- function(csvname=NULL,
 
   # Manually for the tooltiphack
 
-  if (tooltiphack)
+  if (crv$tooltiphack)
   {
     myWin <- theWidget("rattle_window")
     myWin$addEvents(GdkEventMask["focus-change-mask"])

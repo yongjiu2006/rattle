@@ -14,6 +14,7 @@
 
   # Some global constants
 
+  crv$tooltiphack <<- FALSE
   crv$close <<- "close"
   crv$sample.dataset <<- "audit"
   if (.Platform$OS.type == "unix")

@@ -32,6 +32,7 @@
 \alias{on_continuous_clear_button_clicked}
 \alias{on_copy1_activate}
 \alias{on_correlation_radiobutton_toggled}
+\alias{on_costcurve_radiobutton_toggled}
 \alias{on_csv_filechooserbutton_update_preview}
 \alias{on_csv_radiobutton_toggled}
 \alias{on_ctivate}
@@ -80,10 +81,14 @@
 \alias{on_hclust_stats_button_clicked}
 \alias{on_help_ada_activate}
 \alias{on_help_arff_activate}
+\alias{on_help_cluster_hclust_activate}
 \alias{on_help_confusion_table_activate}
 \alias{on_help_correlation_activate}
 \alias{on_help_cost_curve_activate}
 \alias{on_help_csv_activate}
+\alias{on_help_data_corpus_activate}
+\alias{on_help_data_fex_activate}
+\alias{on_help_data_library_activate}
 \alias{on_help_distributions_activate}
 \alias{on_help_general_activate}
 \alias{on_help_ggobi_activate}
@@ -108,6 +113,12 @@
 \alias{on_help_sensitivity_activate}
 \alias{on_help_summary_activate}
 \alias{on_help_support_vector_machine_activate}
+\alias{on_help_test_correlation_activate}
+\alias{on_help_test_f_activate}
+\alias{on_help_test_kolmogorov_smirnov_activate}
+\alias{on_help_test_t_activate}
+\alias{on_help_test_wilcoxon_activate}
+\alias{on_help_test_wilcoxon_signed_rank_activate}
 \alias{on_help_transform_cleanup_emissing_activate}
 \alias{on_help_transform_cleanup_ignored_activate}
 \alias{on_help_transform_cleanup_missing_activate}
@@ -163,6 +174,7 @@
 \alias{on_open_activate}
 \alias{on_open_button_clicked}
 \alias{on_paste1_activate}
+\alias{on_playwith_radiobutton_toggled}
 \alias{on_plot_close_button_clicked}
 \alias{on_plot_copy_button_clicked}
 \alias{on_plot_print_button_clicked}
@@ -170,6 +182,7 @@
 \alias{on_prcomp_radiobutton_toggled}
 \alias{on_precision_radiobutton_toggled}
 \alias{on_priors_entry_changed}
+\alias{on_pvo_radiobutton_toggled}
 \alias{on_rattle_menu_activate}
 \alias{on_rdata_filechooserbutton_update_preview}
 \alias{on_rdata_radiobutton_toggled}
@@ -207,7 +220,9 @@
 \alias{on_summary_radiobutton_toggled}
 \alias{on_svm_kernel_comboboxentry_changed}
 \alias{on_svm_radiobutton_toggled}
+\alias{on_test_correlation_radiobutton_toggled}
 \alias{on_test_groupby_checkbutton_toggled}
+\alias{on_test_wilcoxon_signed_radiobutton_toggled}
 \alias{on_tools_associate_activate}
 \alias{on_tools_cluster_activate}
 \alias{on_tools_data_activate}
@@ -224,10 +239,13 @@
 \alias{on_unsupervised_radiobutton_toggled}
 \alias{on_variables_toggle_ignore_button_clicked}
 \alias{on_variables_toggle_input_button_clicked}
+\alias{on_verbose_menuitem_toggled}
 \alias{on_viewdata_button_clicked}
 \alias{on_viewdata_find_button_clicked}
 \alias{on_viewdata_next_button_clicked}
 \alias{open_odbc_set_combo}
+\alias{predict.hclust}
+\alias{predict.kmeans}
 \alias{quit_rattle}
 \alias{update_comboboxentry_with_dataframes}
 \alias{update_libdata_combobox_entry}

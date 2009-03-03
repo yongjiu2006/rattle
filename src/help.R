@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 17:04:01 Graham Williams>
+# Time-stamp: <2009-03-03 21:17:01 Graham Williams>
 #
 # Help Menu
 #
@@ -435,7 +435,7 @@ Kolmogorov-Smirnov Test."))
 
 on_help_test_wilcoxon_activate <- function(action, window)
 {
-  if (showHelpPlus("The Wilcoxon test, also known as the Mann­Whitney test,
+  if (showHelpPlus("The Wilcoxon test, also known as the Mann-Whitney test,
 is analogous to the two-sample t-test, but performed on the rankings of the
 combined data sets instead of on the actual measure. If the observations
 rankings are not different, then the samples are not different. Because it is
