@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 07:40:53 Graham Williams>
+# Time-stamp: <2009-03-03 21:18:20 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -472,7 +472,7 @@ exportKMeansTab <- function(file)
 ########################################################################
 # SCORE
 
-predict.kmeans <- function(model, data)
+predict.kmeans <- function(object, data, ...)
 {
   # 081228 Initial work on a predict.kmeans function, to allow using a
   # kmeans model to allocate new data to pre-existing clusters using
@@ -481,9 +481,9 @@ predict.kmeans <- function(model, data)
   # support for alternative distance measures. This will be needed
   # eventually
   
-  num.clusters <- nrow(model$centers)
-  cluster.names <- rownames(model$centers)
-  cluster.vars <- colnames(model$centers)
+  num.clusters <- nrow(object$centers)
+  cluster.names <- rownames(object$centers)
+  cluster.vars <- colnames(object$centers)
   num.rows <- nrow(data)
   cluster.row.nums <- seq(num.rows+1, num.rows+num.clusters)
 
@@ -497,7 +497,7 @@ predict.kmeans <- function(model, data)
   # 081228 Simply calculate the distance between all points - this is
   # simpler to code, but perhaps less efficient?
   
-  d <- as.matrix(dist(rbind(data[cluster.vars], model$centers)))
+  d <- as.matrix(dist(rbind(data[cluster.vars], object$centers)))
   d <- d[-cluster.row.nums,cluster.row.nums]
   colnames(d) <- cluster.names
   
