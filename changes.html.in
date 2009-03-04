@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.39.
+    version is 2.4.40.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+421 090304 Account for the CRAN MS/Windows server having older GTK installed
 420 090303 Cleanup for releasing to CRAN
 419 090303 Support randomForest regression (Gabriel Ibarra)
            Fix a pmml problem when the lm model call has no second argument.
@@ -834,6 +835,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-03 21:36:34 Graham Williams</i>
+<i>Last Modified 2009-03-04 21:56:08 Graham Williams</i>
 <!-- hhmts end -->
   </p>
