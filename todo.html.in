@@ -20,6 +20,7 @@ lattice.
 090105 Use F1 for getting Help (Gabor Grothendieck)
 090105 Implement Log as separate window (Gabor Grothendieck)
 090124 Explore using igraph (Rado)
+090304 Use Weights in correlation and cluster analysis (Al Jones)
 
 080416 Log transform +ve/-ve (Linday Clayton)
 080416 C-stat eval for interval target (Linda Clayton)
@@ -138,7 +139,7 @@ lattice.
  line usage. The package also provides a tuning facility.</li>
  <li>080118: Considered moving to using the VGAM package for
  regression. Decide not to move now - VGAM is hijacking S4 classes for
- predict and other functions. The author is now aware of this.
+ predict and other functions. The VGAM author is now aware of this.
  library(VGAM) results in all other models no longer working - no
  "predict" and pmml.lm fails with no coefficients!</li>
 </ol>
@@ -148,6 +149,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-01 11:48:23 Graham Williams</i>
+<i>Last Modified 2009-03-05 06:10:00 Graham Williams</i>
 <!-- hhmts end -->
   </p>
