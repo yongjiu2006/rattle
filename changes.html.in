@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.43.
+    version is 2.4.44.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+425 090314 Further fix for supplied filename - turn into Uri.
+424 090314 Clean up handling of rattle environment variables crs and crv
+           Eliminate NOTE messages from R CMD check
+           Add generation of audit dataset to the code collection
+           Bug fix issue when supplying filename to rattle on startup.
+           For new GTK version need to specify page size for spinbuttons to 0.
+           LazyLoad the Rattle datasets
+           Update the data documentation
 423 090307 PMML 1.2.10 - fix a typo
            Include examples/testing for some pmml methods
 422 090306 PMML 1.2.9 - fix special case for lm models and coefficients.
@@ -838,6 +846,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-09 07:50:11 Graham Williams</i>
+<i>Last Modified 2009-03-14 17:04:28 Graham Williams</i>
 <!-- hhmts end -->
   </p>
