@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-07 07:50:35 Graham Williams>
+# Time-stamp: <2009-03-09 17:25:07 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -306,7 +306,7 @@ getExportSaveName <- function(mtype)
   ##               "This function needs to be loaded.",
   ##               if (isRattle())
   ##               paste("It is not available in Rattle by default.",
-  ##                     "\n\n", SUPPORT))
+  ##                     "\n\n", crv$support.msg))
   ##   return(NULL)
   ## }
 

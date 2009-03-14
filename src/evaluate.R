@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-01 11:49:09 Graham Williams>
+# Time-stamp: <2009-03-09 17:29:33 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -45,7 +45,7 @@ on_evaluate_rdataset_radiobutton_toggled <- function(button)
 on_confusion_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
   setStatusBar()
 }
 
@@ -53,7 +53,7 @@ on_risk_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .EVALUATE$setCurrentPage(.EVALUATE.RISK.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.RISK.TAB)
     theWidget("evaluate_risk_variable_label")$setSensitive(TRUE)
     theWidget("evaluate_risk_label")$setSensitive(TRUE)
   }
@@ -68,28 +68,28 @@ on_risk_radiobutton_toggled <- function(button)
 on_lift_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.LIFT.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.LIFT.TAB)
   setStatusBar()
 }
 
 on_roc_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.ROC.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.ROC.TAB)
   setStatusBar()
 }
 
 on_precision_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.PRECISION.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.PRECISION.TAB)
   setStatusBar()
 }
 
 on_sensitivity_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.SENSITIVITY.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.SENSITIVITY.TAB)
   setStatusBar()
 }
 
@@ -97,7 +97,7 @@ on_score_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .EVALUATE$setCurrentPage(.EVALUATE.SCORE.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.SCORE.TAB)
     theWidget("score_report_label")$show()
     theWidget("score_class_radiobutton")$show()
     theWidget("score_probability_radiobutton")$show()
@@ -124,14 +124,14 @@ on_score_radiobutton_toggled <- function(button)
 on_pvo_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.PVO.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.PVO.TAB)
   setStatusBar()
 }
 
 on_costcurve_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .EVALUATE$setCurrentPage(.EVALUATE.COSTCURVE.TAB)
+    crv$EVALUATE$setCurrentPage(crv$EVALUATE.COSTCURVE.TAB)
   setStatusBar()
 }
 
@@ -176,8 +176,8 @@ getEvaluateModels <- function()
 
 current.evaluate.tab <- function()
 {
-  cp <- .EVALUATE$getCurrentPage()
-  return(.EVALUATE$getTabLabelText(.EVALUATE$getNthPage(cp)))
+  cp <- crv$EVALUATE$getCurrentPage()
+  return(crv$EVALUATE$getTabLabelText(crv$EVALUATE$getNthPage(cp)))
 }
 
 
@@ -223,7 +223,7 @@ executeEvaluateTab <- function()
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
                 "Known models:", crv$MODELLERS,
-                SUPPORT)
+                crv$support.msg)
     return()
   }
 
@@ -235,7 +235,7 @@ executeEvaluateTab <- function()
                 "We found the model types to be:", mtypes,
                 "The models not built:",
                 sapply(mtypes, function(x) is.null(crs[[x]])),
-                "This is a Rattle bug.", SUPPORT)
+                "This is a Rattle bug.", crv$support.msg)
     return()
   }
 
@@ -243,13 +243,13 @@ executeEvaluateTab <- function()
   #   example, when loading a project and going straight to Evaluate,
   #   and wanting to run predict.svm on new data).
 
-  if (.ADA %in%  mtypes &&
+  if (crv$ADA %in%  mtypes &&
       ! packageIsAvailable("ada", sprintf("evaluate a %s model",
-                                          commonName(.ADA))))
+                                          commonName(crv$ADA))))
     return()
-  if (.KSVM %in%  mtypes &&
+  if (crv$KSVM %in%  mtypes &&
       ! packageIsAvailable("kernlab", sprintf("evaluate a %s model",
-                                              commonName(.KSVM))))
+                                              commonName(crv$KSVM))))
     return()
   if (crv$RF %in%  mtypes &&
       ! packageIsAvailable("randomForest", sprintf("evaluate a %s model",
@@ -451,13 +451,13 @@ executeEvaluateTab <- function()
   respcmd <- list() # Command string for response - class of entities
   probcmd <- list() # Command string for probability
   
-  if (.ADA %in%  mtypes)
+  if (crv$ADA %in%  mtypes)
   {
-    testset[[.ADA]] <- testset0
+    testset[[crv$ADA]] <- testset0
 
-    predcmd[[.ADA]] <- genPredictAda(testset[[.ADA]])
-    respcmd[[.ADA]] <- genResponseAda(testset[[.ADA]])
-    probcmd[[.ADA]] <- genProbabilityAda(testset[[.ADA]])
+    predcmd[[crv$ADA]] <- genPredictAda(testset[[crv$ADA]])
+    respcmd[[crv$ADA]] <- genResponseAda(testset[[crv$ADA]])
+    probcmd[[crv$ADA]] <- genProbabilityAda(testset[[crv$ADA]])
   }
 
   if (crv$KMEANS %in% mtypes)
@@ -495,16 +495,16 @@ executeEvaluateTab <- function()
       probcmd[[crv$NNET]] <- gsub(")$", ', type="prob")', predcmd[[crv$NNET]])
   }
 
-  if (.RPART %in%  mtypes)
+  if (crv$RPART %in%  mtypes)
   {
-    testset[[.RPART]] <- testset0
-    predcmd[[.RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
-                                testset[[.RPART]])
+    testset[[crv$RPART]] <- testset0
+    predcmd[[crv$RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
+                                testset[[crv$RPART]])
 
-    # For .RPART, the default is to generate class probabilities for
+    # For crv$RPART, the default is to generate class probabilities for
     # each output class, so ensure we instead generate the response.
   
-    respcmd[[.RPART]] <- gsub(")$", ', type="class")', predcmd[[.RPART]])
+    respcmd[[crv$RPART]] <- gsub(")$", ', type="class")', predcmd[[crv$RPART]])
 
     # For RPART the default predict command generates the probabilities
     # for each class and we assume we are interested in the final class
@@ -512,11 +512,11 @@ executeEvaluateTab <- function()
     
     if (theWidget("model_tree_rpart_radiobutton")$getActive())
       if (binomialTarget())
-        probcmd[[.RPART]] <- sprintf("%s[,2]", predcmd[[.RPART]])
+        probcmd[[crv$RPART]] <- sprintf("%s[,2]", predcmd[[crv$RPART]])
       else
-        probcmd[[.RPART]] <- sprintf("%s", predcmd[[.RPART]])
+        probcmd[[crv$RPART]] <- sprintf("%s", predcmd[[crv$RPART]])
     else # ctree
-      probcmd[[.RPART]] <- sprintf("%s", predcmd[[.RPART]])
+      probcmd[[crv$RPART]] <- sprintf("%s", predcmd[[crv$RPART]])
 
     if (multinomialTarget())
     {
@@ -524,12 +524,12 @@ executeEvaluateTab <- function()
       # but may be a problem for other types of evaluations (of which
       # there are currently none that use probcmd for multinom).
 
-      probcmd[[.RPART]] <- sub("<<- ", "<<- data.frame(",
+      probcmd[[crv$RPART]] <- sub("<<- ", "<<- data.frame(",
                                sub(")$",
                                    sprintf(paste("), rpart=predict(crs$rpart,",
                                                  "%s, type='class'))"),
-                                           testset[[.RPART]]),
-                                   probcmd[[.RPART]]))
+                                           testset[[crv$RPART]]),
+                                   probcmd[[crv$RPART]]))
     }
   }
     
@@ -561,7 +561,7 @@ executeEvaluateTab <- function()
 
   }
     
-  if (.KSVM %in%  mtypes)
+  if (crv$KSVM %in%  mtypes)
   {
 
     ## For SVM and KSVM, we need to deal with NA's. The predict seems to
@@ -611,15 +611,15 @@ executeEvaluateTab <- function()
     ## hope this now solves the problem and we don't need the top
     ## solution for now.
 
-    testset[[.KSVM]] <- sprintf("na.omit(%s)", testset0)
+    testset[[crv$KSVM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[.KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
-                               testset[[.KSVM]])
+    predcmd[[crv$KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
+                               testset[[crv$KSVM]])
 
     ## The default for KSVM is to predict the class, so no
     ## modification of the predict command is required.
 
-    respcmd[[.KSVM]] <- predcmd[[.KSVM]]
+    respcmd[[crv$KSVM]] <- predcmd[[crv$KSVM]]
 
     ## For KSVM we request a probability with the type argument set to
     ## probability (but need prob.model=TRUE in model building). For SVM
@@ -627,10 +627,10 @@ executeEvaluateTab <- function()
     ## need the second column stuff (and in building the model we needed
     ## probability=TRUE).
 
-    probcmd[[.KSVM]] <- sprintf("%s[,2]",
+    probcmd[[crv$KSVM]] <- sprintf("%s[,2]",
                                gsub(")$",
                                     ', type="probabilities")',
-                                    predcmd[[.KSVM]]))
+                                    predcmd[[crv$KSVM]]))
     ## For SVM: 
     ## probability.cmd <- sprintf("%s",
     ##                             gsub(")$",
@@ -824,7 +824,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     # Log the R commands and execute them.
 
     appendLog(sprintf("%sGenerate an Error Matrix for the %s model.",
-                     .START.LOG.COMMENT, commonName(mtype)), no.start=TRUE)
+                     crv$start.log.comment, commonName(mtype)), no.start=TRUE)
     appendLog(sprintf("Obtain the response from the %s model.",
                       commonName(mtype)),
              gsub("<<-", "<-", respcmd[[mtype]]))
@@ -2095,7 +2095,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   # .RATTLE.SCORE.OUT if a relative path.
 
   fname <- Sys.getenv("RATTLE_SCORE")
-  if (fname == "" && exists(".RATTLE.SCORE.OUT")) fname <- .RATTLE.SCORE.OUT
+  if (fname == "" && ! is.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
   
   if (fname == "")
   {

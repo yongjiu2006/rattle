@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-03 21:18:34 Graham Williams>
+# Time-stamp: <2009-03-09 17:15:26 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -29,7 +29,7 @@
 on_hclust_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    .CLUSTER$setCurrentPage(.CLUSTER.HCLUST.TAB)
+    crv$CLUSTER$setCurrentPage(crv$CLUSTER.HCLUST.TAB)
   setStatusBar()
 }
 

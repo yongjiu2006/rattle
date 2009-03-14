@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-03 21:31:30 Graham Williams>
+# Time-stamp: <2009-03-09 17:47:56 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Mar 2009"
+VERSION.DATE <- "Released 09 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -118,21 +118,23 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 rattle <- function(csvname=NULL)
 {
-  # If "tooltiphack" is TRUE then gtkMain is called on focus, blocking
-  # the R console, but at least tooltips work, and on losing focus
-  # gtkMainQuit is called, and thus the console is no longer blocked!
-  # A bit ugly, but seems to work. This was suggested by Felix Andrew,
-  # 080705. I notice that to load the supplied audit dataset I need to
-  # change focus out of Rattle.
+  # If crv$tooltiphack is TRUE then gtkMain is called on focus,
+  # blocking the R console, but at least tooltips work. On losing
+  # focus gtkMainQuit is called, and thus the console is no longer
+  # blocked!  A bit ugly, but seems to work. This was suggested by
+  # Felix Andrew, 080705. I notice that to load the supplied audit
+  # dataset I need to change focus out of Rattle.
 
-  # 080906 If close="quit" then when the window close is pressed, we
+  # 080906 If crv$close="quit" then when the window close is pressed, we
   # also quit R.
   
-  # [080319 gjw] Create GLOBAL to avoid many "no visible binding" from
-  # "R CMD check" by adding all hidden variables to it. Previously
-  # they all began with "." as in crv$ADA used to be .ADA. "R CMD
-  # check" complained a lot, once for each of these, so putting them
-  # all into crv means only one complaint each time!
+  # 080319 Create global crv and crs to avoid many "no visible
+  # binding" messages from "R CMD check" by adding all hidden
+  # variables to crs and crv. Previously they all began with "." as in
+  # crv$ADA used to be .ADA. "R CMD check" complained a lot, once for
+  # each of these, so putting them all into crv means only one
+  # complaint each time! Then defining crv in .onLoad remoaves the
+  # NOTE altogether.
 
   # 090303 Make sure crv has been defined. This was necessitated
   # because CHECK does not run .onLoad in checking.
@@ -290,7 +292,7 @@ rattle <- function(csvname=NULL)
     # Use the .Rattle settings first, but these might be overriden if
     # the environment variable is defined.
     
-    if (exists(".RATTLE.DATA")) csvname <- .RATTLE.DATA
+    if (! is.null(.RATTLE.DATA)) csvname <- .RATTLE.DATA
 
     # Obtain the value of the RATTLE_DATA environment variable and if
     # it is defined then use that at the csvname.
@@ -380,16 +382,16 @@ rattle <- function(csvname=NULL)
   #
   # Various Treeview Columns
   
-  .COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
-              target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
+  crv$COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
+                   target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
   
-  .IMPUTE <<- c(number=0, variable=1, comment=2)
+  crv$IMPUTE <<- c(number=0, variable=1, comment=2)
   
-  .CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
-                     dotplot = 3, mosplot = 4, comment = 5)
+  crv$CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
+                        dotplot = 3, mosplot = 4, comment = 5)
   
-  .CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
-                     hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
+  crv$CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
+                        hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
   # Create constants naming the MODELLERS (i.e., the model
   # builders). Note that these are migrating into the crv variable,
@@ -397,77 +399,62 @@ rattle <- function(csvname=NULL)
   # apriori will also be migrating into being treated as first class
   # models.
 
-  crv$KMEANS <<- "kmeans"
-  crv$HCLUST <<- "hclust"
-  crv$APRIORI <<- "apriori"
+  crv$KMEANS 	<<- "kmeans"
+  crv$HCLUST 	<<- "hclust"
+  crv$APRIORI 	<<- "apriori"
   
-  crv$GLM   <<- "glm"
-  .RPART <<- "rpart"
+  crv$GLM   	<<- "glm"
+  crv$RPART 	<<- "rpart"
   #GBM <<- "gbm"
-  .ADA   <<- "ada"
-  crv$RF    <<- "rf"
-  .SVM   <<- "svm"
-  .KSVM  <<- "ksvm"
-  crv$NNET  <<- "nnet"
+  crv$ADA   	<<- "ada"
+  crv$RF    	<<- "rf"
+  crv$SVM   	<<- "svm"
+  crv$KSVM  	<<- "ksvm"
+  crv$NNET  	<<- "nnet"
 
-  crv$MODELLERS <<- c(.RPART, .ADA, crv$RF, .KSVM, crv$GLM, crv$NNET)
-  
-  # RPART
-  
-  .RPART.CP.DEFAULT        <<- 0.010
-  .RPART.MINSPLIT.DEFAULT  <<- 20
-  .RPART.MINBUCKET.DEFAULT <<- 7
-  .RPART.MAXDEPTH.DEFAULT  <<- 30
-
-  .ADA.NTREE.DEFAULT   <<- 50
-  
-  # MISC
-  
-  .START.LOG.COMMENT <<- "\n\n# "	# Assume paste with sep=""
-  .LOG.COMMENT       <<- "\n## "	# Assume paste with sep=""
-  .END.LOG.COMMENT   <<- "\n\n"	# Assume paste with sep=""
+  crv$MODELLERS <<- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM, crv$NNET)
   
   # PACKAGE STATE VARIABLE
   
-  # Global variables are generally a bad idea, but until a better idea
-  # comes to mind.
+  # 090309 The following is now taken care of in .onLoad as defined in
+  # zzz.R. 
 
-  if (TRUE)
-    crs <<- new.env()
-  else
-    crs <<- list(dataset=NULL,
-               dataname=NULL,
-               dwd=NULL, 	# Data Working Directory
-               mtime=NULL,	# Modification time of file
-               pwd=NULL,	# Project Working Directory
-               input=NULL,
-               target=NULL,
-               weights=NULL,
-               risk=NULL,
-               ident=NULL,
-               ignore=NULL,
-               nontargets=NULL, # 080426 Started but not yet implemented
-               sample=NULL,
-               sample.seed=NULL,
-               kmeans=NULL,
-               kmeans.seed=NULL,
-               hclust=NULL,
-               page="",
-               smodel=NULL, # Record whether the sample has been modelled
-               glm=NULL,
-               rpart=NULL,
-               ada=NULL,
-               apriori=NULL,
-               rf=NULL,
-               svm=NULL,
-               ksvm=NULL,
-               perf=NULL,
-               eval=NULL,
-               testset=NULL,
-               testname=NULL,
-               alog=NULL,	# Record of interaction - useful?
-               transforms=NULL  # Record of variable transforms for inclusion in PMML
-               )
+  ## if (TRUE)
+  ##   crs <<- new.env()
+  ## else
+  ##   crs <<- list(dataset=NULL,
+  ##              dataname=NULL,
+  ##              dwd=NULL, 	# Data Working Directory
+  ##              mtime=NULL,	# Modification time of file
+  ##              pwd=NULL,	# Project Working Directory
+  ##              input=NULL,
+  ##              target=NULL,
+  ##              weights=NULL,
+  ##              risk=NULL,
+  ##              ident=NULL,
+  ##              ignore=NULL,
+  ##              nontargets=NULL, # 080426 Started but not yet implemented
+  ##              sample=NULL,
+  ##              sample.seed=NULL,
+  ##              kmeans=NULL,
+  ##              kmeans.seed=NULL,
+  ##              hclust=NULL,
+  ##              page="",
+  ##              smodel=NULL, # Record whether the sample has been modelled
+  ##              glm=NULL,
+  ##              rpart=NULL,
+  ##              ada=NULL,
+  ##              apriori=NULL,
+  ##              rf=NULL,
+  ##              svm=NULL,
+  ##              ksvm=NULL,
+  ##              perf=NULL,
+  ##              eval=NULL,
+  ##              testset=NULL,
+  ##              testname=NULL,
+  ##              alog=NULL,	# Record of interaction - useful?
+  ##              transforms=NULL  # Record of variable transforms for inclusion in PMML
+  ##              )
 
   # Main notebook related constants and widgets.  Track the widgets
   # that are needed for removing and inserting tabs in the notebook,
@@ -504,13 +491,13 @@ rattle <- function(csvname=NULL)
 
   # 080921 Define the DATA tab pages
 
-  .DATA.NOTEBOOK 	<<- theWidget("data_notebook")
-  .DATA.CORPUS.TAB      <<- getNotebookPage(.DATA.NOTEBOOK, "corpus")
-  .DATA.CSV.TAB         <<- getNotebookPage(.DATA.NOTEBOOK, "csv")
+  crv$DATA.NOTEBOOK 	<<- theWidget("data_notebook")
+  crv$DATA.CORPUS.TAB      <<- getNotebookPage(crv$DATA.NOTEBOOK, "corpus")
+  crv$DATA.CSV.TAB         <<- getNotebookPage(crv$DATA.NOTEBOOK, "csv")
 
-  .DATA.DISPLAY.NOTEBOOK       <<- theWidget("data_display_notebook")
-  .DATA.DISPLAY.TREEVIEW.TAB   <<- getNotebookPage(.DATA.DISPLAY.NOTEBOOK, "treeview")
-  .DATA.DISPLAY.WELCOME.TAB    <<- getNotebookPage(.DATA.DISPLAY.NOTEBOOK, "welcome")
+  crv$DATA.DISPLAY.NOTEBOOK     <<- theWidget("data_display_notebook")
+  crv$DATA.DISPLAY.TREEVIEW.TAB <<- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "treeview")
+  crv$DATA.DISPLAY.WELCOME.TAB  <<- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "welcome")
 
   # Define the TRANSFORM tab pages
   
@@ -522,54 +509,54 @@ rattle <- function(csvname=NULL)
   crv$TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(crv$TRANSFORM, "outlier")
   crv$TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(crv$TRANSFORM, "cleanup")
 
-  .EXPLORE                 <<- theWidget("explore_notebook")
-  .EXPLORE.SUMMARY.TAB     <<- getNotebookPage(.EXPLORE, "summary")
-  .EXPLORE.PLOT.TAB        <<- getNotebookPage(.EXPLORE, "explot")
-  .EXPLORE.GGOBI.TAB       <<- getNotebookPage(.EXPLORE, "ggobi")
-  .EXPLORE.CORRELATION.TAB <<- getNotebookPage(.EXPLORE, "correlation")
-  .EXPLORE.HIERCOR.TAB     <<- getNotebookPage(.EXPLORE, "hiercor")
-  .EXPLORE.PRCOMP.TAB      <<- getNotebookPage(.EXPLORE, "prcomp")
-  .EXPLORE.PLAYWITH.TAB    <<- getNotebookPage(.EXPLORE, "playwith")
+  crv$EXPLORE                 <<- theWidget("explore_notebook")
+  crv$EXPLORE.SUMMARY.TAB     <<- getNotebookPage(crv$EXPLORE, "summary")
+  crv$EXPLORE.PLOT.TAB        <<- getNotebookPage(crv$EXPLORE, "explot")
+  crv$EXPLORE.GGOBI.TAB       <<- getNotebookPage(crv$EXPLORE, "ggobi")
+  crv$EXPLORE.CORRELATION.TAB <<- getNotebookPage(crv$EXPLORE, "correlation")
+  crv$EXPLORE.HIERCOR.TAB     <<- getNotebookPage(crv$EXPLORE, "hiercor")
+  crv$EXPLORE.PRCOMP.TAB      <<- getNotebookPage(crv$EXPLORE, "prcomp")
+  crv$EXPLORE.PLAYWITH.TAB    <<- getNotebookPage(crv$EXPLORE, "playwith")
   
-  .CLUSTER            <<- theWidget("cluster_notebook")
-  .CLUSTER.KMEANS.TAB <<- getNotebookPage(.CLUSTER, "kmeans")
-  .CLUSTER.HCLUST.TAB <<- getNotebookPage(.CLUSTER, "hclust")
+  crv$CLUSTER            <<- theWidget("cluster_notebook")
+  crv$CLUSTER.KMEANS.TAB <<- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.HCLUST.TAB <<- getNotebookPage(crv$CLUSTER, "hclust")
   
   crv$MODEL           <<- theWidget("model_notebook")
-  crv$MODEL.RPART.TAB <<- getNotebookPage(crv$MODEL, .RPART)
+  crv$MODEL.RPART.TAB <<- getNotebookPage(crv$MODEL, crv$RPART)
   crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, crv$GLM)
-  crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, .ADA)
+  crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, crv$ADA)
   ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
   crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, crv$RF)
-  crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, .SVM)
+  crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, crv$SVM)
   crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, crv$NNET)
 
-  .SVMNB           <<- theWidget("svm_notebook")
-  .SVMNB.ESVM.TAB  <<- getNotebookPage(.SVMNB, "esvm")
-  .SVMNB.KSVM.TAB  <<- getNotebookPage(.SVMNB, "ksvm")
+  crv$SVMNB           <<- theWidget("svm_notebook")
+  crv$SVMNB.ESVM.TAB  <<- getNotebookPage(crv$SVMNB, "esvm")
+  crv$SVMNB.KSVM.TAB  <<- getNotebookPage(crv$SVMNB, "ksvm")
   
-  .EVALUATE                 <<- theWidget("evaluate_notebook")
-  .EVALUATE.CONFUSION.TAB   <<- getNotebookPage(.EVALUATE, "confusion")
-  .EVALUATE.RISK.TAB        <<- getNotebookPage(.EVALUATE, "risk")
-  .EVALUATE.LIFT.TAB        <<- getNotebookPage(.EVALUATE, "lift")
-  .EVALUATE.ROC.TAB         <<- getNotebookPage(.EVALUATE, "roc")
-  .EVALUATE.PRECISION.TAB   <<- getNotebookPage(.EVALUATE, "precision")
-  .EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(.EVALUATE, "sensitivity")
-  .EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(.EVALUATE, "costcurve")
-  .EVALUATE.PVO.TAB         <<- getNotebookPage(.EVALUATE, "pvo")
-  .EVALUATE.SCORE.TAB       <<- getNotebookPage(.EVALUATE, "score")
+  crv$EVALUATE                 <<- theWidget("evaluate_notebook")
+  crv$EVALUATE.CONFUSION.TAB   <<- getNotebookPage(crv$EVALUATE, "confusion")
+  crv$EVALUATE.RISK.TAB        <<- getNotebookPage(crv$EVALUATE, "risk")
+  crv$EVALUATE.LIFT.TAB        <<- getNotebookPage(crv$EVALUATE, "lift")
+  crv$EVALUATE.ROC.TAB         <<- getNotebookPage(crv$EVALUATE, "roc")
+  crv$EVALUATE.PRECISION.TAB   <<- getNotebookPage(crv$EVALUATE, "precision")
+  crv$EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(crv$EVALUATE, "sensitivity")
+  crv$EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(crv$EVALUATE, "costcurve")
+  crv$EVALUATE.PVO.TAB         <<- getNotebookPage(crv$EVALUATE, "pvo")
+  crv$EVALUATE.SCORE.TAB       <<- getNotebookPage(crv$EVALUATE, "score")
   
   # Turn off the sub-notebook tabs.
 
   # Sys.sleep(5) 080924 to test delays....
   
-  .DATA.NOTEBOOK$setShowTabs(FALSE)
-  .DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
-  .EXPLORE$setShowTabs(FALSE)
+  crv$DATA.NOTEBOOK$setShowTabs(FALSE)
+  crv$DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
+  crv$EXPLORE$setShowTabs(FALSE)
   crv$TRANSFORM$setShowTabs(FALSE)
-  .CLUSTER$setShowTabs(FALSE)
+  crv$CLUSTER$setShowTabs(FALSE)
   crv$MODEL$setShowTabs(FALSE)
-  .EVALUATE$setShowTabs(FALSE)
+  crv$EVALUATE$setShowTabs(FALSE)
 
   ########################################################################
   # Connect the callbacks.
@@ -709,7 +696,7 @@ configureGUI <- function()
 
 displayWelcomeTabMessage <- function()
 {
-  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.WELCOME.TAB)
+  crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.WELCOME.TAB)
   resetTextview("rattle_welcome_textview",
                 paste("Welcome to Rattle (rattle.togaware.com).\n",
                       "\nRattle is a free graphical user",
@@ -839,17 +826,17 @@ resetRattle <- function(new.dataset=TRUE)
   theWidget("remap_quantiles_radiobutton")$setActive(TRUE)
   theWidget("delete_ignored_radiobutton")$setActive(TRUE)
   
-  .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
+  crv$EXPLORE$setCurrentPage(crv$EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
-  .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
+  crv$CLUSTER$setCurrentPage(crv$CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
   
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
 
-  .EVALUATE$setCurrentPage(.EVALUATE.CONFUSION.TAB)
+  crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
   theWidget("confusion_radiobutton")$setActive(TRUE)
 
   # Reset the DATA tab. But we don't want to do this because
@@ -920,10 +907,10 @@ resetRattle <- function(new.dataset=TRUE)
   
     theWidget("model_tree_priors_entry")$setText("")
     theWidget("model_tree_loss_entry")$setText("")
-    theWidget("rpart_minsplit_spinbutton")$setValue(.RPART.MINSPLIT.DEFAULT)
-    theWidget("rpart_maxdepth_spinbutton")$setValue(.RPART.MAXDEPTH.DEFAULT)
-    theWidget("model_tree_cp_spinbutton")$setValue(.RPART.CP.DEFAULT)
-    theWidget("rpart_minbucket_spinbutton")$setValue(.RPART.MINBUCKET.DEFAULT)
+    theWidget("rpart_minsplit_spinbutton")$setValue(crv$rpart.minsplit.default)
+    theWidget("rpart_maxdepth_spinbutton")$setValue(crv$rpart.maxdepth.default)
+    theWidget("model_tree_cp_spinbutton")$setValue(crv$rpart.cp.default)
+    theWidget("rpart_minbucket_spinbutton")$setValue(crv$rpart.minbucket.default)
     theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
     theWidget("model_tree_rpart_radiobutton")$setActive(TRUE)
     showModelRPartExists()
@@ -967,7 +954,7 @@ resetRattle <- function(new.dataset=TRUE)
     # If there is a .RATTLE.SCORE.IN defined, as might be from a .Rattle
     # file, then use that for the filename of the CSV evaluate option.
   
-    if (exists(".RATTLE.SCORE.IN"))
+    if (! is.null(.RATTLE.SCORE.IN))
     {
       scorename <- .RATTLE.SCORE.IN
       if (not.null(scorename))
@@ -993,7 +980,7 @@ resetRattle <- function(new.dataset=TRUE)
           # the code continues to work on the assumption that it has not
           # been supplied.
 
-          rm(.RATTLE.SCORE.IN, pos=globalenv())
+          .RATTLE.SCORE.IN <<- NULL
         }
         else
         {
@@ -1987,7 +1974,7 @@ on_summary_radiobutton_toggled <- function(button)
   missing.button   <- theWidget("missing_checkbutton")
   if (button$getActive())
   {
-    .EXPLORE$setCurrentPage(.EXPLORE.SUMMARY.TAB)
+    crv$EXPLORE$setCurrentPage(crv$EXPLORE.SUMMARY.TAB)
     #separator$show()
     summary.button$show()
     describe.button$show()
@@ -2021,7 +2008,7 @@ on_explot_radiobutton_toggled <- function(button)
 
   if (button$getActive()) 
   {
-    .EXPLORE$setCurrentPage(.EXPLORE.PLOT.TAB)
+    crv$EXPLORE$setCurrentPage(crv$EXPLORE.PLOT.TAB)
     #separator$show()
     barbutton$show()
     absbutton$show()
@@ -2045,13 +2032,13 @@ on_explot_radiobutton_toggled <- function(button)
 
 on_ggobi_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.GGOBI.TAB)
+  if (button$getActive()) crv$EXPLORE$setCurrentPage(crv$EXPLORE.GGOBI.TAB)
   setStatusBar()
 }
 
 on_playwith_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.PLAYWITH.TAB)
+  if (button$getActive()) crv$EXPLORE$setCurrentPage(crv$EXPLORE.PLAYWITH.TAB)
   setStatusBar()
 }
 
@@ -2064,7 +2051,7 @@ on_correlation_radiobutton_toggled <- function(button)
   methodbox   <- theWidget("explore_correlation_method_combobox")
   if (button$getActive()) 
   {
-    .EXPLORE$setCurrentPage(.EXPLORE.CORRELATION.TAB)
+    crv$EXPLORE$setCurrentPage(crv$EXPLORE.CORRELATION.TAB)
     #separator$show()
     nabutton$show()
     ordbutton$show()
@@ -2088,7 +2075,7 @@ on_hiercor_radiobutton_toggled <- function(button)
   methodbox   <- theWidget("explore_correlation_method_combobox")
   if (button$getActive())
   {
-    .EXPLORE$setCurrentPage(.EXPLORE.HIERCOR.TAB)
+    crv$EXPLORE$setCurrentPage(crv$EXPLORE.HIERCOR.TAB)
     methodlabel$show()
     methodbox$show()
   }
@@ -2102,7 +2089,7 @@ on_hiercor_radiobutton_toggled <- function(button)
 
 on_prcomp_radiobutton_toggled <- function(button)
 {
-  if (button$getActive()) .EXPLORE$setCurrentPage(.EXPLORE.PRCOMP.TAB)
+  if (button$getActive()) crv$EXPLORE$setCurrentPage(crv$EXPLORE.PRCOMP.TAB)
   setStatusBar()
 }
 
@@ -2170,7 +2157,7 @@ on_categorical_clear_button_clicked <- function(action, window)
   # next release. 071117
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
-    columns <- .CATEGORICAL[["barplot"]]:.CATEGORICAL[["mosplot"]]
+    columns <- crv$CATEGORICAL[["barplot"]]:crv$CATEGORICAL[["mosplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
   }, TRUE)
@@ -2192,7 +2179,7 @@ on_continuous_clear_button_clicked <- function(action, window)
   # next release. 071117
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
-    columns <- .CONTINUOUS[["boxplot"]]:.CONTINUOUS[["benplot"]]
+    columns <- crv$CONTINUOUS[["boxplot"]]:crv$CONTINUOUS[["benplot"]]
     for (c in columns) if (model$get(iter, c)[[1]]) model$set(iter, c, FALSE)
     return(FALSE) # Keep going through all rows
   }, TRUE)
@@ -3913,6 +3900,7 @@ executeExploreCorrelation <- function(dataset)
   nas <- theWidget("correlation_na_checkbutton")$getActive()
   if (nas)
   {
+    naids <- NULL
     naids.cmd <- sprintf('naids <- attr(na.omit(t(%s)), "na.action")\n',
                          dataset)
     eval(parse(text=naids.cmd))

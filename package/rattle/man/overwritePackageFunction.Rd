@@ -1,6 +1,6 @@
 \name{overwritePackageFunction}
 \alias{overwritePackageFunction}
-\title{Overwrite the internal function of a package.}
+\title{Overwrite an internal function of a package.}
 \description{
 
   Rattle supports a plugin infrastructure to allow other package writers

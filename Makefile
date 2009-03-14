@@ -43,6 +43,7 @@ R_SOURCE = \
 	src/rattle.R \
 	src/ada.R \
 	src/ada_gui.R \
+	src/audit.R \
 	src/associate.R \
 	src/cluster.R \
 	src/ctree.R \
@@ -244,7 +245,7 @@ R4X:
 
 data: package/rattle/data/audit.RData # package/rattle/data/weather.RData
 
-package/rattle/data/audit.RData: support/audit.R Makefile
+package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	R --no-save --quiet < support/audit.R
 	chmod go+r audit.RData audit.csv audit.arff audit_missing.csv
 	cp audit.RData audit.csv audit.arff audit_missing.csv data/
@@ -254,7 +255,7 @@ package/rattle/data/audit.RData: support/audit.R Makefile
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
 
-package/rattle/data/weather.RData: support/weather.R Makefile
+package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	R --no-save --quiet < support/weather.R
 	chmod go+r weather.RData weather.csv weather.arff weather_missing.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/

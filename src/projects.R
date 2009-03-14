@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-12 17:35:43 Graham Williams>
+# Time-stamp: <2009-03-14 12:16:03 Graham Williams>
 #
 # Project functionality.
 #
@@ -107,8 +107,14 @@ newProject <- function()
   enableDataSourceFunctions()
 
   # Reset things that can't be done in resetRattle()
+
+  # 090314 I was finding that the filechooserbutton was being set to a
+  # folder with the setFilename, so try using unselectFilename instead.
   
-  theWidget("data_filechooserbutton")$setFilename("")
+  #theWidget("data_filechooserbutton")$setFilename("")
+  filename <- theWidget("data_filechooserbutton")$getFilename()
+  theWidget("data_filechooserbutton")$unselectFilename(filename)
+  
   theWidget("data_name_combobox")$setActive(-1)
 
   # TODO Plenty of other things that should be reset as well.
@@ -364,7 +370,7 @@ loadProject <- function()
 
   resetRattle()  # Seems appropriate to clear out the crs
   setMainTitle(basename(load.name))
-  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+  crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
   
   # DATA
 

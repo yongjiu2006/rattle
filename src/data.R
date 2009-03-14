@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-01 10:44:51 Graham Williams>
+# Time-stamp: <2009-03-14 12:01:11 Graham Williams>
 #
 # DATA TAB
 #
@@ -314,11 +314,11 @@ on_data_corpus_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .DATA.NOTEBOOK$setCurrentPage(.DATA.CORPUS.TAB)
+    crv$DATA.NOTEBOOK$setCurrentPage(crv$DATA.CORPUS.TAB)
   }
   else
   {
-    .DATA.NOTEBOOK$setCurrentPage(.DATA.CSV.TAB)
+    crv$DATA.NOTEBOOK$setCurrentPage(crv$DATA.CSV.TAB)
   }
 }
 
@@ -486,7 +486,7 @@ executeDataTab <- function(csvname=NULL)
     nrows <- nrow(crs$dataset)
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
+    theWidget("sample_checkbutton")$setActive(! is.null(.RATTLE.SCORE.IN))
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -494,7 +494,7 @@ executeDataTab <- function(csvname=NULL)
   else
     resetRattle(new.dataset=FALSE)
 
-  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+  crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
 
   
 #  else
@@ -509,7 +509,7 @@ executeDataTab <- function(csvname=NULL)
 #      nrows <- nrow(crs$dataset)
 #      per <- 70
 #      srows <- round(nrows * per / 100)
-#      theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
+#      theWidget("sample_checkbutton")$setActive(! is.null(.RATTLE.SCORE.IN))
 #      theWidget("sample_count_spinbutton")$setRange(1,nrows)
 #      theWidget("sample_count_spinbutton")$setValue(srows)
 #      theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -555,6 +555,8 @@ executeDataCSV <- function(filename=NULL)
   # could be either a CSV or TXT file. If no filename is supplied,
   # then give the user the option to load a sample dataset (for now,
   # the audit dataset).
+
+  supplied <- filename
   
   # Begin by collecting the relevant data from the interface. 080511
   # The file chooser button has a getFilename to retrieve the
@@ -572,8 +574,32 @@ executeDataCSV <- function(filename=NULL)
   
   # If no filename has been supplied give the user the option to use
   # the Rattle supplied sample dataset.
+
+  if (! is.null(supplied))
+  {
+    # 090314 Added to ensure we get the filename listed properly. This
+    # seems to be relevant only if a filename was supplied (it is also
+    # done below for the case when the rattle supplied dataset is
+    # laoded. Perhaps this should be done up there?
+  
+    theWidget("data_filechooserbutton")$setFilename(filename)
+
+    # 090314 Trying to get the scenario of a supplied filename
+    # working, so that it is displayed in the Filename box and
+    # changedDataTab does not think a new file needs loading on the
+    # next Execute.
     
-  if (is.null(filename))
+    if (substr(filename, 1, 1) == "/")
+      filename <- paste("file://", filename, sep="")
+    else
+      filename <- paste("file:///", filename, sep="")
+
+    # 090314 Do this because it was done below.
+    
+    while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+
+  }
+  else if (is.null(filename))
   {
     if (! questionDialog("No CSV filename has been provided.\n",
                          "\nWe require a dataset to be loaded.\n",
@@ -738,6 +764,7 @@ on_data_filechooserbutton_file_set <- function(button)
 
     appendLog("Load an Rdata file containing R objects.", load.cmd)
     set.cursor("watch")
+    new.objects <- NULL
     eval(parse(text=paste("new.objects <- ", load.cmd)), baseenv())
     set.cursor()
     
@@ -854,6 +881,7 @@ open_odbc_set_combo <- function(button)
   
   appendLog("Load the names of available tables.", tables.cmd)
   set.cursor("watch")
+  tables <- NULL
   result <- try(eval(parse(text=paste("tables <<- ", tables.cmd))))
   set.cursor()
   if (inherits(result, "try-error"))
@@ -907,7 +935,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(!exists(".RATTLE.SCORE.IN"))
+    theWidget("sample_checkbutton")$setActive(!is.null(.RATTLE.SCORE.IN))
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -1308,49 +1336,6 @@ executeDataLibrary <- function()
   return(TRUE)
 }
 
-executeDataEntry <- function()
-{
-  # 080523 The DATA ENTRY option has been removed and so we should
-  # remove this function sometime soon.
-  
-  # Check if there is a model first and then warn about losing it.
-
-  if (! overwriteModel()) return()
-
-  ## Generate commands.
-
-  assign.cmd <- paste('crs$dataset <<- data.frame()',
-                      'crs$dataset <<- edit(crs$dataset)', sep="\n")
-  str.cmd <- "str(crs$dataset)"
-  
-  ## Start logging and executing the R code.
-
-  startLog()
-  theWidget(TV)$setWrapMode("none") # On for welcome msg
-  resetTextview(TV)
-  
-  appendLog("ENTER A DATA SET MANUALLY",
-          gsub('<<-', '<-', assign.cmd))
-  resetRattle()
-  eval(parse(text=assign.cmd))
-  crs$dataname <<- "dataset"
-  setMainTitle(crs$dataname)
-  
-  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  setTextview(TV, sprintf("Structure of %s.\n\n", crs$dataset),
-               collectOutput(str.cmd), sep="")
-
-  ## Update the select treeview and samples.
-
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-
-  # Enable the Data View button.
-
-##  showDataViewButtons()
-  
-  setStatusBar("The provided data is now available.")
-}
-
 viewData <- function()
 {
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
@@ -1413,7 +1398,7 @@ editData <- function()
   # Ensure we are viewing the treevie tab rather than the Welcome
   # message.
   
-  .DATA.DISPLAY.NOTEBOOK$setCurrentPage(.DATA.DISPLAY.TREEVIEW.TAB)
+  crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
 
   setStatusBar("The supplied data is now available.")
 
@@ -1574,7 +1559,7 @@ item.toggled <- function(cell, path.str, model)
 
     # Uncheck all other Roles for this row, acting like radio buttons.
     
-    columns <- .COLUMN[["input"]]:.COLUMN[["ignore"]]
+    columns <- crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]]
     lapply(setdiff(columns, column), function(x) model$set(iter, x, FALSE))
 
     # TODO Now fix up other buttons. Any in the same column, if it is
@@ -1606,10 +1591,10 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   # fixed in next release.
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
-    model$set(iter, .COLUMN[["ignore"]], TRUE)
+    model$set(iter, crv$COLUMN[["ignore"]], TRUE)
 
-    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
-                       .COLUMN[["ignore"]])
+    columns <- setdiff(crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]],
+                       crv$COLUMN[["ignore"]])
 
     # Timing indicates the for loop is slower on GNU/Linux but faster
     # on MS/Windows 500! But the extra test also slows things down,
@@ -1646,9 +1631,9 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   # next release. 071113
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
-    model$set(iter, .COLUMN[["input"]], TRUE)
-    columns <- setdiff(.COLUMN[["input"]]:.COLUMN[["ignore"]],
-                       .COLUMN[["input"]])
+    model$set(iter, crv$COLUMN[["input"]], TRUE)
+    columns <- setdiff(crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]],
+                       crv$COLUMN[["input"]])
 
     #if (isWindows())
       for (c in columns)
@@ -2048,7 +2033,7 @@ executeSelectSample <- function()
     crs$sample <<- NULL
 
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    if (exists(".RATTLE.SCORE.IN"))
+    if (! is.null(.RATTLE.SCORE.IN))
       theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
     else
       theWidget("evaluate_training_radiobutton")$setActive(TRUE)
@@ -2095,7 +2080,7 @@ getSelectedVariables <- function(role, named=TRUE)
   # return NULL, rather than an error (for no particular reason).
   #
   # ASSUMPTIONS The variable and number columns are assumed to be the
-  # same in each of .COLUMNS, .CATEGORICAL, and .CONTINUOUS.
+  # same in each of crv$COLUMNS, crv$CATEGORICAL, and crv$CONTINUOUS.
 
   variables <- NULL
   type <- "logical"
@@ -2103,26 +2088,26 @@ getSelectedVariables <- function(role, named=TRUE)
   if (role %in% c("input", "target", "risk", "ident", "ignore"))
   {
     model <- theWidget("select_treeview")$getModel()
-    rcol  <- .COLUMN[[role]]
+    rcol  <- crv$COLUMN[[role]]
   }
 
   else if (role %in% c("boxplot", "hisplot", "cumplot", "benplot"))
   {
     model <- theWidget("continuous_treeview")$getModel()
-    rcol  <- .CONTINUOUS[[role]]
+    rcol  <- crv$CONTINUOUS[[role]]
   }
 
   else if (role %in% c("barplot", "dotplot", "mosplot"))
   {
     model <- theWidget("categorical_treeview")$getModel()
-    rcol  <- .CATEGORICAL[[role]]
+    rcol  <- crv$CATEGORICAL[[role]]
   }
 
   else
     return(variables)
 
-  vcol <- .COLUMN[["variable"]]
-  ncol <- .COLUMN[["number"]]
+  vcol <- crv$COLUMN[["variable"]]
+  ncol <- crv$COLUMN[["number"]]
   model$foreach(function(model, path, iter, data)
                 {
                   flag <- model$get(iter, rcol)[[1]]
@@ -2191,7 +2176,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "No.",
                                         renderer,
-                                        text= .COLUMN[["number"]])
+                                        text= crv$COLUMN[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2199,7 +2184,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= .IMPUTE[["number"]])
+                                       text= crv$IMPUTE[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2207,7 +2192,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= .CATEGORICAL[["number"]])
+                                       text= crv$CATEGORICAL[["number"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2215,7 +2200,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "No.",
                                        renderer,
-                                       text= .CONTINUOUS[["number"]])
+                                       text= crv$CONTINUOUS[["number"]])
   
   ## Add the VARIABLE NAME column to the views.
   
@@ -2225,7 +2210,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Variable",
                                         renderer, 
-                                        text = .COLUMN[["variable"]])
+                                        text = crv$COLUMN[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2233,7 +2218,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = .IMPUTE[["variable"]])
+                                       text = crv$IMPUTE[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2241,7 +2226,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = .CATEGORICAL[["variable"]])
+                                       text = crv$CATEGORICAL[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2249,7 +2234,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "Variable",
                                        renderer, 
-                                       text = .CONTINUOUS[["variable"]])
+                                       text = crv$CONTINUOUS[["variable"]])
 
   ## Add the TYPE column.
 
@@ -2259,7 +2244,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Data Type",
                                         renderer,
-                                        text = .COLUMN[["type"]])
+                                        text = crv$COLUMN[["type"]])
   
   # Add the INPUT column.
 
@@ -2267,13 +2252,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", .COLUMN["input"])
+  renderer$setData("column", crv$COLUMN["input"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Input",
                                         renderer,
-                                        active = .COLUMN[["input"]])
+                                        active = crv$COLUMN[["input"]])
   
   ## Add the TARGET column.
 
@@ -2281,13 +2266,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", .COLUMN["target"])
+  renderer$setData("column", crv$COLUMN["target"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Target",
                                         renderer,
-                                        active = .COLUMN[["target"]])
+                                        active = crv$COLUMN[["target"]])
   
   ## Add the RISK column.
 
@@ -2295,13 +2280,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", .COLUMN["risk"])
+  renderer$setData("column", crv$COLUMN["risk"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Risk",
                                         renderer,
-                                        active = .COLUMN[["risk"]])
+                                        active = crv$COLUMN[["risk"]])
   
   ## Add the IDENT column.
 
@@ -2309,13 +2294,13 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", .COLUMN["ident"])
+  renderer$setData("column", crv$COLUMN["ident"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Ident",
                                         renderer,
-                                        active = .COLUMN[["ident"]])
+                                        active = crv$COLUMN[["ident"]])
   
   ## Add the IGNORE column (the Ignore check button) to the view.
 
@@ -2323,95 +2308,95 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   renderer$set(radio = TRUE)
   renderer$set(width = 60)
-  renderer$setData("column", .COLUMN["ignore"])
+  renderer$setData("column", crv$COLUMN["ignore"])
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         "Ignore",
                                         renderer,
-                                        active = .COLUMN[["ignore"]]) 
+                                        active = crv$COLUMN[["ignore"]]) 
 
   ## Add the barplot and dotplot and mosplot.
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CATEGORICAL["barplot"])
+  renderer$setData("column", crv$CATEGORICAL["barplot"])
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Bar Plot",
                                        renderer,
-                                       active = .CATEGORICAL[["barplot"]])
+                                       active = crv$CATEGORICAL[["barplot"]])
   
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CATEGORICAL["dotplot"])
+  renderer$setData("column", crv$CATEGORICAL["dotplot"])
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Dot Plot",
                                        renderer,
-                                       active = .CATEGORICAL[["dotplot"]])
+                                       active = crv$CATEGORICAL[["dotplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CATEGORICAL["mosplot"])
+  renderer$setData("column", crv$CATEGORICAL["mosplot"])
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        "Mosaic",
                                        renderer,
-                                       active = .CATEGORICAL[["mosplot"]])
+                                       active = crv$CATEGORICAL[["mosplot"]])
   
   ## Add the boxplot, hisplot, cumplot, benplot buttons
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CONTINUOUS["boxplot"])
+  renderer$setData("column", crv$CONTINUOUS["boxplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Box Plot",
                                        renderer,
-                                       active = .CONTINUOUS[["boxplot"]])
+                                       active = crv$CONTINUOUS[["boxplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CONTINUOUS["hisplot"])
+  renderer$setData("column", crv$CONTINUOUS["hisplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Histogram",
                                        renderer,
-                                       active = .CONTINUOUS[["hisplot"]])
+                                       active = crv$CONTINUOUS[["hisplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CONTINUOUS["cumplot"])
+  renderer$setData("column", crv$CONTINUOUS["cumplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Cumulative",
                                        renderer,
-                                       active = .CONTINUOUS[["cumplot"]])
+                                       active = crv$CONTINUOUS[["cumplot"]])
   
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
-  renderer$setData("column", .CONTINUOUS["benplot"])
+  renderer$setData("column", crv$CONTINUOUS["benplot"])
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        "Benford",
                                        renderer,
-                                       active = .CONTINUOUS[["benplot"]])
+                                       active = crv$CONTINUOUS[["benplot"]])
   
   ## Add the COMMENT column.
 
@@ -2421,7 +2406,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         "Comment",
                                         renderer,
-                                        text = .COLUMN[["comment"]])
+                                        text = crv$COLUMN[["comment"]])
   
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2429,7 +2414,7 @@ initialiseVariableViews <- function()
     impview$insertColumnWithAttributes(-1,
                                        "Data Type and Number Missing",
                                         renderer,
-                                        text = .IMPUTE[["comment"]])
+                                        text = crv$IMPUTE[["comment"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2437,7 +2422,7 @@ initialiseVariableViews <- function()
     catview$insertColumnWithAttributes(-1,
                                        "Levels",
                                        renderer,
-                                       text = .CATEGORICAL[["comment"]])
+                                       text = crv$CATEGORICAL[["comment"]])
 
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
@@ -2445,7 +2430,7 @@ initialiseVariableViews <- function()
     conview$insertColumnWithAttributes(-1,
                                        "Min; Median/Mean; Max",
                                        renderer,
-                                       text = .CONTINUOUS[["comment"]])
+                                       text = crv$CONTINUOUS[["comment"]])
 
   ## Allow multiple selections.
   
@@ -2693,17 +2678,17 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Every variable goes into the VARIABLES treeview.
 
     model$set(iter,
-              .COLUMN["number"], i,
-              .COLUMN["variable"], variables[i],
-              .COLUMN["type"], prcl,
-##              .COLUMN["numeric"], cl %in% c("integer", "numeric"),
-##              .COLUMN["categorical"], cl %in% c("factor"),
-              .COLUMN["input"], variables[i] %in% input,
-              .COLUMN["target"], variables[i] %in% target,
-              .COLUMN["risk"], variables[i] %in% risk,
-              .COLUMN["ident"], variables[i] %in% ident,
-              .COLUMN["ignore"], variables[i] %in% ignore,
-              .COLUMN["comment"], paste(ifelse(substr(variables[i], 1, 4)
+              crv$COLUMN["number"], i,
+              crv$COLUMN["variable"], variables[i],
+              crv$COLUMN["type"], prcl,
+##              crv$COLUMN["numeric"], cl %in% c("integer", "numeric"),
+##              crv$COLUMN["categorical"], cl %in% c("factor"),
+              crv$COLUMN["input"], variables[i] %in% input,
+              crv$COLUMN["target"], variables[i] %in% target,
+              crv$COLUMN["risk"], variables[i] %in% risk,
+              crv$COLUMN["ident"], variables[i] %in% ident,
+              crv$COLUMN["ignore"], variables[i] %in% ignore,
+              crv$COLUMN["comment"], paste(ifelse(substr(variables[i], 1, 4)
                                                %in% c("RRK_", "RBG_"),
                                                "*", ""),
                                         ## 090110 Show unique for all ifelse(numeric.var,# &&
@@ -2764,10 +2749,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       combo <- gtkComboBoxNewWithModel(imp.options, 0)
       impiter <- impute$append()$iter
       impute$set(impiter,
-                 .IMPUTE["number"], i,
-                 .IMPUTE["variable"], variables[i],
-                 .IMPUTE["comment"], sprintf("%s%s.",
-                                            dtype, mtext))
+                 crv$IMPUTE["number"], i,
+                 crv$IMPUTE["variable"], variables[i],
+                 crv$IMPUTE["comment"], sprintf("%s%s.", dtype, mtext))
     }
         
     if (strsplit(cl, " ")[[1]][1] == "factor")
@@ -2780,12 +2764,12 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       catiter <- categorical$append()$iter
       categorical$set(catiter,
-                      .CATEGORICAL["number"], i,
-                      .CATEGORICAL["variable"], variables[i],
-                      .CATEGORICAL["barplot"], variables[i] %in% barplot,
-                      .CATEGORICAL["dotplot"], variables[i] %in% dotplot,
-                      .CATEGORICAL["mosplot"], variables[i] %in% mosplot,
-                      .CATEGORICAL["comment"],
+                      crv$CATEGORICAL["number"], i,
+                      crv$CATEGORICAL["variable"], variables[i],
+                      crv$CATEGORICAL["barplot"], variables[i] %in% barplot,
+                      crv$CATEGORICAL["dotplot"], variables[i] %in% dotplot,
+                      crv$CATEGORICAL["mosplot"], variables[i] %in% mosplot,
+                      crv$CATEGORICAL["comment"],
                       sprintf("%s", strsplit(cl, " ")[[1]][2]))
     }
 
@@ -2793,13 +2777,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     {
       coniter <- continuous$append()$iter
       continuous$set(coniter,
-                     .CONTINUOUS["number"], i,
-                     .CONTINUOUS["variable"], variables[i],
-                     .CONTINUOUS["boxplot"], variables[i] %in% boxplot,
-                     .CONTINUOUS["hisplot"], variables[i] %in% hisplot,
-                     .CONTINUOUS["cumplot"], variables[i] %in% cumplot,
-                     .CONTINUOUS["benplot"], variables[i] %in% benplot,
-                     .CONTINUOUS["comment"],
+                     crv$CONTINUOUS["number"], i,
+                     crv$CONTINUOUS["variable"], variables[i],
+                     crv$CONTINUOUS["boxplot"], variables[i] %in% boxplot,
+                     crv$CONTINUOUS["hisplot"], variables[i] %in% hisplot,
+                     crv$CONTINUOUS["cumplot"], variables[i] %in% cumplot,
+                     crv$CONTINUOUS["benplot"], variables[i] %in% benplot,
+                     crv$CONTINUOUS["comment"],
                      sprintf("%.2f; %.2f/%.2f; %.2f",
                              min(crs$dataset[,i], na.rm=TRUE),
                              median(crs$dataset[,i], na.rm=TRUE),
