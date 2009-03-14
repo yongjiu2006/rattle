@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-14 12:01:11 Graham Williams>
+# Time-stamp: <2009-03-14 15:01:24 Graham Williams>
 #
 # DATA TAB
 #
@@ -577,22 +577,25 @@ executeDataCSV <- function(filename=NULL)
 
   if (! is.null(supplied))
   {
-    # 090314 Added to ensure we get the filename listed properly. This
-    # seems to be relevant only if a filename was supplied (it is also
-    # done below for the case when the rattle supplied dataset is
-    # laoded. Perhaps this should be done up there?
-  
-    theWidget("data_filechooserbutton")$setFilename(filename)
-
     # 090314 Trying to get the scenario of a supplied filename
     # working, so that it is displayed in the Filename box and
     # changedDataTab does not think a new file needs loading on the
     # next Execute.
-    
-    if (substr(filename, 1, 1) == "/")
-      filename <- paste("file://", filename, sep="")
-    else
-      filename <- paste("file:///", filename, sep="")
+
+    if (substr(filename, 1, 5) != "file:")
+    {
+      if (substr(filename, 1, 1) == "/")
+        filename <- paste("file://", filename, sep="")
+      else
+        filename <- paste("file:///", filename, sep="")
+    }
+
+    # 090314 Added to ensure we get the filename listed properly. This
+    # seems to be relevant only if a filename was supplied (it is also
+    # done below for the case when the rattle supplied dataset is
+    # laoded. Perhaps this should be done up there?
+
+    theWidget("data_filechooserbutton")$setUri(filename)
 
     # 090314 Do this because it was done below.
     
