@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-14 15:22:58 Graham Williams>
+# Time-stamp: <2009-03-15 09:41:45 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -144,6 +144,18 @@ rattle <- function(csvname=NULL)
     .onLoad()
     .onAttach()
   }
+
+  # 090309 Create the global environment, crs, which stores the curret
+  # Rattle state and used extensively throughout Rattle as a global
+  # state. Not ideal for functional programming and only a hopefully
+  # small deviation from Chamber's Prime Directive principle, and
+  # similar to the option exception to the Prime Directive! Certainly
+  # by including this here we avoid a NOTE in the package check abuot
+  # no visible binding for global variable 'crs.' 090315 Moved to here
+  # from .onLoad so that rattle state is reset each time rattle
+  # starts.
+  
+  crs <<- new.env()
 
   # crv$tooltiphack <<- tooltiphack # Record the value globally
   if (crv$tooltiphack) crv$load.tooltips <<- TRUE
@@ -334,7 +346,7 @@ rattle <- function(csvname=NULL)
       # 081020 gjw If the csvname is supplied then prefix it with
       # file:/// to make it conform to the filename obtained from the
       # file chooser button. Without doing this crs$dwd does not
-      # include file:/// and when compared in changedDataTab to the
+      # include file:/// and when compared in dataNeedsLoading to the
       # filename obtained with getUri they don't match, and hence the
       # data is reloaded! Take care of MS/Windows where the csvname
       # will be prefixed by the drive, so we add three slashes in

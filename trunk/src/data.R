@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-14 15:01:24 Graham Williams>
+# Time-stamp: <2009-03-15 10:25:11 Graham Williams>
 #
 # DATA TAB
 #
@@ -100,16 +100,19 @@ urlModTime <- function(filename)
   return(file.info(gsub("file:///", "/", filename))$mtime)
 }
 
-changedDataTab <- function()
+dataNeedsLoading <- function()
 {
   # 080520 Determine whether any of the data source aspects of the
   # Data tab have changed. This is probably limited to checking things
   # relevant to the currently selected data source radio button.
 
   # 080712 If there is no dataname stored, then don't bother testing
-  # any other conditions. The dataset should be loaded.
+  # any other conditions. The dataset should be loaded.  090315 Never
+  # reload unless there is nothing loaded - that won't work when user
+  # changes Filename we want to load.
   
-  if (is.null(crs$dataname)) return(TRUE)
+  if (is.null(crs$dataname))
+    return(TRUE)
   
   # 080712 Check what data source is active, and act
   # appropriately. For those I have yet to work on, simply return TRUE
@@ -141,9 +144,9 @@ changedDataTab <- function()
     }
 
     # 080606 TODO Test if file date has changed, and if so, return
-    # TRUE.  file.info does not handle URLs so this is no good at
-    # present. Note that under MS/Windows this returns NA so we don't
-    # get a chance to notice updated files.
+    # TRUE.  Note that file.info does not handle URLs so have to
+    # specially handle this. Note that under MS/Windows this returns
+    # NA so we don't get a chance to notice updated files.
 
     now.mtime <- urlModTime(filename)
     if (! is.null(crs$mtime) && ! is.null(now.mtime) && now.mtime > crs$mtime)
@@ -419,17 +422,19 @@ updateRDatasets <- function()
 executeDataTab <- function(csvname=NULL)
 {
   # Dispatch to the task indicated by the selected radio button within
-  # the Data tab. If there is no change to the data source, or the
+  # the Data tab. 090315 Previously I tested if there is was a change
+  # to the data source (with dataNeedsLoading) but this contiually got
+  # complicated between different OS and different data sources,
+  # etc. So now we never reload a dataset, unless no dataset is
+  # loaded. To load a new dataset, click New project first. Unless the
   # data type label is not sensitive (i.e., we have loaded a project),
-  # then simply update the variable roles instead, without reloading
-  # the data.  080520 This is now required as a result of merging the
-  # Data and the Select tabs.
+  # simply update the variable roles without reloading the data.
 
 #  if (! is.null(csvname))
 #  {    
 #    if (! executeDataCSV(csvname)) return(FALSE)
 #  }
-  if (theWidget("data_type_label")$isSensitive() && changedDataTab())
+  if (theWidget("data_type_label")$isSensitive() && dataNeedsLoading())
   {
     if (theWidget("data_csv_radiobutton")$getActive())
     {
@@ -486,7 +491,15 @@ executeDataTab <- function(csvname=NULL)
     nrows <- nrow(crs$dataset)
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(! is.null(.RATTLE.SCORE.IN))
+
+    # 090315 Sampling should be on by default. I had a test here
+    # "!is.null(.RATTLE.SCORE.IN)" which, after cleaning up the
+    # handling of global variables, is now FALSE, whereas previously
+    # it must have been TRUE. Simply set to TRUE here until we find
+    # why that was being done. Might need another crv tuning
+    # parameter.
+    
+    theWidget("sample_checkbutton")$setActive(TRUE)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -501,7 +514,7 @@ executeDataTab <- function(csvname=NULL)
 #  {
 #    resetRattle(new.dataset=FALSE)
 #
-#    if (changedDataTab())
+#    if (dataNeedsLoading())
 #    {
 #        
 #      # Just duplicate above for now to get this working.
@@ -579,7 +592,7 @@ executeDataCSV <- function(filename=NULL)
   {
     # 090314 Trying to get the scenario of a supplied filename
     # working, so that it is displayed in the Filename box and
-    # changedDataTab does not think a new file needs loading on the
+    # dataNeedsLoading does not think a new file needs loading on the
     # next Execute.
 
     if (substr(filename, 1, 5) != "file:")
@@ -625,7 +638,7 @@ executeDataCSV <- function(filename=NULL)
       # Make sure we end up with a URI since a URI is otherwise used
       # when retrieving the information from the filechooserbutton
       # widget. If we don't do this then the crs$dwd does not include
-      # the "file://" bit, and thus changedDataTab returns TRUE the
+      # the "file://" bit, and thus dataNeedsLoading returns TRUE the
       # next time, which is not right! 090214 This does not work for
       # MS/Windows. The filename is something like "C:/..." and this
       # ends up adding "file://" but it should be "file:///". So check
