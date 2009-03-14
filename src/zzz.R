@@ -1,15 +1,5 @@
 .onLoad <- function(libname, pkgname)
 {
-  # 090309 Create the global environment, crs, which stores the curret
-  # Rattle state and used extensively throughout Rattle as a global
-  # state. Not ideal for functional programming and only a hopefully
-  # small deviation from Chamber's Prime Directive principle, and
-  # similar to the option exception to the Prime Directive! Certainly
-  # by including this here we avoid a NOTE in the package check abuot
-  # no visible binding for global variable ‘crs.’
-  
-  crs <<- new.env()
-
   # 090207 Create the global crv environment for Rattle. Once again,
   # this is a deviation from Chamber's Prime Directive, but is akin to
   # the use of option.  It is defined here so that it is glabally
