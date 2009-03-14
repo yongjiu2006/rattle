@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-01 10:46:11 Graham Williams>
+# Time-stamp: <2009-03-09 17:09:57 Graham Williams>
 #
 # MODEL TAB
 #
@@ -100,7 +100,7 @@ on_e1071_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .SVMNB$setCurrentPage(.SVMNB.ESVM.TAB)
+    crv$SVMNB$setCurrentPage(crv$SVMNB.ESVM.TAB)
   }
   setStatusBar()
 }
@@ -109,7 +109,7 @@ on_kernlab_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .SVMNB$setCurrentPage(.SVMNB.KSVM.TAB)
+    crv$SVMNB$setCurrentPage(crv$SVMNB.KSVM.TAB)
   }
   setStatusBar()
 }
@@ -312,7 +312,7 @@ multinomialTarget <- function()
 currentModelTab <- function()
 {
   lb <- getCurrentPageLabel(crv$MODEL)
-  if (lb == .SVM && theWidget("kernlab_radiobutton")$getActive()) lb <- .KSVM
+  if (lb == crv$SVM && theWidget("kernlab_radiobutton")$getActive()) lb <- crv$KSVM
   return(lb)
 }
 
@@ -659,11 +659,11 @@ executeModelTab <- function()
 
   start.time <- Sys.time()
 
-  if (build.all || currentModelTab() == .RPART)
+  if (build.all || currentModelTab() == crv$RPART)
   {
     if (theWidget("rpart_build_radiobutton")$getActive())
     {
-      setStatusBar("Building", commonName(.RPART), "model ...")
+      setStatusBar("Building", commonName(crv$RPART), "model ...")
 
       if (theWidget("model_tree_ctree_radiobutton")$getActive())
       {
@@ -677,20 +677,20 @@ executeModelTab <- function()
         if (executeModelRPart())
             theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
         else
-          setStatusBar("Building", commonName(.RPART), "model ... failed.")
+          setStatusBar("Building", commonName(crv$RPART), "model ... failed.")
       }
     }
     else if (theWidget("rpart_tune_radiobutton")$getActive())
     {
-      setStatusBar("Tuning", commonName(.RPART), "model ...")
+      setStatusBar("Tuning", commonName(crv$RPART), "model ...")
       if (! executeModelRPart("tune"))
-        setStatusBar("Tuning", commonName(.RPART), "model ... failed.")
+        setStatusBar("Tuning", commonName(crv$RPART), "model ... failed.")
     }
     else if (theWidget("rpart_best_radiobutton")$getActive())
     {
-      setStatusBar("Building best", commonName(.RPART), "model ...")
+      setStatusBar("Building best", commonName(crv$RPART), "model ...")
       if (! executeModelRPart("best"))
-        setStatusBar("Building best", commonName(.RPART), "model ... failed.")
+        setStatusBar("Building best", commonName(crv$RPART), "model ... failed.")
     }
     else # That's all the radio buttons - we should not be here.
     {
@@ -702,9 +702,9 @@ executeModelTab <- function()
     }
   }
   if ((binomialTarget() && build.all)
-      || currentModelTab() == .ADA)
+      || currentModelTab() == crv$ADA)
   {
-    setStatusBar("Building", commonName(.ADA), "model ...")
+    setStatusBar("Building", commonName(crv$ADA), "model ...")
     crs$ada <<-
       buildModelAda(formula,
                     dataset,
@@ -720,7 +720,7 @@ executeModelTab <- function()
       theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
     }
     else
-      setStatusBar("Building", commonName(.ADA), "model ... failed.")
+      setStatusBar("Building", commonName(crv$ADA), "model ... failed.")
 
   }
   if ((categoricTarget() && build.all)
@@ -733,13 +733,13 @@ executeModelTab <- function()
       setStatusBar("Building", commonName(crv$RF), "model ... failed.")
   }
   if ((categoricTarget() && build.all)
-      || currentModelTab() %in% c(.SVM, .KSVM))
+      || currentModelTab() %in% c(crv$SVM, crv$KSVM))
   {
-    setStatusBar("Building", commonName(.KSVM), "model ...")
+    setStatusBar("Building", commonName(crv$KSVM), "model ...")
     if (executeModelSVM())
       theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(.KSVM), "model ... failed.")
+      setStatusBar("Building", commonName(crv$KSVM), "model ... failed.")
 
   }
   if (build.all || currentModelTab() == crv$GLM)
@@ -930,7 +930,7 @@ executeModelGLM <- function()
     car.available <- TRUE
     lib.cmd <- "require(car, quietly=TRUE)"
     if (! packageIsAvailable("car", "evaluate a mulitnomial model"))
-      car.avaiable <- FASLE
+      car.avaiable <- FALSE
     else
     {
       appendLog("Sumarise the a multinomial model using the car package.", lib.cmd)
@@ -1307,9 +1307,9 @@ executeModelSVM <- function()
 
   if (sampling)
     if (useKernlab)
-      crs$smodel <<- union(crs$smodel, .KSVM)
+      crs$smodel <<- union(crs$smodel, crv$KSVM)
     else
-      crs$smodel <<- union(crs$smodel, .SVM)
+      crs$smodel <<- union(crs$smodel, crv$SVM)
 
   ## Finish up.
 
@@ -1319,7 +1319,7 @@ executeModelSVM <- function()
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar(sprintf("A %s model has been generated.",
-                       ifelse(useKernlab, .KSVM, .SVM)), time.msg)
+                       ifelse(useKernlab, crv$KSVM, crv$SVM)), time.msg)
   return(TRUE)
 }
 

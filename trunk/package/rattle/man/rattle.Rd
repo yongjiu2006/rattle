@@ -49,8 +49,12 @@ rattle(csvname=NULL)
 # You can start rattle with a path to a csv file to pre-specify the
 # dataset. You then need to click Execute to load the data.
 
-# Don't run this since the CRAN MS/Windows server has an older version
-# of GTK installed, and results in errors.
+#ifdef windows
+# We don't run rattle as an exampe on MS/Windows since the
+# CRAN MS/Windows server has an older version of GTK installed,
+# and results in errors.
+\dontrun{rattle(system.file("csv", "weather.csv", package = "rattle"))}
+#endif
 
 #ifdef unix
 rattle(system.file("csv", "weather.csv", package = "rattle"))

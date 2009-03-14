@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-18 06:01:20 Graham Williams>
+# Time-stamp: <2009-03-09 17:01:36 Graham Williams>
 #
 # RPART TAB
 #
@@ -235,7 +235,7 @@ executeModelRPart <- function(action="build")
   # default, and if so then use it.
 
   minsplit <- theWidget("rpart_minsplit_spinbutton")$getValue()
-  if (minsplit != .RPART.MINSPLIT.DEFAULT)
+  if (minsplit != crv$rpart.minsplit.default)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(minsplit=%d)", minsplit)
@@ -247,7 +247,7 @@ executeModelRPart <- function(action="build")
   # default, and if so then use it.
 
   minbucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
-  if (minbucket != .RPART.MINBUCKET.DEFAULT)
+  if (minbucket != crv$rpart.minbucket.default)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(minbucket=%d)", minbucket)
@@ -259,7 +259,7 @@ executeModelRPart <- function(action="build")
   # default, and if so then use it.
 
   maxdepth <- theWidget("rpart_maxdepth_spinbutton")$getValue()
-  if (maxdepth != .RPART.MAXDEPTH.DEFAULT)
+  if (maxdepth != crv$rpart.maxdepth.default)
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(maxdepth=%d)", maxdepth)
@@ -272,7 +272,7 @@ executeModelRPart <- function(action="build")
 
   cp <- theWidget("model_tree_cp_spinbutton")$getValue()
 
-  if (abs(cp-.RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
+  if (abs(cp-crv$rpart.cp.default) > 0.00001) ## Diff when same is 2.2352e-10!!!
   {
     if (is.null(control))
       control <- sprintf(", control=rpart.control(cp=%f)", cp)
@@ -298,7 +298,7 @@ executeModelRPart <- function(action="build")
   # in Rattle just go with that.
   
   # xval <- theWidget("rpart_xval_spinbutton")$getValue()
-  # if (xval != .RPART.XVAL.DEFAULT)
+  # if (xval != crv$rpart.xval.default)
   # {
   #  if (is.null(control))
   #    control <- sprintf(", control=rpart.control(xval=%d)", xval)
@@ -491,7 +491,7 @@ executeModelRPart <- function(action="build")
                       "rpart"),
               collectOutput(print.cmd))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, .RPART)
+  if (sampling) crs$smodel <<- union(crs$smodel, crv$RPART)
 
   # Now that we have a model, make sure the rules and plot buttons are
   # visible.

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-22 08:17:08 Graham Williams>
+# Time-stamp: <2009-03-09 16:10:16 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -80,7 +80,7 @@ startLog <- function(msg=NULL)
                   "\n# ", crv$appname, " timestamp: ", Sys.time(), sep=""),
           no.start=TRUE)
   if (not.null(msg))
-    appendLog(paste(sep="", .START.LOG.COMMENT, msg), no.start=TRUE)
+    appendLog(paste(sep="", crv$start.log.comment, msg), no.start=TRUE)
 }
 
 appendLog <- function(start, ..., sep=" ", no.start=FALSE)
@@ -90,7 +90,7 @@ appendLog <- function(start, ..., sep=" ", no.start=FALSE)
   if (no.start)
     msg <- paste(sep=sep, start, ...)
   else
-    msg <- paste(sep="", .START.LOG.COMMENT, start, .END.LOG.COMMENT, ...)
+    msg <- paste(sep="", crv$start.log.comment, start, crv$end.log.comment, ...)
   if (length(msg) == 0) msg <-""
 
   # Always place text at the end, irrespective of where the cursor is.

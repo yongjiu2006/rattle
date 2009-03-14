@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-03 21:18:20 Graham Williams>
+# Time-stamp: <2009-03-09 17:15:35 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -30,7 +30,7 @@ on_kmeans_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    .CLUSTER$setCurrentPage(.CLUSTER.KMEANS.TAB)
+    crv$CLUSTER$setCurrentPage(crv$CLUSTER.KMEANS.TAB)
     if (not.null(crs$hclust))
       theWidget("kmeans_hclust_centers_checkbutton")$setSensitive(TRUE)
     else

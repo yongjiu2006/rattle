@@ -25,4 +25,5 @@ Description: Rattle (the R Analytic Tool To Learn Easily) provides a
   functions and the graphical user interface, invoked as rattle(),  does 
   not need to be run to deploy these.  
 License: GPL (>= 2)
+LazyData: yes
 URL: http://rattle.togaware.com/

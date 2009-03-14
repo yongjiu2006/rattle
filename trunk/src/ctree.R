@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-16 05:53:30 Graham>
+# Time-stamp: <2009-03-09 16:59:19 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -75,7 +75,7 @@ executeModelCTree <- function()
   # default, and if so then use it.
 
   minsplit <- theWidget("rpart_minsplit_spinbutton")$getValue()
-  if (minsplit != .RPART.MINSPLIT.DEFAULT)
+  if (minsplit != crv$rpart.minsplit.default)
   {
     if (is.null(control))
       control <- sprintf(", control=ctree_control(minsplit=%d)", minsplit)
@@ -87,7 +87,7 @@ executeModelCTree <- function()
   # default, and if so then use it.
 
   minbucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
-  if (minbucket != .RPART.MINBUCKET.DEFAULT)
+  if (minbucket != crv$rpart.minbucket.default)
   {
     if (is.null(control))
       control <- sprintf(", control=ctree_control(minbucket=%d)", minbucket)
@@ -99,7 +99,7 @@ executeModelCTree <- function()
   # default, and if so then use it.
 
   maxdepth <- theWidget("rpart_maxdepth_spinbutton")$getValue()
-  if (maxdepth != .RPART.MAXDEPTH.DEFAULT)
+  if (maxdepth != crv$rpart.maxdepth.default)
   {
     if (is.null(control))
       control <- sprintf(", control=ctree_control(maxdepth=%d)", maxdepth)
@@ -112,7 +112,7 @@ executeModelCTree <- function()
 
 ##   cp <- theWidget("model_tree_cp_spinbutton")$getValue()
 
-##   if (abs(cp-.RPART.CP.DEFAULT) > 0.00001) ## Diff when same is 2.2352e-10!!!
+##   if (abs(cp-crv$rpart.cp.default) > 0.00001) ## Diff when same is 2.2352e-10!!!
 ##   {
 ##     if (is.null(control))
 ##       control <- sprintf(", control=rpart.control(cp=%f)", cp)
@@ -137,7 +137,7 @@ executeModelCTree <- function()
   # in Rattle just go with that.
   
   # xval <- theWidget("rpart_xval_spinbutton")$getValue()
-  # if (xval != .RPART.XVAL.DEFAULT)
+  # if (xval != crv$rpart.xval.default)
   # {
   #  if (is.null(control))
   #    control <- sprintf(", control=rpart.control(xval=%d)", xval)
@@ -290,7 +290,7 @@ executeModelCTree <- function()
                       "ctree"),
               collectOutput(print.cmd))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, .RPART)
+  if (sampling) crs$smodel <<- union(crs$smodel, crv$RPART)
 
   # Now that we have a model, make sure the rules and plot buttons are
   # visible.
