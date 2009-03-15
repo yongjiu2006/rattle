@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-15 10:25:11 Graham Williams>
+# Time-stamp: <2009-03-16 05:36:43 Graham Williams>
 #
 # DATA TAB
 #
@@ -488,10 +488,6 @@ executeDataTab <- function(csvname=NULL)
     # change in value is noticed, and thus the count is not
     # automatically updated.
     
-    nrows <- nrow(crs$dataset)
-    per <- 70
-    srows <- round(nrows * per / 100)
-
     # 090315 Sampling should be on by default. I had a test here
     # "!is.null(.RATTLE.SCORE.IN)" which, after cleaning up the
     # handling of global variables, is now FALSE, whereas previously
@@ -500,15 +496,32 @@ executeDataTab <- function(csvname=NULL)
     # parameter.
     
     theWidget("sample_checkbutton")$setActive(TRUE)
-    theWidget("sample_count_spinbutton")$setRange(1,nrows)
-    theWidget("sample_count_spinbutton")$setValue(srows)
-    theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   else
     resetRattle(new.dataset=FALSE)
 
+  # 090516 Move the following from the above if branch to here. Reset
+  # the sampling options here, except for whether sampling is
+  # on/off. Thus, on loading a new dataset, sampling is set on
+  # above. But if we modify the dataset external to Rattle, we want to
+  # set new parameters here, yet leave the sampling checkbutton as it
+  # was.
+  #
+  # We set range bounds and generate the default 70% sample. Do the
+  # range bounds first since otherwise the value gets set back to
+  # 1. Also, need to set both the percentage and the count since if
+  # the old percentage is 70 and the new is 70, then no change in
+  # value is noticed, and thus the count is not automatically updated,
+  # even if the number of rows has been changed.
+    
+  nrows <- nrow(crs$dataset)
+  per <- 70
+  srows <- round(nrows * per / 100)
+  theWidget("sample_count_spinbutton")$setRange(1,nrows)
+  theWidget("sample_count_spinbutton")$setValue(srows)
+  theWidget("sample_percentage_spinbutton")$setValue(per)
+  
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
-
   
 #  else
 #  {

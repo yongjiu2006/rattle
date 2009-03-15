@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-15 09:41:45 Graham Williams>
+# Time-stamp: <2009-03-16 05:57:37 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Mar 2009"
+VERSION.DATE <- "Released 15 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1949,7 +1949,7 @@ close_rattle <- function(action, window)
 
 quit_rattle <- function(action, window)
 {
-  # 080815 This function used to return NULL or "yess" and I alwaysed
+  # 080815 This function used to return NULL or "yes" and I always
   # tested whether it's results was NULL. But why not return a
   # logical? Start doing that now, by returning TRUE instead of "yes",
   # and look to return FALSE instead of NULL on a negative response to
