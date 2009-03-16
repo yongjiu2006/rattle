@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-01 10:46:51 Graham Williams>
+# Time-stamp: <2009-03-16 23:01:07 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -199,7 +199,7 @@ executeModelRF <- function()
   # Build the model.
 
   rf.cmd <- paste("set.seed(123)\n",
-                  "crs$rf <<- randomForest(", frml, ", data=crs$dataset",
+                  "crs$rf <- randomForest(", frml, ", data=crs$dataset",
                   if (subsetting) "[",
                   if (sampling) "crs$sample",
                   if (subsetting) ",",
@@ -209,7 +209,7 @@ executeModelRF <- function()
                   ", na.action=na.omit",
                   ")", sep="")
 
-  appendLog("Build a randomForest model.", gsub("<<-", "<-", rf.cmd))
+  appendLog("Build a randomForest model.", rf.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
 
@@ -293,7 +293,7 @@ executeModelRF <- function()
               "\nin the R console. Generating all 500 models takes ",
               "quite some time.\n")
 
-  if (sampling) crs$smodel <<- union(crs$smodel, crv$RF)
+  if (sampling) crs$smodel <- union(crs$smodel, crv$RF)
 
   # Now that we have a model, make sure the buttons are sensitive.
 

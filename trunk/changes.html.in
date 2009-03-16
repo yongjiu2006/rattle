@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.46.
+    version is 2.4.47.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+428 090316 Fix nnet for binomial target - predcmd should return 0/1
+           Complete the transform from crv/crs as list to env and remove <<-
 427 090316 Update sample info when data changed within R console.
 426 090315 More fine tuning of identifying when a new dataset needs loading.
 425 090314 Further fix for supplied filename - turn into Uri.
@@ -848,6 +850,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-16 06:21:05 Graham Williams</i>
+<i>Last Modified 2009-03-16 23:09:52 Graham Williams</i>
 <!-- hhmts end -->
   </p>

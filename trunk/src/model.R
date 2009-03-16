@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:09:57 Graham Williams>
+# Time-stamp: <2009-03-16 22:58:22 Graham Williams>
 #
 # MODEL TAB
 #
@@ -705,7 +705,7 @@ executeModelTab <- function()
       || currentModelTab() == crv$ADA)
   {
     setStatusBar("Building", commonName(crv$ADA), "model ...")
-    crs$ada <<-
+    crs$ada <-
       buildModelAda(formula,
                     dataset,
                     tv=theWidget("ada_textview"),
@@ -829,7 +829,7 @@ executeModelGLM <- function()
     # If we have a binary response it may be that we might consider
     # using a loglog link rather than a logit link.
 
-    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+    model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$sample",
                        if (subsetting) ",",
@@ -871,7 +871,7 @@ executeModelGLM <- function()
     # algorithm) and it also produces the R squared stats, so we use
     # lm.
     
-    model.cmd <- paste("crs$glm <<- lm(", frml, ", data=crs$dataset",
+    model.cmd <- paste("crs$glm <- lm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$sample",
                        if (subsetting) ",",
@@ -890,7 +890,7 @@ executeModelGLM <- function()
     # having both lm and glm options for numeric regression. This uses
     # a gaussian distribution and an identity link function.
 
-    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+    model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$sample",
                        if (subsetting) ",",
@@ -907,7 +907,7 @@ executeModelGLM <- function()
   {
     # 080912 Added
 
-    model.cmd <- paste("crs$glm <<- glm(", frml, ", data=crs$dataset",
+    model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$sample",
                        if (subsetting) ",",
@@ -937,7 +937,7 @@ executeModelGLM <- function()
       eval(parse(text=lib.cmd))
     }
     
-    model.cmd <- paste("crs$glm <<- ",
+    model.cmd <- paste("crs$glm <- ",
                        "multinom",
                        "(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
@@ -970,7 +970,7 @@ executeModelGLM <- function()
   # Build the model.
 
   appendLog("Build a Regression model.",
-            gsub("<<-", "<-", model.cmd), sep="")
+            model.cmd, sep="")
   start.time <- Sys.time()
   eval(parse(text=model.cmd))
   
@@ -1006,7 +1006,7 @@ included as parameters in the exported scoring routine.\n",
 #  }
   
   
-  if (sampling) crs$smodel <<- union(crs$smodel, crv$GLM)
+  if (sampling) crs$smodel <- union(crs$smodel, crv$GLM)
 
   # Enable the plot button
 
@@ -1252,9 +1252,9 @@ executeModelSVM <- function()
   # Build the model.
 
   if (useKernlab)
-    svmCmd <- paste("crs$ksvm <<- ksvm(", frml, ", data=crs$dataset", sep="")
+    svmCmd <- paste("crs$ksvm <- ksvm(", frml, ", data=crs$dataset", sep="")
   else
-    svmCmd <- paste("crs$svm <<- svm(", frml, ", data=crs$dataset", sep="")
+    svmCmd <- paste("crs$svm <- svm(", frml, ", data=crs$dataset", sep="")
   svmCmd <- paste(svmCmd,
                    if (subsetting) "[",
                    if (sampling) "crs$sample",
@@ -1273,7 +1273,7 @@ executeModelSVM <- function()
   svmCmd <- paste(svmCmd, ")", sep="")
 
   start.time <- Sys.time()
-  appendLog("Build a support vector machine model.", gsub("<<-", "<-", svmCmd))
+  appendLog("Build a support vector machine model.", svmCmd)
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -1307,9 +1307,9 @@ executeModelSVM <- function()
 
   if (sampling)
     if (useKernlab)
-      crs$smodel <<- union(crs$smodel, crv$KSVM)
+      crs$smodel <- union(crs$smodel, crv$KSVM)
     else
-      crs$smodel <<- union(crs$smodel, crv$SVM)
+      crs$smodel <- union(crs$smodel, crv$SVM)
 
   ## Finish up.
 

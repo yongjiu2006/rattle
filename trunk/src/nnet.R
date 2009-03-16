@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 07:37:46 Graham Williams>
+# Time-stamp: <2009-03-16 22:58:42 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -107,7 +107,7 @@ executeModelNNet <- function()
   
   # Build a model.
 
-  model.cmd <- paste("crs$nnet <<- ",
+  model.cmd <- paste("crs$nnet <- ",
                      ifelse(numericTarget() || binomialTarget(),
                             "nnet", "multinom"),
                      "(", frml, ", data=crs$dataset",
@@ -122,7 +122,7 @@ executeModelNNet <- function()
                      ", trace=FALSE, maxit=1000",
                      ")", sep="")
 
-  appendLog("Build the nnet model.", gsub("<<-", "<-", model.cmd))
+  appendLog("Build the nnet model.", model.cmd)
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {

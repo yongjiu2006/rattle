@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-14 12:16:03 Graham Williams>
+# Time-stamp: <2009-03-16 23:00:47 Graham Williams>
 #
 # Project functionality.
 #
@@ -219,66 +219,66 @@ saveProject <- function()
   
   # Save the filename to restore on reloading.
 
-  crs$filename <<- theWidget("data_filechooserbutton")$getUri()
+  crs$filename <- theWidget("data_filechooserbutton")$getUri()
 
   # Save all of the text views to be restored on a load.
   # Put the following into a function and call for each textview.
 
-  crs$text$summary <<- getTextviewContent("summary_textview")
-  crs$text$correlation <<- getTextviewContent("correlation_textview")
-  crs$text$prcomp <<- getTextviewContent("prcomp_textview")
-  crs$text$kmeans <<- getTextviewContent("kmeans_textview")
-  crs$text$rpart <<-  getTextviewContent("rpart_textview")
-  crs$text$rf <<-  getTextviewContent("rf_textview")
-  crs$text$esvm <<-  getTextviewContent("esvm_textview")
-  crs$text$ksvm <<-  getTextviewContent("ksvm_textview")
-  crs$text$glm <<-  getTextviewContent("glm_textview")
-  crs$text$ada <<-  getTextviewContent("ada_textview")
-  #crs$text$gbm <<-  getTextviewContent("gbm_textview")
-  crs$text$risk <<- getTextviewContent("risk_textview")
-  crs$text$roc <<- getTextviewContent("roc_textview")
-  crs$text$log <<- getTextviewContent("log_textview")
+  crs$text$summary <- getTextviewContent("summary_textview")
+  crs$text$correlation <- getTextviewContent("correlation_textview")
+  crs$text$prcomp <- getTextviewContent("prcomp_textview")
+  crs$text$kmeans <- getTextviewContent("kmeans_textview")
+  crs$text$rpart <-  getTextviewContent("rpart_textview")
+  crs$text$rf <-  getTextviewContent("rf_textview")
+  crs$text$esvm <-  getTextviewContent("esvm_textview")
+  crs$text$ksvm <-  getTextviewContent("ksvm_textview")
+  crs$text$glm <-  getTextviewContent("glm_textview")
+  crs$text$ada <-  getTextviewContent("ada_textview")
+  #crs$text$gbm <-  getTextviewContent("gbm_textview")
+  crs$text$risk <- getTextviewContent("risk_textview")
+  crs$text$roc <- getTextviewContent("roc_textview")
+  crs$text$log <- getTextviewContent("log_textview")
 
   # Save Transform variables selections - not sure it is really
   # needed, but follow the template!
 
-  crs$zero <<- getSelectedVariables("zero")
+  crs$zero <- getSelectedVariables("zero")
   
   # Save Distribution variable selections
 
-  crs$boxplot <<- getSelectedVariables("boxplot")
-  crs$hisplot <<- getSelectedVariables("hisplot")
-  crs$cumplot <<- getSelectedVariables("cumplot")
-  crs$benplot <<- getSelectedVariables("benplot")
-  crs$barplot <<- getSelectedVariables("barplot")
-  crs$dotplot <<- getSelectedVariables("dotplot")
+  crs$boxplot <- getSelectedVariables("boxplot")
+  crs$hisplot <- getSelectedVariables("hisplot")
+  crs$cumplot <- getSelectedVariables("cumplot")
+  crs$benplot <- getSelectedVariables("benplot")
+  crs$barplot <- getSelectedVariables("barplot")
+  crs$dotplot <- getSelectedVariables("dotplot")
 
   # Save seed information
 
-  crs$sample.seed <<- theWidget("sample_seed_spinbutton")$getValue()
-  crs$kmeans.seed <<- theWidget("kmeans_seed_spinbutton")$getValue()
+  crs$sample.seed <- theWidget("sample_seed_spinbutton")$getValue()
+  crs$kmeans.seed <- theWidget("kmeans_seed_spinbutton")$getValue()
   
   # Save Model options
 
   if (not.null(crs$rpart))
   {
-    crs$rpart.opt$priors <<- theWidget("model_tree_priors_entry")$getText()
-    crs$rpart.opt$loss   <<- theWidget("model_tree_loss_entry")$getText()
-    crs$rpart.opt$split  <<- theWidget("rpart_minsplit_spinbutton")$getValue()
-    crs$rpart.opt$depth  <<- theWidget("rpart_maxdepth_spinbutton")$getValue()
-    crs$rpart.opt$cp     <<- theWidget("model_tree_cp_spinbutton")$getValue()
-    crs$rpart.opt$bucket <<- theWidget("rpart_minbucket_spinbutton")$getValue()
+    crs$rpart.opt$priors <- theWidget("model_tree_priors_entry")$getText()
+    crs$rpart.opt$loss   <- theWidget("model_tree_loss_entry")$getText()
+    crs$rpart.opt$split  <- theWidget("rpart_minsplit_spinbutton")$getValue()
+    crs$rpart.opt$depth  <- theWidget("rpart_maxdepth_spinbutton")$getValue()
+    crs$rpart.opt$cp     <- theWidget("model_tree_cp_spinbutton")$getValue()
+    crs$rpart.opt$bucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
   }
 
   if (not.null(crs$rf))
   {
-    crs$rf.opt$trees     <<- theWidget("rf_ntree_spinbutton")$getValue()
-    crs$rf.opt$vars      <<- theWidget("rf_mtry_spinbutton")$getValue()
-    crs$rf.opt$sample    <<- theWidget("rf_sampsize_entry")$getText()
-    crs$rf.opt$proximity <<- theWidget("rf_proximity_checkbutton")$getActive()
+    crs$rf.opt$trees     <- theWidget("rf_ntree_spinbutton")$getValue()
+    crs$rf.opt$vars      <- theWidget("rf_mtry_spinbutton")$getValue()
+    crs$rf.opt$sample    <- theWidget("rf_sampsize_entry")$getText()
+    crs$rf.opt$proximity <- theWidget("rf_proximity_checkbutton")$getActive()
   }
     
-  crs$svm.opt$kernel <<- theWidget("svm_kernel_comboboxentry")$getActive()
+  crs$svm.opt$kernel <- theWidget("svm_kernel_comboboxentry")$getActive()
 
   set.cursor("watch")
   startLog()
@@ -289,7 +289,7 @@ saveProject <- function()
 
   # Record the cwd for projects.
   
-  crs$pwd <<- dirname(save.name)
+  crs$pwd <- dirname(save.name)
   
   setStatusBar("The current project has been saved to", save.name)
 }
@@ -364,7 +364,7 @@ loadProject <- function()
 
   # Record the cwd for projects.
   
-  crs$pwd <<- dirname(load.name)
+  crs$pwd <- dirname(load.name)
   
   # Now update all appropriate textviews and associated data.
 
@@ -383,25 +383,25 @@ loadProject <- function()
   if (file.exists(crs$filename))
     theWidget("data_filechooserbutton")$setUri(crs$filename)
   
-  crs$dataname <<- crs$dataname
-  crs$dataset <<- crs$dataset
+  crs$dataname <- crs$dataname
+  crs$dataset <- crs$dataset
 
   # Restore the filename options.
   
   if (file.exists(crs$filename))
-      crs$filename <<- crs$filename
+      crs$filename <- crs$filename
   else
   {
     crs$filename <- basename(crs$filename)
-    crs$filename <<- basename(crs$filename)
+    crs$filename <- basename(crs$filename)
   }
 
   if (file.exists(crs$dwd))
-    crs$dwd <<- crs$dwd
+    crs$dwd <- crs$dwd
   else
   {
     crs$dwd <- ""
-    crs$dwd <<- ""
+    crs$dwd <- ""
   }
 
   # Make sure we don't attempt to reload the file on executing the
@@ -409,7 +409,7 @@ loadProject <- function()
   # the work already done on it. Set the modified time for the dataset
   # to be apparently now.
 
-  crs$mtime <<- Sys.time()
+  crs$mtime <- Sys.time()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
@@ -437,13 +437,13 @@ loadProject <- function()
     theWidget("weight_entry")$setText(weights.display)
     the.weight <- sprintf("Weights: %s",weights.display)
     theWidget("model_tree_rpart_weights_label")$setText(the.weight)
-    crs$weights <<- crs$weights
+    crs$weights <- crs$weights
   }
 
   # SAMPLE
 
-  crs$sample      <<- crs$sample
-  crs$sample.seed <<- crs$sample.seed
+  crs$sample      <- crs$sample
+  crs$sample.seed <- crs$sample.seed
 
   if (not.null(crs$sample))
   {
@@ -468,49 +468,49 @@ loadProject <- function()
 
   # TRANSFORM
 
-  crs$transforms <<- crs$transforms
+  crs$transforms <- crs$transforms
   
   # CLUSTER
   
-  crs$kmeans      <<- crs$kmeans
-  crs$kmeans.seed <<- crs$kmeans.seed
+  crs$kmeans      <- crs$kmeans
+  crs$kmeans.seed <- crs$kmeans.seed
   if (not.null(crs$kmeans.seed))
     theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
     theWidget("kmeans_seed_spinbutton")$setValue(123)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
-  crs$hclust   <<- crs$hclust
+  crs$hclust   <- crs$hclust
 
   ## MODELS - Ensure libraries are loaded.
 
-  crs$page     <<- crs$page
-  crs$smodel   <<- crs$smodel
+  crs$page     <- crs$page
+  crs$smodel   <- crs$smodel
 
-  crs$rpart    <<- crs$rpart
+  crs$rpart    <- crs$rpart
   setTextviewContents("rpart_textview", crs$text$rpart)
   if (not.null(crs$rpart)) require(rpart, quietly=TRUE)
   
-  crs$rf       <<- crs$rf
+  crs$rf       <- crs$rf
   setTextviewContents("rf_textview", crs$text$rf)
   if (not.null(crs$rf)) require(randomForest, quietly=TRUE)
 
-  crs$svm      <<- crs$svm
+  crs$svm      <- crs$svm
   setTextviewContents("esvm_textview", crs$text$esvm)
   if (not.null(crs$svm)) require(e1071, quietly=TRUE)
 
-  crs$ksvm     <<- crs$ksvm
+  crs$ksvm     <- crs$ksvm
   setTextviewContents("ksvm_textview", crs$text$ksvm)
   if (not.null(crs$ksvm)) require(kernlab, quietly=TRUE)
 
-  crs$glm      <<- crs$glm
+  crs$glm      <- crs$glm
   setTextviewContents("glm_textview", crs$text$glm)
 
-  crs$ada      <<- crs$ada
+  crs$ada      <- crs$ada
   setTextviewContents("ada_textview", crs$text$ada)
   if (not.null(crs$ada)) require(ada, quietly=TRUE)
 
-  #REMOVE crs$gbm      <<- crs$gbm
+  #REMOVE crs$gbm      <- crs$gbm
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
   if (not.null(crs$rpart.opt$priors))
@@ -560,10 +560,10 @@ loadProject <- function()
   setTextviewContents("roc_textview", crs$text$roc )
 
   
-  crs$perf     <<- crs$perf
-  crs$eval     <<- crs$eval
-  crs$testset  <<- crs$testset
-  crs$testname <<- crs$testname
+  crs$perf     <- crs$perf
+  crs$eval     <- crs$eval
+  crs$testset  <- crs$testset
+  crs$testname <- crs$testname
   
   # LOG
   

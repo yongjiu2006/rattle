@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:01:36 Graham Williams>
+# Time-stamp: <2009-03-16 20:36:58 Graham Williams>
 #
 # RPART TAB
 #
@@ -373,7 +373,7 @@ executeModelRPart <- function(action="build")
                        if (including) included,
                        if (subsetting) "]", sep="")
                        
-    rpart.cmd <- paste("crs$rpart <<- rpart(", frml, ", data=", ds.string,
+    rpart.cmd <- paste("crs$rpart <- rpart(", frml, ", data=", ds.string,
                        ifelse(is.null(crs$weights), "",
                               sprintf(", weights=(%s)%s",
                                       crs$weights,
@@ -422,7 +422,7 @@ executeModelRPart <- function(action="build")
   }
   else if (action == "tune")
   {
-    rpart.cmd <- paste("crs$tune.rpart <<- tune.rpart(", frml, ", data=crs$dataset",
+    rpart.cmd <- paste("crs$tune.rpart <- tune.rpart(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
@@ -436,7 +436,7 @@ executeModelRPart <- function(action="build")
   else if (action == "best")
   {
     # This won't work - best.rpart usese the tune.control() structure
-    rpart.cmd <- paste("crs$rpart <<- best.rpart(", frml, ", data=crs$dataset",
+    rpart.cmd <- paste("crs$rpart <- best.rpart(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
@@ -463,7 +463,7 @@ executeModelRPart <- function(action="build")
 
   # Build the model.
 
-  appendLog("Build an rpart model.", gsub("<<-", "<-", rpart.cmd))
+  appendLog("Build an rpart model.", rpart.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
   time.taken <- Sys.time()-start.time
@@ -491,7 +491,7 @@ executeModelRPart <- function(action="build")
                       "rpart"),
               collectOutput(print.cmd))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, crv$RPART)
+  if (sampling) crs$smodel <- union(crs$smodel, crv$RPART)
 
   # Now that we have a model, make sure the rules and plot buttons are
   # visible.

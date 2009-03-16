@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2009-02-07 07:39:40 Graham Williams>
+# Time-stamp: <2009-03-16 20:36:04 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -270,7 +270,7 @@ continueModelAda <- function(niter)
     setStatusBar("An adaboost model has been updated.", time.msg)
   }
 
-  crs$ada <<- crs$ada
+#  crs$ada <<- crs$ada
   return()
 }
 
@@ -280,7 +280,7 @@ genPredictAda <- function(dataset)
   # Generate a command to obtain the prediction results when applying
   # the model to new data.
   
-  return(sprintf("crs$pr <<- predict(crs$ada, %s)", dataset))
+  return(sprintf("crs$pr <- predict(crs$ada, %s)", dataset))
 }
 
 genResponseAda <- function(dataset)
