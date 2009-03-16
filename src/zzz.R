@@ -8,45 +8,45 @@
   
   crv <<- new.env()
   
-  crv$appname 		<<- "Rattle"
-  crv$log.intro 	<<- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
-  crv$support.msg 	<<- "Contact support@togaware.com."
-  crv$library.command 	<<- "library(rattle)"
-  crv$version 		<<- VERSION
+  crv$appname 		<- "Rattle"
+  crv$log.intro 	<- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
+  crv$support.msg 	<- "Contact support@togaware.com."
+  crv$library.command 	<- "library(rattle)"
+  crv$version 		<- VERSION
 
   # Some global constants
 
-  crv$tooltiphack 		<<- FALSE
-  crv$close 			<<- "close"
-  crv$sample.dataset 		<<- "audit"
+  crv$tooltiphack 		<- FALSE
+  crv$close 			<- "close"
+  crv$sample.dataset 		<- "audit"
   if (.Platform$OS.type == "unix")
-    crv$load.tooltips 		<<- FALSE # Not working in general on Linux
+    crv$load.tooltips 		<- FALSE # Not working in general on Linux
   else
-    crv$load.tooltips 		<<- TRUE
-  crv$verbose 			<<- TRUE # Add sub titles to plots ...
-  crv$max.vars.correlation 	<<- 40 # Correlation slows down too much
-  crv$export.to.c.available 	<<- FALSE # No export to C implemented yet
-  crv$show.warnings 		<<- TRUE # 090207 Show test/train warning.
-  crv$project.extensions 	<<- c("rattle", "rstat") # Extensions for projects  
-  crv$ident.min.rows 		<<- 300 # Unique factors/ints > than this are idents
+    crv$load.tooltips 		<- TRUE
+  crv$verbose 			<- TRUE # Add sub titles to plots ...
+  crv$max.vars.correlation 	<- 40 # Correlation slows down too much
+  crv$export.to.c.available 	<- FALSE # No export to C implemented yet
+  crv$show.warnings 		<- TRUE # 090207 Show test/train warning.
+  crv$project.extensions 	<- c("rattle", "rstat") # Extensions for projects  
+  crv$ident.min.rows 		<- 300 # Unique factors/ints > than this are idents
 
   # Log constants
 
-  crv$start.log.comment <<- "\n\n# "	# Assume paste with sep=""
-  crv$end.log.comment   <<- "\n\n"	# Assume paste with sep=""
+  crv$start.log.comment <- "\n\n# "	# Assume paste with sep=""
+  crv$end.log.comment   <- "\n\n"	# Assume paste with sep=""
   
   # Model defaults
 
-  crv$rpart.cp.default        <<- 0.010
-  crv$rpart.minsplit.default  <<- 20
-  crv$rpart.minbucket.default <<- 7
-  crv$rpart.maxdepth.default  <<- 30
+  crv$rpart.cp.default        <- 0.010
+  crv$rpart.minsplit.default  <- 20
+  crv$rpart.minbucket.default <- 7
+  crv$rpart.maxdepth.default  <- 30
 
-  crv$ada.ntree.default   <<- 50
+  crv$ada.ntree.default   <- 50
 
-  crv$rf.ntree.default    <<- 500
-  crv$rf.mtry.default     <<- 10
-  crv$rf.sampsize.default <<- ""
+  crv$rf.ntree.default    <- 500
+  crv$rf.mtry.default     <- 10
+  crv$rf.sampsize.default <- ""
 
   # Evaluate
 

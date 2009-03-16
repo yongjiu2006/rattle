@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-06 17:47:04 Graham Williams>
+# Time-stamp: <2009-03-16 23:02:26 Graham Williams>
 #
 # 080921 TEXT MINING DATA
 #
@@ -134,8 +134,8 @@ executeDataCorpus <- function()
 
   # Convert into a keyword count dataset.
 
-  ds.cmd <- "crs$dataset <<- as.data.frame(as.matrix(TermDocMatrix(my.corpus)@Data))"
-  appendLog("Convert into a dataset.", sub("<<-", "<-", ds.cmd))
+  ds.cmd <- "crs$dataset <- as.data.frame(as.matrix(TermDocMatrix(my.corpus)@Data))"
+  appendLog("Convert into a dataset.", ds.cmd)
   eval(parse(text=ds.cmd))
 
   # Add in targets if they exist.
@@ -147,14 +147,14 @@ executeDataCorpus <- function()
     appendLog("Read in the targets.", read.cmd)
     eval(parse(text=read.cmd))
 
-    target.cmd <- "crs$dataset <<- cbind(crs$dataset, TARGET=target[[2]])"
-    appendLog("Add the targets to the dataset.", sub("<<-", "<-", target.cmd))
+    target.cmd <- "crs$dataset <- cbind(crs$dataset, TARGET=target[[2]])"
+    appendLog("Add the targets to the dataset.", target.cmd)
     eval(parse(text=target.cmd))
   }
 
   # Set the title and dataname correctly.
 
-  crs$dataname <<- basename(location)
+  crs$dataname <- basename(location)
   setMainTitle(crs$dataname)
 
   # For now, always succeed.

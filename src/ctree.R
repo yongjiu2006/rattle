@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 16:59:19 Graham Williams>
+# Time-stamp: <2009-03-16 20:42:59 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -205,7 +205,7 @@ executeModelCTree <- function()
 
 ##   if (action == "build")
 ##   {
-    fit.cmd <- paste("crs$rpart <<- ctree(", frml, ", data=crs$dataset",
+    fit.cmd <- paste("crs$rpart <- ctree(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
@@ -226,7 +226,7 @@ executeModelCTree <- function()
 ##   }
 ##   else if (action == "tune")
 ##   {
-##     rpart.cmd <- paste("crs$tune.rpart <<- tune.rpart(", frml, ", data=crs$dataset",
+##     rpart.cmd <- paste("crs$tune.rpart <- tune.rpart(", frml, ", data=crs$dataset",
 ##                      if (subsetting) "[",
 ##                      if (sampling) "crs$sample",
 ##                      if (subsetting) ",",
@@ -240,7 +240,7 @@ executeModelCTree <- function()
 ##   else if (action == "best")
 ##   {
 ##     # This won't work - best.rpart usese the tune.control() structure
-##     rpart.cmd <- paste("crs$rpart <<- best.rpart(", frml, ", data=crs$dataset",
+##     rpart.cmd <- paste("crs$rpart <- best.rpart(", frml, ", data=crs$dataset",
 ##                      if (subsetting) "[",
 ##                      if (sampling) "crs$sample",
 ##                      if (subsetting) ",",
@@ -267,7 +267,7 @@ executeModelCTree <- function()
 
   # Build the model.
 
-  appendLog("Build a ctree model.", gsub("<<-", "<-", fit.cmd))
+  appendLog("Build a ctree model.", fit.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=fit.cmd)), silent=TRUE)
   time.taken <- Sys.time()-start.time
@@ -290,7 +290,7 @@ executeModelCTree <- function()
                       "ctree"),
               collectOutput(print.cmd))
 
-  if (sampling) crs$smodel <<- union(crs$smodel, crv$RPART)
+  if (sampling) crs$smodel <- union(crs$smodel, crv$RPART)
 
   # Now that we have a model, make sure the rules and plot buttons are
   # visible.

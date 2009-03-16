@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:15:35 Graham Williams>
+# Time-stamp: <2009-03-16 22:57:08 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -296,7 +296,7 @@ executeClusterKMeans <- function(include)
                 lib.cmd)
       eval(parse(text=lib.cmd))
 
-      kmeans.cmd <- sprintf(paste('crs$kmeans <<-',
+      kmeans.cmd <- sprintf(paste('crs$kmeans <-',
                                   'kmeansruns(crs$dataset[%s,%s],',
                                   '%s, runs=%s)'),
                             ifelse(sampling, "crs$sample", ""),
@@ -304,7 +304,7 @@ executeClusterKMeans <- function(include)
     }
     else
     {
-      kmeans.cmd <- sprintf(paste('crs$kmeans <<- kmeans(',
+      kmeans.cmd <- sprintf(paste('crs$kmeans <- kmeans(',
                                   'na.omit(crs$dataset[%s,%s]), %s)', sep=""),
                             ifelse(sampling, "crs$sample", ""),
                             include, centers)
@@ -313,7 +313,7 @@ executeClusterKMeans <- function(include)
     appendLog(sprintf("Generate a kmeans cluster of size %s%s%s.", nclust,
                       ifelse(nruns>1, " choosing the best from ", ""),
                       ifelse(nruns>1, nruns, "")),
-              gsub("<<-", "<-", kmeans.cmd))
+              kmeans.cmd)
 
     start.time <- Sys.time()
 
@@ -376,7 +376,7 @@ executeClusterKMeans <- function(include)
     css[1] <- 0
     for (i in 2:nclust)
     {
-      kmeans.cmd <- sprintf(paste('crs$kmeans <<-',
+      kmeans.cmd <- sprintf(paste('crs$kmeans <-',
                                   'kmeans(na.omit(crs$dataset[%s,%s]), %s)'),
                             ifelse(sampling, "crs$sample", ""), include, i)
       eval(parse(text=seed.cmd))
@@ -512,7 +512,7 @@ genPredictKmeans <- function(dataset)
   # 081227 Generate a command to obtain the prediction results when
   # applying the model to new data.
   
-  return(sprintf("crs$pr <<- predict(crs$kmeans, %s)", dataset))
+  return(sprintf("crs$pr <- predict(crs$kmeans, %s)", dataset))
 }
 
 genResponseKmeans <- function(dataset)

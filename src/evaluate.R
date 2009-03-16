@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:29:33 Graham Williams>
+# Time-stamp: <2009-03-16 22:55:46 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -332,8 +332,8 @@ executeEvaluateTab <- function()
     # the risk and target variables.
     
     filename <- theWidget("evaluate_filechooserbutton")$getFilename()
-    crs$dwd <<- dirname(filename)
-    crs$mtime <<- urlModTime(filename)
+    crs$dwd <- dirname(filename)
+    crs$mtime <- urlModTime(filename)
 
     if (is.null(filename))
     {
@@ -355,14 +355,13 @@ executeEvaluateTab <- function()
       if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
       nastring <- ', na.strings=c(".", "NA", "", "?")'
-      read.cmd <- sprintf('crs$testset <<- read.csv("%s"%s)',
+      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s)',
                           filename, nastring)
-      appendLog("Read a file for evaluating the model",
-              gsub("<<-", "<-", read.cmd))
+      appendLog("Read a file for evaluating the model", read.cmd)
       eval(parse(text=read.cmd))
 
       testname <- basename(filename)
-      crs$testname <<- testname
+      crs$testname <- testname
     }
     
     # TODO The following case for included assumes the same column
@@ -403,9 +402,9 @@ executeEvaluateTab <- function()
 
     testset0 <- 'crs$testset'
     testname <- dataset
-    crs$testname <<- testname
+    crs$testname <- testname
     
-    assign.cmd <- sprintf("crs$testset <<- %s", dataset)
+    assign.cmd <- sprintf("crs$testset <- %s", dataset)
     appendLog("Assign the R dataset to be used as the test set.", assign.cmd)
     eval(parse(text=assign.cmd))
   }
@@ -425,7 +424,7 @@ executeEvaluateTab <- function()
   if (not.null(crs$testname) && crs$testname != crs$dataname)
     for (c in colnames(crs$dataset))
       if (is.factor(crs$dataset[[c]]))
-        levels(crs$testset[[c]]) <<- c(levels(crs$testset[[c]]),
+        levels(crs$testset[[c]]) <- c(levels(crs$testset[[c]]),
                                        setdiff(levels(crs$dataset[[c]]),
                                                levels(crs$testset[[c]])))
 
@@ -436,7 +435,7 @@ executeEvaluateTab <- function()
   ## generate either a prediction of the response or a probability of
   ## the class, as appropriate to the particular evaluator.
   ##
-  ## PREDICT: crs$pr <<- predict(crs$model, crs$testset[crs$sample, c(...)])
+  ## PREDICT: crs$pr <- predict(crs$model, crs$testset[crs$sample, c(...)])
   
   ## PROBABILITY: this predicts a matrix, each column a probability
   ## for that class.
@@ -486,8 +485,14 @@ executeEvaluateTab <- function()
   {
     testset[[crv$NNET]] <- testset0
 
-    predcmd[[crv$NNET]] <- sprintf("crs$pr <<- predict(crs$nnet, %s)",
-                                   testset[[crv$NNET]])
+    # 090316 For a binomial target convert the 
+    
+    if (binomialTarget())
+      predcmd[[crv$NNET]] <- sprintf("crs$pr <- as.integer(predict(crs$nnet, %s)>=0)",
+                                     testset[[crv$NNET]])
+    else
+      predcmd[[crv$NNET]] <- sprintf("crs$pr <- predict(crs$nnet, %s)",
+                                     testset[[crv$NNET]])
     respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
     if (binomialTarget())
       probcmd[[crv$NNET]] <- gsub(")$", ', type="raw")', predcmd[[crv$NNET]])
@@ -498,7 +503,7 @@ executeEvaluateTab <- function()
   if (crv$RPART %in%  mtypes)
   {
     testset[[crv$RPART]] <- testset0
-    predcmd[[crv$RPART]] <- sprintf("crs$pr <<- predict(crs$rpart, %s)",
+    predcmd[[crv$RPART]] <- sprintf("crs$pr <- predict(crs$rpart, %s)",
                                 testset[[crv$RPART]])
 
     # For crv$RPART, the default is to generate class probabilities for
@@ -524,7 +529,7 @@ executeEvaluateTab <- function()
       # but may be a problem for other types of evaluations (of which
       # there are currently none that use probcmd for multinom).
 
-      probcmd[[crv$RPART]] <- sub("<<- ", "<<- data.frame(",
+      probcmd[[crv$RPART]] <- sub("<- ", "<- data.frame(",
                                sub(")$",
                                    sprintf(paste("), rpart=predict(crs$rpart,",
                                                  "%s, type='class'))"),
@@ -545,7 +550,7 @@ executeEvaluateTab <- function()
     # 090301 testset[[crv$RF]] <- testset0
     testset[[crv$RF]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[crv$RF]] <- sprintf("crs$pr <<- predict(crs$rf, %s)",
+    predcmd[[crv$RF]] <- sprintf("crs$pr <- predict(crs$rf, %s)",
                              testset[[crv$RF]])
 
     # The default for crv$RF is to predict the class, so no
@@ -613,7 +618,7 @@ executeEvaluateTab <- function()
 
     testset[[crv$KSVM]] <- sprintf("na.omit(%s)", testset0)
 
-    predcmd[[crv$KSVM]] <- sprintf("crs$pr <<- predict(crs$ksvm, %s)",
+    predcmd[[crv$KSVM]] <- sprintf("crs$pr <- predict(crs$ksvm, %s)",
                                testset[[crv$KSVM]])
 
     ## The default for KSVM is to predict the class, so no
@@ -647,7 +652,7 @@ executeEvaluateTab <- function()
     if ("multinom" %in% class(crs$glm))
     {
       testset[[crv$GLM]] <- testset0
-      predcmd[[crv$GLM]] <- sprintf("crs$pr <<- predict(crs$glm, %s)",
+      predcmd[[crv$GLM]] <- sprintf("crs$pr <- predict(crs$glm, %s)",
                                      testset[[crv$GLM]])
       respcmd[[crv$GLM]] <- predcmd[[crv$GLM]]
       probcmd[[crv$GLM]] <- sub(")$", ', type="prob")', predcmd[[crv$GLM]])
@@ -656,7 +661,7 @@ executeEvaluateTab <- function()
       # be a problem for other types of evaluations (of which there
       # are currently none that use probcmd for multinom).
 
-      probcmd[[crv$GLM]] <- sub("<<- ", "<<- cbind(",
+      probcmd[[crv$GLM]] <- sub("<- ", "<- cbind(",
                                 sub(")$",
                                     sprintf("), crs$glm$lab[predict(crs$glm, %s)])",
                                             testset[[crv$GLM]]),
@@ -677,7 +682,7 @@ executeEvaluateTab <- function()
       
       testset[[crv$GLM]] <- testset0
 
-      predcmd[[crv$GLM]] <- sprintf(paste("crs$pr <<- predict(crs$glm,",
+      predcmd[[crv$GLM]] <- sprintf(paste("crs$pr <- predict(crs$glm,",
                                           'type="response", %s)'),
                                     testset[[crv$GLM]])
 
@@ -716,7 +721,7 @@ executeEvaluateTab <- function()
 
 ##     ## For GBM the default needs to know the number of trees to include.
 
-##     predcmd[[GBM]] <- sprintf(paste("crs$pr <<- predict(crs$gbm, %s,",
+##     predcmd[[GBM]] <- sprintf(paste("crs$pr <- predict(crs$gbm, %s,",
 ##                                     "n.trees=length(crs$gbm$trees))"),
 ##                               testset[[GBM]])
 ##     respcmd[[GBM]] <- predcmd[[GBM]]
@@ -826,8 +831,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     appendLog(sprintf("%sGenerate an Error Matrix for the %s model.",
                      crv$start.log.comment, commonName(mtype)), no.start=TRUE)
     appendLog(sprintf("Obtain the response from the %s model.",
-                      commonName(mtype)),
-             gsub("<<-", "<-", respcmd[[mtype]]))
+                      commonName(mtype)), respcmd[[mtype]])
   
     result <- try(eval(parse(text=respcmd[[mtype]])), TRUE)
 
@@ -979,7 +983,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
         testsetr <- gsub(testcols, newcols, testset[[mtype]], fixed=TRUE)
       }
   
-      evaluate.cmd <- paste("crs$eval <<- evaluateRisk(crs$pr,",
+      evaluate.cmd <- paste("crs$eval <- evaluateRisk(crs$pr,",
                             sprintf("%s$%s,", testset[[mtype]], crs$target),
                             sprintf("%s$%s)", testsetr, risk))
 
@@ -994,7 +998,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     }
     else
     {
-      evaluate.cmd <- paste("crs$eval <<- evaluateRisk(crs$pr,",
+      evaluate.cmd <- paste("crs$eval <- evaluateRisk(crs$pr,",
                             sprintf("%s$%s)", testset[[mtype]], crs$target))
 
       plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
@@ -1007,8 +1011,8 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     
     appendLog("Generate a Risk Chart",
              "#The Rattle package provides evaluateRisk and plotRisk.\n\n",
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n",
-             gsub("<<-", "<-", evaluate.cmd), "\n",
+             probcmd[[mtype]], "\n",
+             evaluate.cmd, "\n",
              plot.cmd, sep="")
 
     result <- try(eval(parse(text=probcmd[[mtype]])), TRUE)
@@ -1489,7 +1493,7 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
   
     appendLog(sprintf("Generate a Cost Curve for the %s model on %s.",
                      commonName(mtype), testname),
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
+             probcmd[[mtype]], "\n", plot.cmd)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
@@ -1625,7 +1629,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
     
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
+             probcmd[[mtype]], "\n", plot.cmd)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
@@ -1669,8 +1673,8 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                       sep="")
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
-             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   probcmd[[mtype]])), "\n", plot.cmd)
+             sub("-crs\\$sample", "crs$sample",
+                                   probcmd[[mtype]]), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
                                "crs$sample", probcmd[[mtype]]))), silent=TRUE)
@@ -1743,7 +1747,7 @@ executeEvaluateROC <- function(probcmd, testset, testname)
   
     appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
+             probcmd[[mtype]], "\n", plot.cmd)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
@@ -1799,8 +1803,8 @@ executeEvaluateROC <- function(probcmd, testset, testname)
                       sep="")
     appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
-             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   probcmd[[mtype]])), "\n", plot.cmd)
+             sub("-crs\\$sample", "crs$sample",
+                                   probcmd[[mtype]]), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
                                "crs$sample", probcmd[[mtype]]))), silent=TRUE)
@@ -1872,7 +1876,7 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
 
     appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
+             probcmd[[mtype]], "\n", plot.cmd)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
@@ -1915,8 +1919,8 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
                       sep="")
     appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
-             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   probcmd[[mtype]])), "\n", plot.cmd)
+             sub("-crs\\$sample", "crs$sample",
+                                   probcmd[[mtype]]), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
                                "crs$sample", probcmd[[mtype]]))), silent=TRUE)
@@ -1988,7 +1992,7 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
 
     appendLog(sprintf("Generate Sensitivity/Specificity Plot for %s model on %s.",
                      mtype, testname),
-             gsub("<<-", "<-", probcmd[[mtype]]), "\n", plot.cmd)
+             probcmd[[mtype]], "\n", plot.cmd)
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 
@@ -2030,8 +2034,8 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
                       sep="")
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
-             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-                                   probcmd[[mtype]])), "\n", plot.cmd)
+             sub("-crs\\$sample", "crs$sample",
+                                   probcmd[[mtype]]), "\n", plot.cmd)
 
     result <- try(eval(parse(text=sub("-crs\\$sample",
                                "crs$sample", probcmd[[mtype]]))), silent=TRUE)
@@ -2211,7 +2215,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
                                            "predictions",
                                            "class"))),
                       commonName(mtype), testname),
-              gsub("<<-", "<-", thecmd[[mtype]]))
+              thecmd[[mtype]])
     
     result <- try(eval(parse(text=thecmd[[mtype]])), silent=TRUE)
 
@@ -2427,7 +2431,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     appendLog(sprintf(paste("%s: Generate a Predicted v Observed plot",
                             "for %s model on %s."),
                       toupper(mtype), mtype, testname),
-              gsub("<<-", "<-", probcmd[[mtype]]))
+              probcmd[[mtype]])
 
     result <- try(eval(parse(text=probcmd[[mtype]])), silent=TRUE)
 

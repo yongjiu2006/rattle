@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:15:26 Graham Williams>
+# Time-stamp: <2009-03-16 22:56:42 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -226,7 +226,7 @@ executeClusterHClust <- function(include)
 
     # Use the more efficient hcluster for clustering.
   
-    hclust.cmd <- paste("crs$hclust <<- ",
+    hclust.cmd <- paste("crs$hclust <- ",
                         sprintf(paste('hclusterpar(na.omit(crs$dataset[%s,%s]),',
                                       'method="%s", link="%s",',
                                       'nbproc=%d)'),
@@ -237,7 +237,7 @@ executeClusterHClust <- function(include)
 
     # Use the standard hclust for clustering.
     
-    hclust.cmd <- paste("crs$hclust <<- ",
+    hclust.cmd <- paste("crs$hclust <- ",
                         sprintf(paste('hclust(dist(crs$dataset[%s,%s],',
                                       'method="%s"),',
                                       'method="%s")'),
@@ -249,7 +249,7 @@ executeClusterHClust <- function(include)
 
   startLog("HIERARCHICAL CLUSTER")
   appendLog("Generate a hierarchical cluster of the data.",
-          gsub("<<-", "<-", hclust.cmd))
+          hclust.cmd)
   
   # Perform the commands.
 
@@ -573,7 +573,7 @@ genPredictHclust <- function(dataset)
   sampling  <- not.null(crs$sample)
   include <- getNumericVariables()
 
-  return(sprintf("crs$pr <<- predict(crs$hclust, %s, na.omit(crs$dataset[%s,%s]), %s)",
+  return(sprintf("crs$pr <- predict(crs$hclust, %s, na.omit(crs$dataset[%s,%s]), %s)",
                  dataset, ifelse(sampling, "crs$sample", ""), include, nclust))
 }
 

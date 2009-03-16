@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-08 10:20:39 Graham Williams>
+# Time-stamp: <2009-03-16 23:06:43 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -348,20 +348,20 @@ executeTransformNormalisePerform <- function()
     # Generate the command to copy the current variable into a new
     # variable, prefixed appropraitely.
 
-    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <- crs$dataset[["%s"]]',
                         vname, v)
     cl <- class(crs$dataset[[v]])
 
     # Take a copy of the variable to be imputed.
     
-    appendLog(sprintf("RESCALE %s.", v), gsub("<<-", "<-", copy.cmd))
+    appendLog(sprintf("RESCALE %s.", v), copy.cmd)
     eval(parse(text=copy.cmd))
     
     # Determine what action to perform.
     
     if (action == "recenter")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<-',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-',
                                 'scale(crs$dataset[["%s"]])[,1]'), vname, v)
       norm.comment <- "Recenter and rescale the data around 0."
 
@@ -370,7 +370,7 @@ executeTransformNormalisePerform <- function()
       lst <- paste(vname,
                    mean(crs$dataset[[vname]], na.rm=TRUE),
                    sd(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <<- union(crs$transforms, lst)
+      crs$transforms <- union(crs$transforms, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -383,7 +383,7 @@ executeTransformNormalisePerform <- function()
     }
     else if (action == "scale01")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "range")'),
                           vname, v)
       norm.comment <- "Rescale to [0,1]."
@@ -393,7 +393,7 @@ executeTransformNormalisePerform <- function()
       lst <- paste(vname,
                    min(crs$dataset[[vname]], na.rm=TRUE),
                    max(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <<- union(crs$transforms, lst)
+      crs$transforms <- union(crs$transforms, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -407,7 +407,7 @@ executeTransformNormalisePerform <- function()
     }
     else if (action == "rank")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "rank")'),
                           vname, v)
       norm.comment <- "Convert values to ranks."
@@ -418,7 +418,7 @@ executeTransformNormalisePerform <- function()
     }
     else if (action == "medianad")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "robust")'),
                           vname, v)
       norm.comment <- paste("Rescale by subtracting median and dividing",
@@ -429,7 +429,7 @@ executeTransformNormalisePerform <- function()
       lst <- paste(vname,
                    median(crs$dataset[[vname]], na.rm=TRUE),
                    mad(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <<- union(crs$transforms, lst)
+      crs$transforms <- union(crs$transforms, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -447,24 +447,24 @@ executeTransformNormalisePerform <- function()
       # vname <-  the new variable name set up as above
 
       if (is.null(byvname))
-        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- 0\n',
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- 0\n',
                                   'crs$dataset[, ',
-                                  '"%s"] <<-\n',
+                                  '"%s"] <-\n',
                                   '    rescaler(crs$dataset[',
                                   ', "%s"], "range") * 99',
                                   sep=""),
                             vname, vname, v)
       else
         norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
-                                  'crs$dataset[["%s"]] <<- 0\n',
+                                  'crs$dataset[["%s"]] <- 0\n',
                                   'for (vl in bylevels) \n',
                                   '  crs$dataset[crs$dataset[["%s"]]==vl, ',
-                                  '"%s"] <<-\n',
+                                  '"%s"] <-\n',
                                   '    rescaler(crs$dataset[crs$dataset',
                                   '[["%s"]]',
                                   '==vl, "%s"], "range") * 99\n',
                                   'crs$dataset[is.nan(crs$dataset[["%s"]]), ',
-                                  '"%s"] <<- 99',
+                                  '"%s"] <- 99',
                                   sep=""),
                             byvname, vname, byvname, vname, byvname, v,
                             vname, vname)
@@ -474,7 +474,7 @@ executeTransformNormalisePerform <- function()
     }
     else if (action == "matrix")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'crs$dataset[["%s"]]/matrix.total'),
                           vname, v)
       norm.comment <- "Divide variable values by matrix total."
@@ -483,7 +483,7 @@ executeTransformNormalisePerform <- function()
       # this be a general test outside the loop?
 
       present <- grep(vname, crs$transforms)
-      if (length(present) >0) crs$transforms <<- crs$transforms[-present]
+      if (length(present) >0) crs$transforms <- crs$transforms[-present]
       
       # 090117 Record the transformation for inclusion in PMML. Note
       # that we only need matrix.total, but all other members of
@@ -491,7 +491,7 @@ executeTransformNormalisePerform <- function()
       # 1 to keep the group consistent.
 
       lst <- paste(vname, matrix.total, 1, sep="_")
-      crs$transforms <<- union(crs$transforms, lst)
+      crs$transforms <- union(crs$transforms, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -501,7 +501,7 @@ executeTransformNormalisePerform <- function()
     }
     else if (action == "log")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <<- ',
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'log(crs$dataset[["%s"]])',
                                 '\n  crs$dataset[crs$dataset[["%s"]] == -Inf &',
                                 '! is.na(crs$dataset[["%s"]]), "%s"] <- NA'),
@@ -510,7 +510,7 @@ executeTransformNormalisePerform <- function()
 
       # Record the transformation for inclusion in PMML.
       
-      crs$transforms <<- union(crs$transforms, vname)
+      crs$transforms <- union(crs$transforms, vname)
 
       # For the log, record the command to use when scoring the data.
       
@@ -519,7 +519,7 @@ executeTransformNormalisePerform <- function()
 
     appendLog(norm.comment,
               "if (building)\n{\n  ",
-              gsub("<<-", "<-", norm.cmd),
+              norm.cmd,
               "\n}")
     eval(parse(text=norm.cmd))
     if (! is.null(norm.score.command))
@@ -679,7 +679,7 @@ executeTransformImputePerform <- function()
     
     vname <- paste(vprefix, z, sep="_")
     
-    copy.cmd <- sprintf('crs$dataset[["%s"]] <<- crs$dataset[["%s"]]',
+    copy.cmd <- sprintf('crs$dataset[["%s"]] <- crs$dataset[["%s"]]',
                             vname, z)
     cl <- class(crs$dataset[[z]])
     
@@ -692,7 +692,7 @@ executeTransformImputePerform <- function()
 
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
         eval(parse(text=copy.cmd))
              
         # If "Missing" is not currently a category for this variable,
@@ -700,44 +700,44 @@ executeTransformImputePerform <- function()
 
         if ("Missing" %notin% levels(crs$dataset[[vname]]))
         {
-          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
+          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <-',
                                       'c(levels(crs$dataset[["%s"]]),',
                                       '"Missing")'),
                                 vname, vname)
           appendLog('Add a new category "Missing" to the variable',
-                    gsub("<<-", "<-", levels.cmd))
+                    levels.cmd)
           eval(parse(text=levels.cmd))
         }
       
         # Change all NAs to Missing.
       
         missing.cmd <- sprintf(paste('crs$dataset[["%s"]][is.na(',
-                                     'crs$dataset[["%s"]])] <<- "Missing"',
+                                     'crs$dataset[["%s"]])] <- "Missing"',
                                      sep=""),
                                vname, z)
-        appendLog('Change all NAs to "Missing"',gsub("<<-", "<-", missing.cmd))
+        appendLog('Change all NAs to "Missing"', missing.cmd)
         eval(parse(text=missing.cmd))
       }
       else if (action == "mode")
       {
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
         eval(parse(text=copy.cmd))
              
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- modalvalue(crs$dataset[["%s"]], ',
+                                 ' <- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         appendLog("Change all NAs to the modal value (not advisable).",
-                  gsub("<<-", "<-", imp.cmd))
+                  imp.cmd)
         eval(parse(text=imp.cmd))
       }
       else if (action == "constant")
       {
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
+        appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
         eval(parse(text=copy.cmd))
              
         val <- theWidget("impute_constant_entry")$getText()
@@ -747,20 +747,20 @@ executeTransformImputePerform <- function()
 
         if (val %notin% levels(crs$dataset[[vname]]))
         {
-          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <<-',
+          levels.cmd <- sprintf(paste('levels(crs$dataset[["%s"]]) <-',
                                       'c(levels(crs$dataset[["%s"]]),',
                                       sprintf('"%s")', val)),
                                 vname, vname)
           appendLog(sprintf('Add a new category "%s" to the variable', val), 
-                    gsub("<<-", "<-", levels.cmd))
+                    levels.cmd)
           eval(parse(text=levels.cmd))
         }
 
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- "%s"', sep=""), vname, z, val)
+                                 ' <- "%s"', sep=""), vname, z, val)
         appendLog(sprintf("Change all NAs to the constant value: %s", val),
-                  gsub("<<-", "<-", imp.cmd))
+                  imp.cmd)
         eval(parse(text=imp.cmd))
       }
       else
@@ -774,7 +774,7 @@ executeTransformImputePerform <- function()
       
       # Take a copy of the variable to be imputed.
     
-      appendLog(sprintf("IMPUTE %s.", z), gsub("<<-", "<-", copy.cmd))
+      appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
       eval(parse(text=copy.cmd))
       
       # Determine what action to perform.
@@ -783,14 +783,14 @@ executeTransformImputePerform <- function()
       {
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 " <<- 0", sep=""), vname, z)
+                                 " <- 0", sep=""), vname, z)
         imp.comment <- "Change all NAs to 0."
         imp.val <- 0
 
         # Record the transformation for inclusion in PMML.
 
         lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <<- union(crs$transforms, lst)
+        crs$transforms <- union(crs$transforms, lst)
       }
       else if (action == "mean")
       {
@@ -799,7 +799,7 @@ executeTransformImputePerform <- function()
         
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- mean(crs$dataset[["%s"]], ',
+                                 ' <- mean(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the mean value (not advisable)."
         imp.val <- mean(crs$dataset[[z]], na.rm=TRUE)
@@ -807,13 +807,13 @@ executeTransformImputePerform <- function()
         # Record the transformation for inclusion in PMML.
 
         lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <<- union(crs$transforms, lst)
+        crs$transforms <- union(crs$transforms, lst)
       }
       else if (action == "median")
       {
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- median(crs$dataset[["%s"]], ',
+                                 ' <- median(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the median (not advisable)."
         imp.val <- median(crs$dataset[[z]], na.rm=TRUE)
@@ -821,13 +821,13 @@ executeTransformImputePerform <- function()
         # Record the transformation for inclusion in PMML.
 
         lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <<- union(crs$transforms, lst)
+        crs$transforms <- union(crs$transforms, lst)
       }
       else if (action == "mode")
       {
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- modalvalue(crs$dataset[["%s"]], ',
+                                 ' <- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
         imp.comment <- "Change all NAs to the modal value (not advisable)."
         imp.val <- modalvalue(crs$dataset[[z]], na.rm=TRUE)
@@ -835,7 +835,7 @@ executeTransformImputePerform <- function()
         # Record the transformation for inclusion in PMML.
 
         lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <<- union(crs$transforms, lst)
+        crs$transforms <- union(crs$transforms, lst)
       }
       else if (action == "constant")
       {
@@ -849,18 +849,18 @@ executeTransformImputePerform <- function()
         }
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
-                                 ' <<- %s ', sep=""), vname, z, val)
+                                 ' <- %s ', sep=""), vname, z, val)
         imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
         imp.val <- val
 
         # Record the transformation for inclusion in PMML.
 
         lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <<- union(crs$transforms, lst)
+        crs$transforms <- union(crs$transforms, lst)
       }
         
       appendLog(imp.comment, "if (building)\n{\n  ",  
-                gsub("<<-", "<-", imp.cmd), "\n}")
+                imp.cmd, "\n}")
       eval(parse(text=imp.cmd))
       appendLog("When scoring, transform using the training data parameters:",
                 "if (scoring)\n{\n",
@@ -1128,7 +1128,7 @@ executeTransformRemapPerform <- function()
   
   if (action == "quantiles")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- binning(crs$',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- binning(crs$',
                                      'dataset[["%s"]], %d, method="quantile", ',
                                      'ordered=FALSE)',
                                      sep=""),
@@ -1138,7 +1138,7 @@ executeTransformRemapPerform <- function()
   else if (action == "kmeans")
   {
     remap.cmd <- paste(sprintf(paste('  set.seed(23456)\n',
-                                     '  crs$dataset[["%s_%s"]] <<- binning(crs$',
+                                     '  crs$dataset[["%s_%s"]] <- binning(crs$',
                                      'dataset[["%s"]], %d, method="kmeans", ',
                                      'ordered=FALSE)',
                                      sep=""),
@@ -1147,7 +1147,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "eqwidth")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- cut(crs$',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- cut(crs$',
                                      'dataset[["%s"]], %d)',
                                      sep=""),
                                remap.prefix, vars, vars, num.bins),
@@ -1157,7 +1157,7 @@ executeTransformRemapPerform <- function()
   {
     remap.cmd <- paste(sprintf(paste('  crs$dataset[, make.names(paste("%s_%s_", levels(',
                                      'crs$dataset[["%s"]]), sep=""))] ',
-                                     '<<- diag(nlevels(',
+                                     '<- diag(nlevels(',
                                      'crs$dataset[["%s"]]))[crs$dataset',
                                      '[["%s"]],]',
                                      sep=""),
@@ -1173,7 +1173,7 @@ executeTransformRemapPerform <- function()
       return()
     }
       
-    remap.cmd <- sprintf(paste('  crs$dataset[, "%s_%s_%s"] <<- ',
+    remap.cmd <- sprintf(paste('  crs$dataset[, "%s_%s_%s"] <- ',
                                'interaction(paste(crs$dataset[["%s"]], "_",',
                                'crs$dataset[["%s"]], sep=""))',
                                sep=""),
@@ -1182,7 +1182,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "asfactor")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- ',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- ',
                                      'as.factor(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
@@ -1190,7 +1190,7 @@ executeTransformRemapPerform <- function()
   }
   else if (action == "asnumeric")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <<- ',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- ',
                                      'as.numeric(crs$',
                                      'dataset[["%s"]])', sep=""),
                                remap.prefix, vars, vars),
@@ -1202,7 +1202,7 @@ executeTransformRemapPerform <- function()
   startLog("REMAP Variables")
   appendLog(remap.comment,
             "if (building)\n{\n",
-            gsub("<<-", "<-", remap.cmd),
+            remap.cmd,
             "\n}")
   eval(parse(text=remap.cmd))
 
@@ -1236,7 +1236,7 @@ executeTransformRemapPerform <- function()
     ## else
     ##   breaks <- sapply(lst, function(x) sort(attr(crs$dataset[[x]], "breaks")))
     lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
-    crs$transforms <<- union(crs$transforms, lst)
+    crs$transforms <- union(crs$transforms, lst)
 
     appendLog("When scoring, use the training data parameters to bin new data.",
               "if (scoring)\n{\n",
@@ -1364,12 +1364,12 @@ executeTransformCleanupPerform <- function()
     if (is.null(ignore))
     {
       cases <- complete.cases(crs$dataset)
-      del.cmd <- "crs$dataset <<- crs$dataset[complete.cases(crs$dataset),]"
+      del.cmd <- "crs$dataset <- crs$dataset[complete.cases(crs$dataset),]"
     }
     else
     {
       cases <- complete.cases(crs$dataset[,-getVariableIndicies(ignore)])
-      del.cmd <- sprintf(paste("crs$dataset <<- crs$dataset[complete.cases(",
+      del.cmd <- sprintf(paste("crs$dataset <- crs$dataset[complete.cases(",
                                "crs$dataset[,-%s]),]", sep=""),
                          simplifyNumberList(getVariableIndicies(ignore)))
     }
@@ -1384,7 +1384,7 @@ executeTransformCleanupPerform <- function()
 
     # Perform the deletions.
   
-    appendLog("Remove rows with missing values", gsub("<<-", "<-", del.cmd))
+    appendLog("Remove rows with missing values", del.cmd)
     eval(parse(text=del.cmd))
 
   }
@@ -1403,19 +1403,19 @@ executeTransformCleanupPerform <- function()
                          "variables?"))
       return()
 
-    del.cmd <- paste(sprintf('crs$dataset$%s <<- NULL', to.delete),
+    del.cmd <- paste(sprintf('crs$dataset$%s <- NULL', to.delete),
                      collapse="\n")
     del.comment <- "Remove specific variables from the dataset."
 
     # Perform the deletions.
   
-    appendLog(del.comment, gsub("<<-", "<-", del.cmd))
+    appendLog(del.comment, del.cmd)
     eval(parse(text=del.cmd))
 
     # Ensure any delted variables are no longer included in the list
     # of transformed variables.
 
-    crs$transforms <<- crs$transforms[! sapply(crs$transforms,
+    crs$transforms <- crs$transforms[! sapply(crs$transforms,
                                                function(x) sub('_[^_]*_[^_]*$', '', x))
                                       %in% to.delete]
 

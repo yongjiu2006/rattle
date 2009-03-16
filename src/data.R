@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 05:36:43 Graham Williams>
+# Time-stamp: <2009-03-16 20:46:40 Graham Williams>
 #
 # DATA TAB
 #
@@ -675,8 +675,8 @@ executeDataCSV <- function(filename=NULL)
   else
     filename <- URLdecode(filename)
 
-  crs$dwd <<- dirname(filename)
-  crs$mtime <<- urlModTime(filename)
+  crs$dwd <- dirname(filename)
+  crs$mtime <- urlModTime(filename)
   
   # If there is a model warn about losing it.
 
@@ -705,14 +705,14 @@ executeDataCSV <- function(filename=NULL)
   
   # Generate commands to read the data.
 
-  read.cmd <- sprintf('crs$dataset <<- read.csv("%s"%s%s%s)',
+  read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s)',
                       filename, hdr, sep, nastring)
   
   # Start logging and executing the R code.
 
   startLog()
   
-  appendLog("LOAD CSV FILE", gsub('<<-', '<-', read.cmd))
+  appendLog("LOAD CSV FILE", read.cmd)
   resetRattle()
   result <- try(eval(parse(text=read.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -734,7 +734,7 @@ executeDataCSV <- function(filename=NULL)
       errorReport(read.cmd, result)
   }
     
-  crs$dataname <<- basename(filename)
+  crs$dataname <- basename(filename)
   setMainTitle(crs$dataname)
 
   # Update the Data Tab Treeview and Samples.
@@ -776,8 +776,8 @@ on_data_filechooserbutton_file_set <- function(button)
     # Collect relevant data
 
     filename <- theWidget("data_filechooserbutton")$getFilename()
-    crs$dwd <<- dirname(filename)
-    crs$mtime <<- urlModTime(filename)
+    crs$dwd <- dirname(filename)
+    crs$mtime <- urlModTime(filename)
 
     # Fix filename for MS - otherwise eval/parse strip the \\.
 
@@ -877,7 +877,7 @@ open_odbc_set_combo <- function(button)
   # Generate commands to connect to the database and retrieve the tables.
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
-  connect.cmd <- sprintf('crs$odbc <<- odbcConnect("%s")', DSNname)
+  connect.cmd <- sprintf('crs$odbc <- odbcConnect("%s")', DSNname)
   tables.cmd  <- sprintf('sqlTables(crs$odbc)$TABLE_NAME')
   
   # Start logging and executing the R code.
@@ -897,8 +897,7 @@ open_odbc_set_combo <- function(button)
 
   odbcCloseAll()
   
-  appendLog("Open the connection to the ODBC service.",
-          gsub('<<-', '<-', connect.cmd))
+  appendLog("Open the connection to the ODBC service.", connect.cmd)
   result <- try(eval(parse(text=connect.cmd)))
   if (inherits(result, "try-error"))
   {
@@ -1033,8 +1032,8 @@ executeDataARFF <- function()
 
   filename <- URLdecode(filename)
   
-  crs$dwd <<- dirname(filename)
-  crs$mtime <<- urlModTime(filename)
+  crs$dwd <- dirname(filename)
+  crs$mtime <- urlModTime(filename)
 
   # We need the foreign package to read ARFF data.
   
@@ -1051,7 +1050,7 @@ executeDataARFF <- function()
 
   # Generate commands to read the data and then display the structure.
 
-  read.cmd <- sprintf('crs$dataset <<- read.arff("%s")', filename)
+  read.cmd <- sprintf('crs$dataset <- read.arff("%s")', filename)
   str.cmd  <- "str(crs$dataset)"
   
   # Start logging and executing the R code.
@@ -1063,10 +1062,10 @@ executeDataARFF <- function()
   appendLog("The foreign package provides a function to read arff.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  appendLog("LOAD ARFF FILE", gsub('<<-', '<-', read.cmd))
+  appendLog("LOAD ARFF FILE", read.cmd)
   resetRattle()
   eval(parse(text=read.cmd))
-  crs$dataname <<- basename(filename)
+  crs$dataname <- basename(filename)
   setMainTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
@@ -1137,8 +1136,8 @@ executeDataODBC <- function()
     if (row.limit > 0) sql <- paste(sql, "LIMIT", row.limit)
   }
   
-  #assign.cmd <- "crs$dataset <<- sqlFetch(crs$odbc, table)"
-  assign.cmd <- paste("crs$dataset <<- sqlQuery(crs$odbc, ", '"', sql, '"',
+  #assign.cmd <- "crs$dataset <- sqlFetch(crs$odbc, table)"
+  assign.cmd <- paste("crs$dataset <- sqlQuery(crs$odbc, ", '"', sql, '"',
                       ifelse(believe.nrows, "", ", believeNRows=FALSE"),
                       ")", sep="")
   str.cmd  <- "str(crs$dataset)"
@@ -1161,11 +1160,10 @@ executeDataODBC <- function()
   ## Start logging and executing the R code.
 
   startLog()
-  appendLog("LOAD FROM DATABASE TABLE",
-           gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD FROM DATABASE TABLE", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
-  crs$dataname <<- table
+  crs$dataname <- table
   setMainTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
@@ -1200,8 +1198,8 @@ executeDataRdata <- function()
     return(FALSE)
   }
 
-  crs$dwd <<- dirname(filename)
-  crs$mtime <<- urlModTime(filename)
+  crs$dwd <- dirname(filename)
+  crs$mtime <- urlModTime(filename)
 
   # Error if no dataset from the Rdata file has been chosen.
   
@@ -1221,17 +1219,17 @@ executeDataRdata <- function()
 
   # Generate commands.
   
-  assign.cmd <- sprintf('crs$dataset <<- %s', dataset)
+  assign.cmd <- sprintf('crs$dataset <- %s', dataset)
   str.cmd  <- "str(crs$dataset)"
   
   # Start logging and executing the R code.
 
   startLog()
   
-  appendLog("LOAD RDATA FILE", gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD RDATA FILE", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
-  crs$dataname <<- dataset
+  crs$dataname <- dataset
   setMainTitle(crs$dataname)
 
   setStatusBar("The data has been loaded:", crs$dataname)
@@ -1269,7 +1267,7 @@ executeDataRdataset <- function()
 
   # Generate commands.
 
-  assign.cmd <- sprintf('crs$dataset <<- %s', dataset)
+  assign.cmd <- sprintf('crs$dataset <- %s', dataset)
   str.cmd <- "str(crs$dataset)"
 
   # Start logging and executing the R code.
@@ -1278,17 +1276,17 @@ executeDataRdataset <- function()
   #theWidget(TV)$setWrapMode("none") # On for welcome msg
   #resetTextview(TV)
   
-  appendLog("LOAD R DATA FRAME", gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD R DATA FRAME", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
-  crs$dataname <<- dataset
+  crs$dataname <- dataset
   setMainTitle(crs$dataname)
 
   # 080328 Fix up any non-supported characters in the column names,
   # otherwise they cause problems, e.g. "a-b" when used as ds$a-b is
   # interpreted as (ds$a - b)!
   
-  names(crs$dataset) <<- make.names(names(crs$dataset))
+  names(crs$dataset) <- make.names(names(crs$dataset))
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
 
@@ -1334,14 +1332,14 @@ executeDataLibrary <- function()
   # Generate commands.
 
   assign.cmd <- sprintf(paste('data(list = "%s", package = "%s")\n',
-                              'crs$dataset <<- %s', sep=""),
+                              'crs$dataset <- %s', sep=""),
                         dsname, dspkg, adsname)
   
   # Start logging and executing the R code.
 
   startLog()
   
-  appendLog("LOAD R DATASET", gsub('<<-', '<-', assign.cmd))
+  appendLog("LOAD R DATASET", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   if (class(crs$dataset) != "data.frame")
@@ -1356,8 +1354,8 @@ executeDataLibrary <- function()
     return(FALSE)
   }
   
-  crs$dataname <<- adsname
-  crs$datapkg <<- dspkg
+  crs$dataname <- adsname
+  crs$datapkg <- dspkg
   setMainTitle(crs$dataname)
   
   setStatusBar("The R package data is now available.")
@@ -1393,9 +1391,9 @@ editData <- function()
   # Generate commands.
 
   if (is.null(crs$dataset))
-    assign.cmd <- 'crs$dataset <<- edit(data.frame())'
+    assign.cmd <- 'crs$dataset <- edit(data.frame())'
   else
-    assign.cmd <- 'crs$dataset <<- edit(crs$dataset)'
+    assign.cmd <- 'crs$dataset <- edit(crs$dataset)'
   
   # Start logging and executing the R code.
 
@@ -1403,7 +1401,7 @@ editData <- function()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
   
-  appendLog("EDIT A DATA SET MANUALLY", gsub('<<-', '<-', assign.cmd))
+  appendLog("EDIT A DATA SET MANUALLY", assign.cmd)
   
   # These are needed because resetRattle clears everything
 
@@ -1411,10 +1409,10 @@ editData <- function()
   # TODO fn <- theWidget("data_filechooserbutton")$getFilename()
   
   resetRattle()
-  crs$dataset <<- ds
+  crs$dataset <- ds
   eval(parse(text=assign.cmd))
 
-  crs$dataname <<- "dataset"
+  crs$dataname <- "dataset"
   # TODO fn <- theWidget("data_filechooserbutton")$getValue()
 
   setMainTitle(crs$dataname)
@@ -1531,7 +1529,7 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("explore_sample_label")$hide()
     theWidget("explore_vseparator")$hide()
   }
-  crs$sample <<- NULL
+  crs$sample <- NULL
   setStatusBar()
 }
 
@@ -1801,12 +1799,12 @@ executeSelectTab <- function()
   
   # Record appropriate information.
   
-  crs$input   <<- input
-  crs$target  <<- target
-  crs$risk    <<- risk
-  crs$ident   <<- ident
-  crs$ignore  <<- ignore
-  crs$weights <<- weights
+  crs$input   <- input
+  crs$target  <- target
+  crs$risk    <- risk
+  crs$ident   <- ident
+  crs$ignore  <- ignore
+  crs$weights <- weights
   
   # Update MODEL targets
 
@@ -1972,7 +1970,7 @@ executeSelectTab <- function()
 
   # Update defaults that rely on the number of variables.
   
-  crv$rf.mtry.default <<- floor(sqrt(length(crs$input)))
+  crv$rf.mtry.default <- floor(sqrt(length(crs$input)))
   theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
   
   # 080505 We auto decide whether the target looks like a categorical
@@ -2028,7 +2026,7 @@ executeSelectSample <- function()
   
   #target <- getSelectedVariables("target")
   #print(target)
-  #crs$nontargets <<- which(is.na(crs$dataset[[target]]))
+  #crs$nontargets <- which(is.na(crs$dataset[[target]]))
   
   # Record that a random sample of the dataset is desired and the
   # random sample itself is loaded into crs$sample. 080425 Whilst we
@@ -2044,11 +2042,10 @@ executeSelectSample <- function()
     seed <- theWidget("sample_seed_spinbutton")$getValue()
     
     sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
-                        "crs$sample <<- sample(nrow(crs$dataset), ", ssize,
+                        "crs$sample <- sample(nrow(crs$dataset), ", ssize,
                         ")", sep="")
 
-    appendLog("Build a random sample for modelling.",
-            gsub("<<-", "<-", sample.cmd))
+    appendLog("Build a random sample for modelling.", sample.cmd)
     eval(parse(text=sample.cmd))
 
     # When we have sampling, assume the remainder is the test set and
@@ -2059,7 +2056,7 @@ executeSelectSample <- function()
   }
   else
   {
-    crs$sample <<- NULL
+    crs$sample <- NULL
 
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
     if (! is.null(.RATTLE.SCORE.IN))
@@ -2068,16 +2065,16 @@ executeSelectSample <- function()
       theWidget("evaluate_training_radiobutton")$setActive(TRUE)
   }
 
-  crs$smodel <<- vector()
+  crs$smodel <- vector()
 
   # TODO For test/train, use sample,split from caTools?
 
   ## Set some defaults that depend on sample size.
   
   #if (is.null(crs$sample))
-  #  crv$rf.sampsize.default <<- length(crs$dataset)
+  #  crv$rf.sampsize.default <- length(crs$dataset)
   #else
-  #  crv$rf.sampsize.default <<- length(crs$sample)
+  #  crv$rf.sampsize.default <- length(crs$sample)
   #theWidget("rf_sampsize_spinbutton")$setValue(crv$rf.sampsize.default)
 
   ## 080520 Don't set the status bar - it is overwritten by the
@@ -2821,17 +2818,17 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     }
   }
 
-  crs$target <<- target
-  crs$input  <<- input
-  crs$ident  <<- ident
-  crs$ignore <<- ignore
-  crs$risk   <<- risk
+  crs$target <- target
+  crs$input  <- input
+  crs$ident  <- ident
+  crs$ignore <- ignore
+  crs$risk   <- risk
   
   ## Perform other setups associated with a new dataset
 
-  crv$rf.mtry.default <<- floor(sqrt(ncol(crs$dataset)))
+  crv$rf.mtry.default <- floor(sqrt(ncol(crs$dataset)))
   theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
-  #crv$rf.sampsize.default <<- nrow(crs$dataset)
+  #crv$rf.sampsize.default <- nrow(crs$dataset)
   #theWidget("rf_sampsize_spinbutton")$setValue(crv$rf.sampsize.default)
 }
 

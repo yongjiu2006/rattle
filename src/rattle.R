@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 05:57:37 Graham Williams>
+# Time-stamp: <2009-03-16 20:34:56 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 Mar 2009"
+VERSION.DATE <- "Released 16 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -158,8 +158,8 @@ rattle <- function(csvname=NULL)
   crs <<- new.env()
 
   # crv$tooltiphack <<- tooltiphack # Record the value globally
-  if (crv$tooltiphack) crv$load.tooltips <<- TRUE
-  crv$.gtkMain <<- FALSE # Initially gtkMain is not running.
+  if (crv$tooltiphack) crv$load.tooltips <- TRUE
+  crv$.gtkMain <- FALSE # Initially gtkMain is not running.
   
   # Load gloablly required packages.
   
@@ -275,7 +275,7 @@ rattle <- function(csvname=NULL)
   # idea since the knowing user may actually also change options
   # whilst Rattle is running.
   
-  crv$options <<- options(scipen=5)
+  crv$options <- options(scipen=5)
 
   # 080924 Load of a supplied data file occurs here, but may take time
   # and whilst the UI is not fully set up yet, we see the Welcome
@@ -394,15 +394,15 @@ rattle <- function(csvname=NULL)
   #
   # Various Treeview Columns
   
-  crv$COLUMN <<- c(number = 0, variable = 1, type = 2, input = 3,
+  crv$COLUMN <- c(number = 0, variable = 1, type = 2, input = 3,
                    target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
   
-  crv$IMPUTE <<- c(number=0, variable=1, comment=2)
+  crv$IMPUTE <- c(number=0, variable=1, comment=2)
   
-  crv$CATEGORICAL <<- c(number = 0, variable = 1, barplot = 2,
+  crv$CATEGORICAL <- c(number = 0, variable = 1, barplot = 2,
                         dotplot = 3, mosplot = 4, comment = 5)
   
-  crv$CONTINUOUS <<-  c(number = 0, variable = 1, boxplot = 2,
+  crv$CONTINUOUS <-  c(number = 0, variable = 1, boxplot = 2,
                         hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
   # Create constants naming the MODELLERS (i.e., the model
@@ -411,20 +411,20 @@ rattle <- function(csvname=NULL)
   # apriori will also be migrating into being treated as first class
   # models.
 
-  crv$KMEANS 	<<- "kmeans"
-  crv$HCLUST 	<<- "hclust"
-  crv$APRIORI 	<<- "apriori"
+  crv$KMEANS 	<- "kmeans"
+  crv$HCLUST 	<- "hclust"
+  crv$APRIORI 	<- "apriori"
   
-  crv$GLM   	<<- "glm"
-  crv$RPART 	<<- "rpart"
-  #GBM <<- "gbm"
-  crv$ADA   	<<- "ada"
-  crv$RF    	<<- "rf"
-  crv$SVM   	<<- "svm"
-  crv$KSVM  	<<- "ksvm"
-  crv$NNET  	<<- "nnet"
+  crv$GLM   	<- "glm"
+  crv$RPART 	<- "rpart"
+  #GBM <- "gbm"
+  crv$ADA   	<- "ada"
+  crv$RF    	<- "rf"
+  crv$SVM   	<- "svm"
+  crv$KSVM  	<- "ksvm"
+  crv$NNET  	<- "nnet"
 
-  crv$MODELLERS <<- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM, crv$NNET)
+  crv$MODELLERS <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM, crv$NNET)
   
   # PACKAGE STATE VARIABLE
   
@@ -473,90 +473,90 @@ rattle <- function(csvname=NULL)
   # depending on the selected paradigm. TODO Paradigms have gone as of
   # 080519 so we may not need all this machinery now!
   
-  crv$NOTEBOOK <<- theWidget("notebook")
+  crv$NOTEBOOK <- theWidget("notebook")
 
-  crv$NOTEBOOK.DATA.NAME <<- "Data"
+  crv$NOTEBOOK.DATA.NAME <- "Data"
 
-  crv$NOTEBOOK.TEST.NAME <<- "Test"
+  crv$NOTEBOOK.TEST.NAME <- "Test"
 
-  crv$NOTEBOOK.EXPLORE.NAME <<- "Explore"
+  crv$NOTEBOOK.EXPLORE.NAME <- "Explore"
 
-  crv$NOTEBOOK.TRANSFORM.NAME <<- "Transform"
+  crv$NOTEBOOK.TRANSFORM.NAME <- "Transform"
 
-  crv$NOTEBOOK.CLUSTER.NAME    <<- "Cluster"
-  crv$NOTEBOOK.CLUSTER.WIDGET <<- theWidget("cluster_tab_widget")
-  crv$NOTEBOOK.CLUSTER.LABEL  <<- theWidget("cluster_tab_label")
+  crv$NOTEBOOK.CLUSTER.NAME    <- "Cluster"
+  crv$NOTEBOOK.CLUSTER.WIDGET <- theWidget("cluster_tab_widget")
+  crv$NOTEBOOK.CLUSTER.LABEL  <- theWidget("cluster_tab_label")
 
-  crv$NOTEBOOK.ASSOCIATE.NAME    <<- "Associate"
-  crv$NOTEBOOK.ASSOCIATE.WIDGET <<- theWidget("associate_tab_widget")
-  crv$NOTEBOOK.ASSOCIATE.LABEL  <<- theWidget("associate_tab_label")
+  crv$NOTEBOOK.ASSOCIATE.NAME    <- "Associate"
+  crv$NOTEBOOK.ASSOCIATE.WIDGET <- theWidget("associate_tab_widget")
+  crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
-  crv$NOTEBOOK.MODEL.NAME     <<- "Model"
-  crv$NOTEBOOK.MODEL.WIDGET  <<- theWidget("model_tab_widget")
-  crv$NOTEBOOK.MODEL.LABEL   <<- theWidget("model_tab_label")
+  crv$NOTEBOOK.MODEL.NAME     <- "Model"
+  crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
+  crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 
-  crv$NOTEBOOK.EVALUATE.NAME    <<- "Evaluate"
-  crv$NOTEBOOK.EVALUATE.WIDGET <<- theWidget("evaluate_tab_widget")
-  crv$NOTEBOOK.EVALUATE.LABEL  <<- theWidget("evaluate_tab_label")
+  crv$NOTEBOOK.EVALUATE.NAME    <- "Evaluate"
+  crv$NOTEBOOK.EVALUATE.WIDGET <- theWidget("evaluate_tab_widget")
+  crv$NOTEBOOK.EVALUATE.LABEL  <- theWidget("evaluate_tab_label")
 
-  crv$NOTEBOOK.LOG.NAME       <<- "Log"
+  crv$NOTEBOOK.LOG.NAME       <- "Log"
 
   # 080921 Define the DATA tab pages
 
-  crv$DATA.NOTEBOOK 	<<- theWidget("data_notebook")
-  crv$DATA.CORPUS.TAB      <<- getNotebookPage(crv$DATA.NOTEBOOK, "corpus")
-  crv$DATA.CSV.TAB         <<- getNotebookPage(crv$DATA.NOTEBOOK, "csv")
+  crv$DATA.NOTEBOOK 	<- theWidget("data_notebook")
+  crv$DATA.CORPUS.TAB      <- getNotebookPage(crv$DATA.NOTEBOOK, "corpus")
+  crv$DATA.CSV.TAB         <- getNotebookPage(crv$DATA.NOTEBOOK, "csv")
 
-  crv$DATA.DISPLAY.NOTEBOOK     <<- theWidget("data_display_notebook")
-  crv$DATA.DISPLAY.TREEVIEW.TAB <<- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "treeview")
-  crv$DATA.DISPLAY.WELCOME.TAB  <<- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "welcome")
+  crv$DATA.DISPLAY.NOTEBOOK     <- theWidget("data_display_notebook")
+  crv$DATA.DISPLAY.TREEVIEW.TAB <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "treeview")
+  crv$DATA.DISPLAY.WELCOME.TAB  <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "welcome")
 
   # Define the TRANSFORM tab pages
   
-  crv$TRANSFORM               <<- theWidget("transform_notebook")
+  crv$TRANSFORM               <- theWidget("transform_notebook")
   # TODO 080423 Change to RESCALE
-  crv$TRANSFORM.NORMALISE.TAB <<- getNotebookPage(crv$TRANSFORM, "normalise")
-  crv$TRANSFORM.IMPUTE.TAB    <<- getNotebookPage(crv$TRANSFORM, "impute")
-  crv$TRANSFORM.REMAP.TAB     <<- getNotebookPage(crv$TRANSFORM, "remap")
-  crv$TRANSFORM.OUTLIER.TAB   <<- getNotebookPage(crv$TRANSFORM, "outlier")
-  crv$TRANSFORM.CLEANUP.TAB   <<- getNotebookPage(crv$TRANSFORM, "cleanup")
+  crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, "normalise")
+  crv$TRANSFORM.IMPUTE.TAB    <- getNotebookPage(crv$TRANSFORM, "impute")
+  crv$TRANSFORM.REMAP.TAB     <- getNotebookPage(crv$TRANSFORM, "remap")
+  crv$TRANSFORM.OUTLIER.TAB   <- getNotebookPage(crv$TRANSFORM, "outlier")
+  crv$TRANSFORM.CLEANUP.TAB   <- getNotebookPage(crv$TRANSFORM, "cleanup")
 
-  crv$EXPLORE                 <<- theWidget("explore_notebook")
-  crv$EXPLORE.SUMMARY.TAB     <<- getNotebookPage(crv$EXPLORE, "summary")
-  crv$EXPLORE.PLOT.TAB        <<- getNotebookPage(crv$EXPLORE, "explot")
-  crv$EXPLORE.GGOBI.TAB       <<- getNotebookPage(crv$EXPLORE, "ggobi")
-  crv$EXPLORE.CORRELATION.TAB <<- getNotebookPage(crv$EXPLORE, "correlation")
-  crv$EXPLORE.HIERCOR.TAB     <<- getNotebookPage(crv$EXPLORE, "hiercor")
-  crv$EXPLORE.PRCOMP.TAB      <<- getNotebookPage(crv$EXPLORE, "prcomp")
-  crv$EXPLORE.PLAYWITH.TAB    <<- getNotebookPage(crv$EXPLORE, "playwith")
+  crv$EXPLORE                 <- theWidget("explore_notebook")
+  crv$EXPLORE.SUMMARY.TAB     <- getNotebookPage(crv$EXPLORE, "summary")
+  crv$EXPLORE.PLOT.TAB        <- getNotebookPage(crv$EXPLORE, "explot")
+  crv$EXPLORE.GGOBI.TAB       <- getNotebookPage(crv$EXPLORE, "ggobi")
+  crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, "correlation")
+  crv$EXPLORE.HIERCOR.TAB     <- getNotebookPage(crv$EXPLORE, "hiercor")
+  crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, "prcomp")
+  crv$EXPLORE.PLAYWITH.TAB    <- getNotebookPage(crv$EXPLORE, "playwith")
   
-  crv$CLUSTER            <<- theWidget("cluster_notebook")
-  crv$CLUSTER.KMEANS.TAB <<- getNotebookPage(crv$CLUSTER, "kmeans")
-  crv$CLUSTER.HCLUST.TAB <<- getNotebookPage(crv$CLUSTER, "hclust")
+  crv$CLUSTER            <- theWidget("cluster_notebook")
+  crv$CLUSTER.KMEANS.TAB <- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.HCLUST.TAB <- getNotebookPage(crv$CLUSTER, "hclust")
   
-  crv$MODEL           <<- theWidget("model_notebook")
-  crv$MODEL.RPART.TAB <<- getNotebookPage(crv$MODEL, crv$RPART)
-  crv$MODEL.GLM.TAB   <<- getNotebookPage(crv$MODEL, crv$GLM)
-  crv$MODEL.ADA.TAB   <<- getNotebookPage(crv$MODEL, crv$ADA)
-  ## crv$MODEL.GBM.TAB   <<- getNotebookPage(crv$MODEL, .GBM)
-  crv$MODEL.RF.TAB    <<- getNotebookPage(crv$MODEL, crv$RF)
-  crv$MODEL.SVM.TAB   <<- getNotebookPage(crv$MODEL, crv$SVM)
-  crv$MODEL.NNET.TAB   <<- getNotebookPage(crv$MODEL, crv$NNET)
+  crv$MODEL           <- theWidget("model_notebook")
+  crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, crv$RPART)
+  crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, crv$GLM)
+  crv$MODEL.ADA.TAB   <- getNotebookPage(crv$MODEL, crv$ADA)
+  ## crv$MODEL.GBM.TAB   <- getNotebookPage(crv$MODEL, .GBM)
+  crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, crv$RF)
+  crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, crv$SVM)
+  crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, crv$NNET)
 
-  crv$SVMNB           <<- theWidget("svm_notebook")
-  crv$SVMNB.ESVM.TAB  <<- getNotebookPage(crv$SVMNB, "esvm")
-  crv$SVMNB.KSVM.TAB  <<- getNotebookPage(crv$SVMNB, "ksvm")
+  crv$SVMNB           <- theWidget("svm_notebook")
+  crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, "esvm")
+  crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, "ksvm")
   
-  crv$EVALUATE                 <<- theWidget("evaluate_notebook")
-  crv$EVALUATE.CONFUSION.TAB   <<- getNotebookPage(crv$EVALUATE, "confusion")
-  crv$EVALUATE.RISK.TAB        <<- getNotebookPage(crv$EVALUATE, "risk")
-  crv$EVALUATE.LIFT.TAB        <<- getNotebookPage(crv$EVALUATE, "lift")
-  crv$EVALUATE.ROC.TAB         <<- getNotebookPage(crv$EVALUATE, "roc")
-  crv$EVALUATE.PRECISION.TAB   <<- getNotebookPage(crv$EVALUATE, "precision")
-  crv$EVALUATE.SENSITIVITY.TAB <<- getNotebookPage(crv$EVALUATE, "sensitivity")
-  crv$EVALUATE.COSTCURVE.TAB   <<- getNotebookPage(crv$EVALUATE, "costcurve")
-  crv$EVALUATE.PVO.TAB         <<- getNotebookPage(crv$EVALUATE, "pvo")
-  crv$EVALUATE.SCORE.TAB       <<- getNotebookPage(crv$EVALUATE, "score")
+  crv$EVALUATE                 <- theWidget("evaluate_notebook")
+  crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, "confusion")
+  crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, "risk")
+  crv$EVALUATE.LIFT.TAB        <- getNotebookPage(crv$EVALUATE, "lift")
+  crv$EVALUATE.ROC.TAB         <- getNotebookPage(crv$EVALUATE, "roc")
+  crv$EVALUATE.PRECISION.TAB   <- getNotebookPage(crv$EVALUATE, "precision")
+  crv$EVALUATE.SENSITIVITY.TAB <- getNotebookPage(crv$EVALUATE, "sensitivity")
+  crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, "costcurve")
+  crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, "pvo")
+  crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, "score")
   
   # Turn off the sub-notebook tabs.
 
@@ -755,7 +755,7 @@ gtkmain_handler <- function(widget, event)
   
   if (! crv$.gtkMain)
   {
-    crv$.gtkMain <<- TRUE
+    crv$.gtkMain <- TRUE
     gtkMain()
   }
   return(FALSE)
@@ -765,7 +765,7 @@ gtkmainquit_handler <- function(widget, event)
 {
   if (crv$.gtkMain)
   {
-    crv$.gtkMain <<- FALSE
+    crv$.gtkMain <- FALSE
     gtkMainQuit()
   }
   return(FALSE)
@@ -787,41 +787,41 @@ resetRattle <- function(new.dataset=TRUE)
   {
     # Initialise CRS
 
-    crs$dataset  <<- NULL
-    crs$dataname <<- NULL
-    # crs$dwd      <<- NULL
-    crs$mtime    <<- NULL
-    crs$input    <<- NULL
-    crs$target   <<- NULL
-    crs$weights  <<- NULL
-    crs$risk     <<- NULL
-    crs$ident    <<- NULL
-    crs$ignore   <<- NULL
-    crs$nontargets <<- NULL # 080426 Started but not yet implemented.
-    crs$sample   <<- NULL
-    crs$sample.seed <<- NULL
-    crs$testset  <<- NULL
-    crs$testname <<- NULL
-    crs$transforms <<- NULL
+    crs$dataset  <- NULL
+    crs$dataname <- NULL
+    # crs$dwd      <- NULL
+    crs$mtime    <- NULL
+    crs$input    <- NULL
+    crs$target   <- NULL
+    crs$weights  <- NULL
+    crs$risk     <- NULL
+    crs$ident    <- NULL
+    crs$ignore   <- NULL
+    crs$nontargets <- NULL # 080426 Started but not yet implemented.
+    crs$sample   <- NULL
+    crs$sample.seed <- NULL
+    crs$testset  <- NULL
+    crs$testname <- NULL
+    crs$transforms <- NULL
   }
 
   # Clear out all current models.
   
-  crs$kmeans   <<- NULL
-  crs$kmeans.seed <<- NULL
-  crs$hclust   <<- NULL
-  crs$apriori  <<- NULL
-  crs$page     <<- ""
-  crs$smodel   <<- NULL
-  crs$glm      <<- NULL
-  crs$rpart    <<- NULL
-  crs$ada      <<- NULL
-  crs$rf       <<- NULL
-  crs$svm      <<- NULL
-  crs$ksvm     <<- NULL
-  crs$nnet     <<- NULL
-  crs$perf     <<- NULL
-  crs$eval     <<- NULL
+  crs$kmeans   <- NULL
+  crs$kmeans.seed <- NULL
+  crs$hclust   <- NULL
+  crs$apriori  <- NULL
+  crs$page     <- ""
+  crs$smodel   <- NULL
+  crs$glm      <- NULL
+  crs$rpart    <- NULL
+  crs$ada      <- NULL
+  crs$rf       <- NULL
+  crs$svm      <- NULL
+  crs$ksvm     <- NULL
+  crs$nnet     <- NULL
+  crs$perf     <- NULL
+  crs$eval     <- NULL
 
   # Clear all now outdated text views
 
@@ -1337,7 +1337,7 @@ listBuiltModels <- function(exclude=NULL)
   
 ##   if (not.null(filename))
 ##   {
-##     crs$dwd <<- dirname(filename)
+##     crs$dwd <- dirname(filename)
 ##     setwd(crs$dwd)
 ##   }
 ## }
@@ -4235,7 +4235,7 @@ on_tooltips_activate <- function(action, window)
 
 on_verbose_menuitem_toggled <- function(action, window)
 {
-  crv$verbose <<- theWidget("verbose_menuitem")$getActive()
+  crv$verbose <- theWidget("verbose_menuitem")$getActive()
 }
 
 ##----------------------------------------------------------------------
@@ -4375,7 +4375,7 @@ switchToPage <- function(page)
     
   # Record the current page so when we change we know which was last.
 
-  crs$page <<- page
+  crs$page <- page
 
 }
 

@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2009-02-07 07:40:27 Graham Williams>
+## Time-stamp: <2009-03-16 22:56:13 Graham Williams>
 ##
 ## GBM TAB
 ##
@@ -81,7 +81,7 @@ executeModelGBM <- function()
 
   included <- simplifyNumberList(indicies)
   
-  boost.cmd <- paste("crs$gbm <<- gbm.fit(crs$dataset[",
+  boost.cmd <- paste("crs$gbm <- gbm.fit(crs$dataset[",
                          if (sampling) "crs$sample",
                          ",", included, "], ",
                          "crs$dataset$", crs$target,
@@ -98,7 +98,7 @@ executeModelGBM <- function()
   ## Log
 
   appendLog(lib.cmd, "\n",
-          gsub("<<-", "<-", boost.cmd), "\n",
+          boost.cmd, "\n",
           summary.cmd, "\n",
           show.cmd, sep="")
 
@@ -116,7 +116,7 @@ executeModelGBM <- function()
                collectOutput(show.cmd),
                sep="")
 
-  if (sampling) crs$smodel <<- union(crs$smodel, GBM)
+  if (sampling) crs$smodel <- union(crs$smodel, GBM)
   
   timeTaken <- Sys.time()-startTime
   appendLog(sprintf("Time taken: %0.2f %s", timeTaken,

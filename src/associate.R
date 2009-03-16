@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-18 07:36:17 Graham Williams>
+# Time-stamp: <2009-03-16 20:38:47 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -163,7 +163,7 @@ executeAssociateTab <- function()
   include <- getCategoricVariables()
   
   if (baskets)
-    transaction.cmd <- paste("crs$transactions <<- as(split(",
+    transaction.cmd <- paste("crs$transactions <- as(split(",
                              sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
                                      ifelse(sampling, "[crs$sample,]", ""),
                                      crs$target,
@@ -171,23 +171,21 @@ executeAssociateTab <- function()
                                      crs$ident),
                              '), "transactions")', sep="") 
   else
-    transaction.cmd <- paste("crs$transactions <<- as(",
+    transaction.cmd <- paste("crs$transactions <- as(",
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  appendLog("Generate a transactions dataset.",
-           gsub("<<-", "<-", transaction.cmd))
+  appendLog("Generate a transactions dataset.", transaction.cmd)
   eval(parse(text=transaction.cmd))
 
   # Now generate the association rules.
 
-  apriori.cmd <- paste("crs$apriori <<- apriori(crs$transactions, ",
+  apriori.cmd <- paste("crs$apriori <- apriori(crs$transactions, ",
                        "parameter = list(",
                        sprintf("support=%.3f, confidence=%.3f",
                                support, confidence),
                        "))", sep="")
-  appendLog("Generate the association rules.",
-           gsub("<<-", "<-", apriori.cmd))
+  appendLog("Generate the association rules.", apriori.cmd)
   cmd.output <- collectOutput(apriori.cmd)
 
   # Add a summary of the rules.
@@ -274,7 +272,7 @@ plotAssociateFrequencies <- function()
   # don't need this here do we?
   
   if (baskets)
-    transaction.cmd <- paste("crs$transactions <<- as(split(",
+    transaction.cmd <- paste("crs$transactions <- as(split(",
                              sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
                                      ifelse(sampling, "[crs$sample,]", ""),
                                      crs$target,
@@ -282,12 +280,11 @@ plotAssociateFrequencies <- function()
                                      crs$ident),
                              '), "transactions")', sep="")
   else
-    transaction.cmd <- paste("crs$transactions <<- as(",
+    transaction.cmd <- paste("crs$transactions <- as(",
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  appendLog("Generate a transactions dataset.",
-           gsub("<<-", "<-", transaction.cmd))
+  appendLog("Generate a transactions dataset.", transaction.cmd)
   eval(parse(text=transaction.cmd))
 
   # Now plot the relative frequencies.
