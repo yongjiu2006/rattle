@@ -1,5 +1,12 @@
 .onLoad <- function(libname, pkgname)
 {
+  # 090315 Create the crs environment here. It is defined here (and
+  # then also reset in rattle() so that R CMD check would not complain
+  # about knowing nothing of crs (after removing the crs<<- assigments
+  # throughout rattle)!
+
+  crs <<- new.env()
+
   # 090207 Create the global crv environment for Rattle. Once again,
   # this is a deviation from Chamber's Prime Directive, but is akin to
   # the use of option.  It is defined here so that it is glabally

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 20:34:56 Graham Williams>
+# Time-stamp: <2009-03-17 07:12:50 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -86,11 +86,16 @@ COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # GLOBALS
 #
-#   Original design placed state variables into crs and global
-#   constants into . variables that then moved into crv instead, after
-#   R CMD check started complaining about possibly unbound
-#   variables. The real solution is probably environments, but I
-#   haven't explored these yet.
+#   Original design placed state variables into the crs list and
+#   global constants into . variables that then moved into the crv
+#   list instead, after R CMD check started complaining about possibly
+#   unbound variables. The real solution seems to be
+#   environments. This was implemented temporarily simply by replacing
+#   crv and crs with environments. The list notation then continued to
+#   work for them! 090316 Finally removed all <<- assignments into the
+#   environments, since, as Chambers (2008) page 124 points out a
+#   reference to the environemt ralways refers to the same
+#   environment. 
 #
 #   Be aware that the trick of doing
 #
@@ -145,15 +150,11 @@ rattle <- function(csvname=NULL)
     .onAttach()
   }
 
-  # 090309 Create the global environment, crs, which stores the curret
-  # Rattle state and used extensively throughout Rattle as a global
+  # 090309 Reset the environment, crs, which stores the curret Rattle
+  # state and used extensively throughout Rattle as a global
   # state. Not ideal for functional programming and only a hopefully
-  # small deviation from Chamber's Prime Directive principle, and
-  # similar to the option exception to the Prime Directive! Certainly
-  # by including this here we avoid a NOTE in the package check abuot
-  # no visible binding for global variable 'crs.' 090315 Moved to here
-  # from .onLoad so that rattle state is reset each time rattle
-  # starts.
+  # small deviation from Chamber's (2008) Prime Directive principle,
+  # and similar to the "option" exception to the Prime Directive!
   
   crs <<- new.env()
 
