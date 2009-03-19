@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.48.
+    version is 2.4.49.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+430 090320 Add a timestamp to the Rattle startup.
+           Improve handling of project loading and filename checking.
+           For project loading copy environment across.
 429 090317 Ensure environment crs is defined in .onLoad so always available.
 428 090316 Fix nnet binomial target: predcmd return 0/1 (Linda Clayton)
            Complete the conversion from crv/crs as list to env and remove <<-
@@ -851,6 +854,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-17 07:29:47 Graham Williams</i>
+<i>Last Modified 2009-03-20 08:50:56 Graham Williams</i>
 <!-- hhmts end -->
   </p>

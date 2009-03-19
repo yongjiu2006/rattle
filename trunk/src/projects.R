@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 23:00:47 Graham Williams>
+# Time-stamp: <2009-03-17 19:54:04 Graham Williams>
 #
 # Project functionality.
 #
@@ -359,16 +359,27 @@ loadProject <- function()
 
   set.cursor("watch")
 
-  crv$NOTEBOOK$setCurrentPage(0)
-  load(load.name)
+  resetRattle()  # Seems appropriate to clear out the crs
 
+  crv$NOTEBOOK$setCurrentPage(0)
+
+  # 090317 Trying to figure out how to place the save environment into
+  # the crs environment.
+  
+  ocrs <- crs
+  load(load.name)
+  for (o in objects(crs))
+    assign(o, get(o, envir=crs), envir=ocrs)
+  rm(crs)
+      
+  #crs <<- crs # 090317 Ensure we place the environment into the global crs
+  
   # Record the cwd for projects.
   
   crs$pwd <- dirname(load.name)
   
   # Now update all appropriate textviews and associated data.
 
-  resetRattle()  # Seems appropriate to clear out the crs
   setMainTitle(basename(load.name))
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
   
@@ -378,31 +389,17 @@ loadProject <- function()
   # file does not exist? This is most likely when the project comes
   # from another user or another system. Leaving it set as empty seems
   # to work in that we can make changes to the roles and they get
-  # effected.
+  # effected without trying to load the default dataset. 090317 Is
+  # that still true? Also, I don't recall why I go for the basename if
+  # it does not exist. Seems to make some sense.
 
-  if (file.exists(crs$filename))
+  if (file.exists(uri2file(crs$filename)))
     theWidget("data_filechooserbutton")$setUri(crs$filename)
-  
-  crs$dataname <- crs$dataname
-  crs$dataset <- crs$dataset
-
-  # Restore the filename options.
-  
-  if (file.exists(crs$filename))
-      crs$filename <- crs$filename
   else
-  {
     crs$filename <- basename(crs$filename)
-    crs$filename <- basename(crs$filename)
-  }
 
-  if (file.exists(crs$dwd))
-    crs$dwd <- crs$dwd
-  else
-  {
+  if (! file.exists(uri2file(crs$dwd)))
     crs$dwd <- ""
-    crs$dwd <- ""
-  }
 
   # Make sure we don't attempt to reload the file on executing the
   # Data tab, and thereby overwriting the current data, losing all of

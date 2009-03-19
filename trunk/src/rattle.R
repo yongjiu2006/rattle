@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-17 07:12:50 Graham Williams>
+# Time-stamp: <2009-03-19 22:28:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 16 Mar 2009"
+VERSION.DATE <- "Released 17 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -123,6 +123,8 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 rattle <- function(csvname=NULL)
 {
+  cat(crv$appname, "timestamp:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+  
   # If crv$tooltiphack is TRUE then gtkMain is called on focus,
   # blocking the R console, but at least tooltips work. On losing
   # focus gtkMainQuit is called, and thus the console is no longer
@@ -1032,6 +1034,11 @@ resetRattle <- function(new.dataset=TRUE)
 "%notin%" <- function(x,y) ! x %in% y
 
 not.null <- function(x) ! is.null(x)
+
+uri2file <- function(u)
+{
+  sub("^file://", "", u)
+}
 
 ## Common Dialogs
 
