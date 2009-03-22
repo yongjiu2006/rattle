@@ -33,7 +33,7 @@ IDATE=$(shell date +%m%d%y)
 
 PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
-IVERSION=$(shell egrep 'VERSION <-' src/rstat.R | cut -d \" -f 2)
+IVERSION=$(shell egrep 'VERSION <- "' src/rstat.R | cut -d \" -f 2)
 
 DATE=$(shell date +%F)
 

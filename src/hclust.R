@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 22:56:42 Graham Williams>
+# Time-stamp: <2009-03-23 07:36:59 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -386,7 +386,10 @@ displayHClustStats <- function()
   appendLog("Cluster stats is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  resetTextview(TV)
+  # 090323 Don't reset the textview since we want to reatin the build
+  # information.
+
+  # 090323 REMOVE resetTextview(TV)
 
   # Some background information.  Assume we have already built the
   # cluster, and so we don't need to check so many conditions.

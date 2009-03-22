@@ -12,6 +12,7 @@ export(
        genPlotTitleCmd,
        listTreesAda,
        listRPartRules,
+       listVersions,
        modalvalue,
        plotBenfordsLaw,
        plotNetwork,

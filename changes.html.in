@@ -6,13 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.49.
+    version is 2.4.50.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+431 090323 Conditionalise the rattle timestamp.
+           Add new listVersions function as a convenience.
+           Use %notin% rather than ! %in% as a convenience.
+           Ditto for not.null.
+           When loading library datasets, fix column names containing '-'.
+           
 430 090320 Add a timestamp to the Rattle startup.
            Improve handling of project loading and filename checking.
            For project loading copy environment across.
@@ -854,6 +860,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-20 08:50:56 Graham Williams</i>
+<i>Last Modified 2009-03-23 10:18:35 Graham Williams</i>
 <!-- hhmts end -->
   </p>

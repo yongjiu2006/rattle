@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 22:55:46 Graham Williams>
+# Time-stamp: <2009-03-23 07:49:09 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -973,7 +973,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     # affect the na.omit function which will omit more rows if these
     # extra columns have NAs.
 
-    if (! is.null(crs$risk))
+    if (not.null(crs$risk))
     {
       testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
       if (testcols != "")
@@ -1094,15 +1094,15 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
     #auc <- calculateRiskAUC(crs$eval)
     #print(auc)
-    if (! is.null(crs$risk)) aucRisk <- calculateAUC(crs$eval$Caseload, crs$eval$Risk)
+    if (not.null(crs$risk)) aucRisk <- calculateAUC(crs$eval$Caseload, crs$eval$Risk)
     aucRecall <- calculateAUC(crs$eval$Caseload, crs$eval$Recall)
     appendTextview(TV, paste("The area under the ",
                              if (is.null(crs$risk))
                              "Recall curve " else "Risk and Recall curves ",
                              "for ", commonName(mtype), " model\n\n",
-                             if (! is.null(crs$risk))
+                             if (not.null(crs$risk))
                              "Area under the Risk   (red)   curve: ",
-                             if (! is.null(crs$risk))
+                             if (not.null(crs$risk))
                              sprintf("%d%% (%0.3f)\n",
                                      round(100*aucRisk), aucRisk),
                              "Area under the Recall (green) curve: ",
@@ -1223,7 +1223,7 @@ evaluateRisk <- function(predicted, actual, risks=NULL)
     {
       ds.evaluation$Recall[i] <- ds.evaluation$Recall[i+1] +
         ds.evaluation$Recall[i]
-      if (! is.null(risks))
+      if (not.null(risks))
         ds.evaluation$Risk[i] <- ds.evaluation$Risk[i+1] +
           ds.evaluation$Risk[i]
       ds.evaluation$Caseload[i] <- ds.evaluation$Caseload[i+1] +
@@ -1232,10 +1232,10 @@ evaluateRisk <- function(predicted, actual, risks=NULL)
         ds.evaluation$Caseload[i]
     }
   ds.evaluation$Recall <- ds.evaluation$Recall/ds.evaluation$Recall[1]
-  if (! is.null(risks)) ds.evaluation$Risk <- ds.evaluation$Risk/ds.evaluation$Risk[1]
+  if (not.null(risks)) ds.evaluation$Risk <- ds.evaluation$Risk/ds.evaluation$Risk[1]
   ds.evaluation$Caseload <- ds.evaluation$Caseload/ds.evaluation$Caseload[1]
   # This is Michael's measure of performance.
-  if (! is.null(risks))
+  if (not.null(risks))
     ds.evaluation$Measure <- abs(ds.evaluation$Recall - ds.evaluation$Caseload) +
       abs(ds.evaluation$Risk - ds.evaluation$Caseload)
   return(ds.evaluation)
@@ -2099,7 +2099,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   # .RATTLE.SCORE.OUT if a relative path.
 
   fname <- Sys.getenv("RATTLE_SCORE")
-  if (fname == "" && ! is.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
+  if (fname == "" && not.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
   
   if (fname == "")
   {
