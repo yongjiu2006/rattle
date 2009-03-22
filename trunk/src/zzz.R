@@ -23,6 +23,7 @@
 
   # Some global constants
 
+  crv$show.timestamp		<- FALSE
   crv$tooltiphack 		<- FALSE
   crv$close 			<- "close"
   crv$sample.dataset 		<- "audit"

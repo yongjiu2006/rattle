@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 17:25:07 Graham Williams>
+# Time-stamp: <2009-03-23 07:41:56 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -245,7 +245,7 @@ getExportSaveName <- function(mtype)
     
     # 081218 Add glm when implemented.
     
-    if (!binomialTarget() || ! mtype %in% c("rpart", "glm"))
+    if (!binomialTarget() || mtype %notin% c("rpart", "glm"))
     {
       dialogGUI$
       getWidget("export_filechooser_target_label")$setSensitive(FALSE)

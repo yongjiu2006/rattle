@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 20:46:40 Graham Williams>
+# Time-stamp: <2009-03-23 07:47:40 Graham Williams>
 #
 # DATA TAB
 #
@@ -149,7 +149,7 @@ dataNeedsLoading <- function()
     # NA so we don't get a chance to notice updated files.
 
     now.mtime <- urlModTime(filename)
-    if (! is.null(crs$mtime) && ! is.null(now.mtime) && now.mtime > crs$mtime)
+    if (not.null(crs$mtime) && not.null(now.mtime) && now.mtime > crs$mtime)
       return(TRUE)
   
   }
@@ -430,7 +430,7 @@ executeDataTab <- function(csvname=NULL)
   # data type label is not sensitive (i.e., we have loaded a project),
   # simply update the variable roles without reloading the data.
 
-#  if (! is.null(csvname))
+#  if (not.null(csvname))
 #  {    
 #    if (! executeDataCSV(csvname)) return(FALSE)
 #  }
@@ -535,7 +535,7 @@ executeDataTab <- function(csvname=NULL)
 #      nrows <- nrow(crs$dataset)
 #      per <- 70
 #      srows <- round(nrows * per / 100)
-#      theWidget("sample_checkbutton")$setActive(! is.null(.RATTLE.SCORE.IN))
+#      theWidget("sample_checkbutton")$setActive(not.null(.RATTLE.SCORE.IN))
 #      theWidget("sample_count_spinbutton")$setRange(1,nrows)
 #      theWidget("sample_count_spinbutton")$setValue(srows)
 #      theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -601,7 +601,7 @@ executeDataCSV <- function(filename=NULL)
   # If no filename has been supplied give the user the option to use
   # the Rattle supplied sample dataset.
 
-  if (! is.null(supplied))
+  if (not.null(supplied))
   {
     # 090314 Trying to get the scenario of a supplied filename
     # working, so that it is displayed in the Filename box and
@@ -815,8 +815,9 @@ on_data_filechooserbutton_file_set <- function(button)
 # DATA LIBRAY
 #
 
-# 080522 Migrated this from old interface to new interface. Maybe this
-# is now called whenever the Library radio button is activated.
+# 080522 Migrated this from the old interface to the new
+# interface. Maybe this is now called whenever the Library radio
+# button is activated.
 #
 # OLD: Update the library combo box with all of the available
 # datasets. Can take a little time the first time to generate the
@@ -835,7 +836,7 @@ updateDataLibrary <- function()
   
   current <- data.name.combobox$getActiveText()
 
-  ## if (! is.null(current)) return()
+  ## if (not.null(current)) return()
 
   # This could take a little while, so use to watch cursor to indicate
   # we are busy.
@@ -1329,10 +1330,18 @@ executeDataLibrary <- function()
 
   if (! overwriteModel()) return()
 
-  # Generate commands.
+  # Generate commands. 090321 Add a command to fix the column
+  # names. Some datasets, like AdultUCI in arules, have names like
+  # education-num, which is some cases looks like a subtraction in
+  # R. Without changing it here I would need to fix other code up to
+  # quote the use of the variable name, and it might be that rpart has
+  # an issue with it also (but not confirmed).
 
   assign.cmd <- sprintf(paste('data(list = "%s", package = "%s")\n',
-                              'crs$dataset <- %s', sep=""),
+                              'crs$dataset <- %s\n',
+                              'names(crs$dataset) <- ',
+                              'gsub("-", ".", names(crs$dataset))',
+                              sep=""),
                         dsname, dspkg, adsname)
   
   # Start logging and executing the R code.
@@ -2059,7 +2068,7 @@ executeSelectSample <- function()
     crs$sample <- NULL
 
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    if (! is.null(.RATTLE.SCORE.IN))
+    if (not.null(.RATTLE.SCORE.IN))
       theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
     else
       theWidget("evaluate_training_radiobutton")$setActive(TRUE)
@@ -2587,11 +2596,16 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     iter <- model$append()$iter
 
     cl <- class(crs$dataset[[variables[i]]])
-    if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
-    {
-      cl <- "factor"
-      cl <- "Categorical"
-    }
+
+    # 090320 The following used to be included, but firstly, why the
+    # two assignments? Secondly, do we need this. Try for now without
+    # it. Below, change "ordered" to Categoric.
+    
+    ## if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
+    ## {
+    ##   cl <- "factor"
+    ##   cl <- "Categorical"
+    ## }
     
     # First check for special variable names. 
 
@@ -2671,7 +2685,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     if (length(target) > 0 && length(ident) > 0 && target %in% ident)
       target <- NULL
     
-    # 090110 We used to include the number of levels in the Dat Type
+    # 090110 We used to include the number of levels in the Data Type
     # column, but since we now include Unique in the comment column,
     # no longer include this redundant information.
     
@@ -2696,8 +2710,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     
     # Convert internal class to printable form.
     
-    prcl <- cl
+    prcl <- cl[1]
     prcl <- gsub('factor', 'Categoric', prcl)
+    prcl <- gsub('ordered', 'Categoric', prcl)
     prcl <- gsub('integer', 'Numeric', prcl)
     prcl <- gsub('numeric', 'Numeric', prcl)
     

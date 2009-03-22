@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-17 19:54:04 Graham Williams>
+# Time-stamp: <2009-03-23 07:45:14 Graham Williams>
 #
 # Project functionality.
 #
@@ -198,7 +198,7 @@ saveProject <- function()
   # filters is active, or else the first extension in the list
   # crv$project.extensions.
   
-  if (! save.ext %in% c(crv$project.extensions, "Rdata"))
+  if (save.ext %notin% c(crv$project.extensions, "Rdata"))
   {
     if (filter.name == "Projects")
     {

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-19 22:28:54 Graham Williams>
+# Time-stamp: <2009-03-23 09:27:58 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Mar 2009"
+VERSION.DATE <- "Released 20 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -123,7 +123,9 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 rattle <- function(csvname=NULL)
 {
-  cat(crv$appname, "timestamp:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+  if (crv$show.timestamp)
+    cat(crv$appname, "timestamp:",
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
   
   # If crv$tooltiphack is TRUE then gtkMain is called on focus,
   # blocking the R console, but at least tooltips work. On losing
@@ -1029,7 +1031,8 @@ resetRattle <- function(new.dataset=TRUE)
   
 }
 
-## UTILITIES
+########################################################################
+# UTILITIES
 
 "%notin%" <- function(x,y) ! x %in% y
 
@@ -1038,6 +1041,13 @@ not.null <- function(x) ! is.null(x)
 uri2file <- function(u)
 {
   sub("^file://", "", u)
+}
+
+listVersions <- function(file="")
+{
+  result <- installed.packages()[,c("Package", "Version")]
+  row.names(result) <- NULL
+  write.csv(result, file=file)
 }
 
 ## Common Dialogs
@@ -1634,7 +1644,7 @@ my.dev.print <- function (device = postscript, ...)
     nm <- names(current.device)[1]
     if (nm == "null device") 
         stop("no device to print from")
-    if (!(nm %in% c("Cairo", "X11", "GTK", "gnome", "windows", "quartz"))) 
+    if (nm %notin% c("Cairo", "X11", "GTK", "gnome", "windows", "quartz")) 
         stop("can only print from screen device")
     oc <- match.call()
     oc[[1]] <- as.name("dev.copy")

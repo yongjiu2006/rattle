@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 22:57:08 Graham Williams>
+# Time-stamp: <2009-03-23 07:41:14 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -84,7 +84,7 @@ on_kmeans_seed_button_clicked <- function(button)
 
 on_kmeans_stats_button_clicked <- function(button)
 {
-  ## Make sure there is a cluster first.
+  # Make sure there is a cluster first.
   
   if (is.null(crs$kmeans))
   {
@@ -92,16 +92,16 @@ on_kmeans_stats_button_clicked <- function(button)
     return()
   }
 
-  ## LIBRARY: Ensure the appropriate package is available for the
-  ## plot, and log the R command and execute.
+  # LIBRARY: Ensure the appropriate package is available for the
+  # plot, and log the R command and execute.
   
   if (!packageIsAvailable("fpc", "plot a cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  ## Some background information.  Assume we have already built the
-  ## cluster, and so we don't need to check so many conditions.
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
 
   TV <- "kmeans_textview"
   sampling  <- not.null(crs$sample)
