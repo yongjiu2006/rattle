@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 07:41:56 Graham Williams>
+# Time-stamp: <2009-03-23 12:18:33 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -76,7 +76,7 @@ dispatchExportButton <- function()
 
 ## exportExploreTab <- function()
 ## {
-##   if (theWidget("explot_radiobutton")$getActive())
+##   if (theWidget("explore_distr_radiobutton")$getActive())
 ##     exportPlot("dist")
 ##   else if (theWidget("correlation_radiobutton")$getActive())
 ##     exportPlot("corr")

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 23:06:43 Graham Williams>
+# Time-stamp: <2009-03-23 14:07:03 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -120,10 +120,18 @@ executeTransformTab <- function()
 ########################################################################
 # RESCALE
 
-executeTransformNormalisePerform <- function()
+executeTransformNormalisePerform <- function(variables=NULL,
+                                             action=NULL,
+                                             vprefix=paste(action, "_",
+                                               sep=""))
 {
   # TODO 080609 We should rename this in line with the interface change,
   # since it is not necessarily normalisation but is rescaling.
+
+  # 090323 The paramaters were added to the function call so that we
+  # can override what the interface says. This is primarily useful for
+  # my Sweave work where I'm automatically controlling Rattle to get
+  # screensshots.
   
   # First determine which normalisation option has been chosen and the
   # prefix of the new variable that will be introduced.  Default to
@@ -133,54 +141,57 @@ executeTransformNormalisePerform <- function()
   # multiple transformations for the selected variables, but for now,
   # stay with radio buttons as it is simple, without loss of
   # functionality.
-  
-  action <- NULL
-  vprefix <- NULL
-  if (theWidget("normalise_recenter_radiobutton")$getActive())
+
+  if (is.null(action))
   {
-    action <- "recenter"
-    vprefix <- "RRC_"
-  }
-  else if (theWidget("normalise_scale01_radiobutton")$getActive())
-  {
-    action <- "scale01"
-    vprefix <- "R01_"
-  }
-  else if (theWidget("normalise_rank_radiobutton")$getActive())
-  {
-    action <- "rank"
-    vprefix <- "RRK_"
-  }
-  else if (theWidget("normalise_medianad_radiobutton")$getActive())
-  {
-    action <- "medianad"
-    vprefix <- "RMD_"
-  }
-  else if (theWidget("normalise_bygroup_radiobutton")$getActive())
-  {
-    action <- "bygroup"
-    vprefix <- "RBG"
-  }
-  else if (theWidget("rescale_matrix_radiobutton")$getActive())
-  {
-    action <- "matrix"
-    vprefix <- "RMA_"
-  }
+    if (theWidget("normalise_recenter_radiobutton")$getActive())
+    {
+      action <- "recenter"
+      vprefix <- "RRC_"
+    }
+    else if (theWidget("normalise_scale01_radiobutton")$getActive())
+    {
+      action <- "scale01"
+      vprefix <- "R01_"
+    }
+    else if (theWidget("normalise_rank_radiobutton")$getActive())
+    {
+      action <- "rank"
+      vprefix <- "RRK_"
+    }
+    else if (theWidget("normalise_medianad_radiobutton")$getActive())
+    {
+      action <- "medianad"
+      vprefix <- "RMD_"
+    }
+    else if (theWidget("normalise_bygroup_radiobutton")$getActive())
+    {
+      action <- "bygroup"
+      vprefix <- "RBG"
+    }
+    else if (theWidget("rescale_matrix_radiobutton")$getActive())
+    {
+      action <- "matrix"
+      vprefix <- "RMA_"
+    }
     else if (theWidget("rescale_log_radiobutton")$getActive())
-  {
-    action <- "log"
-    vprefix <- "RLG_"
-    #remap.comment <- "Log transform."
+    {
+      action <- "log"
+      vprefix <- "RLG_"
+      #remap.comment <- "Log transform."
+    }
   }
   
   # Obtain the list of selected variables from the treeview.
 
-  variables <- NULL
-  selected <- theWidget("impute_treeview")$getSelection()
-  selected$selectedForeach(function(model, path, iter, data)
+  if (is.null(variables))
   {
-    variables <<- c(variables, model$get(iter, 1)[[1]])
-  }, TRUE)
+    selected <- theWidget("impute_treeview")$getSelection()
+    selected$selectedForeach(function(model, path, iter, data)
+    {
+      variables <<- c(variables, model$get(iter, 1)[[1]])
+    }, TRUE)
+  }
 
   # We check here if the action is rescale, and we have any
   # categoric variables to be normalised. If so put up an info
