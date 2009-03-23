@@ -62,7 +62,7 @@
 \alias{on_evaluate_radiobutton_group_changed}
 \alias{on_evaluate_rdataset_radiobutton_toggled}
 \alias{on_execute_button_clicked}
-\alias{on_explot_radiobutton_toggled}
+\alias{on_explore_distr_radiobutton_toggled}
 \alias{on_export_button_clicked}
 \alias{on_export_pmml_activate}
 \alias{on_gbm_importance_button_clicked}
