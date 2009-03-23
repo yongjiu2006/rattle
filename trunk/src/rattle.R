@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 09:27:58 Graham Williams>
+# Time-stamp: <2009-03-23 20:07:40 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 20 Mar 2009"
+VERSION.DATE <- "Released 23 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd"
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -123,10 +123,6 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 rattle <- function(csvname=NULL)
 {
-  if (crv$show.timestamp)
-    cat(crv$appname, "timestamp:",
-        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
-  
   # If crv$tooltiphack is TRUE then gtkMain is called on focus,
   # blocking the R console, but at least tooltips work. On losing
   # focus gtkMainQuit is called, and thus the console is no longer
@@ -154,6 +150,10 @@ rattle <- function(csvname=NULL)
     .onAttach()
   }
 
+  if (crv$show.timestamp)
+    cat(crv$appname, "timestamp:",
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+  
   # 090309 Reset the environment, crs, which stores the curret Rattle
   # state and used extensively throughout Rattle as a global
   # state. Not ideal for functional programming and only a hopefully
@@ -603,7 +603,7 @@ rattle <- function(csvname=NULL)
   # Do not enable ARFF option for versions before 2.5.0 where it was
   # not included in the foreign package.
 
-  if (R.version$minor < "4.0")
+  if (!exists("getRversion", baseenv()) || getRversion() <= "2.4.0")
     theWidget("arff_radiobutton")$hide()
   
   theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
@@ -1043,11 +1043,12 @@ uri2file <- function(u)
   sub("^file://", "", u)
 }
 
-listVersions <- function(file="")
+listVersions <- function(file="", ...)
 {
   result <- installed.packages()[,c("Package", "Version")]
   row.names(result) <- NULL
-  write.csv(result, file=file)
+  write.csv(result, file=file, ...)
+  invisible(result)
 }
 
 ## Common Dialogs
@@ -2026,7 +2027,7 @@ on_summary_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_explot_radiobutton_toggled <- function(button)
+on_explore_distr_radiobutton_toggled <- function(button)
 {
   #separator <- theWidget("explore_vseparator")
   barbutton <- theWidget("benford_bars_checkbutton")
@@ -2276,10 +2277,8 @@ summarySearch <- function(tv, search.str, start.iter)
     setStatusBar(sprintf('The string "%s" was not found.', search.str))
 }
 
-##----------------------------------------------------------------------
-##
-## Execution
-##
+#----------------------------------------------------------------------
+# Execution
 
 executeExploreTab <- function()
 {
@@ -2341,7 +2340,7 @@ executeExploreTab <- function()
   
   if (theWidget("summary_radiobutton")$getActive())
     executeExploreSummary(dataset)
-  else if (theWidget("explot_radiobutton")$getActive())
+  else if (theWidget("explore_distr_radiobutton")$getActive())
     executeExplorePlot(avdataset)
   else if (theWidget("ggobi_radiobutton")$getActive())
     executeExploreGGobi(dataset, crs$dataname)
@@ -2654,33 +2653,45 @@ plotBenfordsLaw <- function(l)
            xlab = "Initial Digit", ylab = "Probability")
 }
 
-executeExplorePlot <- function(dataset)
+executeExplorePlot <- function(dataset,
+                               boxplots = getSelectedVariables("boxplot"),
+                               hisplots = getSelectedVariables("hisplot"),
+                               cumplots = getSelectedVariables("cumplot"),
+                               benplots = getSelectedVariables("benplot"),
+                               barplots = getSelectedVariables("barplot"),
+                               dotplots = getSelectedVariables("dotplot"),
+                               mosplots = getSelectedVariables("mosplot"))
 {
-  # Plot the data. The dataset is a string that defines the dataset
-  # to use. Information about what variables to plot and the kind of
-  # plots is obtained from the continuous_treeview and the
+  # Plot the data. The DATASET is a character string that defines the
+  # dataset to use. Information about what variables to plot and the
+  # kind of plots is obtained from the continuous_treeview and the
   # categorical_treeview which are displayed in the Explore tab's
-  # Distribution option. The appropriate plots are displayed.
+  # Distribution option. The appropriate plots are displayed. 090323
+  # By having the list of varaiables to display for each type of plot
+  # set in the parameter list we can call this function to plot
+  # variables from the command line, as in using Sweave. The function
+  # remains an internal Rattle function though - only for those who
+  # know!
 
   # Obtain the selection of variables.
 
-  boxplots  <- getSelectedVariables("boxplot")
+  # 090323 REMOVE boxplots  <- getSelectedVariables("boxplot")
   nboxplots <- length(boxplots)
 
-  hisplots <- getSelectedVariables("hisplot")
+  # 090323 REMOVE hisplots <- getSelectedVariables("hisplot")
   nhisplots <- length(hisplots)
 
-  cumplots <- getSelectedVariables("cumplot")
-  benplots  <- getSelectedVariables("benplot")
+  # 090323 REMOVE cumplots <- getSelectedVariables("cumplot")
+  # 090323 REMOVE benplots  <- getSelectedVariables("benplot")
   nbenplots <- length(benplots)
   
-  barplots  <- getSelectedVariables("barplot")
+  # 090323 REMOVE barplots  <- getSelectedVariables("barplot")
   nbarplots <- length(barplots)
   
-  dotplots  <- getSelectedVariables("dotplot")
+  # 090323 REMOVE dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
 
-  mosplots  <- getSelectedVariables("mosplot")
+  # 090323 REMOVE mosplots  <- getSelectedVariables("mosplot")
   nmosplots <- length(mosplots)
 
   total.plots <- nboxplots + nhisplots + length(cumplots) +

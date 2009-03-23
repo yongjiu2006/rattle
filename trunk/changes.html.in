@@ -13,7 +13,7 @@
    </p>
 
 <pre>
-432 Add doc for listVersions.
+432 090323 Add doc for listVersions.
 431 090323 Conditionalise the rattle timestamp.
            Add new listVersions function as a convenience.
            Use %notin% rather than ! %in% as a convenience.
@@ -862,6 +862,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-23 10:22:08 Graham Williams</i>
+<i>Last Modified 2009-03-23 13:45:14 Graham Williams</i>
 <!-- hhmts end -->
   </p>

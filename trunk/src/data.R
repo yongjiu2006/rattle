@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 07:47:40 Graham Williams>
+# Time-stamp: <2009-03-23 20:07:57 Graham Williams>
 #
 # DATA TAB
 #
@@ -1012,7 +1012,7 @@ executeDataScript <- function()
 executeDataARFF <- function()
 {
 
-  if (R.version$minor < "4.0")
+  if (!exists("getRversion", baseenv()) || getRversion() <= "2.4.0")
   {
     infoDialog("Support for ARFF is only available in R 2.5.0 and beyond.")
     return(FALSE)
