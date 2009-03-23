@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.50.
+    version is 2.4.53.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+433 090323 Move test for timestamp later in rattle sequence (needs crv)
+           Fix test of version for arff support (Kurt Hornik)
+           listVersions returns the list, not the CSV.
+           Rename explot to explore_distr.
+           Place initialisations into function parms to support Sweave control.
 432 090323 Add doc for listVersions.
 431 090323 Conditionalise the rattle timestamp.
            Add new listVersions function as a convenience.
@@ -862,6 +867,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-23 13:45:14 Graham Williams</i>
+<i>Last Modified 2009-03-23 21:56:07 Graham Williams</i>
 <!-- hhmts end -->
   </p>
