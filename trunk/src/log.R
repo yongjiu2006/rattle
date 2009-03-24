@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-09 16:10:16 Graham Williams>
+# Time-stamp: <2009-03-24 18:02:33 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -23,20 +23,18 @@
 
 initiateLog <- function()
 {
-  if (! is.null(crv$log.intro)) appendTextview("log_textview", crv$log.intro, tvsep=FALSE)
+  if (! is.null(crv$log.intro))
+    appendTextview("log_textview", crv$log.intro, tvsep=FALSE)
 
-
-  startLog(paste(sprintf("%s version %s User %s",
+  startLog(paste(sprintf("%s version %s user '%s'",
                          crv$appname, crv$version, Sys.info()["user"]),
            #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
-          "\n\n# We can export the contents of this log textview to file using
-# the export button or Tools menu. This will save a log of what we have done,
-# potentially to repeat the process by sending the same commands directly
-# to R. For example, if we export to the file \"model061205.R\" then in the
-# R Console we can issue the command 'source(\"model061205.R\")' to run the
-# commands in that file. We may want to edit the file to suit our needs.
-# We can also directly edit this current log textview to record additional
-# information about the work you have done, before exporting the log.
+          "\n\n# Export this log textview to a file using the Export button or the Tools
+# menu to save a log of all activity. This facilitates repeatability. Exporting
+# to file 'myrf01.R', for example, allows us to the type in the R Console
+# the command 'source(\"myrf01.R\")' to repeat the process automatically.
+# Generally, we may want to edit the file to suit our needs. We can also directly
+# edit this current log textview to record additional information before exporting.
 #
 # Saving and loading projects also retains this log.
 
@@ -44,25 +42,16 @@ initiateLog <- function()
                  crv$library.command,
                  "
 
-# The variable crs is used to store the current state.
-# We initialise it here to be empty and then we start populating it.
-# Simply type \"str(crs)\" in the R Console to see a summary of what is
-# stored there!
-
-crs <- NULL
-
-# The commands in this log generally record the process of building a model.
-# However, with very little effort the log can be used to score a new dataset.
-# The variable, building, can be used to toggle between these two. For example
-# it is used to toggle between generating transformations, as when building a
-# model, and simply using the transformations, as when scoring a dataset.
+# This log generally records the process of building a model. However, with very
+# little effort the log can be used to score a new dataset. The logical variable
+# 'building' is used to toggle between generating transformations, as when building
+# a model, and simply using the transformations, as when scoring a dataset.
 
 building <- TRUE
 scoring  <- ! building",
                  ifelse(packageIsAvailable("vcd"), "
 
-# The vcd package is used to generate the colours used in plots, if
-# it is available.
+# The vcd package is used to generate the colours used in plots, if available.
 
 library(vcd)", "")))
 

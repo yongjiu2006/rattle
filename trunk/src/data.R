@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 20:07:57 Graham Williams>
+# Time-stamp: <2009-03-25 07:19:18 Graham Williams>
 #
 # DATA TAB
 #
@@ -867,11 +867,17 @@ updateDataLibrary <- function()
 
 open_odbc_set_combo <- function(button)
 {
-  # This is a callback for when the ODBC DSN name has changed
-  # (associated with "activate").  Load the corresponding tables from
-  # the specified ODBC database.
+  openODBCSetTables()
+}
 
-  # Obtain name of the DSN.
+openODBCSetTables <- function()
+{
+  # This is for use in the callback for when the ODBC DSN name has
+  # changed (associated with the "activate" signal).  Load the known
+  # tables from the specified ODBC database. The ODBC connection will
+  # be opened and queried for the list of tables.
+
+  # Obtain the name of the DSN.
 
   DSNname <- theWidget("data_odbc_dsn_entry")$getText()
   
@@ -879,21 +885,21 @@ open_odbc_set_combo <- function(button)
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
   connect.cmd <- sprintf('crs$odbc <- odbcConnect("%s")', DSNname)
-  tables.cmd  <- sprintf('sqlTables(crs$odbc)$TABLE_NAME')
+  tables.cmd  <- sprintf('crs$odbc.tables <- sqlTables(crs$odbc)$TABLE_NAME')
   
-  # Start logging and executing the R code.
+  # Ensure the RODBC library is available or else we can not support ODBC.
 
   if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return(FALSE)
       
   startLog("ODBC CONNECTION")
 
-  appendLog("Require the RODBC library", lib.cmd)
+  appendLog("Require the RODBC library.", lib.cmd)
   set.cursor("watch")
   eval(parse(text=lib.cmd))
-  set.cursor("")
+  set.cursor()
        
   # Close all currently open channels. This assumes that the user is
-  # not openning channelse themselves. Could be a bad choice, but
+  # not openning channels themselves. It could be a bad choice, but
   # assume we are addressing the usual Rattle user.
 
   odbcCloseAll()
@@ -910,8 +916,7 @@ open_odbc_set_combo <- function(button)
   
   appendLog("Load the names of available tables.", tables.cmd)
   set.cursor("watch")
-  tables <- NULL
-  result <- try(eval(parse(text=paste("tables <<- ", tables.cmd))))
+  result <- try(eval(parse(text=tables.cmd)))
   set.cursor()
   if (inherits(result, "try-error"))
   {
@@ -924,10 +929,10 @@ open_odbc_set_combo <- function(button)
   # Add list of tables to the combo box.
 
   combobox <- theWidget("data_odbc_table_combobox")
-  if (not.null(tables))
+  if (not.null(crs$odbc.tables))
   {
     combobox$getModel()$clear()
-    lapply(tables, combobox$appendText)
+    lapply(crs$odbc.tables, combobox$appendText)
   }
   
   setStatusBar("ODBC connection to database established. Now select a table.")
@@ -1088,10 +1093,10 @@ executeDataARFF <- function()
 
 executeDataODBC <- function()
 {
-
-  # Retrieve information. Note that there is no standard LIMIT option
-  # in SQL, but it is LIMIT in Teradata, so perhaps we go with that
-  # for now?
+  # Retrieve data from a data source name (DSN) as provided through
+  # the data_odbc_dsn_entry. Note that there is no standard LIMIT
+  # option in SQL, but it is LIMIT in Teradata, so perhaps we go with
+  # that for now?
   
   dsn.name <- theWidget("data_odbc_dsn_entry")$getText()
   table <- theWidget("data_odbc_table_combobox")$getActiveText()
@@ -1161,21 +1166,13 @@ executeDataODBC <- function()
   ## Start logging and executing the R code.
 
   startLog()
-  appendLog("LOAD FROM DATABASE TABLE", assign.cmd)
+  appendLog("LOAD FROM ODBC DATABASE TABLE", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- table
   setMainTitle(crs$dataname)
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
-  
-  ## Update the select treeview and samples.
-  
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-  
-  # Enable the Data View button.
-
-##  showDataViewButtons()
   
   setStatusBar("The ODBC data has been loaded:", crs$dataname)
 

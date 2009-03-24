@@ -15,28 +15,28 @@
   
   crv <<- new.env()
   
-  crv$appname 		<- "Rattle"
-  crv$log.intro 	<- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
-  crv$support.msg 	<- "Contact support@togaware.com."
-  crv$library.command 	<- "library(rattle)"
-  crv$version 		<- VERSION
+  crv$appname <- "Rattle"
+  crv$log.intro <- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
+  crv$support.msg <- "Contact support@togaware.com."
+  crv$library.command <- "library(rattle)"
+  crv$version <- VERSION
 
   # Some global constants
 
-  crv$show.timestamp		<- FALSE
-  crv$tooltiphack 		<- FALSE
-  crv$close 			<- "close"
-  crv$sample.dataset 		<- "audit"
+  crv$show.timestamp <- FALSE
+  crv$tooltiphack <- FALSE
+  crv$close <- "close"
+  crv$sample.dataset <- "audit"
   if (.Platform$OS.type == "unix")
-    crv$load.tooltips 		<- FALSE # Not working in general on Linux
+    crv$load.tooltips <- FALSE # Not working in general on Linux
   else
-    crv$load.tooltips 		<- TRUE
-  crv$verbose 			<- TRUE # Add sub titles to plots ...
-  crv$max.vars.correlation 	<- 40 # Correlation slows down too much
-  crv$export.to.c.available 	<- FALSE # No export to C implemented yet
-  crv$show.warnings 		<- TRUE # 090207 Show test/train warning.
-  crv$project.extensions 	<- c("rattle", "rstat") # Extensions for projects  
-  crv$ident.min.rows 		<- 300 # Unique factors/ints > than this are idents
+    crv$load.tooltips <- TRUE
+  crv$verbose <- TRUE # Add sub titles to plots ...
+  crv$max.vars.correlation <- 40 # Correlation slows down too much
+  crv$export.to.c.available <- FALSE # No export to C implemented yet
+  crv$show.warnings <- TRUE # 090207 Show test/train warning.
+  crv$project.extensions <- c("rattle", "rstat") # Extensions for projects  
+  crv$ident.min.rows <- 300 # Unique factors/ints > than this are idents
 
   # Log constants
 
@@ -91,13 +91,13 @@
   if (! suppressRattleWelcome)
   {
 
-    cat(sprintf(paste("Rattle, Graphical interface for data mining using R\n",
-                      "Version %s. ", COPYRIGHT, "\n", sep=""), VERSION))
+    cat(sprintf(paste("Rattle: Graphical interface for data mining using R.\n",
+                      "Version %s ", COPYRIGHT, "\n", sep=""), VERSION))
     if ("rattle" %in% getOption("defaultPackages"))
       rattle()
     else
-      cat(paste("Type \"rattle()\" to shake, rattle, and roll ",
-                "your data.\n", sep=""))
+      cat(paste("Type \"rattle()\" to shake, rattle, and roll your data.\n",
+                sep=""))
   }
 }
 
