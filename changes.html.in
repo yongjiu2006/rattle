@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.53.
+    version is 2.4.54.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+435 090325 Fix ODBC connection - tables were not being listed (Chima-Okereke)
+           Review Log text.
+434 090324 Add new explore_distr radiobutton to internal man page
 433 090323 Move test for timestamp later in rattle sequence (needs crv)
            Fix test of version for arff support (Kurt Hornik)
            listVersions returns the list, not the CSV.
@@ -867,6 +870,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-23 21:56:07 Graham Williams</i>
+<i>Last Modified 2009-03-25 07:24:20 Graham Williams</i>
 <!-- hhmts end -->
   </p>
