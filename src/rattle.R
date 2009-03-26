@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-24 21:43:33 Graham Williams>
+# Time-stamp: <2009-03-25 11:58:56 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Mar 2009"
+VERSION.DATE <- "Released 25 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2404,7 +2404,7 @@ executeExploreSummary <- function(dataset)
 
   if (do.summary)
   {
-    # Find the number of entities with any missing value for the
+    # Find the number of observations with any missing value for the
     # non-ignored variables.
     
     missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
@@ -2424,17 +2424,17 @@ executeExploreSummary <- function(dataset)
     }
     summary.cmd <- sprintf("summary(%s)", dataset)
     
-    appendLog("SUMMARISE THE DATASET", contents.cmd, summary.cmd)
+    appendLog("SUMMARISE THE DATASET", contents.cmd, "\n", summary.cmd)
     appendTextview(TV,
                    paste("Below is a summary of ",
                          ifelse(use.sample && sampling, "a SAMPLE of ", ""),
                          "the dataset.\n\n", sep=""),
                    "In reading the simple distribution tables the 1st and 3rd Qu.\n",
                    "refer to the first and third quartiles, indicating that 25% of\n",
-                   "the entities have values of that variable which are less than\n",
+                   "the observations have values of that variable which are less than\n",
                    "or greater than (respectively) the value listed.\n\n",
                    if (missing > 0)
-                   paste("We also note that the data contains", missing, "entities",
+                   paste("We also note that the data contains", missing, "observations",
                          "with missing values.\nCheck",
                          "the Show Missing check box for details.\n\n"),
                    collectOutput(contents.cmd),

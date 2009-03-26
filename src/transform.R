@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 14:07:03 Graham Williams>
+# Time-stamp: <2009-03-25 12:21:16 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1022,19 +1022,26 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
   return(result)
 }
 
-executeTransformRemapPerform <- function()
+executeTransformRemapPerform <- function(vars=NULL,
+                                         action=NULL,
+                                         num.bins=4,
+                                         remap.prefix=paste(action, "_",
+                                           sep=""),
+                                         remap.comment="Remap")
 {
   # Remap variables in some way.
 
   # Obtain the list of selected variables from the treeview.
 
-  vars <- NULL
-  selected <- theWidget("impute_treeview")$getSelection()
-  selected$selectedForeach(function(model, path, iter, data)
+  if (is.null(vars))
   {
-    vars <<- c(vars, model$get(iter, 1)[[1]])
-  }, TRUE)
-
+    selected <- theWidget("impute_treeview")$getSelection()
+    selected$selectedForeach(function(model, path, iter, data)
+    {
+      vars <<- c(vars, model$get(iter, 1)[[1]])
+    }, TRUE)
+  }
+  
   if (length(vars) == 0)
   {
     infoDialog("Please select some variables to remap first. Then Execute.")
@@ -1053,53 +1060,56 @@ executeTransformRemapPerform <- function()
 
   # Determine the action requested.
 
-  if (theWidget("remap_quantiles_radiobutton")$getActive())
+  if (is.null(action))
   {
-    action <- "quantiles"
-    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BQ%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                   "using quantiles."), num.bins)
-  }
-  else if (theWidget("remap_kmeans_radiobutton")$getActive())
-  {
-    action <- "kmeans"
-    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BK%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                   "using kmeans."), num.bins)
-  }
-  else if (theWidget("remap_eqwidth_radiobutton")$getActive())
-  {
-    action <- "eqwidth"
-    num.bins <- theWidget("remap_bins_spinbutton")$getValue()
-    remap.prefix <- sprintf("BE%d", num.bins)
-    remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                   "using equal widths."), num.bins)
-  }
-  else if (theWidget("remap_indicator_radiobutton")$getActive())
-  {
-    action <- "indicator"
-    remap.prefix <- "TIN"
-    remap.comment <- "Turn a factor into indicator variables"
-  }
-  else if (theWidget("remap_joincat_radiobutton")$getActive())
-  {
-    action <- "joincat"
-    remap.prefix <- "TJN"
-    remap.comment <- "Turn two factors into one factor"
-  }
-  else if (theWidget("remap_asfactor_radiobutton")$getActive())
-  {
-    action <- "asfactor"
-    remap.prefix <- "TFC"
-    remap.comment <- "Transform into a Factor."
-  }
-  else if (theWidget("remap_asnumeric_radiobutton")$getActive())
-  {
-    action <- "asnumeric"
-    remap.prefix <- "TNM"
-    remap.comment <- "Transform into a Numeric."
+    if (theWidget("remap_quantiles_radiobutton")$getActive())
+    {
+      action <- "quantiles"
+      num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+      remap.prefix <- sprintf("BQ%d", num.bins)
+      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
+                                     "using quantiles."), num.bins)
+    }
+    else if (theWidget("remap_kmeans_radiobutton")$getActive())
+    {
+      action <- "kmeans"
+      num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+      remap.prefix <- sprintf("BK%d", num.bins)
+      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
+                                     "using kmeans."), num.bins)
+    }
+    else if (theWidget("remap_eqwidth_radiobutton")$getActive())
+    {
+      action <- "eqwidth"
+      num.bins <- theWidget("remap_bins_spinbutton")$getValue()
+      remap.prefix <- sprintf("BE%d", num.bins)
+      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
+                                     "using equal widths."), num.bins)
+    }
+    else if (theWidget("remap_indicator_radiobutton")$getActive())
+    {
+      action <- "indicator"
+      remap.prefix <- "TIN"
+      remap.comment <- "Turn a factor into indicator variables"
+    }
+    else if (theWidget("remap_joincat_radiobutton")$getActive())
+    {
+      action <- "joincat"
+      remap.prefix <- "TJN"
+      remap.comment <- "Turn two factors into one factor"
+    }
+    else if (theWidget("remap_asfactor_radiobutton")$getActive())
+    {
+      action <- "asfactor"
+      remap.prefix <- "TFC"
+      remap.comment <- "Transform into a Factor."
+    }
+    else if (theWidget("remap_asnumeric_radiobutton")$getActive())
+    {
+      action <- "asnumeric"
+      remap.prefix <- "TNM"
+      remap.comment <- "Transform into a Numeric."
+    }
   }
   
   # Check if the action is one that only works on numeric data, and we

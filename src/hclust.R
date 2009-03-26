@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 07:36:59 Graham Williams>
+# Time-stamp: <2009-03-25 07:58:47 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -266,7 +266,7 @@ executeClusterHClust <- function(include)
                   "as hclust is rather memory hungry.",
                   "A quick solution is to sample the dataset, through the",
                   "Data tab. On 32bit machines you may be limited to",
-                  "less than 2000 entities.")
+                  "less than 2000 observations.")
       setTextview(TV)
     }
     else
@@ -333,7 +333,7 @@ plotDendrogram <- function()
   set.cursor("watch", "Rendering hierarchical cluster dndrogram...")
   
   # Generate the plot command to not print the xaxis labels if there
-  # are too many entities.
+  # are too many observations.
 
   if (length(crs$hclust$order) > 100)
     limit <- ", labels=FALSE, hang=0"

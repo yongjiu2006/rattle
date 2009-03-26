@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-25 07:19:18 Graham Williams>
+# Time-stamp: <2009-03-27 10:31:48 Graham Williams>
 #
 # DATA TAB
 #
@@ -384,7 +384,7 @@ on_data_odbc_radiobutton_toggled <- function(button)
                 "data_odbc_believeNRows_checkbutton")
 }
 
-updateRDatasets <- function()
+updateRDatasets <- function(current=NULL)
 {
   # Update a combo box with just the available data frames and matrices.
 
@@ -409,11 +409,13 @@ updateRDatasets <- function()
   {
     cbox$getModel()$clear()
     lapply(dl, cbox$appendText)
-    ## Set the selection to that which was already selected, if possible.
-#    if (not.null(current) && current %in% dl)
-#      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
+
+    # Set the selection to that which was is supplied.
+
+    if (not.null(current) && current %in% dl)
+      cbox$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
-  set.cursor(message="")
+  set.cursor(message="Data Names updated.")
 }
 
 ########################################################################
@@ -772,45 +774,47 @@ on_data_filechooserbutton_file_set <- function(button)
   # chosen from.
 
   if (theWidget("data_rdata_radiobutton")$getActive())
-  {
-    # Collect relevant data
-
-    filename <- theWidget("data_filechooserbutton")$getFilename()
-    crs$dwd <- dirname(filename)
-    crs$mtime <- urlModTime(filename)
-
-    # Fix filename for MS - otherwise eval/parse strip the \\.
-
-    if (isWindows()) filename <- gsub("\\\\", "/", filename)
-
-    # Generate commands to read the data and then display the structure.
-
-    load.cmd <- sprintf('load("%s")', filename)
-
-    # Start logging and executing the R code.
-
-    startLog()
-
-    appendLog("Load an Rdata file containing R objects.", load.cmd)
-    set.cursor("watch")
-    new.objects <- NULL
-    eval(parse(text=paste("new.objects <- ", load.cmd)), baseenv())
-    set.cursor()
-    
-    # Add new dataframes to the combo box.
-    
-    combobox <- theWidget("data_name_combobox")
-    if (not.null(new.objects))
-    {
-      combobox$getModel()$clear()
-      lapply(new.objects, combobox$appendText)
-    }
-  
-    setStatusBar()
-  }
-  
+    updateRDataNames()
 }
 
+updateRDataNames <- function()
+{
+  # Collect relevant data
+
+  filename <- theWidget("data_filechooserbutton")$getFilename()
+  crs$dwd <- dirname(filename)
+  crs$mtime <- urlModTime(filename)
+
+  # Fix filename for MS - otherwise eval/parse strip the \\.
+
+  if (isWindows()) filename <- gsub("\\\\", "/", filename)
+
+  # Generate commands to read the data and then display the structure.
+
+  load.cmd <- sprintf('crs$rdata.datasets <- load("%s")', filename)
+
+  # Start logging and executing the R code.
+
+  startLog()
+  
+  appendLog("Load an Rdata file containing R objects.", load.cmd)
+  set.cursor("watch")
+  eval(parse(text=load.cmd), .GlobalEnv) # Env so datasets are globally available.
+  set.cursor()
+  
+  # Add new dataframes to the combo box.
+  
+  combobox <- theWidget("data_name_combobox")
+  if (not.null(crs$rdata.datasets))
+  {
+    combobox$getModel()$clear()
+    lapply(crs$rdata.datasets, combobox$appendText)
+  }
+  
+  setStatusBar("Updated list of datasets available from the supplied data file.",
+               "Choose one from the Data Name box.")
+}
+  
 #-----------------------------------------------------------------------
 # DATA LIBRAY
 #
@@ -1150,8 +1154,8 @@ executeDataODBC <- function()
 
   if (row.limit == 0)
   {
-    ## Double check with the user if we are abuot to extract a large
-    ## number of rows.
+    # Double check with the user if we are about to extract a large
+    # number of rows.
     
     numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
     if (numRows > 50000)
@@ -1163,7 +1167,7 @@ executeDataODBC <- function()
         return()
   }
   
-  ## Start logging and executing the R code.
+  # Start logging and executing the R code.
 
   startLog()
   appendLog("LOAD FROM ODBC DATABASE TABLE", assign.cmd)
@@ -1247,7 +1251,7 @@ executeDataRdataset <- function()
   # best! But at least having it in here means we can update it when
   # it is executed.
   
-  updateRDatasets()
+  updateRDatasets(dataset)
   
   if (is.null(dataset))
   {
@@ -1384,7 +1388,8 @@ viewData <- function()
   op <- options(width=10000)
   tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
   options(op)
-  ## For IBI viewdataGUI$getWidget("viewdata_window")$setTitle("Fred")
+  viewdataGUI$getWidget("viewdata_window")$
+  setTitle(paste(crv$appname, ": Data Viewer", sep=""))
 }
     
 editData <- function()
@@ -2006,7 +2011,7 @@ executeSelectTab <- function()
   # Finished - update the status bar.
   
   setStatusBar("Roles noted.",
-               nrow(crs$dataset), "entites by",
+               nrow(crs$dataset), "observations by",
                length(crs$input), "input variables.",
                ifelse(length(crs$target) == 0,
                       paste("NO target thus no predictive modelling nor",
@@ -2020,8 +2025,8 @@ executeSelectTab <- function()
 
 executeSelectSample <- function()
 {
-  # Identify if there are entities without a target value. TODO
-  # 080426. I started looking at noting those entities with missing
+  # Identify if there are observations without a target value. TODO
+  # 080426. I started looking at noting those observations with missing
   # target values. This is recorded in crs$nontargets. Currently I'm
   # not using it. The intention was to only sample from those with
   # targets, etc. But the impacts need to be carefuly thought through.
@@ -2090,7 +2095,7 @@ executeSelectSample <- function()
 
 ##  if (theWidget("sample_checkbutton")$getActive())
 ##    setStatusBar("The sample has been generated.",
-##                  "There are", length(crs$sample), "entities.")
+##                  "There are", length(crs$sample), "observations.")
 ##  else
 ##    setStatusBar("Sampling is inactive.")
 }

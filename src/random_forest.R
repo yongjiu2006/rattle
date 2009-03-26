@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 23:01:07 Graham Williams>
+# Time-stamp: <2009-03-25 07:56:04 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -39,8 +39,8 @@ number of variables as the subset to choose from at each node. The
 resulting model is generally not very sensitive to the choice of these
 parameters.
 <<>>
-Any entity with missing values will be ignored, which may lead to some
-suprises, like many fewer entities to model when many missing values
+Any observation with missing values will be ignored, which may lead to some
+suprises, like many fewer observations to model when many missing values
 exist. It can also lead to losing all examples of a particular class!
 <<>>
 An estimate of the error rate is provided as the out-of-bag (OOB)
@@ -173,10 +173,10 @@ executeModelRF <- function()
   if (inherits(result, "try-error")) dsrow <- 0
   if (missing == dsrow)
   {
-    errorDialog("A review of the dataset has found all entities have one",
+    errorDialog("A review of the dataset has found all observations have one",
                 "or more missing values amongst the vriables selected.",
                 "A random forest can not be built from data with missing",
-                "values, and thus there are no entities left to model.",
+                "values, and thus there are no observations left to model.",
                 "To fix this problem, you can, for example, Ignore any",
                 "variable with many (or any) missing values (NAs).",
                 "Or else employ imputation to fill in default or modelled",
@@ -223,7 +223,7 @@ executeModelRF <- function()
                    "as randomForest is rather memory hungry.",
                    "A quick solution is to sample the dataset, through the",
                    "Transform tab. On 32 bit machines you may be limited to",
-                   "less than 2000 entities.")
+                   "less than 2000 observations.")
       setTextview(TV)
     }
     else if (any(grep("NA/NaN/Inf", result)))
