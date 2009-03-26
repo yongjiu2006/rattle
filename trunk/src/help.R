@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-03 21:17:01 Graham Williams>
+# Time-stamp: <2009-03-25 07:58:16 Graham Williams>
 #
 # Help Menu
 #
@@ -94,14 +94,14 @@ different nomenclatures being used in data mining, deriving from the many
 different contributory fields. Here, we attempt to stay with a single,
 consistent nomenclature.
 <<>>
-A dataset consists of entities described using variables,
+A dataset consists of observations described using variables,
 which might consist of a mixture of input variables and output variables,
 either of which may be categoric or numeric.
 <<>>
 dataset = A collection of data.
 <<>>
-entity = An object of interest, descibed by variables.
-Also called a record, object, row or observation.
+observation = An object or entity of interest, descibed by variables.
+Also called a record, object, row or entity.
 <<>>
 variable = The data items used to describe an enitity.
 Also called an attribute, feature or column.
@@ -138,8 +138,8 @@ This is a good option for importing data.
 The CSV file is assumed to begin with a header row, listing the names
 of the variables. 
 The remainder of the file is expected to consist of rows of data that record
-information about the entities, with fields generally separated by commas
-recording the values of the variables for this entity.
+information about the observations, with fields generally separated by commas
+recording the values of the variables for this observation.
 <<>>
 Use the Separator box to choose a separator other than the default comma.
 A common alternative is a tab (\\t), or simply leave it blank to have
@@ -216,7 +216,7 @@ on_help_data_corpus_activate <- function(action, window)
   showHelp("The Corpus option of the Data tab will load and process a folder of
 documents, referred to as a corpus. Each document will be processed according to the
 options specified, to end up with a dataset with, in the simplest case, variables
-corresponding to the keywords identified in the documents, and the entities
+corresponding to the keywords identified in the documents, and the observations
 corresponding to each documents. The full functionality of Rattle can then be deployed
 on this dataset.
 <<>>
@@ -243,7 +243,7 @@ Modify the roles as appropriate for each variable.
 <<>>
     Risk: A variable used in the Risk Chart
 <<>>
-    Ident: An identify for unique entities in the data set.
+    Ident: An identify for unique observations in the data set.
 <<>>
     Ignore: Do not use this variable
 <<>>
@@ -256,7 +256,7 @@ variable to those selected.")
 on_help_weight_calculator_activate <- function(action, window)
 {
   showHelp("Weights are used by variable modellers to identify
-some entities as more important than others. The Weights Calculator
+some observations as more important than others. The Weights Calculator
 can be used to specify a formula in terms of the variables in the dataset.
 You can list just a variable name, or
 any formula can be used, as long as it is a valid R formula - R will be
@@ -671,7 +671,7 @@ on_help_transform_remap_indicator_activate <- function(action, window)
   showHelp("Convert a categoric variable into a collection of indicator variables,
 with each new variable corresponding to one of the levels of the categoric variable.
 The resulting set of indicator variables each has one of two possible values, 0 or 1.
-Only one of the indicator variables, for a particular entity, will have a 1,
+Only one of the indicator variables, for a particular observation, will have a 1,
 and all the rest are necessarily 0. The 1 corresponds to the actual value of the
 original variable.")
 }
@@ -717,7 +717,7 @@ on_help_transform_cleanup_missing_activate <- function(action, window)
 
 on_help_transform_cleanup_emissing_activate <- function(action, window)
 {
-  showHelp("Remove any entities (rows) that have any mising values.")
+  showHelp("Remove any observations (rows) that have any mising values.")
 }
 
 ########################################################################
@@ -741,8 +741,8 @@ can be generated, using the package fpc, as a display of the clusters."))
 on_help_cluster_hclust_activate <- function(action, window)
 {
   if (showHelpPlus("A hierarchical cluster is build as a hierachy of clusters,
-starting with each entity defining its own cluster. The two closest clusters are then
-cobined to generate a new cluster. This is repeated until all entities are in the
+starting with each observation defining its own cluster. The two closest clusters are then
+cobined to generate a new cluster. This is repeated until all observations are in the
 one cluster. Thus a hierachy is generated.
 <<>>
 A complete clustering is built. After building, we can choose a specific number of
@@ -796,10 +796,10 @@ Rattle deploys ksvm from the kernlab package."))
 on_help_confusion_table_activate <- function(action, window)
 {
   if (showHelpPlus("An error matrix concisely reports the performance
-of a model against a testing dataset. Generally, the number of entities
+of a model against a testing dataset. Generally, the number of observations
 predicted by the model into each of the classes is presented against the
-actual class to which that entity belongs. Rattle reports two error matricies.
-The first is the raw entity counts whilst the second reports the
+actual class to which that observation belongs. Rattle reports two error matricies.
+The first is the raw observation counts whilst the second reports the
 percentages."))
   {
     popupTextviewHelpWindow("table")
