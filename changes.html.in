@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.56.
+    version is 2.4.57.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+438 090328 Revert inactive test in pmml back to exact match for singularities.
+           plotRiskChart now has show.lift parameter
+           Change lift chart x axis to caseload
 437 090328 Split explore code into explore.R
            Tidy up Explore tab:
              Move configs to each tab rather than a shared bar - getting too long
@@ -883,6 +886,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-28 12:59:04 Graham Williams</i>
+<i>Last Modified 2009-03-28 19:50:43 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 11:49:50 Graham Williams>
+# Time-stamp: <2009-03-28 17:43:14 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1295,7 +1295,8 @@ openMyDevice <- function(dev, filename)
 plotRisk <- function (cl, pr, re, ri=NULL,
                       title=NULL,
                       show.legend=TRUE,
-                      xleg=60, yleg=55,
+                      # xleg=60, yleg=55,
+                      xleg=20, yleg=16,
                       optimal=NULL, optimal.label="",
                       chosen=NULL, chosen.label="",
                       include.baseline=TRUE,
@@ -1405,14 +1406,13 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   if (show.legend)
     legend(xleg, yleg, legend, lty=lty, lwd=2, col=col)
 
-  # if (show.lift)
-  # somethng like:
-  #
-  #  axis(4, at=c(21,42,63,84), labels=c(1,2,3,4))
-  #  mtext("Lift", side=4, line=3)
-  #
+  if (show.lift)
+  {
+    lifts <- seq(pr[1], 100, pr[1])
+    axis(4, at=lifts, labels=seq(1, length(lifts)))
+    mtext("Lift", side=4, line=3)
+  }
   
-
   #
   #
   # Add in knot labels
@@ -1605,10 +1605,8 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
 }
 
   
-##----------------------------------------------------------------------
-##
-## EVALUATE LIFT CHART
-##
+#----------------------------------------------------------------------
+# LIFT CHART
 
 executeEvaluateLift <- function(probcmd, testset, testname)
 {
@@ -1617,6 +1615,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
 
   newPlot()
   addplot <- "FALSE"
+  xlab <- "Caseload (%)"
 
   nummodels <- length(probcmd)
   mcolors <- rainbow(nummodels, 1, .8)
@@ -1628,11 +1627,16 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                  "a lift chart ...")
     
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+    plot.cmd <- paste("\n# First convert rate of positive predictions to percentage\n",
+                      "\nper <- performance(prediction(crs$pr, ",
                       sprintf("%s$%s),", testset[[mtype]], crs$target),
-                      '"lift", "rpp"), ',
+                      '"lift", "rpp")\n',
+                      "per@x.values[[1]] <- per@x.values[[1]]*100\n\n",
+                      "# Now plot the lift.\n",
+                      "\nplot(per, ",
                       sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
-                      sprintf("add=%s)\n", addplot),
+                      sprintf('xlab="%s", ', xlab),
+                      sprintf("add=%s)", addplot),
                       sep="")
     addplot <- "TRUE"
     
@@ -1675,11 +1679,14 @@ executeEvaluateLift <- function(probcmd, testset, testname)
   if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
-                      sprintf("%s$%s),",
-                              sub("-crs\\$sample", "crs$sample",
+    plot.cmd <- paste("\n# Also convert rate of positive predictions to percentage\n",
+                      "\nper <- performance(prediction(crs$pr, ",
+                      sprintf("%s$%s),", sub("-crs\\$sample", "crs$sample",
                                   testset[[mtype]]), crs$target),
-                      '"lift", "rpp"), ',
+                      '"lift", "rpp")\n',
+                      "per@x.values[[1]] <- per@x.values[[1]]*100\n\n",
+                      "# Now plot the lift.\n",
+                      "\nplot(per, ",
                       'col="#00CCCCFF", lty=2, ',
                       sprintf("add=%s)\n", addplot),
                       sep="")
