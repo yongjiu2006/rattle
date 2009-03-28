@@ -50,6 +50,7 @@ R_SOURCE = \
 	src/data.R \
 	src/evaluate.R \
 	src/execute.R \
+	src/explore.R \
 	src/export.R \
 	src/hclust.R \
 	src/help.R \
@@ -241,9 +242,10 @@ R4X:
 	R CMD build support/r4x/pkg/R4X
 
 # 090201 Keep the weather data static - keeps changing my book details
-# otherwise!
+# otherwise! 090326 Modify the R script to keep a static version and
+# then regualrly updated versions.
 
-data: package/rattle/data/audit.RData # package/rattle/data/weather.RData
+data: package/rattle/data/audit.RData package/rattle/data/weather.RData
 
 package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	R --no-save --quiet < support/audit.R
@@ -260,9 +262,9 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	chmod go+r weather.RData weather.csv weather.arff weather_missing.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
 	cp weather.RData weather.csv weather.arff weather_missing.csv src/
-	cp weather.RData package/rattle/data/
-	cp weather.csv package/rattle/inst/csv/
-	cp weather.arff package/rattle/inst/arff/
+	cp weather.RData weatherCanberra.RData weatherSydney.RData package/rattle/data/
+	cp weather.csv weatherCanberra.csv weatherSydney.csv package/rattle/inst/csv/
+	cp weather.arff weatherCanberra.arff weatherSydney.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/projects/togaware/www/site/rattle/
 
 zip: local plocal ilocal
@@ -316,4 +318,8 @@ clean:
 realclean: clean
 	rm -f package/rattle/data/audit.RData package/rattle/inst/csv/audit.csv
 	rm -f package/rattle/data/weather.RData package/rattle/inst/csv/weather.csv
+	rm -f package/rattle/data/weatherCanberra.RData
+	rm -f package/rattle/inst/csv/weatherCanberra.csv
+	rm -f package/rattle/data/weatherSydney.RData
+	rm -f package/rattle/data/weatherSydney.csv
 	rm -rf rattle.Rcheck rattle_$(VERSION).tar.gz
