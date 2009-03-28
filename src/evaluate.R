@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 07:49:09 Graham Williams>
+# Time-stamp: <2009-03-28 11:49:50 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -180,9 +180,8 @@ current.evaluate.tab <- function()
   return(crv$EVALUATE$getTabLabelText(crv$EVALUATE$getNthPage(cp)))
 }
 
-
 ########################################################################
-# Execution
+# EXECUTION
 
 executeEvaluateTab <- function()
 {
@@ -1302,6 +1301,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
                       include.baseline=TRUE,
                       dev="", filename="",
                       show.knots=NULL,
+                      show.lift=TRUE,
                       risk.name="Revenue", #"Risk",
                       recall.name="Adjustments", #"Recall",
                       precision.name="Strike Rate") #"Precision")
@@ -1344,7 +1344,10 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   #
   # Now plot
   #
-  opar <- par(lwd=2)
+  if (show.lift)
+    opar <- par(lwd=2, mar=c(5.1, 4.1, 4.1, 4.1))
+  else
+    opar <- par(lwd=2)
   plot(c(0,100), c(0,100), type='l', col=1,
        xlab="Caseload (%)", ylab="Performance (%)",
        ylim=c(0,100), xlim=c(0,100))
@@ -1401,6 +1404,15 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   }
   if (show.legend)
     legend(xleg, yleg, legend, lty=lty, lwd=2, col=col)
+
+  # if (show.lift)
+  # somethng like:
+  #
+  #  axis(4, at=c(21,42,63,84), labels=c(1,2,3,4))
+  #  mtext("Lift", side=4, line=3)
+  #
+  
+
   #
   #
   # Add in knot labels

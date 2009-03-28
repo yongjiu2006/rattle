@@ -6,13 +6,23 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.55.
+    version is 2.4.56.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+437 090328 Split explore code into explore.R
+           Tidy up Explore tab:
+             Move configs to each tab rather than a shared bar - getting too long
+             Merge Latticist and GGobi into Interactive.
+             Move Sample indicator to toolbar.
+             Merge Correlation and Hierarchical in Correlation.
+           Update numerous textview texts.
+           Add a show.lift option to plotRisk (not yet implemented).
+           Rename listRPartRules to asRules.rpart for making into method.
+           Add weatherCanberra and weatherSydney datasets.
 436 090327 Bug fix updateRDataNames, updateRDataset
            Set data viewer name appropriately.
            Update a few functions to take partms so can control from API
@@ -873,6 +883,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-27 10:38:49 Graham Williams</i>
+<i>Last Modified 2009-03-28 12:59:04 Graham Williams</i>
 <!-- hhmts end -->
   </p>

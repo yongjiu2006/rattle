@@ -1,5 +1,6 @@
 export(
        acquireAuditData,
+       asRules,
        binning,
        calcInitialDigitDistr,
        calculateAUC,
@@ -11,7 +12,6 @@ export(
        generateAprioriSummary,
        genPlotTitleCmd,
        listTreesAda,
-       listRPartRules,
        listVersions,
        modalvalue,
        plotBenfordsLaw,
@@ -33,3 +33,5 @@ export(
        )
 
 exportPattern("_") # Needed for the Glade interface
+
+S3method(asRules, rpart)

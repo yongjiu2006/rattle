@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-27 10:31:48 Graham Williams>
+# Time-stamp: <2009-03-28 09:17:20 Graham Williams>
 #
 # DATA TAB
 #
@@ -1527,7 +1527,6 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
     theWidget("sample_seed_button")$setSensitive(TRUE)
     theWidget("explore_sample_label")$show()
-    theWidget("explore_vseparator")$show()
   }
   else
   {
@@ -1538,7 +1537,6 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
     theWidget("sample_seed_button")$setSensitive(FALSE)
     theWidget("explore_sample_label")$hide()
-    theWidget("explore_vseparator")$hide()
   }
   crs$sample <- NULL
   setStatusBar()

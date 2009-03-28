@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-22 19:52:20 Graham Williams>
+# Time-stamp: <2009-03-28 12:10:12 Graham Williams>
 #
 # Textview widget support
 #
@@ -188,8 +188,8 @@ resetTextviews <- function(tv=NULL)
   # textviews.xml if there is one and XML package is available!
 
   if (is.null(tv))
-    sapply(c("summary_textview", "playwith_textview", "ggobi_textview",
-             "correlation_textview", "hiercor_textview",
+    sapply(c("summary_textview", "interactive_textview",
+             "correlation_textview",
              "prcomp_textview", "test_textview", "kmeans_textview",
              "hclust_textview", "associate_textview", "rpart_textview",
              "glm_textview", "ada_textview", "rf_textview",
