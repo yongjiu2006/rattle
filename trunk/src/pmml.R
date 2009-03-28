@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-03-09 07:47:09 Graham Williams>
+# Time-stamp: <2009-03-28 14:36:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.10" # Fix typo in pmml.lm
+  VERSION <- "1.2.11" # Fix categroics with one singularity in lm were marked inactive.
+  # "1.2.10" # Fix typo in pmml.lm
   # "1.2.9" # Further fix a pmml.lm bug.
   # "1.2.8" # Fix a pmml.lm bug.
   # "1.2.7" # Export logistic classes
@@ -239,10 +240,17 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
     # model. However, for categorics, this is the indicator variable,
     # like GenderMale. The test for %in% fails! So as a quick fix use
     # grep. This is not a solution (because the variable Test is a
-    # substring of TestAll, etc)
+    # substring of TestAll, etc). 
+
+    # 090328 Revert to the exact test. We need to be cleverer in what
+    # we pass through in the inactive vector. Whilst GenderMale might
+    # be NA and thus is the only value included for this categoric,
+    # for a categoric with more levels we need to no treat the others
+    # as inactive so the whole categroic itself should not be
+    # inactive. For now, the simple reversion works.
     
-    # 081103 if (field$name[i] %in% inactive) usage <- "inactive"
-    if (length(grep(field$name[i], inactive))) usage <- "inactive"
+    if (field$name[i] %in% inactive) usage <- "inactive"
+    # 090328 if (length(grep(field$name[i], inactive))) usage <- "inactive"
       
     mining.fields[[i]] <- xmlNode("MiningField",
                                   attrs=c(name=field$name[i],
