@@ -259,7 +259,7 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 
 package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	R --no-save --quiet < support/weather.R
-	chmod go+r weather.RData weather.csv weather.arff weather_missing.csv
+	chmod go+r weather*.RData weather*.csv weathe*r.arff weather_missing*.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
 	cp weather.RData weather.csv weather.arff weather_missing.csv src/
 	cp weather.RData weatherCanberra.RData weatherSydney.RData package/rattle/data/
