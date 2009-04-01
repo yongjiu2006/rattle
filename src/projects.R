@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 07:45:14 Graham Williams>
+# Time-stamp: <2009-04-02 06:54:42 Graham Williams>
 #
 # Project functionality.
 #
@@ -364,7 +364,7 @@ loadProject <- function()
   crv$NOTEBOOK$setCurrentPage(0)
 
   # 090317 Trying to figure out how to place the save environment into
-  # the crs environment.
+  # the crs environment. This seems to do the trick.
   
   ocrs <- crs
   load(load.name)
@@ -421,7 +421,7 @@ loadProject <- function()
 
   # 080707 Ensure data sources are disabled so that we can not,
   # logically, load a dataset after we have loaded a project. This
-  # also helps to ensure when we press theExecute button, a data set
+  # also helps to ensure when we press the Execute button, a data set
   # is not thought to be needed to be loaded.
 
   enableDataSourceFunctions(FALSE)
@@ -439,8 +439,11 @@ loadProject <- function()
 
   # SAMPLE
 
-  crs$sample      <- crs$sample
-  crs$sample.seed <- crs$sample.seed
+  # 090402 Are these needed any more now we assign crs above? I don;t
+  # think so. Comment out all the following assignments as well.
+  
+#  crs$sample      <- crs$sample
+#  crs$sample.seed <- crs$sample.seed
 
   if (not.null(crs$sample))
   {
@@ -465,45 +468,45 @@ loadProject <- function()
 
   # TRANSFORM
 
-  crs$transforms <- crs$transforms
+#  crs$transforms <- crs$transforms
   
   # CLUSTER
   
-  crs$kmeans      <- crs$kmeans
-  crs$kmeans.seed <- crs$kmeans.seed
+#  crs$kmeans      <- crs$kmeans
+#  crs$kmeans.seed <- crs$kmeans.seed
   if (not.null(crs$kmeans.seed))
     theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
     theWidget("kmeans_seed_spinbutton")$setValue(123)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
-  crs$hclust   <- crs$hclust
+#  crs$hclust   <- crs$hclust
 
   ## MODELS - Ensure libraries are loaded.
 
-  crs$page     <- crs$page
-  crs$smodel   <- crs$smodel
+#  crs$page     <- crs$page
+#  crs$smodel   <- crs$smodel
 
-  crs$rpart    <- crs$rpart
+#  crs$rpart    <- crs$rpart
   setTextviewContents("rpart_textview", crs$text$rpart)
   if (not.null(crs$rpart)) require(rpart, quietly=TRUE)
   
-  crs$rf       <- crs$rf
+#  crs$rf       <- crs$rf
   setTextviewContents("rf_textview", crs$text$rf)
   if (not.null(crs$rf)) require(randomForest, quietly=TRUE)
 
-  crs$svm      <- crs$svm
+#  crs$svm      <- crs$svm
   setTextviewContents("esvm_textview", crs$text$esvm)
   if (not.null(crs$svm)) require(e1071, quietly=TRUE)
 
-  crs$ksvm     <- crs$ksvm
+#  crs$ksvm     <- crs$ksvm
   setTextviewContents("ksvm_textview", crs$text$ksvm)
   if (not.null(crs$ksvm)) require(kernlab, quietly=TRUE)
 
-  crs$glm      <- crs$glm
+#  crs$glm      <- crs$glm
   setTextviewContents("glm_textview", crs$text$glm)
 
-  crs$ada      <- crs$ada
+#  crs$ada      <- crs$ada
   setTextviewContents("ada_textview", crs$text$ada)
   if (not.null(crs$ada)) require(ada, quietly=TRUE)
 
@@ -540,7 +543,7 @@ loadProject <- function()
   if (not.null(crs$rf.opt$proximity))
     theWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
 
-  ## Make buttons sensitive for MODEL:RF if there is an RF model
+  # Make buttons sensitive for MODEL:RF if there is an RF model
 
   showModelRFExists()
   
@@ -555,12 +558,15 @@ loadProject <- function()
   setTextviewContents("risk_textview", crs$text$risk)
 
   setTextviewContents("roc_textview", crs$text$roc )
-
   
-  crs$perf     <- crs$perf
-  crs$eval     <- crs$eval
-  crs$testset  <- crs$testset
-  crs$testname <- crs$testname
+#  crs$perf     <- crs$perf
+#  crs$eval     <- crs$eval
+#  crs$testset  <- crs$testset
+#  crs$testname <- crs$testname
+
+  # Ensure the Evaluate options are reset appropriately.
+  
+  rattle:::makeEvaluateSensitive()
   
   # LOG
   

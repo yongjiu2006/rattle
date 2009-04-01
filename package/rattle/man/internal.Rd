@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_explore_hiercor_checkbutton_toggled}
+\alias{on_explore_interactive_radiobutton_toggled}
 \alias{ISO_8601_to_POSIX_datetime_format}
 \alias{ada.formula}
 \alias{cat_toggled}

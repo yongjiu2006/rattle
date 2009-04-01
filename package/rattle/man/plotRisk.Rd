@@ -13,9 +13,10 @@
 }
 \usage{
 plotRisk(cl, pr, re, ri = NULL, title = NULL,
-    show.legend = TRUE, xleg = 60, yleg = 55,
+    show.legend = TRUE, xleg = 20, yleg = 16,
     optimal = NULL, optimal.label = "", chosen = NULL, chosen.label = "",
     include.baseline = TRUE, dev = "", filename = "", show.knots = NULL,
+    show.lift=TRUE,
     risk.name = "Revenue", recall.name = "Adjustments",
     precision.name = "Strike Rate")
 }
@@ -76,6 +77,8 @@ plotRisk(cl, pr, re, ri = NULL, title = NULL,
   should be drawn. These might correspond, for example, to individual
   paths through a decision tree, illustrating the impact of each path on
   the caseload and performance.}
+
+  \item{show.lift}{whether to label the right axis with lift.}
 
   \item{risk.name}{a string used within the plot's legend that gives a
   name to the risk. Often the risk is a dollar amount at risk from a
