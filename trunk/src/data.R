@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 09:17:20 Graham Williams>
+# Time-stamp: <2009-03-30 21:43:57 Graham Williams>
 #
 # DATA TAB
 #
@@ -2711,6 +2711,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Convert internal class to printable form.
     
     prcl <- cl[1]
+    prcl <- gsub('ident', 'Ident', prcl)
     prcl <- gsub('factor', 'Categoric', prcl)
     prcl <- gsub('ordered', 'Categoric', prcl)
     prcl <- gsub('integer', 'Numeric', prcl)

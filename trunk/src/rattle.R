@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 12:05:36 Graham Williams>
+# Time-stamp: <2009-04-01 18:47:22 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 Mar 2009"
+VERSION.DATE <- "Released 29 Mar 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1928,6 +1928,31 @@ update_comboboxentry_with_dataframes <- function(action, window)
 
 close_rattle <- function(action, window)
 {
+  # 090401 This callback seems to be called after the window is
+  # destroyed!!!  So the question serves no purpose... Not clear how
+  # to fix that.
+  
+  closeRattle()
+}
+
+quit_rattle <- function(action, window)
+{
+  # 080815 This function used to return NULL or "yes" and I always
+  # tested whether it's results was NULL. But why not return a
+  # logical? Start doing that now, by returning TRUE instead of "yes",
+  # and look to return FALSE instead of NULL on a negative response to
+  # the question.
+
+  closeRattle(TRUE)
+}
+
+closeRattle <- function(ask=FALSE)
+{
+  if (ask || crv$close %in% c("quit", "ask"))
+  {  
+    msg <- sprintf("Do you want to terminate %s?", crv$appname)
+    if (!questionDialog(msg)) return(FALSE)
+  }
   
   # Don't remove the graphics for now. In moving to the Cairo device,
   # this blanks the device, but does not destroy the containing
@@ -1962,24 +1987,9 @@ close_rattle <- function(action, window)
   # littler or R CMD BATCH and we close rather than quit.
 
   if (crv$close == "quit") quit(save="no")
+
 }
-
-quit_rattle <- function(action, window)
-{
-  # 080815 This function used to return NULL or "yes" and I always
-  # tested whether it's results was NULL. But why not return a
-  # logical? Start doing that now, by returning TRUE instead of "yes",
-  # and look to return FALSE instead of NULL on a negative response to
-  # the question.
-
- msg <- sprintf("Do you want to terminate %s?", crv$appname)
   
-  if (questionDialog(msg))
-  {
-    crv$close <- "quit"
-    close_rattle(action, window)
-  }
-}
 
 ########################################################################
 

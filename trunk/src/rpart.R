@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-27 16:33:25 Graham Williams>
+# Time-stamp: <2009-03-29 19:30:06 Graham Williams>
 #
 # RPART TAB
 #
@@ -582,7 +582,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
 
 asRules <- function(model, compact=FALSE, ...) UseMethod("asRules")
 
-asRules.rpart <- function(model, compact=FALSE)
+asRules.rpart <- function(model, compact=FALSE, ...)
 {
   if (!inherits(model, "rpart")) stop("Not a legitimate rpart tree")
   # if (model$method != "class")) stop("Model method needs to be class")

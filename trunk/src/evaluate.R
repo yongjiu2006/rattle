@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 17:43:14 Graham Williams>
+# Time-stamp: <2009-04-02 06:43:44 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1728,10 +1728,8 @@ executeEvaluateLift <- function(probcmd, testset, testname)
   return("Generated Lift Charts.")
 }
 
-##----------------------------------------------------------------------
-##
-## EVALUATE ROC PLOT
-##
+#----------------------------------------------------------------------
+# ROC PLOT
 
 executeEvaluateROC <- function(probcmd, testset, testname)
 {
@@ -1858,10 +1856,8 @@ executeEvaluateROC <- function(probcmd, testset, testname)
   return(sprintf("Generated ROC Curves on %s.", testname))
 }
   
-##----------------------------------------------------------------------
-##
-## EVALUATE PRECISION PLOT
-##
+#----------------------------------------------------------------------
+# EVALUATE PRECISION PLOT
 
 executeEvaluatePrecision <- function(probcmd, testset, testname)
 {
@@ -1974,10 +1970,8 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
   return(sprintf("Generated Precision/Recall Plot on %s.", title))
 }
 
-##----------------------------------------------------------------------
-##
-## EVALUATE SENSITIVITY PLOT
-##
+#----------------------------------------------------------------------
+# EVALUATE SENSITIVITY PLOT
 
 executeEvaluateSensitivity <- function(probcmd, testset, testname)
 {
@@ -2090,7 +2084,8 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
   return(sprintf("Generated Sensitivity/Specificity Plot on %s.", testname))
 }
 
-########################################################################
+#-----------------------------------------------------------------------
+# SCORE
 
 executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
 {
@@ -2410,6 +2405,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   
   return(paste("Scores have been saved to the file", fname))
 }
+
+#-----------------------------------------------------------------------
+# PR VERSUS OB PLOT
 
 executeEvaluatePvOplot <- function(probcmd, testset, testname)
 {
