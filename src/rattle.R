@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 21:57:07 Graham Williams>
+# Time-stamp: <2009-04-02 22:39:06 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -1923,6 +1923,18 @@ update_comboboxentry_with_dataframes <- function(action, window)
     ## Set the selection to that which was already selected, if possible.
     if (not.null(current) && current %in% dl)
       action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
+  }
+}
+
+on_rattle_window_delete_event<- function(action, window)
+{
+  if (crv$close %in% c("quit", "ask"))
+  {  
+    msg <- sprintf("Do you want to terminate %s?", crv$appname)
+    if (!questionDialog(msg))
+      return(TRUE)
+    else
+      return(FALSE)
   }
 }
 
