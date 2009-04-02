@@ -13,6 +13,8 @@
    </p>
 
 <pre>
+441 090402 Restore test file name in evaluate from project load.
+           Fix spelling of Performace in risk plot.
 440 090402 Attempt to capture window manager close to be able to ask (not yet)
            Change ident to Ident on variable list.
            asRules needs a ... argument
@@ -894,6 +896,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-04-02 07:01:23 Graham Williams</i>
+<i>Last Modified 2009-04-02 21:43:40 Graham Williams</i>
 <!-- hhmts end -->
   </p>

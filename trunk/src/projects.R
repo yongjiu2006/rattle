@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 06:54:42 Graham Williams>
+# Time-stamp: <2009-04-02 21:41:11 Graham Williams>
 #
 # Project functionality.
 #
@@ -556,8 +556,14 @@ loadProject <- function()
   # EVALUATE
 
   setTextviewContents("risk_textview", crs$text$risk)
-
   setTextviewContents("roc_textview", crs$text$roc )
+
+  if (not.null(crs$testname))
+  {
+    theWidget("evaluate_filechooserbutton")$setFilename(crs$testname)
+    theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
+  }
+  
   
 #  crs$perf     <- crs$perf
 #  crs$eval     <- crs$eval

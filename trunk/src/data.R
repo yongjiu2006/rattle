@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-30 21:43:57 Graham Williams>
+# Time-stamp: <2009-04-02 21:36:10 Graham Williams>
 #
 # DATA TAB
 #
@@ -964,16 +964,16 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 
   if (resample)
   {
-    ## Turn sampling on, set range bounds and generate the default 70%
-    ## sample. Do the range bounds first since otherwise the value
-    ## gets set back to 1. Also, need to set both the percentage and
-    ## the count since if the old percentage is 70 and the new is 70,
-    ## then no change in value is noticed, and thus the count is not
-    ## automatically updated.
+    # Turn sampling on, set range bounds and generate the default 70%
+    # sample. Do the range bounds first since otherwise the value gets
+    # set back to 1. Also, need to set both the percentage and the
+    # count since if the old percentage is 70 and the new is 70, then
+    # no change in value is noticed, and thus the count is not
+    # automatically updated.
 
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(!is.null(.RATTLE.SCORE.IN))
+    theWidget("sample_checkbutton")$setActive(TRUE)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
