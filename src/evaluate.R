@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 06:43:44 Graham Williams>
+# Time-stamp: <2009-04-02 21:42:30 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1003,7 +1003,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
       plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
                         "crs$eval$Precision, crs$eval$Recall)",
                         "\n",
-                        genPlotTitleCmd("Performace Chart", commonName(mtype),
+                        genPlotTitleCmd("Performance Chart", commonName(mtype),
                                         testname),
                         sep="")
     }
