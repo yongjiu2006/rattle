@@ -25,7 +25,7 @@
 
   crv$show.timestamp <- FALSE
   crv$tooltiphack <- FALSE
-  crv$close <- "close"
+  crv$close <- "ask"
   crv$sample.dataset <- "audit"
   if (.Platform$OS.type == "unix")
     crv$load.tooltips <- FALSE # Not working in general on Linux
