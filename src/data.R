@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-19 11:54:56 Graham Williams>
+# Time-stamp: <2009-04-19 20:59:25 Graham Williams>
 #
 # DATA TAB
 #
@@ -314,10 +314,15 @@ on_data_rdata_radiobutton_toggled <- function(button)
     cbox$getModel()$clear()
     if (not.null(crs$data.tab.rdata.filename))
       theWidget("data_filechooserbutton")$setUri(crs$data.tab.rdata.filename)
+    if (not.null(crs$data.tab.rdata.active))
+    {
+      theWidget("data_name_combobox")$setActive(crs$data.tab.rdata.active)
+    }
   }
   else
   {
     crs$data.tab.rdata.filename <- theWidget("data_filechooserbutton")$getUri()
+    crs$data.tab.rdata.active <- theWidget("data_name_combobox")$getActive()
   }
 }
 
@@ -802,7 +807,7 @@ on_data_filechooserbutton_file_set <- function(button)
     updateRDataNames()
 }
 
-updateRDataNames <- function()
+updateRDataNames <- function(filename=NULL)
 {
   # Collect relevant data
 
@@ -828,7 +833,7 @@ updateRDataNames <- function()
   set.cursor()
   
   # Add new dataframes to the combo box.
-  
+
   combobox <- theWidget("data_name_combobox")
   if (not.null(crs$rdata.datasets))
   {
