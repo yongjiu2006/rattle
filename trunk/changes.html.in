@@ -13,6 +13,14 @@
    </p>
 
 <pre>
+443 090419 Data tab - cache files/names. Restore when toggle (Bob Muenchen)
+           Bug fix data combo box - always clear before repopulate
+           Suppress warnings on Data Library option.
+           Revert to weather as the default - more generally interesting.
+           Bug fix bar and dot plot - ignore NAs.
+           Bug fix mosaic - should reflect state of sample
+           Sort the columns of the mosaic plot.
+442 090402 Close will now ask beofre close if crv$close == ask 
 441 090402 Restore test file name in evaluate from project load.
            Fix spelling of Performace in risk plot.
 440 090402 Attempt to capture window manager close to be able to ask (not yet)
@@ -896,6 +904,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-04-02 21:43:40 Graham Williams</i>
+<i>Last Modified 2009-04-19 12:06:55 Graham Williams</i>
 <!-- hhmts end -->
   </p>

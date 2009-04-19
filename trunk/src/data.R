@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 21:36:10 Graham Williams>
+# Time-stamp: <2009-04-19 11:54:56 Graham Williams>
 #
 # DATA TAB
 #
@@ -276,6 +276,12 @@ on_data_csv_radiobutton_toggled <- function(button)
                 "data_separator_entry",
                 "data_header_checkbutton")
     updateFilenameFilters("data_filechooserbutton", "CSV")
+    if (not.null(crs$data.tab.csv.filename))
+      theWidget("data_filechooserbutton")$setUri(crs$data.tab.csv.filename)
+  }
+  else
+  {
+    crs$data.tab.csv.filename <- theWidget("data_filechooserbutton")$getUri()
   }
 }
 
@@ -283,10 +289,15 @@ on_data_arff_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
-    
     dataTabShow("data_filename_label",
                 "data_filechooserbutton")
     updateFilenameFilters("data_filechooserbutton", "ARFF")
+    if (not.null(crs$data.tab.arff.filename))
+      theWidget("data_filechooserbutton")$setUri(crs$data.tab.arff.filename)
+  }
+  else
+  {
+    crs$data.tab.arff.filename <- theWidget("data_filechooserbutton")$getUri()
   }
 }
 
@@ -301,6 +312,12 @@ on_data_rdata_radiobutton_toggled <- function(button)
     updateFilenameFilters("data_filechooserbutton", "Rdata")
     cbox <- theWidget("data_name_combobox")
     cbox$getModel()$clear()
+    if (not.null(crs$data.tab.rdata.filename))
+      theWidget("data_filechooserbutton")$setUri(crs$data.tab.rdata.filename)
+  }
+  else
+  {
+    crs$data.tab.rdata.filename <- theWidget("data_filechooserbutton")$getUri()
   }
 }
 
@@ -309,7 +326,11 @@ on_data_rdataset_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     dataTabShow("data_name_label", "data_name_combobox")
-    updateRDatasets()
+    updateRDatasets(crs$data.tab.rdataset.name)
+  }
+  else
+  {
+    crs$data.tab.rdataset.name <- theWidget("data_name_combobox")$getActiveText()
   }
 }
 
@@ -368,7 +389,11 @@ on_data_library_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     dataTabShow("data_name_label", "data_name_combobox")
-    updateDataLibrary()
+    updateDataLibrary(crs$data.tab.library.name)
+  }
+  else
+  {
+    crs$data.tab.library.name <- theWidget("data_name_combobox")$getActiveText()
   }
 }
 
@@ -405,9 +430,9 @@ updateRDatasets <- function(current=NULL)
 
   cbox <- theWidget("data_name_combobox")
   
+  cbox$getModel()$clear()
   if (not.null(dl))
   {
-    cbox$getModel()$clear()
     lapply(dl, cbox$appendText)
 
     # Set the selection to that which was is supplied.
@@ -828,7 +853,7 @@ updateRDataNames <- function()
 # list. I've associated this with the focus callback, but then it is
 # called also when it loses focus!!!
 
-updateDataLibrary <- function()
+updateDataLibrary <- function(current=NULL)
 {
   # OLD: TODO How to tell that this is a "gain focus" action and not a
   # "lose focus" action, since we only want to build the list on
@@ -838,7 +863,7 @@ updateDataLibrary <- function()
   
   # Record the current selection so that we can keep it as the default.
   
-  current <- data.name.combobox$getActiveText()
+  if (is.null(current)) current <- data.name.combobox$getActiveText()
 
   ## if (not.null(current)) return()
 
@@ -846,15 +871,20 @@ updateDataLibrary <- function()
   # we are busy.
   
   set.cursor("watch", "Determining the available datasets from all packages...")
-  
+
+  # 090418 Suppress warnings about datasets having moved to 'datasets'
+
+  opt <- options(warn=-1)
   da <- data(package = .packages(all.available = TRUE))
+  options(opt)
+  
   dl <- sort(paste(da$results[,'Item'], ":", da$results[,'Package'], 
                    ":", da$results[,'Title'], sep=""))
   # Add the entries to the combo box.
-  
+
+  data.name.combobox$getModel()$clear()
   if (not.null(dl))
   {
-    data.name.combobox$getModel()$clear()
     lapply(dl, data.name.combobox$appendText)
     
     # Set the selection to that which was already selected, if possible.
