@@ -323,3 +323,7 @@ realclean: clean
 	rm -f package/rattle/data/weatherSydney.RData
 	rm -f package/rattle/data/weatherSydney.csv
 	rm -rf rattle.Rcheck rattle_$(VERSION).tar.gz
+
+.PHONY: backup
+backup:
+	rsync -a src bovj.redirectme.net:BACKUP/rattle/

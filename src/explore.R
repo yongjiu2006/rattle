@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 12:50:44 Graham Williams>
+# Time-stamp: <2009-04-19 09:03:23 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -1171,32 +1171,32 @@ executeExplorePlot <- function(dataset,
     }
   }
 
-  ##---------------------------------------------------------------------
+  #---------------------------------------------------------------------
 
   if (nbarplots > 0)
   {
-    ## Plot a frequency plot for a categoric variable.
+    # Plot a frequency plot for a categoric variable.
 
-    ## Use barplot2 from gplots.
+    # Use barplot2 from gplots.
     
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
-    ## Construct a generic data command built using the genericDataSet
-    ## values. To generate a barplot we use the output of the summary
-    ## command on each element in the genericDataSet, and bring them
-    ## together into a single structure. The resulting
-    ## generic.data.cmd will have a number of "%s"s (one for the whole
-    ## dataset, then one for each level) from the original
-    ## genericDataSet string that will be replaced with the name of
-    ## each variable as it is being plotted.
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then one
+    # for each level) from the original genericDataSet string that
+    # will be replaced with the name of each variable as it is being
+    # plotted.
 
     generic.data.cmd <- paste(lapply(genericDataSet,
-                                   function(x) sprintf("summary(%s)", x)),
+                                   function(x) sprintf("summary(na.omit(%s))", x)),
                             collapse=",\n    ")
     generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
 
-    ## If the gplots package is available then generate a plot for
-    ## each chosen vairable.
+    # If the gplots package is available then generate a plot for each
+    # chosen vairable.
     
     if (packageIsAvailable("gplots", "plot a bar chart"))
     {
@@ -1206,16 +1206,17 @@ executeExplorePlot <- function(dataset,
 
       for (s in seq_len(nbarplots))
       {
-
         startLog()
+        appendLog("BAR PLOT")
 
-        ## Construct and evaluate a command string to generate the
-        ## data for the plot.
+        # Construct and evaluate a command string to generate the
+        # data for the plot.
 
         ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
-                       paste(paste('"', rep(barplots[s], length(targets)+1),
-                                 '"', sep=""), collapse=","), ")")
+                        paste(paste('"', rep(barplots[s], length(targets)+1),
+                                    '"', sep=""), collapse=","), ")")
         ds.cmd <- eval(parse(text=ds.cmd))
+
         appendLog("Generate the summary data for plotting.",
                  paste("ds <-", ds.cmd))
         ds <- eval(parse(text=ds.cmd))
@@ -1487,7 +1488,7 @@ executeExplorePlot <- function(dataset,
     ## being plotted.
 
     generic.data.cmd <- paste(lapply(genericDataSet,
-                                   function(x) sprintf("summary(%s)", x)),
+                                   function(x) sprintf("summary(na.omit(%s))", x)),
                             collapse=",\n    ")
     generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
 
@@ -1501,6 +1502,7 @@ executeExplorePlot <- function(dataset,
     {
 
       startLog()
+      appendLog("DOT PLOT")
 
       ## Construct and evaluate a command string to generate the
       ## data for the plot.
@@ -1566,15 +1568,20 @@ executeExplorePlot <- function(dataset,
   {
 
     startLog()
+    appendLog("MOSAIC PLOT")
 
     # Construct and evaluate a command string to generate the
     # data for the plot.
 
     if (is.null(target))
-      ds.cmd <- sprintf("table(crs$dataset$%s)", mosplots[s])
+      ds.cmd <- sprintf("table(crs$dataset%s$%s)",
+                        ifelse(sampling, "[crs$sample,]", ""),
+                        mosplots[s])
     else
-      ds.cmd <- paste(sprintf(paste("table(crs$dataset$%s,",
-                                      "crs$dataset$%s)"), mosplots[s], target))
+      ds.cmd <- paste(sprintf(paste("table(crs$dataset%s$%s,",
+                                      "crs$dataset%s$%s)"),
+                              ifelse(sampling, "[crs$sample,]", ""), mosplots[s],
+                              ifelse(sampling, "[crs$sample,]", ""), target))
     appendLog("Generate the table data for plotting.",
               paste("ds <-", ds.cmd))
     ds <- eval(parse(text=ds.cmd))
@@ -1582,6 +1589,13 @@ executeExplorePlot <- function(dataset,
     # Construct and evaluate the command to determin the order in
     # which to print the catgories, from larges to smallest.
 
+      if (is.null(target))
+        ord.cmd <- 'order(ds, decreasing=TRUE)'
+      else
+        ord.cmd <- "order(apply(ds, 1, sum), decreasing=TRUE)"
+    appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+    ord <- eval(parse(text=ord.cmd))
+    
     # Construct and evaluate the command to plot the
     # distribution.
     
@@ -1604,9 +1618,11 @@ executeExplorePlot <- function(dataset,
     else
       cols <- "color=rainbow(%d)"
 
-    plot.cmd <- sprintf(paste('mosaicplot(ds, main="%s", sub="%s",',
-                              ' ', cols, ', cex=0.7)'),
-                        titles[1], titles[2], length(targets)+1)
+    plot.cmd <- sprintf(paste('mosaicplot(ds[ord%s], main="%s", sub="%s", ',
+                              cols, '%s, cex=0.7)', sep=""),
+                        ifelse(is.null(target), "", ","),
+                        titles[1], titles[2], length(targets)+1,
+                        ifelse(is.null(target), "", "[-1]"))
     appendLog("Plot the data.", plot.cmd)
     eval(parse(text=plot.cmd))
   }
@@ -1646,6 +1662,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
   if (! packageIsAvailable("rggobi", "explore the data using GGobi")) return()
 
   startLog()
+  appendLog("GGOBI DATA EXPLORATION")
   appendLog("GGobi is accessed using the rggobi package.", lib.cmd)
   eval(parse(text=lib.cmd))
   appendLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
