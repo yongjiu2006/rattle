@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-25 12:21:16 Graham Williams>
+# Time-stamp: <2009-04-21 20:43:36 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -461,8 +461,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
         norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- 0\n',
                                   'crs$dataset[, ',
                                   '"%s"] <-\n',
-                                  '    rescaler(crs$dataset[',
-                                  ', "%s"], "range") * 99',
+                                  '    round(rescaler(crs$dataset[',
+                                  ', "%s"], "range") * 99)',
                                   sep=""),
                             vname, vname, v)
       else
@@ -471,9 +471,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                   'for (vl in bylevels) \n',
                                   '  crs$dataset[crs$dataset[["%s"]]==vl, ',
                                   '"%s"] <-\n',
-                                  '    rescaler(crs$dataset[crs$dataset',
+                                  '    round(rescaler(crs$dataset[crs$dataset',
                                   '[["%s"]]',
-                                  '==vl, "%s"], "range") * 99\n',
+                                  '==vl, "%s"], "range") * 99)\n',
                                   'crs$dataset[is.nan(crs$dataset[["%s"]]), ',
                                   '"%s"] <- 99',
                                   sep=""),
