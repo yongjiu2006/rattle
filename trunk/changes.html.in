@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.63.
+    version is 2.4.64.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+445 090424 Nolan transforms rounded to result in 99 categories (Tony Nolan)
 444 090419 Bug fix: RData not always listing objects (Bob Muenchen)
 443 090419 Data tab - cache files/names. Restore when toggle (Bob Muenchen)
            Bug fix data combo box - always clear before repopulate
@@ -905,6 +906,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-04-19 21:02:54 Graham Williams</i>
+<i>Last Modified 2009-04-24 06:36:52 Graham Williams</i>
 <!-- hhmts end -->
   </p>
