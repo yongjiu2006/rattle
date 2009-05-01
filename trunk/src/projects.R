@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 21:41:11 Graham Williams>
+# Time-stamp: <2009-05-01 18:02:59 Graham Williams>
 #
 # Project functionality.
 #
@@ -26,6 +26,7 @@
 
 on_new_activate <- function(action, window)     { newProject()  }
 on_new_button_clicked <- function(action, window)  { newProject() }
+on_close_activate <- function(action, window)     { closeProject()  }
 
 on_open_activate <- function(action, window)
 {
@@ -113,7 +114,7 @@ newProject <- function()
   
   #theWidget("data_filechooserbutton")$setFilename("")
   filename <- theWidget("data_filechooserbutton")$getFilename()
-  theWidget("data_filechooserbutton")$unselectFilename(filename)
+  if (not.null(filename)) theWidget("data_filechooserbutton")$unselectFilename(filename)
   
   theWidget("data_name_combobox")$setActive(-1)
 
@@ -138,6 +139,13 @@ enableDataSourceFunctions <- function(enable=TRUE)
                 "data_corpus_radiobutton")
   for (w in widgets) theWidget(w)$setSensitive(enable)
 }
+
+########################################################################
+# CLOSE PROJECT
+#
+# For now, Close is just like New.
+
+closeProject <- newProject
 
 ########################################################################
 # SAVE PROJECT

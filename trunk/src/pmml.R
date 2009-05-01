@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-03-28 14:36:07 Graham Williams>
+# Time-stamp: <2009-05-01 21:25:41 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.11" # Fix categroics with one singularity in lm were marked inactive.
+  VERSION <- "1.2.12" # Fix pmml.lm handling of singularities -> inactive
+  # "1.2.11" # Fix categroics with one singularity in lm were marked inactive.
   # "1.2.10" # Fix typo in pmml.lm
   # "1.2.9" # Further fix a pmml.lm bug.
   # "1.2.8" # Fix a pmml.lm bug.
