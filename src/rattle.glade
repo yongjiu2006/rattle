@@ -6,9 +6,7 @@
     <property name="visible">True</property>
     <property name="title" translatable="yes">Rattle: Effective Data Mining with R</property>
     <property name="role">Rattle</property>
-    <property name="default_width">750</property>
-    <property name="default_height">580</property>
-    <signal name="delete-event" handler="on_rattle_window_delete_event"/>
+    <signal name="delete_event" handler="on_rattle_window_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -70,7 +68,7 @@
                         <property name="label" translatable="yes">gtk-close</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="close_rattle"/>
+                        <signal name="activate" handler="on_close_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -1028,13 +1026,17 @@
                     <signal name="clicked" handler="on_execute_button_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkSeparatorToolItem" id="separatortoolitem3">
                     <property name="visible">True</property>
                   </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkToolButton" id="new_button">
@@ -1043,7 +1045,7 @@
                     <signal name="clicked" handler="on_new_button_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1053,7 +1055,7 @@
                     <signal name="clicked" handler="on_open_button_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1063,13 +1065,17 @@
                     <signal name="clicked" handler="on_save_button_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkSeparatorToolItem" id="separatortoolitem1">
                     <property name="visible">True</property>
                   </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkToolButton" id="report_toolbutton">
@@ -1078,7 +1084,7 @@
                     <signal name="clicked" handler="on_report_toolbutton_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1090,13 +1096,17 @@
                     <signal name="clicked" handler="on_export_button_clicked"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkSeparatorToolItem" id="separatortoolitem2">
                     <property name="visible">True</property>
                   </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkToolButton" id="quit_button">
@@ -1105,13 +1115,17 @@
                     <signal name="clicked" handler="quit_rattle"/>
                   </widget>
                   <packing>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkSeparatorToolItem" id="separatortoolitem4">
                     <property name="visible">True</property>
                   </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkToolItem" id="toolbutton1">
@@ -1126,8 +1140,8 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="homogeneous">True</property>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
                   </packing>
                 </child>
               </widget>
@@ -1587,8 +1601,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="local_only">False</property>
                             <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -8115,8 +8129,8 @@ ANOVA RBF (anovadot)</property>
         <property name="visible">True</property>
         <child>
           <widget class="GtkDrawingArea" id="drawingarea">
-            <property name="width_request">600</property>
-            <property name="height_request">600</property>
+            <property name="width_request">500</property>
+            <property name="height_request">500</property>
             <property name="visible">True</property>
           </widget>
         </child>
@@ -8139,6 +8153,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem9">
@@ -8155,6 +8173,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem3">
@@ -8171,6 +8193,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem4">
@@ -8187,6 +8213,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -8234,6 +8264,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem6">
@@ -8246,6 +8280,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem7">
@@ -8261,6 +8299,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkToolItem" id="toolitem8">
@@ -8276,6 +8318,10 @@ ANOVA RBF (anovadot)</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">False</property>
+              </packing>
             </child>
           </widget>
           <packing>

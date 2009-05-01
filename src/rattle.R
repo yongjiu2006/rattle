@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 22:39:06 Graham Williams>
+# Time-stamp: <2009-05-01 18:05:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Apr 2009"
+VERSION.DATE <- "Released 24 Apr 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -150,7 +150,7 @@ rattle <- function(csvname=NULL)
     .onAttach()
   }
 
-  if (crv$show.timestamp)
+  if (not.null(crv$show.timestamp) && crv$show.timestamp)
     cat(crv$appname, "timestamp:",
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
   
