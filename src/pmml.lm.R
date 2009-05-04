@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-05-01 21:18:15 Graham Williams>
+# Time-stamp: <2009-05-04 20:01:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -68,7 +68,7 @@ pmml.lm <- function(model,
   target <- field$name[1]
 
   # 090501 Identify those who are singularities. For numerics, this is
-  # easy sine the names are just the variable names. For categorics
+  # easy since the names are just the variable names. For categorics
   # this gets tricky because the names include the levels. So we need
   # to keep in inactive the actual variable name, if all coefficients
   # for that variable are NAs.
@@ -78,8 +78,10 @@ pmml.lm <- function(model,
 
   # These are the actual variable names.
   
-  inactive.vars <- names(unlist(sapply(field$name, grep, inactive)))
-  active.vars <- names(unlist(sapply(field$name, grep, active)))
+  tmp <- sapply(sapply(field$name, grep, inactive), length)
+  inactive.vars <- names(tmp[tmp>0])
+  tmp <- sapply(sapply(field$name, grep, active), length)
+  active.vars <- names(tmp[tmp>0])
   
   # Now remove any which have any non-NA levels, and that final
   # list is passed on the definitive list of onactive variables
