@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-19 09:03:23 Graham Williams>
+# Time-stamp: <2009-05-03 10:09:19 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -426,23 +426,11 @@ executeExplorePlot <- function(dataset,
 
   # Obtain the selection of variables.
 
-  # 090323 REMOVE boxplots  <- getSelectedVariables("boxplot")
   nboxplots <- length(boxplots)
-
-  # 090323 REMOVE hisplots <- getSelectedVariables("hisplot")
   nhisplots <- length(hisplots)
-
-  # 090323 REMOVE cumplots <- getSelectedVariables("cumplot")
-  # 090323 REMOVE benplots  <- getSelectedVariables("benplot")
   nbenplots <- length(benplots)
-  
-  # 090323 REMOVE barplots  <- getSelectedVariables("barplot")
   nbarplots <- length(barplots)
-  
-  # 090323 REMOVE dotplots  <- getSelectedVariables("dotplot")
   ndotplots <- length(dotplots)
-
-  # 090323 REMOVE mosplots  <- getSelectedVariables("mosplot")
   nmosplots <- length(mosplots)
 
   total.plots <- nboxplots + nhisplots + length(cumplots) +

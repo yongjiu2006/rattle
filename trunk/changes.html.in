@@ -6,16 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.65.
+    version is 2.4.66.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+447 090504 Ensure a window manager close obeys crv$close=quit.
+           PMML LM ensure correct marking of active/inactive wrt singularities
 446 090501 Bug fix on rattle start and crv$show.timestamp is NULL
            Ensure singularities are marked as inactive in the exported pmml.lm
-           Project -> Close is "Close Project" not "Quite Rattle" (Bob Muenchen)
+           Project -> Close is "Close Project" not "Quit Rattle" (Bob Muenchen)
            Bug fix: new project with NULL filename complained - test.
            Remove default/min window sizes from glade for smaller window (netbook)
            Release pmml 1.2.12
@@ -912,6 +914,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-01 21:26:34 Graham Williams</i>
+<i>Last Modified 2009-05-04 20:16:19 Graham Williams</i>
 <!-- hhmts end -->
   </p>

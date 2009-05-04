@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-01 18:05:54 Graham Williams>
+# Time-stamp: <2009-05-04 19:25:37 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Apr 2009"
+VERSION.DATE <- "Released 01 May 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1926,15 +1926,18 @@ update_comboboxentry_with_dataframes <- function(action, window)
   }
 }
 
-on_rattle_window_delete_event<- function(action, window)
+on_rattle_window_delete_event <- function(action, window)
 {
   if (crv$close %in% c("quit", "ask"))
-  {  
+  {
     msg <- sprintf("Do you want to terminate %s?", crv$appname)
     if (!questionDialog(msg))
       return(TRUE)
     else
-      return(FALSE)
+      if (crv$close == "quit")
+        quit(save="no")
+      else
+        return(FALSE)
   }
 }
 
