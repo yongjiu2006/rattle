@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.66.
+    version is 2.4.67.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+448 090505 Remove Menu Project/Close - we do not have multiple projects.
 447 090504 Ensure a window manager close obeys crv$close=quit.
            PMML LM ensure correct marking of active/inactive wrt singularities
 446 090501 Bug fix on rattle start and crv$show.timestamp is NULL
@@ -914,6 +915,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-04 20:16:19 Graham Williams</i>
+<i>Last Modified 2009-05-05 07:20:22 Graham Williams</i>
 <!-- hhmts end -->
   </p>
