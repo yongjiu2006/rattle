@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-04 19:25:37 Graham Williams>
+# Time-stamp: <2009-05-05 21:25:22 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 May 2009"
+VERSION.DATE <- "Released 05 May 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1626,107 +1626,12 @@ printPlot <- function(dev.num=dev.cur())
   cur <- dev.cur()
   dev.set(dev.num)
   if (isWindows())
-    my.dev.print(win.print)
+    dev.print(win.print)
   else
-    my.dev.print()
+    dev.print()
   dev.set(cur)
 }
   
-# The following is from dev.print, but dev.print does not list "Cairo"
-# as a screen device. So just use their code until they change
-# this. Ripley has implemented (070408) a fix for this and it is in
-# 2.5.0 version of dev.print.
-
-my.dev.print <- function (device = postscript, ...) 
-{
-    current.device <- dev.cur()
-    nm <- names(current.device)[1]
-    if (nm == "null device") 
-        stop("no device to print from")
-    if (nm %notin% c("Cairo", "X11", "GTK", "gnome", "windows", "quartz")) 
-        stop("can only print from screen device")
-    oc <- match.call()
-    oc[[1]] <- as.name("dev.copy")
-    oc$device <- device
-    din <- graphics::par("din")
-    w <- din[1]
-    h <- din[2]
-    if (missing(device)) {
-        if (is.null(oc$file)) 
-            oc$file <- ""
-        hz0 <- oc$horizontal
-        hz <- if (is.null(hz0)) 
-            ps.options()$horizontal
-        else eval.parent(hz0)
-        paper <- oc$paper
-        if (is.null(paper)) 
-            paper <- ps.options()$paper
-        if (paper == "default") 
-            paper <- getOption("papersize")
-        paper <- tolower(paper)
-        switch(paper, a4 = {
-            wp <- 8.27
-            hp <- 11.69
-        }, legal = {
-            wp <- 8.5
-            hp <- 14
-        }, executive = {
-            wp <- 7.25
-            hp <- 10.5
-        }, {
-            wp <- 8.5
-            hp <- 11
-        })
-        wp <- wp - 0.5
-        hp <- hp - 0.5
-        if (!hz && is.null(hz0) && h < wp && wp < w && w < hp) {
-            hz <- TRUE
-        }
-        else if (hz && is.null(hz0) && w < wp && wp < h && h < 
-            hp) {
-            hz <- FALSE
-        }
-        else {
-            h0 <- ifelse(hz, wp, hp)
-            if (h > h0) {
-                w <- w * h0/h
-                h <- h0
-            }
-            w0 <- ifelse(hz, hp, wp)
-            if (w > w0) {
-                h <- h * w0/w
-                w <- w0
-            }
-        }
-        if (is.null(oc$pointsize)) {
-            pt <- ps.options()$pointsize
-            oc$pointsize <- pt * w/din[1]
-        }
-        if (is.null(hz0)) 
-            oc$horizontal <- hz
-        if (is.null(oc$width)) 
-            oc$width <- w
-        if (is.null(oc$height)) 
-            oc$height <- h
-    }
-    else {
-        devname <- deparse(substitute(device))
-        if (devname %in% c("png", "jpeg", "bmp") && is.null(oc$width) && 
-            is.null(oc$height)) 
-            warning("need to specify one of 'width' and 'height'")
-        if (is.null(oc$width)) 
-            oc$width <- if (!is.null(oc$height)) 
-                w/h * eval.parent(oc$height)
-            else w
-        if (is.null(oc$height)) 
-            oc$height <- if (!is.null(oc$width)) 
-                h/w * eval.parent(oc$width)
-            else h
-    }
-    dev.off(eval.parent(oc))
-    dev.set(current.device)
-}
-
 # This one seems to have some assumption about the device it is saving
 # from and causes a memory fault if it is Cairo! Best not to use it
 # for now, and the Gtk clipboard stuff does work under Windows.
