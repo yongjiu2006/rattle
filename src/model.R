@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-17 06:49:20 Graham Williams>
+# Time-stamp: <2009-05-05 19:55:11 Graham Williams>
 #
 # MODEL TAB
 #
@@ -972,7 +972,27 @@ executeModelGLM <- function()
   appendLog("Build a Regression model.",
             model.cmd, sep="")
   start.time <- Sys.time()
-  eval(parse(text=model.cmd))
+  result <- try(eval(parse(text=model.cmd)), silent=TRUE)
+  if (inherits(result, "try-error"))
+  {
+    if (any(grep("too many (.*) weights", result)))
+    {
+      find.num.weights <- regexpr('\\([0-9]*\\)', result)
+      num.weights <- substr(result, find.num.weights,
+                            find.num.weights + attr(find.num.weights, "match.length")-1)
+      errorDialog("The Multinomial model build has failed, with too many weights",
+                  num.weights,
+                  "needing to be calculated. Perhaps consider reducing the",
+                  "number of categoric variables with unique values (if you have",
+                  "such variables in your input data) or perhaps treating the target",
+                  "variable as numeric and perform a numeric linear regression.")
+      setTextview(TV)
+    }        
+    else
+      errorDialog("The regression model appears to have failed.",
+                  "The error message was:", result, crv$support.msg)
+    return(FALSE)
+  }
   
   # Summarise the model.
 
