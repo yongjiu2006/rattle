@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-02 21:42:30 Graham Williams>
+# Time-stamp: <2009-05-06 18:10:28 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -731,8 +731,21 @@ executeEvaluateTab <- function()
   # with binary classification, as does my own Risk Chart.
   
   if (!(theWidget("confusion_radiobutton")$getActive()
-        #theWidget("pvo_radiobutton")$getActive() || Not working for multiclass
+
+        # 090506 I had a note here that pvo was not working for
+        # multiclass targets for the PrvOb plot, but uncommenting the
+        # following and having a numeric target from a categoric
+        # variable we get a decent looking plot, but we get a warning
+        # about only fitting to first two points and the plotted lines
+        # may be relating only to the first two etc. So until I review
+        # what happens leave this out. Make sure pvo is not available
+        # under such circumstances. Add the check of the Categoric
+        # target choice to cover the case of a Numeric override of a
+        # Categoric variable.
+
+        || theWidget("pvo_radiobutton")$getActive()
         || theWidget("score_radiobutton")$getActive())
+      && !theWidget("target_categoric_radiobutton")$getActive() # See Note Above
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {
@@ -2579,6 +2592,18 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     appendLog("Obtain the observed output for the dataset",
               paste("obs <-", obsset))
     obs <- eval(parse(text=obsset))
+
+    # 090506 Account for the case when a categoric is being treated as
+    # a numeric.
+
+    obsfix <- sprintf(paste("obs.rownames <- rownames(obs)\n",
+                            "obs <- as.numeric(obs[[1]])\n",
+                            "obs <- data.frame(%s=obs)\n",
+                            "rownames(obs) <- obs.rownames", sep=""),
+                      crs$target)
+    appendLog("Handle in case categoric target treated as numeric.",
+              obsfix)
+    eval(parse(text=obsfix))
 
     # fitcorr is the so called psuedo-R-square. It has a maximum less
     # than 1 and is often used in either binary or multinomial
