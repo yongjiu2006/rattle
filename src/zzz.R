@@ -33,12 +33,15 @@
   else
     crv$load.tooltips <- TRUE
   crv$verbose <- TRUE # Add sub titles to plots ...
+
+  crv$max.categories <- 10 # Above which target assumed numeric, not categoric
   crv$max.vars.correlation <- 40 # Correlation slows down too much
   crv$export.to.c.available <- FALSE # No export to C implemented yet
   crv$show.warnings <- TRUE # 090207 Show test/train warning.
   crv$project.extensions <- c("rattle", "rstat") # Extensions for projects  
   crv$ident.min.rows <- 300 # Unique factors/ints > than this are idents
-
+  crv$default.train.percentage <- 70 # The default sample percentage value.
+  
   # Log constants
 
   crv$start.log.comment <- "\n\n# "	# Assume paste with sep=""

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-06 18:10:28 Graham Williams>
+# Time-stamp: <2009-05-07 06:19:32 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -2639,10 +2639,10 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
 
     vnames <- names(fitpoints)
     plot.cmd <-sprintf('plot(%s, fitpoints[[2]], asp=1, xlab="%s", ylab="%s")',
-                       ifelse(length(unique(fitpoints[[1]])) < 5,
+                       ifelse(length(unique(fitpoints[[1]])) < crv$max.categories,
                               "jitter(fitpoints[[1]])",
                               "fitpoints[[1]]"),
-                       ifelse(length(unique(fitpoints[[1]])) < 5,
+                       ifelse(length(unique(fitpoints[[1]])) < crv$max.categories,
                               paste(vnames[1], "(Jittered)"),
                               vnames[1]),
                        vnames[2])
