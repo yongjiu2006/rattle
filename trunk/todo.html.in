@@ -14,6 +14,7 @@ lattice.
 
 <h2>Specific Suggestions</h2>
 <pre>
+090512 Clustering via fuzzy c-means (e1071) algorithm (Iliya Georgiev)
 090109 Add RVM (as cf SVM) (Gabriel Ibarra)
 090109 Allow a SQL select to choose the data you want (Eberhard W. Lisse)
 090109 Support PostgreSQL (RdbiPgSQL) and MySQL (RMySQL) (Eberhard W. Lisse)
@@ -149,6 +150,6 @@ lattice.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-03-05 06:10:00 Graham Williams</i>
+<i>Last Modified 2009-05-13 06:03:15 Graham Williams</i>
 <!-- hhmts end -->
   </p>

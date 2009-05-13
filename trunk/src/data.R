@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-19 20:59:25 Graham Williams>
+# Time-stamp: <2009-05-13 22:19:17 Graham Williams>
 #
 # DATA TAB
 #
@@ -528,16 +528,28 @@ executeDataTab <- function(csvname=NULL)
     # parameter.
     
     theWidget("sample_checkbutton")$setActive(TRUE)
-  }
+
+    # 090513 Reset the default sample size percentage and ensure it
+    # holds (hence we need more than just setting the percentage spin
+    # button.
+    nrows <- nrow(crs$dataset)
+    per <- crv$default.train.percentage
+    srows <- round(nrows * per / 100)
+    theWidget("sample_count_spinbutton")$setRange(1,nrows)
+    theWidget("sample_count_spinbutton")$setValue(srows)
+    theWidget("sample_percentage_spinbutton")$setValue(per)
+ }
   else
     resetRattle(new.dataset=FALSE)
 
-  # 090516 Move the following from the above if branch to here. Reset
+  # 090416 Move the following from the above if branch to here. Reset
   # the sampling options here, except for whether sampling is
   # on/off. Thus, on loading a new dataset, sampling is set on
   # above. But if we modify the dataset external to Rattle, we want to
   # set new parameters here, yet leave the sampling checkbutton as it
-  # was.
+  # was. The extra settings here are often redundant, but needed for
+  # the "modified in R" case. 090513 Though now that I have this code
+  # both here and above, we might need to revist the logic!
   #
   # We set range bounds and generate the default 70% sample. Do the
   # range bounds first since otherwise the value gets set back to
@@ -547,12 +559,16 @@ executeDataTab <- function(csvname=NULL)
   # even if the number of rows has been changed.
     
   nrows <- nrow(crs$dataset)
-  per <- 70
+  # 090513 Remove the resetting of the sample size to 70 from here,
+  # but get the current value. Otherwise, the sample size is always
+  # reset to 70 on each Execute of the Data tab - not desired. Now
+  # need to only reset it to 70 on loading a new dataset.
+  per <- theWidget("sample_percentage_spinbutton")$getValue()
   srows <- round(nrows * per / 100)
   theWidget("sample_count_spinbutton")$setRange(1,nrows)
   theWidget("sample_count_spinbutton")$setValue(srows)
   theWidget("sample_percentage_spinbutton")$setValue(per)
-  
+ 
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
   
 #  else
@@ -2024,14 +2040,14 @@ executeSelectTab <- function()
   
   if (not.null(target)
       && categoricTarget()
-      && target.levels > 10)
+      && target.levels > crv$max.categories)
   {
     if (! questionDialog("The column selected as a Target",
                          sprintf("(%s)", target),
                          "will be treated as a categorical variable",
                          "since Target Type is set to Categoric.",
-                         "\n\nThe variable has more than 10 distinct",
-                         "values",
+                         "\n\nThe variable has more than", crv$max.categories,
+                         "distinct values",
                          sprintf("(%d in fact).", target.levels),
                          "That is unusual and some model builders will",
                          "take a long time.\n\nConsider using fewer",
@@ -2739,7 +2755,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     unique.value <- unique(crs$dataset[[variables[i]]])
 
     numeric.var <- is.numeric(crs$dataset[[variables[i]]])
-    possible.categoric <- (unique.count <= 10 ||
+    possible.categoric <- (unique.count <= crv$max.categories ||
                            theWidget("target_categoric_radiobutton")$
                            getActive())
     

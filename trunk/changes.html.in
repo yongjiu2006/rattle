@@ -13,6 +13,10 @@
    </p>
 
 <pre>
+451 090513 Bug fix - sample changes were not being kept.
+           Set the default percentage for sampling as a crv constant.
+           Set the heuristic for categoric target as a crv constant.
+450 090506 Allow PrVOb plots for categrics treated as numeric.
 449 090505 Revert to R's dev.print for plot Print - now supports Cairo
            Intercept regression errors - explain multinom weights error.
            Remove Copy from plots - does not work
@@ -918,6 +922,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-05 22:05:15 Graham Williams</i>
+<i>Last Modified 2009-05-13 22:36:58 Graham Williams</i>
 <!-- hhmts end -->
   </p>
