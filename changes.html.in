@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.69.
+    version is 2.4.71.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+452 090518 Test for exported but not supported transforms.
+           Add new pmmlCanExport to test for variables that are exportable.
+           Data/Transform tabs identify variables not supported for export.
+           pmml becomes a dependency of rattle.
 451 090513 Bug fix - sample changes were not being kept.
            Set the default percentage for sampling as a crv constant.
            Set the heuristic for categoric target as a crv constant.
@@ -922,6 +926,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-13 22:36:58 Graham Williams</i>
+<i>Last Modified 2009-05-18 21:56:12 Graham Williams</i>
 <!-- hhmts end -->
   </p>

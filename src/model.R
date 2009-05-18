@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-06 06:35:03 Graham Williams>
+# Time-stamp: <2009-05-18 21:51:51 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1466,6 +1466,23 @@ exportModelTab <- function()
 
   if (noDatasetLoaded()) return()
 
+  # 090518 Test if each of the variables is exportable. If not (i.e.,
+  # one or more are transforms that are not supported) then put up a
+  # warning but continue. RStat may decide to not continue, but Rattle
+  # should since perhaps the PMML is provided as a template to then
+  # allow a user to edit.
+  
+  if (any(!sapply(crs$input, pmmlCanExport)))
+  {
+    if (!questionDialog("In exporting the model the following variables appear to be",
+                        "transformations that are not currently supported for export.",
+                        "Be aware that the results will not perform the",
+                        "transformations.\n\n",
+                        paste(names(which(!sapply(crs$input, pmmlCanExport))), collapse=", "),
+                        "\n\nDo you wish to continue?"))
+      return()
+  }
+  
   if (theWidget("rpart_radiobutton")$getActive())
   {
     exportRpartTab()
