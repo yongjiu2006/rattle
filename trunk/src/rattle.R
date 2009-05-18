@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-05 21:25:22 Graham Williams>
+# Time-stamp: <2009-05-17 21:13:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 May 2009"
+VERSION.DATE <- "Released 13 May 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -113,7 +113,12 @@ overwritePackageFunction <- function(fname, fun, pkg)
 {
   # 090207 This allows a plugin to easily overwrite any Rattle funtion
   # with their own functionality. Simply define your own FUN that is
-  # to overwrite the Rattle defined function FNAME.
+  # to overwrite the Rattle defined function FNAME. 090517 We do it
+  # this way rather than having to export the function to be
+  # overridden. Note that the override only happens within the
+  # namespace of the package. Thus it does not make sense to use this
+  # overwrite function to overwrite an exported function, since the
+  # overwrite will not be seen externally to the package.
   
   re <- eval(parse(text=sprintf("environment(%s)", pkg)))
   unlockBinding(fname, re)
@@ -123,6 +128,11 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 rattle <- function(csvname=NULL)
 {
+  # 090517 Require pmml. Now that there is an indication on the Data
+  # tab as to whether the varaiable (i.e., a transformed variable) can
+  # be exported to PMML we need pmml to be loaded. Thus pmml is now a
+  # "Depends:" in the DESCRIPTION file.
+  
   # If crv$tooltiphack is TRUE then gtkMain is called on focus,
   # blocking the R console, but at least tooltips work. On losing
   # focus gtkMainQuit is called, and thus the console is no longer

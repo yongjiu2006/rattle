@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-05-01 21:25:41 Graham Williams>
+# Time-stamp: <2009-05-17 21:13:55 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -267,14 +267,25 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
 
 # GLOBAL CONSTANTS
 
+# 090517 List here all transforms that we know about from the rattle
+# package. In using the pmml package with rattle these are used to
+# identify tranformations. Information about how the transformation is
+# performed (i.e., the transformation parameters) is separately
+# recorded within rattle (crs$transforms) and must be used separately
+# to generate the appropriate PMML code. Eventually I expect to see
+# the handling of transform variables incorporated into the pmml
+# package.
+
 .TRANSFORMS.NORM.CONTINUOUS <- c("RRC_", "R01_", "RMD_", "RMA_")
 .TRANSFORMS.IMPUTE <- paste(c("IZR", "IMN", "IMD", "IMO", "ICN"), "_", sep="")
 .TRANSFORMS.APPLY <- c("RLG_")
 .TRANSFORMS.BIN <- c("BQ_", "BK_", "BE_")
+.TRANSFORMS.OTHER <- c("RRK_")
 .TRANSFORMS <- c(.TRANSFORMS.NORM.CONTINUOUS,
                  .TRANSFORMS.APPLY,
                  .TRANSFORMS.IMPUTE,
-                 .TRANSFORMS.BIN)
+                 .TRANSFORMS.BIN,
+                 .TRANSFORMS.OTHER)
 
 supportTransformExport <- function(transforms=NULL)
 {
@@ -349,6 +360,19 @@ unifyTransforms <- function(field, transforms)
   return(field)
 }
 
+pmmlCanExport <- function(vname)
+{
+  # 090517 In general this support function will return TRUE if the
+  # variable name supplied is either not a transform (hence it is
+  # exportable in general, since it is a supplied variable) or if it
+  # is a transform, it is a supported transformation, if there is such
+  # a list available. This is intended for the implementation of
+  # transforms into PMML. An extermal package will provide a
+  # pmml.transforms function and will override the simple default here
+  # to test whether the transform is one that it can handle.
+  return(! isTransformVar(vname))
+}
+
 isTransformVar <- function(var.name)
 {
   return(transformToCode(var.name) %in% .TRANSFORMS)
@@ -356,6 +380,8 @@ isTransformVar <- function(var.name)
 
 transformToCode <- function(var)
 {
+  # 090517 Should we be returning NULL if there is no code? Or perhaps
+  # an empty string so that %in% will still work.
   code <- sub("^([^_]*_).*$", "\\1", var)
   if (sprintf("%s_", substr(code, 1, 2)) %in% .TRANSFORMS.BIN)
     code <- sprintf("%s_", substr(code, 1, 2))

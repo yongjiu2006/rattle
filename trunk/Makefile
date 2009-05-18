@@ -103,9 +103,9 @@ default: local plocal ilocal
 
 .PHONY: kathy
 kathy: zip
-	diff ibi/rstat.R src > ibi/updates
-	diff ibi/pmml.transforms.R src >> ibi/updates
-	diff ibi/pmmltocibi.R src >> ibi/updates
+	-diff ibi/rstat.R src >| ibi/updates
+	-diff ibi/pmml.transforms.R src >> ibi/updates
+	-diff ibi/pmmltocibi.R src >> ibi/updates
 	zip $@`date +%y%m%d%H%M`.zip \
 	rattle_$(VERSION).zip pmml_$(PVERSION).zip rstat_$(IVERSION).zip \
 	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates

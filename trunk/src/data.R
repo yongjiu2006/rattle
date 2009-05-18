@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-13 22:19:17 Graham Williams>
+# Time-stamp: <2009-05-17 21:41:51 Graham Williams>
 #
 # DATA TAB
 #
@@ -2781,9 +2781,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               crv$COLUMN["risk"], variables[i] %in% risk,
               crv$COLUMN["ident"], variables[i] %in% ident,
               crv$COLUMN["ignore"], variables[i] %in% ignore,
-              crv$COLUMN["comment"], paste(ifelse(substr(variables[i], 1, 4)
-                                               %in% c("RRK_", "RBG_"),
-                                               "*", ""),
+              crv$COLUMN["comment"], paste(ifelse(pmmlCanExport(variables[i]),
+                                                  "", "NO pmml export. "),
                                         ## 090110 Show unique for all ifelse(numeric.var,# &&
                                                #possible.categoric,
                                                sprintf("Unique: %d ",
@@ -2806,6 +2805,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                            # must include all variables, not just ones
                            # with missing values.
     {
+
+      # Check if it can be exported to PMML.
+
+      etype <- ifelse(pmmlCanExport(variables[i]), "", "NO pmml export. ")
+
       # Generate correct Rattle terminology for the variable class.
       
       dtype <- paste("A ", cl, " variable")
@@ -2844,7 +2848,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       impute$set(impiter,
                  crv$IMPUTE["number"], i,
                  crv$IMPUTE["variable"], variables[i],
-                 crv$IMPUTE["comment"], sprintf("%s%s.", dtype, mtext))
+                 crv$IMPUTE["comment"], sprintf("%s%s.", etype, dtype, mtext))
     }
         
     if (strsplit(cl, " ")[[1]][1] == "factor")
