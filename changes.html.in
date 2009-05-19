@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.71.
+    version is 2.4.72.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+453 090519 Pick up lm contrasts error (constant factor).
+           Ensure TIN_ vars identified as transform (not PML exported)
+           When indicator variable is created, ignore the original variable
+           Identify inactive rpart variables in exported PMML
 452 090518 Test for exported but not supported transforms.
            Add new pmmlCanExport to test for variables that are exportable.
            Data/Transform tabs identify variables not supported for export.
@@ -926,6 +930,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-18 21:56:12 Graham Williams</i>
+<i>Last Modified 2009-05-19 21:32:13 Graham Williams</i>
 <!-- hhmts end -->
   </p>

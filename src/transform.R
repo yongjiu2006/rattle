@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-04-21 20:43:36 Graham Williams>
+# Time-stamp: <2009-05-19 21:27:58 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1301,8 +1301,11 @@ executeTransformRemapPerform <- function(vars=NULL,
   if (action == "joincat")
     input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
   else if (action == "indicator")
+  {
     input <- union(input, paste(remap.prefix, vars,
                                 levels(crs$dataset[[vars]]), sep="_"))
+    ignore <- union(ignore, vars)
+  }
   else if (action %in% c('quantiles', 'kmeans', "eqwidth"))
   {
     input <- setdiff(input, vars) # 090110 Added

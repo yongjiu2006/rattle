@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-02-19 07:30:10 Graham Williams>
+# Time-stamp: <2009-05-19 21:11:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -101,6 +101,22 @@ pmml.rpart <- function(model,
         field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
+  # 090519 Identify those variables that are not used in the model. We
+  # need to deal with a model that has surrogates. Use maxsurrogate to
+  # distinguish. However, when using surrogates perhaps we also need
+  # to identify the smaller list of inactive, since there may still be
+  # inactive variables. This is not yet implemented.
+
+  if (model$control$maxsurrogate == 0)
+  {
+    frame <- model$frame
+    leaves <- frame$var == "<leaf>"
+    used <- unique(frame$var[!leaves])
+    inactive <- setdiff(setdiff(levels(used), used), "<leaf>")
+  }
+  else
+    inactive <- NULL
+  
   # PMML
 
   pmml <- pmmlRootNode("3.2")
@@ -123,7 +139,7 @@ pmml.rpart <- function(model,
 
   # PMML -> TreeModel -> MiningSchema
   
-  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target))
+  the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
   # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
 

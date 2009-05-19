@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-18 21:51:51 Graham Williams>
+# Time-stamp: <2009-05-19 19:53:16 Graham Williams>
 #
 # MODEL TAB
 #
@@ -988,6 +988,24 @@ executeModelGLM <- function()
                   "variable as numeric and perform a numeric linear regression.")
       setTextview(TV)
     }        
+    else if (any(grep("contrasts can be applied only to factors with 2", result)))
+    {
+      factors <- crs$input[sapply(crs$input, function(x)
+                                  is.factor(crs$dataset[[x]]))]
+      single <- factors[sapply(factors, function(x)
+                               length(levels(crs$dataset[[x]]))==1)]
+      one <- length(single)==1
+      errorDialog("It appears that", ifelse(one, "a", "some"),
+                  "categoric input",
+                  ifelse(one, "variable is", "variables are"), "constant.",
+                  "The regression model algorithm can not handle such",
+                  ifelse(one, "a variable.", "variables."),
+                  "You may like to Ignore the",
+                  ifelse(one, "variable", "variables"),
+                  "through the Data tab:\n\n",
+                  paste(single, collapse=", "))
+      setTextview(TV)
+    }
     else
       errorDialog("The regression model appears to have failed.",
                   "The error message was:", result, crv$support.msg)
