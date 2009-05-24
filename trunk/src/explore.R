@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-03 10:09:19 Graham Williams>
+# Time-stamp: <2009-05-24 14:16:45 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -580,11 +580,12 @@ executeExplorePlot <- function(dataset,
 #    else
 #    {
     
-    # 080918 Use the vcd package to get a better colour map. See
-    # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87
+    # 080918 Use the colorspace package to get a better colour map. See
+    # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87 and
+    # http://statmath.wu.ac.at/~zeileis/papers/Zeileis+Hornik+Murrell-2009.pdf
     
-    if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(%d, start = 270, end = 150),"
+    if (packageIsAvailable("colorspace"))
+      cols <- "col=rainbow_hcl(%d)," # 090524, start = 270, end = 150),"
     else
       cols <- "col=rainbow(%d),"
     
@@ -692,34 +693,122 @@ executeExplorePlot <- function(dataset,
   
   if (nhisplots > 0)
   {
-    # Plot a histogram for numeric data.
+    # Plot a histogram for numeric data. 090523 Bob Muenchen suggested
+    # using a fixed colour for the bars and use the colours as in the
+    # box plots for the breakdown between class values, for
+    # consistency. I have also introduced colour for the rug and
+    # ensured the y limits are calcuated in case the density plot is
+    # higher than the histogram. The current colours are not yet right
+    # though. For binary data the distinction between the blue and
+    # gree is very difficult to see for thin lines.
 
-    if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(%s, start = 270, end = 150)"
+    #if (packageIsAvailable("RColorBrewer"))
+    #  cols <- 'col=brewer.pal(%s, "Set1")'
+    #else
+    if (packageIsAvailable("colorspace")) # 090524 Why vcd? comes from colorspace....
+      # cols <- "col=rainbow_hcl(%s, start = 270, end = 150)"
+      cols <- "col=rainbow_hcl(%s)"# 090524, start = 0, end = 150)"
     else
       cols <- "col=rainbow(%s)"
 
+    # 090523 The preplot.cmd was considered for use in determining the
+    # highest point of the desnity plots so that we can ensure we have
+    # enough on the y axis to draw them all. We could use xpd=NA so as
+    # not to crop, but then the y axis may not go up high enough and
+    # the density may still be higher than fits in the device, and it
+    # looks ugly.
+    #
+    # 090524 An alternative could be, as with much of Rattle, that
+    # this cropping is good enough, and the user can fine tune it
+    # themselves. But even with xpd=NA the lines look ugly. Also note
+    # that xpd=NA makes the left and right extensions of the desnity
+    # plots visible, which is not so nice.
+    #
+    # The original attempt, whereby the below hist (with plot=FALSE)
+    # was included in a preplot.cmd, did not work because somehow this
+    # plot actually interferred with multiple plots on a page.
+    #
+    # Note this tip that could help:
+    # http://wiki.r-project.org/rwiki/doku.php?id=tips:easier:tbtable
+    #
+
+    # 090524 REMOVE
+    #preplot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], plot=FALSE)\n',
+    #                     'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
+    #                     'rs <- max(hs$counts)/max(dens$y)\n',
+    #                     'maxy <- max(dens$y*rs)', sep="")
+
+    ## hs <- hist(ds[ds$grp=="All",1], breaks="fd", plot=FALSE)
+    ## dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)
+    ## rs <- max(hs$counts)/max(dens$y)
+    ## maxy <- max(dens$y*rs)
+    ## print(maxy)
+    
+    ## if (length(targets))
+    ##   for (i in 1:length(targets))
+    ##   {
+    ##     dens <- density(ds[ds$grp==targets[i], 1], na.rm=TRUE)
+    ##     maxy <- max(c(maxy, dens$y*rs))
+    ##   }
+    ## print(maxy)
+
+    # 090524 A note on using breaks in the histogram: The default is
+    # to use Sturges' rule from 1926. Rob Hyndman
+    # (http://robjhyndman.com/papers/sturges.pdf) argues that Sturges'
+    # rule is wrong. Sturges' rule leads to oversmoothed
+    # histograms. Hyndman notes that Scott's (1979) rule and Freedman
+    # and Diaconis's (1981) rule are just as simple to use as Sturges'
+    # rule, but are well-founded in statistical theory. Sturges' rule
+    # does not work for large n. Also see
+    # http://www.math.leidenuniv.nl/~gill/teaching/statistics/histogram.pdf
+    # So let's use the Freedman and Diaconis approach.
+    
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
-                      cols, ', breaks="scott", border=FALSE)\n',
+                      # cols,
+                      'col="grey90"',
+                      ', ylim=c(0, %s)', #', ceiling(maxy), ')',
+                      ', breaks="fd", border=TRUE)\n',
                       'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
-                      'rs <- max(hs$counts)/max(dens$y)\n',
-                      'lines(dens$x, dens$y*rs, type="l")',
+                      # 090523 Now done in preplot.cmd:
+                      # 'rs <- max(hs$counts)/max(dens$y)\n',
+                      'lines(dens$x, dens$y*rs, type="l", ',
+                      sprintf(cols, length(targets)+1), '[1])',
                       sep="")
     if (length(targets))
+    {
+      # 090524 REMOVE
+#      preplot.cmd <- paste(preplot.cmd, "\n",
+#                           paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
+#                                               '1], na.rm=TRUE)\n',
+#                                               'maxy <- max(c(maxy, dens$y*rs))'),
+#                                         targets), collpase="\n"),
+#                           sep="")
+      
       plot.cmd <- paste(plot.cmd, "\n",
                         paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
                                             '1], na.rm=TRUE)\n',
                                             'lines(dens$x, dens$y*rs, ',
                                             'type="l", ',
-                                            'col=rainbow(%s)[%s])', sep=""),
+                                            '%s[%s])', sep=""),
                                       targets,
-                                      length(targets)+1,
-                                      seq_along(targets)),
+                                      sprintf(cols, length(targets)+1),
+                                      (seq_along(targets)+1)),
                                       #eval(parse(text=sprintf(cols,
                                       #             length(targets))))),
                               collapse="\n"),
                         sep="")
-    rug.cmd <- 'rug(ds[ds$grp=="All",1])'
+    }
+
+    if (length(targets))
+    {
+      rug.cmd <- paste(sprintf('rug(ds[ds$grp=="%s", 1], %s[%s])', targets,
+                               sprintf(cols, length(targets)+1),
+                               seq_along(targets)+1), collapse="\n")
+    }
+    else
+    {
+      rug.cmd <- 'rug(ds[ds$grp=="All",1])'
+    }
 
     # If the data looks more categoric then do a more usual hist
     # plot. TODO 080811 Add in a density plot - just need to get the
@@ -727,13 +816,13 @@ executeExplorePlot <- function(dataset,
     # sense, because the bars are the actual data, there is no
     # grouping.
 
-    if (packageIsAvailable("vcd"))
-      cols <- "col=rainbow_hcl(30, start = 270, end = 150)"
-    else
-      cols <- "col=rainbow(30)"
+    #if (packageIsAvailable("vcd"))
+    #  cols2 <- "col=rainbow_hcl(30, start = 270, end = 150)"
+    #else
+    #  cols2 <- "col=rainbow(30)"
 
-    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All",1], ',
-                         'digits=2)), ', cols, ')\n',
+    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All", 1], ',
+                         'digits=2)), col="grey90")\n',
                          #'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
                          #'rs<- max(summary(as.factor(round(ds[ds$grp=="All",',
                          #'1], digits=2))))/max(dens$y)\n',
@@ -756,6 +845,20 @@ executeExplorePlot <- function(dataset,
               paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
+      # 090524 Perform the max y calculation here for each plot
+      
+      hs <- hist(ds[ds$grp=="All",1], breaks="fd", plot=FALSE)
+      dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)
+      rs <- max(hs$counts)/max(dens$y)
+      maxy <- max(dens$y*rs)
+      
+      if (length(targets))
+        for (i in 1:length(targets))
+        {
+          dens <- density(ds[ds$grp==targets[i], 1], na.rm=TRUE)
+          maxy <- max(c(maxy, dens$y*rs))
+        }
+
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
@@ -769,7 +872,7 @@ executeExplorePlot <- function(dataset,
       # 080925 Determine the likely number of bars for the plot. This
       # does not always seem to get it correct.
       
-      nbars <- nclass.scott(na.omit(ds[ds$grp=="All",1]))
+      nbars <- nclass.FD(na.omit(ds[ds$grp=="All",1]))
 
       if (length(dsuni) <= 20 && dsmax - dsmin <= 20)
       {
@@ -778,18 +881,33 @@ executeExplorePlot <- function(dataset,
       }
       else
       {
-        plot.cmd <- sprintf(plot.cmd, nbars)
-        appendLog("Plot the data.", plot.cmd)
-        eval(parse(text=plot.cmd))
+        # 090523 REMOVE The nbars is no longer required because we are now
+        # using a single colour.
+        #
+        # plot.cmd <- paste(preplot.cmd, sprintf(plot.cmd, nbars), sep="\n")
+        #
+        # 090524 REMOVE If I don't worry about trying to determine a maximum,
+        # simply don't crop, through using the xpd parameter as set
+        # above, then plots look ugly, so do try....
+        #
+
+        # 090524 Note the sprintf here, to dynamically specify the max
+        # y value for each individual plot.
+        
+        appendLog("Plot the data.", sprintf(plot.cmd, maxy))
+        eval(parse(text=sprintf(plot.cmd, maxy)))
         appendLog("Add a rug to illustrate density.", rug.cmd)
         eval(parse(text=rug.cmd))
         if (length(targets))
         {
-          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
-                                      'fill=c("black", rainbow(%s)))'),
+          # 090524 REMOVE
+#          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
+#                                      'fill=c("black", rainbow(%s)))'),
+          legend.cmd <- sprintf('legend("topright", c(%s), %s)',
                                 paste(sprintf('"%s"', c("All", targets)),
                                       collapse=","),
-                                length(targets)+1)
+                                sprintf(sub("col", "fill", cols),
+                                        length(targets)+1))
           appendLog("Add a legend to the plot.", legend.cmd)
           eval(parse(text=legend.cmd))
         }
@@ -817,8 +935,8 @@ executeExplorePlot <- function(dataset,
     {
       startLog()
 
-      if (packageIsAvailable("vcd"))
-        col <- rainbow_hcl(length(targets)+1, start = 30, end = 300)
+      if (packageIsAvailable("colorspace"))
+        col <- rainbow_hcl(length(targets)+1) #, start = 30, end = 300)
       else
         col <- rainbow(length(targets)+1)
       
@@ -836,8 +954,8 @@ executeExplorePlot <- function(dataset,
                             sep="")
         }
 
-      if (packageIsAvailable("vcd"))
-        cols <- "col=rainbow_hcl(%d, start = 30, end = 300)"
+      if (packageIsAvailable("colorspace"))
+        cols <- "col=rainbow_hcl(%d)" # 090524, start = 30, end = 300)"
       else
         cols <- "col=rainbow(%d)"
 
@@ -907,8 +1025,8 @@ executeExplorePlot <- function(dataset,
     
     lib.cmd <- "require(gplots, quietly=TRUE)"
 
-    if (packageIsAvailable("vcd"))
-      cols <- "rainbow_hcl(%d, start = 30, end = 300)"
+    if (packageIsAvailable("colorspace"))
+      cols <- "rainbow_hcl(%d)" # 090524, start = 30, end = 300)"
     else
       cols <- "rainbow(%d)"
 
@@ -928,7 +1046,8 @@ executeExplorePlot <- function(dataset,
     if (barbutton)
     {
       plot.cmd <- paste('barplot2(ds, beside=TRUE,',
-                       'xlab="Distribution of the ',
+                        'col=c("black",', sprintf(cols, length(targets)+1), "),",
+                        'xlab="Distribution of the ',
                         paste(digspin, c("st", "nd",
                                          "rd", "th")[min(4, digspin)],
                               sep = ""),
@@ -938,7 +1057,8 @@ executeExplorePlot <- function(dataset,
     {
       plot.cmd <- paste('plot(', ifelse(digspin==1, "1", "0"),
                         ':9, ds[1,], type="b", pch=19, col=',
-                        sprintf(cols, 1), ', ',
+                        '"black"', ', ',
+# 090524                        sprintf(cols, 1), ', ',
                        'ylim=c(0,max(ds)), axes=FALSE, ',
                        'xlab="Distribution of the ',
                         paste(digspin, c("st", "nd",
@@ -950,11 +1070,11 @@ executeExplorePlot <- function(dataset,
                         ifelse(digspin==1, "1", "0"),
                         ':9)\n', 'axis(2)\n',
                        sprintf(paste('points(%d:9, ds[2,],',
-                                     'col=%s[2], pch=19, type="b")\n'),
+                                     'col=%s[1], pch=19, type="b")\n'),
                                ifelse(digspin==1, 1, 0),
                                ifelse(is.null(target),
-                                      sprintf(cols, 2),
-                                      sprintf(cols, length(targets)+2))),
+                                      sprintf(cols, 1),
+                                      sprintf(cols, length(targets)+1))),
                        sep="")
       if (not.null(targets))
         for (i in seq_along(targets))
@@ -962,8 +1082,8 @@ executeExplorePlot <- function(dataset,
           plot.cmd <- sprintf(paste('%s\npoints(%d:9, ds[%d,],',
                                    'col=%s[%d], pch=%d, type="b")'),
                              plot.cmd, ifelse(digspin==1, 1, 0), i+2,
-                             sprintf(cols, length(targets)+2),
-                             i+2, 19)
+                             sprintf(cols, length(targets)+1),
+                             i+1, 19)
         }
     }
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
@@ -1084,21 +1204,22 @@ executeExplorePlot <- function(dataset,
           if (not.null(targets))
             if (barbutton)
               legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
-                                         'fill=heat.colors(%d), title="%s")'),
+# 090524                                         'fill=heat.colors(%d), title="%s")'),
+                                         'fill=c("black", %s), title="%s")'),
                                    paste(sprintf('"%s"',
                                                  c("Benford", "All", targets)),
                                          collapse=","),
-                                   length(targets)+2, target)
+                                   sprintf(cols, length(targets)+1), target)
             else
               legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05,',
-                                         'fill=%s, title="%s")'),
+                                         'fill=c("black", %s), title="%s")'),
                                     ifelse(digspin>2, "bottomright",
                                            "topright"),
                                     '"Benfords", sizes',
 #                                   paste(sprintf('"%s"',
 #                                                c("Benford", "All", targets)),
 #                                         collapse=","),
-                                   sprintf(cols, length(targets)+2), target)
+                                   sprintf(cols, length(targets)+1), target)
           else
             if (barbutton)
               legend.cmd <- paste('legend("topright", c("Benford", "All"),',
@@ -1224,8 +1345,8 @@ executeExplorePlot <- function(dataset,
         appendLog("Sort the entries.", paste("ord <-", ord.cmd))
         ord <- eval(parse(text=ord.cmd))
 
-        cols <- sprintf(ifelse(packageIsAvailable("vcd"),
-                               "rainbow_hcl(%s, start = 270, end = 150)",
+        cols <- sprintf(ifelse(packageIsAvailable("colorspace"),
+                               "rainbow_hcl(%s)", # 090524, start = 270, end = 150)",
                                "rainbow(%s)"),
                        length(targets)+1) 
         
@@ -1525,8 +1646,8 @@ executeExplorePlot <- function(dataset,
                                         ifelse(sampling," (sample)","")),
                                 vector=TRUE)
 
-      cols <- sprintf(ifelse(packageIsAvailable("vcd"),
-                             "rainbow_hcl(%s, start = 270, end = 150)",
+      cols <- sprintf(ifelse(packageIsAvailable("colorspace"),
+                             "rainbow_hcl(%s)", # 090524, start = 270, end = 150)",
                              "rainbow(%s)"),
                       length(targets)+1) 
 
@@ -1541,9 +1662,11 @@ executeExplorePlot <- function(dataset,
       if (not.null(target))
       {
         legend.cmd <- sprintf(paste('legend("bottomright", bg="white",',
-                                   'c("All","0","1"), col=%s,',
+                                   'c(%s), col=%s,',
                                    'pch=19, title="%s")'),
-                             cols, target)
+                              paste(sprintf('"%s"', c("All", targets)),
+                                    collapse=","),
+                              cols, target)
         appendLog("Add a legend.", legend.cmd)
         eval(parse(text=legend.cmd))
       }
@@ -1601,8 +1724,8 @@ executeExplorePlot <- function(dataset,
                                         ifelse(sampling," (sample)","")),
                                 vector=TRUE)
 
-    if (packageIsAvailable("vcd"))
-      cols <- "color=rainbow_hcl(%d, start = 270, end = 150)"
+    if (packageIsAvailable("colorspace"))
+      cols <- "color=rainbow_hcl(%d)" # 090524, start = 270, end = 150)"
     else
       cols <- "color=rainbow(%d)"
 

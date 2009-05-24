@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-07 06:19:32 Graham Williams>
+# Time-stamp: <2009-05-24 12:06:53 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1473,8 +1473,8 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
   opar <- par(cex=cex)
 
   nummodels <- length(probcmd)
-  if (packageIsAvailable("vcd"))
-     mcolors <- rainbow_hcl(nummodels, start = 270, end = 150)
+  if (packageIsAvailable("colorspace"))
+     mcolors <- rainbow_hcl(nummodels) # 090524, start = 270, end = 150)
   else
     mcolors <- rainbow(nummodels, 1, .8)
   mcount <- 0  
