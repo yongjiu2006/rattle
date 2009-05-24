@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2008-08-15 19:00:53 Graham>
+# Time-stamp: <2009-05-23 21:49:09 Graham Williams>
 #
 # Reporting support
 #
@@ -46,6 +46,7 @@ dispatchReportButton <- function()
                        "- need chooser.",
                        "\n\tA plot is displayed on screen - need to suppress.",
                        "\n\tToo much generated to the console - how remove?",
+                       "\n\nOtherwise it is safe to use!",
                        "\n\nDo you wish to continue?"))
     return(FALSE)
   

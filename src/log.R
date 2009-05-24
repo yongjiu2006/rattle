@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-24 18:02:33 Graham Williams>
+# Time-stamp: <2009-05-24 12:10:36 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -49,11 +49,11 @@ initiateLog <- function()
 
 building <- TRUE
 scoring  <- ! building",
-                 ifelse(packageIsAvailable("vcd"), "
+                 ifelse(packageIsAvailable("colorspace"), "
 
-# The vcd package is used to generate the colours used in plots, if available.
+# The colorspace package is used to generate the colours used in plots, if available.
 
-library(vcd)", "")))
+library(colorspace)", "")))
 
 }
 
