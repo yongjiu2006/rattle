@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-17 21:41:51 Graham Williams>
+# Time-stamp: <2009-06-09 19:33:53 Graham Williams>
 #
 # DATA TAB
 #
@@ -2814,24 +2814,34 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d]",
+        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d%s]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
                          as.integer(mean(crs$dataset[[variables[i]]],
                                          na.rm=TRUE)),
                          as.integer(median(crs$dataset[[variables[i]]],
-                                         na.rm=TRUE)))
+                                         na.rm=TRUE)),
+                         ifelse(sum(is.na(crs$dataset[[variables[i]]])),
+                                sprintf("; miss=%d",
+                                        sum(is.na(crs$dataset[[variables[i]]]))),
+                                ""))
       else if (cl == "numeric")
-        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f]",
+        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE),
-                         median(crs$dataset[[variables[i]]], na.rm=TRUE))
+                         median(crs$dataset[[variables[i]]], na.rm=TRUE),
+                         ifelse(sum(is.na(crs$dataset[[variables[i]]])),
+                                sprintf("; miss=%d",
+                                        sum(is.na(crs$dataset[[variables[i]]]))), ""))
       else if (substr(cl, 1, 6) == "factor")
-        dtype <- sprintf("Categorical [%s levels]",
-                         length(levels(crs$dataset[[variables[i]]])))
+        dtype <- sprintf("Categorical [%s levels%s]",
+                         length(levels(crs$dataset[[variables[i]]])),
+                         ifelse(sum(is.na(crs$dataset[[variables[i]]])),
+                                sprintf("; miss=%d",
+                                        sum(is.na(crs$dataset[[variables[i]]]))), ""))
 
       # Generate text for the missing values bit.
 

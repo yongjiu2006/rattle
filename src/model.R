@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-19 19:53:16 Graham Williams>
+# Time-stamp: <2009-06-13 22:02:11 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1496,7 +1496,8 @@ exportModelTab <- function()
                         "transformations that are not currently supported for export.",
                         "Be aware that the results will not perform the",
                         "transformations.\n\n",
-                        paste(names(which(!sapply(crs$input, pmmlCanExport))), collapse=", "),
+                        paste(names(which(!sapply(crs$input, pmmlCanExport))),
+                              collapse=", "),
                         "\n\nDo you wish to continue?"))
       return()
   }

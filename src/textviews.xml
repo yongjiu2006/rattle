@@ -90,7 +90,15 @@ VARIATION IN THE DATA
 CORRELATION
 
   Correlation    Pearsons    Are the values from the paired samples correlated?</textview>
-  <textview widget="kmeans_textview">KMEANS CLUSTERING</textview>
+  <textview widget="kmeans_textview">KMEANS CLUSTERING
+
+A cluster analysis will identify groups within a dataset. The K-Means
+clustering algorithm will search for K clusters (which you specify).
+The resulting K clusters are represented by the mean or average
+values of each of the variables.
+
+By default K-Means only works with numeric variables.
+</textview>
   <textview widget="hclust_textview">HIERARCHICAL CLUSTERING</textview>
   <textview widget="associate_textview">ASSOCIATION RULE ANALYSIS
 
@@ -196,7 +204,6 @@ An error matrix is also known as a confusion matrix.
 A risk chart provides an effective approach to presenting the performance of a model. 
 
 The default chart displays caseload versus performance.</textview>
-  <textview widget="confusion_textview">ERROR MATRIX</textview>
   <textview widget="lift_textview">LIFT CHART</textview>
   <textview widget="roc_textview">ROC CURVE</textview>
   <textview widget="precision_textview">PRECISION CHART</textview>

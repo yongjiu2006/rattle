@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-19 21:27:58 Graham Williams>
+# Time-stamp: <2009-06-07 21:34:58 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -70,6 +70,48 @@ on_impute_constant_radiobutton_toggled <- function(button)
 }
 
 ########################################################################
+# CAPTURE A RECORD OF TRANSFORMS
+#
+# 090605 Record a list of transforms. Treat as an object. Previously
+# we simply had a list of strings and recorded the parameters of the
+# transform within the string. This was not scalable. Now we have a
+# list of lists. Each element in the list is named with the name of
+# the new variable. The sub list then records at least the source
+# variable name and the type of the transform. Other transform
+# parameters that completely define how the transform is calculated
+# are also recorded.
+#
+# RRC_AGE
+#	orig	Age
+#	type	RRC
+#	mean	38.622
+#	sd	13.58475
+
+union.transform <- function(tr, nm, lst)
+{
+  # 090605 Add the new transform, resulting in a variable named NM
+  # with paramaters LST (which has a minimum of source and type), into
+  # the list TR, optionally overwriting any previous transform of the
+  # same type. The list of transforms, TR, is returned, with the new
+  # transform appedned.
+
+  # Remove any transforms of the same variable and type. Note that the
+  # names already embody the variable name and the transform type.
+  
+  tr[which(nm == names(tr))] <- NULL
+
+  # Add the new transform, and give it the name of the variable being
+  # transformed.
+  
+  tr <- c(tr, list(lst))
+  names(tr)[length(tr)] <- nm
+
+  # Return the augmented list of transforms.
+  
+  return(tr)
+}
+
+########################################################################
 # UTILITIES
 
 modalvalue <- function(x, na.rm=FALSE)
@@ -122,8 +164,7 @@ executeTransformTab <- function()
 
 executeTransformNormalisePerform <- function(variables=NULL,
                                              action=NULL,
-                                             vprefix=paste(action, "_",
-                                               sep=""))
+                                             vprefix=action)
 {
   # TODO 080609 We should rename this in line with the interface change,
   # since it is not necessarily normalisation but is rescaling.
@@ -147,22 +188,22 @@ executeTransformNormalisePerform <- function(variables=NULL,
     if (theWidget("normalise_recenter_radiobutton")$getActive())
     {
       action <- "recenter"
-      vprefix <- "RRC_"
+      vprefix <- "RRC"
     }
     else if (theWidget("normalise_scale01_radiobutton")$getActive())
     {
       action <- "scale01"
-      vprefix <- "R01_"
+      vprefix <- "R01"
     }
     else if (theWidget("normalise_rank_radiobutton")$getActive())
     {
       action <- "rank"
-      vprefix <- "RRK_"
+      vprefix <- "RRK"
     }
     else if (theWidget("normalise_medianad_radiobutton")$getActive())
     {
       action <- "medianad"
-      vprefix <- "RMD_"
+      vprefix <- "RMD"
     }
     else if (theWidget("normalise_bygroup_radiobutton")$getActive())
     {
@@ -172,12 +213,12 @@ executeTransformNormalisePerform <- function(variables=NULL,
     else if (theWidget("rescale_matrix_radiobutton")$getActive())
     {
       action <- "matrix"
-      vprefix <- "RMA_"
+      vprefix <- "RMA"
     }
     else if (theWidget("rescale_log_radiobutton")$getActive())
     {
       action <- "log"
-      vprefix <- "RLG_"
+      vprefix <- "RLG"
       #remap.comment <- "Log transform."
     }
   }
@@ -334,7 +375,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     if (action %in% c("bygroup"))
       vname <- paste(vprefix, byvname, v, sep="_")
     else
-      vname <- paste(vprefix, v, sep="")
+      vname <- paste(vprefix, v, sep="_")
     
     # Check variable specific preconditions, and if we fail then
     # proceed to next variable.
@@ -377,11 +418,13 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.comment <- "Recenter and rescale the data around 0."
 
       # Record the transformation for inclusion in PMML.
+
+      # 090605 New transforms data structure
       
-      lst <- paste(vname,
-                   mean(crs$dataset[[vname]], na.rm=TRUE),
-                   sd(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <- union(crs$transforms, lst)
+      lst <- list(orig=v, type=vprefix,
+                  mean=mean(crs$dataset[[vname]], na.rm=TRUE),
+                  sd=sd(crs$dataset[[vname]], na.rm=TRUE))
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -401,10 +444,12 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # Record the transformation for inclusion in PMML.
 
-      lst <- paste(vname,
-                   min(crs$dataset[[vname]], na.rm=TRUE),
-                   max(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <- union(crs$transforms, lst)
+      # 090606 New transforms data structure
+      
+      lst <- list(orig=v, type=vprefix,
+                  min=min(crs$dataset[[vname]], na.rm=TRUE),
+                  max=max(crs$dataset[[vname]], na.rm=TRUE))
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -426,6 +471,11 @@ executeTransformNormalisePerform <- function(variables=NULL,
       # How would we rank a new item? Thus, can we actually use a rank
       # in a transform?
 
+      # 090606 Record the transformation for inclusion in PMML.
+
+      lst <- list(orig=v, type=vprefix)
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
+
     }
     else if (action == "medianad")
     {
@@ -437,10 +487,12 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # Record the transformation for inclusion in PMML.
       
-      lst <- paste(vname,
-                   median(crs$dataset[[vname]], na.rm=TRUE),
-                   mad(crs$dataset[[vname]], na.rm=TRUE), sep="_")
-      crs$transforms <- union(crs$transforms, lst)
+      # 090606 New transforms data structure
+      
+      lst <- list(orig=v, type=vprefix,
+                   median=median(crs$dataset[[vname]], na.rm=TRUE),
+                   mad=mad(crs$dataset[[vname]], na.rm=TRUE))
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -469,11 +521,11 @@ executeTransformNormalisePerform <- function(variables=NULL,
         norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
                                   'crs$dataset[["%s"]] <- 0\n',
                                   'for (vl in bylevels) \n',
-                                  '  crs$dataset[crs$dataset[["%s"]]==vl, ',
+                                  '  crs$dataset[isTRUE(crs$dataset[["%s"]]==vl), ',
                                   '"%s"] <-\n',
-                                  '    round(rescaler(crs$dataset[crs$dataset',
+                                  '    round(rescaler(crs$dataset[isTRUE(crs$dataset',
                                   '[["%s"]]',
-                                  '==vl, "%s"], "range") * 99)\n',
+                                  '==vl), "%s"], "range") * 99)\n',
                                   'crs$dataset[is.nan(crs$dataset[["%s"]]), ',
                                   '"%s"] <- 99',
                                   sep=""),
@@ -482,6 +534,12 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       
       norm.comment <- "Rescale to 0-100 within each group."
+
+      # 090606 Record the transformation for inclusion in PMML.
+      
+      lst <- list(orig=v, type=vprefix, group=byvname)
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
+
     }
     else if (action == "matrix")
     {
@@ -490,19 +548,22 @@ executeTransformNormalisePerform <- function(variables=NULL,
                           vname, v)
       norm.comment <- "Divide variable values by matrix total."
 
+      # 090606 Is this still needed with the new data structure?
       # 090117 Remove any old instances of the same transform. Could
       # this be a general test outside the loop?
 
-      present <- grep(vname, crs$transforms)
-      if (length(present) >0) crs$transforms <- crs$transforms[-present]
+      ## present <- grep(vname, crs$transforms)
+      ## if (length(present) >0) crs$transforms <- crs$transforms[-present]
       
       # 090117 Record the transformation for inclusion in PMML. Note
       # that we only need matrix.total, but all other members of
       # .TRANSFORMS.NORM.CONTINUOUS have two paramters, so include the
       # 1 to keep the group consistent.
 
-      lst <- paste(vname, matrix.total, 1, sep="_")
-      crs$transforms <- union(crs$transforms, lst)
+      # 090605 New transforms data structure
+      
+      lst <- list(orig=v, type=vprefix, sum=matrix.total, vars=variables)
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -520,8 +581,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.comment <- "Take a log transform of the variable - treat -Inf as NA."
 
       # Record the transformation for inclusion in PMML.
-      
-      crs$transforms <- union(crs$transforms, vname)
+
+      lst <- list(orig=v, type=vprefix)
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
       
@@ -800,8 +862,8 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <- union(crs$transforms, lst)
+        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mean")
       {
@@ -817,8 +879,8 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <- union(crs$transforms, lst)
+        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "median")
       {
@@ -831,8 +893,8 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <- union(crs$transforms, lst)
+        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mode")
       {
@@ -845,8 +907,8 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <- union(crs$transforms, lst)
+        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "constant")
       {
@@ -866,8 +928,8 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- paste(vname, imp.val, sep="_")
-        crs$transforms <- union(crs$transforms, lst)
+        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
         
       appendLog(imp.comment, "if (building)\n{\n  ",  
@@ -1029,7 +1091,8 @@ executeTransformRemapPerform <- function(vars=NULL,
                                            sep=""),
                                          remap.comment="Remap")
 {
-  # Remap variables in some way.
+  # Remap variables in some way:
+  # quantiles, kmeans, eqwidth, log, indicator, joincat, asfactor, asnumeric
 
   # Obtain the list of selected variables from the treeview.
 
@@ -1090,7 +1153,7 @@ executeTransformRemapPerform <- function(vars=NULL,
     {
       action <- "indicator"
       remap.prefix <- "TIN"
-      remap.comment <- "Turn a factor into indicator variables"
+      remap.comment <- "Turn a factor into indicator variables."
     }
     else if (theWidget("remap_joincat_radiobutton")$getActive())
     {
@@ -1110,6 +1173,20 @@ executeTransformRemapPerform <- function(vars=NULL,
       remap.prefix <- "TNM"
       remap.comment <- "Transform into a Numeric."
     }
+  }
+  
+  # 090603 Check if it is an indicator transform, and more than a
+  # single variable selected. Can not handle this yet - do them one at
+  # a time for now. Really need to turn crs$transforms into list with
+  # each element naming a variable to be transformed, and having as
+  # attributes or slots the parameters of the transformation.
+
+  if (action %in% c("indicator") && length(vars) > 1)
+  {
+    errorDialog("The Indicator Variable transform can only be performed",
+                "one variable at a time. Please select just one variable",
+                "to transform.")
+    return(FALSE)
   }
   
   # Check if the action is one that only works on numeric data, and we
@@ -1176,7 +1253,8 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else if (action == "indicator")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[, make.names(paste("%s_%s_", levels(',
+    remap.cmd <- paste(sprintf(paste('  crs$dataset[, make.names(paste("%s_%s_", ',
+                                     'levels(',
                                      'crs$dataset[["%s"]]), sep=""))] ',
                                      '<- diag(nlevels(',
                                      'crs$dataset[["%s"]]))[crs$dataset',
@@ -1222,12 +1300,15 @@ executeTransformRemapPerform <- function(vars=NULL,
 
   startLog("REMAP Variables")
   appendLog(remap.comment,
-            "if (building)\n{\n",
-            remap.cmd,
-            "\n}")
+            # 090601 build/score difference only for some remap ops.
+            ifelse(action %in% c('quantiles', 'kmeans', "eqwidth"),
+                   sprintf("if (building)\n{\n %s\n}\n", remap.cmd),
+                   remap.cmd))
   eval(parse(text=remap.cmd))
 
   # Record the transformation as well as reporting to the log.
+
+  vname <- paste(remap.prefix, vars, sep="_")
 
   if (action %in% c('quantiles', 'kmeans', "eqwidth"))
   {
@@ -1235,8 +1316,7 @@ executeTransformRemapPerform <- function(vars=NULL,
     # get the breaks from the levels of the variables instead of
     # relying on other information.
 
-    lst <- paste(remap.prefix, vars, sep="_")
-    breaks <- sapply(lst, function(x)
+    breaks <- sapply(vname, function(x)
                       sort(unique(as.numeric(unlist(strsplit(
                       gsub(",", " ",
                       gsub("\\(|\\]|\\[", "",
@@ -1256,9 +1336,15 @@ executeTransformRemapPerform <- function(vars=NULL,
     ##                         collapse=" "))), " "))))))
     ## else
     ##   breaks <- sapply(lst, function(x) sort(attr(crs$dataset[[x]], "breaks")))
-    lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
-    crs$transforms <- union(crs$transforms, lst)
 
+    # 090606 New transforms data structure
+
+    ## lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
+    ## crs$transforms <- union(crs$transforms, lst)
+
+    lst <- list(orig=vars, type=substr(remap.prefix, 1, 2), breaks=as.vector(breaks))
+    crs$transforms <- union.transform(crs$transforms, vname, lst)
+    
     appendLog("When scoring, use the training data parameters to bin new data.",
               "if (scoring)\n{\n",
               # Print the transforms based on the training parameters
@@ -1290,6 +1376,32 @@ executeTransformRemapPerform <- function(vars=NULL,
               "\n}")
     
   }
+  else if (action == "indicator")
+  {
+    # 090606 record each of the newly added variables in the lsit of
+    # transforms.
+
+    sapply(levels(crs$dataset[,vars]), function(x) 
+           {
+             lst <- list(orig=vars, type=remap.prefix, level=x)
+             crs$transforms <- union.transform(crs$transforms,
+                                               paste(vname, x, sep="_"), lst)
+           })
+  }
+  else if (action == "joincat")
+  {
+    lst <- list(orig=vars, type=remap.prefix)
+    crs$transforms <- union.transform(crs$transforms,
+                                      paste(remap.prefix, vars[1], vars[2], sep="_"),
+                                      lst)
+  }
+  else if (action %in% c("asfactor", "asnumeric"))
+  {
+    lst <- list(orig=vars, type=remap.prefix)
+    crs$transforms <- union.transform(crs$transforms,
+                                      paste(remap.prefix, vars, sep="_"),
+                                      lst)
+  }
   
   # Record the new variables as having an INPUT role. 090110
   # Previously implemented no other changes as the original variables
@@ -1299,9 +1411,14 @@ executeTransformRemapPerform <- function(vars=NULL,
   # correlated, and so lead to singularities in regression models.
 
   if (action == "joincat")
+  {
     input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
+  }
   else if (action == "indicator")
   {
+    # 090603 This needs work to support multiple variables at the one
+    # time.
+    
     input <- union(input, paste(remap.prefix, vars,
                                 levels(crs$dataset[[vars]]), sep="_"))
     ignore <- union(ignore, vars)
@@ -1324,7 +1441,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   # Update the status bar
   
   setStatusBar(sprintf(paste("Remapped variables added to the dataset",
-                             "with '%s' prefix."), remap.prefix))
+                             "with '%s_' prefix."), remap.prefix))
 }
 
 #-----------------------------------------------------------------------
@@ -1436,12 +1553,13 @@ executeTransformCleanupPerform <- function()
     appendLog(del.comment, del.cmd)
     eval(parse(text=del.cmd))
 
-    # Ensure any delted variables are no longer included in the list
-    # of transformed variables.
+    # Ensure any deleted variables are no longer included in the list
+    # of transformed variables. 090606 Modified to work with new
+    # transforms data structure. Note that we are only removing delted
+    # transformed variables. What about when we delete a variable that
+    # a transform depends on!
 
-    crs$transforms <- crs$transforms[! sapply(crs$transforms,
-                                               function(x) sub('_[^_]*_[^_]*$', '', x))
-                                      %in% to.delete]
+    crs$transforms[names(crs$transforms) %in% to.delete] <- NULL
 
   }
   

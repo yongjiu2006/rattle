@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-24 12:11:49 Graham Williams>
+# Time-stamp: <2009-06-01 18:02:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 May 2009"
+VERSION.DATE <- "Released 24 May 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -173,7 +173,12 @@ rattle <- function(csvname=NULL)
   crs <<- new.env()
 
   # crv$tooltiphack <<- tooltiphack # Record the value globally
-  if (crv$tooltiphack) crv$load.tooltips <- TRUE
+
+  # 090525 Move to having the Setting option work on Linux. This
+  # remove all this tooltip stuff.
+  
+  # if (crv$tooltiphack) crv$load.tooltips <- TRUE
+
   crv$.gtkMain <- FALSE # Initially gtkMain is not running.
   
   # Load gloablly required packages.
@@ -591,15 +596,13 @@ rattle <- function(csvname=NULL)
   
   gladeXMLSignalAutoconnect(rattleGUI)
 
-  # Manually for the tooltiphack
+  # Enable the tooltips Settings option on GNU/Linux. Under MS/Windows
+  # tooltips have always worked so this option is not relevant.
 
-  if (crv$tooltiphack)
+  if (isLinux() && crv$load.tooltips)
   {
-    myWin <- theWidget("rattle_window")
-    myWin$addEvents(GdkEventMask["focus-change-mask"])
-    gSignalConnect(myWin, "focus-in-event", gtkmain_handler)
-    gSignalConnect(myWin, "focus-out-event", gtkmainquit_handler)
-    gSignalConnect(myWin, "delete-event", gtkmainquit_handler)
+    theWidget("tooltips_menuitem")$show()
+    theWidget("tooltips_menuitem")$setActive(FALSE)
   }
 
   ########################################################################
@@ -759,13 +762,16 @@ writeCSV <- function(x, file="", ...)
 # MAINLOOP ITERATION
 #
 # Attempt to get tooltips working forGNU/Linux by starting up gtkMain
-# on the window etting focus, and stopping it when it loses
+# on the window getting focus, and stopping it when it loses
 # focus. Based on idea from Felix Andrews.
 
 gtkmain_handler <- function(widget, event)
 {
-#  if (! crv$tooltiphack)
-#    return(gtkmainquit_handler(widget, event))
+  # 090525 Can't get this one working yet - to be able to turn
+  # tooltips on and off. playwith does it?
+  
+  #if (! theWidget("tooltip_menuitem")$getActive())
+  #  return(gtkmainquit_handler(widget, event))
   
   # Switch to GTK event loop while the window is in focus (for tooltips)
   
@@ -1338,6 +1344,12 @@ isWindows <- function()
   # manual page.
   return(.Platform$OS.type == "windows")
 }
+
+isLinux <- function()
+{
+  return(.Platform$OS.type == "unix")
+}
+
 
 listBuiltModels <- function(exclude=NULL)
 {
@@ -1969,10 +1981,25 @@ on_copy1_activate <- notImplemented
 
 on_tooltips_activate <- function(action, window)
 {
-  infoDialog("Currently this functionality is not implemented.",
-              "It is awaiting some insight into how to get hold of",
-              "the glade GtkTooltips group, which can then be",
-              "disabled or enabled as requested.")
+  
+  ## infoDialog("Currently this functionality is not implemented.",
+  ##             "It is awaiting some insight into how to get hold of",
+  ##             "the glade GtkTooltips group, which can then be",
+  ##             "disabled or enabled as requested.")
+
+  if(action$getActive())
+  {
+    myWin <- theWidget("rattle_window")
+    myWin$addEvents(GdkEventMask["focus-change-mask"])
+    gSignalConnect(myWin, "focus-in-event", gtkmain_handler)
+    gSignalConnect(myWin, "focus-out-event", gtkmainquit_handler)
+    gSignalConnect(myWin, "delete-event", gtkmainquit_handler)
+  }
+  ## else
+  ## {
+  ##   infoDialog("Currently the functionality to turn tooltips off",
+  ##              "is not implemented.")
+  ## }    
 }
 
 on_verbose_menuitem_toggled <- function(action, window)

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-24 12:06:53 Graham Williams>
+# Time-stamp: <2009-05-27 13:17:11 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1417,7 +1417,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
     col <- c(col,"grey")
   }
   if (show.legend)
-    legend(xleg, yleg, legend, lty=lty, lwd=2, col=col)
+    legend(xleg, yleg, legend, lty=lty, lwd=2, col=col, bty="n")
 
   if (show.lift)
   {

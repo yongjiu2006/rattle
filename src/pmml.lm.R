@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-05-04 20:01:42 Graham Williams>
+# Time-stamp: <2009-06-13 21:48:11 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -60,7 +60,7 @@ pmml.lm <- function(model,
   orig.class <- field$class
 
   # 090103 Support transforms if available.
-  
+
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)
@@ -130,8 +130,8 @@ pmml.lm <- function(model,
 
   if (model$call[[1]] == "lm")
     model.type <- "lm"
-  else if (model$call[[1]] == "glm" && length(model$call) > 2)
-    model.type <- as.character(model$call[[3]])[1]
+  else if (model$call[[1]] == "glm")
+    model.type <- model$family$family
   else
     model.type <- "unknown"
   
@@ -171,7 +171,7 @@ pmml.lm <- function(model,
                            targetFieldName=target))
   }
   else 
-    stop("PMML.LM: Not a supported family object: ", model.type)
+    stop("pmml.lm: Not a supported family object: ", model.type)
 
   # PMML -> RegressionModel -> MiningSchema
 

@@ -1,3 +1,6 @@
+options(error=recover) # Any errors will invoke recover() for debugging
+options(warn=2) # For development treat any warnings as errors
+
 source("rattle.R")
 source("zzz.R")
 source("associate.R")
@@ -46,7 +49,8 @@ if (! exists("crv"))
 }
 
 #source("rstat.R")
-#source("pmml.transforms.R")
-#source("pmmltocibi.R")
+library(XML)
+source("pmml.transforms.R")
+source("pmmltocibi.R")
 
-
+crv$export.to.c.available <- TRUE
