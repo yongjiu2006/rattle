@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-05-19 21:11:20 Graham Williams>
+# Time-stamp: <2009-06-07 20:12:10 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -65,9 +65,11 @@ pmml.rpart <- function(model,
   {
     frame <- model$frame
     leaves <- frame$var == "<leaf>"
-    used <- unique(frame$var[!leaves])
+    # 090607 This is no longer required?
+    #used<-unlist(lapply(as.character(unique(frame$var[!leaves])), transformToBasename))
+    used <- as.character(unique(frame$var[!leaves]))
 
-    trs <- sapply(transforms, transformToDerived)
+    trs <- names(transforms)
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == trs)))
 
     if (length(unused)) transforms <- transforms[-unused]
@@ -86,6 +88,7 @@ pmml.rpart <- function(model,
   # single transform on each variable.
 
   ofield <- field
+  # 090607 Is this needed? What's it do?
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)

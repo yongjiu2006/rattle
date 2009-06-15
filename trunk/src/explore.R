@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-24 14:16:45 Graham Williams>
+# Time-stamp: <2009-05-25 14:38:12 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -895,7 +895,7 @@ executeExplorePlot <- function(dataset,
         # y value for each individual plot.
         
         appendLog("Plot the data.", sprintf(plot.cmd, maxy))
-        eval(parse(text=sprintf(plot.cmd, maxy)))
+        eval(parse(text=sprintf(plot.cmd, round(maxy))))
         appendLog("Add a rug to illustrate density.", rug.cmd)
         eval(parse(text=rug.cmd))
         if (length(targets))
@@ -903,9 +903,9 @@ executeExplorePlot <- function(dataset,
           # 090524 REMOVE
 #          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
 #                                      'fill=c("black", rainbow(%s)))'),
-          legend.cmd <- sprintf('legend("topright", c(%s), %s)',
+          legend.cmd <- sprintf('legend("topright", c(%s), bty="n", %s)',
                                 paste(sprintf('"%s"', c("All", targets)),
-                                      collapse=","),
+                                      collapse=", "),
                                 sprintf(sub("col", "fill", cols),
                                         length(targets)+1))
           appendLog("Add a legend to the plot.", legend.cmd)
@@ -913,9 +913,11 @@ executeExplorePlot <- function(dataset,
         }
       }
       
-      title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
+      title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
                                            hisplots[s],
-                                           ifelse(sampling, " (sample)","")))
+                                           ifelse(sampling, " (sample)",""),
+                                           ifelse(length(targets),
+                                                  paste("\nby", target), "")))
       appendLog("Add a title to the plot.", title.cmd)
       eval(parse(text=title.cmd))
     }
@@ -960,13 +962,12 @@ executeExplorePlot <- function(dataset,
         cols <- "col=rainbow(%d)"
 
       if (not.null(targets))
-        legend.cmd <- sprintf(paste('legend("bottomright", c(%s), ',
+        legend.cmd <- sprintf(paste('legend("bottomright", c(%s), bty="n", ',
                                    cols, ", lty=1:%d,",
-                                   'title="%s", inset=c(0.05,0.05))'),
+                                   'inset=c(0.05,0.05))'),
                              paste(sprintf('"%s"', c("All", targets)),
                                    collapse=","),
-                             length(targets)+1, length(targets)+1,
-                             target)
+                             length(targets)+1, length(targets)+1)
         
       cmd <- paste("sprintf(bind.cmd,",
                     paste(paste('"', rep(cumplots[s], length(targets)+1), '"',
@@ -989,9 +990,11 @@ executeExplorePlot <- function(dataset,
 
       appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
-      title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s",
+      title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s%s",
                                            cumplots[s],
-                                           ifelse(sampling, " (sample)","")))
+                                           ifelse(sampling, " (sample)",""),
+                                           ifelse(length(targets),
+                                                  paste("\nby", target), "")))
 
       if (not.null(targets))
       {
@@ -1137,13 +1140,13 @@ executeExplorePlot <- function(dataset,
                             sep="")
         data.cmd <- paste(data.cmd, ")))", sep="")
 
-        legend.cmd <- sprintf(paste('legend("%s", c(%s), ',
-                                   'fill=%s, title="%s")'),
+        legend.cmd <- sprintf(paste('legend("%s", c(%s), bty="n", ',
+                                   'fill=%s)'),
                               ifelse(digspin>2, "botright", "topright"),
                               paste(sprintf('"%s"',
                                             c("Benford", benplots)),
                                     collapse=","),
-                              sprintf(cols, nbenplots+1), "Variables")
+                              sprintf(cols, nbenplots+1))
 
         appendLog("Generate the required data.",
                  paste("ds <-", new.bind.cmd))
@@ -1164,9 +1167,13 @@ executeExplorePlot <- function(dataset,
         eval(parse(text=legend.cmd))
         
         if (sampling)
-          title.cmd <- genPlotTitleCmd("Benford's Law (sample)")
+          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law (sample)%s",
+                                               ifelse(length(targets),
+                                                  paste("\nby", target), "")))
         else
-          title.cmd <- genPlotTitleCmd("Benford's Law")
+          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law%s",
+                                               ifelse(length(targets),
+                                                      paste("\nby", target), "")))
 
         appendLog("Add a title to the plot.", title.cmd)
         eval(parse(text=title.cmd))
@@ -1203,29 +1210,29 @@ executeExplorePlot <- function(dataset,
 
           if (not.null(targets))
             if (barbutton)
-              legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
+              legend.cmd <- sprintf(paste('legend("topright", c(%s), bty="n", ',
 # 090524                                         'fill=heat.colors(%d), title="%s")'),
-                                         'fill=c("black", %s), title="%s")'),
+                                         'fill=c("black", %s))'),
                                    paste(sprintf('"%s"',
                                                  c("Benford", "All", targets)),
                                          collapse=","),
-                                   sprintf(cols, length(targets)+1), target)
+                                   sprintf(cols, length(targets)+1))
             else
-              legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05,',
-                                         'fill=c("black", %s), title="%s")'),
+              legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05, bty="n",',
+                                         'fill=c("black", %s))'),
                                     ifelse(digspin>2, "bottomright",
                                            "topright"),
                                     '"Benfords", sizes',
 #                                   paste(sprintf('"%s"',
 #                                                c("Benford", "All", targets)),
 #                                         collapse=","),
-                                   sprintf(cols, length(targets)+1), target)
+                                   sprintf(cols, length(targets)+1))
           else
             if (barbutton)
-              legend.cmd <- paste('legend("topright", c("Benford", "All"),',
+              legend.cmd <- paste('legend("topright", c("Benford", "All"), bty="n",',
                                  'fill=heat.colors(2))')
             else
-              legend.cmd <- paste('legend("topright", c("Benford", "All"), ',
+              legend.cmd <- paste('legend("topright", c("Benford", "All"), bty="n", ',
                                   'fill=', sprintf(cols, 2), sep="")
           
           cmd <- paste("sprintf(bind.cmd,",
@@ -1264,15 +1271,19 @@ executeExplorePlot <- function(dataset,
           
           if (sampling)
             title.cmd <- genPlotTitleCmd(sprintf(paste("Benford's Law:",
-                                                       "%s (sample)%s"),
+                                                       "%s (sample)%s%s"),
                                                  benplots[s],
                 ifelse(posbutton, " (positive values)",
-                       ifelse(negbutton, " (negative values)", ""))))
+                       ifelse(negbutton, " (negative values)", "")),
+                                                 ifelse(length(targets),
+                                                        paste("\nby", target), "")))
           else
-            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s%s",
+            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s%s%s",
                                                  benplots[s],
                 ifelse(posbutton, " (positive values)",
-                       ifelse(negbutton, " (negative values)", ""))))
+                       ifelse(negbutton, " (negative values)", "")),
+                                                 ifelse(length(targets),
+                                                        paste("\nby", target), "")))
           appendLog("Add a title to the plot.", title.cmd)
           eval(parse(text=title.cmd))
         }
@@ -1376,13 +1387,11 @@ executeExplorePlot <- function(dataset,
         
         if (not.null(targets))
         {
-          legend.cmd <- sprintf(paste('legend("topright", c(%s), ',
-                                     "fill=%s, ",
-                                     'title="%s")'),
+          legend.cmd <- sprintf(paste('legend("topright", bty="n", c(%s), ',
+                                     "fill=%s)"),
                                paste(sprintf('"%s"', c("All", targets)),
                                      collapse=","),
-                               cols,
-                               target)
+                               cols)
           appendLog("Add a legend to the plot.", legend.cmd)
           eval(parse(text=legend.cmd))
         }
@@ -1390,9 +1399,11 @@ executeExplorePlot <- function(dataset,
         ## Construct and evaluate a command to add the title to the
         ## plot.
         
-        title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
-                                            barplots[s],
-                                            ifelse(sampling," (sample)","")))
+        title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
+                                             barplots[s],
+                                             ifelse(sampling," (sample)",""),
+                                             ifelse(length(targets),
+                                                    paste("\nby", target), "")))
         appendLog("Add a title to the plot.", title.cmd)
         eval(parse(text=title.cmd))
       }
@@ -1587,14 +1598,14 @@ executeExplorePlot <- function(dataset,
   if (ndotplots > 0)
   {
     
-    ## Construct a generic data command built using the genericDataSet
-    ## values. To generate a barplot we use the output of the summary
-    ## command on each element in the genericDataSet, and bring them
-    ## together into a single structure. The resulting generic.data.cmd
-    ## will have a number of "%s"s (one for the whole dataset, then
-    ## one for each level) from the original genericDataSet string
-    ## that will be replaced with the name of each variable as it is
-    ## being plotted.
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then one
+    # for each level) from the original genericDataSet string that
+    # will be replaced with the name of each variable as it is being
+    # plotted.
 
     generic.data.cmd <- paste(lapply(genericDataSet,
                                    function(x) sprintf("summary(na.omit(%s))", x)),
@@ -1613,8 +1624,8 @@ executeExplorePlot <- function(dataset,
       startLog()
       appendLog("DOT PLOT")
 
-      ## Construct and evaluate a command string to generate the
-      ## data for the plot.
+      # Construct and evaluate a command string to generate the data
+      # for the plot.
 
       ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
                      paste(paste('"', rep(dotplots[s], length(targets)+1),
@@ -1624,8 +1635,8 @@ executeExplorePlot <- function(dataset,
                paste("ds <-", ds.cmd))
       ds <- eval(parse(text=ds.cmd))
 
-      ## Construct and evaluate the command to determin the order in
-      ## which to print the catgories, from larges to smallest.
+      # Construct and evaluate the command to determine the order in
+      # which to print the catgories, from larges to smallest.
 
       if (is.null(target))
         ord.cmd <- 'order(ds[1,])'
@@ -1635,15 +1646,16 @@ executeExplorePlot <- function(dataset,
                paste("ord <-", ord.cmd))
       ord <- eval(parse(text=ord.cmd))
         
-      ## Construct and evaluate the command to plot the
-      ## distribution.
+      # Construct and evaluate the command to plot the distribution.
     
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
-      titles <- genPlotTitleCmd(sprintf("Distribution of %s%s",
+      titles <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
                                         dotplots[s],
-                                        ifelse(sampling," (sample)","")),
+                                        ifelse(sampling," (sample)",""),
+                                         ifelse(length(targets),
+                                                  paste("\nby", target), "")),
                                 vector=TRUE)
 
       cols <- sprintf(ifelse(packageIsAvailable("colorspace"),
@@ -1652,21 +1664,25 @@ executeExplorePlot <- function(dataset,
                       length(targets)+1) 
 
       plot.cmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
-                               'col=%s,%s',
+                               'col=rev(%s),%s',
                                'xlab="Frequency", pch=19)'),
-                         "ds[,ord]", titles[1], titles[2], cols,
+                          # 090525 reverse the row order to get the
+                          # order I want in the dot chart - start with
+                          # All, and then the rest. It is not clear
+                          # wht dotplots does this.
+                         "ds[nrow(ds):1,ord]", titles[1], titles[2], cols,
                          ifelse(is.null(target), "", ' labels="",'))
       appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
 
       if (not.null(target))
       {
-        legend.cmd <- sprintf(paste('legend("bottomright", bg="white",',
+        legend.cmd <- sprintf(paste('legend("bottomright", bty="n",',
                                    'c(%s), col=%s,',
-                                   'pch=19, title="%s")'),
+                                   'pch=19)'),
                               paste(sprintf('"%s"', c("All", targets)),
                                     collapse=","),
-                              cols, target)
+                              cols)
         appendLog("Add a legend.", legend.cmd)
         eval(parse(text=legend.cmd))
       }
@@ -1719,9 +1735,10 @@ executeExplorePlot <- function(dataset,
                                         ifelse(sampling," (sample)","")),
                                 vector=TRUE)
     else
-      titles <- genPlotTitleCmd(sprintf("%s by %s%s",
-                                        mosplots[s], target,
-                                        ifelse(sampling," (sample)","")),
+      titles <- genPlotTitleCmd(sprintf("Mosaic of %s %s\nby %s",
+                                        mosplots[s],
+                                        ifelse(sampling," (sample)",""),
+                                        target),
                                 vector=TRUE)
 
     if (packageIsAvailable("colorspace"))

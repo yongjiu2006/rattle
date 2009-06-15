@@ -6,13 +6,23 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.73.
+    version is 2.4.74.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+455 090615 Redesign the structure to record transforms to be scalable.
+           Note missing values in Transform list of variables
+           For pmml export of glm get family from structure, not the call.
+           Cleanup tooltip handling for GNU/Linux
+           Record indicator transforms ready for export
+           Remove boxes around legends.
+           Unify plot titles.
+           Improve colour for Benfords plot.
+           Update the weather dataset - use yes/no for rain tomorrow.
+           Bump pmml version to 1.2.13
 454 090524 The colorspace pacakge is separate to vcd - don't need vcd
            Note other transforms in the .TRANSFORMS var
            Unify colours in plots (Bob Muenchen)
@@ -937,6 +947,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-05-24 14:40:19 Graham Williams</i>
+<i>Last Modified 2009-06-15 06:02:20 Graham Williams</i>
 <!-- hhmts end -->
   </p>

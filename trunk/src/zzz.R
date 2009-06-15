@@ -24,14 +24,20 @@
   # Some global constants
 
   crv$show.timestamp <- FALSE
-  crv$tooltiphack <- FALSE
+  ## crv$tooltiphack <- FALSE
   crv$close <- "ask"
   # crv$sample.dataset <- "audit"
   crv$sample.dataset <- "weather"
-  if (.Platform$OS.type == "unix")
-    crv$load.tooltips <- FALSE # Not working in general on Linux
-  else
-    crv$load.tooltips <- TRUE
+  # 090525 Always load tooltips - now use Settings option to enable on GNU/Linux.
+  ## if (.Platform$OS.type == "unix")
+  ##   crv$load.tooltips <- FALSE # Not working in general on Linux
+  ## else
+  
+  # 090601 Add the crv$load.tooltips option, so it can be turned off
+  # on the command line before starting rattle, since older GTK
+  # version has issue: Invalid property tooltip-text!
+  
+  crv$load.tooltips <- TRUE
   crv$verbose <- TRUE # Add sub titles to plots ...
 
   crv$max.categories <- 10 # Above which target assumed numeric, not categoric
