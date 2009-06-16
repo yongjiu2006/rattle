@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-09 19:33:53 Graham Williams>
+# Time-stamp: <2009-06-17 06:57:37 Graham Williams>
 #
 # DATA TAB
 #
@@ -1577,7 +1577,10 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(TRUE)
     theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
     theWidget("sample_seed_button")$setSensitive(TRUE)
-    theWidget("explore_sample_label")$show()
+    # 090617 Do not show this label in the tool bar - It is mixing
+    # information with actions and thus is conceptually not a good
+    # thing to do. [Rado]
+    # theWidget("explore_sample_label")$show()
   }
   else
   {
@@ -1587,7 +1590,7 @@ on_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(FALSE)
     theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
     theWidget("sample_seed_button")$setSensitive(FALSE)
-    theWidget("explore_sample_label")$hide()
+    # theWidget("explore_sample_label")$hide()
   }
   crs$sample <- NULL
   setStatusBar()
@@ -2781,8 +2784,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               crv$COLUMN["risk"], variables[i] %in% risk,
               crv$COLUMN["ident"], variables[i] %in% ident,
               crv$COLUMN["ignore"], variables[i] %in% ignore,
-              crv$COLUMN["comment"], paste(ifelse(pmmlCanExport(variables[i]),
-                                                  "", "NO pmml export. "),
+              crv$COLUMN["comment"], paste(# 090617 Don't show in data tab
+                                           #ifelse(pmmlCanExport(variables[i]),
+                                           #       "", "NO code export. "),
                                         ## 090110 Show unique for all ifelse(numeric.var,# &&
                                                #possible.categoric,
                                                sprintf("Unique: %d ",
@@ -2808,7 +2812,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
       # Check if it can be exported to PMML.
 
-      etype <- ifelse(pmmlCanExport(variables[i]), "", "NO pmml export. ")
+      etype <- ifelse(pmmlCanExport(variables[i]), "", ". NO code export")
 
       # Generate correct Rattle terminology for the variable class.
       
@@ -2833,15 +2837,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                          unique.count,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE),
                          median(crs$dataset[[variables[i]]], na.rm=TRUE),
-                         ifelse(sum(is.na(crs$dataset[[variables[i]]])),
-                                sprintf("; miss=%d",
-                                        sum(is.na(crs$dataset[[variables[i]]]))), ""))
+                         ifelse(missing.count > 0,
+                                sprintf("; miss=%d", missing.count), ""))
       else if (substr(cl, 1, 6) == "factor")
         dtype <- sprintf("Categorical [%s levels%s]",
                          length(levels(crs$dataset[[variables[i]]])),
-                         ifelse(sum(is.na(crs$dataset[[variables[i]]])),
-                                sprintf("; miss=%d",
-                                        sum(is.na(crs$dataset[[variables[i]]]))), ""))
+                         ifelse(missing.count > 0,
+                                sprintf("; miss=%d", missing.count), ""))
 
       # Generate text for the missing values bit.
 
@@ -2858,7 +2860,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       impute$set(impiter,
                  crv$IMPUTE["number"], i,
                  crv$IMPUTE["variable"], variables[i],
-                 crv$IMPUTE["comment"], sprintf("%s%s.", etype, dtype, mtext))
+                 #crv$IMPUTE["comment"], sprintf("%s%s%s.", etype, dtype, mtext))
+                 crv$IMPUTE["comment"], sprintf("%s%s.", dtype, etype))
     }
         
     if (strsplit(cl, " ")[[1]][1] == "factor")

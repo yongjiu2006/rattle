@@ -1583,8 +1583,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="action">select-folder</property>
                             <property name="local_only">False</property>
+                            <property name="action">select-folder</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -2179,7 +2179,7 @@
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="explore_interactive_radiobutton">
-                        <property name="label" translatable="yes">Interactive</property>
+                        <property name="label" translatable="yes">Visualize</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -3556,18 +3556,6 @@ Spearman</property>
                             <property name="column_spacing">5</property>
                             <property name="row_spacing">5</property>
                             <child>
-                              <widget class="GtkLabel" id="label37">
-                                <property name="xalign">1</property>
-                                <property name="label" translatable="yes">Note: Order transforms do not carry through to scoring.</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">3</property>
-                                <property name="right_attach">6</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkRadioButton" id="rescale_matrix_radiobutton">
                                 <property name="label" translatable="yes">Matrix</property>
                                 <property name="visible">True</property>
@@ -3682,7 +3670,7 @@ Spearman</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label35">
+                              <widget class="GtkLabel" id="normalise_order_label">
                                 <property name="width_request">65</property>
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
@@ -3704,6 +3692,15 @@ Spearman</property>
                               <packing>
                                 <property name="x_options"></property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                             <child>
                               <placeholder/>
@@ -6506,6 +6503,16 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6514,16 +6521,6 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -8494,8 +8491,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
