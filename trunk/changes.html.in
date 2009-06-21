@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.75.
+    version is 2.4.76.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+457 090621 Improve unification of transforms with input variables.
+           Add origVarType to determine input variables data type for a transform.
+           Add platform info to log.
+           Default "cases" label for drawTreeNodes changes to "obs"
+           Handle transforms of transforms for pmml.rpart.
+           Change keyboard shortcuts for some Tools menu items.
+           Remove the Edit menu - not used.
+           Make rattle depend on pmml > 1.2.13 (for canExportPMML).
 456 090617 Do not show Sampling label in toolbar - mixed info with actions.
            Don't show NO export in data tab (for transforms)
            Move NO code export to end of info in Transform tab
@@ -950,6 +958,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-06-17 07:02:08 Graham Williams</i>
+<i>Last Modified 2009-06-21 21:13:15 Graham Williams</i>
 <!-- hhmts end -->
   </p>

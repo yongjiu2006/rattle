@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-07 20:12:10 Graham Williams>
+# Time-stamp: <2009-06-17 19:20:19 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -69,6 +69,11 @@ pmml.rpart <- function(model,
     #used<-unlist(lapply(as.character(unique(frame$var[!leaves])), transformToBasename))
     used <- as.character(unique(frame$var[!leaves]))
 
+    # 090617 Make sure we include any transforms that don't appear in
+    # the model, but other variables trsnformed from them do.
+
+    used <- union(used, sapply(transforms, function(x) x$orig))
+
     trs <- names(transforms)
     unused <- as.vector(sapply(setdiff(trs, used), function(x) which(x == trs)))
 
@@ -88,7 +93,11 @@ pmml.rpart <- function(model,
   # single transform on each variable.
 
   ofield <- field
-  # 090607 Is this needed? What's it do?
+
+  # 090617 Ensure that the list of fields includes those necessary for
+  # the transforms. By this stage the transforms should have removed
+  # from it any that are not needed in the model.
+  
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)

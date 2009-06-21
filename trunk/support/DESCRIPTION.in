@@ -5,7 +5,7 @@ Version: VERSION
 Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
-Depends: R (>= 2.2.0), pmml
+Depends: R (>= 2.2.0), pmml (>= 1.2.13)
 Suggests: RGtk2, ada, amap, arules, bitops, brew, cairoDevice, car, 
   cba, colorspace, combinat, doBy, e1071, ellipse, fEcofin, 
   fCalendar, fBasics, foreign, fpc, gdata, grid, gtools, gplots, 

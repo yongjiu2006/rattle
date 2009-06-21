@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-29 19:30:06 Graham Williams>
+# Time-stamp: <2009-06-20 16:42:17 Graham Williams>
 #
 # RPART TAB
 #
@@ -672,7 +672,7 @@ list.rule.nodes.rpart <- function(model)
 #
 drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
                            size = 4 * cex, col = NULL, nodeinfo = FALSE,
-                           units = "", cases = "cases", 
+                           units = "", cases = "obs", 
                            digits = getOption("digits"),
                            decimals = 2,
                            print.levels = TRUE, new = TRUE) 

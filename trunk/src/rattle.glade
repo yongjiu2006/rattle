@@ -78,7 +78,6 @@
             </child>
             <child>
               <widget class="GtkMenuItem" id="menuitem2">
-                <property name="visible">True</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
                 <child>
@@ -129,6 +128,7 @@
             </child>
             <child>
               <widget class="GtkMenuItem" id="tools1">
+                <property name="visible">True</property>
                 <property name="label" translatable="yes">_Tools</property>
                 <property name="use_underline">True</property>
                 <child>
@@ -193,7 +193,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="explore2">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Ex_plore</property>
+                        <property name="label" translatable="yes">E_xplore</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_tools_explore_activate"/>
                       </widget>
@@ -241,7 +241,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="evaluate2">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Ev_aluate</property>
+                        <property name="label" translatable="yes">E_valuate</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_tools_evaluate_activate"/>
                       </widget>
@@ -1583,8 +1583,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="local_only">False</property>
                             <property name="action">select-folder</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -6503,16 +6503,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6521,6 +6511,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
