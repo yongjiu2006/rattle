@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-17 20:08:17 Graham Williams>
+# Time-stamp: <2009-06-21 21:21:56 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.13" # Change strcutre used to record transforms.
+  VERSION <- "1.2.14" # Support mult transforms for rpart
+  # "1.2.13" # Change strcutre used to record transforms.
   # "1.2.12" # Fix pmml.lm handling of singularities -> inactive
   # "1.2.11" # Fix categroics with one singularity in lm were marked inactive.
   # "1.2.10" # Fix typo in pmml.lm
