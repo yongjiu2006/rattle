@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-15 06:02:08 Graham Williams>
+# Time-stamp: <2009-06-17 20:08:17 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -282,7 +282,11 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
 .TRANSFORMS.APPLY <- c("RLG")
 .TRANSFORMS.BIN <- c("BQ", "BK", "BE")
 .TRANSFORMS.INDICATOR <- c("TIN")
-.TRANSFORMS.OTHER <- c("RRK", "TJN", "TFC", "TNM")
+
+.TRANSFORMS.OTHER.NUM <- c("RRK", "TFC")
+.TRANSFORMS.OTHER.CAT <- c("TJN", "TNM")
+.TRANSFORMS.OTHER <- c(.TRANSFORMS.OTHER.NUM, .TRANSFORMS.OTHER.CAT)
+
 .TRANSFORMS <- c(.TRANSFORMS.NORM.CONTINUOUS,
                  .TRANSFORMS.APPLY,
                  .TRANSFORMS.IMPUTE,
@@ -306,30 +310,37 @@ unifyTransforms <- function(field, transforms)
 {
   # 090102 Unify the list of variables in FIELD based on the known
   # TRANSFORMS, so that the variables in the TRANSFORMS are removed
-  # from FIELD and repced with the original variables from which the
-  # TRANFROMS are derived.
+  # from FIELD and replaced with the original variables from which the
+  # TRANFROMS are derived. 090617 The final list of fields then are those
+  # variables which need to be supplied to run the model.
   #
   # The variable TRANSFORMS is a list of transform structures (lists),
   # and each list has a type and original name.
 
   # 090111 We make sure that the field class is reset appropriately,
   # in special cases. So a binning transform, which is now a
-  # categoric, was originally a numeric! Change it back.
+  # categoric, was originally a numeric! Change it back to numeric.
 
-  for (v in seq_along(transforms))
+  for (i in seq_along(transforms))
   {
-    var <- transforms[v][[1]]
+    var <- transforms[i][[1]]
     type <- var$type
-    vname <- names(transforms)[v]
+    vname <- names(transforms)[i] # The transformed variable name
 
-    # 090102 The name ibase should be in the list of vars, where we
-    # replace it with the original name.
+    # 090102 The vname should be in the list of variables in field,
+    # where we replace it with the original name. 090617 If it is not
+    # in the list of variables then it should be an "intermediate"
+    # transform, which is used later in another transform. We need to
+    # handle this.
 
-    if (vname %in% field$name)
+    # 090617 if (vname %in% field$name)
+    # 090617 {
+    index <- which(vname == field$name)
+    if (length(index) > 0)
     {
-      index <- which(vname == field$name)
-      
-      # 081229 I should probably be testing if index is NULL
+          
+      # 081229 I should probably be testing if index is integer(0) -
+      # 090617 Now doing so.
 
       # 090607 REMOVE oname <- sub("^([^_]*)_", "", field$name[index])
 
@@ -339,17 +350,25 @@ unifyTransforms <- function(field, transforms)
       if (type %in% .TRANSFORMS.BIN)
         field$class[index] <- "numeric"
 
-      # 090102 If the new var is already in the input variables, then
-      # simply remove the entry naming the transformed var, otherwise
-      # replace the entry naming the transformed var with the new var.
+      # 090102 If the original variable (the untransformed variable)
+      # for this transformed variable vname is already in the input
+      # variables or is itself a transformed variable, then simply
+      # remove the entry naming the transformed variable vname,
+      # otherwise replace the entry naming the transformed var with
+      # the original variable name.
       
-      if (var$orig %in% field$name)
+      if (var$orig %in% union(field$name, names(transforms)))
       {
         field$name <- field$name[-index]
         field$class <- field$class[-index]
       }
       else
         field$name[index] <- var$orig
+    }
+    else if (length(which(var$orig == field$name)) == 0) # Orig not in field
+    {
+      field$name <- c(field$name, var$orig)
+      field$class <- c(field$class, origVarType(var$type))
     }
   }
 
@@ -396,6 +415,19 @@ isTransformVar <- function(vname)
 
 #  return(FALSE)
 }
+
+origVarType <- function(ty)
+{
+  if (ty %in% c(.TRANSFORMS.NORM.CONTINUOUS,
+                .TRANSFORMS.IMPUTE, # 090617 But IZR and ICN are ambiguous.
+                .TRANSFORMS.APPLY,
+                .TRANSFORMS.BIN,
+                .TRANSFORMS.OTHER.NUM))
+    return("numeric")
+  else
+    return("factor")
+}
+
 
 transformType <- function(tr)
 {
