@@ -11,7 +11,7 @@
 \usage{
 drawTreeNodes(tree, cex = par("cex"), pch = par("pch"),
                            size = 4 * cex, col = NULL, nodeinfo = FALSE,
-                           units = "", cases = "cases", 
+                           units = "", cases = "obs", 
                            digits = getOption("digits"),
                            decimals = 2,
                            print.levels = TRUE, new = TRUE) 

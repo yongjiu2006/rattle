@@ -47,7 +47,7 @@ pmml(model, model.name="Rattle_Model", app.name="Rattle/PMML",
 }
 \author{\email{Graham.Williams@togaware.com}}
 \seealso{
-  \code{\link{pmml.arules}},
+  \code{\link{pmml.rules}},
   \code{\link{pmml.hclust}},
   \code{\link{pmml.kmeans}},
   \code{\link{pmml.ksvm}},
