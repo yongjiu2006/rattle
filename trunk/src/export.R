@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-23 12:18:33 Graham Williams>
+# Time-stamp: <2009-06-29 18:54:47 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -240,8 +240,14 @@ getExportSaveName <- function(mtype)
   if (crv$export.to.c.available)
   {
     if (mtype %in% c("glm"))
-      dialogGUI$
-      getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
+      # 090629 The default for multinomial is class but we don't allow
+      # the suer to choose probablity - was that always the case?
+      if (multinomialTarget())
+        dialogGUI$
+    getWidget("export_filechooser_class_radiobutton")$setActive(TRUE)
+      else
+        dialogGUI$
+    getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
     
     # 081218 Add glm when implemented.
     

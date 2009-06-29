@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.78.
+    version is 2.4.79.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+460 090629 In export glm to C ensure multinom defaults to Classify
+           Add export log option to not save comments.
+           Turn tooltips off for Linux again - older GTK problems
 459 090621 Fix doc warnings.
            Bump PMML version to 1.2.15.
 458 090621 Bump PMML version to 1.2.14.
@@ -961,6 +964,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-06-21 22:53:35 Graham Williams</i>
+<i>Last Modified 2009-06-29 20:53:32 Graham Williams</i>
 <!-- hhmts end -->
   </p>
