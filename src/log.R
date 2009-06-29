@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-21 20:59:04 Graham Williams>
+# Time-stamp: <2009-06-24 18:26:29 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -127,8 +127,10 @@ exportLogTab <- function()
   if (get.extension(save.name) != "R")
     save.name <- sprintf("%s.R", save.name)
 
-  write(getTextviewContent("log_textview"), save.name)
+  save.text <- getTextviewContent("log_textview")
+  if (!theWidget("log_export_comments_checkbutton")$getActive())
+    save.text <- gsub("\n\n+", "\n", gsub("#[^\n]*\n", "", save.text))
+  write(save.text, save.name)
 
   setStatusBar("The log has been exported to", save.name)
 }
-
