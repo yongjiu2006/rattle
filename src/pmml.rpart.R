@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-17 19:20:19 Graham Williams>
+# Time-stamp: <2009-06-30 21:51:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -70,7 +70,7 @@ pmml.rpart <- function(model,
     used <- as.character(unique(frame$var[!leaves]))
 
     # 090617 Make sure we include any transforms that don't appear in
-    # the model, but other variables trsnformed from them do.
+    # the model, but have other variables transformed from them.
 
     used <- union(used, sapply(transforms, function(x) x$orig))
 

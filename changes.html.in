@@ -6,13 +6,14 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.79.
+    version is 2.4.80.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+461 090702 Export IZR transforms of categoric varaibles.
 460 090629 In export glm to C ensure multinom defaults to Classify
            Add export log option to not save comments.
            Turn tooltips off for Linux again - older GTK problems
@@ -964,6 +965,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-06-29 20:53:32 Graham Williams</i>
+<i>Last Modified 2009-07-02 10:06:06 Graham Williams</i>
 <!-- hhmts end -->
   </p>
