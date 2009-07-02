@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-07 21:34:58 Graham Williams>
+# Time-stamp: <2009-07-01 08:05:58 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -790,6 +790,13 @@ executeTransformImputePerform <- function()
                                vname, z)
         appendLog('Change all NAs to "Missing"', missing.cmd)
         eval(parse(text=missing.cmd))
+
+        # 090630 I seemed to have only recorded these transforms for
+        # non-categorics so now record the transformation for
+        # inclusion in PMML.
+
+        lst <- list(orig=z, type=vprefix, impute="Missing")
+        crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mode")
       {
@@ -1555,11 +1562,15 @@ executeTransformCleanupPerform <- function()
 
     # Ensure any deleted variables are no longer included in the list
     # of transformed variables. 090606 Modified to work with new
-    # transforms data structure. Note that we are only removing delted
-    # transformed variables. What about when we delete a variable that
-    # a transform depends on!
+    # transforms data structure. Note that we are only removing
+    # deleted transformed variables. What about when we delete a
+    # variable that a transform depends on! 090701 Perhaps we don't
+    # delete them from the list of transforms. Is there anything to
+    # lose keeping the information there, in particular if there are
+    # other transforms derived from any transforms about to be
+    # deleted.
 
-    crs$transforms[names(crs$transforms) %in% to.delete] <- NULL
+    # 090701 crs$transforms[names(crs$transforms) %in% to.delete] <- NULL
 
   }
   
