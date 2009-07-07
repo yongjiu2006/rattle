@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-21 22:38:42 Graham Williams>
+# Time-stamp: <2009-07-07 06:12:02 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -282,10 +282,10 @@ pmmlMiningSchema <- function(field, target=NULL, inactive=NULL)
 .TRANSFORMS.NORM.CONTINUOUS <- c("RRC", "R01", "RMD", "RMA")
 .TRANSFORMS.IMPUTE <- c("IZR", "IMN", "IMD", "IMO", "ICN")
 .TRANSFORMS.APPLY <- c("RLG")
-.TRANSFORMS.BIN <- c("BQ", "BK", "BE")
+.TRANSFORMS.BIN <- c("BQ", "BK", "BE", "TFC")
 .TRANSFORMS.INDICATOR <- c("TIN")
 
-.TRANSFORMS.OTHER.NUM <- c("RRK", "TFC")
+.TRANSFORMS.OTHER.NUM <- c("RRK")
 .TRANSFORMS.OTHER.CAT <- c("TJN", "TNM")
 .TRANSFORMS.OTHER <- c(.TRANSFORMS.OTHER.NUM, .TRANSFORMS.OTHER.CAT)
 

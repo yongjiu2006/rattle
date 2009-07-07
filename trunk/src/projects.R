@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-01 18:02:59 Graham Williams>
+# Time-stamp: <2009-07-07 20:33:19 Graham Williams>
 #
 # Project functionality.
 #
@@ -164,8 +164,12 @@ saveProject <- function()
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
+
+  # 090707 Add the .rattle extension by default to be consistent
+  # throughout Rattle. It is also needed for OverwriteConfirmation.
   
-  dialog$setCurrentName(get.stem(crs$dataname))
+  dialog$setCurrentName(paste(get.stem(crs$dataname), ".rattle", sep=""))
+
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
   if (length(crv$project.extensions))
@@ -276,6 +280,7 @@ saveProject <- function()
     crs$rpart.opt$depth  <- theWidget("rpart_maxdepth_spinbutton")$getValue()
     crs$rpart.opt$cp     <- theWidget("model_tree_cp_spinbutton")$getValue()
     crs$rpart.opt$bucket <- theWidget("rpart_minbucket_spinbutton")$getValue()
+    crs$rpart.opt$miss   <- theWidget("model_tree_include_missing_checkbutton")$getActive()
   }
 
   if (not.null(crs$rf))
@@ -533,7 +538,10 @@ loadProject <- function()
     theWidget("model_tree_cp_spinbutton")$setValue(crs$rpart.opt$cp)
   if (not.null(crs$rpart.opt$bucket))
     theWidget("rpart_minbucket_spinbutton")$setValue(crs$rpart.opt$bucket)
+  if (not.null(crs$rpart.opt$miss))
+    theWidget("model_tree_include_missing_checkbutton")$setActive(crs$rpart.opt$miss)
 
+  
   # Make buttons sensitive for MODEL:RPART if there is an RPART model
   
   showModelRPartExists()

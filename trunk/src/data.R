@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-17 06:57:37 Graham Williams>
+# Time-stamp: <2009-07-04 09:58:19 Graham Williams>
 #
 # DATA TAB
 #
@@ -1129,7 +1129,7 @@ executeDataARFF <- function()
   crs$dataname <- basename(filename)
   setMainTitle(crs$dataname)
 
-  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  # appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   ##appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
   ##                collectOutput(str.cmd))
   
@@ -2712,7 +2712,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       else
       {
         lv <- length(levels(as.factor(crs$dataset[[variables[i]]])))
-        if ("integer" %in% cl &&
+        # 090704 Start supporting a Date format
+        if (length(intersect(c("integer", "POSIXt"), cl)) &&
             nrow(crs$dataset) > crv$ident.min.rows &&
             lv == nrow(crs$dataset))
         {

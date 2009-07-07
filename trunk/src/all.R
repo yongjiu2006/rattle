@@ -1,5 +1,5 @@
-options(error=recover) # Any errors will invoke recover() for debugging
-options(warn=2) # For development treat any warnings as errors
+#options(error=recover) # Any errors will invoke recover() for debugging
+#options(warn=2) # For development treat any warnings as errors
 
 source("rattle.R")
 source("zzz.R")

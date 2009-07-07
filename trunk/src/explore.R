@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-25 14:38:12 Graham Williams>
+# Time-stamp: <2009-07-02 15:32:14 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -180,16 +180,16 @@ executeExploreSummary <- function(dataset)
                    paste("Below is a summary of ",
                          ifelse(use.sample && sampling, "a SAMPLE of ", ""),
                          "the dataset.\n\n", sep=""),
-                   "In reading the simple distribution tables the 1st and 3rd Qu.\n",
+                   if (missing > 0)
+                   paste("Note that the data contains", missing, "observations",
+                         "with missing values.\nCheck",
+                         "the Show Missing check box for details.\n"),
+                   collectOutput(contents.cmd),
+                   "\n\n",
+                   "For the simple distribution tables below the 1st and 3rd Qu.\n",
                    "refer to the first and third quartiles, indicating that 25% of\n",
                    "the observations have values of that variable which are less than\n",
                    "or greater than (respectively) the value listed.\n\n",
-                   if (missing > 0)
-                   paste("We also note that the data contains", missing, "observations",
-                         "with missing values.\nCheck",
-                         "the Show Missing check box for details.\n\n"),
-                   collectOutput(contents.cmd),
-                   "\n\n",
                    collectOutput(summary.cmd))
   }
 
