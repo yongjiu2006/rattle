@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-05-27 13:17:11 Graham Williams>
+# Time-stamp: <2009-07-11 08:31:46 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -2395,7 +2395,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   sdata <- eval(parse(text=scoreset))
 
   appendLog("Output the combined data.",
-            "write.csv(cbind(sdata, scores), row.names=FALSE)")
+            "write.csv(cbind(sdata, crs$pr), row.names=FALSE)")
 
   # 081107 Special case: for multinom, multiple probs are saved, plus
   # the decision. But the decision as a dataframe used to become the

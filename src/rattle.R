@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-05 20:15:35 Graham Williams>
+# Time-stamp: <2009-07-08 06:47:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 02 Jul 2009"
+VERSION.DATE <- "Released 07 Jul 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -283,19 +283,6 @@ rattle <- function(csvname=NULL)
   
   Global_rattleGUI <<-rattleGUI
 
-  # Icon 090705 Set the icon to be the R logo. Save the pixbuf in
-  # crv$icon so that plots can also set the icon appropriately. How to
-  # get all windows to inherit this icon?
-
-  crv$icon <- system.file("etc/Rlogo.png", package="rattle")
-  if (crv$icon == "" && file.exists("./Rlogo.png"))
-    crv$icon <- "./Rlogo.png"
-  if (crv$icon == "")
-    crv$icon <- NULL
-  else
-    crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
-  theWidget("rattle_window")$setIcon(crv$icon)
-  
   # 090206 Tune the interface to suit needs, and in particular allow
   # packages to overwrite these functions so that the interface can be
   # tuned to suit plugins.
@@ -303,7 +290,14 @@ rattle <- function(csvname=NULL)
   setMainTitle()
   configureGUI()
   if (crv$load.tooltips) loadTooltips()
+
+  # 090708 Set the icon for the current window, and then make it the
+  # default for all other windows. We do it here rather than earlier
+  # in case configureGUI is overriddent to not change the icon.
   
+  theWidget("rattle_window")$setIcon(crv$icon)
+  if (! is.null(crv$icon)) gtkWindowSetDefaultIcon(crv$icon)
+
   # 080511 Record the current options and set the scientific penalty
   # to be 5 so we generally get numerics pinted using fixed rather
   # than exponential notation. We reset all options to what they were
@@ -735,6 +729,17 @@ configureGUI <- function()
   rattle.menu$SetRightJustified(TRUE)
   rattle.menu$getChild()$setMarkup(id.string)
 
+  # Icon 090705 Set the icon to be the R logo. Save the pixbuf in
+  # crv$icon so that plots can also set the icon appropriately. How to
+  # get all windows to inherit this icon?
+
+  crv$icon <- system.file("etc/Rlogo.png", package="rattle")
+  if (crv$icon == "" && file.exists("./Rlogo.png"))
+    crv$icon <- "./Rlogo.png"
+  if (crv$icon == "")
+    crv$icon <- NULL
+  else
+    crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
 }
 
 displayWelcomeTabMessage <- function()
@@ -1086,7 +1091,6 @@ debugDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "ok",
                                 "Debug Message:", ...)
-  dialog$setIcon(crv$icon)
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1099,7 +1103,6 @@ infoDialog <- function(...)
   {
     dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "close",
                                   ...)
-    dialog$setIcon(crv$icon)
     connectSignal(dialog, "response", gtkWidgetDestroy)
   }
   else
@@ -1111,7 +1114,6 @@ warnDialog <- function(...)
 {
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "warn", "close",
                                 ...)
-  dialog$setIcon(crv$icon)
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1120,7 +1122,6 @@ errorDialog <- function(...)
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
                                 ...,
                                 sprintf("\n\n%s %s", crv$appname, crv$version))
-  dialog$setIcon(crv$icon)
   connectSignal(dialog, "response", gtkWidgetDestroy)
 }
 
@@ -1139,7 +1140,6 @@ questionDialog <- function(...)
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
                                 "yes-no",
                                 ...)
-  dialog$setIcon(crv$icon)
   result <- dialog$run()
   dialog$destroy()
   if (result == GtkResponseType["yes"])
@@ -1483,7 +1483,6 @@ newPlot <- function(pcnt=1)
     asCairoDevice(da)
     plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": Plot ",
                                                     dev.cur(), sep=""))
-    plotGUI$getWidget("plot_window")$setIcon(crv$icon)
   }
   else if (.Platform$GUI %in% c("X11", "unknown"))
   {

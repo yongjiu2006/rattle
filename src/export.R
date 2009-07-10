@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-29 18:54:47 Graham Williams>
+# Time-stamp: <2009-07-08 06:41:06 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -213,7 +213,8 @@ getExportSaveName <- function(mtype)
   dialog <- dialogGUI$getWidget("export_filechooserdialog")
 
   if (crv$export.to.c.available) dialog$setTitle("Export C or PMML")
-
+  #dialog$setIcon(crv$icon)
+  
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_", mtype,
                                 ifelse(crv$export.to.c.available, ".c", ".xml"),
