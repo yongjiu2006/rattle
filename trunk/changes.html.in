@@ -6,15 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.82.
+    version is 2.4.83.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
-463 Tidyup handling of icon.
-Bug fix scoring code in Log.
+464 090713 Support TNM transform.
+463 090711 Tidyup handling of icon.
+	   Bug fix scoring code in Log.
 462 090707 Add R icon to windows.
            Add TFC as a BIN transform.
            Begin support for recording TFC transforms.
@@ -972,6 +973,6 @@ Bug fix scoring code in Log.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-07-11 08:44:51 Graham Williams</i>
+<i>Last Modified 2009-07-13 21:33:46 Graham Williams</i>
 <!-- hhmts end -->
   </p>
