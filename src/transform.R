@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-07 06:40:47 Graham Williams>
+# Time-stamp: <2009-07-13 20:01:43 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1405,7 +1405,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   else if (action == "asfactor")
   {
     # 090707 Add in a breaks attribute. We have already transformed
-    # the variable so we can get the informatin from it. Also note
+    # the variable so we can get the information from it. Also note
     # that unlike the other binning transforms, the name of the bins
     # here are the values of the variable, not ranges. We also need to
     # repeat the first entry, so that when we represent the ranges in
@@ -1420,7 +1420,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else if (action == "asnumeric")
   {
-    lst <- list(orig=vars, type=remap.prefix)
+    lst <- list(orig=vars, type=remap.prefix, levels=levels(crs$dataset[[vars]]))
     crs$transforms <- union.transform(crs$transforms,
                                       paste(remap.prefix, vars, sep="_"),
                                       lst)
