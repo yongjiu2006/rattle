@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-25 07:56:04 Graham Williams>
+# Time-stamp: <2009-07-18 16:39:15 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -387,26 +387,37 @@ plotRandomForestError <- function()
 
 displayRandomForestTree <- function()
 {
-  ## Initial setup 
+  # Initial setup.
   
   TV <- "rf_textview"
 
-  ## Obtain which tree to display.
+  # Obtain which tree to display.
   
   tree.num <- theWidget("rf_print_tree_spinbutton")$getValue()
 
-  ## Command to run.
+  # If tree.num is zero and there are very many trees, first warn.
+
+  if (tree.num == 0 && crs$rf$ntree > 5)
+    if (! questionDialog("Displaying all rules can take quite a while.",
+                         "\n\nDo you wish to continue?"))
+      return()
+  
+  # Command to run.
 
   display.cmd <- sprintf("printRandomForests(crs$rf, %d)", tree.num)
 
-  ## Perform the action.
+  # Perform the action.
 
   appendLog(sprintf("Display tree number %d.", tree.num), display.cmd)
   set.cursor("watch")
+  setStatusBar("The rules are being generated...")
   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
   set.cursor()
-  setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
-                     "You may need to scroll the textview to see it."))
+  setStatusBar(paste(ifelse(tree.num == 0,
+                            "Rules from all trees",
+                            paste("Rules from tree", tree.num)),
+                     "have been added to the textview.",
+                     "You may need to scroll the textview."))
 }
 
 printRandomForests <- function(model, models=NULL, include.class=NULL,
@@ -420,7 +431,7 @@ printRandomForests <- function(model, models=NULL, include.class=NULL,
 
   require(randomForest, quietly=TRUE)
 
-  if (is.null(models)) models <- 1:model$ntree
+  if (is.null(models) || models == 0) models <- 1:model$ntree
 
   for (i in models)
     printRandomForest(model, i, include.class, format)
