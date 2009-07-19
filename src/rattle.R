@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-08 06:47:49 Graham Williams>
+# Time-stamp: <2009-07-18 16:23:44 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 11 Jul 2009"
+VERSION.DATE <- "Released 13 Jul 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -1793,8 +1793,15 @@ get.extension <- function(path)
 
 get.stem <- function(path)
 {
+  # Given a filename PATH extract the basename, and from this, the
+  # name without an extension.  090718 If the PATH supplied is a
+  # string with no extension than just return the PATH.
+  
   parts <- strsplit(basename(path), "\\.")[[1]]
-  last <- paste(parts[1:length(parts)-1], collapse=".")
+  if (length(parts) > 1)
+    last <- paste(parts[seq_len(length(parts)-1)], collapse=".")
+  else
+    last <- parts
   last
 }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-07 20:33:19 Graham Williams>
+# Time-stamp: <2009-07-18 16:16:04 Graham Williams>
 #
 # Project functionality.
 #
@@ -153,12 +153,12 @@ closeProject <- newProject
 saveProject <- function()
 {
 
-  # Pre-conditions
+  # Check pre-conditions.
   
   if (noDatasetLoaded()) return()
   if (variablesHaveChanged("saving the project")) return()
 
-  # Obtain filename to save to
+  # Obtain a filename to save to.
   
   dialog <- gtkFileChooserDialog("Save Project", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
