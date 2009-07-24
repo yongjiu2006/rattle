@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-06-30 21:51:49 Graham Williams>
+# Time-stamp: <2009-07-24 21:49:34 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -97,7 +97,6 @@ pmml.rpart <- function(model,
   # 090617 Ensure that the list of fields includes those necessary for
   # the transforms. By this stage the transforms should have removed
   # from it any that are not needed in the model.
-  
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)

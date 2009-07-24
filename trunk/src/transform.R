@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-18 12:39:49 Graham Williams>
+# Time-stamp: <2009-07-24 15:45:30 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1408,7 +1408,10 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else if (action == "joincat")
   {
-    lst <- list(orig=vars, type=remap.prefix)
+    lst <- list(orig=vars, type=remap.prefix,
+                levels=list(levels(crs$dataset[,vars[1]]),
+                  levels(crs$dataset[,vars[2]])))
+    names(lst$levels) <- vars
     crs$transforms <- union.transform(crs$transforms,
                                       paste(remap.prefix, vars[1], vars[2], sep="_"),
                                       lst)
@@ -1458,14 +1461,21 @@ executeTransformRemapPerform <- function(vars=NULL,
   else if (action == "indicator")
   {
     # 090603 This needs work to support multiple variables at the one
-    # time.
-    
+    # time. 090724 Add the make.names to catch levels that have spaces
+    # in their names.
+
     input <- union(input, paste(remap.prefix, vars,
-                                levels(crs$dataset[[vars]]), sep="_"))
+                                make.names(levels(crs$dataset[[vars]])), sep="_"))
     ignore <- union(ignore, vars)
   }
-  else if (action %in% c('quantiles', 'kmeans', "eqwidth"))
+  else if (action %in% c('quantiles', 'kmeans', "eqwidth", "asfactor", "asnumeric"))
   {
+    # 090722 Added asfactor and asnumeric here - avoid surprising the
+    # user as they are probably expecting the old variables to be
+    # ignored, like most other operations. I can't see any reason for
+    # keeping the originals as input, except if the user really wanted
+    # to, which they can purposfully do.
+    
     input <- setdiff(input, vars) # 090110 Added
     ignore <- union(ignore, vars) # 090110 Added
     input <- union(input, paste(remap.prefix, vars, sep="_"))

@@ -996,6 +996,7 @@
                 <property name="height_request">55</property>
                 <property name="visible">True</property>
                 <property name="toolbar_style">both</property>
+                <property name="icon_size_set">True</property>
                 <child>
                   <widget class="GtkToolButton" id="execute_button">
                     <property name="visible">True</property>
@@ -1135,6 +1136,8 @@
           <widget class="GtkNotebook" id="notebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="scrollable">True</property>
+            <property name="enable_popup">True</property>
             <signal name="switch_page" handler="on_notebook_switch_page"/>
             <child>
               <widget class="GtkVBox" id="vbox15">
@@ -1583,8 +1586,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="action">select-folder</property>
                             <property name="local_only">False</property>
+                            <property name="action">select-folder</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -6503,16 +6506,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6521,6 +6514,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -7155,6 +7158,8 @@ ANOVA RBF (anovadot)</property>
               <packing>
                 <property name="position">6</property>
                 <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+                <property name="detachable">True</property>
                 <property name="type">tab</property>
               </packing>
             </child>
@@ -8091,6 +8096,8 @@ ANOVA RBF (anovadot)</property>
               <packing>
                 <property name="position">7</property>
                 <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+                <property name="detachable">True</property>
                 <property name="type">tab</property>
               </packing>
             </child>
@@ -8154,8 +8161,11 @@ ANOVA RBF (anovadot)</property>
                 <property name="label" translatable="yes">Log</property>
               </widget>
               <packing>
+                <property name="menu_label">Log</property>
                 <property name="position">8</property>
                 <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+                <property name="detachable">True</property>
                 <property name="type">tab</property>
               </packing>
             </child>
@@ -8511,8 +8521,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>

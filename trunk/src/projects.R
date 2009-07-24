@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-18 16:16:04 Graham Williams>
+# Time-stamp: <2009-07-24 09:12:39 Graham Williams>
 #
 # Project functionality.
 #
@@ -168,7 +168,7 @@ saveProject <- function()
   # 090707 Add the .rattle extension by default to be consistent
   # throughout Rattle. It is also needed for OverwriteConfirmation.
   
-  dialog$setCurrentName(paste(get.stem(crs$dataname), ".rattle", sep=""))
+  dialog$setCurrentName(paste(get.stem(crs$dataname), crv$projext, sep=""))
 
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
@@ -209,8 +209,8 @@ saveProject <- function()
   # already. The logic of which to add depends on whether one of the
   # filters is active, or else the first extension in the list
   # crv$project.extensions.
-  
-  if (save.ext %notin% c(crv$project.extensions, "Rdata"))
+
+  if (tolower(save.ext) %notin% c(crv$project.extensions, "rdata"))
   {
     if (filter.name == "Projects")
     {
