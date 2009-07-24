@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-08 06:40:54 Graham Williams>
+# Time-stamp: <2009-07-24 09:24:36 Graham Williams>
 #
 # DATA TAB
 #
@@ -1538,7 +1538,7 @@ exportDataTab <- function()
     return()
   }
 
-  if (get.extension(save.name) != "csv")
+  if (tolower(get.extension(save.name)) != "csv")
     save.name <- sprintf("%s.csv", save.name)
 
   # 081222 Do this with the OverwriteConfirmation of the widget.
@@ -2819,7 +2819,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d%s]",
+        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d%s%s]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
@@ -2830,21 +2830,24 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                          ifelse(sum(is.na(crs$dataset[[variables[i]]])),
                                 sprintf("; miss=%d",
                                         sum(is.na(crs$dataset[[variables[i]]]))),
-                                ""))
+                                ""),
+                         ifelse(variables[i] %in% ignore, "; ignored", ""))
       else if (cl == "numeric")
-        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s]",
+        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s%s]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE),
                          median(crs$dataset[[variables[i]]], na.rm=TRUE),
                          ifelse(missing.count > 0,
-                                sprintf("; miss=%d", missing.count), ""))
+                                sprintf("; miss=%d", missing.count), ""),
+                         ifelse(variables[i] %in% ignore, "; ignored", ""))
       else if (substr(cl, 1, 6) == "factor")
-        dtype <- sprintf("Categorical [%s levels%s]",
+        dtype <- sprintf("Categorical [%s levels%s%s]",
                          length(levels(crs$dataset[[variables[i]]])),
                          ifelse(missing.count > 0,
-                                sprintf("; miss=%d", missing.count), ""))
+                                sprintf("; miss=%d", missing.count), ""),
+                         ifelse(variables[i] %in% ignore, "; ignored", ""))
 
       # Generate text for the missing values bit.
 

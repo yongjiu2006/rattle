@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-18 16:23:44 Graham Williams>
+# Time-stamp: <2009-07-24 08:23:44 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Jul 2009"
+VERSION.DATE <- "Released 19 Jul 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -872,6 +872,7 @@ resetRattle <- function(new.dataset=TRUE)
   # TODO 080423 Change name to RESCALE
   crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   theWidget("normalise_radiobutton")$setActive(TRUE)
+  theWidget("normalise_recenter_radiobutton")$setActive(TRUE)
   theWidget("impute_zero_radiobutton")$setActive(TRUE)
   theWidget("impute_constant_entry")$setText("")
   theWidget("remap_quantiles_radiobutton")$setActive(TRUE)

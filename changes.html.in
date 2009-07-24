@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.84.
+    version is 2.4.85.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+466 090724 Reset Normalise to Recenter on a Reset.
+           Begin capture of TJN transform (joincat).
+           Add "ignored" to transform data summary.
+           Introduce crv$projext for the project extension.
+           Bump pmml version to 1.2.16.
 465 090719 Modify get.stem to work when dataset names are not files.
            Above fix means R Dataset name gets to be default for saving.
            Allow RF Rules to be 0, so all trees are extracted.
@@ -977,6 +982,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-07-19 16:42:28 Graham Williams</i>
+<i>Last Modified 2009-07-24 22:40:43 Graham Williams</i>
 <!-- hhmts end -->
   </p>

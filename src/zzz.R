@@ -16,6 +16,7 @@
   crv <<- new.env()
   
   crv$appname <- "Rattle"
+  crv$projext <- ".rattle"
   crv$log.intro <- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
   crv$support.msg <- "Contact support@togaware.com."
   crv$library.command <- "library(rattle)"

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-07-07 06:12:02 Graham Williams>
+# Time-stamp: <2009-07-24 22:41:24 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.15" # Update documentation
+  VERSION <- "1.2.16" # Support TJN (joincat).
+  # "1.2.15" # Update documentation
   # "1.2.14" # Support mult transforms for rpart
   # "1.2.13" # Change strcutre used to record transforms.
   # "1.2.12" # Fix pmml.lm handling of singularities -> inactive
@@ -338,7 +339,7 @@ unifyTransforms <- function(field, transforms)
     # 090617 if (vname %in% field$name)
     # 090617 {
     index <- which(vname == field$name)
-    if (length(index) > 0)
+    if (length(index))
     {
           
       # 081229 I should probably be testing if index is integer(0) -
@@ -358,19 +359,33 @@ unifyTransforms <- function(field, transforms)
       # remove the entry naming the transformed variable vname,
       # otherwise replace the entry naming the transformed var with
       # the original variable name.
-      
-      if (var$orig %in% union(field$name, names(transforms)))
+
+      for (v in var$orig)
       {
-        field$name <- field$name[-index]
-        field$class <- field$class[-index]
+        if (v %in% union(field$name, names(transforms)))
+        {
+          field$name <- field$name[-index]
+          field$class <- field$class[-index]
+        }
+        else
+        {
+          # 090724 For TJN with two orig variables we loop through
+          # here twice, so the second time through (i.e., when v is
+          # not the same as var$orig[1]) add the dependent variable to
+          # the end of the list and record a class for it - assumed to
+          # always be factor.
+          if (v != var$orig[1]) index <- length(field$name) + 1
+          field$name[index] <- v
+          if (v != var$orig[1]) field$class[index] <- "factor"
+        }
+        
       }
-      else
-        field$name[index] <- var$orig
     }
     else if (length(which(var$orig == field$name)) == 0) # Orig not in field
     {
       field$name <- c(field$name, var$orig)
-      field$class <- c(field$class, origVarType(var$type))
+      # 090724 Add this rep to account for TJN which has multiple orig vars.
+      field$class <- c(field$class, rep(origVarType(var$type), length(var$orig)))
     }
   }
 
