@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-24 15:45:30 Graham Williams>
+# Time-stamp: <2009-07-31 23:41:19 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1202,23 +1202,33 @@ executeTransformRemapPerform <- function(vars=NULL,
   # be imputed.
 
   classes <- unlist(lapply(vars, function(x) class(crs$dataset[[x]])))
-  if (action %in% c("quantiles", "kmeans", "eqwidth", "log")
+  if (action %in% c("quantiles", "kmeans", "eqwidth", "log", "asfactor")
       && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste("We can only handle numeric data for %s.",
-                             "Ignoring: %s."), action,
+    infoDialog(sprintf(paste("Only numeric data is permissible for the %s transform.",
+                             "\n\nIgnoring: %s."),
+                       switch(action,
+                              quantiles="Quantiles",
+                              kmeans="KMeans",
+                              eqwidth="Equal Width",
+                              log="Log",
+                              asfactor="As Categoric"),
                        paste(vars[which(classes == "factor")], collapse=", ")))
     vars <- vars[-which(classes == "factor")] # Remove the factors.
   }
-  if (action %in% c("indicator", "joincat")
+  if (action %in% c("indicator", "joincat", "asnumeric")
       && ("numeric" %in% classes || "integer" %in% classes))
   {
-    infoDialog(sprintf(paste("We can only handle non numeric data for %s.",
-                             "Ignoring: %s."), action,
-                       paste(vars[which(classes == "numeric" ||
+    infoDialog(sprintf(paste("Only non numeric data is permissible for the %s",
+                             " transform.\n\nIgnoring: %s."),
+                       switch(action,
+                              indicator="Indicator Variable",
+                              joincat="Join Categorics",
+                              asnumeric="As Numeric"),
+                       paste(vars[which(classes == "numeric" |
                                         classes == "integer")],
                              collapse=", ")))
-    vars <- vars[-which(classes == "numeric" || classes == "integer")]
+    vars <- vars[-which(classes == "numeric" | classes == "integer")]
   }
 
   # If, as a result of removing variables from consideration we end up
@@ -1272,25 +1282,42 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else if (action == "joincat")
   {
-    if (length(vars) != 2)
+    if (length(vars) > 2)
     {
-      infoDialog("We only join two categorics at a time.",
-                 "Please select just two.")
+      infoDialog("A join of only two categoric variables at a time is allowed.",
+                 "Please select just two categoric variables, then Execute.")
       return()
     }
+    if (length(vars) < 2)
+    {
+      infoDialog("A join of categoric variables requires two categoric variables.",
+                 "Please select two categoric variables, then Execute.")
+      return()
+    }
+    
       
     remap.cmd <- sprintf(paste('  crs$dataset[, "%s_%s_%s"] <- ',
                                'interaction(paste(crs$dataset[["%s"]], "_",',
-                               'crs$dataset[["%s"]], sep=""))',
+                               'crs$dataset[["%s"]], sep=""))\n',
+                               '  crs$dataset[["%s_%s_%s"]]',
+                               '[grepl("^NA_|_NA$", crs$dataset[["%s_%s_%s"]])]',
+                               ' <- NA\n',
+                               '  crs$dataset[["%s_%s_%s"]] <- ',
+                               'as.factor(as.character(crs$dataset[["%s_%s_%s"]]))',
                                sep=""),
                          remap.prefix, vars[1], vars[2],
-                         vars[1], vars[2])
+                         vars[1], vars[2],
+                         remap.prefix, vars[1], vars[2],
+                         remap.prefix, vars[1], vars[2],
+                         remap.prefix, vars[1], vars[2],
+                         remap.prefix, vars[1], vars[2])
   }
   else if (action == "asfactor")
   {
     remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- ',
                                      'as.factor(crs$',
-                                     'dataset[["%s"]])', sep=""),
+                                     'dataset[["%s"]])',
+                                     sep=""),
                                remap.prefix, vars, vars),
                        collapse="\n")
     # 090718 Remap the levels to correspond to how the transform will
@@ -1457,6 +1484,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   if (action == "joincat")
   {
     input <- union(input, paste(remap.prefix, vars[1], vars[2], sep="_"))
+    ignore <- union(ignore, vars)
   }
   else if (action == "indicator")
   {
@@ -1482,6 +1510,13 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else
     input <- union(input, paste(remap.prefix, vars, sep="_"))
+
+  # 090731 Remove any vars as a target/risk/ident, since they have
+  # been ignored and we don't want both!
+  
+  target <- setdiff(target, vars)
+  risk <- setdiff(risk, vars)
+  ident <- setdiff(ident, vars)
 
   # Reset the dataset views keeping the roles unchanged except for
   # those that have been created, wich have just been added as inputs.

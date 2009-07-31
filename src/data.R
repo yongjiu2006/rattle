@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-24 09:24:36 Graham Williams>
+# Time-stamp: <2009-07-31 23:12:11 Graham Williams>
 #
 # DATA TAB
 #
@@ -2815,11 +2815,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
       etype <- ifelse(pmmlCanExport(variables[i]), "", ". NO code export")
 
-      # Generate correct Rattle terminology for the variable class.
+      # Generate correct Rattle terminology for the variable
+      # class. 090731 We denote an integer as Numeric, to be
+      # consistent throughout Rattle.
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Integer [%d to %d; unique=%d; mean=%d; median=%d%s%s]",
+        dtype <- sprintf("Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]",
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
