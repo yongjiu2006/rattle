@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-07-26 07:54:12 Graham Williams>
+# Time-stamp: <2009-08-01 21:29:03 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -175,7 +175,7 @@ pmmlDataDictionary <- function(field)
   # field$name is a vector of strings, and includes target
   # field$class is indexed by fields$names
   # field$levels is indexed by fields$names
-  
+
   number.of.fields <- length(field$name)
 
   # DataDictionary
@@ -330,6 +330,17 @@ unifyTransforms <- function(field, transforms)
     type <- var$type
     vname <- names(transforms)[i] # The transformed variable name
 
+    # 090801 If the status is inactive and there is no active
+    # transform that uses this vname, then skip its processing - the
+    # variable is not required hence it's source variable is not
+    # required.
+
+    status <- transforms[i][[1]]$status
+    usedbytrans <- unique(unlist(sapply(crs$transforms,
+                                        function(x) if (x$status=="active") x$orig)))
+    if (status == "inactive" && ! is.null(usedbytrans) &&
+        ! (vname  %in% usedbytrans)) next
+    
     # 090102 The vname should be in the list of variables in field,
     # where we replace it with the original name. 090617 If it is not
     # in the list of variables then it should be an "intermediate"
@@ -393,6 +404,22 @@ unifyTransforms <- function(field, transforms)
   # variables.
 
   names(field$class) <- field$name
+
+  # 090801 If this is called in the context of a running Rattle, then
+  # sort the fields to be the same order they appear in
+  # names(crs$dataset).
+
+  if (exists("crs") && ! is.null(crs$dataset))
+  {
+    orig <- field
+    f1 <- field$class[1]
+    field$class <- field$class[-1]
+    field$name <- field$name[-1]
+    field$class <- field$class[names(crs$dataset)[names(crs$dataset) %in% field$name]]
+    field$class <- c(f1, field$class)
+    field$class <- c(field$class, orig$class[! (orig$name %in% names(field$class))])
+    field$name <- names(field$class)
+  }
   
   return(field)
 }

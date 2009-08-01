@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-06-13 21:48:11 Graham Williams>
+# Time-stamp: <2009-08-01 17:19:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -64,7 +64,7 @@ pmml.lm <- function(model,
   if (supportTransformExport(transforms))
     field <- unifyTransforms(field, transforms)
   number.of.fields <- length(field$name)
-  
+
   target <- field$name[1]
 
   # 090501 Identify those who are singularities. For numerics, this is

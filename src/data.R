@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-31 23:12:11 Graham Williams>
+# Time-stamp: <2009-08-01 15:45:59 Graham Williams>
 #
 # DATA TAB
 #
@@ -455,8 +455,8 @@ executeDataTab <- function(csvname=NULL)
 {
   # Dispatch to the task indicated by the selected radio button within
   # the Data tab. 090315 Previously I tested if there is was a change
-  # to the data source (with dataNeedsLoading) but this contiually got
-  # complicated between different OS and different data sources,
+  # to the data source (with dataNeedsLoading) but this continually
+  # got complicated between different OS and different data sources,
   # etc. So now we never reload a dataset, unless no dataset is
   # loaded. To load a new dataset, click New project first. Unless the
   # data type label is not sensitive (i.e., we have loaded a project),
@@ -1740,9 +1740,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 }
 
 #----------------------------------------------------------------------
-#
 # Execution
-#
 
 executeSelectTab <- function()
 {
@@ -1868,6 +1866,18 @@ executeSelectTab <- function()
   crs$ident   <- ident
   crs$ignore  <- ignore
   crs$weights <- weights
+
+  # 090801 Update the transforms list, so that any transforms that are
+  # not ignore/ident will be noted as active. The status is used when
+  # exporting to XML since we want to keep ignored transforms (since
+  # they might be used in other transforms) but don't want them
+  # exported unnecessarily.
+
+  for (i in seq_along(crs$transforms))
+    if (names(crs$transforms)[i] %in% union(ident, ignore))
+      crs$transforms[[i]]$status <- "inactive"
+    else
+      crs$transforms[[i]]$status <- "active"
   
   # Update MODEL targets
 
