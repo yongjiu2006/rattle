@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-31 23:41:19 Graham Williams>
+# Time-stamp: <2009-08-01 15:30:34 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -421,7 +421,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # 090605 New transforms data structure
       
-      lst <- list(orig=v, type=vprefix,
+      lst <- list(orig=v, type=vprefix, status="active",
                   mean=mean(crs$dataset[[vname]], na.rm=TRUE),
                   sd=sd(crs$dataset[[vname]], na.rm=TRUE))
       crs$transforms <- union.transform(crs$transforms, vname, lst)
@@ -446,7 +446,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # 090606 New transforms data structure
       
-      lst <- list(orig=v, type=vprefix,
+      lst <- list(orig=v, type=vprefix, status="active",
                   min=min(crs$dataset[[vname]], na.rm=TRUE),
                   max=max(crs$dataset[[vname]], na.rm=TRUE))
       crs$transforms <- union.transform(crs$transforms, vname, lst)
@@ -473,7 +473,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # 090606 Record the transformation for inclusion in PMML.
 
-      lst <- list(orig=v, type=vprefix)
+      lst <- list(orig=v, type=vprefix, status="active")
       crs$transforms <- union.transform(crs$transforms, vname, lst)
 
     }
@@ -489,7 +489,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
       
       # 090606 New transforms data structure
       
-      lst <- list(orig=v, type=vprefix,
+      lst <- list(orig=v, type=vprefix, status="active",
                    median=median(crs$dataset[[vname]], na.rm=TRUE),
                    mad=mad(crs$dataset[[vname]], na.rm=TRUE))
       crs$transforms <- union.transform(crs$transforms, vname, lst)
@@ -537,7 +537,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # 090606 Record the transformation for inclusion in PMML.
       
-      lst <- list(orig=v, type=vprefix, group=byvname)
+      lst <- list(orig=v, type=vprefix, status="active", group=byvname)
       crs$transforms <- union.transform(crs$transforms, vname, lst)
 
     }
@@ -562,7 +562,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # 090605 New transforms data structure
       
-      lst <- list(orig=v, type=vprefix, sum=matrix.total, vars=variables)
+      lst <- list(orig=v, type=vprefix, status="active",
+                  sum=matrix.total, vars=variables)
       crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
@@ -582,7 +583,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
       # Record the transformation for inclusion in PMML.
 
-      lst <- list(orig=v, type=vprefix)
+      lst <- list(orig=v, type=vprefix, status="active")
       crs$transforms <- union.transform(crs$transforms, vname, lst)
 
       # For the log, record the command to use when scoring the data.
@@ -795,7 +796,7 @@ executeTransformImputePerform <- function()
         # non-categorics so now record the transformation for
         # inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute="Missing")
+        lst <- list(orig=z, type=vprefix, status="active", impute="Missing")
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mode")
@@ -869,7 +870,7 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        lst <- list(orig=z, type=vprefix, status="active", impute=imp.val)
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mean")
@@ -886,7 +887,7 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        lst <- list(orig=z, type=vprefix, status="active", impute=imp.val)
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "median")
@@ -900,7 +901,7 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        lst <- list(orig=z, type=vprefix, status="active", impute=imp.val)
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "mode")
@@ -914,7 +915,7 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        lst <- list(orig=z, type=vprefix, status="active", impute=imp.val)
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
       else if (action == "constant")
@@ -935,7 +936,7 @@ executeTransformImputePerform <- function()
 
         # Record the transformation for inclusion in PMML.
 
-        lst <- list(orig=z, type=vprefix, impute=imp.val)
+        lst <- list(orig=z, type=vprefix, status="active", impute=imp.val)
         crs$transforms <- union.transform(crs$transforms, vname, lst)
       }
         
@@ -1184,9 +1185,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   
   # 090603 Check if it is an indicator transform, and more than a
   # single variable selected. Can not handle this yet - do them one at
-  # a time for now. Really need to turn crs$transforms into list with
-  # each element naming a variable to be transformed, and having as
-  # attributes or slots the parameters of the transformation.
+  # a time for now.
 
   if (action %in% c("indicator") && length(vars) > 1)
   {
@@ -1387,7 +1386,8 @@ executeTransformRemapPerform <- function(vars=NULL,
     ## lst <- paste(lst, apply(breaks, 2, paste, collapse="_"), sep="_")
     ## crs$transforms <- union(crs$transforms, lst)
 
-    lst <- list(orig=vars, type=substr(remap.prefix, 1, 2), breaks=as.vector(breaks))
+    lst <- list(orig=vars, type=substr(remap.prefix, 1, 2), status="active",
+                breaks=as.vector(breaks))
     crs$transforms <- union.transform(crs$transforms, vname, lst)
     
     appendLog("When scoring, use the training data parameters to bin new data.",
@@ -1428,14 +1428,14 @@ executeTransformRemapPerform <- function(vars=NULL,
 
     sapply(levels(crs$dataset[,vars]), function(x) 
            {
-             lst <- list(orig=vars, type=remap.prefix, level=x)
+             lst <- list(orig=vars, type=remap.prefix, status="active", level=x)
              crs$transforms <- union.transform(crs$transforms,
                                                paste(vname, x, sep="_"), lst)
            })
   }
   else if (action == "joincat")
   {
-    lst <- list(orig=vars, type=remap.prefix,
+    lst <- list(orig=vars, type=remap.prefix, status="active",
                 levels=list(levels(crs$dataset[,vars[1]]),
                   levels(crs$dataset[,vars[2]])))
     names(lst$levels) <- vars
@@ -1461,14 +1461,15 @@ executeTransformRemapPerform <- function(vars=NULL,
     # 090718 breaks <- as.numeric(levels(crs$dataset[[vname]]))
     breaks <- as.numeric(ol)
     breaks <- c(breaks[1], breaks)
-    lst <- list(orig=vars, type=remap.prefix, breaks=breaks)
+    lst <- list(orig=vars, type=remap.prefix, status="active", breaks=breaks)
     crs$transforms <- union.transform(crs$transforms,
                                       paste(remap.prefix, vars, sep="_"),
                                       lst)
   }
   else if (action == "asnumeric")
   {
-    lst <- list(orig=vars, type=remap.prefix, levels=levels(crs$dataset[[vars]]))
+    lst <- list(orig=vars, type=remap.prefix, status="active",
+                levels=levels(crs$dataset[[vars]]))
     crs$transforms <- union.transform(crs$transforms,
                                       paste(remap.prefix, vars, sep="_"),
                                       lst)
@@ -1647,9 +1648,13 @@ executeTransformCleanupPerform <- function()
     # delete them from the list of transforms. Is there anything to
     # lose keeping the information there, in particular if there are
     # other transforms derived from any transforms about to be
-    # deleted.
+    # deleted. 090801 Restore the removal of deleted transforms since
+    # otherwise they get used to identify source variables to
+    # export. We may like to add some logic here to not allow any
+    # variable to be deleted if it is used in a transform
+    # (irrespective of whether that tranform is ignored).
 
-    # 090701 crs$transforms[names(crs$transforms) %in% to.delete] <- NULL
+    crs$transforms[names(crs$transforms) %in% to.delete] <- NULL
 
   }
   
