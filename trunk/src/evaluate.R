@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-11 08:49:52 Graham Williams>
+# Time-stamp: <2009-08-02 10:38:51 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -495,6 +495,8 @@ executeEvaluateTab <- function()
     respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
     if (binomialTarget())
       probcmd[[crv$NNET]] <- gsub(")$", ', type="raw")', predcmd[[crv$NNET]])
+    else if (numericTarget())
+      probcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
     else
       probcmd[[crv$NNET]] <- gsub(")$", ', type="prob")', predcmd[[crv$NNET]])
   }
@@ -559,9 +561,12 @@ executeEvaluateTab <- function()
 
     # For RF we request a probability with the type argument, and as
     # with RPART we extract the column of interest (the last column).
-  
-    probcmd[[crv$RF]] <- sprintf("%s[,2]",
-                             gsub(")$", ', type="prob")', predcmd[[crv$RF]]))
+
+    if (numericTarget())
+      probcmd[[crv$RF]] <- predcmd[[crv$RF]]
+    else
+      probcmd[[crv$RF]] <- sprintf("%s[,2]",
+                                   gsub(")$", ', type="prob")', predcmd[[crv$RF]]))
 
   }
     
@@ -928,21 +933,6 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   # let's go with it.
   
   risk <- crs$risk
-###   if (is.null(risk))
-###   {
-###     errorDialog("No risk variable has been specified.",
-###                 "From the Data tab please identify one variable as",
-###                 "a risk variable and rerun the modelling (if the variable",
-###                 "was previously an input variable).",
-###                 "The risk variable is a measure of the size of the risk.",
-###                 "For example, it might be the dollar amount of fraud",
-###                 "that has been recovered for each case.",
-###                 "TODO: The Risk Variable is not actually required,",
-###                 "and the requirement will be removed sometime soon,",
-###                 "essentially giving a ROC type of curve, but with",
-###                 "coverage on the x axis rather than false positives.")
-###     return()
-###   }
 
   # Put 1 or 2 charts onto their own plots. Otherwise, put the
   # multiple charts onto one plot, keeping them all the same size
@@ -1001,9 +991,10 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
       plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
                         "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
-                        'risk.name="', risk, '", recall.name="', crs$target,
-                        '")',
-                        "\n",
+                        'risk.name="', risk, '", recall.name="', crs$target, '"',
+                        ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                        ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                        ")\n",
                         genPlotTitleCmd("Risk Chart", commonName(mtype),
                                         testname, risk),
                         sep="")
@@ -1014,8 +1005,10 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                             sprintf("%s$%s)", testset[[mtype]], crs$target))
 
       plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
-                        "crs$eval$Precision, crs$eval$Recall)",
-                        "\n",
+                        "crs$eval$Precision, crs$eval$Recall",
+                        ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                        ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                        ")\n",
                         genPlotTitleCmd("Performance Chart", commonName(mtype),
                                         testname),
                         sep="")
@@ -1099,7 +1092,9 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     msg <- paste("Summary ", commonName(mtype), " model ",
                  sprintf("(built using %s)", mtype), " on ",
                  testname,
-                 " by probability cutoffs.\n\n", msg, sep="")
+                 " by ",
+                 ifelse(numericTarget(), "predicted value", "probability"),
+                 " cutoffs.\n\n", msg, sep="")
     appendTextview(TV, msg, collectOutput(sprintf("crs$eval[%s,]", id), TRUE))
 
     # Display the AUC measures.
@@ -1175,10 +1170,12 @@ evaluateRisk <- function(predicted, actual, risks=NULL)
 
   # With na.rm=TRUE we cater for the case when the actual data has
   # missing values for the target.
+
+  # 090802 Try allowing any range of numbers 
   
-  if (min(actual, na.rm=TRUE) != 0 || max(actual, na.rm=TRUE) !=1 )
-    stop("actual must be binary (0,1) but found (",
-         min(actual, na.rm=TRUE), ",", max(actual, na.rm=TRUE), ").")
+#  if (min(actual, na.rm=TRUE) != 0 || max(actual, na.rm=TRUE) !=1 )
+#    stop("actual must be binary (0,1) but found (",
+#         min(actual, na.rm=TRUE), ",", max(actual, na.rm=TRUE), ").")
 
   # For KSVMs, and perhaps other modellers, the predictied values are
   # probabilites, which may be a very high level of precision (e.g.,
@@ -1316,6 +1313,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
                       dev="", filename="",
                       show.knots=NULL,
                       show.lift=TRUE,
+                      show.precision=TRUE,
                       risk.name="Revenue", #"Risk",
                       recall.name="Adjustments", #"Recall",
                       precision.name="Strike Rate") #"Precision")
@@ -1369,9 +1367,9 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   if (not.null(title))
     title(main=title, sub=paste("Rattle", Sys.time(), Sys.info()["user"]))
   points(re ~ cl, type='l', col=3, lty=5)
-  points(pr ~ cl, type='l', col=4, lty=4)
+  if (show.precision) points(pr ~ cl, type='l', col=4, lty=4)
   if (not.null(ri)) points(ri ~ cl, type='l', col=2, lty=1)
-  if (include.baseline) text(100, pr[1]+4, sprintf("%0.0f%%", pr[1]))
+  if (include.baseline && show.precision) text(100, pr[1]+4, sprintf("%0.0f%%", pr[1]))
   # Optimal
   if (not.null(optimal))
   {
@@ -1401,7 +1399,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   }  
   auc <- calculateAUC(cl/100, re/100)
   legend <- c(legend, sprintf("%s (%d%%)", recall.name, round(100*auc)))
-  legend <- c(legend, precision.name)
+  if (show.precision) legend <- c(legend, precision.name)
   lty <- c(lty,5,4)
   col <- c(col,3,4)
   if (not.null(optimal))

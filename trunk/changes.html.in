@@ -6,19 +6,19 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.87.
+    version is 2.4.88.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
-468
-Update unifyTransforms to handle ignored transforms.
-If possible in writing PMML sort fields in order of crs$dataset.
-Add a status to the transforms based on inactive = ignore/ident.
-Restore removal of transforms when deleted by user.
-
+469 090802 Allow risk charts for regression models.
+           Add filter on Log export to remap variable names.
+468 090801 Update unifyTransforms to handle ignored transforms.
+	   If possible in writing PMML sort fields in order of crs$dataset.
+           Add a status to the transforms based on inactive = ignore/ident.
+           Restore removal of transforms when deleted by user.
 467 090731 Do not allow num to num or cat to cat transforms.
            On a joincat transform, keep NA as NA.
            Ensure, on transform of a target/id/risk, the flag is unset.
@@ -991,6 +991,6 @@ Restore removal of transforms when deleted by user.
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-08-01 22:49:39 Graham Williams</i>
+<i>Last Modified 2009-08-02 11:45:34 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-13 22:02:11 Graham Williams>
+# Time-stamp: <2009-08-02 09:42:02 Graham Williams>
 #
 # MODEL TAB
 #
@@ -415,7 +415,7 @@ makeEvaluateSensitive <- function()
   else if (multinomialTarget())
     buttons <- c("confusion", "score")
   else if (numericTarget())
-    buttons <- c("pvo", "score")
+    buttons <- c("risk", "pvo", "score") # 090802 Try risk charts for numeric output
   # 090222 If it is a binomial target then do not allow Pr v Ob since
   #  the target might be categoric and the display makes no sense (and
   #  fails with the jitter function.
