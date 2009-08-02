@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-24 18:26:29 Graham Williams>
+# Time-stamp: <2009-08-02 11:43:14 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -20,6 +20,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+# CALLBACKS
+
+on_log_export_rename_checkbutton_toggled <- function(button)
+{
+  theWidget("log_export_rename_entry")$setSensitive(button$getActive())
+}
 
 initiateLog <- function()
 {
@@ -53,7 +61,7 @@ scoring  <- ! building",
 
 # The colorspace package is used to generate the colours used in plots, if available.
 
-library(colorspace)", "")))
+library(colorspace)", ""), sep=""))
 
 }
 
@@ -130,6 +138,11 @@ exportLogTab <- function()
   save.text <- getTextviewContent("log_textview")
   if (!theWidget("log_export_comments_checkbutton")$getActive())
     save.text <- gsub("\n\n+", "\n", gsub("#[^\n]*\n", "", save.text))
+  if (theWidget("log_export_rename_checkbutton")$getActive())
+  {
+    nm <- theWidget("log_export_rename_entry")$getText()
+    save.text <- gsub("crs\\$", nm, save.text)
+  }
   write(save.text, save.name)
 
   setStatusBar("The log has been exported to", save.name)
