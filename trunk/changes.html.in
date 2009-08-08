@@ -6,13 +6,15 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.89.
+    version is 2.4.90.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+471 090808 Score datasets are adjusted to match levels - show in Log.
+           Reimplement predict.kmeans - remove massive memory problem.
 470 090808 For clusters, mark categoric transforms as inactive.
            Change Data tab option order - reflect book and logic
            Modify plotRisk to only optionally show precision
@@ -998,6 +1000,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-08-08 11:01:05 Graham Williams</i>
+<i>Last Modified 2009-08-08 23:38:25 Graham Williams</i>
 <!-- hhmts end -->
   </p>

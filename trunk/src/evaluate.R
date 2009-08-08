@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-02 10:38:51 Graham Williams>
+# Time-stamp: <2009-08-08 17:08:29 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -421,11 +421,27 @@ executeEvaluateTab <- function()
   # those with different levels.
 
   if (not.null(crs$testname) && crs$testname != crs$dataname)
-    for (c in colnames(crs$dataset))
-      if (is.factor(crs$dataset[[c]]))
-        levels(crs$testset[[c]]) <- c(levels(crs$testset[[c]]),
-                                       setdiff(levels(crs$dataset[[c]]),
-                                               levels(crs$testset[[c]])))
+    for (cn in colnames(crs$dataset))
+      if (is.factor(crs$dataset[[cn]]))
+        ## REMOVE 090808
+        ## levels(crs$testset[[cn]]) <- c(levels(crs$testset[[cn]]),
+        ##                                setdiff(levels(crs$dataset[[cn]]),
+        ##                                        levels(crs$testset[[cn]])))
+      {
+        # 090808 Be sure to expose this trick to the log file since
+        # the user will otherwise be unable to repeat the scoring for
+        # the case where the levels are not the same as the training
+        # dataset.
+        cmd <- sprintf(paste('levels(crs$testset[["%s"]]) <-',
+                             '\n  c(levels(crs$testset[["%s"]]),',
+                             '\n    setdiff(levels(crs$dataset[["%s"]]),',
+                             '\n               levels(crs$testset[["%s"]])))'),
+                       cn, cn, cn, cn)
+        appendLog(sprintf(paste("Ensure the levels are the same as the training",
+                                "data for variable `%s'."), cn),
+                          cmd)
+        eval(parse(text=cmd))
+      }
 
   ## The default command for prediction from any model is
   ## predict(model, data). Here we tune the predict command to
