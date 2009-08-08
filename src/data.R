@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-01 15:45:59 Graham Williams>
+# Time-stamp: <2009-08-06 14:52:49 Graham Williams>
 #
 # DATA TAB
 #
@@ -2678,8 +2678,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       if (paste("IMP_", variables[i], sep="") %in% variables)
       {
         # This works with SAS/EM IMPutations and Rattle's imputations,
-        # which add the IMP_ at the beginning of the name of any imputed
-        # variables.
+        # which add the IMP_ at the beginning of the name of any
+        # imputed variables. These will be ignored as they will have
+        # been replaced by another variable.
         
         ignore <- c(ignore, variables[i])
         

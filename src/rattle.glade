@@ -1194,6 +1194,23 @@
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkRadioButton" id="data_odbc_radiobutton">
+                        <property name="label" translatable="yes">ODBC</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">data_csv_radiobutton</property>
+                        <signal name="toggled" handler="on_data_odbc_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="GtkRadioButton" id="data_rdataset_radiobutton">
                         <property name="label" translatable="yes">R Dataset</property>
                         <property name="visible">True</property>
@@ -1203,23 +1220,6 @@
                         <property name="draw_indicator">True</property>
                         <property name="group">data_csv_radiobutton</property>
                         <signal name="toggled" handler="on_data_rdataset_radiobutton_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="data_library_radiobutton">
-                        <property name="label" translatable="yes">Library</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">data_csv_radiobutton</property>
-                        <signal name="toggled" handler="on_data_library_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1245,15 +1245,15 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="data_odbc_radiobutton">
-                        <property name="label" translatable="yes">ODBC</property>
+                      <widget class="GtkRadioButton" id="data_library_radiobutton">
+                        <property name="label" translatable="yes">Library</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">data_csv_radiobutton</property>
-                        <signal name="toggled" handler="on_data_odbc_radiobutton_toggled"/>
+                        <signal name="toggled" handler="on_data_library_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1291,6 +1291,9 @@
                         <property name="expand">False</property>
                         <property name="position">8</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </widget>
                   <packing>
@@ -1586,8 +1589,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="local_only">False</property>
                             <property name="action">select-folder</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -6506,16 +6509,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6524,6 +6517,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -8545,8 +8548,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
