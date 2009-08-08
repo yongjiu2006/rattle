@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_log_export_rename_checkbutton_toggled}
 \alias{on_close_activate}
 \alias{on_rattle_window_delete_event}
 \alias{on_explore_hiercor_checkbutton_toggled}

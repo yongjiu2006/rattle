@@ -111,6 +111,60 @@ kathy: zip
 	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates
 	cp src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/
 
+.PHONY: jie
+jie:
+	tar zcvf jie`date +%y%m%d%H%M`.tar.gz \
+	src/ada_gui.R \
+	src/ada.R \
+	src/all.R \
+	src/associate.R \
+	src/audit.R \
+	src/cluster.R \
+	src/ctree.R \
+	src/data.R \
+	src/evaluate.R \
+	src/execute.R \
+	src/explore.R \
+	src/export.R \
+	src/gbm.R \
+	src/hclust.R \
+	src/help.R \
+	src/kmeans.R \
+	src/log.R \
+	src/model.R \
+	src/nnet.R \
+	src/pmml.arules.R \
+	src/pmml.hclust.R \
+	src/pmml.kmeans.R \
+	src/pmml.ksvm.R \
+	src/pmml.lm.R \
+	src/pmml.multinom.R \
+	src/pmml.nnet.R \
+	src/pmml.R \
+	src/pmml.randomForest.R \
+	src/pmml.read.R \
+	src/pmml.rpart.R \
+	src/pmml.rsf.R \
+	src/pmmltocibi.R \
+	src/pmmltoc.R \
+	src/pmml.transforms.R \
+	src/projects.R \
+	src/random_forest.R \
+	src/rattle.R \
+	src/report.R \
+	src/rpart.R \
+	src/rstat.R \
+	src/test.R \
+	src/textminer.R \
+	src/textview.R \
+	src/tooltips.R \
+	src/transform.R \
+	src/utils.R \
+	src/zzz.R \
+	src/rattle.glade \
+	src/tooltips.xml \
+	src/textviews.xml
+
 # This one checks the R installations for overlap of packages
 # installed. If they are in both local and lib, should remove the
 # local one.

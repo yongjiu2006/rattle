@@ -30,7 +30,7 @@
 #          added ScoreDistribution, missingValueStrategy 
 #          by Zementis, Inc. in June 2008
 #           
-
+# Updated: updated by Zementis Inc. to add Output element in July 2009
 pmml.rpart <- function(model,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
@@ -153,6 +153,11 @@ pmml.rpart <- function(model,
   
   the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
+  #########################################
+  #  OUTPUT
+  the.model <- append.XMLNode(the.model, pmmlOutput(field,target))
+
+  ############################################################################
   # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
 
   if (supportTransformExport(transforms))

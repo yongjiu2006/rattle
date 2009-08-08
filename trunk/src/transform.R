@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-01 15:30:34 Graham Williams>
+# Time-stamp: <2009-08-08 10:50:15 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1322,6 +1322,7 @@ executeTransformRemapPerform <- function(vars=NULL,
     # 090718 Remap the levels to correspond to how the transform will
     # appear when exported to PMML.
 
+    ol <- NULL # 090808 Keep "R check" happy.
     remap.cmd <- paste(remap.cmd,
                        sprintf('  ol <- levels(crs$dataset[["%s_%s"]])',
                                remap.prefix, vars),
