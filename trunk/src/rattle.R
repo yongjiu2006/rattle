@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-24 08:23:44 Graham Williams>
+# Time-stamp: <2009-08-18 05:41:58 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -186,7 +186,7 @@ rattle <- function(csvname=NULL)
   if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
-  if (packageIsAvailable("colorspace"))
+  if (packageIsAvailable("colorspace", "choose appropriate colors for plots"))
   {
     # 080921 Load each individually so we can keep the loading quiet!
 

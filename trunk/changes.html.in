@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.90.
+    version is 2.4.91.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+472 090820 Multiple transforms for kmeans, hclust, multinom, lm, rpart models.
+           Unify error checking for noModelAvailable.
+           Fix handling of nnet binomial build/predict/pmml
+           Handle transforms for nnet pmml.
+           Fix handling of multiple transforms: activatedependTransforms
+           Capture transform case where TJN_A_B and B is also target.
+           Ensure predict.hclust works with predict.kmeans.
+           Handle NA in predict.kmeans
 471 090808 Score datasets are adjusted to match levels - show in Log.
            Reimplement predict.kmeans - remove massive memory problem.
 470 090808 For clusters, mark categoric transforms as inactive.
@@ -1000,6 +1008,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-08-08 23:38:25 Graham Williams</i>
+<i>Last Modified 2009-08-20 06:51:11 Graham Williams</i>
 <!-- hhmts end -->
   </p>

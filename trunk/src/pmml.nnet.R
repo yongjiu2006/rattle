@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2008-06-21 14:50:01 Graham Williams>
+# Time-stamp: <2009-08-20 06:38:33 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -142,18 +142,17 @@ pmml.nnet <- function(model,
                       app.name="Rattle/PMML",
                       description="Neural Network PMML Model",
                       copyright=NULL,
+                      transforms=NULL,
                       ...)
 {
   if (! inherits(model, "nnet")) stop("Not a legitimate nnet object")
   
   require(XML, quietly=TRUE)
   
-  ###################################################################
   # Collect the required information. We list all variables,
-  # irrespective of whether they appear in the final model. This
-  # seems to be the standard thing to do with PMML. It also adds
-  # extra information - i.e., the model did not need these extra
-  # variables!
+  # irrespective of whether they appear in the final model. This seems
+  # to be the standard thing to do with PMML. It also adds extra
+  # information - i.e., the model did not need these extra variables!
   
   number.of.neural.layers <- length(model$n) - 1
   field <- NULL
@@ -180,6 +179,15 @@ pmml.nnet <- function(model,
       field$class[[field$name[i + 1]]] <- "numeric"
     }
   }
+
+  # 090820 Support transforms if available.
+
+  if (supportTransformExport(transforms))
+  {
+    field <- unifyTransforms(field, transforms)
+    transforms <- activateDependTransforms(transforms)
+  }
+  number.of.fields <- length(field$name)
   
   ################################################################################
   # According to the nnet documentation:
@@ -261,7 +269,7 @@ pmml.nnet <- function(model,
   
   if (field$class[[field$name[1]]] == "factor")
   {
-    nnet.model <- xmlNode("NeuralNetwork",
+    the.model <- xmlNode("NeuralNetwork",
                           attrs=c(modelName=model.name,
                             functionName="classification",
                             numberOfLayers=temp,
@@ -269,7 +277,7 @@ pmml.nnet <- function(model,
   }
   else
   {
-    nnet.model <- xmlNode("NeuralNetwork",
+    the.model <- xmlNode("NeuralNetwork",
                           attrs=c(modelName=model.name,
                             functionName="regression",
                             numberOfLayers=temp,
@@ -286,13 +294,17 @@ pmml.nnet <- function(model,
     target <- substring(target,11,endPos)
   }
   
-  nnet.model <- append.XMLNode(nnet.model, pmml.nnet.MiningSchema(field, target))
+  the.model <- append.XMLNode(the.model, pmml.nnet.MiningSchema(field, target))
   
-  #########################################
-  #  OUTPUT
-  nnet.model <- append.XMLNode(nnet.model, pmmlOutput(field,target))
+  #  PMML -> NeuralNetwork -> Output
+
+  the.model <- append.XMLNode(the.model, pmmlOutput(field,target))
+
+  # PMML -> NeuralNetwork -> LocalTransforms
+
+  if (supportTransformExport(transforms))
+    the.model <- append.XMLNode(the.model, pmml.transforms(transforms))
   
-  ##############################################################################
   # PMML -> NeuralNetwork -> NeuralInputs
   
   neuralInputs <- xmlNode("NeuralInputs",
@@ -361,7 +373,7 @@ pmml.nnet <- function(model,
     
   }
   
-  nnet.model <- append.XMLNode(nnet.model, neuralInputs)
+  the.model <- append.XMLNode(the.model, neuralInputs)
   
   number.of.inputs <- model$n[1]
   
@@ -440,7 +452,7 @@ pmml.nnet <- function(model,
     
     previous.number.of.neurons <- number.of.neurons
     
-    nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
+    the.model <- append.XMLNode(the.model, neuralLayerNode)
   }
   
   # Special case for NN with 1 output neuron implementing classification
@@ -485,7 +497,7 @@ pmml.nnet <- function(model,
           
           neuralLayerNode <- append.XMLNode(neuralLayerNode, neuronNode)
           
-          nnet.model <- append.XMLNode(nnet.model, neuralLayerNode)
+          the.model <- append.XMLNode(the.model, neuralLayerNode)
           
           number.of.neurons <- number.of.neurons + 1
           
@@ -555,11 +567,11 @@ pmml.nnet <- function(model,
 		
 	}
 
-	nnet.model <- append.XMLNode(nnet.model, neuralOutputs)
+	the.model <- append.XMLNode(the.model, neuralOutputs)
 	
 	# Add to the top level structure.
 	
-	pmml <- append.XMLNode(pmml, nnet.model)
+	pmml <- append.XMLNode(pmml, the.model)
 	
 	return(pmml)
 }
