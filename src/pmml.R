@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-08 10:36:00 Graham Williams>
+# Time-stamp: <2009-08-19 20:07:58 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -341,6 +341,36 @@ supportTransformExport <- function(transforms=NULL)
          ! is.null(transforms))
 }
 
+activateTransforms <- function(transforms)
+{
+  # 090813 For each transform ensure the stats is set to active. This
+  # is needed when we have multiple transforms and we have remove from
+  # the list of transforms those which are truely ignored (i.e.,
+  # inactive). Those that remain with an inactive status are then
+  # assumed to be used for active transforms. So make them active.
+
+  return(lapply(transforms, function(x) {x$status <- "active"; return(x)}))
+}
+
+activateDependTransforms <- function(transforms)
+{
+  # 090813 For each transform, starting from the last (assuming the
+  # order of multiple transforms goes from the beginning to the end -
+  # i.e., RRC_TNM_EDUCATION appears later than TNM_EDUCATION),
+  # activate any inactive transforms that are needed for later active
+  # transforms.
+
+  for (i in rev(seq_along(transforms)))
+  {
+    if (i == length(transforms)) next
+    if (names(transforms)[i] %in%
+        sapply(transforms[seq(i+1, length(transforms))],
+               function(x) ifelse(x$status=="active", x$orig, NA)))
+      transforms[[i]]$status <- "active"
+  }
+  return(transforms)
+}
+
 unifyTransforms <- function(field, transforms, keep.first=TRUE)
 {
   # 090102 Unify the list of variables in FIELD based on the known
@@ -415,8 +445,17 @@ unifyTransforms <- function(field, transforms, keep.first=TRUE)
       {
         if (v %in% union(field$name, names(transforms)))
         {
-          field$name <- field$name[-index]
-          field$class <- field$class[-index]
+          # 090819 Not 100% this is correct, but it captures where
+          # TJN_EDUCATION_GENDER is a transform and GENDER is also the
+          # target. the second time through this loop v is GENDER, but
+          # we do not want to remove the "index" item since that will
+          # have been set to EDUCATION the first time through the
+          # loop!
+          if (length(var$orig) == 1)
+          {
+            field$name <- field$name[-index]
+            field$class <- field$class[-index]
+          }
         }
         else
         {

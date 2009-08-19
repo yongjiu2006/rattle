@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-01 20:43:33 Graham Williams>
+# Time-stamp: <2009-08-13 06:47:02 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -43,8 +43,8 @@ pmml.rpart <- function(model,
   require(XML, quietly=TRUE)
   require(rpart, quietly=TRUE)
 
-  functionName <- "classification"
-  if (model$method != "class") functionName <- "regression"
+  function.name <- "classification"
+  if (model$method != "class") function.name <- "regression"
   
   # Collect the required information.
 
@@ -86,6 +86,10 @@ pmml.rpart <- function(model,
       field$name <- field$name[-unused]
       field$class <- field$class[-unused]
     }
+
+    # 090813 Ensure transforms that remain are made active.
+
+    transforms <- activateTransforms(transforms)
   }
   
   # 081229 Our names and types get out of sync for multiple transforms
@@ -144,7 +148,7 @@ pmml.rpart <- function(model,
   # PMML -> TreeModel
 
   the.model <- xmlNode("TreeModel", attrs=c(modelName=model.name,
-                                       functionName=functionName,
+                                       functionName=function.name,
                                        algorithmName="rpart",
                                        splitCharacteristic="binarySplit",
                                        missingValueStrategy="defaultChild"))
@@ -183,10 +187,10 @@ pmml.rpart <- function(model,
   rows <- (1:length(id))[parent.cp > cp]
   parent_ii <- 1
 
-  # Check the functionName.
+  # Check the function.name.
   
   score <- attr(model, "ylevels")[model$frame$yval]
-  if(functionName == "regression") score <- ff$yval[rows]
+  if(function.name == "regression") score <- ff$yval[rows]
 
   # Get the information for the primary predicates
 

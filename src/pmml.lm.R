@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-08-08 10:33:45 Graham Williams>
+# Time-stamp: <2009-08-20 06:36:37 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -63,7 +63,10 @@ pmml.lm <- function(model,
   # 090103 Support transforms if available.
 
   if (supportTransformExport(transforms))
+  {
     field <- unifyTransforms(field, transforms)
+    transforms <- activateDependTransforms(transforms)
+  }
   number.of.fields <- length(field$name)
 
   target <- field$name[1]
@@ -178,7 +181,7 @@ pmml.lm <- function(model,
 
   the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
-  # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
+  # PMML -> TreeModel -> LocalTransforms
 
   if (supportTransformExport(transforms))
     the.model <- append.XMLNode(the.model, pmml.transforms(transforms))

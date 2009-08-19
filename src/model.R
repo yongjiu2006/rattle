@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-02 09:42:02 Graham Williams>
+# Time-stamp: <2009-08-12 21:50:02 Graham Williams>
 #
 # MODEL TAB
 #
@@ -330,6 +330,23 @@ existsPredictiveModel <- function()
   return(! is.null(listBuiltModels(c(crv$KMEANS, crv$HCLUST, crv$APRIORI))))
 }
 
+noModelAvailable <- function(model, model.class)
+{
+  # 090812 A general test for a model existing. Designed for use for
+  # each of the export<model>Tab functions. We need to also know the
+  # model.class since if model is NULL we won't ne able to determine
+  # it.
+
+  if (is.null(model))
+  {
+    errorDialog("No", commonName(model.class),
+                "is available. Be sure to build",
+                "the model before trying to export it! You will need",
+                "to press the Execute button (F2) in order to build the",
+                "model.")
+  }
+  return(is.null(model))
+}
 
 resetReportType <- function()
 {
@@ -1107,19 +1124,12 @@ rattle.print.summary.multinom <- function (x, digits = x$digits, ...)
 exportRegressionTab <- function()
 {
   # Make sure we have a model first!
-  
-  if (is.null(crs$glm))
-  {
-    errorDialog("No Regression is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
-    return()
-  }
+
+  if (noModelAvailable(crs$glm, crv$GLM)) return(FALSE)
 
   startLog("EXPORT REGRESSION")
 
-  save.name <- getExportSaveName("glm")
+  save.name <- getExportSaveName(crv$GLM)
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 
@@ -1139,7 +1149,7 @@ exportRegressionTab <- function()
   {
     # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "regression")
 
-    # 090223 Why is this tolower being used? Unde GNU/Linux it is
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
     # blatantly wrong. Maybe only needed for MS/Widnows
     
     if (isWindows()) save.name <- tolower(save.name)
@@ -1159,7 +1169,6 @@ exportRegressionTab <- function()
   }
   
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
-  
 }
 
 #------------------------------------------------------------------------
@@ -1481,7 +1490,10 @@ exportSVMTab <- function()
 
 exportModelTab <- function()
 {
-
+  # 090812 The Export button has been clicked whilst the Model tab is
+  # active. Export the active Model tpyer as appropriate (either PMML
+  # or C code, if C code export is available.)
+  
   if (noDatasetLoaded()) return()
 
   # 090518 Test if each of the variables is exportable. If not (i.e.,

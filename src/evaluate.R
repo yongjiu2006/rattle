@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-08 17:08:29 Graham Williams>
+# Time-stamp: <2009-08-20 06:21:25 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -500,17 +500,33 @@ executeEvaluateTab <- function()
   {
     testset[[crv$NNET]] <- testset0
 
-    # 090316 For a binomial target convert the 
+    # 090316 For a binomial target the output node is built with
+    # linout=TRUE, thus the value is trying to be close to 1 or 0. Use
+    # 0.5 threshold to predict it as 1 or 0. 090820 Move to doing a
+    # logistic for nnet, so that we don't use linout in the model
+    # building.
+
+    predcmd[[crv$NNET]] <- sprintf("crs$pr <- predict(crs$nnet, %s)",
+                                   testset[[crv$NNET]])
+
+    if (binomialTarget())
+      respcmd[[crv$NNET]] <- sub(")$", ', type="class")', predcmd[[crv$NNET]])
+
+#090820 REMOVE the old commented code from here once nnet is stable.
+#      predcmd[[crv$NNET]] <- sprintf("crs$pr <- as.integer(predict(crs$nnet, %s)>=0.5)",
+#                                     testset[[crv$NNET]])
+
+    else
+      respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
     
     if (binomialTarget())
-      predcmd[[crv$NNET]] <- sprintf("crs$pr <- as.integer(predict(crs$nnet, %s)>=0)",
-                                     testset[[crv$NNET]])
-    else
-      predcmd[[crv$NNET]] <- sprintf("crs$pr <- predict(crs$nnet, %s)",
-                                     testset[[crv$NNET]])
-    respcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
-    if (binomialTarget())
-      probcmd[[crv$NNET]] <- gsub(")$", ', type="raw")', predcmd[[crv$NNET]])
+#      # 090809 Change from using the pred command to using the raw
+#      # predicticed value, which is what it originally probably meant
+#      # to be.  090820 TODO Combine these two that both set to
+#      # basecmd. In fact, currently nnet is either only binomial or
+#      # numeric?
+      probcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
+#      ## gsub(")$", ', type="raw")', predcmd[[crv$NNET]])
     else if (numericTarget())
       probcmd[[crv$NNET]] <- predcmd[[crv$NNET]]
     else

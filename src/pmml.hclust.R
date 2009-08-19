@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-02-12 21:01:44 Graham Williams>
+# Time-stamp: <2009-08-13 22:26:34 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -46,7 +46,10 @@ pmml.hclust <- function(model,
 
   orig.fields <- field$name
   if (supportTransformExport(transforms))
+  {
     field <- unifyTransforms(field, transforms)
+    transforms <- activateDependTransforms(transforms)
+  }
 
   number.of.clusters <- nrow(centers)
   cluster.names <- 1:number.of.clusters

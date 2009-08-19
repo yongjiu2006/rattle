@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-25 07:58:47 Graham Williams>
+# Time-stamp: <2009-08-18 18:54:59 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -553,18 +553,19 @@ exportHClustTab <- function(file)
 ########################################################################
 # SCORE
 
-predict.hclust <- function(object, data, x, nclust=10, ...)
+predict.hclust <- function(model, data, x, nclust=10, ...)
 {
   # 090126 Initial work on a predict.hclust function, to allow using a
-  # hclust model to allocate new data to pre-existing clusters using
-  # the common model interface function, predict. This makes it easy
-  # to use the Rattle modelling code on kmeans. We use a kmeans
-  # encoding to generate the clusters. This is only an
-  # approximation. Gets pretty close for ward link and euclidean
-  # distance.
+  # hclust model to allocate new DATA to pre-existing clusters that
+  # are built from another dataset X. This uses the common model
+  # interface function, predict. This makes it easy to use the Rattle
+  # modelling code on kmeans. We use a kmeans encoding to generate the
+  # clusters. This is only an approximation. Gets pretty close for
+  # ward link and euclidean distance.
 
-  object$centers <- centers.hclust(x, object, nclust=nclust, use.median=FALSE)
-  return(predict.kmeans(object, data))
+  model$centers <- centers.hclust(x, model, nclust=nclust, use.median=FALSE)
+  rownames(model$centers) <- seq_len(nclust)
+  return(predict.kmeans(model, data))
 }
 
 genPredictHclust <- function(dataset)

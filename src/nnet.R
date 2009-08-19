@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 22:58:42 Graham Williams>
+# Time-stamp: <2009-08-20 06:03:27 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -65,6 +65,10 @@
 
 executeModelNNet <- function()
 {
+  # 090820 nnet is only supported in Rattle at the moment for numeric
+  # and binomial targets, through the Rattle interface. The
+  # multinomial target is handled through multinom under Linear.
+  
   # Initial setup. 
   
   TV <- "nnet_textview"
@@ -83,11 +87,13 @@ executeModelNNet <- function()
 
   # Build the formula for the model.
 
-  if (binomialTarget() && ! is.numeric(crs$dataset[[crs$target]]))
+#  if (binomialTarget() && ! is.numeric(crs$dataset[[crs$target]]))
     # 081010 Needs to be numeric, but I also subtract 1 so we get a
-    # 0/1 target?
-    frml <- sprintf("as.numeric(%s)-1 ~ .", crs$target)
-  else
+    # 0/1 target? 090820 But should it? It should use whatever nnet
+    # does when it has a categoric target. Then we also need to remove
+    # linout? Though again, check why linout is needed at all.
+#    frml <- sprintf("as.numeric(%s)-1 ~ .", crs$target)
+#  else
     frml <- sprintf("%s ~ .", crs$target)
   
 
@@ -117,8 +123,12 @@ executeModelNNet <- function()
                      if (including) included,
                      if (subsetting) "]",
                      # TODO 080427 How to choose a good value for size?
-                     if (numericTarget() || binomialTarget())
-                     sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
+                     # TODO 090808 Why linout for a binomial target?
+#                     if (numericTarget() || binomialTarget())
+#                     sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
+                     sprintf(", size=%d", size),
+                     if (numericTarget()) ", linout=TRUE",
+                     ", skip=TRUE",
                      ", trace=FALSE, maxit=1000",
                      ")", sep="")
 
@@ -161,6 +171,100 @@ executeModelNNet <- function()
 }
 
 exportNNetTab <- function()
+{
+  # Make sure we have a model first! 090812 DRY move all
+  # export<model>Tab fucntions to use this test instead of their
+  # individual tests. 090812 DRY Unify much more the export<model>Tab
+  # functions - they are all mostly the same, so don't repeat
+  # yourself.
+
+  if (noModelAvailable(crs$nnet, crv$NNET)) return(FALSE)
+
+  startLog("EXPORT NNET MODEL") 
+
+  save.name <- getExportSaveName(crv$NNET)
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+  
+  # 090812 DRY - make regression and rpart all the same mold.
+
+  ## REMOVE 090812 - Not consistent with rpart and regression so do we
+  ## need this?
+  ##
+  ## # Require the pmml package
+  ##
+  ## lib.cmd <- "require(pmml, quietly=TRUE)"
+  ## if (! packageIsAvailable("pmml", "export neural net")) return(FALSE)
+  ## appendLog("Load the PMML package to export a neural net.", lib.cmd)
+  ## # Load the package unless we already have a pmml defined (through source).
+  ## if (! exists("pmml")) eval(parse(text=lib.cmd))
+
+  ## REMOVE 090812 This is now handled by getExportSaveName
+  ##
+  ## # Obtain filename to write the PMML to.
+  ##
+  ## dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+  ##                                "gtk-cancel", GtkResponseType["cancel"],
+  ##                                "gtk-save", GtkResponseType["accept"])
+  ## dialog$setDoOverwriteConfirmation(TRUE)
+  ##
+  ## if(not.null(crs$dataname))
+  ##   dialog$setCurrentName(paste(get.stem(crs$dataname), "_nnet.xml", sep=""))
+  ##
+  ## ff <- gtkFileFilterNew()
+  ## ff$setName("PMML Files")
+  ## ff$addPattern("*.xml")
+  ## dialog$addFilter(ff)
+  ##
+  ## ff <- gtkFileFilterNew()
+  ## ff$setName("All Files")
+  ## ff$addPattern("*")
+  ## dialog$addFilter(ff)
+  ##
+  ## if (dialog$run() == GtkResponseType["accept"])
+  ## {
+  ##   save.name <- dialog$getFilename()
+  ##   dialog$destroy()
+  ## }
+  ## else
+  ## {
+  ##   dialog$destroy()
+  ##   return()
+  ## }
+
+  #if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
+    
+  pmml.cmd <- sprintf("pmml(crs$nnet%s)",
+                      ifelse(length(crs$transforms),
+                             ", transforms=crs$transforms", ""))
+  if (ext == "xml")
+  {
+    appendLog("Export a neural net as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    if (isWindows()) save.name <- tolower(save.name)
+
+    model.name <- sub("\\.c", "", basename(save.name))
+    appendLog("Export a neural net model as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
+                      pmml.cmd, model.name, 
+                      attr(save.name, "includePMML"),
+                      attr(save.name, "includeMetaData"),
+                      attr(save.name, "exportClass"),
+                      save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+                attr(save.name, "includePMML"),
+                attr(save.name, "includeMetaData"),
+                attr(save.name, "exportClass")), file=save.name)
+  }
+
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+}
+
+REMOVE090812exportNNetTab <- function()
 {
   # Make sure we have a model first!
   

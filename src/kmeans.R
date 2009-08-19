@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-08 23:30:15 Graham Williams>
+# Time-stamp: <2009-08-18 18:50:54 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -481,11 +481,11 @@ predict.kmeans <- function(object, data, ...)
   # support for alternative distance measures. This will be needed
   # eventually
   
-  num.clusters <- nrow(object$centers)
+  #num.clusters <- nrow(object$centers)
   cluster.names <- rownames(object$centers)
   cluster.vars <- colnames(object$centers)
-  num.rows <- nrow(data)
-  cluster.row.nums <- seq(num.rows+1, num.rows+num.clusters)
+  #num.rows <- nrow(data)
+  #cluster.row.nums <- seq(num.rows+1, num.rows+num.clusters)
 
   # 081228 Put the data first, to maintain rownames. If there are
   # conflicts in rownames then rbind creates new rownames, and this
@@ -515,6 +515,7 @@ predict.kmeans <- function(object, data, ...)
                cluster.names[which.min(apply(object$centers, 1,
                                              function(x)
                                              sqrt(sum(abs(d - x)^2))))])
+  out <- sapply(out, function(x) ifelse(length(x), x, NA))
   return(out)
 }
 

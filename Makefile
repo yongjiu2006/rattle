@@ -101,8 +101,8 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 default: local plocal ilocal
 
-.PHONY: kathy
-kathy: zip
+.PHONY: ibirstat
+ibirstat: zip
 	-diff ibi/rstat.R src >| ibi/updates
 	-diff ibi/pmml.transforms.R src >> ibi/updates
 	-diff ibi/pmmltocibi.R src >> ibi/updates

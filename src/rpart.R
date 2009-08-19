@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-06-20 16:42:17 Graham Williams>
+# Time-stamp: <2009-08-12 21:50:14 Graham Williams>
 #
 # RPART TAB
 #
@@ -969,18 +969,11 @@ exportRpartTab <- function()
 {
   # Make sure we have a model first!
   
-  if (is.null(crs$rpart))
-  {
-    errorDialog("No Tree model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
-    return()
-  }
+  if (noModelAvailable(crs$rpart, crv$RPART)) return(FALSE)
 
   startLog("EXPORT RPART TREE")
 
-  save.name <- getExportSaveName("rpart")
+  save.name <- getExportSaveName(crv$RPART)
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 
@@ -994,7 +987,6 @@ exportRpartTab <- function()
 
   if (ext == "xml")
   {
-    require(XML, quietly=TRUE)
     appendLog("Export a decision tree as PMML.",
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
@@ -1002,7 +994,11 @@ exportRpartTab <- function()
   else if (ext == "c")
   {
     # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "decision tree")
-    save.name <- tolower(save.name)
+
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+    
+    if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
     appendLog("Export a decision tree as C code for WebFocus.",
