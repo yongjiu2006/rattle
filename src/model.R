@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-12 21:50:02 Graham Williams>
+# Time-stamp: <2009-08-20 21:14:44 Graham Williams>
 #
 # MODEL TAB
 #
@@ -420,7 +420,7 @@ makeEvaluateSensitive <- function()
   
   # All known Evaluate buttons.
   
-  all.buttons <- c("confusion", "risk", "costcurve", "lift", "roc",
+  all.buttons <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
                    "precision", "sensitivity", "pvo", "score")
 
   # Automatically work out what needs to be sensistive, based on data
