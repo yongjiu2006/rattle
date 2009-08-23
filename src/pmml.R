@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-19 20:07:58 Graham Williams>
+# Time-stamp: <2009-08-24 06:12:13 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -104,7 +104,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.17" # Zementis: add Output node.
+  VERSION <- "1.2.18" # Fix export of pmml for hclust with transforms.
+  # "1.2.17" # Zementis: add Output node.
   # "1.2.16" # Support TJN (joincat).
   # "1.2.15" # Update documentation
   # "1.2.14" # Support mult transforms for rpart
