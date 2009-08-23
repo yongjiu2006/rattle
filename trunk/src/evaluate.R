@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-20 21:10:12 Graham Williams>
+# Time-stamp: <2009-08-20 21:26:08 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -2743,7 +2743,7 @@ executeEvaluateHand <- function(probcmd, testset, testname)
 
   model.list <- getEvaluateModels()
   numplots <- length(model.list)
-
+  
   for (mtype in model.list)
   {
     newPlot(6)
@@ -2752,6 +2752,7 @@ executeEvaluateHand <- function(probcmd, testset, testname)
     obsset <- sprintf('subset(%s, select=crs$target)', scoreset)
     obs <- eval(parse(text=obsset))
     x <- t(cbind(obs, result))
+    n0n1 <- ncol(x)
 
     # alpha and betad are the parameters in the beta 
     # cost distribution ~ c^alpha * (1-c)^betad
@@ -2969,8 +2970,8 @@ executeEvaluateHand <- function(probcmd, testset, testname)
     y <- dbeta(b,alpha,betad)
     plot(b,y,type= "l",xlab= "Cost ", main= "H measure weight function of c",ylab= "w(c) ")
 
-    print(sprintf("%s: H=%f, AUC=%f, Gini=%f, AUCH=%f, KS=%f\n",
-                  mtype, H, AUC, Gini, AUCH, KS))
+    cat(sprintf("%s: H=%f, AUC=%f, Gini=%f, AUCH=%f, KS=%f\n",
+                mtype, H, AUC, Gini, AUCH, KS))
   }
 
 }

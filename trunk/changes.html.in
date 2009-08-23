@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.92.
+    version is 2.4.93.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+474 090824 Bump pmml version to 1.2.18
+           Fix export of pmml for hclust with transforms.
+           Bug fix H score evaluation.
 473 090820 Add experimental (David) Hand measure for evaluation.
 472 090820 Multiple transforms for kmeans, hclust, multinom, lm, rpart models.
            Unify error checking for noModelAvailable.
@@ -1009,6 +1012,6 @@
     <COPYRIGHT>
 
 <!-- hhmts start -->
-<i>Last Modified 2009-08-20 21:18:03 Graham Williams</i>
+<i>Last Modified 2009-08-24 06:13:40 Graham Williams</i>
 <!-- hhmts end -->
   </p>

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-13 22:26:34 Graham Williams>
+# Time-stamp: <2009-08-22 06:59:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -45,9 +45,18 @@ pmml.hclust <- function(model,
   names(field$class) <- field$name
 
   orig.fields <- field$name
+
+  # 090822 Mark any categoric transforms as inactive since they won't
+  # have been used in the clustering (at least not until we automate
+  # the conversion to indicator variables.
+
+  for (i in which(sapply(transforms, function(x) x$type) %in%
+                  .TRANSFORMS.TO.CATEGORIC))
+    transforms[[i]]$status <- "inactive"
+  
   if (supportTransformExport(transforms))
   {
-    field <- unifyTransforms(field, transforms)
+    field <- unifyTransforms(field, transforms, keep.first=FALSE)
     transforms <- activateDependTransforms(transforms)
   }
 
