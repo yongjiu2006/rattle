@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-18 05:41:58 Graham Williams>
+# Time-stamp: <2009-09-02 20:34:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 20 Aug 2009"
+VERSION.DATE <- "Released 24 Aug 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -453,6 +453,7 @@ rattle <- function(csvname=NULL)
   crv$SVM   	<- "svm"
   crv$KSVM  	<- "ksvm"
   crv$NNET  	<- "nnet"
+  crv$SURVIVAL <- "survival"
 
   crv$MODELLERS <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM, crv$NNET)
   
@@ -570,7 +571,8 @@ rattle <- function(csvname=NULL)
   crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, crv$RF)
   crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, crv$SVM)
   crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, crv$NNET)
-
+  crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, crv$SURVIVAL)
+  
   crv$SVMNB           <- theWidget("svm_notebook")
   crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, "esvm")
   crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, "ksvm")

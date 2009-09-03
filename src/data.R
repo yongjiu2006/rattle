@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-06 14:52:49 Graham Williams>
+# Time-stamp: <2009-09-03 12:15:57 Graham Williams>
 #
 # DATA TAB
 #
@@ -649,6 +649,8 @@ executeDataCSV <- function(filename=NULL)
   # If no filename has been supplied give the user the option to use
   # the Rattle supplied sample dataset.
 
+  use.sample.dataset <- FALSE
+  
   if (not.null(supplied))
   {
     # 090314 Trying to get the scenario of a supplied filename
@@ -691,7 +693,8 @@ executeDataCSV <- function(filename=NULL)
     else
     {
       # 080515 Use the Rattle provided sample dataset.
-      
+
+      use.sample.dataset <- TRUE
       filename <- system.file("csv", paste(crv$sample.dataset, ".csv", sep=""),
                               package="rattle")
       theWidget("data_filechooserbutton")$setFilename(filename)
@@ -753,8 +756,15 @@ executeDataCSV <- function(filename=NULL)
   
   # Generate commands to read the data.
 
-  read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s)',
-                      filename, hdr, sep, nastring)
+  if (use.sample.dataset)
+    read.cmd <- sprintf(paste('crs$dataset <-',
+                              'read.csv(system.file("csv",',
+                              '"%s.csv", package="rattle"))'),
+                        crv$sample.dataset)
+                              
+  else
+    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s)',
+                        filename, hdr, sep, nastring)
   
   # Start logging and executing the R code.
 
@@ -848,7 +858,7 @@ updateRDataNames <- function(filename=NULL)
   eval(parse(text=load.cmd), .GlobalEnv) # Env so datasets are globally available.
   set.cursor()
   
-  # Add new dataframes to the combo box.
+  # Add new data frames to the combo box.
 
   combobox <- theWidget("data_name_combobox")
   if (not.null(crs$rdata.datasets))
@@ -1884,6 +1894,9 @@ executeSelectTab <- function()
   the.target <- sprintf("Target: %s", ifelse(is.null(target),
                                              "None", target))
 
+  the.risk <- sprintf("Event: %s", ifelse(is.null(risk),
+                                             "None", risk))
+
   theWidget("explot_target_label")$setText(the.target)
 
   theWidget("test_groupby_target_label")$setText(the.target)
@@ -1895,7 +1908,9 @@ executeSelectTab <- function()
   theWidget("ada_target_label")$setText(the.target)
   theWidget("glm_target_label")$setText(the.target)
   theWidget("nnet_target_label")$setText(the.target)
-
+  theWidget("model_survival_time_var_label")$setText(the.target) 
+  theWidget("model_survival_status_var_label")$setText(the.risk) 
+  
   # Update MODEL weights
 
   if (not.null(weights))

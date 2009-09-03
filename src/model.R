@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-20 21:14:44 Graham Williams>
+# Time-stamp: <2009-09-02 20:33:25 Graham Williams>
 #
 # MODEL TAB
 #
@@ -110,6 +110,20 @@ on_kernlab_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     crv$SVMNB$setCurrentPage(crv$SVMNB.KSVM.TAB)
+  }
+  setStatusBar()
+}
+
+on_model_survival_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    crv$MODEL$setCurrentPage(crv$MODEL.SURVIVAL.TAB)
+    # 090222 Do we really want to reset the textview? Obviously I
+    # decided to do so some time ago, so continut to do so, but call
+    # resetTextviews for this textview).
+    ## setTextview("confusion_textview")
+    resetTextviews("confusion_textview")
   }
   setStatusBar()
 }

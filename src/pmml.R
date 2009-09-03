@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-24 06:12:13 Graham Williams>
+# Time-stamp: <2009-08-30 10:28:36 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -283,12 +283,12 @@ pmmlOutput <- function(field, target=NULL)
 
   for (i in 1:number.of.fields) {
     if (field$name[i]==target) {
+          output.fields[[1]] <- xmlNode("OutputField", attrs=c(name=target, feature="predictedValue"))
+
           for (j in seq_along(field$levels[[field$name[i]]]))
-           output.fields[[j]] <- xmlNode("OutputField",
-                           attrs=c(name=paste("Probability_",
-                                     field$levels[[field$name[i]]][j],sep=""),
-                             optype="continuous",
-                           dataType = "double", feature="probability",
+           output.fields[[j+1]] <- xmlNode("OutputField",
+                           attrs=c(name=paste("Probability_", field$levels[[field$name[i]]][j],sep=""),
+                           optype="continuous", dataType = "double", feature="probability",
                            value= field$levels[[field$name[i]]][j]))
     }
   }

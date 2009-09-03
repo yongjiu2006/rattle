@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-20 06:38:33 Graham Williams>
+# Time-stamp: <2009-08-30 10:58:34 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,6 +27,9 @@
 # Author: Zementis, Inc. (www.zementis.com) E-mail: info@zementis.com
 # Date: 6 Feb 2008
 # Implements a PMML exporter for nnet objects (Neural Networks)
+#
+# 090824 gjw Instead of two output nodes should there only be one for
+# a single output node neural network?
 #
 
 # Function pmml.nnet.DataDictionary
@@ -149,12 +152,17 @@ pmml.nnet <- function(model,
   
   require(XML, quietly=TRUE)
   
-  # Collect the required information. We list all variables,
-  # irrespective of whether they appear in the final model. This seems
-  # to be the standard thing to do with PMML. It also adds extra
-  # information - i.e., the model did not need these extra variables!
+  # Collect the required information.
+
+  # 090824 The number of layers is the number of hidden layers. So it
+  # is the number of layers minus 1. The nnet function will only ever
+  # build a single-hidden-layer neural network and we might expect
+  # this to be subtract 2, not subtract 1. But the representation used
+  # here feeds the normal single output layer into another layer of
+  # two nodes
   
   number.of.neural.layers <- length(model$n) - 1
+
   field <- NULL
   if (model$call[[1]] == "nnet.formula")
   {
@@ -189,57 +197,43 @@ pmml.nnet <- function(model,
   }
   number.of.fields <- length(field$name)
   
-  ################################################################################
   # According to the nnet documentation:
-  # If the response in formula is a factor, an appropriate classification
-  # network is constructed; this has one output and entropy fit if the number
-  # of levels is two, and a number of outputs equal to the number of classes
-  # and a softmax output stage for more levels.
-  # If the response is not a factor, it is passed on unchanged to nnet.default.
+  #
+  # If the response in formula is a factor, an appropriate
+  # classification network is constructed; this has one output and
+  # entropy fit if the number of levels is two, and a number of
+  # outputs equal to the number of classes and a softmax output stage
+  # for more levels.  If the response is not a factor, it is passed on
+  # unchanged to nnet.default.
   #
   # However, we will actually export a network with two output neurons for binary
   # classification with a softmax output stage.
-  #
   
   normalization.method <- "none"
   skipLayers <- FALSE
   linearOutputUnits <- FALSE
   
-  if (length(model$call$skip) > 0)
-  {
-    if(model$call$skip == "T" || model$call$skip == "TRUE")
-    {
-      skipLayers <- TRUE
-    }
-  }
+  if (length(model$call$skip) && model$call$skip)
+    skipLayers <- TRUE
   if (model$nunits > model$nsunits)
-  {
     linearOutputUnits <- TRUE
-  }
   if (model$softmax)
-  {
     normalization.method <- "softmax"
-  }
   if (model$censored)
-  {
     stop("PMML does not support the censored variant of softmax!")
-  }
   
   # Levels
   
   if (field$class[[field$name[1]]] == "factor")
-  {
     field$levels[[field$name[1]]] <- model$lev
-  }
+
   factor_count <- 1
-  for (i in 1:number.of.inputs)
-  {
+  for (i in seq_len(number.of.inputs))
     if (field$class[[field$name[i + 1]]] == "factor")
     {
       field$levels[[field$name[i + 1]]] <- model$xlevels[[factor_count]]
       factor_count <- factor_count + 1
     }
-  }
   
   ##############################################################################
   # PMML
@@ -254,10 +248,8 @@ pmml.nnet <- function(model,
   
   pmml <- append.XMLNode(pmml, pmml.nnet.DataDictionary(field))
   
-  #############################################################################
   # PMML -> NeuralNetwork
-  
-  
+
   if (model$n[length(model$n)] == 1 && field$class[[field$name[1]]] == "factor")
   {
     temp <- number.of.neural.layers + 1
@@ -287,7 +279,7 @@ pmml.nnet <- function(model,
   # PMML -> NeuralNetwork -> MiningSchema
   
   temp = grep("as.factor", target, value = TRUE, fixed = TRUE)
-  if (length(temp) > 0)
+  if (length(temp))
   {
     tempName <- strsplit(target,"")
     endPos <- (length(tempName[[1]]) - 1)
@@ -311,9 +303,15 @@ pmml.nnet <- function(model,
                           attrs=c(numberOfInputs=as.numeric(model$n[1])))
   input_count <- 1
   factor_count <- 1
-  for (i in 1:number.of.inputs)
+
+  # 090830 We need to reference everything in terms of the terms, not
+  # field, since the node numbers will be in the order of the terms,
+  # and not fields, once transforms come into play.
+  
+  for (i in seq_len(number.of.inputs))
   {
-    if (field$class[[field$name[i+1]]] == "factor")
+    # 090830 if (field$class[[field$name[i+1]]] == "factor")
+    if (terms$dataClasses[[terms$term.labels[i]]] == "factor")
     {
       number.of.values = length(model$xlevels[[factor_count]])
       usedValues <- model$xlevels[[factor_count]]
@@ -327,7 +325,7 @@ pmml.nnet <- function(model,
                                      attrs=c(id=as.numeric(input_count)))
           input_count <- input_count + 1
           
-          fieldName <- paste("derivedNI_",terms$term.labels[i],sep="")
+          fieldName <- paste("derivedNI_", terms$term.labels[i], sep="")
           fieldName <- paste(fieldName,usedValues[j],sep="")
           
           derivedFieldNode <- xmlNode("DerivedField",
@@ -353,8 +351,16 @@ pmml.nnet <- function(model,
                                  attrs=c(id=as.numeric(input_count)))
       input_count <- input_count + 1
       
-      name <- field$name[i + 1]
-      fieldName <- paste("derivedNI_",name,sep="")
+      # 090830 Use terms rather than field. The former works because
+      # its ordering will be different to foeld once we have
+      # transforms, and the the fields no longer corresponds to the
+      # terms in the model because fields will be in original variable
+      # order, whilst terms is in original variable and then transform
+      # order. But field does not have the ransform name.
+      
+#      name <- field$name[i + 1]
+      name <- terms$term.labels[i]
+      fieldName <- paste("derivedNI_", name, sep="")
       
       derivedFieldNode <- xmlNode("DerivedField",
                                   attrs=c(name=fieldName,
@@ -377,7 +383,6 @@ pmml.nnet <- function(model,
   
   number.of.inputs <- model$n[1]
   
-  #############################################################################
   # PMML -> NeuralNetwork -> NeuralLayers
   
   wtsID <- 1
