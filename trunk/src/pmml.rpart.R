@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-13 06:47:02 Graham Williams>
+# Time-stamp: <2009-08-29 14:14:19 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -110,11 +110,18 @@ pmml.rpart <- function(model,
   
   for (i in 1:number.of.fields)
   {
-    if (field$class[[field$name[i]]] == "factor")
-      if (field$name[i] == target)
+    # 090829 Zementis Move the test for factor to inside the test for
+    # a target.  This will guarantee that for a non-string target in a
+    # classification tree model, the probability can still be output
+    # for each category.
+
+    # if (field$class[[field$name[i]]] == "factor")
+
+    if (field$name[i] == target)
         field$levels[[field$name[i]]] <- attr(model, "ylevels")
       else
-        field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
+        if (field$class[[field$name[i]]] == "factor")
+          field$levels[[field$name[i]]] <- attr(model,"xlevels")[[field$name[i]]]
   }
 
   # 090519 Identify those variables that are not used in the model. We

@@ -303,6 +303,7 @@ R4X:
 # otherwise! 090326 Modify the R script to keep a static version and
 # then regualrly updated versions.
 
+.PHONY: data
 data: package/rattle/data/audit.RData package/rattle/data/weather.RData
 
 package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
@@ -323,7 +324,7 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	cp weather.RData weatherCanberra.RData weatherSydney.RData package/rattle/data/
 	cp weather.csv weatherCanberra.csv weatherSydney.csv package/rattle/inst/csv/
 	cp weather.arff weatherCanberra.arff weatherSydney.arff package/rattle/inst/arff/
-	cp weather.csv /home/gjw/projects/togaware/www/site/rattle/
+	cp weather.csv /home/gjw/Projects/togaware/www/site/rattle/
 
 zip: local plocal ilocal
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
