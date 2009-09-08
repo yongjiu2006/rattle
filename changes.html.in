@@ -13,8 +13,10 @@
    </p>
 
 <pre>
+476 090908 Initial survival model GUI.
 475 090903 Update pmml.nnet.
-           
+           Display more generaic log of loading sample dataset.
+           Initial framework for survival model.
 474 090824 Bump pmml version to 1.2.18
            Fix export of pmml for hclust with transforms.
            Bug fix H score evaluation.

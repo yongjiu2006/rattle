@@ -62,6 +62,7 @@ R_SOURCE = \
 	src/random_forest.R \
 	src/report.R \
 	src/rpart.R \
+	src/survival.R \
 	src/test.R \
 	src/textview.R \
 	src/textminer.R \
@@ -154,6 +155,7 @@ jie:
 	src/report.R \
 	src/rpart.R \
 	src/rstat.R \
+	src/survival.R \
 	src/test.R \
 	src/textminer.R \
 	src/textview.R \

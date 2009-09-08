@@ -7244,6 +7244,7 @@ ANOVA RBF (anovadot)</property>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
+                            <property name="padding">5</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -7253,10 +7254,13 @@ ANOVA RBF (anovadot)</property>
                             <property name="can_focus">True</property>
                             <property name="hscrollbar_policy">automatic</property>
                             <property name="vscrollbar_policy">automatic</property>
+                            <property name="shadow_type">in</property>
                             <child>
-                              <widget class="GtkTextView" id="textview1">
+                              <widget class="GtkTextView" id="model_survival_textview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="editable">False</property>
+                                <property name="wrap_mode">word</property>
                               </widget>
                             </child>
                           </widget>
@@ -7639,6 +7643,20 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkCheckButton" id="survival_evaluate_checkbutton">
+                        <property name="label" translatable="yes">Survival</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">8</property>
+                      </packing>
+                    </child>
+                    <child>
                       <widget class="GtkCheckButton" id="kmeans_evaluate_checkbutton">
                         <property name="label" translatable="yes">KMeans</property>
                         <property name="visible">True</property>
@@ -7650,7 +7668,7 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">8</property>
+                        <property name="position">9</property>
                       </packing>
                     </child>
                     <child>
@@ -7665,11 +7683,8 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">9</property>
+                        <property name="position">10</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
