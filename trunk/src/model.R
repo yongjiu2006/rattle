@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-02 20:33:25 Graham Williams>
+# Time-stamp: <2009-09-07 20:29:53 Graham Williams>
 #
 # MODEL TAB
 #
@@ -262,7 +262,8 @@ commonName <- function(mtype)
                          glm="Linear",
                          linear="Linear",
                          multinom="Neural Net",
-                         nnet="Neural Net")
+                         nnet="Neural Net",
+                         survival="Survival")
   return(as.character(name.map[[mtype]]))
 }
 
@@ -545,7 +546,6 @@ resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
     theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
 }
 
-
 ## deactivateROCRPlots <- function()
 ## {
 ##   theWidget("lift_radiobutton")$setSensitive(FALSE)
@@ -652,12 +652,12 @@ executeModelTab <- function()
   }
   else if (numericTarget())
   {
-    ## setTextview("confusion_textview") # Clear any confusion table
+    # setTextview("confusion_textview") # Clear any confusion table
     resetTextviews("confusion_textview")
   }
   else
   {
-    ## setTextview("confusion_textview") # Clear any confusion table
+    # setTextview("confusion_textview") # Clear any confusion table
     resetTextviews("confusion_textview")
   }
 
@@ -683,7 +683,6 @@ executeModelTab <- function()
                    if (including) included,
                    if (subsetting) "]",
                    sep="")
-
   
   # This order of execution should correspond to the order in the
   # GUI as this makes most logical sense to the user.
@@ -789,6 +788,35 @@ executeModelTab <- function()
       theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
     else
       setStatusBar("Building", commonName(crv$NNET), "model ... failed.")
+  }
+  if (currentModelTab() == crv$SURVIVAL)
+  {
+    included <- getIncludedVariables(risk=TRUE)
+    including <- not.null(included)
+    dataset <- paste("crs$dataset",
+                     if (subsetting) "[",
+                     if (sampling) "crs$sample",
+                     if (subsetting) ",",
+                     if (including) included,
+                     if (subsetting) "]",
+                     sep="")
+    setStatusBar("Building", commonName(crv$SURVIVAL), "model ...")
+      # ?? survfit(Surv(RISK_MM, as.numeric(RainTomorrow)) ~ MinTemp, data=crs$dataset)
+    formula <- sprintf("Surv(%s, %s) ~ %s",
+                       crs$target, crs$risk, paste(crs$input, collapse=" + "))
+    crs$survival <-
+      buildModelSurvival(formula,
+                         dataset,
+                         tv=theWidget("model_survival_textview"),
+                         method=ifelse(theWidget("model_survival_km_radiobutton")$
+                           getActive(), "km", "coxph"))
+    if (not.null(crs$survival))
+    {
+      showModelSurvivalExists()
+      theWidget("survival_evaluate_checkbutton")$setActive(TRUE)
+    }
+    else
+      setStatusBar("Building", commonName(crv$SURVIVAL), "model ... failed.")
   }
   
   if (build.all)

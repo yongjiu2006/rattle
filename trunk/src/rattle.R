@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-02 20:34:20 Graham Williams>
+# Time-stamp: <2009-09-07 06:26:24 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Aug 2009"
+VERSION.DATE <- "Released 03 Sep 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -455,7 +455,8 @@ rattle <- function(csvname=NULL)
   crv$NNET  	<- "nnet"
   crv$SURVIVAL <- "survival"
 
-  crv$MODELLERS <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM, crv$NNET)
+  crv$MODELLERS <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM,
+                     crv$NNET, crv$SURVIVAL)
   
   # PACKAGE STATE VARIABLE
   
@@ -861,6 +862,7 @@ resetRattle <- function(new.dataset=TRUE)
   crs$svm      <- NULL
   crs$ksvm     <- NULL
   crs$nnet     <- NULL
+  crs$survival <- NULL
   crs$perf     <- NULL
   crs$eval     <- NULL
 
@@ -999,6 +1001,8 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("rf_target_label")$setText("No target selected")
     theWidget("svm_target_label")$setText("No target selected")
     theWidget("nnet_target_label")$setText("No target selected")
+    theWidget("model_survival_time_var_label")$setText("No time variable selected")
+    theWidget("model_survival_status_var_label")$setText("No status variable selected")
     theWidget("evaluate_risk_label")$setText("No risk variable selected")
   
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)

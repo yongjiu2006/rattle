@@ -28,6 +28,7 @@ source("textminer.R")
 source("tooltips.R")
 source("transform.R")
 source("help.R")
+source("survival.R")
 
 source("pmml.R")
 source("pmml.arules.R")
