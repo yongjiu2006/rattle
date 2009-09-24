@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-07 20:29:53 Graham Williams>
+# Time-stamp: <2009-09-19 13:29:53 Graham Williams>
 #
 # MODEL TAB
 #
@@ -230,6 +230,11 @@ on_rpart_evaluate_checkbutton_toggled <- function(button)
 }
 
 on_glm_evaluate_checkbutton_toggled <- function(button)
+{
+  resetReportType()
+}
+
+on_nnet_evaluate_checkbutton_toggled <- function(button)
 {
   resetReportType()
 }

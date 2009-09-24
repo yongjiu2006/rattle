@@ -196,13 +196,17 @@ meld:
 diff:
 	svn diff
 
+.PHONY: translations
+translations:
+	(cd package/rattle/po; make)
+
 .PHONY: install
 install: build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
-	cp changes.html.in /home/gjw/projects/togaware/www/
-	cp todo.html.in /home/gjw/projects/togaware/www/
-	(cd /home/gjw/projects/togaware/www/;\
+	cp changes.html.in /home/gjw/Projects/togaware/www/
+	cp todo.html.in /home/gjw/Projects/togaware/www/
+	(cd /home/gjw/Projects/togaware/www/;\
 	 perl -pi -e "s|Latest version [0-9\.]* |Latest version $(VERSION) |" \
 			rattle.html.in;\
 	 perl -pi -e "s|released [^\.]*\.|released $(VDATE).|" \
@@ -226,7 +230,7 @@ install: build pbuild ibuild zip rattle_src.zip # check pcheck
 	 perl -pi -e "s|pmml_[0-9\.]*tar.gz|pmml_$(PVERSION).tar.gz|g" \
 			rattle-download.html.in;\
 	 make local; lftp -f .lftp-rattle)
-	(cd /home/gjw/projects/dmsurvivor/;\
+	(cd /home/gjw/Projects/dmsurvivor/;\
 	 perl -pi -e "s|rattle_.*zip|rattle_$(VERSION).zip|g" \
 			dmsurvivor.Rnw;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
@@ -316,7 +320,7 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	cp audit.RData package/rattle/data/
 	cp audit.csv package/rattle/inst/csv/
 	cp audit.arff package/rattle/inst/arff/
-	cp audit.csv /home/gjw/projects/togaware/www/site/rattle/
+	cp audit.csv /home/gjw/Projects/togaware/www/site/rattle/
 
 package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	R --no-save --quiet < support/weather.R
@@ -346,7 +350,7 @@ html:
 	  rm -f $$m.html;\
 	done
 
-locals: clean local plocal ilocal zip
+locals: clean translations local plocal ilocal zip
 
 local: rattle_$(VERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
@@ -358,7 +362,7 @@ ilocal: rstat_$(IVERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 access:
-	grep 'rattle' /home/gjw/projects/ilisys/log
+	grep 'rattle' /home/gjw/Projects/ilisys/log
 
 python:
 	python rattle.py

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-02 15:32:14 Graham Williams>
+# Time-stamp: <2009-09-24 16:21:36 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -1856,18 +1856,18 @@ executeExploreCorrelation <- function(dataset)
   }
 
   lib.cmd <-"require(ellipse, quietly=TRUE)"
-  crscor.cmd  <- sprintf('%scrscor <- cor(%s, use="pairwise", method="%s")',
+  crscor.cmd  <- sprintf('%scrs$cor <- cor(%s, use="pairwise", method="%s")',
                          ifelse(nas, naids.cmd, ""),
                          ifelse(nas,
                                 sprintf("is.na(%s[naids])", dataset),
                                 dataset),
                          method)
   if (ordered)
-    crsord.cmd  <- paste("crsord <- order(crscor[1,])",
-                         "crscor  <- crscor[crsord, crsord]",
+    crsord.cmd  <- paste("crs$ord <- order(crs$cor[1,])",
+                         "crs$cor  <- crs$cor[crs$ord, crs$ord]",
                          sep="\n")
     
-  print.cmd   <- "print(crscor)"
+  print.cmd   <- "print(crs$cor)"
   if (nas)
   {
     print.cmd <- paste(print.cmd,
@@ -1881,9 +1881,9 @@ executeExploreCorrelation <- function(dataset)
                        sep="")
     
   }
-  plot.cmd    <- paste("plotcorr(crscor, ",
+  plot.cmd    <- paste("plotcorr(crs$cor, ",
                        'col=colorRampPalette(c("red", "white", "blue"))(11)',
-                       '[5*crscor + 6])\n',
+                       '[5*crs$cor + 6])\n',
                        genPlotTitleCmd("Correlation",
                                        ifelse(nas, "of Missing Values", ""),
                                        crs$dataname, "using", method),
