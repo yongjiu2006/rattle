@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.94.
+    version is 2.4.96.
 
    The version number is determined as 2.4.n where n is the current
    revision identified below minus 380.
    </p>
 
 <pre>
+477 090924 Ensure nnet evaluate resets the report types
+           Add initial survival model building support
+           Add initial support for translations
+           Export crscor as crs$cor so it is available in console.
 476 090908 Initial survival model GUI.
 475 090903 Update pmml.nnet.
            Display more generaic log of loading sample dataset.

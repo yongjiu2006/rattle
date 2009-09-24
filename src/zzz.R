@@ -106,12 +106,14 @@
   if (! suppressRattleWelcome)
   {
 
-    cat(sprintf(paste("Rattle: Graphical interface for data mining using R.\n",
-                      "Version %s ", COPYRIGHT, "\n", sep=""), VERSION))
+    cat(sprintf(paste(gettext("Rattle: Graphical interface for data mining using R.",
+                              domain="R-rattle"),
+                      gettext("\nVersion", domain="R-rattle"),
+                      " %s ", COPYRIGHT, "\n", sep=""), VERSION))
     if ("rattle" %in% getOption("defaultPackages"))
       rattle()
     else
-      cat(paste("Type \"rattle()\" to shake, rattle, and roll your data.\n",
-                sep=""))
+      cat(gettext("Type 'rattle()' to shake, rattle, and roll your data.\n",
+                  domain="R-rattle"))
   }
 }
