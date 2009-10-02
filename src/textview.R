@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-28 12:10:12 Graham Williams>
+# Time-stamp: <2009-10-02 11:06:45 Graham Williams>
 #
 # Textview widget support
 #
@@ -194,6 +194,7 @@ resetTextviews <- function(tv=NULL)
              "hclust_textview", "associate_textview", "rpart_textview",
              "glm_textview", "ada_textview", "rf_textview",
              "esvm_textview", "ksvm_textview", "nnet_textview",
+             "model_survival_textview",
              "confusion_textview", "risk_textview", "roc_textview"),
            resetTextview)
   

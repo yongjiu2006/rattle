@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-19 13:29:53 Graham Williams>
+# Time-stamp: <2009-10-02 10:51:52 Graham Williams>
 #
 # MODEL TAB
 #
@@ -239,6 +239,12 @@ on_nnet_evaluate_checkbutton_toggled <- function(button)
   resetReportType()
 }
 
+on_survival_evaluate_checkbutton_toggled <- function(button)
+{
+  makeEvaluateSensitive()
+  resetReportType()
+}
+
 on_kmeans_evaluate_checkbutton_toggled <- function(button)
 {
   makeEvaluateSensitive()
@@ -430,161 +436,6 @@ resetReportType <- function()
   ##   theWidget("score_probability_radiobutton")$setSensitive(FALSE)
   ## }
 }
-
-makeEvaluateSensitive <- function()
-{
-  # 080821 Make all the appropriate Evaluate options sensitive. This
-  # should be the one place where this is decided, and this is then
-  # called from the callbacks whenever any of the model type buttons
-  # is toggled.
-  
-  # All known Evaluate buttons.
-  
-  all.buttons <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
-                   "precision", "sensitivity", "pvo", "score")
-
-  # Automatically work out what needs to be sensistive, based on data
-  # type of the target plus whether kmeans or hclust is active and
-  # selected.
-
-  if (is.null(crs$target))
-    buttons <- c("score")
-  else if (multinomialTarget())
-    buttons <- c("confusion", "score")
-  else if (numericTarget())
-    buttons <- c("risk", "pvo", "score") # 090802 Try risk charts for numeric output
-  # 090222 If it is a binomial target then do not allow Pr v Ob since
-  #  the target might be categoric and the display makes no sense (and
-  #  fails with the jitter function.
-  else if (binomialTarget() && is.factor(crs$dataset[,crs$target]))
-    buttons <- setdiff(all.buttons, "pvo")
-  else
-    buttons <- all.buttons
-
-  if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
-      theWidget("hclust_evaluate_checkbutton")$getActive())
-    buttons <- c("score")
-
-  # Need to handle the Risk button specially. Only enable it if there
-  # is a risk variable. 081002 But the plotRisk function actually
-  # works just fine when there is no risk variable, so let it plot
-  # such.
-  
-###   if ("risk" %in% buttons)
-###   {
-###     theWidget("risk_radiobutton")$
-###     setSensitive(length(getSelectedVariables("risk")) != 0)
-###     buttons <- setdiff(buttons, "risk")
-###     all.buttons <- setdiff(all.buttons, "risk")
-###   }
-
-  # Enable each of the specified evaluate buttons.
-
-  for (b in buttons)
-    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(TRUE)
-
-  # Disable each of the buttons not specified and make sure none are
-  # set as active.
-
-  for (b in setdiff(all.buttons, buttons))
-  {
-    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(FALSE)
-    theWidget(paste(b, "_radiobutton", sep=""))$setActive(FALSE)
-  }
-
-  # Need a button to be set as default. Use the first in the list.
-  
-  if (length(buttons) > 0)
-    theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
-
-###   # 081206 Handle the sensitivity of the new Report options: Class and
-###   # Probability. These are only available if one of the non-cluster
-###   # models is active.
-
-###   if (existsCategoricModel())
-###   {
-###     theWidget("score_report_label")$setSensitive(TRUE)
-###     theWidget("score_class_radiobutton")$setSensitive(TRUE)
-###     theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-###   }
-###   else
-###   {
-###     theWidget("score_report_label")$setSensitive(FALSE)
-###     theWidget("score_class_radiobutton")$setSensitive(FALSE)
-###     theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-###   }
-}
-
-resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
-{
-  if (action %in% c("predictive_inactive", "all_inactive"))
-  {
-    theWidget("rpart_evaluate_checkbutton")$setActive(seton)
-    theWidget("ada_evaluate_checkbutton")$setActive(seton)
-    theWidget("rf_evaluate_checkbutton")$setActive(seton)
-    theWidget("ksvm_evaluate_checkbutton")$setActive(seton)
-    theWidget("glm_evaluate_checkbutton")$setActive(seton)
-    theWidget("nnet_evaluate_checkbutton")$setActive(seton)
-    theWidget("mars_evaluate_checkbutton")$setActive(seton)
-  }
-  if (action %in% c("descriptive_inactive", "all_inactive"))
-  {
-    theWidget("kmeans_evaluate_checkbutton")$setActive(seton)
-    theWidget("hclust_evaluate_checkbutton")$setActive(seton)
-  }
-  if (action %in% c("predictive_insensitive", "all_insensitive"))
-  {
-    theWidget("rpart_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("ada_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("rf_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("ksvm_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("glm_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("nnet_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("mars_evaluate_checkbutton")$setSensitive(seton)
-  }
-  if (action %in% c("descriptive_insensitive", "all_insensitive"))
-  {
-    theWidget("kmeans_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("hclust_evaluate_checkbutton")$setSensitive(seton)
-  }
-  if (!is.null(default))
-    theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
-}
-
-## deactivateROCRPlots <- function()
-## {
-##   theWidget("lift_radiobutton")$setSensitive(FALSE)
-##   theWidget("roc_radiobutton")$setSensitive(FALSE)
-##   theWidget("precision_radiobutton")$setSensitive(FALSE)
-##   theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-##   theWidget("risk_radiobutton")$setSensitive(FALSE)
-##   theWidget("costcurve_radiobutton")$setSensitive(FALSE)
-
-##   if (numericTarget())
-##   {
-##     theWidget("score_radiobutton")$setActive(TRUE)
-##     theWidget("confusion_radiobutton")$setSensitive(FALSE)
-##   }
-##   else if (multinomialTarget())
-##   {
-##     theWidget("confusion_radiobutton")$setActive(TRUE)
-##     theWidget("confusion_radiobutton")$setSensitive(TRUE)
-##     theWidget("pvo_radiobutton")$setSensitive(FALSE)
-##   }
-## }
-
-## activateROCRPlots <- function()
-## {
-##   theWidget("confusion_radiobutton")$setActive(TRUE)
-##   theWidget("confusion_radiobutton")$setSensitive(TRUE)
-##   theWidget("lift_radiobutton")$setSensitive(TRUE)
-##   theWidget("roc_radiobutton")$setSensitive(TRUE)
-##   theWidget("precision_radiobutton")$setSensitive(TRUE)
-##   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-##   theWidget("risk_radiobutton")$setSensitive(length(getSelectedVariables("risk")) != 0)
-##   theWidget("costcurve_radiobutton")$setSensitive(TRUE)
-##   theWidget("pvo_radiobutton")$setSensitive(TRUE)
-## }
 
 ########################################################################
 # EXECUTE MODEL TAB
@@ -813,8 +664,8 @@ executeModelTab <- function()
       buildModelSurvival(formula,
                          dataset,
                          tv=theWidget("model_survival_textview"),
-                         method=ifelse(theWidget("model_survival_km_radiobutton")$
-                           getActive(), "km", "coxph"))
+                         method=ifelse(theWidget("model_survival_para_radiobutton")$
+                           getActive(), "para", "coxph"))
     if (not.null(crs$survival))
     {
       showModelSurvivalExists()

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-18 16:39:15 Graham Williams>
+# Time-stamp: <2009-09-25 16:18:45 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -657,12 +657,16 @@ printRandomForest <- function(model, n=1, include.class=NULL,
   {
     tr.path <- tr.paths[[i]]
     nodenum <- as.integer(names(tr.paths[i]))
+    # 090925 This needs work to make it apply in the case of a
+    # regression model. For now simply note this in the output.
     target <- levels(model$y)[tr[nodenum,'prediction']]
 
     if (! is.null(include.class) && target %notin% include.class) next()
     
-    cat(sprintf("%sTree %d Rule %d Node %d Decision %s\n\n",
-                comment, n, i, nodenum, target))
+    cat(sprintf("%sTree %d Rule %d Node %d %s\n\n",
+                comment, n, i, nodenum,
+                ifelse(is.null(target), "Regression (to do - extract predicted value)",
+                       paste("Decision", target))))
 
     if (format=="VB") cat("ELSE IF TRUE\n")
 

@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2008-05-03 15:20:38 Graham Williams>
+## Time-stamp: <2009-10-02 11:04:44 Graham Williams>
 ##
 ## Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -152,6 +152,8 @@ drawTreesAdaGui <- function()
 
 setGuiDefaultsAda <- function(stumps=FALSE)
 {
+  theWidget("ada_target_label")$setText("No target selected")
+  
   if (stumps)
   {
     theWidget("ada_maxdepth_spinbutton")$setValue(1)

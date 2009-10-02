@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-07 06:26:24 Graham Williams>
+# Time-stamp: <2009-10-02 11:04:28 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "4"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-380
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 08 Sep 2009"
+VERSION.DATE <- "Released 24 Sep 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -931,7 +931,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("model_tree_rpart_weights_label")$
     setText("")
 
-    # Reset Test tab
+    # Reset Test
 
     theWidget("test_distr_radiobutton")$setActive(TRUE)
     theWidget("test_vars1_combobox")$getModel()$clear()
@@ -943,7 +943,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("test_groupby_checkbutton")$setSensitive(TRUE)
     theWidget("test_groupby_target_label")$setSensitive(TRUE)
     
-    # Reset Cluster
+    # Reset Describe -> Cluster -> KMeans
 
     theWidget("kmeans_clusters_spinbutton")$setValue(10)
     theWidget("kmeans_seed_spinbutton")$setValue(123)
@@ -952,6 +952,8 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("kmeans_data_plot_button")$setSensitive(FALSE)
     theWidget("kmeans_discriminant_plot_button")$setSensitive(FALSE)
 
+    # Reset Describe -> Cluster -> HClust
+
     theWidget("hclust_clusters_spinbutton")$setValue(10)
     theWidget("hclust_nbproc_spinbutton")$setValue(1)
     theWidget("hclust_dendrogram_button")$setSensitive(FALSE)
@@ -959,7 +961,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("hclust_data_plot_button")$setSensitive(FALSE)
     theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
     
-    # Reset Model -> Tree -> RPart
+    # Reset Predict -> Tree -> RPart
   
     theWidget("model_tree_priors_entry")$setText("")
     theWidget("model_tree_loss_entry")$setText("")
@@ -971,19 +973,23 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("model_tree_rpart_radiobutton")$setActive(TRUE)
     showModelRPartExists()
 
-    # Reset MODEL:ADA
+    # Reset Predict -> ADA
   
     showModelAdaExists()
     setGuiDefaultsAda()
   
-    # Reset MODEL:RF
+    # Reset Predict -> RF
   
     showModelRFExists()
 
-    # Reset MODEL:SVM
+    # Reset Predict -> SVM
 
     setGuiDefaultsSVM()
 
+    # Reset Predict -> Survival
+
+    setGuiDefaultsSurvival()
+    
     # Update EXPLORE, MODEL and EVALUATE targets
 
     theWidget("explot_target_label")$setText("No target selected")
@@ -997,12 +1003,10 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("glm_target_label")$setText("No target selected")
     theWidget("rpart_target_label")$setText("No target selected")
     ##theWidget("gbm_target_label")$setText("No target selected")
-    theWidget("ada_target_label")$setText("No target selected")
     theWidget("rf_target_label")$setText("No target selected")
     theWidget("svm_target_label")$setText("No target selected")
     theWidget("nnet_target_label")$setText("No target selected")
-    theWidget("model_survival_time_var_label")$setText("No time variable selected")
-    theWidget("model_survival_status_var_label")$setText("No status variable selected")
+
     theWidget("evaluate_risk_label")$setText("No risk variable selected")
   
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)

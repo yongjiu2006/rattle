@@ -14,6 +14,11 @@ lattice.
 
 <h2>Specific Suggestions</h2>
 <pre>
+090929 Rattle View data with many columns has issues (Liyin Xue)
+090928 Add in a tutorial mode - cf log tab (Tony Nolan)
+090928 Extend printRFRules for regression (Michael Fogliani)
+081222 Add CSV Separator and Header information to filechooser instead of tab
+
 090512 Clustering via fuzzy c-means (e1071) algorithm (Iliya Georgiev)
 090109 Add RVM (as cf SVM) (Gabriel Ibarra)
 090109 Allow a SQL select to choose the data you want (Eberhard W. Lisse)
@@ -23,6 +28,10 @@ lattice.
 090124 Explore using igraph (Rado)
 090304 Use Weights in correlation and cluster analysis (Al Jones)
 
+080131 Add earth to Rattle (William Bert Craytor)
+080528 Migrate rattle from libglade to GtkBuilder
+       http://www.micahcarrick.com/12-24-2007/gtk-glade-tutorial-part-1.html
+       http://www.micahcarrick.com/05-30-2008/gtk-builder-libglade-faq.html
 080416 Log transform +ve/-ve (Linday Clayton)
 080416 C-stat eval for interval target (Linda Clayton)
 080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
@@ -46,7 +55,6 @@ lattice.
        http://cheminfo.informatics.indiana.edu/~rguha/code/R/
 080512 Fix scoring for multiple class classification
 080513 Introduce Ensemble scoring to add scores together (see NetFlix).
-080504 Allow risk charts without a RISK identified
 080427 Fix Draw of decision tree for Regression
 080512 Notice $ amounts and , in thousands and treat as numeric (Tony Nolan)
 080521 Use dprep's ce.impute to impute: mean, median, knn
@@ -75,7 +83,6 @@ lattice.
        lay behind the model whose performance is being plotted.
 080418 Load rattle script files (.ras) for data, score, test:
 080418 Allow txt score file (perhaps automatic if training data is txt)
-080415 Fix about Quit button
 080408 Transform Tab, "Filter" textbox for rows to keep
 080330 After Transform refreshes list, keep same selections?
 080318 Migrate all global variables into the crv$ structure - avoid warnings
