@@ -7191,34 +7191,37 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="model_survival_km_radiobutton">
-                                <property name="label" translatable="yes">Kaplan-Meier</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkRadioButton" id="model_survival_coxph_radiobutton">
                                 <property name="label" translatable="yes">Cox Proportional Hazards</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="yalign">0.43999999761581421</property>
+                                <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <property name="group">model_survival_km_radiobutton</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="model_survival_para_radiobutton">
+                                <property name="label" translatable="yes">Parametric</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">model_survival_coxph_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">3</property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                           </widget>
                           <packing>
@@ -7651,6 +7654,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_survival_evaluate_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

@@ -204,9 +204,9 @@ translations:
 install: build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
-	cp changes.html.in /home/gjw/Projects/togaware/www/
-	cp todo.html.in /home/gjw/Projects/togaware/www/
-	(cd /home/gjw/Projects/togaware/www/;\
+	cp changes.html.in /home/gjw/Projects/Togaware/www/
+	cp todo.html.in /home/gjw/Projects/Togaware/www/
+	(cd /home/gjw/Projects/Togaware/www/;\
 	 perl -pi -e "s|Latest version [0-9\.]* |Latest version $(VERSION) |" \
 			rattle.html.in;\
 	 perl -pi -e "s|released [^\.]*\.|released $(VDATE).|" \
@@ -320,7 +320,7 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	cp audit.RData package/rattle/data/
 	cp audit.csv package/rattle/inst/csv/
 	cp audit.arff package/rattle/inst/arff/
-	cp audit.csv /home/gjw/Projects/togaware/www/site/rattle/
+	cp audit.csv /home/gjw/Projects/Togaware/www/site/rattle/
 
 package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	R --no-save --quiet < support/weather.R
@@ -330,7 +330,7 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	cp weather.RData weatherCanberra.RData weatherSydney.RData package/rattle/data/
 	cp weather.csv weatherCanberra.csv weatherSydney.csv package/rattle/inst/csv/
 	cp weather.arff weatherCanberra.arff weatherSydney.arff package/rattle/inst/arff/
-	cp weather.csv /home/gjw/Projects/togaware/www/site/rattle/
+	cp weather.csv /home/gjw/Projects/Togaware/www/site/rattle/
 
 zip: local plocal ilocal
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \

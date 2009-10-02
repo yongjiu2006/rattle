@@ -187,6 +187,13 @@ talking about only two dimensional data) that separates the classes.
 Build a model that is based on the idea of multiple layers of neurons
 connected to each other, feeding the numeric data through the network,
 combining the numbers, to produce a final answer.</textview>
+  <textview widget="model_survival_textview">SURVIVAL REGRESSION MODEL
+
+Build a regression model taking into account the censoring of the
+data. Censoring is the phenomenon of having data relating to some
+event occurring, but at the point of time when the data was
+collected, we do not know whether that event might occur to others
+in the data. That event might be death.</textview>
   <textview widget="confusion_textview">ERROR MATRIX
 
 An error matrix shows the true outcomes against the predicted

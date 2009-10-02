@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-09-17 05:59:22 Graham Williams>
+# Time-stamp: <2009-10-02 16:09:11 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -19,7 +19,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
 
-buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("km", "coxph"))
+########################################################################
+# GUI
+
+setGuiDefaultsSurvival <- function()
+{
+  theWidget("model_survival_time_var_label")$setText("No time variable selected")
+  theWidget("model_survival_status_var_label")$setText("No status variable selected")
+  theWidget("model_survival_coxph_radiobutton")$setActive(TRUE)
+}
+
+########################################################################
+# Model Tab
+
+buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxph"))
 {
   # If tv is not NULL, then we will be updating the textview object as
   # we proceed, as well as sending information to the log. The aim is
@@ -40,9 +53,9 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("km", "coxph"
   if (gui) appendLog("Require the survival package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  # Build a model.
+  # Build a model. 
 
-  method <- ifelse(method=="km", "survfit", "coxph")
+  method <- ifelse(method=="para", "survreg", "coxph")
   model.cmd <- sprintf("%s(%s, data=%s)", method, formula, dataset)
 
   if (gui) appendLog("Build the Survival model.",
@@ -74,7 +87,7 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("km", "coxph"
 
   if (gui)
   {
-    print.cmd <- paste("print(crs$survival)", "summary(crs$survival)", sep="\n")
+    print.cmd <- "summary(crs$survival)"
     appendLog("Print the results of the modelling.", print.cmd)
     resetTextview(tv, tvsep=FALSE,
                   sprintf("Summary of the Survival model (built using %s):\n\n", method),
@@ -105,3 +118,34 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
   {
   }
 }
+
+########################################################################
+# Evaluate
+
+genPredictSurvival <- function(dataset, coxph=FALSE)
+{
+  # Generate a command to obtain the prediction results when applying
+  # the model to new data. 091002 Don't use the coxph yet until it is
+  # better understood.
+  
+  return(sprintf("crs$pr <- predict(crs$survival, %s%s)", dataset,
+                 ifelse(coxph, ', type="expected"', "")))
+}
+
+genResponseSurvival <- function(dataset)
+{
+  # Generate a command to obtain the response when applying the model
+  # to new data.
+  
+  return(genPredictSurvival(dataset))
+}
+
+genProbabilitySurvival <- function(dataset)
+{
+  # Generate a command to obtain the probability when applying the
+  # model to new data.
+  
+  return(sprintf("%s[,2]", gsub(")$", ', type="prob")',
+                                genPredictSurvival(dataset))))
+}
+
