@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-24 16:21:36 Graham Williams>
+# Time-stamp: <2009-10-05 10:10:57 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -411,7 +411,8 @@ executeExplorePlot <- function(dataset,
                                benplots = getSelectedVariables("benplot"),
                                barplots = getSelectedVariables("barplot"),
                                dotplots = getSelectedVariables("dotplot"),
-                               mosplots = getSelectedVariables("mosplot"))
+                               mosplots = getSelectedVariables("mosplot"),
+                               stratify=TRUE)
 {
   # Plot the data. The DATASET is a character string that defines the
   # dataset to use. Information about what variables to plot and the
@@ -543,6 +544,12 @@ executeExplorePlot <- function(dataset,
       return()
 
   #---------------------------------------------------------------------
+  # 091005 If no plots are specified then generate a matrix of scatter
+  # plots following the example in the pairs function.
+  
+  if (total.plots == 0) displayPairsPlot(dataset)
+
+  #---------------------------------------------------------------------
 
   if (nboxplots > 0)
   {
@@ -590,10 +597,11 @@ executeExplorePlot <- function(dataset,
       cols <- "col=rainbow(%d),"
     
     plot.cmd <- paste('bp <<- boxplot(dat ~ grp, ds,',
-                     sprintf(cols, length(targets)+1),
-                     ifelse(is.null(targets), "",
-                            sprintf('xlab="%s",', target)),
-                     'notch=TRUE)')
+                      sprintf(cols, length(targets)+1),
+                      ifelse(is.null(targets), "",
+                             sprintf('xlab="%s",', target)),
+                      'ylab="%s",',
+                      'notch=TRUE)')
 
     # Based on an example from Jim Holtman on r-help 070406.
     
@@ -652,10 +660,11 @@ executeExplorePlot <- function(dataset,
 
       if (pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
-      
+
+      this.plot.cmd <- sprintf(plot.cmd, boxplots[s])
       appendLog("Plot the data, grouped appropriately.",
-                gsub("<<", "<", plot.cmd))
-      eval(parse(text=plot.cmd))
+                gsub("<<", "<", this.plot.cmd))
+      eval(parse(text=this.plot.cmd))
 
       # Add a value for the mean to each boxplot.
       
@@ -763,7 +772,7 @@ executeExplorePlot <- function(dataset,
     # http://www.math.leidenuniv.nl/~gill/teaching/statistics/histogram.pdf
     # So let's use the Freedman and Diaconis approach.
     
-    plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="", ',
+    plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="%s", ',
                       # cols,
                       'col="grey90"',
                       ', ylim=c(0, %s)', #', ceiling(maxy), ')',
@@ -774,7 +783,7 @@ executeExplorePlot <- function(dataset,
                       'lines(dens$x, dens$y*rs, type="l", ',
                       sprintf(cols, length(targets)+1), '[1])',
                       sep="")
-    if (length(targets))
+    if (stratify && length(targets))
     {
       # 090524 REMOVE
 #      preplot.cmd <- paste(preplot.cmd, "\n",
@@ -799,7 +808,7 @@ executeExplorePlot <- function(dataset,
                         sep="")
     }
 
-    if (length(targets))
+    if (stratify && length(targets))
     {
       rug.cmd <- paste(sprintf('rug(ds[ds$grp=="%s", 1], %s[%s])', targets,
                                sprintf(cols, length(targets)+1),
@@ -893,12 +902,12 @@ executeExplorePlot <- function(dataset,
 
         # 090524 Note the sprintf here, to dynamically specify the max
         # y value for each individual plot.
-        
-        appendLog("Plot the data.", sprintf(plot.cmd, maxy))
-        eval(parse(text=sprintf(plot.cmd, round(maxy))))
+
+        appendLog("Plot the data.", sprintf(plot.cmd, hisplots[s], maxy))
+        eval(parse(text=sprintf(plot.cmd, hisplots[s], round(maxy))))
         appendLog("Add a rug to illustrate density.", rug.cmd)
         eval(parse(text=rug.cmd))
-        if (length(targets))
+        if (stratify && length(targets))
         {
           # 090524 REMOVE
 #          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
@@ -916,7 +925,7 @@ executeExplorePlot <- function(dataset,
       title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
                                            hisplots[s],
                                            ifelse(sampling, " (sample)",""),
-                                           ifelse(length(targets),
+                                           ifelse(stratify && length(targets),
                                                   paste("\nby", target), "")))
       appendLog("Add a title to the plot.", title.cmd)
       eval(parse(text=title.cmd))
@@ -943,9 +952,10 @@ executeExplorePlot <- function(dataset,
         col <- rainbow(length(targets)+1)
       
       plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
-                       sprintf('col="%s",', col[1]),
-                       'xlab="",',
-                       'subtitles=FALSE)\n')
+                        sprintf('col="%s",', col[1]),
+                        'xlab="%s",',
+                        'ylab=expression(Proportion <= x),',
+                        'subtitles=FALSE)\n')
       if (not.null(targets))
         for (t in seq_along(targets))
         {
@@ -988,8 +998,9 @@ executeExplorePlot <- function(dataset,
       appendLog("Use Ecdf from the Hmisc package.", lib.cmd)
       eval(parse(text=lib.cmd))
 
-      appendLog("Plot the data.", plot.cmd)
-      eval(parse(text=plot.cmd))
+      this.plot.cmd <- sprintf(plot.cmd, cumplots[s])
+      appendLog("Plot the data.", this.plot.cmd)
+      eval(parse(text=this.plot.cmd))
       title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s%s",
                                            cumplots[s],
                                            ifelse(sampling, " (sample)",""),
@@ -1363,8 +1374,9 @@ executeExplorePlot <- function(dataset,
         
         maxFreq <- max(ds)
         plot.cmd <- sprintf(paste('barplot2(ds[,ord], beside=TRUE,',
-                                 'ylim=c(0, %d), col=%s)'),
-                           round(maxFreq+maxFreq*0.20), cols)
+                                  'ylab="Frequency", xlab="%s",',
+                                  'ylim=c(0, %d), col=%s)'),
+                            barplots[s], round(maxFreq+maxFreq*0.20), cols)
         appendLog("Plot the data.", paste("bp <- ", plot.cmd))
         bp <- eval(parse(text=plot.cmd))
 
@@ -1665,13 +1677,13 @@ executeExplorePlot <- function(dataset,
 
       plot.cmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
                                'col=rev(%s),%s',
-                               'xlab="Frequency", pch=19)'),
+                               'xlab="Frequency", ylab="%s", pch=19)'),
                           # 090525 reverse the row order to get the
                           # order I want in the dot chart - start with
                           # All, and then the rest. It is not clear
                           # wht dotplots does this.
                          "ds[nrow(ds):1,ord]", titles[1], titles[2], cols,
-                         ifelse(is.null(target), "", ' labels="",'))
+                         ifelse(is.null(target), "", ' labels="",'), dotplots[s])
       appendLog("Plot the data.", plot.cmd)
       eval(parse(text=plot.cmd))
 
@@ -1747,10 +1759,12 @@ executeExplorePlot <- function(dataset,
       cols <- "color=rainbow(%d)"
 
     plot.cmd <- sprintf(paste('mosaicplot(ds[ord%s], main="%s", sub="%s", ',
-                              cols, '%s, cex=0.7)', sep=""),
+                              cols, '%s, cex=0.7, xlab="%s", ylab="%s")',
+                              sep=""),
                         ifelse(is.null(target), "", ","),
                         titles[1], titles[2], length(targets)+1,
-                        ifelse(is.null(target), "", "[-1]"))
+                        ifelse(is.null(target), "", "[-1]"),
+                        mosplots[s], target)
     appendLog("Plot the data.", plot.cmd)
     eval(parse(text=plot.cmd))
   }
@@ -1762,7 +1776,71 @@ executeExplorePlot <- function(dataset,
   else if (total.plots ==  1)
     setStatusBar("One plot generated.")
   else
-    setStatusBar("No plots selected.")
+    setStatusBar("Pairs plot generated.")
+}
+
+displayPairsPlot <- function(dataset)
+{
+  # 091005 Given a dataset (a string that evaluates to a data frame)
+  # generate a pairs plot with the upper panel being a scatter plot
+  # matrix, the diagonal being histograms, and the lower panel showing
+  # correlations.
+  #
+  # If there are more than 6 input/target/risk variables, then
+  # randomly sample down to 6 since larger than that is harder to
+  # read.
+
+  newPlot(1)
+  
+  # We use a couple of helper functions from the pairs help page.
+  
+  pre.cmd <- 'panel.hist <- function(x, ...)
+{
+   usr <- par("usr"); on.exit(par(usr))
+   par(usr = c(usr[1:2], 0, 1.5) )
+   h <- hist(x, plot = FALSE)
+   breaks <- h$breaks; nB <- length(breaks)
+   y <- h$counts; y <- y/max(y)
+   rect(breaks[-nB], 0, breaks[-1], y, col="cyan", ...)
+}
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
+{
+   usr <- par("usr"); on.exit(par(usr))
+   par(usr = c(0, 1, 0, 1))
+   r <- abs(cor(x, y, use="complete"))
+   txt <- format(c(r, 0.123456789), digits=digits)[1]
+   txt <- paste(prefix, txt, sep="")
+   if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+   text(0.5, 0.5, txt, cex = cex.cor * r)
+}'
+
+  # Determine the variables to display.
+
+  vars <- c(getVariableIndicies(crs$input),
+            getVariableIndicies(crs$target),
+            getVariableIndicies(crs$risk))
+  if (length(vars) <= 6)
+    vars <- ""
+  else
+  {
+    vars <- simplifyNumberList(sort(sample(vars, 6)))
+  }
+
+  # The plot command is the pairs function from the graphics package
+  # (and hence always available).
+
+  plot.cmd <- paste(sprintf("pairs(%s[%s],", dataset, vars),
+                    "diag.panel=panel.hist,",
+                    "upper.panel=panel.smooth,",
+                    "lower.panel=panel.cor)")
+
+  startLog()
+  appendLog("SCATTER PLOT")
+  appendLog("Support functions for the plot.", pre.cmd)
+  eval(parse(text=pre.cmd))
+  appendLog(paste("Display a pairs (scatter) plot. Note random selection of variables",
+                  "if there are more than 6."), plot.cmd)
+  eval(parse(text=plot.cmd))
 }
   
 executeExploreGGobi <- function(dataset, name=NULL)

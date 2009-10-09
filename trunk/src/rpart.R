@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-12 21:50:14 Graham Williams>
+# Time-stamp: <2009-10-03 08:01:38 Graham Williams>
 #
 # RPART TAB
 #
@@ -981,7 +981,7 @@ exportRpartTab <- function()
   # so we have to run the save/write command separately, i.e., not
   # inside the string that is being parsed.
   
-  pmml.cmd <- sprintf("pmml(crs$rpart%s)",
+  pmml.cmd <- sprintf("pmml(crs$rpart%s, dataset=crs$dataset)",
                       ifelse(length(crs$transforms),
                              ", transforms=crs$transforms", ""))
 

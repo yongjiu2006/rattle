@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-03 12:15:57 Graham Williams>
+# Time-stamp: <2009-10-05 08:26:25 Graham Williams>
 #
 # DATA TAB
 #
@@ -2997,10 +2997,10 @@ getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE, targe
 
 inputVariables <- function(numonly=FALSE)
 {
-  ## Return, as a comma separated list (as a string) the list of input
-  ## variable indicies. If the list contains all variables except for
-  ## the target variable, then return NULL (as the dataset does not then
-  ## need to be indexed to subset the variables).
+  # Return, as a comma separated list (as a string), the list of input
+  # variable indicies. If the list contains all variables except for
+  # the target variable, then return NULL (as the dataset does not then
+  # need to be indexed to subset the variables).
 
   fi <- getVariableIndicies(crs$input)
   ti <- getVariableIndicies(crs$target)

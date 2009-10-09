@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-29 14:14:19 Graham Williams>
+# Time-stamp: <2009-10-03 08:12:04 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -24,19 +24,21 @@
 ########################################################################
 # rpart PMML exporter
 #
-# Original: by Togaware
-# 
-# Updated: updated regression tree, 
-#          added ScoreDistribution, missingValueStrategy 
-#          by Zementis, Inc. in June 2008
-#           
-# Updated: updated by Zementis Inc. to add Output element in July 2009
+# Original by Togaware
+# Updated by Zementis 080605 to add ScoreDistribution, missingValueStrategy 
+# Updated by Zementis 090705 to add Output element
+# Updated by Togaware 091003 to add other attributes to Output element
+#
+# To Do
+#   Add the optional ModelStats, ModelExplanation and ModelVerification elements
+
 pmml.rpart <- function(model,
                        model.name="RPart_Model",
                        app.name="Rattle/PMML",
                        description="RPart Decision Tree Model",
                        copyright=NULL,
                        transforms=NULL,
+                       dataset=NULL,
                         ...)
 {
   if (! inherits(model, "rpart")) stop("Not a legitimate rpart object")
@@ -150,7 +152,7 @@ pmml.rpart <- function(model,
 
   # PMML -> DataDictionary
 
-  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field, dataset))
 
   # PMML -> TreeModel
 
@@ -164,11 +166,14 @@ pmml.rpart <- function(model,
   
   the.model <- append.XMLNode(the.model, pmmlMiningSchema(field, target, inactive))
 
-  #########################################
-  #  OUTPUT
-  the.model <- append.XMLNode(the.model, pmmlOutput(field,target))
+  # PMML -> TreeModel -> Output
+  
+  the.model <- append.XMLNode(the.model,
+                              pmmlOutput(field, target,
+                                         switch(function.name,
+                                                classification="categorical",
+                                                regression="continuous")))
 
-  ############################################################################
   # PMML -> TreeModel -> LocalTransformations -> DerivedField -> NormContiuous
 
   if (supportTransformExport(transforms))

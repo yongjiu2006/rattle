@@ -13,6 +13,16 @@
    </p>
 
 <pre>
+479 091009 Add an intro msg to Status bar on starting Rattle
+    	   If no plots selected in Distribution, then generate a scatter plot matrix
+	   Ensure all plots have appropriate X and Y labels.
+           Bump pmml version to 1.2.19
+	   Fixes some PMML conformance issues:
+	     Timestamp is not an extension in the header.
+	     Add Interval elements to DataField if dataset known (rpart only for now)
+	     Add a dataType to OutputField if it is known
+	     Logistic - include two RegressionTables - second for the alternative target
+
 478 091002 Fix survival GUI issues
            Implement parametric regression for survival
            Implement Evalaute for survival model - currently only Score

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-02 11:04:28 Graham Williams>
+# Time-stamp: <2009-10-04 17:04:55 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -1073,6 +1073,10 @@ resetRattle <- function(new.dataset=TRUE)
   theWidget("hclust_stats_button")$setSensitive(FALSE)
   theWidget("hclust_data_plot_button")$setSensitive(FALSE)
   theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
+
+  setStatusBar(paste("To Begin: Choose the Type of data source,",
+                     "specifically identify the source,",
+                     "then click the Execute button."))
   
 }
 
