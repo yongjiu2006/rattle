@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-10-02 16:09:11 Graham Williams>
+# Time-stamp: <2009-10-12 20:07:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -129,23 +129,23 @@ genPredictSurvival <- function(dataset, coxph=FALSE)
   # better understood.
   
   return(sprintf("crs$pr <- predict(crs$survival, %s%s)", dataset,
-                 ifelse(coxph, ', type="expected"', "")))
+                 ifelse(coxph, ', type="risk"', "")))
 }
 
-genResponseSurvival <- function(dataset)
+genResponseSurvival <- function(dataset, coxph=FALSE)
 {
   # Generate a command to obtain the response when applying the model
   # to new data.
   
-  return(genPredictSurvival(dataset))
+  return(genPredictSurvival(dataset, coxph))
 }
 
-genProbabilitySurvival <- function(dataset)
+genProbabilitySurvival <- function(dataset, coxph=FALSE)
 {
   # Generate a command to obtain the probability when applying the
   # model to new data.
   
   return(sprintf("%s[,2]", gsub(")$", ', type="prob")',
-                                genPredictSurvival(dataset))))
+                                genPredictSurvival(dataset, coxph))))
 }
 

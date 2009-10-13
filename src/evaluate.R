@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-02 10:52:39 Graham Williams>
+# Time-stamp: <2009-10-12 20:06:40 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -662,9 +662,11 @@ executeEvaluateTab <- function()
   {
     testset[[crv$SURVIVAL]] <- testset0
 
-    predcmd[[crv$SURVIVAL]] <- genPredictSurvival(testset[[crv$SURVIVAL]])
-    respcmd[[crv$SURVIVAL]] <- genResponseSurvival(testset[[crv$SURVIVAL]])
-    probcmd[[crv$SURVIVAL]] <- genProbabilitySurvival(testset[[crv$SURVIVAL]])
+    is.coxph <- class(crs$survival) == "coxph"
+
+    predcmd[[crv$SURVIVAL]] <- genPredictSurvival(testset[[crv$SURVIVAL]], is.coxph)
+    respcmd[[crv$SURVIVAL]] <- genResponseSurvival(testset[[crv$SURVIVAL]], is.coxph)
+    probcmd[[crv$SURVIVAL]] <- genProbabilitySurvival(testset[[crv$SURVIVAL]], is.coxph)
   }
 
   if (crv$NNET %in%  mtypes)

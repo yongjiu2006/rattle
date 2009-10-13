@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-05 10:10:57 Graham Williams>
+# Time-stamp: <2009-10-13 21:00:45 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -412,7 +412,8 @@ executeExplorePlot <- function(dataset,
                                barplots = getSelectedVariables("barplot"),
                                dotplots = getSelectedVariables("dotplot"),
                                mosplots = getSelectedVariables("mosplot"),
-                               stratify=TRUE)
+                               stratify=TRUE, sampling=NULL,
+                               target=crs$target)
 {
   # Plot the data. The DATASET is a character string that defines the
   # dataset to use. Information about what variables to plot and the
@@ -440,21 +441,20 @@ executeExplorePlot <- function(dataset,
   pmax <- theWidget("plots_per_page_spinbutton")$getValue()
   pcnt <- 0
 
-  # Don't waste real estate if we are plotting less than number
-  # allowed per page.
-  
-  if (total.plots < pmax) pmax <- total.plots
-  
   # Iterate over all target values if a target is defined and has
   # less than 10 values. The plots will then also display the
   # distributions per target value.
 
-  target <- getSelectedVariables("target")
+  # 091011 Move to using the value of crs$target instead of getting it
+  # from the interface. Evenetually, pass target in as an argument so
+  # we can be independent of the GUI?
+
+  # target <- getSelectedVariables("target")
 
   if (is.null(target))
     targets <- NULL
   else
-    targets <- levels(as.factor(crs$dataset[[crs$target]]))
+    targets <- levels(as.factor(crs$dataset[[target]]))
 
   if (length(targets) > 10) targets <- NULL
 
@@ -467,10 +467,30 @@ executeExplorePlot <- function(dataset,
 ##     targets <- NULL
 ##   }
   
-  # Check for sampling.
+  # 091011 Check if there are mosaic plots requested but there is not
+  # target - notify that the mosaic plots will not be plotted.
+
+  if (nmosplots > 0 && is.null(target))
+  {
+    infoDialog("A mosaic plot can not be displayed without identifying a target.",
+               "The requested mosaic plots will be ignored.")
+    total.plots <- total.plots - nmosplots
+    mosplots <- NULL
+    nmosplots <- 0
+  }
+
+  # Don't waste real estate if we are plotting less than number
+  # allowed per page.
   
-  use.sample <- theWidget("sample_checkbutton")$getActive()
-  sampling  <- use.sample && not.null(crs$sample)
+  if (total.plots < pmax) pmax <- total.plots
+  
+  # Check for sampling.
+
+  if (is.null(sampling))
+  {
+    use.sample <- theWidget("sample_checkbutton")$getActive()
+    sampling  <- use.sample && not.null(crs$sample)
+  }
 
   # Record other options.
 
@@ -1807,7 +1827,7 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
 {
    usr <- par("usr"); on.exit(par(usr))
    par(usr = c(0, 1, 0, 1))
-   r <- abs(cor(x, y, use="complete"))
+   r <- cor(x, y, use="complete")
    txt <- format(c(r, 0.123456789), digits=digits)[1]
    txt <- paste(prefix, txt, sep="")
    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
