@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-07-24 09:12:39 Graham Williams>
+# Time-stamp: <2009-10-12 19:19:59 Graham Williams>
 #
 # Project functionality.
 #
@@ -246,6 +246,8 @@ saveProject <- function()
   crs$text$ksvm <-  getTextviewContent("ksvm_textview")
   crs$text$glm <-  getTextviewContent("glm_textview")
   crs$text$ada <-  getTextviewContent("ada_textview")
+  crs$text$nnet <-  getTextviewContent("nnet_textview")
+  crs$text$survival <-  getTextviewContent("model_survival_textview")
   #crs$text$gbm <-  getTextviewContent("gbm_textview")
   crs$text$risk <- getTextviewContent("risk_textview")
   crs$text$roc <- getTextviewContent("roc_textview")
@@ -523,6 +525,12 @@ loadProject <- function()
   setTextviewContents("ada_textview", crs$text$ada)
   if (not.null(crs$ada)) require(ada, quietly=TRUE)
 
+  setTextviewContents("nnet_textview", crs$text$nnet)
+  if (not.null(crs$nnet)) require(nnet, quietly=TRUE)
+
+  setTextviewContents("model_survival_textview", crs$text$survival)
+  if (not.null(crs$survival)) require(survival, quietly=TRUE)
+
   #REMOVE crs$gbm      <- crs$gbm
   #REMOVE setTextviewContents("gbm_textview", crs$text$gbm)
 
@@ -600,4 +608,3 @@ loadProject <- function()
   setStatusBar("Project loaded from", load.name)
 
 }
-

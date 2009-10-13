@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.4.97.
+    version is 2.4.99.
 
-   The version number is determined as 2.4.n where n is the current
-   revision identified below minus 380.
+   The version number is determined as 2.5.n where n is the current
+   revision identified below minus 480.
    </p>
 
 <pre>
+480 091013 Bump rattle version to 2.5
+           coxph default predict risk, not lp.
+           Ensure nnet and survival texvies are saved in projects.
+           Ensure mosaic plot only when there is a target variable.
 479 091009 Add an intro msg to Status bar on starting Rattle
     	   If no plots selected in Distribution, then generate a scatter plot matrix
 	   Ensure all plots have appropriate X and Y labels.
@@ -22,7 +26,6 @@
 	     Add Interval elements to DataField if dataset known (rpart only for now)
 	     Add a dataType to OutputField if it is known
 	     Logistic - include two RegressionTables - second for the alternative target
-
 478 091002 Fix survival GUI issues
            Implement parametric regression for survival
            Implement Evalaute for survival model - currently only Score
