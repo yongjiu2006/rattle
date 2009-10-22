@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-03 08:01:38 Graham Williams>
+# Time-stamp: <2009-10-23 06:25:48 Graham Williams>
 #
 # RPART TAB
 #
@@ -450,7 +450,7 @@ executeModelRPart <- function(action="build")
                                
   # Load the required library.
 
-  startLog("DECISION TREE")
+  startLog("Decision Tree")
   appendLog("Build a decision tree using the rpart package.", lib.cmd)
 
   eval(parse(text=lib.cmd))
@@ -971,7 +971,7 @@ exportRpartTab <- function()
   
   if (noModelAvailable(crs$rpart, crv$RPART)) return(FALSE)
 
-  startLog("EXPORT RPART TREE")
+  startLog("Export RPart Tree")
 
   save.name <- getExportSaveName(crv$RPART)
   if (is.null(save.name)) return(FALSE)

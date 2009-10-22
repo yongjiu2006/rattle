@@ -25,7 +25,7 @@ MAJOR=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 SVNREVIS=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
 REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
-            | awk '{print $$1-380}')
+            | awk '{print $$1-480}')
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
 	   | sed 's|^.*, ||')

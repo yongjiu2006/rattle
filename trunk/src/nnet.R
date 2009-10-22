@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-20 06:03:27 Graham Williams>
+# Time-stamp: <2009-10-23 06:27:22 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -79,7 +79,7 @@ executeModelNNet <- function()
   
   # Load the package into the library
 
-  startLog("NEURAL NETWORK")
+  startLog("Neural Network")
   lib.cmd <-  "require(nnet, quietly=TRUE)"
   if (! packageIsAvailable("nnet", "build a neural network")) return(FALSE)
   appendLog("Build a neural network model using the nnet package.", lib.cmd)
@@ -94,9 +94,17 @@ executeModelNNet <- function()
     # linout? Though again, check why linout is needed at all.
 #    frml <- sprintf("as.numeric(%s)-1 ~ .", crs$target)
 #  else
+
+  # 091023 When the target is binary, the prediction uses type=class,
+  # but that won't work if the target is binary and numeric. So we
+  # test that case here and convert it to a factor. Note that we only
+  # support numeric targets for nnet.
+
+  if (binomialTarget())
+    frml <- sprintf("as.factor(%s) ~ .", crs$target)
+  else
     frml <- sprintf("%s ~ .", crs$target)
   
-
   # Variables to be included --- a string of indicies.
   
   included <- getIncludedVariables()
@@ -132,7 +140,7 @@ executeModelNNet <- function()
                      ", trace=FALSE, maxit=1000",
                      ")", sep="")
 
-  appendLog("Build the nnet model.", model.cmd)
+  appendLog("Build the NNet model.", model.cmd)
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
@@ -180,7 +188,7 @@ exportNNetTab <- function()
 
   if (noModelAvailable(crs$nnet, crv$NNET)) return(FALSE)
 
-  startLog("EXPORT NNET MODEL") 
+  startLog("Export NNET Model") 
 
   save.name <- getExportSaveName(crv$NNET)
   if (is.null(save.name)) return(FALSE)
@@ -199,41 +207,6 @@ exportNNetTab <- function()
   ## # Load the package unless we already have a pmml defined (through source).
   ## if (! exists("pmml")) eval(parse(text=lib.cmd))
 
-  ## REMOVE 090812 This is now handled by getExportSaveName
-  ##
-  ## # Obtain filename to write the PMML to.
-  ##
-  ## dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
-  ##                                "gtk-cancel", GtkResponseType["cancel"],
-  ##                                "gtk-save", GtkResponseType["accept"])
-  ## dialog$setDoOverwriteConfirmation(TRUE)
-  ##
-  ## if(not.null(crs$dataname))
-  ##   dialog$setCurrentName(paste(get.stem(crs$dataname), "_nnet.xml", sep=""))
-  ##
-  ## ff <- gtkFileFilterNew()
-  ## ff$setName("PMML Files")
-  ## ff$addPattern("*.xml")
-  ## dialog$addFilter(ff)
-  ##
-  ## ff <- gtkFileFilterNew()
-  ## ff$setName("All Files")
-  ## ff$addPattern("*")
-  ## dialog$addFilter(ff)
-  ##
-  ## if (dialog$run() == GtkResponseType["accept"])
-  ## {
-  ##   save.name <- dialog$getFilename()
-  ##   dialog$destroy()
-  ## }
-  ## else
-  ## {
-  ##   dialog$destroy()
-  ##   return()
-  ## }
-
-  #if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
-    
   pmml.cmd <- sprintf("pmml(crs$nnet%s)",
                       ifelse(length(crs$transforms),
                              ", transforms=crs$transforms", ""))

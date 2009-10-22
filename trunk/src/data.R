@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-05 08:26:25 Graham Williams>
+# Time-stamp: <2009-10-21 18:51:30 Graham Williams>
 #
 # DATA TAB
 #
@@ -770,7 +770,7 @@ executeDataCSV <- function(filename=NULL)
 
   startLog()
   
-  appendLog("LOAD CSV FILE", read.cmd)
+  appendLog("Load CSV File", read.cmd)
   resetRattle()
   result <- try(eval(parse(text=read.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -956,7 +956,7 @@ openODBCSetTables <- function()
 
   if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return(FALSE)
       
-  startLog("ODBC CONNECTION")
+  startLog("ODBC Connection")
 
   appendLog("Require the RODBC library.", lib.cmd)
   set.cursor("watch")
@@ -1133,7 +1133,7 @@ executeDataARFF <- function()
   appendLog("The foreign package provides a function to read arff.", lib.cmd)
   eval(parse(text=lib.cmd))
 
-  appendLog("LOAD ARFF FILE", read.cmd)
+  appendLog("Load ARFF File", read.cmd)
   resetRattle()
   eval(parse(text=read.cmd))
   crs$dataname <- basename(filename)
@@ -1231,7 +1231,7 @@ executeDataODBC <- function()
   # Start logging and executing the R code.
 
   startLog()
-  appendLog("LOAD FROM ODBC DATABASE TABLE", assign.cmd)
+  appendLog("Load From ODBC Database Table", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- table
@@ -1289,7 +1289,7 @@ executeDataRdata <- function()
 
   startLog()
   
-  appendLog("LOAD RDATA FILE", assign.cmd)
+  appendLog("Load RData File", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- dataset
@@ -1339,7 +1339,7 @@ executeDataRdataset <- function()
   #theWidget(TV)$setWrapMode("none") # On for welcome msg
   #resetTextview(TV)
   
-  appendLog("LOAD R DATA FRAME", assign.cmd)
+  appendLog("Load R Data Frame", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- dataset
@@ -1410,7 +1410,7 @@ executeDataLibrary <- function()
 
   startLog()
   
-  appendLog("LOAD R DATASET", assign.cmd)
+  appendLog("Load R Dataset", assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   if (class(crs$dataset) != "data.frame")
@@ -1473,7 +1473,7 @@ editData <- function()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
   
-  appendLog("EDIT A DATA SET MANUALLY", assign.cmd)
+  appendLog("Edit A Data Set Manually", assign.cmd)
   
   # These are needed because resetRattle clears everything
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-02-11 07:17:16 Graham Williams>
+# Time-stamp: <2009-10-21 18:39:26 Graham Williams>
 #
 # Test Tab
 #
@@ -168,7 +168,7 @@ executeTestTab <- function()
 
   # Start the log for this task.
 
-  startLog("PERFORM TEST")
+  startLog("Perform Test")
 
   # Ensure the package is available.
 
@@ -315,13 +315,13 @@ variances, at the 95% level of confidence.
 
     preamble <- "CORRELATION TEST
 
-The paired sample correlation test is performed on the specified two
-samples. The two samples are expected to be paired (two observations
-for the same entity). The null hypothesis is that the two samples
-are correlated. Pearson's product moment correlation coefficient is used.
+The paired sample correlation test is performed on the two specified samples.
+The two samples are expected to be paired (two observations for the same entity).
+The null hypothesis is that the two samples have no (i.e., 0) correlation.
+Pearson's product moment correlation coefficient is used.
 
 If the p-value is less than 0.05 then we reject the null hypothesis and
-accept the alternative hypothesis that the samples are not correlated,
+accept the alternative hypothesis that the samples are correlated,
 at the 95% level of confidence.
 "
   }
