@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-12 20:06:40 Graham Williams>
+# Time-stamp: <2009-10-23 06:27:07 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -426,9 +426,9 @@ executeEvaluateTab <- function()
     return()
 
   if(theWidget("score_radiobutton")$getActive())
-    startLog("SCORE A DATASET")
+    startLog("Score a Dataset")
   else
-    startLog("EVALUATE MODEL PERFORMANCE")
+    startLog("Evaluate Model Performance")
 
   # Identify the data on which evaluation is to be performed.
 
@@ -1012,7 +1012,7 @@ executeEvaluateTab <- function()
 }
 
 #----------------------------------------------------------------------
-# EVALUATE CONFUSION TABLE
+# Evaluate Confusion Table
   
 executeEvaluateConfusion <- function(respcmd, testset, testname)
 {
@@ -1044,8 +1044,13 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                             "/length(crs$pr))",
                             sep="")
 
-    if (binomialTarget()) # 080528 TODO generalise to categoricTarget
-      error.cmd <- paste("(function(x){return((x[1,2]+x[2,1])/sum(x))})",
+    if (binomialTarget())
+      # 080528 TODO generalise to categoricTarget. 091023 Handle the
+      # case where there is only one value predicted from the two
+      # possible values.
+      error.cmd <- paste("(function(x){ if (nrow(x) == 2)",
+                         "cat((x[1,2]+x[2,1])/sum(x))",
+                         "else cat(1-(x[1,rownames(x)])/sum(x))})",
                          "(table(crs$pr,",
                          sprintf("%s$%s, ", ts, crs$target),
                          'dnn=c("Predicted", "Actual")))')
@@ -1103,7 +1108,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     if (binomialTarget())
     {
       appendLog("Calucate overall error percentage.", error.cmd)
-      error.output <- collectOutput(error.cmd, TRUE)
+      error.output <- collectOutput(error.cmd)
     }
     
     appendTextview(TV,

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-13 21:00:45 Graham Williams>
+# Time-stamp: <2009-10-21 19:09:08 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -175,7 +175,7 @@ executeExploreSummary <- function(dataset)
     }
     summary.cmd <- sprintf("summary(%s)", dataset)
     
-    appendLog("SUMMARISE THE DATASET", contents.cmd, "\n", summary.cmd)
+    appendLog("Summarise the Dataset", contents.cmd, "\n", summary.cmd)
     appendTextview(TV,
                    paste("Below is a summary of ",
                          ifelse(use.sample && sampling, "a SAMPLE of ", ""),
@@ -664,8 +664,7 @@ executeExplorePlot <- function(dataset,
     for (s in seq_len(nboxplots))
     {
 
-      startLog()
-      appendLog("BOX PLOT")
+      startLog("Box Plot")
 
       cmd <- paste("sprintf(bind.cmd,",
                    paste(paste('"', rep(boxplots[s], length(targets)+1), '"',
@@ -761,12 +760,6 @@ executeExplorePlot <- function(dataset,
     # http://wiki.r-project.org/rwiki/doku.php?id=tips:easier:tbtable
     #
 
-    # 090524 REMOVE
-    #preplot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], plot=FALSE)\n',
-    #                     'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
-    #                     'rs <- max(hs$counts)/max(dens$y)\n',
-    #                     'maxy <- max(dens$y*rs)', sep="")
-
     ## hs <- hist(ds[ds$grp=="All",1], breaks="fd", plot=FALSE)
     ## dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)
     ## rs <- max(hs$counts)/max(dens$y)
@@ -798,24 +791,17 @@ executeExplorePlot <- function(dataset,
                       ', ylim=c(0, %s)', #', ceiling(maxy), ')',
                       ', breaks="fd", border=TRUE)\n',
                       'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
-                      # 090523 Now done in preplot.cmd:
-                      # 'rs <- max(hs$counts)/max(dens$y)\n',
+                      # 090523 Now done in preplot.cmd - not any more? 091021
+                      'rs <- max(hs$counts)/max(dens$y)\n',
                       'lines(dens$x, dens$y*rs, type="l", ',
                       sprintf(cols, length(targets)+1), '[1])',
                       sep="")
     if (stratify && length(targets))
     {
-      # 090524 REMOVE
-#      preplot.cmd <- paste(preplot.cmd, "\n",
-#                           paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
-#                                               '1], na.rm=TRUE)\n',
-#                                               'maxy <- max(c(maxy, dens$y*rs))'),
-#                                         targets), collpase="\n"),
-#                           sep="")
-      
       plot.cmd <- paste(plot.cmd, "\n",
                         paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
                                             '1], na.rm=TRUE)\n',
+                                            'rs <- max(hs$counts)/max(dens$y)\n',
                                             'lines(dens$x, dens$y*rs, ',
                                             'type="l", ',
                                             '%s[%s])', sep=""),
@@ -860,8 +846,7 @@ executeExplorePlot <- function(dataset,
 
     for (s in seq_len(nhisplots))
     {
-      startLog()
-      appendLog("HISTOGRAM")
+      startLog("Plot a Histogram")
       
       cmd <- paste("sprintf(bind.cmd,",
                    paste(paste('"', rep(hisplots[s], length(targets)+1), '"',
@@ -1122,8 +1107,7 @@ executeExplorePlot <- function(dataset,
     }
     if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
     {
-      startLog()
-      appendLog("BENFORD'S LAW")
+      startLog("Benford's Law")
       
       appendLog("Use barplot2 from gplots to plot Benford's Law.", lib.cmd)
       eval(parse(text=lib.cmd))
@@ -1357,8 +1341,7 @@ executeExplorePlot <- function(dataset,
 
       for (s in seq_len(nbarplots))
       {
-        startLog()
-        appendLog("BAR PLOT")
+        startLog("Bar Plot")
 
         # Construct and evaluate a command string to generate the
         # data for the plot.
@@ -1653,8 +1636,7 @@ executeExplorePlot <- function(dataset,
     for (s in seq_len(ndotplots))
     {
 
-      startLog()
-      appendLog("DOT PLOT")
+      startLog("Dot Plot")
 
       # Construct and evaluate a command string to generate the data
       # for the plot.
@@ -1726,8 +1708,7 @@ executeExplorePlot <- function(dataset,
   for (s in seq_len(nmosplots))
   {
 
-    startLog()
-    appendLog("MOSAIC PLOT")
+    startLog("Mosaic Plot")
 
     # Construct and evaluate a command string to generate the
     # data for the plot.
@@ -1854,8 +1835,7 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
                     "upper.panel=panel.smooth,",
                     "lower.panel=panel.cor)")
 
-  startLog()
-  appendLog("SCATTER PLOT")
+  startLog("Scatter Plot")
   appendLog("Support functions for the plot.", pre.cmd)
   eval(parse(text=pre.cmd))
   appendLog(paste("Display a pairs (scatter) plot. Note random selection of variables",
@@ -1879,7 +1859,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
   # Construct the commands.
 
   lib.cmd <- "require(rggobi, quietly=TRUE)"
-  ggobi.cmd <- paste('gg <<- ggobi(', dataset,
+  ggobi.cmd <- paste('crs$gg <<- ggobi(', dataset,
                      ifelse(not.null(name), sprintf(', name="%s"', name), ""),
                      ')')
 
@@ -1887,8 +1867,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
   
   if (! packageIsAvailable("rggobi", "explore the data using GGobi")) return()
 
-  startLog()
-  appendLog("GGOBI DATA EXPLORATION")
+  startLog("GGobi Data Exploration")
   appendLog("GGobi is accessed using the rggobi package.", lib.cmd)
   eval(parse(text=lib.cmd))
   appendLog("Launch GGobi data visualization.", gsub("<<-", "<-", ggobi.cmd))
@@ -2093,7 +2072,7 @@ executeExploreHiercor <- function(dataset)
 
   # Start logging and executing the R code.
 
-  startLog("HIERARCHICAL VARIABLE CORRELATION")
+  startLog("Hierarchical Variable Correlation")
 
   appendLog("Generate the correlations (numerics only).", cor.cmd)
   eval(parse(text=cor.cmd))
@@ -2155,7 +2134,7 @@ executeExplorePrcomp <- function(dataset)
   startLog()
   resetTextview(TV)
   
-  appendLog("PRINCIPAL COMPONENTS ANALYSIS (on numerics only).",
+  appendLog("Principal Components Analysis (on numerics only).",
           gsub("<<-", "<-", prcomp.cmd))
   eval(parse(text=prcomp.cmd))
 
@@ -2196,7 +2175,7 @@ executeExplorePlaywith <- function(dataset)
 
   if (! packageIsAvailable("latticist", "explore data")) return()
 
-  startLog("EXPLORE DATA.")
+  startLog("Explore Data")
 
   lib.cmd <- "require(latticist)"
   appendLog("The latticist command comes from the latticist package.", lib.cmd)
