@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-10-12 20:07:20 Graham Williams>
+# Time-stamp: <2009-11-04 11:36:04 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -117,6 +117,59 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
   if (state)
   {
   }
+}
+
+########################################################################
+# Export
+
+exportSurvivalTab <- function()
+{
+  # Make sure we have a model first!
+
+  if (noModelAvailable(crs$survival, crv$SURVIVAL)) return(FALSE)
+
+  startLog("Export Survival Model")
+
+  save.name <- getExportSaveName(crv$SURVIVAL)
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+
+  # Generate appropriate code.
+  
+  pmml.cmd <- sprintf("pmml(crs$survival%s)",
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""))
+
+  if (ext == "xml")
+  {
+    appendLog("Export regression as PMML.",
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "regression")
+
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+    
+    if (isWindows()) save.name <- tolower(save.name)
+    
+    model.name <- sub("\\.c", "", basename(save.name))
+    appendLog("Export a regression model as C code for WebFocus.",
+              sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
+                      pmml.cmd, model.name, 
+                      attr(save.name, "includePMML"),
+                      attr(save.name, "includeMetaData"),
+                      attr(save.name, "exportClass"),
+                      save.name))
+    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+                attr(save.name, "includePMML"),
+                attr(save.name, "includeMetaData"),
+                attr(save.name, "exportClass")), file=save.name)
+  }
+  
+  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
 }
 
 ########################################################################

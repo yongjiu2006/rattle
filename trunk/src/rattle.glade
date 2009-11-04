@@ -2184,26 +2184,13 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="explore_interactive_radiobutton">
-                        <property name="label" translatable="yes">Interactive</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">summary_radiobutton</property>
-                        <signal name="toggled" handler="on_explore_interactive_radiobutton_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">3</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="correlation_radiobutton">
+                      <widget class="GtkRadioButton" id="explore_correlation_radiobutton">
                         <property name="label" translatable="yes">Correlation</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -2211,7 +2198,7 @@
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">summary_radiobutton</property>
-                        <signal name="toggled" handler="on_correlation_radiobutton_toggled"/>
+                        <signal name="toggled" handler="on_explore_correlation_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2240,7 +2227,19 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <widget class="GtkRadioButton" id="explore_interactive_radiobutton">
+                        <property name="label" translatable="yes">Interactive</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">summary_radiobutton</property>
+                        <signal name="toggled" handler="on_explore_interactive_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">8</property>
+                      </packing>
                     </child>
                   </widget>
                   <packing>
@@ -2818,7 +2817,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="correlation_na_checkbutton">
+                                  <widget class="GtkCheckButton" id="explore_correlation_na_checkbutton">
                                     <property name="label" translatable="yes">Explore Missing</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2833,13 +2832,13 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="explore_hiercor_checkbutton">
+                                  <widget class="GtkCheckButton" id="explore_correlation_hier_checkbutton">
                                     <property name="label" translatable="yes">Hierarchical</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_explore_hiercor_checkbutton_toggled"/>
+                                    <signal name="toggled" handler="on_explore_correlation_hier_checkbutton_toggled"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6526,6 +6525,16 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6534,16 +6543,6 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -8718,8 +8717,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">save</property>
+    <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
@@ -8837,7 +8836,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
             <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="button3">
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -8852,7 +8851,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
             </child>
             <child>
               <widget class="GtkButton" id="button4">
-                <property name="label" translatable="yes">gtk-save</property>
+                <property name="label">gtk-save</property>
                 <property name="response_id">-3</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>

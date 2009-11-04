@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-02 10:51:52 Graham Williams>
+# Time-stamp: <2009-11-04 11:38:45 Graham Williams>
 #
 # MODEL TAB
 #
@@ -360,17 +360,15 @@ noModelAvailable <- function(model, model.class)
 {
   # 090812 A general test for a model existing. Designed for use for
   # each of the export<model>Tab functions. We need to also know the
-  # model.class since if model is NULL we won't ne able to determine
+  # model.class since if model is NULL we won't be able to determine
   # it.
 
   if (is.null(model))
-  {
     errorDialog("No", commonName(model.class),
-                "is available. Be sure to build",
+                "model is available. Be sure to build",
                 "the model before trying to export it! You will need",
                 "to press the Execute button (F2) in order to build the",
                 "model.")
-  }
   return(is.null(model))
 }
 
@@ -517,7 +515,7 @@ executeModelTab <- function()
     resetTextviews("confusion_textview")
   }
 
-  # DISPATCH
+  # Dispatch
 
   build.all <- theWidget("all_models_radiobutton")$getActive()
 
@@ -731,7 +729,7 @@ executeModelGLM <- function()
   including <- not.null(included)
   subsetting <- sampling || including
   
-  startLog("REGRESSION")
+  startLog("Regression")
 
   if (family == "Logistic" || family == "Probit")
   {
@@ -1025,7 +1023,7 @@ exportRegressionTab <- function()
 
   if (noModelAvailable(crs$glm, crv$GLM)) return(FALSE)
 
-  startLog("EXPORT REGRESSION")
+  startLog("Export Regression")
 
   save.name <- getExportSaveName(crv$GLM)
   if (is.null(save.name)) return(FALSE)
@@ -1127,7 +1125,7 @@ executeModelSVM <- function()
 
   TV <- ifelse(useKernlab, "ksvm_textview", "esvm_textview")
   
-  startLog("SUPPORT VECTOR MACHINE")
+  startLog("Support Vector Machine")
 
   ## Library.
 
@@ -1384,13 +1382,13 @@ exportSVMTab <- function()
 
 
 ########################################################################
-# EXPORT
+# Export
 
 exportModelTab <- function()
 {
   # 090812 The Export button has been clicked whilst the Model tab is
-  # active. Export the active Model tpyer as appropriate (either PMML
-  # or C code, if C code export is available.)
+  # active. Export the active Model as appropriate (either PMML or C
+  # code, if C code export is available.)
   
   if (noDatasetLoaded()) return()
 
@@ -1427,6 +1425,10 @@ exportModelTab <- function()
   else if (theWidget("nnet_radiobutton")$getActive())
   {
     exportNNetTab()
+  }
+  else if (theWidget("model_survival_radiobutton")$getActive())
+  {
+    exportSurvivalTab()
   }
   else
   {
