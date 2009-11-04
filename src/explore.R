@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-21 19:09:08 Graham Williams>
+# Time-stamp: <2009-11-03 08:03:09 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -91,21 +91,16 @@ executeExploreTab <- function()
       executeExplorePlaywith(dataset)
     else
       executeExploreGGobi(dataset, crs$dataname)
-  else if (theWidget("correlation_radiobutton")$getActive())
-    if (theWidget("explore_hiercor_checkbutton")$getActive())
+  else if (theWidget("explore_correlation_radiobutton")$getActive())
+    if (theWidget("explore_correlation_hier_checkbutton")$getActive())
         executeExploreHiercor(ndataset)
     else
     {
-      if (theWidget("correlation_na_checkbutton")$getActive())
+      if (theWidget("explore_correlation_na_checkbutton")$getActive())
         executeExploreCorrelation(dataset)
       else
         executeExploreCorrelation(ndataset)
     }
-  
-# 090328 Remove separate Hier Correlation
-# else if (theWidget("hiercor_radiobutton")$getActive())
-#    executeExploreHiercor(ndataset)
-
   else if (theWidget("prcomp_radiobutton")$getActive())
     executeExplorePrcomp(nidataset)
 }
@@ -1911,7 +1906,7 @@ executeExploreCorrelation <- function(dataset)
 
   # Deal with showing the missing values plot.
   
-  nas <- theWidget("correlation_na_checkbutton")$getActive()
+  nas <- theWidget("explore_correlation_na_checkbutton")$getActive()
   if (nas)
   {
     naids <- NULL
@@ -1962,7 +1957,7 @@ executeExploreCorrelation <- function(dataset)
                        'col=colorRampPalette(c("red", "white", "blue"))(11)',
                        '[5*crs$cor + 6])\n',
                        genPlotTitleCmd("Correlation",
-                                       ifelse(nas, "of Missing Values", ""),
+                                       ifelse(nas, "of Missing Values\n", ""),
                                        crs$dataname, "using", method),
                        sep="")
   
@@ -2055,7 +2050,7 @@ executeExploreHiercor <- function(dataset)
                       'lab.cex = ', fontsize, ', lab.col = "tomato"), ',
                       'edgePar = list(col = "gray", lwd = 2)',
                       ')\n',
-                      genPlotTitleCmd("Variable Correlation Clusters",
+                      genPlotTitleCmd("Variable Correlation Clusters\n",
                                      crs$dataname, "using", method),'\n',
                       'par(op)\n',
                       sep="")
@@ -2219,7 +2214,7 @@ on_explore_interactive_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_correlation_radiobutton_toggled <- function(button)
+on_explore_correlation_radiobutton_toggled <- function(button)
 {
   if (button$getActive()) crv$EXPLORE$setCurrentPage(crv$EXPLORE.CORRELATION.TAB)
   setStatusBar()
@@ -2388,17 +2383,17 @@ summarySearch <- function(tv, search.str, start.iter)
 #-----------------------------------------------------------------------
 # CORRELATION
 
-on_explore_hiercor_checkbutton_toggled <- function(button)
+on_explore_correlation_hier_checkbutton_toggled <- function(button)
 {
   if (button$getActive())
   {
     theWidget("explore_correlation_ordered_checkbutton")$setSensitive(FALSE)
-    theWidget("correlation_na_checkbutton")$setSensitive(FALSE)
+    theWidget("explore_correlation_na_checkbutton")$setSensitive(FALSE)
   }
   else
   {
     theWidget("explore_correlation_ordered_checkbutton")$setSensitive(TRUE)
-    theWidget("correlation_na_checkbutton")$setSensitive(TRUE)
+    theWidget("explore_correlation_na_checkbutton")$setSensitive(TRUE)
   }
 }  
 

@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-10-09 22:01:23 Graham Williams>
+# Time-stamp: <2009-11-04 16:59:44 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -105,7 +105,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.19" # Several fixes for PMML conformance.
+  VERSION <- "1.2.20" # Support coxph as regression.
+  # "1.2.19" # Several fixes for PMML conformance.
   # "1.2.18" # Fix export of pmml for hclust with transforms.
   # "1.2.17" # Zementis: add Output node.
   # "1.2.16" # Support TJN (joincat).
@@ -221,9 +222,12 @@ pmmlDataDictionary <- function(field, dataset=NULL)
 
     if (optype == "continuous" && ! is.null(dataset))
     {
-      interval <-  xmlNode("Interval", attrs=c(closure="closedClosed",
-                                         leftMargin=min(dataset[[field$name[i]]]),
-                                         rightMargin=max(dataset[[field$name[i]]])))
+      interval <-  xmlNode("Interval",
+                           attrs=c(closure="closedClosed",
+                             leftMargin=min(dataset[[field$name[i]]],
+                               na.rm=TRUE), # 091025 Handle missing values
+                             rightMargin=max(dataset[[field$name[i]]],
+                               na.rm=TRUE))) # 091025 Handle missing values
       data.fields[[i]] <- append.XMLNode(data.fields[[i]], interval)
     }
     

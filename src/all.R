@@ -42,6 +42,7 @@ source("pmmltoc.R")
 source("pmml.randomForest.R")
 source("pmml.rpart.R")
 source("pmml.rsf.R")
+source("pmml.coxph.R") # 091015
 
 if (! exists("crv"))
 {

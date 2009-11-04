@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.0.
+    version is 2.5.1.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+482 091104 Add export to PMML of coxph risk scoring.
+           Ensure NA handled in PMML Interval exporting.
+           Bump pmml version to 1.2.20.
 481 091023 Fix overall error code for nnet confusion matrix with binomial target
            For nnet wiht binomial target convert to factor to build model
            Correct message when testing correlation - null hypothesis was stated wrongly

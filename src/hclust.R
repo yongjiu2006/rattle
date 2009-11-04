@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-18 18:54:59 Graham Williams>
+# Time-stamp: <2009-10-25 14:58:09 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -553,7 +553,7 @@ exportHClustTab <- function(file)
 ########################################################################
 # SCORE
 
-predict.hclust <- function(model, data, x, nclust=10, ...)
+predict.hclust <- function(object, data, x, nclust=10, ...)
 {
   # 090126 Initial work on a predict.hclust function, to allow using a
   # hclust model to allocate new DATA to pre-existing clusters that
@@ -563,9 +563,9 @@ predict.hclust <- function(model, data, x, nclust=10, ...)
   # clusters. This is only an approximation. Gets pretty close for
   # ward link and euclidean distance.
 
-  model$centers <- centers.hclust(x, model, nclust=nclust, use.median=FALSE)
-  rownames(model$centers) <- seq_len(nclust)
-  return(predict.kmeans(model, data))
+  object$centers <- centers.hclust(x, object, nclust=nclust, use.median=FALSE)
+  rownames(object$centers) <- seq_len(nclust)
+  return(predict.kmeans(object, data))
 }
 
 genPredictHclust <- function(dataset)

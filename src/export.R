@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-12 06:34:46 Graham Williams>
+# Time-stamp: <2009-11-04 14:15:17 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -78,9 +78,9 @@ dispatchExportButton <- function()
 ## {
 ##   if (theWidget("explore_distr_radiobutton")$getActive())
 ##     exportPlot("dist")
-##   else if (theWidget("correlation_radiobutton")$getActive())
+##   else if (theWidget("explore_correlation_radiobutton")$getActive())
 ##     exportPlot("corr")
-##   else if (theWidget("hiercor_radiobutton")$getActive())
+##   else if (theWidget("explore_correlation_hier_radiobutton")$getActive())
 ##     exportPlot("hiercorr")
 ##   else if (theWidget("prcomp_radiobutton")$getActive())
 ##     exportPlot("prcomp")
@@ -242,7 +242,7 @@ getExportSaveName <- function(mtype)
   {
     if (mtype %in% c("glm"))
       # 090629 The default for multinomial is class but we don't allow
-      # the suer to choose probablity - was that always the case?
+      # the user to choose probablity - was that always the case?
       if (multinomialTarget())
         dialogGUI$
     getWidget("export_filechooser_class_radiobutton")$setActive(TRUE)
@@ -250,6 +250,10 @@ getExportSaveName <- function(mtype)
         dialogGUI$
     getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
     
+    if (mtype %in% c("survival"))
+      dialogGUI$
+      getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
+
     # 081218 Add glm when implemented.
     
     if (!binomialTarget() || mtype %notin% c("rpart", "glm"))

@@ -1,4 +1,9 @@
 \name{rattle_gui}
+\alias{on_explore_correlation_hier_checkbutton_toggled}
+\alias{on_explore_correlation_radiobutton_toggled}
+\alias{on_model_survival_radiobutton_toggled}
+\alias{on_nnet_evaluate_checkbutton_toggled}
+\alias{on_survival_evaluate_checkbutton_toggled}
 \alias{on_log_export_rename_checkbutton_toggled}
 \alias{on_close_activate}
 \alias{on_rattle_window_delete_event}

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-13 21:30:56 Graham Williams>
+# Time-stamp: <2009-11-03 21:42:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Oct 2009"
+VERSION.DATE <- "Released 23 Oct 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -181,22 +181,15 @@ rattle <- function(csvname=NULL)
 
   crv$.gtkMain <- FALSE # Initially gtkMain is not running.
   
-  # Load gloablly required packages.
+  # Load gloablly required packages if they are available. 
   
   if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
     stop("RGtk2 package is not available but is required for the GUI.")
 
   if (packageIsAvailable("colorspace", "choose appropriate colors for plots"))
   {
-    # 080921 Load each individually so we can keep the loading quiet!
-
-    # 090524 I think we are only after the colorspace package
-    # here. Perhaps remove these others from the Suggests list.
-    
-#    require("MASS", quietly=TRUE)
-#    require("grid", quietly=TRUE)
+    # 080921 Load here to keep the loading quiet!
     require("colorspace", quietly=TRUE)
-#    require("vcd", quietly=TRUE)
   }
   
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/

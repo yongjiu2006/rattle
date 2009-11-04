@@ -8,10 +8,10 @@ Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.2.0), pmml (>= 1.2.13)
 Suggests: RGtk2, ada, amap, arules, cairoDevice, car, 
   cba, colorspace, doBy, e1071, ellipse, fEcofin, 
-  fCalendar, fBasics, foreign, fpc, gdata, grid, gtools, gplots, 
-  gWidgetsRGtk2, Hmisc, kernlab, latticist, MASS, Matrix, mice, network, 
+  fBasics, foreign, fpc, gdata, gtools, gplots, 
+  gWidgetsRGtk2, Hmisc, kernlab, latticist, Matrix, mice, network, 
   nnet, odfWeave, party, playwith, randomForest, reshape, rggobi, ROCR,
-  RODBC, rpart, RSvgDevice, XML
+  RODBC, rpart, RSvgDevice, survival, timeDate, XML
 Description: Rattle (the R Analytic Tool To Learn Easily) provides a 
   Gnome (RGtk2) based interface to R functionality for data mining. 
   The aim is to provide a simple and intuitive interface 
@@ -25,5 +25,6 @@ Description: Rattle (the R Analytic Tool To Learn Easily) provides a
   functions and the graphical user interface, invoked as rattle(),  does 
   not need to be run to deploy these.  
 License: GPL (>= 2)
+LazyLoad: yes
 LazyData: yes
 URL: http://rattle.togaware.com/

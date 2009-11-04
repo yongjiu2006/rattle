@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-08-22 06:59:42 Graham Williams>
+# Time-stamp: <2009-10-25 20:51:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -29,6 +29,7 @@ pmml.hclust <- function(model,
                         description="Hierarchical cluster model",
                         copyright=NULL,
                         transforms=NULL,
+                        dataset=NULL,
                         centers,
                         ...)
 {
