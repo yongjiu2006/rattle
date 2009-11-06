@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-23 06:27:07 Graham Williams>
+# Time-stamp: <2009-11-06 15:58:15 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -160,11 +160,26 @@ makeEvaluateSensitive <- function()
   all.buttons <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
                    "precision", "sensitivity", "pvo", "score")
 
+  # 091106 Determine if there are any models selected.
+
+  any.model <- theWidget("rpart_evaluate_checkbutton")$getActive() ||
+  theWidget("ada_evaluate_checkbutton")$getActive() ||
+  theWidget("rf_evaluate_checkbutton")$getActive() ||
+  theWidget("ksvm_evaluate_checkbutton")$getActive() ||
+  theWidget("glm_evaluate_checkbutton")$getActive() ||
+  theWidget("nnet_evaluate_checkbutton")$getActive() ||
+  theWidget("mars_evaluate_checkbutton")$getActive() ||
+  theWidget("kmeans_evaluate_checkbutton")$getActive() ||
+  theWidget("hclust_evaluate_checkbutton")$getActive() ||
+  theWidget("survival_evaluate_checkbutton")$getActive()
+
   # Automatically work out what needs to be sensistive, based on data
   # type of the target plus whether kmeans or hclust is active and
   # selected.
 
-  if (is.null(crs$target))
+  if (! any.model)
+    buttons <- NULL
+  else if (is.null(crs$target))
     buttons <- c("score")
   else if (multinomialTarget())
     buttons <- c("confusion", "score")

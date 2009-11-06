@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-08-18 18:50:54 Graham Williams>
+# Time-stamp: <2009-11-06 16:00:40 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -291,7 +291,7 @@ executeClusterKMeans <- function(include)
     if (nruns > 1)
     {
       lib.cmd <- "require(fpc, quietly=TRUE)"
-      if (! packageIsAvailable("fpc", "kmeans runs")) return()
+      if (! packageIsAvailable("fpc", "kmeans runs")) return(FALSE)
       appendLog("The kmeansruns functionality is provided by the fpc package.",
                 lib.cmd)
       eval(parse(text=lib.cmd))
@@ -407,7 +407,7 @@ executeClusterKMeans <- function(include)
   appendLog(time.msg)
   setStatusBar("The K Means cluster has been generated.",
                time.msg )
-  
+  return(TRUE)
 }
 
 ########################################################################

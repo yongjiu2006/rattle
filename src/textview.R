@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-02 11:06:45 Graham Williams>
+# Time-stamp: <2009-11-06 14:03:47 Graham Williams>
 #
 # Textview widget support
 #
@@ -39,6 +39,19 @@
 #         ...
 #         options(oldopt)
 #
+
+allTextviews <- function()
+{
+  return(c("summary_textview", "interactive_textview",
+           "correlation_textview",
+           "prcomp_textview", "test_textview", "kmeans_textview",
+           "hclust_textview", "associate_textview", "rpart_textview",
+           "glm_textview", "ada_textview", "rf_textview",
+           "esvm_textview", "ksvm_textview", "nnet_textview",
+           "model_survival_textview",
+           "confusion_textview", "risk_textview", "roc_textview"))
+}
+
 
 getTextview <- function(tv)
 {
@@ -188,15 +201,7 @@ resetTextviews <- function(tv=NULL)
   # textviews.xml if there is one and XML package is available!
 
   if (is.null(tv))
-    sapply(c("summary_textview", "interactive_textview",
-             "correlation_textview",
-             "prcomp_textview", "test_textview", "kmeans_textview",
-             "hclust_textview", "associate_textview", "rpart_textview",
-             "glm_textview", "ada_textview", "rf_textview",
-             "esvm_textview", "ksvm_textview", "nnet_textview",
-             "model_survival_textview",
-             "confusion_textview", "risk_textview", "roc_textview"),
-           resetTextview)
+    sapply(allTextviews(), resetTextview)
   
   if (! packageIsAvailable("XML", "load textview texts"))
   {
@@ -227,4 +232,5 @@ resetTextviews <- function(tv=NULL)
              wd <- xmlGetAttr(tt, 'widget')
              if (wd %in% tv) resetTextview(wd, xmlValue(tt), tvsep=FALSE)
            })
+  invisible()
 }

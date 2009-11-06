@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-24 11:26:39 Graham Williams>
+# Time-stamp: <2009-11-06 11:37:25 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1431,7 +1431,8 @@ executeTransformRemapPerform <- function(vars=NULL,
            {
              lst <- list(orig=vars, type=remap.prefix, status="active", level=x)
              crs$transforms <- union.transform(crs$transforms,
-                                               paste(vname, x, sep="_"), lst)
+                                               make.names(paste(vname, x,
+                                                                sep="_")), lst)
            })
   }
   else if (action == "joincat")
