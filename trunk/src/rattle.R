@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-03 21:42:20 Graham Williams>
+# Time-stamp: <2009-11-06 14:39:23 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Oct 2009"
+VERSION.DATE <- "Released 04 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -126,6 +126,8 @@ overwritePackageFunction <- function(fname, fun, pkg)
   lockBinding(fname, re)
 }
 
+toga <- function() browseURL("http://rattle.togaware.com")
+
 rattle <- function(csvname=NULL)
 {
   # 090517 Require pmml. Now that there is an indication on the Data
@@ -159,10 +161,6 @@ rattle <- function(csvname=NULL)
     .onLoad()
     .onAttach()
   }
-
-  if (not.null(crv$show.timestamp) && crv$show.timestamp)
-    cat(crv$appname, "timestamp:",
-        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
   
   # 090309 Reset the environment, crs, which stores the curret Rattle
   # state and used extensively throughout Rattle as a global
@@ -255,7 +253,14 @@ rattle <- function(csvname=NULL)
   # Ensure the About dialog will respond to the Quit button.
   
   on_aboutdialog_response <<- gtkWidgetDestroy
-  
+
+  # When an error is reported to the R Console, include a time stamp.
+
+  options(error=function()
+          cat(sprintf("%s timestamp (for the error above): %s\n",
+                      crv$appname, Sys.time())))
+
+
   # Keep the loading of Hmisc quiet.
 
   options(Hverbose=FALSE)
@@ -283,6 +288,10 @@ rattle <- function(csvname=NULL)
   setMainTitle()
   configureGUI()
   if (crv$load.tooltips) loadTooltips()
+
+  if (not.null(crv$show.timestamp) && crv$show.timestamp)
+    cat(crv$appname, "timestamp:",
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 
   # 090708 Set the icon for the current window, and then make it the
   # default for all other windows. We do it here rather than earlier
@@ -1747,6 +1756,25 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
   if (! is.null(message)) setStatusBar(message)
   theWidget("rattle_window")$getWindow()$
   setCursor(gdkCursorNew(cursor))
+
+  # 091106 For now, set cursor specifically on the textview
+  # windows. Under Ubuntu it is not needed, but is on Vista. Is this a
+  # GTK+ issue?emove this once MS/Windows no longer has this problem.
+
+  # 091106 The first approach, lapply, did not work! Whlist all the
+  # textview widgets do exist, the getWind0w returned NULL unless the
+  # textview had been visited. So, instead, loop through the
+  # textviews.
+  
+  # lapply(allTextviews(), function(x) theWidget(x)$
+  #            getWindow("GTK_TEXT_WINDOW_TEXT")$
+  #            setCursor(gdkCursorNew(cursor)))
+  
+  for (tv in allTextviews())
+  {
+    win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
+    if (! is.null(win)) win$setCursor(gdkCursorNew(cursor))
+  }
 }
 
 simplifyNumberList <- function(nums)

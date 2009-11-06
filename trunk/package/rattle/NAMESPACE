@@ -28,6 +28,7 @@ export(
        rattle.print.summary.multinom,
        overwritePackageFunction,
        savePlotToFile,
+       toga,
        treeset.randomForest,
        ada.formula
        )

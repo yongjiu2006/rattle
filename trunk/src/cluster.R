@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-01-20 20:13:01 Graham Williams>
+# Time-stamp: <2009-11-06 15:46:59 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -55,21 +55,25 @@ executeClusterTab <- function()
 
   if (theWidget("kmeans_radiobutton")$getActive())
   {
-    executeClusterKMeans(include)
-    makeEvaluateSensitive()
-    resetEvaluateCheckbuttons("all_inactive")
-    theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
-    theWidget("kmeans_evaluate_checkbutton")$setActive(TRUE)
-    theWidget("hclust_evaluate_checkbutton")$setActive(FALSE)
+    if (executeClusterKMeans(include))
+    {
+      makeEvaluateSensitive()
+      resetEvaluateCheckbuttons("all_inactive")
+      theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
+      theWidget("kmeans_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("hclust_evaluate_checkbutton")$setActive(FALSE)
+    }
   }
   else if (theWidget("hclust_radiobutton")$getActive())
   {
-    executeClusterHClust(include)
-    makeEvaluateSensitive()
-    resetEvaluateCheckbuttons("all_inactive")
-    theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
-    theWidget("hclust_evaluate_checkbutton")$setActive(TRUE)
-    theWidget("kmeans_evaluate_checkbutton")$setActive(FALSE)
+    if (executeClusterHClust(include))
+    {
+      makeEvaluateSensitive()
+      resetEvaluateCheckbuttons("all_inactive")
+      theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
+      theWidget("hclust_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("kmeans_evaluate_checkbutton")$setActive(FALSE)
+    }
   }
 }
 

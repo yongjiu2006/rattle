@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-11-04 16:59:44 Graham Williams>
+# Time-stamp: <2009-11-05 17:34:37 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -476,10 +476,15 @@ unifyTransforms <- function(field, transforms, keep.first=TRUE)
       # 090607 REMOVE oname <- sub("^([^_]*)_", "", field$name[index])
 
       # 090111 For the binning operations, be sure to change the class
-      # from categoric back to numeric.
+      # from categoric back to numeric. 091105 For TIN transform, be
+      # sure to change the class to categoric since the original
+      # variable will have been a categoric variable. Does this
+      # capture them all?
 
       if (type %in% .TRANSFORMS.BIN)
         field$class[index] <- "numeric"
+      else if (type %in% c("TIN", "TNM"))
+        field$class[index] <- "factor"
 
       # 090102 If the original variable (the untransformed variable)
       # for this transformed variable vname is already in the input

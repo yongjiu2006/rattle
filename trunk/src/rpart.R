@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-23 06:25:48 Graham Williams>
+# Time-stamp: <2009-11-06 16:39:17 Graham Williams>
 #
 # RPART TAB
 #
@@ -78,7 +78,7 @@ on_rpart_plot_button_clicked <- function(button)
     return()
   }
 
-  # PLOT: Log the R command and execute.
+  # Plot: Log the R command and execute.
 
   if (theWidget("model_tree_rpart_radiobutton")$getActive())
     plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",

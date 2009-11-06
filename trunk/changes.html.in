@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.1.
+    version is 2.5.2.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+483 091105 Test return of building cluster models, and don't enable evaluate on failure.
+           Display Console timestamps - startup and console errors.
+	   GTK bug on MS Windows - ensure textviews have busy cursor when models are building.
+	   Add Plots button to Survival model for coxph.
+	   Ensure TIN derived var names are proper var names for R with make.names
+           unifyTransforms - handle TIN and TNM - orig vars are factors.
+           Add toga function to browse to the ratle home page.
+	   Fix some logic around what evaluate Types are active.
 482 091104 Add export to PMML of coxph risk scoring.
            Ensure NA handled in PMML Interval exporting.
            Bump pmml version to 1.2.20.

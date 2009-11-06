@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-25 14:58:09 Graham Williams>
+# Time-stamp: <2009-11-06 16:01:09 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -272,7 +272,7 @@ executeClusterHClust <- function(include)
     else
       errorDialog("The call to hclust appears to have failed.",
                    "The error message was:", result, crv$support.msg)
-    return()
+    return(FALSE)
   }
 
   setTextview(TV, "Hiearchical Cluster\n", collectOutput("crs$hclust", TRUE))
@@ -289,7 +289,7 @@ executeClusterHClust <- function(include)
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
   setStatusBar("A hierarchical cluster has been generated.", time.msg)
-  
+  return(TRUE)
 }
 
 centers.hclust <- function(x, h, nclust=10, use.median=FALSE)

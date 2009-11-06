@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-04 11:36:04 Graham Williams>
+# Time-stamp: <2009-11-06 19:09:00 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,7 +27,14 @@ setGuiDefaultsSurvival <- function()
   theWidget("model_survival_time_var_label")$setText("No time variable selected")
   theWidget("model_survival_status_var_label")$setText("No status variable selected")
   theWidget("model_survival_coxph_radiobutton")$setActive(TRUE)
+  theWidget("model_survival_plots_button")$hide()
 }
+
+on_model_survival_plots_button_clicked <- function(button)
+{
+  plotSurvivalModel()
+}
+
 
 ########################################################################
 # Model Tab
@@ -44,12 +51,12 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   # summary of what has been done.
 
   gui <- not.null(tv)
-  if (gui) startLog("SURVIVAL MODEL")
+  if (gui) startLog("Survival Model")
 
   # Load the required package into the library.
 
   lib.cmd <-  "require(survival, quietly=TRUE)"
-  if (! packageIsAvailable("survival", "build a Survival model")) return(FALSE)
+  if (! packageIsAvailable("survival", "build a Survival model")) return(NULL)
   if (gui) appendLog("Require the survival package.", lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -111,13 +118,35 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
 {
   # If a survival model exists then show the relevant buttons that
   # require the model to exist. For the Survival model this will be
-  # some plot functions, but as of 090909 they are not yet
-  # implemented.
-  
+  # some plot functions.
+
   if (state)
   {
+    theWidget("model_survival_plots_button")$show()
+    if (class(crs$survival) == "coxph")
+      theWidget("model_survival_plots_button")$setSensitive(TRUE)
+    else
+      # Show it but indicate it is not yet implemented
+      theWidget("model_survival_plots_button")$setSensitive(FALSE)
+  }
+  else
+  {
+    theWidget("model_survival_plots_button")$hide()
   }
 }
+
+plotSurvivalModel <- function()
+{
+  plot.cmd <- paste('plot(survfit(crs$survival), xlab=crs$target,',
+                    'ylab="Survival Probability", col=3)\n',
+                    genPlotTitleCmd('Survival Chart', crs$target, 'to',
+                                    crs$risk))
+  appendLog("Plot the survival chart for the most recent survival model.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+}
+
+
 
 ########################################################################
 # Export
@@ -128,6 +157,14 @@ exportSurvivalTab <- function()
 
   if (noModelAvailable(crs$survival, crv$SURVIVAL)) return(FALSE)
 
+  if (class(crs$survival) == "survreg")
+  {
+    infoDialog("The Parametric Survival Regression model (survreg) can not",
+               "currently be exported. Perhaps try a Cox Proportional",
+               "Hazards model.")
+    return(FALSE)
+  }
+  
   startLog("Export Survival Model")
 
   save.name <- getExportSaveName(crv$SURVIVAL)
