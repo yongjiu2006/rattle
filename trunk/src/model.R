@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 10:50:23 Graham Williams>
+# Time-stamp: <2009-11-13 06:43:02 Graham Williams>
 #
 # MODEL TAB
 #
@@ -224,39 +224,11 @@ on_glm_multinomial_radiobutton_toggled <- function(button)
     theWidget("model_linear_builder_label")$setText("multinom")
 }
 
-on_rpart_evaluate_checkbutton_toggled <- function(button)
+on_evaluate_model_checkbutton_toggled <- function(button)
 {
+  configureEvaluateTab()
   resetReportType()
 }
-
-on_glm_evaluate_checkbutton_toggled <- function(button)
-{
-  resetReportType()
-}
-
-on_nnet_evaluate_checkbutton_toggled <- function(button)
-{
-  resetReportType()
-}
-
-on_survival_evaluate_checkbutton_toggled <- function(button)
-{
-  makeEvaluateSensitive()
-  resetReportType()
-}
-
-on_kmeans_evaluate_checkbutton_toggled <- function(button)
-{
-  makeEvaluateSensitive()
-  resetReportType()
-}
-
-on_hclust_evaluate_checkbutton_toggled <- function(button)
-{
-  makeEvaluateSensitive()
-  resetReportType()
-}
-
 
 ########################################################################
 # UTILITIES
@@ -382,12 +354,12 @@ resetReportType <- function()
   # non-cluster models is active but not if it is a multinomial
   # target.
 
-  predictive.model <- (theWidget("rpart_evaluate_checkbutton")$getActive() ||
-                       theWidget("ada_evaluate_checkbutton")$getActive() ||
-                       theWidget("rf_evaluate_checkbutton")$getActive() ||
-                       theWidget("ksvm_evaluate_checkbutton")$getActive() ||
-                       theWidget("glm_evaluate_checkbutton")$getActive() ||
-                       theWidget("nnet_evaluate_checkbutton")$getActive())
+  predictive.model <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
+                       theWidget("evaluate_ada_checkbutton")$getActive() ||
+                       theWidget("evaluate_rf_checkbutton")$getActive() ||
+                       theWidget("evaluate_ksvm_checkbutton")$getActive() ||
+                       theWidget("evaluate_glm_checkbutton")$getActive() ||
+                       theWidget("evaluate_nnet_checkbutton")$getActive())
   
   make.sensitive <- (existsCategoricModel()
                      && predictive.model
@@ -397,17 +369,15 @@ resetReportType <- function()
   theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
   theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
 
-  default.to.class <- (theWidget("rpart_evaluate_checkbutton")$getActive() ||
-                       theWidget("ada_evaluate_checkbutton")$getActive() ||
-                       theWidget("rf_evaluate_checkbutton")$getActive() ||
-                       theWidget("ksvm_evaluate_checkbutton")$getActive())
+  default.to.class <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
+                       theWidget("evaluate_ada_checkbutton")$getActive() ||
+                       theWidget("evaluate_rf_checkbutton")$getActive() ||
+                       theWidget("evaluate_ksvm_checkbutton")$getActive())
 
   if (default.to.class)
     theWidget("score_class_radiobutton")$setActive(TRUE)
   else
     theWidget("score_probability_radiobutton")$setActive(TRUE)
-  
-  
   
   ## if (existsCategoricModel())
   ## {
@@ -490,7 +460,7 @@ executeModelTab <- function()
   # textview of the Evaluate tab. We make this word wrap here and then
   # turn that off once the tab is Executed.
 
-  makeEvaluateSensitive()
+  #091113 configureEvaluateTab()
 
   if (multinomialTarget())
   {
@@ -521,7 +491,8 @@ executeModelTab <- function()
 
   # Reset all Evaluate options to unchecked.
 
-  resetEvaluateCheckbuttons("all_inactive")
+  #091112 resetEvaluateTab("all_inactive")
+  #resetEvaluateTab(desensitise=FALSE)
   
   # The following work for ada, do they work for the rest?
   
@@ -552,14 +523,14 @@ executeModelTab <- function()
       if (theWidget("model_tree_ctree_radiobutton")$getActive())
       {
         if (executeModelCTree())
-          theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+          theWidget("evaluate_rpart_checkbutton")$setActive(TRUE)
         else
           setStatusBar("Building", commonName("ctree"), "model ... failed.")
       }
       else
       {
         if (executeModelRPart())
-            theWidget("rpart_evaluate_checkbutton")$setActive(TRUE)
+            theWidget("evaluate_rpart_checkbutton")$setActive(TRUE)
         else
           setStatusBar("Building", commonName(crv$RPART), "model ... failed.")
       }
@@ -601,7 +572,7 @@ executeModelTab <- function()
     if (not.null(crs$ada))
     {
       showModelAdaExists()
-      theWidget("ada_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_ada_checkbutton")$setActive(TRUE)
     }
     else
       setStatusBar("Building", commonName(crv$ADA), "model ... failed.")
@@ -612,7 +583,7 @@ executeModelTab <- function()
   {
     setStatusBar("Building", commonName(crv$RF), "model ...")
     if (executeModelRF())
-      theWidget("rf_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_rf_checkbutton")$setActive(TRUE)
     else
       setStatusBar("Building", commonName(crv$RF), "model ... failed.")
   }
@@ -621,7 +592,7 @@ executeModelTab <- function()
   {
     setStatusBar("Building", commonName(crv$KSVM), "model ...")
     if (executeModelSVM())
-      theWidget("ksvm_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_ksvm_checkbutton")$setActive(TRUE)
     else
       setStatusBar("Building", commonName(crv$KSVM), "model ... failed.")
 
@@ -630,7 +601,7 @@ executeModelTab <- function()
   {
     setStatusBar("Building", commonName(crv$GLM), "model ...")
     if (executeModelGLM())
-      theWidget("glm_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_glm_checkbutton")$setActive(TRUE)
     else
       setStatusBar("Building", commonName(crv$GLM), "model ... failed.")
   }
@@ -639,7 +610,7 @@ executeModelTab <- function()
   {
     setStatusBar("Building", commonName(crv$NNET), "model ...")
     if (executeModelNNet())
-      theWidget("nnet_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_nnet_checkbutton")$setActive(TRUE)
     else
       setStatusBar("Building", commonName(crv$NNET), "model ... failed.")
   }
@@ -667,7 +638,7 @@ executeModelTab <- function()
     if (not.null(crs$survival))
     {
       showModelSurvivalExists()
-      theWidget("survival_evaluate_checkbutton")$setActive(TRUE)
+      theWidget("evaluate_survival_checkbutton")$setActive(TRUE)
     }
     else
       setStatusBar("Building", commonName(crv$SURVIVAL), "model ... failed.")

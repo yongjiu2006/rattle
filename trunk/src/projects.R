@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-12 19:19:59 Graham Williams>
+# Time-stamp: <2009-11-12 21:11:10 Graham Williams>
 #
 # Project functionality.
 #
@@ -596,7 +596,7 @@ loadProject <- function()
 
   # Ensure the Evaluate options are reset appropriately.
   
-  rattle:::makeEvaluateSensitive()
+  rattle:::configureEvaluateTab()
   
   # LOG
   
