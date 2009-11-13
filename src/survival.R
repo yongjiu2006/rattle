@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-06 19:09:00 Graham Williams>
+# Time-stamp: <2009-11-07 13:02:31 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -99,13 +99,20 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
     resetTextview(tv, tvsep=FALSE,
                   sprintf("Summary of the Survival model (built using %s):\n\n", method),
                   collectOutput(print.cmd))
+    if (method=="coxph")
+    {
+      print.cmd <- paste(print.cmd, "cox.zph(crs$survival)", sep="; ")
+      appendTextview(tv, tvsep=FALSE, "\n\nTest the proportional hazards ",
+                     "assumption for a Cox regression model:\n\n",
+                     collectOutput(print.cmd))
+    }
   }
 
   # Finish up.
   
   if (gui)
   {
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+    time.msg <- sprintf("\nTime taken: %0.2f %s", time.taken,
                         attr(time.taken, "units"))
     appendTextview(tv, "\n", time.msg)
     appendLog(time.msg)
@@ -140,8 +147,16 @@ plotSurvivalModel <- function()
   plot.cmd <- paste('plot(survfit(crs$survival), xlab=crs$target,',
                     'ylab="Survival Probability", col=3)\n',
                     genPlotTitleCmd('Survival Chart', crs$target, 'to',
-                                    crs$risk))
+                                    crs$risk), sep="")
   appendLog("Plot the survival chart for the most recent survival model.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+  
+  plot.cmd <- paste('plot(cox.zph(crs$survival), var=1)\n',
+                    genPlotTitleCmd('Scaled Schoenfeld Residuals'), sep="")
+  appendLog(paste("Plot the graphical test of proportional hazards",
+                  "(scaled Schoenfeld residuals) on variable 1."),
+            plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 }

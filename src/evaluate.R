@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 15:58:15 Graham Williams>
+# Time-stamp: <2009-11-14 07:19:10 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -42,14 +42,14 @@ on_evaluate_rdataset_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_confusion_radiobutton_toggled <- function(button)
+on_evaluate_confusion_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
   setStatusBar()
 }
 
-on_risk_radiobutton_toggled <- function(button)
+on_evaluate_risk_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
@@ -65,35 +65,35 @@ on_risk_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_lift_radiobutton_toggled <- function(button)
+on_evaluate_lift_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.LIFT.TAB)
   setStatusBar()
 }
 
-on_roc_radiobutton_toggled <- function(button)
+on_evaluate_roc_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.ROC.TAB)
   setStatusBar()
 }
 
-on_precision_radiobutton_toggled <- function(button)
+on_evaluate_precision_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.PRECISION.TAB)
   setStatusBar()
 }
 
-on_sensitivity_radiobutton_toggled <- function(button)
+on_evaluate_sensitivity_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.SENSITIVITY.TAB)
   setStatusBar()
 }
 
-on_score_radiobutton_toggled <- function(button)
+on_evaluate_score_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
   {
@@ -104,10 +104,11 @@ on_score_radiobutton_toggled <- function(button)
     theWidget("score_include_label")$show()
     theWidget("score_idents_radiobutton")$show()
     theWidget("score_all_radiobutton")$show()
-    if (not.null(crs$kmeans))
-      theWidget("kmeans_evaluate_checkbutton")$setSensitive(TRUE)
-    if (not.null(crs$hclust))
-      theWidget("hclust_evaluate_checkbutton")$setSensitive(TRUE)
+    #091112 I don't think this belongs here anymore.
+#    if (not.null(crs$kmeans))
+#      theWidget("evaluate_kmeans_checkbutton")$setSensitive(TRUE)
+#    if (not.null(crs$hclust))
+#      theWidget("evaluate_hclust_checkbutton")$setSensitive(TRUE)
   }
   else
   {
@@ -121,14 +122,14 @@ on_score_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
-on_pvo_radiobutton_toggled <- function(button)
+on_evaluate_pvo_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.PVO.TAB)
   setStatusBar()
 }
 
-on_costcurve_radiobutton_toggled <- function(button)
+on_evaluate_costcurve_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.COSTCURVE.TAB)
@@ -148,178 +149,132 @@ on_risk_comboboxentry_changed <- function(action, window)
 ########################################################################
 # UTILITIES
 
-makeEvaluateSensitive <- function()
+configureEvaluateTab <- function()
 {
-  # 080821 Make all the appropriate Evaluate options sensitive. This
-  # should be the one place where this is decided, and this is then
-  # called from the callbacks whenever any of the model type buttons
-  # is toggled.
-  
-  # All known Evaluate buttons.
-  
-  all.buttons <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
-                   "precision", "sensitivity", "pvo", "score")
+  # 091112 Redesign. Configure based on the available models.  Don't
+  # change the status of any model checkboxes.  This is the one place
+  # where all this is done, and this is then called from the callbacks
+  # whenever any of the model type buttons is toggled.
 
-  # 091106 Determine if there are any models selected.
+  # Check if any models are checked for evaluation.
+  
+  active.model <- FALSE
 
-  any.model <- theWidget("rpart_evaluate_checkbutton")$getActive() ||
-  theWidget("ada_evaluate_checkbutton")$getActive() ||
-  theWidget("rf_evaluate_checkbutton")$getActive() ||
-  theWidget("ksvm_evaluate_checkbutton")$getActive() ||
-  theWidget("glm_evaluate_checkbutton")$getActive() ||
-  theWidget("nnet_evaluate_checkbutton")$getActive() ||
-  theWidget("mars_evaluate_checkbutton")$getActive() ||
-  theWidget("kmeans_evaluate_checkbutton")$getActive() ||
-  theWidget("hclust_evaluate_checkbutton")$getActive() ||
-  theWidget("survival_evaluate_checkbutton")$getActive()
+  MODEL <- union(crv$PREDICT, setdiff(crv$DESCRIBE, crv$APRIORI))
+
+  for (m in MODEL)
+  {
+    avail <- ! is.null(eval(parse(text=paste("crs$", m, sep=""))))
+    theWidget(paste("evaluate", m, "checkbutton", sep="_"))$setSensitive(avail)
+    active.model <- active.model ||
+    theWidget(paste("evaluate", m, "checkbutton", sep="_"))$getActive()
+  }
 
   # Automatically work out what needs to be sensistive, based on data
   # type of the target plus whether kmeans or hclust is active and
   # selected.
 
-  if (! any.model)
+  TYPE <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
+            "precision", "sensitivity", "pvo", "score")
+  
+  if (! active.model)
     buttons <- NULL
   else if (is.null(crs$target))
+    buttons <- c("score")
+  else if (theWidget("evaluate_kmeans_checkbutton")$getActive() ||
+           theWidget("evaluate_hclust_checkbutton")$getActive() ||
+           theWidget("evaluate_survival_checkbutton")$getActive()) # 090929 For now.
     buttons <- c("score")
   else if (multinomialTarget())
     buttons <- c("confusion", "score")
   else if (numericTarget())
-    buttons <- c("risk", "pvo", "score") # 090802 Try risk charts for numeric output
-  # 090222 If it is a binomial target then do not allow Pr v Ob since
-  #  the target might be categoric and the display makes no sense (and
-  #  fails with the jitter function.
+    buttons <- c("risk", "pvo", "score")
   else if (binomialTarget() && is.factor(crs$dataset[,crs$target]))
-    buttons <- setdiff(all.buttons, "pvo")
+    # 090222 If it is a binomial target then do not allow Pr v Ob
+    # since the target might be categoric and the display makes no
+    # sense (and fails with the jitter function).
+    buttons <- setdiff(TYPE, "pvo")
   else
-    buttons <- all.buttons
+    buttons <- TYPE
 
-  if (theWidget("kmeans_evaluate_checkbutton")$getActive() ||
-      theWidget("hclust_evaluate_checkbutton")$getActive() ||
-      theWidget("survival_evaluate_checkbutton")$getActive()) # 090929 For now.
-    buttons <- c("score")
-
-  # Need to handle the Risk button specially. Only enable it if there
-  # is a risk variable. 081002 But the plotRisk function actually
-  # works just fine when there is no risk variable, so let it plot
-  # such.
-  
-###   if ("risk" %in% buttons)
-###   {
-###     theWidget("risk_radiobutton")$
-###     setSensitive(length(getSelectedVariables("risk")) != 0)
-###     buttons <- setdiff(buttons, "risk")
-###     all.buttons <- setdiff(all.buttons, "risk")
-###   }
-
-  # Enable each of the specified evaluate buttons.
+  # Now enable each of the identified evaluate buttons.
 
   for (b in buttons)
-    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(TRUE)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
 
   # Disable each of the buttons not specified and make sure none are
   # set as active.
 
-  for (b in setdiff(all.buttons, buttons))
+  for (b in setdiff(TYPE, buttons))
   {
-    theWidget(paste(b, "_radiobutton", sep=""))$setSensitive(FALSE)
-    theWidget(paste(b, "_radiobutton", sep=""))$setActive(FALSE)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(FALSE)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setActive(FALSE)
   }
 
   # Need a button to be set as default. Use the first in the list.
   
   if (length(buttons) > 0)
-    theWidget(paste(buttons[1], "_radiobutton", sep=""))$setActive(TRUE)
+    theWidget(paste("evaluate", buttons[1], "radiobutton", sep="_"))$setActive(TRUE)
 
-###   # 081206 Handle the sensitivity of the new Report options: Class and
-###   # Probability. These are only available if one of the non-cluster
-###   # models is active.
+  # Set the Data options of the Evaluate tab appropraitely.
 
-###   if (existsCategoricModel())
-###   {
-###     theWidget("score_report_label")$setSensitive(TRUE)
-###     theWidget("score_class_radiobutton")$setSensitive(TRUE)
-###     theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-###   }
-###   else
-###   {
-###     theWidget("score_report_label")$setSensitive(FALSE)
-###     theWidget("score_class_radiobutton")$setSensitive(FALSE)
-###     theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-###   }
+  for (b in c("training", "csv", "rdataset"))
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
+  
+  
+  # When we have sampling, assume the remainder is the test set and
+  # so enable the Testing radio button in Evaluate.
+    
+  if (theWidget("sample_checkbutton")$getActive())
+  {
+    theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
+    theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
+  }
+  else
+  {
+    theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
+    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+  }      
 }
 
-resetEvaluateCheckbuttons <- function(action, seton=FALSE, default=NULL)
+resetEvaluateTab <- function()
 {
-  if (action %in% c("predictive_inactive", "all_inactive"))
+  # 091112 Simply deactivate and desensitise everything back to
+  # default.
+
+  TYPE <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
+            "precision", "sensitivity", "pvo", "score")
+
+  for (b in TYPE)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(FALSE)
+  theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
+
+  DATA <- c("training", "testing", "csv", "rdataset")
+  
+  for (b in DATA)
   {
-    theWidget("rpart_evaluate_checkbutton")$setActive(seton)
-    theWidget("ada_evaluate_checkbutton")$setActive(seton)
-    theWidget("rf_evaluate_checkbutton")$setActive(seton)
-    theWidget("ksvm_evaluate_checkbutton")$setActive(seton)
-    theWidget("glm_evaluate_checkbutton")$setActive(seton)
-    theWidget("nnet_evaluate_checkbutton")$setActive(seton)
-    theWidget("mars_evaluate_checkbutton")$setActive(seton)
-    theWidget("survival_evaluate_checkbutton")$setActive(seton)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(FALSE)
+    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setActive(FALSE)
   }
-  if (action %in% c("descriptive_inactive", "all_inactive"))
+
+  MODEL <- union(crv$PREDICT, setdiff(crv$DESCRIBE, crv$APRIORI))
+  
+  for (m in MODEL)
   {
-    theWidget("kmeans_evaluate_checkbutton")$setActive(seton)
-    theWidget("hclust_evaluate_checkbutton")$setActive(seton)
+    theWidget(paste("evaluate", m, "checkbutton", sep="_"))$setSensitive(FALSE)
+    theWidget(paste("evaluate", m, "checkbutton", sep="_"))$setActive(FALSE)
   }
-  if (action %in% c("predictive_insensitive", "all_insensitive"))
-  {
-    theWidget("rpart_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("ada_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("rf_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("ksvm_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("glm_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("nnet_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("mars_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("survival_evaluate_checkbutton")$setSensitive(seton)
-  }
-  if (action %in% c("descriptive_insensitive", "all_insensitive"))
-  {
-    theWidget("kmeans_evaluate_checkbutton")$setSensitive(seton)
-    theWidget("hclust_evaluate_checkbutton")$setSensitive(seton)
-  }
-  if (!is.null(default))
-    theWidget(paste(default, "_evaluate_checkbutton", sep=""))$setActive(TRUE)
+
+  # Scoring options
+  
+  theWidget("score_report_label")$hide()
+  theWidget("score_class_radiobutton")$hide()
+  theWidget("score_probability_radiobutton")$hide()
+  theWidget("score_include_label")$hide()
+  theWidget("score_idents_radiobutton")$hide()
+  theWidget("score_all_radiobutton")$hide()
+
 }
-
-## deactivateROCRPlots <- function()
-## {
-##   theWidget("lift_radiobutton")$setSensitive(FALSE)
-##   theWidget("roc_radiobutton")$setSensitive(FALSE)
-##   theWidget("precision_radiobutton")$setSensitive(FALSE)
-##   theWidget("sensitivity_radiobutton")$setSensitive(FALSE)
-##   theWidget("risk_radiobutton")$setSensitive(FALSE)
-##   theWidget("costcurve_radiobutton")$setSensitive(FALSE)
-
-##   if (numericTarget())
-##   {
-##     theWidget("score_radiobutton")$setActive(TRUE)
-##     theWidget("confusion_radiobutton")$setSensitive(FALSE)
-##   }
-##   else if (multinomialTarget())
-##   {
-##     theWidget("confusion_radiobutton")$setActive(TRUE)
-##     theWidget("confusion_radiobutton")$setSensitive(TRUE)
-##     theWidget("pvo_radiobutton")$setSensitive(FALSE)
-##   }
-## }
-
-## activateROCRPlots <- function()
-## {
-##   theWidget("confusion_radiobutton")$setActive(TRUE)
-##   theWidget("confusion_radiobutton")$setSensitive(TRUE)
-##   theWidget("lift_radiobutton")$setSensitive(TRUE)
-##   theWidget("roc_radiobutton")$setSensitive(TRUE)
-##   theWidget("precision_radiobutton")$setSensitive(TRUE)
-##   theWidget("sensitivity_radiobutton")$setSensitive(TRUE)
-##   theWidget("risk_radiobutton")$setSensitive(length(getSelectedVariables("risk")) != 0)
-##   theWidget("costcurve_radiobutton")$setSensitive(TRUE)
-##   theWidget("pvo_radiobutton")$setSensitive(TRUE)
-## }
 
 getEvaluateModels <- function()
 {
@@ -329,19 +284,19 @@ getEvaluateModels <- function()
 
   # First, check each of the traditional model checkboxes.
   
-  for (m in crv$MODELLERS)
-    if (theWidget(paste(m, "_evaluate_checkbutton", sep=""))$getActive())
+  for (m in crv$PREDICT)
+    if (theWidget(paste("evaluate", m, "checkbutton", sep="_"))$getActive())
       models <- c(models, m)
 
   # Now add in the cluster models, which will eventually be part of
   # the Model tab.
   
-  if (theWidget("kmeans_evaluate_checkbutton")$isSensitive() &&
-      theWidget("kmeans_evaluate_checkbutton")$getActive())
+  if (theWidget("evaluate_kmeans_checkbutton")$isSensitive() &&
+      theWidget("evaluate_kmeans_checkbutton")$getActive())
     models <- c(models, "kmeans")
 
-  if (theWidget("hclust_evaluate_checkbutton")$isSensitive() &&
-      theWidget("hclust_evaluate_checkbutton")$getActive())
+  if (theWidget("evaluate_hclust_checkbutton")$isSensitive() &&
+      theWidget("evaluate_hclust_checkbutton")$getActive())
     models <- c(models, "hclust")
 
   return(models)
@@ -390,11 +345,11 @@ executeEvaluateTab <- function()
 
   # Ensure we recognise the model type.
   
-  if (length(setdiff(mtypes, union(crv$MODELLERS, c("kmeans", "hclust")))) > 0)
+  if (length(setdiff(mtypes, union(crv$PREDICT, c("kmeans", "hclust")))) > 0)
   {
     errorDialog("E121: A model type is not recognised.",
                 "We found the model types to be:", mtypes,
-                "Known models:", crv$MODELLERS,
+                "Known models:", crv$PREDICT,
                 crv$support.msg)
     return()
   }
@@ -440,7 +395,7 @@ executeEvaluateTab <- function()
                                                commonName(crv$SURVIVAL))))
     return()
 
-  if(theWidget("score_radiobutton")$getActive())
+  if(theWidget("evaluate_score_radiobutton")$getActive())
     startLog("Score a Dataset")
   else
     startLog("Evaluate Model Performance")
@@ -955,7 +910,7 @@ executeEvaluateTab <- function()
   # Currently (and perhaps permanently) the ROCR package deals only
   # with binary classification, as does my own Risk Chart.
   
-  if (!(theWidget("confusion_radiobutton")$getActive()
+  if (!(theWidget("evaluate_confusion_radiobutton")$getActive()
 
         # 090506 I had a note here that pvo was not working for
         # multiclass targets for the PrvOb plot, but uncommenting the
@@ -968,8 +923,8 @@ executeEvaluateTab <- function()
         # target choice to cover the case of a Numeric override of a
         # Categoric variable.
 
-        || theWidget("pvo_radiobutton")$getActive()
-        || theWidget("score_radiobutton")$getActive())
+        || theWidget("evaluate_pvo_radiobutton")$getActive()
+        || theWidget("evaluate_score_radiobutton")$getActive())
       && !theWidget("target_categoric_radiobutton")$getActive() # See Note Above
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
@@ -984,24 +939,23 @@ executeEvaluateTab <- function()
 
   # DISPATCH
   
-  if (theWidget("confusion_radiobutton")$getActive())
+  if (theWidget("evaluate_confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)
-  else if (theWidget("risk_radiobutton")$getActive())
+  else if (theWidget("evaluate_risk_radiobutton")$getActive())
     msg <- executeEvaluateRisk(probcmd, testset, testname)
-  else if (theWidget("costcurve_radiobutton")$getActive())
+  else if (theWidget("evaluate_costcurve_radiobutton")$getActive())
     msg <- executeEvaluateCostCurve(probcmd, testset, testname)
-  else if (theWidget("roc_radiobutton")$getActive())
+  else if (theWidget("evaluate_roc_radiobutton")$getActive())
     msg <- executeEvaluateROC(probcmd, testset, testname)
-  else if (theWidget("lift_radiobutton")$getActive())
+  else if (theWidget("evaluate_lift_radiobutton")$getActive())
     msg <- executeEvaluateLift(probcmd, testset, testname)
-  else if (theWidget("precision_radiobutton")$getActive())
+  else if (theWidget("evaluate_precision_radiobutton")$getActive())
     msg <- executeEvaluatePrecision(probcmd, testset, testname)
-  else if (theWidget("sensitivity_radiobutton")$getActive())
+  else if (theWidget("evaluate_sensitivity_radiobutton")$getActive())
     msg <- executeEvaluateSensitivity(probcmd, testset, testname)
-  else if (theWidget("hand_radiobutton")$getActive())
+  else if (theWidget("evaluate_hand_radiobutton")$getActive())
     msg <- executeEvaluateHand(probcmd, testset, testname)
-  
-  else if (theWidget("pvo_radiobutton")$getActive())
+  else if (theWidget("evaluate_pvo_radiobutton")$getActive())
   {
     if (categoricTarget())
       msg <- executeEvaluatePvOplot(probcmd, testset, testname)
@@ -1009,7 +963,7 @@ executeEvaluateTab <- function()
       msg <- executeEvaluatePvOplot(predcmd, testset, testname)
   }
 
-  else if (theWidget("score_radiobutton")$getActive())
+  else if (theWidget("evaluate_score_radiobutton")$getActive())
   {
     if (categoricTarget())
       # 081025 Which is best? For trees, traditionally we return the

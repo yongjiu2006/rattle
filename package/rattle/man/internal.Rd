@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_model_survival_plots_button_clicked}
+\alias{toga}
 \alias{on_explore_correlation_hier_checkbutton_toggled}
 \alias{on_explore_correlation_radiobutton_toggled}
 \alias{on_model_survival_radiobutton_toggled}

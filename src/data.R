@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-21 18:51:30 Graham Williams>
+# Time-stamp: <2009-11-12 20:44:44 Graham Williams>
 #
 # DATA TAB
 #
@@ -2136,11 +2136,6 @@ executeSelectSample <- function()
     appendLog("Build a random sample for modelling.", sample.cmd)
     eval(parse(text=sample.cmd))
 
-    # When we have sampling, assume the remainder is the test set and
-    # so enable the Testing radio button in Evaluate.
-    
-    theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
-    theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
   }
   else
   {

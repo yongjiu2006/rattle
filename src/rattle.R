@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 14:39:23 Graham Williams>
+# Time-stamp: <2009-11-14 07:14:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 04 Nov 2009"
+VERSION.DATE <- "Released 06 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -432,20 +432,22 @@ rattle <- function(csvname=NULL)
   crv$IMPUTE <- c(number=0, variable=1, comment=2)
   
   crv$CATEGORICAL <- c(number = 0, variable = 1, barplot = 2,
-                        dotplot = 3, mosplot = 4, comment = 5)
+                       dotplot = 3, mosplot = 4, comment = 5)
   
   crv$CONTINUOUS <-  c(number = 0, variable = 1, boxplot = 2,
-                        hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
+                       hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
   
-  # Create constants naming the MODELLERS (i.e., the model
-  # builders). Note that these are migrating into the crv variable,
-  # but not all are done yet. 081227 Also note that kmeans, hclust and
-  # apriori will also be migrating into being treated as first class
-  # models.
+  # Create constants naming DESCRIBE (i.e., the descriptive model
+  # builders) and PREDICT (i.e., the predictive model builders). Note
+  # that these are migrating into the crv variable, but not all are
+  # done yet. 081227 Also note that kmeans, hclust and apriori will
+  # also be migrating into being treated as first class models.
 
   crv$KMEANS 	<- "kmeans"
   crv$HCLUST 	<- "hclust"
   crv$APRIORI 	<- "apriori"
+
+  crv$DESCRIBE <- c(crv$KMEANS, crv$HCLUST, crv$APRIORI)
   
   crv$GLM   	<- "glm"
   crv$RPART 	<- "rpart"
@@ -457,7 +459,7 @@ rattle <- function(csvname=NULL)
   crv$NNET  	<- "nnet"
   crv$SURVIVAL <- "survival"
 
-  crv$MODELLERS <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM,
+  crv$PREDICT <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM,
                      crv$NNET, crv$SURVIVAL)
   
   # PACKAGE STATE VARIABLE
@@ -895,7 +897,7 @@ resetRattle <- function(new.dataset=TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
 
   crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
-  theWidget("confusion_radiobutton")$setActive(TRUE)
+  theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
 
   # Reset the DATA tab. But we don't want to do this because
   # resetRattle is called on loading a database table, and this ends
@@ -1055,8 +1057,9 @@ resetRattle <- function(new.dataset=TRUE)
     }
   }
   
-  resetEvaluateCheckbuttons("all_inactive")
-  resetEvaluateCheckbuttons("all_insensitive")
+  #091112 resetEvaluateTab("all_inactive")
+  #091112 resetEvaluateTab("all_insensitive")
+  resetEvaluateTab()
 
   #theWidget("rpart_evaluate_checkbutton")$hide()
   #theWidget("rf_evaluate_checkbutton")$hide()
@@ -1389,8 +1392,7 @@ listBuiltModels <- function(exclude=NULL)
 {
   # Build a list of models that have been built. 
   models <- c()
-  for (m in setdiff(c(crv$MODELLERS, crv$KMEANS, crv$HCLUST, crv$APRIORI),
-                    exclude))
+  for (m in setdiff(c(crv$PREDICT, crv$DESCRIBE), exclude))
     if (not.null(eval(parse(text=sprintf("crs$%s", m)))))
       models <- c(models, m)
   return(models)
@@ -2152,38 +2154,39 @@ switchToPage <- function(page)
   if (is.numeric(page))
     page <- crv$NOTEBOOK$getTabLabelText(crv$NOTEBOOK$getNthPage(page))
 
-  if (page == crv$NOTEBOOK.EVALUATE.NAME)
-  {
+  # 091112 This is now done in configureEvaluateTab.
+  ## if (page == crv$NOTEBOOK.EVALUATE.NAME)
+  ## {
     
-    # On moving to the EVALUATE page, ensure each built model's
-    # checkbox is active, and check the active model's checkbox, but
-    # leave all the other as they are.
+  ##   # On moving to the EVALUATE page, ensure each built model's
+  ##   # checkbox is active, and check the active model's checkbox, but
+  ##   # leave all the other as they are.
 
-    mtypes <- listBuiltModels(exclude=crv$APRIORI)
+  ##   mtypes <- listBuiltModels(exclude=crv$APRIORI)
 
-    if (not.null(mtypes))
-    {
-      # We have some models, so make sure their checkboxes are
-      # sensitive.
+  ##   if (not.null(mtypes))
+  ##   {
+  ##     # We have some models, so make sure their checkboxes are
+  ##     # sensitive.
 
-      lapply(mtypes,
-             function(x) theWidget(paste(x, "_evaluate_checkbutton",
-                                            sep=""))$setSensitive(TRUE))
+  ##     lapply(mtypes,
+  ##            function(x) theWidget(paste(x, "_evaluate_checkbutton",
+  ##                                           sep=""))$setSensitive(TRUE))
       
-      if (is.null(crs$page) || crs$page == crv$NOTEBOOK.MODEL.NAME)
-      {
-        # By default check the current model's check button if we
-        # have just come from the MODEL page. This makes it easy when
-        # swaping from the Model page to this page to evaluate the
-        # just built model (usually). The NULL test on crs$page
-        # simply covers the loading of a project that did not save
-        # the crs$page, as was the case for old project files.
-        if (currentModelTab() %in% mtypes)
-          theWidget(paste(currentModelTab(), "_evaluate_checkbutton",
-                          sep=""))$setActive(TRUE)
-      }
-    }
-  }
+  ##     if (is.null(crs$page) || crs$page == crv$NOTEBOOK.MODEL.NAME)
+  ##     {
+  ##       # By default check the current model's check button if we
+  ##       # have just come from the MODEL page. This makes it easy when
+  ##       # swaping from the Model page to this page to evaluate the
+  ##       # just built model (usually). The NULL test on crs$page
+  ##       # simply covers the loading of a project that did not save
+  ##       # the crs$page, as was the case for old project files.
+  ##       if (currentModelTab() %in% mtypes)
+  ##         theWidget(paste(currentModelTab(), "_evaluate_checkbutton",
+  ##                         sep=""))$setActive(TRUE)
+  ##     }
+  ##   }
+  ## }
 
 
   # When changing to the LOG page desensitise the Execute button. Not

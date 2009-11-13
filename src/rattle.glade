@@ -7343,7 +7343,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="confusion_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_confusion_radiobutton">
                         <property name="label" translatable="yes">Error Matrix</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7351,7 +7351,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_confusion_radiobutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_confusion_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7361,7 +7361,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="risk_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_risk_radiobutton">
                         <property name="label" translatable="yes">Risk</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7369,8 +7369,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_risk_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_risk_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7380,15 +7380,15 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="costcurve_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_costcurve_radiobutton">
                         <property name="label" translatable="yes">Cost Curve</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_costcurve_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_costcurve_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7397,14 +7397,14 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="hand_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_hand_radiobutton">
                         <property name="label" translatable="yes">Hand</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
+                        <property name="group">evaluate_confusion_radiobutton</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7412,7 +7412,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="lift_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_lift_radiobutton">
                         <property name="label" translatable="yes">Lift</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7420,8 +7420,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_lift_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_lift_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7431,7 +7431,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="roc_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_roc_radiobutton">
                         <property name="label" translatable="yes">ROC</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7439,8 +7439,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_roc_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_roc_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7450,7 +7450,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="precision_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_precision_radiobutton">
                         <property name="label" translatable="yes">Precision</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7458,8 +7458,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_precision_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_precision_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7469,7 +7469,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="sensitivity_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_sensitivity_radiobutton">
                         <property name="label" translatable="yes">Sensitivity</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7477,8 +7477,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_sensitivity_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_sensitivity_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7488,7 +7488,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="pvo_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_pvo_radiobutton">
                         <property name="label" translatable="yes">Pr v Ob</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7496,8 +7496,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_pvo_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_pvo_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7506,7 +7506,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="score_radiobutton">
+                      <widget class="GtkRadioButton" id="evaluate_score_radiobutton">
                         <property name="label" translatable="yes">Score</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7514,8 +7514,8 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">confusion_radiobutton</property>
-                        <signal name="toggled" handler="on_score_radiobutton_toggled"/>
+                        <property name="group">evaluate_confusion_radiobutton</property>
+                        <signal name="toggled" handler="on_evaluate_score_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7553,7 +7553,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="rpart_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_rpart_checkbutton">
                         <property name="label" translatable="yes">Tree</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7561,7 +7561,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_rpart_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7570,7 +7570,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="ada_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_ada_checkbutton">
                         <property name="label" translatable="yes">Boost</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7578,6 +7578,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7586,7 +7587,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="rf_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_rf_checkbutton">
                         <property name="label" translatable="yes">Forest</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7594,6 +7595,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7602,7 +7604,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="ksvm_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_ksvm_checkbutton">
                         <property name="label" translatable="yes">SVM</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7610,6 +7612,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7618,7 +7621,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="glm_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_glm_checkbutton">
                         <property name="label" translatable="yes">Linear</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7626,7 +7629,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_glm_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7635,7 +7638,7 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="nnet_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_nnet_checkbutton">
                         <property name="label" translatable="yes">Neural Net</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
@@ -7643,7 +7646,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_nnet_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7652,13 +7655,14 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="mars_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_mars_checkbutton">
                         <property name="label" translatable="yes">MARS</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7667,14 +7671,14 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="survival_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_survival_checkbutton">
                         <property name="label" translatable="yes">Survival</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_survival_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7682,14 +7686,14 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="kmeans_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_kmeans_checkbutton">
                         <property name="label" translatable="yes">KMeans</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_kmeans_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7697,14 +7701,14 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="hclust_evaluate_checkbutton">
+                      <widget class="GtkCheckButton" id="evaluate_hclust_checkbutton">
                         <property name="label" translatable="yes">HClust</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_hclust_evaluate_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_evaluate_model_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
