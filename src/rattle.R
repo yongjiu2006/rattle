@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-14 07:14:07 Graham Williams>
+# Time-stamp: <2009-11-14 21:21:38 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Nov 2009"
+VERSION.DATE <- "Released 14 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -53,10 +53,14 @@ COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # INTERFACE STYLE
 #
-#    080427 For options like a button to show a model once it has been
+#    080427 For options like a button to display a model once it has been
 #    built or which model builders are available given the nature of
 #    the data, we generally toggle the Sensistivity of the widgets
 #    appropraitely.
+#
+#    In general, show all available widgets at any time, but grey out
+#    those that can not yet be used because, for example, a model has
+#    not yet been built.
 #
 #    If the functionality is not yet implemented, full stop, then have
 #    the interface item(s) not present. This is better than having
@@ -257,8 +261,9 @@ rattle <- function(csvname=NULL)
   # When an error is reported to the R Console, include a time stamp.
 
   options(error=function()
-          cat(sprintf("%s timestamp (for the error above): %s\n",
-                      crv$appname, Sys.time())))
+          cat(sprintf("%s timestamp (for the error above): %s\n%s\n",
+                      crv$appname, Sys.time(),
+                      paste(rep("^", 72), collapse=""))))
 
 
   # Keep the loading of Hmisc quiet.
@@ -1091,6 +1096,8 @@ resetRattle <- function(new.dataset=TRUE)
 "%notin%" <- function(x,y) ! x %in% y
 
 not.null <- function(x) ! is.null(x)
+
+Rtxt <- function(...) gettext(paste(...), domain="R-rattle")
 
 uri2file <- function(u)
 {

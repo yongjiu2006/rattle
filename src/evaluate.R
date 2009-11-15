@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-14 07:19:10 Graham Williams>
+# Time-stamp: <2009-11-15 14:55:05 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -95,15 +95,26 @@ on_evaluate_sensitivity_radiobutton_toggled <- function(button)
 
 on_evaluate_score_radiobutton_toggled <- function(button)
 {
+  # Configure the Report and Include options that relate only to
+  # scoring. For non-Survival models the report is either Class or
+  # Probability. For Survival models (coxph at least) it is Time or
+  # Risk. We change the labels appropriately.
+
   if (button$getActive())
   {
+    # Show the Score textview.
+    
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.SCORE.TAB)
-    theWidget("score_report_label")$show()
-    theWidget("score_class_radiobutton")$show()
-    theWidget("score_probability_radiobutton")$show()
-    theWidget("score_include_label")$show()
-    theWidget("score_idents_radiobutton")$show()
-    theWidget("score_all_radiobutton")$show()
+
+    # Configure the Report/Include options
+    
+    theWidget("score_report_label")$setSensitive(TRUE)
+    theWidget("score_class_radiobutton")$setSensitive(TRUE)
+    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+    theWidget("score_include_label")$setSensitive(TRUE)
+    theWidget("score_idents_radiobutton")$setSensitive(TRUE)
+    theWidget("score_all_radiobutton")$setSensitive(TRUE)
+
     #091112 I don't think this belongs here anymore.
 #    if (not.null(crs$kmeans))
 #      theWidget("evaluate_kmeans_checkbutton")$setSensitive(TRUE)
@@ -112,12 +123,12 @@ on_evaluate_score_radiobutton_toggled <- function(button)
   }
   else
   {
-    theWidget("score_report_label")$hide()
-    theWidget("score_class_radiobutton")$hide()
-    theWidget("score_probability_radiobutton")$hide()
-    theWidget("score_include_label")$hide()
-    theWidget("score_idents_radiobutton")$hide()
-    theWidget("score_all_radiobutton")$hide()
+    theWidget("score_report_label")$setSensitive(FALSE)
+    theWidget("score_class_radiobutton")$setSensitive(FALSE)
+    theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+    theWidget("score_include_label")$setSensitive(FALSE)
+    theWidget("score_idents_radiobutton")$setSensitive(FALSE)
+    theWidget("score_all_radiobutton")$setSensitive(FALSE)
   }    
   setStatusBar()
 }
@@ -154,11 +165,12 @@ configureEvaluateTab <- function()
   # 091112 Redesign. Configure based on the available models.  Don't
   # change the status of any model checkboxes.  This is the one place
   # where all this is done, and this is then called from the callbacks
-  # whenever any of the model type buttons is toggled.
+  # whenever any of the model buttons within the Evaluate tab is
+  # toggled.
 
   # Check if any models are checked for evaluation.
   
-  active.model <- FALSE
+  active.models <- NULL
 
   MODEL <- union(crv$PREDICT, setdiff(crv$DESCRIBE, crv$APRIORI))
 
@@ -166,8 +178,8 @@ configureEvaluateTab <- function()
   {
     avail <- ! is.null(eval(parse(text=paste("crs$", m, sep=""))))
     theWidget(paste("evaluate", m, "checkbutton", sep="_"))$setSensitive(avail)
-    active.model <- active.model ||
-    theWidget(paste("evaluate", m, "checkbutton", sep="_"))$getActive()
+    if (theWidget(paste("evaluate", m, "checkbutton", sep="_"))$getActive())
+      active.models <- c(active.models, m)
   }
 
   # Automatically work out what needs to be sensistive, based on data
@@ -177,7 +189,7 @@ configureEvaluateTab <- function()
   TYPE <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
             "precision", "sensitivity", "pvo", "score")
   
-  if (! active.model)
+  if (length(active.models) == 0)
     buttons <- NULL
   else if (is.null(crs$target))
     buttons <- c("score")
@@ -211,17 +223,24 @@ configureEvaluateTab <- function()
     theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setActive(FALSE)
   }
 
-  # Need a button to be set as default. Use the first in the list.
+  # Need a button to be set as default. Use the first in the
+  # list. 091114 TODO We also need to check if there is a current
+  # sensitive button that is active, and if so then leave it as it is.
+
+  sensitive.active <- NULL
+  for (b in TYPE)
+    if (theWidget(paste("evaluate", b, "radiobutton", sep="_"))$isSensitive()
+        && theWidget(paste("evaluate", b, "radiobutton", sep="_"))$getActive())
+      sensitive.active <- c(sensitive.active, b)
   
-  if (length(buttons) > 0)
+  if (length(buttons) > 0 && length(sensitive.active) == 0)
     theWidget(paste("evaluate", buttons[1], "radiobutton", sep="_"))$setActive(TRUE)
 
   # Set the Data options of the Evaluate tab appropraitely.
 
   for (b in c("training", "csv", "rdataset"))
     theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
-  
-  
+    
   # When we have sampling, assume the remainder is the test set and
   # so enable the Testing radio button in Evaluate.
     
@@ -234,7 +253,62 @@ configureEvaluateTab <- function()
   {
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)
-  }      
+  }
+
+  #----------------------------------------------------------------------
+  
+  # 081206 Handle the sensitivity of the new Report options: Class
+  # and Probability. These are only available if one of the
+  # non-cluster models is active but not if it is a multinomial
+  # target.
+
+  #091114 Now done in the Score callback?
+#  predictive.model <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
+#                       theWidget("evaluate_ada_checkbutton")$getActive() ||
+#                       theWidget("evaluate_rf_checkbutton")$getActive() ||
+#                       theWidget("evaluate_ksvm_checkbutton")$getActive() ||
+#                       theWidget("evaluate_glm_checkbutton")$getActive() ||
+#                       theWidget("evaluate_nnet_checkbutton")$getActive())
+#  
+#  make.sensitive <- (! is.null(crs$survival) ||
+#                     (existsCategoricModel()
+#                      && predictive.model
+#                      && ! multinomialTarget()))
+#
+#  theWidget("score_report_label")$setSensitive(make.sensitive)
+#  theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
+#  theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
+
+  default.to.class <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
+                       theWidget("evaluate_ada_checkbutton")$getActive() ||
+                       theWidget("evaluate_rf_checkbutton")$getActive() ||
+                       theWidget("evaluate_ksvm_checkbutton")$getActive())
+
+  if (default.to.class)
+    theWidget("score_class_radiobutton")$setActive(TRUE)
+  else
+    theWidget("score_probability_radiobutton")$setActive(TRUE)
+  
+  # Change the labels for Report if Survival is set.
+
+  if (theWidget("evaluate_survival_checkbutton")$getActive())
+  {
+    if (length(active.models) == 1) # Only Survival is selected
+    {
+      theWidget("score_class_radiobutton")$setLabel("Time")
+      theWidget("score_probability_radiobutton")$setLabel("Risk")
+    }
+    else
+    {
+      theWidget("score_class_radiobutton")$setLabel("Class/Time")
+      theWidget("score_probability_radiobutton")$setLabel("Prob/Risk")
+    }
+  }
+  else if (length(active.models)) 
+  {
+    theWidget("score_class_radiobutton")$setLabel("Class")
+    theWidget("score_probability_radiobutton")$setLabel("Probability")
+  }
 }
 
 resetEvaluateTab <- function()
@@ -267,12 +341,12 @@ resetEvaluateTab <- function()
 
   # Scoring options
   
-  theWidget("score_report_label")$hide()
-  theWidget("score_class_radiobutton")$hide()
-  theWidget("score_probability_radiobutton")$hide()
-  theWidget("score_include_label")$hide()
-  theWidget("score_idents_radiobutton")$hide()
-  theWidget("score_all_radiobutton")$hide()
+  theWidget("score_report_label")$setSensitive(FALSE)
+  theWidget("score_class_radiobutton")$setSensitive(FALSE)
+  theWidget("score_probability_radiobutton")$setSensitive(FALSE)
+  theWidget("score_include_label")$setSensitive(FALSE)
+  theWidget("score_idents_radiobutton")$setSensitive(FALSE)
+  theWidget("score_all_radiobutton")$setSensitive(FALSE)
 
 }
 
@@ -444,7 +518,7 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_testing_radiobutton")$getActive())
   {
-    # EVALUATE ON TEST DATA
+    # Evaluate on test data
     
     if (is.null(included))
       testset0 <- "crs$dataset[-crs$sample,]"
@@ -454,7 +528,7 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_csv_radiobutton")$getActive())
   {
-    # EVALUATE ON CSV DATA
+    # Evaluate on CSV data
 
     # We need to allow for the case where the loaded csv data does not
     # have the risk and target variables when we are scoring the data
@@ -466,16 +540,16 @@ executeEvaluateTab <- function()
     crs$dwd <- dirname(filename)
     crs$mtime <- urlModTime(filename)
 
-    if (is.null(filename))
+    if (is.null(filename) || ! file.exists(filename) || file.info(getwd())$isdir)
     {
-      errorDialog("You have requested that a CSV file be used",
-                  "as your testing dataset, but you have not",
-                  "identified which file. Please use the file",
-                  "chooser button to select the CSV file you wish",
-                  "to use as your testset for evaluation.")
+      errorDialog(Rtxt("You have requested that a CSV file be used",
+                       "as your testing dataset, but you have not",
+                       "identified which file. Please use the file",
+                       "chooser button to select the CSV file you wish",
+                       "to use as your testset for evaluation."))
       return()
     }
-                   
+    
     # Load the testset from file, but only load it if it is not
     # already loaded.
     
@@ -590,12 +664,20 @@ executeEvaluateTab <- function()
   ## We want to obtain the probablity of class 1 (i.e., the second of
   ## a two level class). Start with the default predict.cmd.
 
-  ## Now build model specific strings for each model
+  # Now build model specific strings for each model
 
   testset <- list() # The string representing the test dataset
   predcmd <- list() # Command string for predictions
   respcmd <- list() # Command string for response - class of entities
   probcmd <- list() # Command string for probability
+
+  # Why a Predict and Response command? Need better documentation.
+  #
+  # modeller    pred		resp		prob
+  # ada				=pred
+  # kmeans			=pred		=pred
+  # hclust			=pred		=pred
+  # survival			=pred
   
   if (crv$ADA %in%  mtypes)
   {
@@ -632,11 +714,9 @@ executeEvaluateTab <- function()
   {
     testset[[crv$SURVIVAL]] <- testset0
 
-    is.coxph <- class(crs$survival) == "coxph"
-
-    predcmd[[crv$SURVIVAL]] <- genPredictSurvival(testset[[crv$SURVIVAL]], is.coxph)
-    respcmd[[crv$SURVIVAL]] <- genResponseSurvival(testset[[crv$SURVIVAL]], is.coxph)
-    probcmd[[crv$SURVIVAL]] <- genProbabilitySurvival(testset[[crv$SURVIVAL]], is.coxph)
+    predcmd[[crv$SURVIVAL]] <- genPredictSurvival(testset[[crv$SURVIVAL]])
+    respcmd[[crv$SURVIVAL]] <- genResponseSurvival(testset[[crv$SURVIVAL]])
+    probcmd[[crv$SURVIVAL]] <- genProbabilitySurvival(testset[[crv$SURVIVAL]])
   }
 
   if (crv$NNET %in%  mtypes)
@@ -965,13 +1045,26 @@ executeEvaluateTab <- function()
 
   else if (theWidget("evaluate_score_radiobutton")$getActive())
   {
-    if (categoricTarget())
+    if (categoricTarget() || crv$SURVIVAL %in%  mtypes)
+      
       # 081025 Which is best? For trees, traditionally we return the
       # class, but for logistic regression we might return the
       # probability. 081204 So we pass both to the function and decide in
       # there based on a radiobutton setting.
+
+      # 091115 Add the survival option. For a survival model we want
+      # access to both the prob and resp (i.e., pred) commands, yet we
+      # do not have a categoric target. The prob will be the risk
+      # prediction and the resp will be the time to event
+      # prediction. Unfortunately, if other models are also selected,
+      # this will fail since normally they would go down the other
+      # branch here - should be testing that case also I think and put
+      # up a warning.
+
       msg <- executeEvaluateScore(probcmd, respcmd, testset, testname)
+
     else
+
       msg <- executeEvaluateScore(predcmd, predcmd, testset, testname)
   }
   else
@@ -1005,11 +1098,11 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     
     confuse.cmd <- paste(sprintf("table(crs$pr, %s$%s, ",
                                  ts, crs$target),
-                         'dnn=c("Predicted", "Actual"))')
+                         '\n        dnn=c("Predicted", "Actual"))')
   
     percentage.cmd <- paste("round(100*table(crs$pr, ",
                             sprintf("%s$%s, ", ts, crs$target),
-                            'dnn=c("Predicted", "Actual"))',
+                            '\n        dnn=c("Predicted", "Actual"))',
                             "/length(crs$pr))",
                             sep="")
 
@@ -1017,12 +1110,12 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       # 080528 TODO generalise to categoricTarget. 091023 Handle the
       # case where there is only one value predicted from the two
       # possible values.
-      error.cmd <- paste("(function(x){ if (nrow(x) == 2)",
-                         "cat((x[1,2]+x[2,1])/sum(x))",
-                         "else cat(1-(x[1,rownames(x)])/sum(x))})",
-                         "(table(crs$pr,",
+      error.cmd <- paste("overall <- function(x)\n{\n  if (nrow(x) == 2)",
+                         "\n    cat((x[1,2] + x[2,1]) / sum(x))",
+                         "\n  else\n    cat(1 - (x[1,rownames(x)]) / sum(x))\n}",
+                         "\noverall(table(crs$pr,",
                          sprintf("%s$%s, ", ts, crs$target),
-                         'dnn=c("Predicted", "Actual")))')
+                         '\n        dnn=c("Predicted", "Actual")))')
     
     # Log the R commands and execute them.
 
@@ -1067,16 +1160,16 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       next()
     }
     
-    appendLog("Now generate the error matrix.", confuse.cmd)
+    appendLog(Rtxt("Generate the error matrix showing counts."), confuse.cmd)
 
     confuse.output <- collectOutput(confuse.cmd, TRUE)
   
-    appendLog("Generate error matrix showing percentages.", percentage.cmd)
+    appendLog(Rtxt("Generate the error matrix showing percentages."), percentage.cmd)
     percentage.output <- collectOutput(percentage.cmd, TRUE)
 
     if (binomialTarget())
     {
-      appendLog("Calucate overall error percentage.", error.cmd)
+      appendLog(Rtxt("Calucate the overall error percentage."), error.cmd)
       error.output <- collectOutput(error.cmd)
     }
     
@@ -2396,7 +2489,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   for (mtype in the.models)
   {
     setStatusBar("Scoring dataset using", mtype, "...")
-        
+
     # Determine whether we want the respcmd (for trees and multinom)
     # or the probcmd (for logistic regression). 081204 Originally we
     # returned probabilities for glm and class for everything
@@ -2410,9 +2503,8 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
     
     # Apply the model to the dataset.
 
-    appendLog(sprintf(paste("%s: Obtain %s",
+    appendLog(sprintf(paste("Obtain %s",
                             "for the %s model on %s."),
-                      toupper(mtype),
                       ifelse(mtype %in% c("kmeans", "hclust"),
                              "cluster number",
                              ifelse(categoricTarget(),

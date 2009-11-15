@@ -985,6 +985,7 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -1292,9 +1293,6 @@
                         <property name="position">8</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -1302,9 +1300,6 @@
                     <property name="padding">5</property>
                     <property name="position">0</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
                 <child>
                   <widget class="GtkNotebook" id="data_notebook">
@@ -1482,82 +1477,7 @@
                             <property name="position">13</property>
                           </packing>
                         </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label18">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">csv</property>
-                      </widget>
-                      <packing>
-                        <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label19">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">arff</property>
-                      </widget>
-                      <packing>
-                        <property name="position">1</property>
-                        <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label20">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">rdataset</property>
-                      </widget>
-                      <packing>
-                        <property name="position">2</property>
-                        <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label21">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">library</property>
-                      </widget>
-                      <packing>
-                        <property name="position">3</property>
-                        <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label22">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">rdatafile</property>
-                      </widget>
-                      <packing>
-                        <property name="position">4</property>
-                        <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label25">
@@ -1589,8 +1509,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="action">select-folder</property>
                             <property name="local_only">False</property>
+                            <property name="action">select-folder</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -1626,9 +1546,6 @@
                             <property name="expand">False</property>
                             <property name="position">3</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <widget class="GtkCheckButton" id="data_corpus_stopwords_checkbutton">
@@ -1832,9 +1749,6 @@
                         <property name="fill">False</property>
                         <property name="position">9</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                   </widget>
                   <packing>
@@ -2184,12 +2098,6 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
                       <widget class="GtkRadioButton" id="explore_correlation_radiobutton">
                         <property name="label" translatable="yes">Correlation</property>
                         <property name="visible">True</property>
@@ -2205,9 +2113,6 @@
                         <property name="fill">False</property>
                         <property name="position">5</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="prcomp_radiobutton">
@@ -2248,9 +2153,6 @@
                     <property name="padding">5</property>
                     <property name="position">0</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
                 <child>
                   <widget class="GtkVBox" id="vbox10">
@@ -2348,9 +2250,6 @@
                                         <property name="fill">False</property>
                                         <property name="position">4</property>
                                       </packing>
-                                    </child>
-                                    <child>
-                                      <placeholder/>
                                     </child>
                                     <child>
                                       <widget class="GtkCheckButton" id="missing_checkbutton">
@@ -2476,6 +2375,7 @@
                         <child>
                           <widget class="GtkVBox" id="vbox26">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox26">
                                 <property name="visible">True</property>
@@ -2775,9 +2675,6 @@
                                 <property name="position">4</property>
                               </packing>
                             </child>
-                            <child>
-                              <placeholder/>
-                            </child>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -2797,6 +2694,7 @@
                         <child>
                           <widget class="GtkVBox" id="vbox16">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox38">
                                 <property name="visible">True</property>
@@ -2867,9 +2765,6 @@ Spearman</property>
                                     <property name="position">4</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -2914,6 +2809,7 @@ Spearman</property>
                         <child>
                           <widget class="GtkVBox" id="vbox22">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox28">
                                 <property name="visible">True</property>
@@ -3002,6 +2898,7 @@ Spearman</property>
                         <child>
                           <widget class="GtkVBox" id="vbox24">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox41">
                                 <property name="visible">True</property>
@@ -3109,6 +3006,7 @@ Spearman</property>
             <child>
               <widget class="GtkVBox" id="vbox8">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkTable" id="table1">
                     <property name="visible">True</property>
@@ -3269,30 +3167,6 @@ Spearman</property>
                   <widget class="GtkHBox" id="hbox23">
                     <property name="visible">True</property>
                     <property name="spacing">10</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -3381,15 +3255,6 @@ Spearman</property>
                         <property name="expand">False</property>
                         <property name="position">6</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                   </widget>
                   <packing>
@@ -3550,9 +3415,6 @@ Spearman</property>
                       <widget class="GtkVBox" id="vbox35">
                         <property name="visible">True</property>
                         <property name="orientation">vertical</property>
-                        <child>
-                          <placeholder/>
-                        </child>
                         <child>
                           <widget class="GtkTable" id="table2">
                             <property name="visible">True</property>
@@ -3973,12 +3835,6 @@ Spearman</property>
                                     <property name="position">5</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </widget>
                               <packing>
                                 <property name="position">0</property>
@@ -4028,9 +3884,6 @@ Spearman</property>
                                 <property name="expand">False</property>
                                 <property name="position">1</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                             <child>
                               <widget class="GtkRadioButton" id="remap_asfactor_radiobutton">
@@ -4089,12 +3942,7 @@ Spearman</property>
                       <widget class="GtkVBox" id="vbox6">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
+                        <property name="orientation">vertical</property>
                       </widget>
                       <packing>
                         <property name="position">3</property>
@@ -4115,6 +3963,7 @@ Spearman</property>
                       <widget class="GtkVBox" id="vbox9">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkLabel" id="label10">
                             <property name="visible">True</property>
@@ -4199,12 +4048,6 @@ Spearman</property>
                                 <property name="position">3</property>
                               </packing>
                             </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -4270,6 +4113,7 @@ Spearman</property>
             <child>
               <widget class="GtkVBox" id="cluster_tab_widget">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox14">
                     <property name="visible">True</property>
@@ -4319,9 +4163,6 @@ Spearman</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -4336,6 +4177,7 @@ Spearman</property>
                     <child>
                       <widget class="GtkVBox" id="vbox27">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkHBox" id="hbox29">
                             <property name="visible">True</property>
@@ -4524,15 +4366,6 @@ Spearman</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4571,9 +4404,11 @@ Spearman</property>
                     <child>
                       <widget class="GtkVBox" id="vbox28">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkVBox" id="vbox2">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <property name="spacing">5</property>
                             <child>
                               <widget class="GtkHSeparator" id="hseparator2">
@@ -4811,9 +4646,6 @@ centroid</property>
                                     <property name="position">6</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -4882,6 +4714,7 @@ centroid</property>
             <child>
               <widget class="GtkVBox" id="associate_tab_widget">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox32">
                     <property name="visible">True</property>
@@ -5261,9 +5094,6 @@ centroid</property>
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
                   <widget class="GtkNotebook" id="model_notebook">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -5271,9 +5101,11 @@ centroid</property>
                     <child>
                       <widget class="GtkVBox" id="model_tree_vbox">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkVBox" id="model_tree_options_vbox">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="model_tree_top_hbox">
                                 <property name="height_request">20</property>
@@ -5732,9 +5564,11 @@ centroid</property>
                     <child>
                       <widget class="GtkVBox" id="model_boos_vbox">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkVBox" id="model_boost_vbox">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox11">
                                 <property name="height_request">20</property>
@@ -6412,6 +6246,7 @@ centroid</property>
                     <child>
                       <widget class="GtkVBox" id="vbox25">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkHBox" id="hbox16">
                             <property name="height_request">20</property>
@@ -6655,9 +6490,11 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkVBox" id="model_linear_vbox">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkVBox" id="model_linear_options_vbox">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="model_linear_top_hbox">
                                 <property name="height_request">20</property>
@@ -6821,12 +6658,6 @@ ANOVA RBF (anovadot)</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </widget>
                               <packing>
                                 <property name="padding">5</property>
@@ -6876,9 +6707,11 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkVBox" id="vbox30">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkVBox" id="vbox7">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox18">
                                 <property name="height_request">20</property>
@@ -7038,6 +6871,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkVBox" id="vbox13">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkTable" id="table7">
                             <property name="visible">True</property>
@@ -7165,6 +6999,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <widget class="GtkHBox" id="hbox44">
+                            <property name="height_request">20</property>
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkLabel" id="model_survival_time_var_label">
@@ -7189,53 +7024,28 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="model_survival_coxph_radiobutton">
-                                <property name="label" translatable="yes">Cox Proportional Hazards</property>
+                              <widget class="GtkLabel" id="model_survival_builder_label">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="yalign">0.43999999761581421</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
+                                <property name="xalign">1</property>
+                                <property name="label" translatable="yes">Model Builder:</property>
                               </widget>
                               <packing>
-                                <property name="expand">False</property>
+                                <property name="padding">5</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkRadioButton" id="model_survival_para_radiobutton">
-                                <property name="label" translatable="yes">Parametric</property>
+                              <widget class="GtkLabel" id="model_survival_function_label">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">model_survival_coxph_radiobutton</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkButton" id="model_survival_plots_button">
-                                <property name="label" translatable="yes">Plots</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <signal name="clicked" handler="on_model_survival_plots_button_clicked"/>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">coxph</property>
+                                <property name="width_chars">15</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="padding">5</property>
-                                <property name="position">4</property>
+                                <property name="position">3</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </widget>
                           <packing>
@@ -7247,20 +7057,56 @@ ANOVA RBF (anovadot)</property>
                           <widget class="GtkHBox" id="hbox45">
                             <property name="visible">True</property>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkRadioButton" id="model_survival_coxph_radiobutton">
+                                <property name="label" translatable="yes">Cox Proportional Hazards</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="yalign">0.43999999761581421</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_model_survival_coxph_radiobutton_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkRadioButton" id="model_survival_para_radiobutton">
+                                <property name="label" translatable="yes">Parametric</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">model_survival_coxph_radiobutton</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
+                              <widget class="GtkButton" id="model_survival_plots_button">
+                                <property name="label" translatable="yes">Plots</property>
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_model_survival_plots_button_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="padding">5</property>
+                                <property name="position">2</property>
+                              </packing>
                             </child>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="padding">5</property>
                             <property name="position">1</property>
                           </packing>
@@ -7303,7 +7149,7 @@ ANOVA RBF (anovadot)</property>
                     </child>
                   </widget>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </widget>
@@ -7327,6 +7173,7 @@ ANOVA RBF (anovadot)</property>
             <child>
               <widget class="GtkVBox" id="evaluate_tab_widget">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox5">
                     <property name="visible">True</property>
@@ -7524,12 +7371,6 @@ ANOVA RBF (anovadot)</property>
                         <property name="position">10</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -7715,12 +7556,6 @@ ANOVA RBF (anovadot)</property>
                         <property name="position">10</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -7881,6 +7716,7 @@ ANOVA RBF (anovadot)</property>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="score_report_label">
+                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Report:</property>
                       </widget>
@@ -7893,6 +7729,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="score_class_radiobutton">
                         <property name="label" translatable="yes">Class</property>
+                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -7908,6 +7745,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="score_probability_radiobutton">
                         <property name="label" translatable="yes">Probability</property>
+                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -7923,6 +7761,8 @@ ANOVA RBF (anovadot)</property>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="score_include_label">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="xalign">0</property>
                         <property name="xpad">15</property>
                         <property name="label" translatable="yes">Include:</property>
@@ -7936,6 +7776,8 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="score_idents_radiobutton">
                         <property name="label" translatable="yes">Identifiers</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="active">True</property>
@@ -7949,6 +7791,8 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkRadioButton" id="score_all_radiobutton">
                         <property name="label" translatable="yes">All</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="xalign">0</property>
@@ -7971,6 +7815,7 @@ ANOVA RBF (anovadot)</property>
                 <child>
                   <widget class="GtkVBox" id="vbox11">
                     <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
                     <child>
                       <widget class="GtkNotebook" id="evaluate_notebook">
                         <property name="visible">True</property>
@@ -7979,6 +7824,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox21">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow18">
                                 <property name="visible">True</property>
@@ -8011,6 +7857,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox20">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow17">
                                 <property name="visible">True</property>
@@ -8046,6 +7893,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox17">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow14">
                                 <property name="visible">True</property>
@@ -8081,6 +7929,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox18">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow15">
                                 <property name="visible">True</property>
@@ -8116,6 +7965,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox19">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow16">
                                 <property name="visible">True</property>
@@ -8151,6 +8001,7 @@ ANOVA RBF (anovadot)</property>
                         <child>
                           <widget class="GtkVBox" id="vbox14">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkScrolledWindow" id="scrolledwindow9">
                                 <property name="visible">True</property>
@@ -8301,6 +8152,7 @@ ANOVA RBF (anovadot)</property>
             <child>
               <widget class="GtkVBox" id="vbox29">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox43">
                     <property name="visible">True</property>
@@ -8417,6 +8269,7 @@ ANOVA RBF (anovadot)</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">24</property>
         <child internal-child="action_area">
           <widget class="GtkHButtonBox" id="dialog-action_area2">
@@ -8581,6 +8434,7 @@ ANOVA RBF (anovadot)</property>
     <child>
       <widget class="GtkVBox" id="vbox43">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <widget class="GtkScrolledWindow" id="scrolledwindow39">
             <property name="visible">True</property>
@@ -8712,10 +8566,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
       <widget class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child>
-          <placeholder/>
-        </child>
         <child internal-child="action_area">
           <widget class="GtkHButtonBox" id="dialog-action_area3">
             <property name="visible">True</property>
@@ -8742,8 +8594,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
