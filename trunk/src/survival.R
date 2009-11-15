@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-07 13:02:31 Graham Williams>
+# Time-stamp: <2009-11-15 14:06:25 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,7 +27,17 @@ setGuiDefaultsSurvival <- function()
   theWidget("model_survival_time_var_label")$setText("No time variable selected")
   theWidget("model_survival_status_var_label")$setText("No status variable selected")
   theWidget("model_survival_coxph_radiobutton")$setActive(TRUE)
-  theWidget("model_survival_plots_button")$hide()
+  theWidget("model_survival_plots_button")$setSensitive(FALSE)
+}
+
+on_model_survival_coxph_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+    theWidget("model_survival_function_label")$setText("coxph")
+  else
+    # 091114 This is the only other alternative for now, so only use
+    # the one callback unless we add alternative buidlers.
+    theWidget("model_survival_function_label")$setText("survreg")
 }
 
 on_model_survival_plots_button_clicked <- function(button)
@@ -123,23 +133,12 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
 
 showModelSurvivalExists <- function(state=!is.null(crs$survival))
 {
-  # If a survival model exists then show the relevant buttons that
-  # require the model to exist. For the Survival model this will be
-  # some plot functions.
+  # If a survival model exists then make sensitive the relevant
+  # buttons that require the model to exist. For the Survival model
+  # this will be the plot functions.
 
-  if (state)
-  {
-    theWidget("model_survival_plots_button")$show()
-    if (class(crs$survival) == "coxph")
-      theWidget("model_survival_plots_button")$setSensitive(TRUE)
-    else
-      # Show it but indicate it is not yet implemented
-      theWidget("model_survival_plots_button")$setSensitive(FALSE)
-  }
-  else
-  {
-    theWidget("model_survival_plots_button")$hide()
-  }
+  theWidget("model_survival_plots_button")$
+  setSensitive(state && class(crs$survival) == "coxph")
 }
 
 plotSurvivalModel <- function()
@@ -148,7 +147,8 @@ plotSurvivalModel <- function()
                     'ylab="Survival Probability", col=3)\n',
                     genPlotTitleCmd('Survival Chart', crs$target, 'to',
                                     crs$risk), sep="")
-  appendLog("Plot the survival chart for the most recent survival model.", plot.cmd)
+  appendLog(Rtxt("Plot the survival chart for",
+                 "the most recent survival model."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
   
@@ -161,12 +161,10 @@ plotSurvivalModel <- function()
   eval(parse(text=plot.cmd))
 }
 
-
-
 ########################################################################
 # Export
 
-exportSurvivalTab <- function()
+exportSurvivalModel <- function()
 {
   # Make sure we have a model first!
 
@@ -227,30 +225,42 @@ exportSurvivalTab <- function()
 ########################################################################
 # Evaluate
 
-genPredictSurvival <- function(dataset, coxph=FALSE)
+genPredictSurvival <- function(dataset)
 {
   # Generate a command to obtain the prediction results when applying
-  # the model to new data. 091002 Don't use the coxph yet until it is
-  # better understood.
+  # the model to new data. For the coxph model we return the median of
+  # the expected survival time. 091115 Note that the code to extract
+  # this is somewhat convoluted until I generate the actual formula
+  # that is used to calculate the median. This will also be needed to
+  # convert to C code.
   
-  return(sprintf("crs$pr <- predict(crs$survival, %s%s)", dataset,
-                 ifelse(coxph, ', type="risk"', "")))
+  is.coxph <- class(crs$survival) == "coxph"
+
+  return(sprintf(paste("crs$pr <- survival:::survmean(survfit(crs$survival,",
+                       '%s), scale=1, rmean="none")[[1]][,5]'), dataset))
+
 }
 
-genResponseSurvival <- function(dataset, coxph=FALSE)
+genResponseSurvival <- function(dataset)
 {
   # Generate a command to obtain the response when applying the model
   # to new data.
   
-  return(genPredictSurvival(dataset, coxph))
+  return(genPredictSurvival(dataset))
 }
 
-genProbabilitySurvival <- function(dataset, coxph=FALSE)
+genProbabilitySurvival <- function(dataset)
 {
   # Generate a command to obtain the probability when applying the
-  # model to new data.
+  # model to new data. For the coxph model we predict the risk. This
+  # is not a probability, but is a number relative to 1, so that
+  # greater than 1 has a higher risk that the average of the event
+  # occuring, and below 1 has a lower risk of the event occuring than
+  # the average.
   
-  return(sprintf("%s[,2]", gsub(")$", ', type="prob")',
-                                genPredictSurvival(dataset, coxph))))
+  is.coxph <- class(crs$survival) == "coxph"
+
+  return(sprintf("crs$pr <- predict(crs$survival, %s%s)", dataset,
+                 ifelse(is.coxph, ', type="risk"', "")))
 }
 

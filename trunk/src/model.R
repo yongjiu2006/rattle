@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-13 06:43:02 Graham Williams>
+# Time-stamp: <2009-11-14 21:26:22 Graham Williams>
 #
 # MODEL TAB
 #
@@ -227,7 +227,6 @@ on_glm_multinomial_radiobutton_toggled <- function(button)
 on_evaluate_model_checkbutton_toggled <- function(button)
 {
   configureEvaluateTab()
-  resetReportType()
 }
 
 ########################################################################
@@ -344,67 +343,6 @@ noModelAvailable <- function(model, model.class)
   return(is.null(model))
 }
 
-resetReportType <- function()
-{
-  # This should be called whenever anyone of the the model type check
-  # buttons of the Evaluate tab are toggled.
-
-  # 081206 Handle the sensitivity of the new Report options: Class
-  # and Probability. These are only available if one of the
-  # non-cluster models is active but not if it is a multinomial
-  # target.
-
-  predictive.model <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
-                       theWidget("evaluate_ada_checkbutton")$getActive() ||
-                       theWidget("evaluate_rf_checkbutton")$getActive() ||
-                       theWidget("evaluate_ksvm_checkbutton")$getActive() ||
-                       theWidget("evaluate_glm_checkbutton")$getActive() ||
-                       theWidget("evaluate_nnet_checkbutton")$getActive())
-  
-  make.sensitive <- (existsCategoricModel()
-                     && predictive.model
-                     && ! multinomialTarget())
-
-  theWidget("score_report_label")$setSensitive(make.sensitive)
-  theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
-  theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
-
-  default.to.class <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
-                       theWidget("evaluate_ada_checkbutton")$getActive() ||
-                       theWidget("evaluate_rf_checkbutton")$getActive() ||
-                       theWidget("evaluate_ksvm_checkbutton")$getActive())
-
-  if (default.to.class)
-    theWidget("score_class_radiobutton")$setActive(TRUE)
-  else
-    theWidget("score_probability_radiobutton")$setActive(TRUE)
-  
-  ## if (existsCategoricModel())
-  ## {
-  ##   theWidget("score_report_label")$setSensitive(TRUE)
-  ##   theWidget("score_class_radiobutton")$setSensitive(TRUE)
-  ##   theWidget("score_probability_radiobutton")$setSensitive(TRUE)
-
-  ##   if (theWidget("rpart_evaluate_checkbutton")$getActive() ||
-  ##       theWidget("ada_evaluate_checkbutton")$getActive() ||
-  ##       theWidget("rf_evaluate_checkbutton")$getActive() ||
-  ##       theWidget("ksvm_evaluate_checkbutton")$getActive())
-  ##   {
-  ##     theWidget("score_class_radiobutton")$setActive(TRUE)
-  ##   }
-  ##   else
-  ##   {
-  ##     theWidget("score_probability_radiobutton")$setActive(TRUE)
-  ##   }
-  ## }
-  ## if (! existsCategoricModel() || multinomialTarget())
-  ## {
-  ##   theWidget("score_report_label")$setSensitive(FALSE)
-  ##   theWidget("score_class_radiobutton")$setSensitive(FALSE)
-  ##   theWidget("score_probability_radiobutton")$setSensitive(FALSE)
-  ## }
-}
-
 ########################################################################
 # EXECUTE MODEL TAB
 
@@ -476,12 +414,10 @@ executeModelTab <- function()
   }
   else if (numericTarget())
   {
-    # setTextview("confusion_textview") # Clear any confusion table
     resetTextviews("confusion_textview")
   }
   else
   {
-    # setTextview("confusion_textview") # Clear any confusion table
     resetTextviews("confusion_textview")
   }
 
@@ -988,7 +924,7 @@ rattle.print.summary.multinom <- function (x, digits = x$digits, ...)
     invisible(x)
 }
 
-exportRegressionTab <- function()
+exportRegressionModel <- function()
 {
   # Make sure we have a model first!
 
@@ -1237,7 +1173,7 @@ executeModelSVM <- function()
   return(TRUE)
 }
 
-exportSVMTab <- function()
+exportSVMModel <- function()
 {
   # Make sure we have a model first!
   
@@ -1383,23 +1319,23 @@ exportModelTab <- function()
   
   if (theWidget("rpart_radiobutton")$getActive())
   {
-    exportRpartTab()
+    exportRpartModel()
   }
   else if (theWidget("model_linear_radiobutton")$getActive())
   {
-    exportRegressionTab()
+    exportRegressionModel()
   }
   else if (theWidget("svm_radiobutton")$getActive())
   {
-    exportSVMTab()
+    exportSVMModel()
   }
   else if (theWidget("nnet_radiobutton")$getActive())
   {
-    exportNNetTab()
+    exportNNetModel()
   }
   else if (theWidget("model_survival_radiobutton")$getActive())
   {
-    exportSurvivalTab()
+    exportSurvivalModel()
   }
   else
   {

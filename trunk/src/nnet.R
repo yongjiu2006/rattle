@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-10-23 06:27:22 Graham Williams>
+# Time-stamp: <2009-11-14 21:24:25 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -119,12 +119,16 @@ executeModelNNet <- function()
   
   start.time <- Sys.time()
   
-  # Build a model.
+  # Build a model. 091114 Note that we use a seed so that we get the
+  # same model each time. Otherwise it can be disconcerting to the
+  # user to see the model changing each time they click Execute, or
+  # each time they come into the application.
 
-  model.cmd <- paste("crs$nnet <- ",
+  model.cmd <- paste("set.seed(1234)\n",
+                     "crs$nnet <- ",
                      ifelse(numericTarget() || binomialTarget(),
                             "nnet", "multinom"),
-                     "(", frml, ", data=crs$dataset",
+                     "(", frml, ",\n        data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
@@ -134,7 +138,7 @@ executeModelNNet <- function()
                      # TODO 090808 Why linout for a binomial target?
 #                     if (numericTarget() || binomialTarget())
 #                     sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
-                     sprintf(", size=%d", size),
+                     sprintf(",\n        size=%d", size),
                      if (numericTarget()) ", linout=TRUE",
                      ", skip=TRUE",
                      ", trace=FALSE, maxit=1000",
@@ -151,8 +155,15 @@ executeModelNNet <- function()
   # Print the results of the modelling.
 
   if (numericTarget() || binomialTarget())
-    print.cmd <- paste("print(crs$nnet)", 'print("\n\nNetwork Weights:\n\n")',
-                       "print(summary(crs$nnet))", sep="\n")
+    print.cmd <- paste('cat(sprintf("A %s network with %d weights.\n",',
+                       '    paste(crs$nnet$n, collapse="-"),',
+                       '    length(crs$nnet$wts)))',
+                       'cat(sprintf("Inputs: %s.\n",',
+                       '    paste(crs$nnet$coefnames, collapse=", ")))',
+                       'cat(sprintf("Output: %s.\n",',
+                       '    names(attr(crs$nnet$terms, "dataClasses"))[1]))',
+                       'cat("\nNetwork Weights:\n\n")',
+                       "print(summary(crs$nnet))", "cat('\n')", sep="\n")
   else
     print.cmd <- "print(crs$nnet)"
 
@@ -178,7 +189,7 @@ executeModelNNet <- function()
   return(TRUE)
 }
 
-exportNNetTab <- function()
+exportNNetModel <- function()
 {
   # Make sure we have a model first! 090812 DRY move all
   # export<model>Tab fucntions to use this test instead of their
@@ -188,7 +199,7 @@ exportNNetTab <- function()
 
   if (noModelAvailable(crs$nnet, crv$NNET)) return(FALSE)
 
-  startLog("Export NNET Model") 
+  startLog(Rtxt("Export the NNET Model")) 
 
   save.name <- getExportSaveName(crv$NNET)
   if (is.null(save.name)) return(FALSE)
@@ -235,69 +246,4 @@ exportNNetTab <- function()
   }
 
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
-}
-
-REMOVE090812exportNNetTab <- function()
-{
-  # Make sure we have a model first!
-  
-  if (is.null(crs$nnet))
-  {
-    errorDialog("No neural net model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
-    return()
-  }
-
-  # Require the pmml package
-  
-  lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export neural net")) return(FALSE)
-  appendLog("Load the PMML package to export a neural net.", lib.cmd)
-  # Load the package unless we already have a pmml defined (through source).
-  if (! exists("pmml")) eval(parse(text=lib.cmd))
-  
-  # Obtain filename to write the PMML to.
-  
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
-                                 "gtk-cancel", GtkResponseType["cancel"],
-                                 "gtk-save", GtkResponseType["accept"])
-  dialog$setDoOverwriteConfirmation(TRUE)
-  
-  if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_nnet.xml", sep=""))
-
-  ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
-  ff$addPattern("*.xml")
-  dialog$addFilter(ff)
-
-  ff <- gtkFileFilterNew()
-  ff$setName("All Files")
-  ff$addPattern("*")
-  dialog$addFilter(ff)
-  
-  if (dialog$run() == GtkResponseType["accept"])
-  {
-    save.name <- dialog$getFilename()
-    dialog$destroy()
-  }
-  else
-  {
-    dialog$destroy()
-    return()
-  }
-
-  #if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
-    
-  pmml.cmd <- "pmml(crs$nnet)"
-  appendLog("Export a neural net as PMML.",
-            sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
-  saveXML(eval(parse(text=pmml.cmd)), save.name)
-
-  # Be less chatty infoDialog("The PMML file", save.name, "has been written.")
-
-  setStatusBar("The PMML file", save.name, "has been written.")
-  
 }

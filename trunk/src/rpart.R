@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 16:39:17 Graham Williams>
+# Time-stamp: <2009-11-14 21:25:41 Graham Williams>
 #
 # RPART TAB
 #
@@ -965,7 +965,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
   }
 }
 
-exportRpartTab <- function()
+exportRpartModel <- function()
 {
   # Make sure we have a model first!
   
