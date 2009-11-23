@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-12 20:44:44 Graham Williams>
+# Time-stamp: <2009-11-22 21:34:47 Graham Williams>
 #
 # DATA TAB
 #
@@ -527,7 +527,7 @@ executeDataTab <- function(csvname=NULL)
     # why that was being done. Might need another crv tuning
     # parameter.
     
-    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("data_sample_checkbutton")$setActive(TRUE)
 
     # 090513 Reset the default sample size percentage and ensure it
     # holds (hence we need more than just setting the percentage spin
@@ -583,7 +583,7 @@ executeDataTab <- function(csvname=NULL)
 #      nrows <- nrow(crs$dataset)
 #      per <- 70
 #      srows <- round(nrows * per / 100)
-#      theWidget("sample_checkbutton")$setActive(not.null(.RATTLE.SCORE.IN))
+#      theWidget("data_sample_checkbutton")$setActive(not.null(.RATTLE.SCORE.IN))
 #      theWidget("sample_count_spinbutton")$setRange(1,nrows)
 #      theWidget("sample_count_spinbutton")$setValue(srows)
 #      theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -1034,7 +1034,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 
     per <- 70
     srows <- round(nrows * per / 100)
-    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("data_sample_checkbutton")$setActive(TRUE)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
@@ -1505,6 +1505,8 @@ editData <- function()
 
 exportDataTab <- function()
 {
+  sampling <- theWidget("data_sample_checkbutton")$getActive()
+
   # Obtain filename to write the dataset as CSV to.
   
   dialog <- gtkFileChooserDialog("Export Dataset", NULL, "save",
@@ -1513,7 +1515,9 @@ exportDataTab <- function()
   dialog$setDoOverwriteConfirmation(TRUE)
   
   if(not.null(crs$dataname))
-    dialog$setCurrentName(paste(get.stem(crs$dataname), "_saved.csv", sep=""))
+    dialog$setCurrentName(paste(get.stem(crs$dataname), "_",
+                                ifelse(sampling, "sample", "saved"),
+                                ".csv", sep=""))
 
   # 081222 I get an error on doing the following:
   #
@@ -1551,17 +1555,15 @@ exportDataTab <- function()
   if (tolower(get.extension(save.name)) != "csv")
     save.name <- sprintf("%s.csv", save.name)
 
-  # 081222 Do this with the OverwriteConfirmation of the widget.
-###   if (file.exists(save.name))
-###     if (! questionDialog("The data file", save.name,
-###                          "already exists. Are you sure you want to overwrite",
-###                          "this file?"))
-###       return()
+  # If sample is active then only save the sample.
 
-  writeCSV(crs$dataset, save.name)
+  if (sampling)
+    writeCSV(crs$dataset[crs$sample,], save.name)
+  else
+    writeCSV(crs$dataset, save.name)
 
-  setStatusBar("The dataset has been exported to", save.name)
-
+  setStatusBar("The dataset ", ifelse(sampling, "sample ", ""),
+               "has been exported to ", save.name, sep="")
 }  
 
 ########################################################################
@@ -1577,7 +1579,7 @@ exportDataTab <- function()
 #------------------------------------------------------------------------
 # Interface
 
-on_sample_checkbutton_toggled <- function(button)
+on_data_sample_checkbutton_toggled <- function(button)
 {
   if (button$getActive())
   {
@@ -1755,7 +1757,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 executeSelectTab <- function()
 {
   # 080520 TODO May want to rename this as SELECT is no longer a tab
-  # but is not part of the DATA tab. Perhaps we call it
+  # but is now part of the DATA tab. Perhaps we call it
   # resetSelections.
   
   # Check for pre-requisites.
@@ -1908,6 +1910,8 @@ executeSelectTab <- function()
   theWidget("ada_target_label")$setText(the.target)
   theWidget("glm_target_label")$setText(the.target)
   theWidget("nnet_target_label")$setText(the.target)
+
+  theWidget("model_survival_radiobutton")$setSensitive(TRUE)
   theWidget("model_survival_time_var_label")$setText(the.target) 
   theWidget("model_survival_status_var_label")$setText(the.risk) 
   
@@ -2043,13 +2047,14 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
     # 080719 - remove, or else we can't sample and cluster!!
-    # theWidget("sample_checkbutton")$setActive(FALSE)
+    # theWidget("data_sample_checkbutton")$setActive(FALSE)
     theWidget("glm_linear_radiobutton")$setSensitive(FALSE)
     theWidget("glm_gaussian_radiobutton")$setSensitive(FALSE)
     theWidget("model_linear_poisson_radiobutton")$setSensitive(FALSE)
     theWidget("glm_logistic_radiobutton")$setSensitive(FALSE)
     theWidget("model_linear_probit_radiobutton")$setSensitive(FALSE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
+    theWidget("model_survival_radiobutton")$setSensitive(FALSE)
   }
   
   # Update EVALUATE risk variable
@@ -2121,7 +2126,7 @@ executeSelectSample <- function()
   # are at it we also set the variable crs$targeted to be those row
   # indicies that have a non NA target.
 
-  if (theWidget("sample_checkbutton")$getActive())
+  if (theWidget("data_sample_checkbutton")$getActive())
   {
     #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
     #ssize <- floor(nrow(crs$dataset)*ssize/100)
@@ -2165,7 +2170,7 @@ executeSelectSample <- function()
 
 ##  setStatusBar()
 
-##  if (theWidget("sample_checkbutton")$getActive())
+##  if (theWidget("data_sample_checkbutton")$getActive())
 ##    setStatusBar("The sample has been generated.",
 ##                  "There are", length(crs$sample), "observations.")
 ##  else

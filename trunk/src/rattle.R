@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-14 21:21:38 Graham Williams>
+# Time-stamp: <2009-11-21 14:55:00 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 14 Nov 2009"
+VERSION.DATE <- "Released 15 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -911,7 +911,7 @@ resetRattle <- function(new.dataset=TRUE)
   if (new.dataset)
   {
     theWidget("sample_count_spinbutton")$setValue(0)
-    theWidget("sample_checkbutton")$setActive(FALSE)
+    theWidget("data_sample_checkbutton")$setActive(FALSE)
     theWidget("target_type_radiobutton")$setActive(TRUE)
   }
   
@@ -1258,7 +1258,7 @@ sampleNeedsExecute <- function()
 
   # If sampling is active, make sure there is a sample.
   
-  if (theWidget("sample_checkbutton")$getActive()
+  if (theWidget("data_sample_checkbutton")$getActive()
       && is.null(crs$sample))
   {
     errorDialog("Sampling is active but has not been Executed.",
@@ -1271,7 +1271,7 @@ sampleNeedsExecute <- function()
   # If sampling is inactive, make sure there is no sample. 080601 Why
   # would I need this test?
 
-###   if (! theWidget("sample_checkbutton")$getActive()
+###   if (! theWidget("data_sample_checkbutton")$getActive()
 ###       && not.null(crs$sample))
 ###   {
 ###     errorDialog("Sampling is inactive but has not been Executed",

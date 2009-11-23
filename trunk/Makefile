@@ -83,7 +83,8 @@ PSOURCE = \
 	src/pmml.randomForest.R \
 	src/pmml.rpart.R \
 	src/pmml.rsf.R \
-	src/pmml.coxph.R
+	src/pmml.coxph.R \
+	src/pmml.survreg.R
 
 ISOURCE = \
 	src/rstat.R \
@@ -151,6 +152,7 @@ jie:
 	src/pmmltoc.R \
 	src/pmml.transforms.R \
 	src/pmml.coxph.R \
+	src/pmml.survreg.R \
 	src/projects.R \
 	src/random_forest.R \
 	src/rattle.R \

@@ -1387,7 +1387,7 @@
                         </child>
                         <child>
                           <widget class="GtkComboBox" id="data_name_combobox">
-                            <property name="width_request">180</property>
+                            <property name="width_request">400</property>
                             <property name="events"></property>
                             <property name="items" translatable="yes">No data frames yet loaded.</property>
                           </widget>
@@ -1614,14 +1614,14 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="sample_checkbutton">
+                      <widget class="GtkCheckButton" id="data_sample_checkbutton">
                         <property name="label" translatable="yes">Sample</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_sample_checkbutton_toggled"/>
+                        <signal name="toggled" handler="on_data_sample_checkbutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -6360,16 +6360,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6378,6 +6368,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
