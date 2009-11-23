@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-15 14:06:25 Graham Williams>
+# Time-stamp: <2009-11-23 20:05:31 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -170,13 +170,13 @@ exportSurvivalModel <- function()
 
   if (noModelAvailable(crs$survival, crv$SURVIVAL)) return(FALSE)
 
-  if (class(crs$survival) == "survreg")
-  {
-    infoDialog("The Parametric Survival Regression model (survreg) can not",
-               "currently be exported. Perhaps try a Cox Proportional",
-               "Hazards model.")
-    return(FALSE)
-  }
+#  if (class(crs$survival) == "survreg")
+#  {
+#    infoDialog("The Parametric Survival Regression model (survreg) can not",
+#               "currently be exported. Perhaps try a Cox Proportional",
+#               "Hazards model.")
+#    return(FALSE)
+#  }
   
   startLog("Export Survival Model")
 
@@ -192,7 +192,7 @@ exportSurvivalModel <- function()
 
   if (ext == "xml")
   {
-    appendLog("Export regression as PMML.",
+    appendLog("Export Survival regression as PMML.",
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -206,7 +206,7 @@ exportSurvivalModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
     
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a regression model as C code for WebFocus.",
+    appendLog("Export a Survival regression model as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-04 14:15:17 Graham Williams>
+# Time-stamp: <2009-11-23 06:26:14 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -28,8 +28,9 @@ on_export_button_clicked <- function(action, window)
   
   setStatusBar()
   set.cursor("watch")
-  try(dispatchExportButton())
-  set.cursor()
+  on.exit(set.cursor())
+  dispatchExportButton()
+
 }
 
 dispatchExportButton <- function()
@@ -66,6 +67,11 @@ dispatchExportButton <- function()
   {
     exportLogTab()
   }
+  else if (ct == crv$NOTEBOOK.EVALUATE.NAME &&
+           theWidget("evaluate_score_radiobutton")$getActive())
+    # 091123 Users expect the Export to save the scores, so make this
+    # the same as clicking the Execute button.
+    executeEvaluateTab()
   else
     infoDialog("No export functionality is available for the",
                ct, "tab. Nothing done.")

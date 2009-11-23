@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.4.
+    version is 2.5.5.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+486 091123 Export on Evaluate with Score option is same as Execute
+           Allow export of sampled dataset.
+           Export survreg model to PMML.
+	   Expand size of library Data Name in data tab to show more detail.
 485 091115 Improve Survival options layout and general glade code.
            Support Survival scoring to generate either Risk or Median (Time).
 	   Add Risk/Time options as Report types in Score/Evaluate

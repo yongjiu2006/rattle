@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-15 14:55:05 Graham Williams>
+# Time-stamp: <2009-11-21 14:53:33 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -244,7 +244,7 @@ configureEvaluateTab <- function()
   # When we have sampling, assume the remainder is the test set and
   # so enable the Testing radio button in Evaluate.
     
-  if (theWidget("sample_checkbutton")$getActive())
+  if (theWidget("data_sample_checkbutton")$getActive())
   {
     theWidget("evaluate_testing_radiobutton")$setSensitive(TRUE)
     theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
@@ -493,7 +493,7 @@ executeEvaluateTab <- function()
   {
     # Evaluate on training data
 
-    if (crv$show.warnings && theWidget("sample_checkbutton")$getActive())
+    if (crv$show.warnings && theWidget("data_sample_checkbutton")$getActive())
       infoDialog("You are using the training dataset to evaluate your model.",
                  "This will give you an optimistic estimate",
                  "of the performance of your model.",
@@ -503,7 +503,7 @@ executeEvaluateTab <- function()
                  "load a separate test dataset from a CSV File or a",
                  "pre-existing R Dataset here.")
 
-    if (theWidget("sample_checkbutton")$getActive())
+    if (theWidget("data_sample_checkbutton")$getActive())
       if (is.null(included))
         testset0 <- "crs$dataset[crs$sample,]"
       else

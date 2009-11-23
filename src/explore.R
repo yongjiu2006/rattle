@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-03 08:03:09 Graham Williams>
+# Time-stamp: <2009-11-21 14:54:07 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -39,7 +39,7 @@ executeExploreTab <- function()
 
   # Ensure Sample does not require executing.
 
-  sampling <- theWidget("sample_checkbutton")$getActive()
+  sampling <- theWidget("data_sample_checkbutton")$getActive()
   if (sampling && sampleNeedsExecute()) return()
 
   # We generate a string representing the subset of the dataset on
@@ -111,7 +111,7 @@ executeExploreSummary <- function(dataset)
 
   # Get the current state of the relevant buttons.
   
-  use.sample  <- theWidget("sample_checkbutton")$getActive()
+  use.sample  <- theWidget("data_sample_checkbutton")$getActive()
   do.summary  <- theWidget("summary_checkbutton")$getActive()
   do.describe <- theWidget("describe_checkbutton")$getActive()
   do.basics   <- theWidget("basics_checkbutton")$getActive()
@@ -483,7 +483,7 @@ executeExplorePlot <- function(dataset,
 
   if (is.null(sampling))
   {
-    use.sample <- theWidget("sample_checkbutton")$getActive()
+    use.sample <- theWidget("data_sample_checkbutton")$getActive()
     sampling  <- use.sample && not.null(crs$sample)
   }
 

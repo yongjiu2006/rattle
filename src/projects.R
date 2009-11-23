@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-12 21:11:10 Graham Williams>
+# Time-stamp: <2009-11-21 14:54:30 Graham Williams>
 #
 # Project functionality.
 #
@@ -465,7 +465,7 @@ loadProject <- function()
     nrows <- nrow(crs$dataset)
     srows <- length(crs$sample)
     per <- 100*srows/nrows
-    theWidget("sample_checkbutton")$setActive(TRUE)
+    theWidget("data_sample_checkbutton")$setActive(TRUE)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     if (not.null(crs$sample.seed))
