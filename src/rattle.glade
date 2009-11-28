@@ -1091,6 +1091,17 @@
                   </packing>
                 </child>
                 <child>
+                  <widget class="GtkToolButton" id="stop_button">
+                    <property name="visible">True</property>
+                    <property name="stock_id">gtk-stop</property>
+                    <signal name="clicked" handler="interrupt_rattle"/>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="GtkToolButton" id="quit_button">
                     <property name="visible">True</property>
                     <property name="stock_id">gtk-quit</property>

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-21 14:53:33 Graham Williams>
+# Time-stamp: <2009-11-28 17:11:19 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -540,7 +540,7 @@ executeEvaluateTab <- function()
     crs$dwd <- dirname(filename)
     crs$mtime <- urlModTime(filename)
 
-    if (is.null(filename) || ! file.exists(filename) || file.info(getwd())$isdir)
+    if (is.null(filename) || ! file.exists(filename)) # || file.info(getwd())$isdir())
     {
       errorDialog(Rtxt("You have requested that a CSV file be used",
                        "as your testing dataset, but you have not",

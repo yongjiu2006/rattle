@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 16:00:40 Graham Williams>
+# Time-stamp: <2009-11-28 17:02:36 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -461,7 +461,9 @@ exportKMeansTab <- function(file)
                       save.name))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
                 attr(save.name, "includePMML"),
-                attr(save.name, "includeMetaData"),
+                ifelse(attr(save.name, "includeMetaData"),
+                       getTextviewContent("kmeans_textview"),
+                       "\"Not Included\""),
                 attr(save.name, "exportClass")), file=save.name)
   }
   
