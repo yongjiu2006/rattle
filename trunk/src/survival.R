@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-23 20:05:31 Graham Williams>
+# Time-stamp: <2009-11-28 17:01:29 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -170,14 +170,6 @@ exportSurvivalModel <- function()
 
   if (noModelAvailable(crs$survival, crv$SURVIVAL)) return(FALSE)
 
-#  if (class(crs$survival) == "survreg")
-#  {
-#    infoDialog("The Parametric Survival Regression model (survreg) can not",
-#               "currently be exported. Perhaps try a Cox Proportional",
-#               "Hazards model.")
-#    return(FALSE)
-#  }
-  
   startLog("Export Survival Model")
 
   save.name <- getExportSaveName(crv$SURVIVAL)
@@ -215,7 +207,9 @@ exportSurvivalModel <- function()
                       save.name))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
                 attr(save.name, "includePMML"),
-                attr(save.name, "includeMetaData"),
+                ifelse(attr(save.name, "includeMetaData"),
+                       getTextviewContent("survival_textview"),
+                       "\"Not Included\""),
                 attr(save.name, "exportClass")), file=save.name)
   }
   

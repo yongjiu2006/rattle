@@ -1,6 +1,8 @@
 \name{rattle_gui}
+\alias{on_model_survival_coxph_radiobutton_toggled}
 \alias{on_model_survival_plots_button_clicked}
 \alias{toga}
+\alias{interrupt_rattle}
 \alias{on_explore_correlation_hier_checkbutton_toggled}
 \alias{on_explore_correlation_radiobutton_toggled}
 \alias{on_model_survival_radiobutton_toggled}
@@ -40,11 +42,11 @@
 \alias{on_boost_radiobutton_toggled}
 \alias{on_categorical_clear_button_clicked}
 \alias{on_cleanup_radiobutton_toggled}
-\alias{on_confusion_radiobutton_toggled}
+\alias{on_evaluate_confusion_radiobutton_toggled}
 \alias{on_continuous_clear_button_clicked}
 \alias{on_copy1_activate}
 \alias{on_correlation_radiobutton_toggled}
-\alias{on_costcurve_radiobutton_toggled}
+\alias{on_evaluate_costcurve_radiobutton_toggled}
 \alias{on_csv_filechooserbutton_update_preview}
 \alias{on_csv_radiobutton_toggled}
 \alias{on_ctivate}
@@ -170,7 +172,8 @@
 \alias{on_kmeans_stats_button_clicked}
 \alias{on_libdata_combobox_changed}
 \alias{on_libdata_radiobutton_toggled}
-\alias{on_lift_radiobutton_toggled}
+\alias{on_evaluate_lift_radiobutton_toggled}
+\alias{on_evaluate_model_checkbutton_toggled}
 \alias{on_model_linear_plot_button_clicked}
 \alias{on_model_linear_poisson_radiobutton_toggled}
 \alias{on_model_linear_probit_radiobutton_toggled}
@@ -192,9 +195,9 @@
 \alias{on_plot_print_button_clicked}
 \alias{on_plot_save_button_clicked}
 \alias{on_prcomp_radiobutton_toggled}
-\alias{on_precision_radiobutton_toggled}
+\alias{on_evaluate_precision_radiobutton_toggled}
 \alias{on_priors_entry_changed}
-\alias{on_pvo_radiobutton_toggled}
+\alias{on_evaluate_pvo_radiobutton_toggled}
 \alias{on_rattle_menu_activate}
 \alias{on_rdata_filechooserbutton_update_preview}
 \alias{on_rdata_radiobutton_toggled}
@@ -208,8 +211,8 @@
 \alias{on_rf_print_tree_button_clicked}
 \alias{on_rf_radiobutton_toggled}
 \alias{on_risk_comboboxentry_changed}
-\alias{on_risk_radiobutton_toggled}
-\alias{on_roc_radiobutton_toggled}
+\alias{on_evaluate_risk_radiobutton_toggled}
+\alias{on_evaluate_roc_radiobutton_toggled}
 \alias{on_rpart_best_radiobutton_toggled}
 \alias{on_rpart_build_radiobutton_toggled}
 \alias{on_rpart_evaluate_checkbutton_toggled}
@@ -217,7 +220,7 @@
 \alias{on_rpart_plot_button_clicked}
 \alias{on_rpart_rules_button_clicked}
 \alias{on_rpart_tune_radiobutton_toggled}
-\alias{on_sample_checkbutton_toggled}
+\alias{on_data_sample_checkbutton_toggled}
 \alias{on_sample_count_spinbutton_changed}
 \alias{on_sample_percentage_spinbutton_changed}
 \alias{on_sample_radiobutton_toggled}
@@ -225,8 +228,8 @@
 \alias{on_save_as_activate}
 \alias{on_save_button_clicked}
 \alias{on_save_menu_activate}
-\alias{on_score_radiobutton_toggled}
-\alias{on_sensitivity_radiobutton_toggled}
+\alias{on_evaluate_score_radiobutton_toggled}
+\alias{on_evaluate_sensitivity_radiobutton_toggled}
 \alias{on_summary_find_button_clicked}
 \alias{on_summary_next_button_clicked}
 \alias{on_summary_radiobutton_toggled}

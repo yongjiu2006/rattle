@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-21 14:55:00 Graham Williams>
+# Time-stamp: <2009-11-28 21:15:10 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 Nov 2009"
+VERSION.DATE <- "Released 23 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -2004,6 +2004,15 @@ closeRattle <- function(ask=FALSE)
 
 }
   
+interrupt_rattle <- function(action, window) 
+{
+  # The multicore or fork packages may provide some hope under
+  # GNU/Linux, but not MS/Wdinwos. Under MS the Esc seems to send a
+  # SIGBREAK to the R process. How to do that?
+  
+  infoDialog("This operatoin is not yet functioning.")
+}
+
 
 ########################################################################
 

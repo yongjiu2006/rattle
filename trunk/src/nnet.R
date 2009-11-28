@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-14 21:24:25 Graham Williams>
+# Time-stamp: <2009-11-28 16:59:54 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -241,7 +241,9 @@ exportNNetModel <- function()
                       save.name))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
                 attr(save.name, "includePMML"),
-                attr(save.name, "includeMetaData"),
+                ifelse(attr(save.name, "includeMetaData"),
+                       getTextviewContent("nnet_textview"),
+                       "\"Not Included\""),
                 attr(save.name, "exportClass")), file=save.name)
   }
 
