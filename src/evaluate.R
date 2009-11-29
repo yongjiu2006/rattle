@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 17:11:19 Graham Williams>
+# Time-stamp: <2009-11-30 06:01:32 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -560,8 +560,8 @@ executeEvaluateTab <- function()
       if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
       nastring <- ', na.strings=c(".", "NA", "", "?")'
-      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s)',
-                          filename, nastring)
+      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, encoding="%s")',
+                          filename, nastring, crs$csv.encoding)
       appendLog("Read a file for evaluating the model", read.cmd)
       eval(parse(text=read.cmd))
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 23:02:26 Graham Williams>
+# Time-stamp: <2009-11-30 06:03:45 Graham Williams>
 #
 # 080921 TEXT MINING DATA
 #
@@ -143,7 +143,8 @@ executeDataCorpus <- function()
   target.fname <- paste(location, ".target.csv", sep="/")
   if (file.exists(target.fname))
   {
-    read.cmd <- "target <- read.csv(target.fname)"
+    read.cmd <- sprintf('target <- read.csv(target.fname, encoding="%s")',
+                        crs$csv.encoding)
     appendLog("Read in the targets.", read.cmd)
     eval(parse(text=read.cmd))
 

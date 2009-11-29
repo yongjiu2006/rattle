@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.7.
+    version is 2.5.8.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+489 091130 Use encoding of UTF-8 when reading csv data files
+    	   this is default for GNU/Linux, but not MS/Windows
+    	   Use iconv to convert GTK strings (always UTF-8) to current locale
 488 091129 Catch error when Stats button of cluster runs out of memory
     	   Properly restore sampling state within a project.
 	   Fix numerous set.cursor calls to use on.exit to reset.

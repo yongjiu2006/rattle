@@ -24,6 +24,12 @@
 
   # Some global constants
 
+  # 091130 Use UTF-8 as the default encoding for files. This certainly
+  # works okay on GNU/Linux. On Vista I see ISO8859-1 as the default
+  # and Acken sees CP932 for Japanese.
+  
+  crv$csv.encoding <- "UTF-8"
+  
   crv$show.timestamp <- FALSE
   ## crv$tooltiphack <- FALSE
   crv$close <- "ask"

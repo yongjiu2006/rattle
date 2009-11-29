@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-29 08:45:01 Graham Williams>
+# Time-stamp: <2009-11-30 06:23:09 Graham Williams>
 #
 # DATA TAB
 #
@@ -754,17 +754,19 @@ executeDataCSV <- function(filename=NULL)
   
   nastring <- ', na.strings=c(".", "NA", "", "?")'
   
-  # Generate commands to read the data.
+  # Generate commands to read the data. 091130 Add encoding to use the
+  # configured encoding.
 
   if (use.sample.dataset)
     read.cmd <- sprintf(paste('crs$dataset <-',
                               'read.csv(system.file("csv",',
-                              '"%s.csv", package="rattle"))'),
-                        crv$sample.dataset)
+                              '"%s.csv", package="rattle"),',
+                              'encoding="%s")'),
+                        crv$sample.dataset, crv$csv.encoding)
                               
   else
-    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s)',
-                        filename, hdr, sep, nastring)
+    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s, encoding="%s")',
+                        filename, hdr, sep, nastring, crv$csv.encoding)
   
   # Start logging and executing the R code.
 
@@ -1791,7 +1793,7 @@ executeSelectTab <- function()
   
   # Ask if the Target does not look like a target.
 
-  if (not.null(target))
+  if (length(target))
     target.levels <- length(levels(as.factor(crs$dataset[[target]])))
   else
     target.levels <- 0
@@ -1811,7 +1813,7 @@ executeSelectTab <- function()
 
   # Fail if the Risk column is not numeric.
 
-  if (not.null(risk) && ! is.numeric(crs$dataset[[risk]]))
+  if (length(risk) && ! is.numeric(crs$dataset[[risk]]))
   {
     errorDialog("The column selected for your risk",
                  sprintf("(%s)", crs$dataset[[risk]]),
@@ -2242,9 +2244,15 @@ getSelectedVariables <- function(role, named=TRUE)
                     if (flag) variables <<- c(variables, variable)
                   return(FALSE) # Keep going through all rows
                 }, TRUE)
+
   # Set the data parameter to TRUE to avoid an RGtk2 bug in 2.12.1, fixed in
   # next release. 071117
 
+  # 091130 Apparently Gtk always returns UTF-8 strings (Acken
+  # Sakakibara). Thus we convert to the local locale of the system.
+
+  variables <- iconv(variables, "UTF-8", localeToCharset()[1])
+  
   return(variables)
 }
 
