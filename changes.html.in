@@ -6,13 +6,16 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.6.
+    version is 2.5.7.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+488 091129 Catch error when Stats button of cluster runs out of memory
+    	   Properly restore sampling state within a project.
+	   Fix numerous set.cursor calls to use on.exit to reset.
 487 091129 Add a Stop button - but not yet figure out how to implement.
            Pass a screen scrape to pmmltoc for the meta information.
            Bug fix - score CSV file was not working.

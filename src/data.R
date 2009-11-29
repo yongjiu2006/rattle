@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-22 21:34:47 Graham Williams>
+# Time-stamp: <2009-11-29 08:45:01 Graham Williams>
 #
 # DATA TAB
 #
@@ -2218,7 +2218,7 @@ getSelectedVariables <- function(role, named=TRUE)
   }
 
   else
-    return(variables)
+    return(NULL)
 
   vcol <- crv$COLUMN[["variable"]]
   ncol <- crv$COLUMN[["number"]]
