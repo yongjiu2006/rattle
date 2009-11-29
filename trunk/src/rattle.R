@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 21:15:10 Graham Williams>
+# Time-stamp: <2009-11-29 21:40:43 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Nov 2009"
+VERSION.DATE <- "Released 29 Nov 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -850,6 +850,7 @@ resetRattle <- function(new.dataset=TRUE)
     crs$ignore   <- NULL
     crs$nontargets <- NULL # 080426 Started but not yet implemented.
     crs$sample   <- NULL
+    crs$sample.on <- TRUE
     crs$sample.seed <- NULL
     crs$testset  <- NULL
     crs$testname <- NULL
@@ -1345,10 +1346,15 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   
   if (inherits(result, "try-error"))
   {
-    errorDialog(sprintf("A command has failed: %s.", command),
-                "The action you requested has not been completed.",
-                "Refer to the R Console for details.")
-    commandsink <- "FAILED"
+    if (any(grep("cannot allocate vector", result)))
+      errorDialog("E141: The dataset is too large for this operation.",
+                  "It is terminating now without any output.",
+                  "The R Console may contain further information.")
+    else
+      errorDialog(sprintf("E142: A command has failed: %s.", command),
+                  "The action you requested has not been completed.",
+                  "Refer to the R Console for details.")
+    commandsink <- "NO OUTPUT GENERATED"
   }
   options(width=owidth)
   return(paste(commandsink, collapse="\n"))
@@ -2010,9 +2016,8 @@ interrupt_rattle <- function(action, window)
   # GNU/Linux, but not MS/Wdinwos. Under MS the Esc seems to send a
   # SIGBREAK to the R process. How to do that?
   
-  infoDialog("This operatoin is not yet functioning.")
+  infoDialog("This operation is not yet functioning.")
 }
-
 
 ########################################################################
 

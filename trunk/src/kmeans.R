@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 17:02:36 Graham Williams>
+# Time-stamp: <2009-11-29 21:32:05 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -115,9 +115,28 @@ on_kmeans_stats_button_clicked <- function(button)
     return()
   }
 
+  # 091129 For large data, the distance matrix gets very large and
+  # calculations take a long time. Under 32 bit we often run out of
+  # memory. Under 64 bit we might eventually run out of virtual
+  # memory. Pop up a warning.
+
+  if (length(crs$kmeans$cluster) > 4000 &&
+      ! questionDialog("The dataset has more than 4000 observations.",
+                       "This may be a little too large to calculate the",
+                       "required pairwsie distance matrix for this dataset.",
+                       "If you continue you may find that the command will",
+                       "fail on trying to allocate memory (on a 32 bit",
+                       "computer) or else will proceed to fill up all memory",
+                       "and thereby freeze the computer.",
+                       "\n\nDo you wish to continue anyhow?"))
+    return(FALSE)
+  
   # STATS: Log the R command and execute. 080521 TODO Fix a bug by
   # adding the na.omit here (since by default that is done in building
   # the clusters). Not sure if this is generally correct.
+
+  set.cursor("watch")
+  on.exit(set.cursor())
 
   stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
                              "crs$kmeans$cluster)\n"),
@@ -125,7 +144,6 @@ on_kmeans_stats_button_clicked <- function(button)
   appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
   appendTextview(TV, "General cluster statistics:\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
-
   setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
 }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-21 14:54:30 Graham Williams>
+# Time-stamp: <2009-11-29 20:38:26 Graham Williams>
 #
 # Project functionality.
 #
@@ -41,46 +41,34 @@ on_open_activate <- function(action, window)
 
 on_save_menu_activate <- function(action, window)
 {
-  # Wrap the actual call with a "try" so that the watch cursor turns
-  # off even on error.
-  
   setStatusBar()
   set.cursor("watch")
-  try(saveProject())
-  set.cursor()
+  on.exit(set.cursor())
+  saveProject()
 }
 
 on_save_as_activate <- function(action, window)
 {
-  # Wrap the actual call with a "try" so that the watch cursor turns
-  # off even on error.
-  
   setStatusBar()
   set.cursor("watch")
-  try(saveProject())
-  set.cursor()
+  on.exit(set.cursor())
+  saveProject()
 }
 
 on_open_button_clicked <- function(action, window)
 {
-  # Wrap the actual call with a "try" so that the watch cursor turns
-  # off even on error.
-  
   setStatusBar()
   set.cursor("watch")
-  try(loadProject())
-  set.cursor()
+  on.exit(set.cursor())
+  loadProject()
 }
 
 on_save_button_clicked <- function(action, window)
 {
-  # Wrap the actual call with a "try" so that the watch cursor turns
-  # off even on error.
-  
   setStatusBar()
   set.cursor("watch")
-  try(saveProject())
-  set.cursor()
+  on.exit(set.cursor())
+  saveProject()
 }
 
 ########################################################################
@@ -141,14 +129,14 @@ enableDataSourceFunctions <- function(enable=TRUE)
 }
 
 ########################################################################
-# CLOSE PROJECT
+# Close Project
 #
 # For now, Close is just like New.
 
 closeProject <- newProject
 
 ########################################################################
-# SAVE PROJECT
+# Save Project
 
 saveProject <- function()
 {
@@ -165,7 +153,7 @@ saveProject <- function()
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
 
-  # 090707 Add the .rattle extension by default to be consistent
+  # 090707 Add the crs$projext extension by default to be consistent
   # throughout Rattle. It is also needed for OverwriteConfirmation.
   
   dialog$setCurrentName(paste(get.stem(crs$dataname), crv$projext, sep=""))
@@ -269,6 +257,7 @@ saveProject <- function()
 
   # Save seed information
 
+  crs$sample.on <- theWidget("data_sample_checkbutton")$getActive()
   crs$sample.seed <- theWidget("sample_seed_spinbutton")$getValue()
   crs$kmeans.seed <- theWidget("kmeans_seed_spinbutton")$getValue()
   
@@ -296,11 +285,11 @@ saveProject <- function()
   crs$svm.opt$kernel <- theWidget("svm_kernel_comboboxentry")$getActive()
 
   set.cursor("watch")
+  on.exit(set.cursor())
   startLog()
   appendLog("Saved the project data (variable crs) to file.",
-           sprintf('save(crs, file="%s", compress=TRUE)', save.name))
+            sprintf('save(crs, file="%s", compress=TRUE)', save.name))
   save(crs, file=save.name, compress=TRUE)
-  set.cursor()
 
   # Record the cwd for projects.
   
@@ -373,6 +362,7 @@ loadProject <- function()
   # Load the file
 
   set.cursor("watch")
+  on.exit(set.cursor())
 
   resetRattle()  # Seems appropriate to clear out the crs
 
@@ -452,15 +442,15 @@ loadProject <- function()
     crs$weights <- crs$weights
   }
 
-  # SAMPLE
+  # Sample
 
-  # 090402 Are these needed any more now we assign crs above? I don;t
+  # 090402 Are these needed any more now we assign crs above? I don't
   # think so. Comment out all the following assignments as well.
   
 #  crs$sample      <- crs$sample
 #  crs$sample.seed <- crs$sample.seed
-
-  if (not.null(crs$sample))
+  
+  if (crs$sample.on)
   {
     nrows <- nrow(crs$dataset)
     srows <- length(crs$sample)
@@ -474,8 +464,12 @@ loadProject <- function()
       theWidget("sample_seed_spinbutton")$setValue(123)
     theWidget("sample_percentage_spinbutton")$setValue(per)
   }
-  
-  # EXPLORE
+  else
+  {
+    theWidget("data_sample_checkbutton")$setActive(FALSE)
+  }
+
+  # Explore
   
   setTextviewContents("summary_textview", crs$text$summary)
   setTextviewContents("correlation_textview", crs$text$correlation)
@@ -604,7 +598,6 @@ loadProject <- function()
   startLog()
   appendLog("Reloaded the project data (variable crs) from file.",
            sprintf('load("%s")', load.name))
-  set.cursor()
   setStatusBar("Project loaded from", load.name)
 
 }
