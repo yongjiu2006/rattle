@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 16:59:08 Graham Williams>
+# Time-stamp: <2009-12-06 11:58:04 Graham Williams>
 #
 # MODEL TAB
 #
@@ -304,6 +304,11 @@ multinomialTarget <- function()
 {
   return(categoricTarget() &&
          length(levels(as.factor(crs$dataset[[crs$target]]))) > 2)
+}
+
+survivalTarget <- function()
+{
+  return(theWidget("data_target_survival_checkbutton")$getActive())
 }
 
 currentModelTab <- function()

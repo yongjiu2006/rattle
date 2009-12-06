@@ -13,6 +13,10 @@
    </p>
 
 <pre>
+490 091206 Clean up the survival interface - add chackbutton to Data tab.
+    	   Recognise TIME and STATUS and EVENT for survival models.
+	   Ensure ROCR evaluations can handle missing target values.
+	   Handle ROCR 1.0-3 bug in add=TRUE not working.
 489 091130 Use encoding of UTF-8 when reading csv data files
     	   this is default for GNU/Linux, but not MS/Windows
     	   Use iconv to convert GTK strings (always UTF-8) to current locale
