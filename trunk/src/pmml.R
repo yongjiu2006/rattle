@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-11-05 17:34:37 Graham Williams>
+# Time-stamp: <2009-12-07 06:36:20 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -105,7 +105,8 @@ pmmlHeader <- function(description, copyright, app.name)
 {
   # Header
   
-  VERSION <- "1.2.20" # Support coxph as regression.
+  VERSION <- "1.2.21" # Fix bug in pmml export of TNM transform.
+  # "1.2.20" # Support coxph as regression.
   # "1.2.19" # Several fixes for PMML conformance.
   # "1.2.18" # Fix export of pmml for hclust with transforms.
   # "1.2.17" # Zementis: add Output node.

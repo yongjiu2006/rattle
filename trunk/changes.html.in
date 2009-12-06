@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.8.
+    version is 2.5.10.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+491 091207 Bug fix pmml export of nnet - better handle transforms.
+    	   Bump pmml version to 1.2.21
+           Change Target handling in Data tab - all radio buttons.
+	   Include variable selectsion in the Log (Tony Nolan).
+	   Add help for nnet and survival.
 490 091206 Clean up the survival interface - add chackbutton to Data tab.
     	   Recognise TIME and STATUS and EVENT for survival models.
 	   Ensure ROCR evaluations can handle missing target values.

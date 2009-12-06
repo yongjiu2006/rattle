@@ -859,6 +859,23 @@
                                 <signal name="activate" handler="on_help_glm_activate"/>
                               </widget>
                             </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_model_nnet">
+                                <property name="visible">True</property>
+                                <property name="label"
+                                translatable="yes">_Neural Net</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_model_nnet_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="help_model_survival">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">S_urvival</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_model_survival_activate"/>
+                              </widget>
+                            </child>
                           </widget>
                         </child>
                       </widget>
@@ -1905,13 +1922,12 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="target_type_radiobutton">
+                      <widget class="GtkRadioButton" id="data_target_auto_radiobutton">
                         <property name="label" translatable="yes">Auto</property>
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">False</property>
+                        <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1919,14 +1935,14 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="target_categoric_radiobutton">
-                        <property name="label" translatable="yes">Categoric</property>
+                      <widget class="GtkRadioButton" id="data_target_classification_radiobutton">
+                        <property name="label" translatable="yes">Classification</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">False</property>
-                        <property name="group">target_type_radiobutton</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">data_target_auto_radiobutton</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1935,14 +1951,14 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="target_numeric_radiobutton">
-                        <property name="label" translatable="yes">Numeric  </property>
+                      <widget class="GtkRadioButton" id="data_target_regression_radiobutton">
+                        <property name="label" translatable="yes">Regression </property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">False</property>
-                        <property name="group">target_type_radiobutton</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">data_target_auto_radiobutton</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1951,16 +1967,18 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="data_target_survival_checkbutton">
+                      <widget class="GtkRadioButton" id="data_target_survival_radiobutton">
                         <property name="label" translatable="yes">Survival</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_data_target_survival_checkbutton_toggled"/>
+                        <property name="group">data_target_auto_radiobutton</property>
+                        <signal name="toggled" handler="on_data_target_survival_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">8</property>
                       </packing>
                     </child>
@@ -8622,8 +8640,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
