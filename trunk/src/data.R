@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-30 06:23:09 Graham Williams>
+# Time-stamp: <2009-12-06 12:12:48 Graham Williams>
 #
 # DATA TAB
 #
@@ -447,6 +447,28 @@ updateRDatasets <- function(current=NULL)
   }
   set.cursor(message="Data Names updated.")
 }
+
+on_data_target_survival_checkbutton_toggled <- function(button)
+{
+  # 091206 When the Survival check button is toggled, change the names
+  # of the Target/Risk columns to match the paradigm.
+  
+  target <- theWidget("select_treeview")$getColumn(crv$COLUMN["target"])
+  risk <- theWidget("select_treeview")$getColumn(crv$COLUMN["risk"])
+  
+  if (button$getActive())
+  {
+    target$setTitle("Time")
+    risk$setTitle("Status")
+  }
+  else
+  {
+    target$setTitle("Target")
+    risk$setTitle("Risk")
+  }
+}
+
+      
 
 ########################################################################
 # EXECUTE
@@ -1946,16 +1968,29 @@ executeSelectTab <- function()
   
   # Update various MODEL options
 
-  if (categoricTarget())
+  if (survivalTarget())
   {
+    theWidget("model_survival_radiobutton")$setSensitive(TRUE)
+    theWidget("model_survival_radiobutton")$setActive(TRUE)
+    theWidget("rpart_radiobutton")$setSensitive(FALSE)
+    theWidget("boost_radiobutton")$setSensitive(FALSE)
+    theWidget("rf_radiobutton")$setSensitive(FALSE)
+    theWidget("svm_radiobutton")$setSensitive(FALSE)
+    theWidget("model_linear_radiobutton")$setSensitive(FALSE)
+    theWidget("nnet_radiobutton")$setSensitive(FALSE)
+    theWidget("all_models_radiobutton")$setSensitive(FALSE)
+  }
+  else if (categoricTarget())
+  {
+    theWidget("model_survival_radiobutton")$setSensitive(FALSE)
+
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
     theWidget("rf_radiobutton")$setSensitive(TRUE)
     theWidget("svm_radiobutton")$setSensitive(TRUE)
 
     theWidget("model_linear_radiobutton")$setSensitive(TRUE)
 
-    # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
-
+    theWidget("all_models_radiobutton")$setSensitive(TRUE)
 
     # For linear models, if it is categoric and binomial then assume
     # logistic regression (default to binmoial distribution and the
@@ -2003,6 +2038,8 @@ executeSelectTab <- function()
   }
   else if (numericTarget())
   {
+    theWidget("model_survival_radiobutton")$setSensitive(FALSE)
+
     theWidget("rpart_radiobutton")$setSensitive(TRUE)
     theWidget("rf_radiobutton")$setSensitive(TRUE) # 090301 Support regression
     theWidget("svm_radiobutton")$setSensitive(FALSE)
@@ -2034,8 +2071,7 @@ executeSelectTab <- function()
     theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
     theWidget("nnet_builder_label")$setText("nnet (Regression)")
 
-
-    # Always sensitive? theWidget("all_models_radiobutton")$setSensitive(TRUE)
+    theWidget("all_models_radiobutton")$setSensitive(TRUE)
 
   }
   else # What else could it be? No target!
@@ -2249,7 +2285,7 @@ getSelectedVariables <- function(role, named=TRUE)
   # next release. 071117
 
   # 091130 Apparently Gtk always returns UTF-8 strings (Acken
-  # Sakakibara). Thus we convert to the local locale of the system.
+  # Sakakibara). Thus we convert to the locale of the system.
 
   variables <- iconv(variables, "UTF-8", localeToCharset()[1])
   
@@ -2588,14 +2624,15 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   categorical <- theWidget("categorical_treeview")$getModel()
   continuous  <- theWidget("continuous_treeview")$getModel()
 
-  # Automatically identify a default target if none are identified as
-  # a target (by beginning with TARGET) in the variables
-  # (080303). Heuristic is - the last or first if it's a factor with
-  # few levels, or has only a few values. Then the treeview model will
-  # record this choice, and we set the appropriate labels with this,
-  # and record it in crs.
+  # 080303 Automatically identify a default target if none are
+  # identified as a target (by beginning with TARGET or TIME for
+  # SURVIVAL data) in the variables. Heuristic is - the last or first
+  # if it's a factor with few levels, or has only a few values. Then
+  # the treeview model will record this choice, and we set the
+  # appropriate labels with this, and record it in crs.
 
-  given.target <- which(substr(variables, 1, 6) == "TARGET")
+  given.target <- c(which(substr(variables, 1, 6) == "TARGET"),
+                    which(substr(variables, 1, 4) == "TIME"))
   if (autoroles && length(given.target) > 0) target <- variables[given.target[1]]
   
   if (autoroles && is.null(target))
@@ -2725,7 +2762,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       {
         ignore <- c(ignore, variables[i])
       }
-      else if (substr(variables[i], 1, 4) == "RISK")
+      else if (substr(variables[i], 1, 4) == "RISK" ||
+               substr(variables[i], 1, 6) == "STATUS" ||
+               substr(variables[i], 1, 5) == "EVENT")
       {
         risk <- c(risk, variables[i])
       }
@@ -2947,8 +2986,17 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   crs$ident  <- ident
   crs$ignore <- ignore
   crs$risk   <- risk
-  
-  ## Perform other setups associated with a new dataset
+
+  # 091206 If the target is TIME... and risk is STATUS... or
+  # EVENT... then enable the Survival checkbutton.
+
+  if (! (is.null(target) || is.null(risk)) &&
+      substr(target, 1, 4) == "TIME" &&
+      (substr(risk, 1, 6) == "STATUS" ||
+       substr(variables[i], 1, 5) == "EVENT"))
+    theWidget("data_target_survival_checkbutton")$setActive(TRUE)
+    
+  # Perform other setups associated with a new dataset
 
   crv$rf.mtry.default <- floor(sqrt(ncol(crs$dataset)))
   theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)

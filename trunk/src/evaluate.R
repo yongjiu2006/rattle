@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-30 06:01:32 Graham Williams>
+# Time-stamp: <2009-12-05 21:55:57 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1249,7 +1249,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
     # affect the na.omit function which will omit more rows if these
     # extra columns have NAs.
 
-    if (not.null(crs$risk))
+    if (length(crs$risk))
     {
       testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
       if (testcols != "")
@@ -1711,6 +1711,23 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   par(opar)
 }
 
+handleMissingValues <- function(testset, mtype)
+{
+  # 091205 A shared function to generate predictions in the variable
+  # pred that do not include any missing values (from the target
+  # variable.
+  
+  return(paste('\n# Deal with any missing values in the target variable by',
+               '# ignoring any training data with missing target values.\n',
+               sprintf('no.miss <- na.omit(%s$%s)', testset[[mtype]], crs$target),
+               'miss.list <- attr(no.miss, "na.action")',
+               'if (length(miss.list)) {',
+               '\tpred <- prediction(crs$pr[-miss.list], no.miss)',
+               '} else {',
+               '\tpred <- prediction(crs$pr, no.miss)\n}',
+               sep="\n"))
+}
+
 #----------------------------------------------------------------------
 # EVALUATE COST CURVE 080524 
 
@@ -1759,33 +1776,35 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
                  "model to the dataset to generate a cost curve ...")
 
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(0, 0, xlim=c(0, 1), ylim=c(0, 1),",
-                      'xlab="Probability cost function",',
-                      'ylab="Normalized expected cost")\n',
-                      'lines(c(0,1),c(0,1))\n',
-                      'lines(c(0,1),c(1,0))\n',
-                      'pred <- prediction(crs$pr,',
-                      sprintf("%s$%s)\n", testset[[mtype]], crs$target),
-                      'perf1 <- performance(pred, "fpr", "fnr")\n',
-                      'for (i in seq_along(perf1@x.values))\n{\n',
-                      '\tfor (j in seq_along(perf1@x.values[[i]]))\n\t{\n',
-                      '\t\tlines(c(0,1),c(perf1@y.values[[i]][j],\n',
-                      '\t\t\t\tperf1@x.values[[i]][j]),\n',
-                      '\t\t\t\tcol=terrain.colors(10)[i],lty=3)\n',
-                      '\t}\n}\n',
-                      'perf<-performance(pred,"ecost")\n',
-                      "plot(perf, lwd=1.5, xlim=c(0,1), ylim=c(0,1), add=T)\n",
-                      "op <- par(xpd=TRUE)\n",
-                      'text(0, 1.07, "FPR")\n',
-                      'text(1, 1.07, "FNR")\n',
-                      "par(op)\n",
-                      'text(0.12, 1, "Predict +ve")\n',
-                      'text(0.88, 1, "Predict -ve")\n',
+    plot.cmd <- paste(paste("plot(0, 0, xlim=c(0, 1), ylim=c(0, 1),",
+                            'xlab="Probability cost function",',
+                            'ylab="Normalized expected cost")'),
+                      'lines(c(0,1),c(0,1))',
+                      'lines(c(0,1),c(1,0))',
+                      handleMissingvalues(testset, mtype),
+                      'perf1 <- performance(pred, "fpr", "fnr")',
+                      'for (i in seq_along(perf1@x.values))\n{',
+                      '\tfor (j in seq_along(perf1@x.values[[i]]))\n\t{',
+                      '\t\tlines(c(0,1),c(perf1@y.values[[i]][j],',
+                      '\t\t\t\tperf1@x.values[[i]][j]),',
+                      '\t\t\t\tcol=terrain.colors(10)[i],lty=3)',
+                      '\t}\n}',
+                      'perf<-performance(pred, "ecost")',
+                      '\n# Bug in ROCR 1.0-3 does not obey the add command.',
+                      '# Calling the function directly does work.\n',
+                      ".plot.performance(perf, lwd=1.5, xlim=c(0,1), ylim=c(0,1), add=T)",
+                      "op <- par(xpd=TRUE)",
+                      'text(0, 1.07, "FPR")',
+                      'text(1, 1.07, "FNR")',
+                      "par(op)",
+                      'text(0.12, 1, "Predict +ve")',
+                      'text(0.88, 1, "Predict -ve")',
                       # TODO 080810 Add text AUC=... to plot
                       genPlotTitleCmd("Cost Curve", commonName(mtype),
-                                      testname))
+                                      testname),
+                      sep="\n")
                       
-    appendLog("Plot a cost curve using the ROCR package.", lib.cmd)
+    appendLog("Cost Curve: requires the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
   
     appendLog(sprintf("Generate a Cost Curve for the %s model on %s.",
@@ -1823,70 +1842,8 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
 
     eval(parse(text=plot.cmd))
 
-#    # Report the area under the curve.
-#  
-#    auc.cmd <- paste("performance(prediction(crs$pr, ",
-#                    sprintf("%s$%s),", testset[[mtype]], crs$target),
-#                    '"auc")', sep="")
-#    appendLog("Calculate the area under the curve for the plot.", auc.cmd)
-#    auc <- eval(parse(text=auc.cmd))
-#    appendTextview(TV, paste("Area under the ROC curve for the",
-#                             sprintf("%s model on %s is %0.4f",
-#                                     mtype, testname,
-#                                     attr(auc, "y.values"))))
   }
-#  lines(c(0,1), c(0,1)) # Baseline
-
-  ## If just one model, and we are plotting the test dataset, then
-  ## also plot the training dataset.
-
-#  if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
-#  {
-#    mcount <- mcount + 1
-#    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
-#                      sprintf("%s$%s),",
-#                              sub("-crs\\$sample", "crs$sample",
-#                                  testset[[mtype]]), crs$target),
-#                      '"tpr", "fpr"), ',
-#                      'col="#00CCCCFF", lty=2, ',
-#                      sprintf("add=%s)\n", addplot),
-#                      sep="")
-#    appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
-#                     mtype, sub('\\[test\\]', '[train]', testname)),
-#             gsub("<<-", "<-", sub("-crs\\$sample", "crs$sample",
-#                                   probcmd[[mtype]])), "\n", plot.cmd)
-#
-#    result <- try(eval(parse(text=sub("-crs\\$sample",
-#                               "crs$sample", probcmd[[mtype]]))), silent=TRUE)
-#    eval(parse(text=plot.cmd))
-#    models <- c("Test", "Train")
-#    nummodels <- 2
-#    legtitle <- getEvaluateModels()
-#    title <- sub('\\[test\\]', '', testname)
-#  }
-#  else
-#  {
-#    models <- getEvaluateModels()
-#    legtitle <- "Models"
-#    title <- testname
-#  }
-
-#  legendcmd <- paste('legend("bottomright",',
-#                     sprintf("c(%s),",
-#                             paste('"', models, '"',
-#                                   sep="", collapse=",")),
-#                     sprintf('col=rainbow(%d, 1, .8), lty=1:%d,',
-#                             nummodels, nummodels),
-#                     sprintf('title="%s", inset=c(0.05, 0.05))', legtitle))
-#  appendLog("Add a legend to the plot.", legendcmd)
-#  eval(parse(text=legendcmd))
-  
-#  decor.cmd <- paste(genPlotTitleCmd("ROC Curve", "", title),
-#                    '\ngrid()', sep="")
-#  appendLog("Add decorations to the plot.", decor.cmd)
-#  eval(parse(text=decor.cmd))
-  
-  return(sprintf("Generated ROC Curves on %s.", testname))
+  return(sprintf("Generated Cost Curves on %s.", testname))
 }
 
   
@@ -1912,23 +1869,22 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                  "a lift chart ...")
     
     mcount <- mcount + 1
-    plot.cmd <- paste("\n# First convert rate of positive predictions to percentage\n",
-                      "\nper <- performance(prediction(crs$pr, ",
-                      sprintf("%s$%s),", testset[[mtype]], crs$target),
-                      '"lift", "rpp")\n',
-                      "per@x.values[[1]] <- per@x.values[[1]]*100\n\n",
-                      "# Now plot the lift.\n",
-                      "\nplot(per, ",
-                      sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
-                      sprintf('xlab="%s", ', xlab),
-                      sprintf("add=%s)", addplot),
-                      sep="")
+    plot.cmd <- paste(handleMissingValues(testset, mtype),
+                      "\n# Convert rate of positive predictions to percentage.\n",
+                      'per <- performance(pred, "lift", "rpp")',
+                      "per@x.values[[1]] <- per@x.values[[1]]*100\n",
+                      "# Plot the lift chart.\n",
+                      paste("plot(per,",
+                            sprintf('col="%s", lty=%d,', mcolors[mcount], mcount),
+                            sprintf('xlab="%s",', xlab),
+                            sprintf("add=%s)", addplot)),
+                      sep="\n")
     addplot <- "TRUE"
     
-    appendLog("Display Lift Chart using the ROCR package.", lib.cmd)
+    appendLog("Lift Chart: requires the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
     
-    appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
+    appendLog(sprintf("Obtain predictions from the %s model on the %s dataset.",
                      mtype, testname),
              probcmd[[mtype]], "\n", plot.cmd)
 
@@ -1971,9 +1927,11 @@ executeEvaluateLift <- function(probcmd, testset, testname)
                       '"lift", "rpp")\n',
                       "per@x.values[[1]] <- per@x.values[[1]]*100\n\n",
                       "# Now plot the lift.\n",
-                      "\nplot(per, ",
+                      '\n# Bug in ROCR 1.0-3 plot does not obey the add command.',
+                      '# Calling the function directly (.plot.performance) does work.\n',
+                      "\n.plot.performance(per, ",
                       'col="#00CCCCFF", lty=2, ',
-                      sprintf("add=%s)\n", addplot),
+                      sprintf("add=%s)", addplot),
                       sep="")
     appendLog(sprintf("Generate a Lift Chart for the %s model on %s.",
                      mtype, sub('\\[test\\]', '[train]', testname)),
@@ -2036,15 +1994,14 @@ executeEvaluateROC <- function(probcmd, testset, testname)
                  "a ROC plot ...")
 
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
-                      sprintf("%s$%s),", testset[[mtype]], crs$target),
-                      '"tpr", "fpr"), ',
+    plot.cmd <- paste(handleMissingValues(testset, mtype),
+                      '\nplot(performance(pred, "tpr", "fpr"), ',
                       sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
                       sprintf("add=%s)\n", addplot),
                       sep="")
     addplot <- "TRUE"
 
-    appendLog("Plot an ROC curve using the ROCR package.", lib.cmd)
+    appendLog("ROC Curve: requires the ROCR package.", lib.cmd)
     eval(parse(text=lib.cmd))
   
     appendLog(sprintf("Generate an ROC Curve for the %s model on %s.",
@@ -2075,11 +2032,10 @@ executeEvaluateROC <- function(probcmd, testset, testname)
 
     eval(parse(text=plot.cmd))
 
-    ## Report the area under the curve.
+    # Report the area under the curve.
   
-    auc.cmd <- paste("performance(prediction(crs$pr, ",
-                    sprintf("%s$%s),", testset[[mtype]], crs$target),
-                    '"auc")', sep="")
+    auc.cmd <- paste(handleMissingValues(testset, mtype),
+                     'performance(pred, "auc")', sep="\n")
     appendLog("Calculate the area under the curve for the plot.", auc.cmd)
     auc <- eval(parse(text=auc.cmd))
     appendTextview(TV, paste("Area under the ROC curve for the",
@@ -2089,13 +2045,15 @@ executeEvaluateROC <- function(probcmd, testset, testname)
   }
   lines(c(0,1), c(0,1)) # Baseline
 
-  ## If just one model, and we are plotting the test dataset, then
-  ## also plot the training dataset.
+  # If just one model, and we are plotting the test dataset, then
+  # also plot the training dataset.
 
   if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+    plot.cmd <- paste('\n# Bug in ROCR 1.0-3 plot does not obey the add command.\n',
+                      '# Calling the function directly does work.\n\n',
+                      ".plot.performance(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),",
                               sub("-crs\\$sample", "crs$sample",
                                   testset[[mtype]]), crs$target),
@@ -2163,15 +2121,14 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
 
     mcount <- mcount + 1
 
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
-                      sprintf("%s$%s),", testset[[mtype]], crs$target),
-                      '"prec", "rec"), ',
+    plot.cmd <- paste(handleMissingValues(testset, mtype),
+                      '\nplot(performance(pred, "prec", "rec"), ',
                       sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
                       sprintf("add=%s)\n", addplot),
                       sep="")
     addplot <- "TRUE"
   
-    appendLog("Precision/Recall Plot using the ROCR package", lib.cmd)
+    appendLog("Precision/Recall Plot: requires the ROCR package", lib.cmd)
     eval(parse(text=lib.cmd))
 
     appendLog(sprintf("Generate a Precision/Recall Plot for the %s model on %s.",
@@ -2209,7 +2166,9 @@ executeEvaluatePrecision <- function(probcmd, testset, testname)
   if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+    plot.cmd <- paste('\n# Bug in ROCR 1.0-3 plot does not obey the add command.\n',
+                      '# Calling the function directly (.plot.performance) does work.\n\n',
+                      ".plot.performance(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),",
                               sub("-crs\\$sample", "crs$sample",
                                   testset[[mtype]]), crs$target),
@@ -2276,15 +2235,14 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
                  "a Sensitivity plot ...")
 
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
-                      sprintf("%s$%s),", testset[[mtype]], crs$target),
-                      '"sens", "spec"), ',
+    plot.cmd <- paste(handleMissingValues(testset, mtype),
+                      '\nplot(performance(pred, "sens", "spec"), ',
                       sprintf('col="%s", lty=%d, ', mcolors[mcount], mcount),
                       sprintf("add=%s)\n", addplot),
                       sep="")
      addplot <- "TRUE"
  
-    appendLog("Display a Sensitivity/Specificity Plot using the ROCR package",
+    appendLog("Sensitivity/Specificity Plot: requires the ROCR package",
              lib.cmd)
     eval(parse(text=lib.cmd))
 
@@ -2322,7 +2280,9 @@ executeEvaluateSensitivity <- function(probcmd, testset, testname)
   if (nummodels==1 && length(grep("\\[test\\]", testname))>0)
   {
     mcount <- mcount + 1
-    plot.cmd <- paste("plot(performance(prediction(crs$pr, ",
+    plot.cmd <- paste('\n# Bug in ROCR 1.0-3 plot does not obey the add command.\n',
+                      '# Calling the function directly (.plot.performance) does work.\n\n',
+                      ".plot.performance(performance(prediction(crs$pr, ",
                       sprintf("%s$%s),",
                               sub("-crs\\$sample", "crs$sample",
                                   testset[[mtype]]), crs$target),
