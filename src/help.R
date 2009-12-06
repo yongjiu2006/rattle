@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-25 07:58:16 Graham Williams>
+# Time-stamp: <2009-12-06 17:01:03 Graham Williams>
 #
 # Help Menu
 #
@@ -23,7 +23,7 @@
 
 popupTextviewHelpWindow <- function(topic)
 {
-  collectOutput(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
+  collectOutput(sprintf("help(%s, help_type='html')", topic), TRUE)
 }
 
 showHelpPlus <- function(msg)
@@ -789,6 +789,41 @@ Rattle deploys ksvm from the kernlab package."))
     {
       require(kernlab, quietly=TRUE)
       popupTextviewHelpWindow("ksvm")
+    }
+  }
+}
+
+on_help_model_nnet_activate <- function(action, window)
+{
+  if (showHelpPlus("A Neural Network is quite an old approach to modelling.
+The structure used for modelling imitates a human's neural network. The idea
+is to build a network of neurons connected by synapses, and instead of
+propagating electrical signals, the network propagates numbers. Mathematically,
+this can be described quite nicely in a relatively straightforward, if not simple,
+way. Rattle uses the functionality provided by the nnet package."))
+  {
+    if (packageIsAvailable("nnet", "view documentation for nnet"))
+    {
+      require(nnet, quietly=TRUE)
+      popupTextviewHelpWindow("nnet")
+    }
+  }
+}
+
+on_help_model_survival_activate <- function(action, window)
+{
+  if (showHelpPlus("A Survival Model deals with so called censored data.
+This is data that for each patient, for example, records how long they
+have survived so far. When a patient dies, then we have a record of how
+long they survived until deat. We all eventually die, and so in this respect, the
+data we have is censored. The Target variables are thus the time so far, and whether
+or not the event has occurred (recorded as the Status).
+Rattle uses the functionality provided by the survival package."))
+  {
+    if (packageIsAvailable("survival", "view documentation for survival"))
+    {
+      require(survival, quietly=TRUE)
+      popupTextviewHelpWindow("coxph")
     }
   }
 }

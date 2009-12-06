@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-05 21:55:57 Graham Williams>
+# Time-stamp: <2009-12-06 14:05:39 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1005,7 +1005,7 @@ executeEvaluateTab <- function()
 
         || theWidget("evaluate_pvo_radiobutton")$getActive()
         || theWidget("evaluate_score_radiobutton")$getActive())
-      && !theWidget("target_categoric_radiobutton")$getActive() # See Note Above
+      && !theWidget("data_target_classification_radiobutton")$getActive() # See Note Above
       && is.factor(crs$dataset[[crs$target]])
       && length(levels(crs$dataset[[crs$target]])) > 2)
   {

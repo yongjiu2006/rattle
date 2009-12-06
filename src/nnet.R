@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 16:59:54 Graham Williams>
+# Time-stamp: <2009-12-06 19:20:42 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -199,7 +199,7 @@ exportNNetModel <- function()
 
   if (noModelAvailable(crs$nnet, crv$NNET)) return(FALSE)
 
-  startLog(Rtxt("Export the NNET Model")) 
+  startLog(Rtxt("Export the Neural Net Model")) 
 
   save.name <- getExportSaveName(crv$NNET)
   if (is.null(save.name)) return(FALSE)
@@ -223,7 +223,7 @@ exportNNetModel <- function()
                              ", transforms=crs$transforms", ""))
   if (ext == "xml")
   {
-    appendLog("Export a neural net as PMML.",
+    appendLog("Export the Neural Net model as PMML.",
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -232,7 +232,7 @@ exportNNetModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a neural net model as C code for WebFocus.",
+    appendLog("Export the Neural Net model as C code for WebFocus.",
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),

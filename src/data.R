@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 12:12:48 Graham Williams>
+# Time-stamp: <2009-12-06 16:23:55 Graham Williams>
 #
 # DATA TAB
 #
@@ -448,9 +448,9 @@ updateRDatasets <- function(current=NULL)
   set.cursor(message="Data Names updated.")
 }
 
-on_data_target_survival_checkbutton_toggled <- function(button)
+on_data_target_survival_radiobutton_toggled <- function(button)
 {
-  # 091206 When the Survival check button is toggled, change the names
+  # 091206 When the Survival radio button is toggled, change the names
   # of the Target/Risk columns to match the paradigm.
   
   target <- theWidget("select_treeview")$getColumn(crv$COLUMN["target"])
@@ -1369,7 +1369,7 @@ executeDataRdataset <- function()
   crs$dataname <- dataset
   setMainTitle(crs$dataname)
 
-  # 080328 Fix up any non-supported characters in the column names,
+  # 080328 Fix up any non-supported characters in the variable names,
   # otherwise they cause problems, e.g. "a-b" when used as ds$a-b is
   # interpreted as (ds$a - b)!
   
@@ -1416,7 +1416,7 @@ executeDataLibrary <- function()
 
   if (! overwriteModel()) return()
 
-  # Generate commands. 090321 Add a command to fix the column
+  # Generate commands. 090321 Add a command to fix the variable
   # names. Some datasets, like AdultUCI in arules, have names like
   # education-num, which is some cases looks like a subtraction in
   # R. Without changing it here I would need to fix other code up to
@@ -1824,12 +1824,15 @@ executeSelectTab <- function()
 
   if (length(risk) > 1)
   {
-    errorDialog("More than a single risk column has been identified (",
-                 paste(sprintf("%s:%s",
-                               getSelectedVariables("risk", FALSE),
-                               risk), collapse=" "),
-                 "). \n\nOnly a single risk column is allowed.",
-                 sep="")
+    errorDialog("More than a single ",
+                ifelse(survivalTarget(), "Status", "Risk"),
+                " variable has been identified (",
+                paste(sprintf("%s:%s",
+                              getSelectedVariables("risk", FALSE),
+                              risk), collapse=" "),
+                "). Only a single variable is allowed.\n",
+                "\nPlease change the role of one of the variables.",
+                sep="")
     return()
   }
 
@@ -1837,10 +1840,11 @@ executeSelectTab <- function()
 
   if (length(risk) && ! is.numeric(crs$dataset[[risk]]))
   {
-    errorDialog("The column selected for your risk",
-                 sprintf("(%s)", crs$dataset[[risk]]),
-                 "is not numeric.",
-                "\n\nPlease select a numeric column as your Risk vairable.")
+    errorDialog("The variable selected for your",
+                ifelse(survivalTarget(), "Status", "Risk"),
+                sprintf("(%s)", risk),
+                "is not numeric.",
+                "\n\nPlease select a numeric variable.")
     return()
   }
 
@@ -1902,6 +1906,18 @@ executeSelectTab <- function()
   crs$ident   <- ident
   crs$ignore  <- ignore
   crs$weights <- weights
+
+  # 091206 Add the information to the Log tab
+
+  convertOneMany <- function(x)
+    switch(min(length(x)+1, 3), 'NULL', sprintf('"%s"', x),
+           sprintf('c("%s")', paste(x, collapse='", "')))
+  appendLog("The following selections of variables has been made.",
+            'crs$input <- ', convertOneMany(input),
+            '\ncrs$target <- ', convertOneMany(target),
+            '\ncrs$risk <- ', convertOneMany(risk),
+            '\ncrs$ident <- ', convertOneMany(ident),
+            '\ncrs$ignore <- ', convertOneMany(ignore))
 
   # 090801 Update the transforms list, so that any transforms that are
   # not ignore/ident will be noted as active. The status is used when
@@ -2106,7 +2122,7 @@ executeSelectTab <- function()
   
   # 080505 We auto decide whether the target looks like a categorical
   # or numeric, but if it ends up being a categoric (the user
-  # overrides with the type radio button) with vary many classes,
+  # overrides with the type radio button) with very many classes,
   # then complain!
   
   if (not.null(target)
@@ -2128,6 +2144,22 @@ executeSelectTab <- function()
       return()
   }
 
+  # 091206 Check that we have both a target and risk for a survival
+  # model.
+
+  if (not.null(target)
+      && !length(risk)
+      && survivalTarget())
+  {
+    errorDialog("You have chosen Survial models as the target type,",
+                "but no Status variable has been identified.",
+                "Survival models require both a Time and a Status",
+                "variable.\n",
+                "\nPlease identify the Status variable and then",
+                "Execute this tab once again.")
+    return(FALSE)
+  }
+  
   # Finished - update the status bar.
   
   setStatusBar("Roles noted.",
@@ -2136,11 +2168,15 @@ executeSelectTab <- function()
                ifelse(length(crs$target) == 0,
                       paste("NO target thus no predictive modelling nor",
                             "sampling."),
-                      paste("Target:", crs$target, "a",
-                            ifelse(categoricTarget(),
-                                   sprintf("Categoric %d for classification.",
-                                           target.levels),
-                                   "Numeric for regression."))))
+                      paste("The target is ", crs$target,
+                            ifelse(survivalTarget(),
+                                   paste(" with ", crs$risk,
+                                         ". Survival", sep=""),
+                                   ifelse(categoricTarget(),
+                                          sprintf(". Categoric %d. Classification",
+                                                  target.levels),
+                                          ". Numeric. Regression")),
+                            " models enabled.", sep="")))
 }
 
 executeSelectSample <- function()
@@ -2833,7 +2869,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     numeric.var <- is.numeric(crs$dataset[[variables[i]]])
     possible.categoric <- (unique.count <= crv$max.categories ||
-                           theWidget("target_categoric_radiobutton")$
+                           theWidget("data_target_classification_radiobutton")$
                            getActive())
     
     # Convert internal class to printable form.
@@ -2987,14 +3023,27 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   crs$ignore <- ignore
   crs$risk   <- risk
 
+  # 091206 Set the default target type.
+  
   # 091206 If the target is TIME... and risk is STATUS... or
-  # EVENT... then enable the Survival checkbutton.
+  # EVENT... then enable the Survival radiobutton.
 
   if (! (is.null(target) || is.null(risk)) &&
       substr(target, 1, 4) == "TIME" &&
       (substr(risk, 1, 6) == "STATUS" ||
        substr(variables[i], 1, 5) == "EVENT"))
-    theWidget("data_target_survival_checkbutton")$setActive(TRUE)
+    theWidget("data_target_survival_radiobutton")$setActive(TRUE)
+  else if (is.numeric(crs$dataset[[crs$target]]) &&
+           # 080505 TODO we should put 10 as a global CONST
+           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
+    theWidget("data_target_regression_radiobutton")$setActive(TRUE)
+  else if (is.factor(crs$dataset[[crs$target]]) ||
+           (is.numeric(crs$dataset[[crs$target]]) &&
+            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
+    theWidget("data_target_classification_radiobutton")$setActive(TRUE)
+  else
+    # Unset them all - not sure we should be here ever?
+    theWidget("data_target_auto_radiobutton")$setActive(TRUE)
     
   # Perform other setups associated with a new dataset
 

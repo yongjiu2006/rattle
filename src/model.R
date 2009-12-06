@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 11:58:04 Graham Williams>
+# Time-stamp: <2009-12-06 14:17:29 Graham Williams>
 #
 # MODEL TAB
 #
@@ -253,13 +253,14 @@ numericTarget <- function()
 {
   if (length(getSelectedVariables("target")) == 0)
     return(FALSE)
-  else if (theWidget("target_type_radiobutton")$getActive())
-    # 080505 TODO we should put 10 as a global CONST
-    return(is.numeric(crs$dataset[[crs$target]]) &&
-           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
-  else if (theWidget("target_categoric_radiobutton")$getActive())
+  # 091206 Move to not using the auto radio button.
+  #  else if (theWidget("data_target_auto_radiobutton")$getActive())
+  #  # 080505 TODO we should put 10 as a global CONST
+  #  return(is.numeric(crs$dataset[[crs$target]]) &&
+  #         length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
+  else if (theWidget("data_target_classification_radiobutton")$getActive())
     return(FALSE)
-  else if (theWidget("target_numeric_radiobutton")$getActive())
+  else if (theWidget("data_target_regression_radiobutton")$getActive())
     return(TRUE)
   else
     return(FALSE)
@@ -281,14 +282,15 @@ categoricTarget <- function()
 {
   if (length(getSelectedVariables("target")) == 0)
     return(FALSE)
-  else if (theWidget("target_type_radiobutton")$getActive())
-    # 080505 TODO we should put 10 as a global CONST
-    return(is.factor(crs$dataset[[crs$target]]) ||
-           (is.numeric(crs$dataset[[crs$target]]) &&
-            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
-  else if (theWidget("target_categoric_radiobutton")$getActive())
+  # 091206 Move to not using the auto radio button.
+  # else if (theWidget("data_target_auto_radiobutton")$getActive())
+  #  # 080505 TODO we should put 10 as a global CONST
+  #  return(is.factor(crs$dataset[[crs$target]]) ||
+  #         (is.numeric(crs$dataset[[crs$target]]) &&
+  #          length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
+  else if (theWidget("data_target_classification_radiobutton")$getActive())
     return(TRUE)
-  else if (theWidget("target_numeric_radiobutton")$getActive())
+  else if (theWidget("data_target_regression_radiobutton")$getActive())
     return(FALSE)
   else
     return(FALSE)
@@ -308,7 +310,7 @@ multinomialTarget <- function()
 
 survivalTarget <- function()
 {
-  return(theWidget("data_target_survival_checkbutton")$getActive())
+  return(theWidget("data_target_survival_radiobutton")$getActive())
 }
 
 currentModelTab <- function()

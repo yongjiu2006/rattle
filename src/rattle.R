@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-29 21:40:43 Graham Williams>
+# Time-stamp: <2009-12-06 14:07:18 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Nov 2009"
+VERSION.DATE <- "Released 06 Dec 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -913,15 +913,15 @@ resetRattle <- function(new.dataset=TRUE)
   {
     theWidget("sample_count_spinbutton")$setValue(0)
     theWidget("data_sample_checkbutton")$setActive(FALSE)
-    theWidget("target_type_radiobutton")$setActive(TRUE)
+    theWidget("data_target_auto_radiobutton")$setActive(TRUE)
   }
   
-  ## 080520 Don't turn these off - it makes sesne to allow the user to
-  ## set these options even before the dataset is loaded.
+  # 080520 Don't turn these off - it makes sesne to allow the user to
+  # set these options even before the dataset is loaded.
   
-  ##theWidget("target_type_radiobutton")$setSensitive(FALSE)
-  ##theWidget("target_categoric_radiobutton")$setSensitive(FALSE)
-  ##theWidget("target_numeric_radiobutton")$setSensitive(FALSE)
+  # theWidget("target_type_radiobutton")$setSensitive(FALSE)
+  # theWidget("data_target_classification_radiobutton")$setSensitive(FALSE)
+  # theWidget("data_target_regression_radiobutton")$setSensitive(FALSE)
   
 ##   theWidget("odbc_dsn_entry")$setText("")
 ##   theWidget("odbc_combobox")$setActive(-1)
