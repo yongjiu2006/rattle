@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 16:23:55 Graham Williams>
+# Time-stamp: <2009-12-17 11:04:28 Graham Williams>
 #
 # DATA TAB
 #
@@ -560,7 +560,7 @@ executeDataTab <- function(csvname=NULL)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
- }
+  }
   else
     resetRattle(new.dataset=FALSE)
 
@@ -1933,11 +1933,8 @@ executeSelectTab <- function()
   
   # Update MODEL targets
 
-  the.target <- sprintf("Target: %s", ifelse(is.null(target),
-                                             "None", target))
-
-  the.risk <- sprintf("Event: %s", ifelse(is.null(risk),
-                                             "None", risk))
+  the.target <- sprintf("Target: %s", ifelse(is.null(target), "None", target))
+  the.risk <- sprintf("Status: %s", ifelse(is.null(risk), "None", risk))
 
   theWidget("explot_target_label")$setText(the.target)
 
@@ -1952,7 +1949,8 @@ executeSelectTab <- function()
   theWidget("nnet_target_label")$setText(the.target)
 
   theWidget("model_survival_radiobutton")$setSensitive(TRUE)
-  theWidget("model_survival_time_var_label")$setText(the.target) 
+  theWidget("model_survival_time_var_label")$setText(sub("Target:",
+                                                         "Time:", the.target))
   theWidget("model_survival_status_var_label")$setText(the.risk) 
   
   # Update MODEL weights
@@ -2027,10 +2025,8 @@ executeSelectTab <- function()
       theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
 
       theWidget("nnet_radiobutton")$setSensitive(TRUE)
-      # I don't think these need tgo be done. We can't see the options
-    # when the nnet button is not sensitive
-    #theWidget("nnet_hidden_nodes_label")$setSensitive(FALSE)
-    #theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(FALSE)
+      theWidget("nnet_hidden_nodes_label")$setSensitive(TRUE)
+      theWidget("nnet_hidden_nodes_spinbutton")$setSensitive(TRUE)
       theWidget("nnet_builder_label")$setText("nnet (0/1)")
 
     }
@@ -2846,7 +2842,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Fix any doubling up
 
     input <- setdiff(input, target)
-    if (length(target) > 0 && length(ident) > 0 && target %in% ident)
+    if (length(target) && length(ident) && target %in% ident)
       target <- NULL
     
     # 090110 We used to include the number of levels in the Data Type
@@ -3028,7 +3024,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   # 091206 If the target is TIME... and risk is STATUS... or
   # EVENT... then enable the Survival radiobutton.
 
-  if (! (is.null(target) || is.null(risk)) &&
+  if (is.null(target))
+    theWidget("data_target_auto_radiobutton")$setActive(TRUE)
+  else if (! (is.null(target) || is.null(risk)) &&
       substr(target, 1, 4) == "TIME" &&
       (substr(risk, 1, 6) == "STATUS" ||
        substr(variables[i], 1, 5) == "EVENT"))

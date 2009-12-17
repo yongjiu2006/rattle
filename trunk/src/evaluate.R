@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 14:05:39 Graham Williams>
+# Time-stamp: <2009-12-16 07:23:21 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -257,8 +257,8 @@ configureEvaluateTab <- function()
 
   #----------------------------------------------------------------------
   
-  # 081206 Handle the sensitivity of the new Report options: Class
-  # and Probability. These are only available if one of the
+  # 081206 Handle the sensitivity of the Report options: Class/Time
+  # and Probability/Risk. These are only available if one of the
   # non-cluster models is active but not if it is a multinomial
   # target.
 
@@ -282,7 +282,9 @@ configureEvaluateTab <- function()
   default.to.class <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
                        theWidget("evaluate_ada_checkbutton")$getActive() ||
                        theWidget("evaluate_rf_checkbutton")$getActive() ||
-                       theWidget("evaluate_ksvm_checkbutton")$getActive())
+                       theWidget("evaluate_ksvm_checkbutton")$getActive() ||
+                       (theWidget("evaluate_survival_checkbutton")$getActive() &&
+                        class(crs$survival) %in% "survreg"))
 
   if (default.to.class)
     theWidget("score_class_radiobutton")$setActive(TRUE)
@@ -348,6 +350,10 @@ resetEvaluateTab <- function()
   theWidget("score_idents_radiobutton")$setSensitive(FALSE)
   theWidget("score_all_radiobutton")$setSensitive(FALSE)
 
+  # 091215 Set default choice back to Error Matrix
+
+  theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
+  
 }
 
 getEvaluateModels <- function()
@@ -712,7 +718,7 @@ executeEvaluateTab <- function()
   
   if (crv$SURVIVAL %in%  mtypes)
   {
-    testset[[crv$SURVIVAL]] <- testset0
+    testset[[crv$SURVIVAL]] <- sprintf("na.omit(%s)", testset0)
 
     predcmd[[crv$SURVIVAL]] <- genPredictSurvival(testset[[crv$SURVIVAL]])
     respcmd[[crv$SURVIVAL]] <- genResponseSurvival(testset[[crv$SURVIVAL]])
@@ -1781,7 +1787,7 @@ executeEvaluateCostCurve <- function(probcmd, testset, testname)
                             'ylab="Normalized expected cost")'),
                       'lines(c(0,1),c(0,1))',
                       'lines(c(0,1),c(1,0))',
-                      handleMissingvalues(testset, mtype),
+                      handleMissingValues(testset, mtype),
                       'perf1 <- performance(pred, "fpr", "fnr")',
                       'for (i in seq_along(perf1@x.values))\n{',
                       '\tfor (j in seq_along(perf1@x.values[[i]]))\n\t{',
@@ -2420,8 +2426,8 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   # crs$testset[,c(...)]
   # na.omit(crs$testset[,c(...)])
   #
-  # TODO 080425 I could test to make sure they are all of the same
-  # form to make sure the assumption is not breached.
+  # 080425 TODO It would be best to test they are all of the same form
+  # to make sure the assumption is not breached.
   #
   # We first remove the na.omit so we can get all row names. The
   # na.omit is there for those models, like glm and ksvm, which do not

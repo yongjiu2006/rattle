@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 17:02:59 Graham Williams>
+# Time-stamp: <2009-12-10 19:58:27 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -260,7 +260,7 @@ executeClusterHClust <- function(include)
   {
     if (any(grep("[cC]annot allocate (vector|memory)", result)))
     {
-      errorDialog("The call to hclust appears to have failed.",
+      errorDialog("E143: The call to hclust appears to have failed.",
                   "This is often due, as is the case here,",
                   "to running out of memory",
                   "as hclust is rather memory hungry.",

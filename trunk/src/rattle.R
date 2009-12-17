@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 14:07:18 Graham Williams>
+# Time-stamp: <2009-12-16 07:34:10 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Dec 2009"
+VERSION.DATE <- "Released 07 Dec 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -904,6 +904,9 @@ resetRattle <- function(new.dataset=TRUE)
 
   crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
   theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
+  theWidget("score_class_radiobutton")$setActive(TRUE)
+  theWidget("score_class_radiobutton")$setLabel("Class")
+  theWidget("score_probability_radiobutton")$setLabel("Probability")
 
   # Reset the DATA tab. But we don't want to do this because
   # resetRattle is called on loading a database table, and this ends

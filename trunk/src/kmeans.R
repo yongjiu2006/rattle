@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-29 21:32:05 Graham Williams>
+# Time-stamp: <2009-12-17 19:44:26 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -127,7 +127,8 @@ on_kmeans_stats_button_clicked <- function(button)
                        "If you continue you may find that the command will",
                        "fail on trying to allocate memory (on a 32 bit",
                        "computer) or else will proceed to fill up all memory",
-                       "and thereby freeze the computer.",
+                       "and thereby freeze the computer. Whlist the calculations",
+                       "are being performed the interface will also freeze.",
                        "\n\nDo you wish to continue anyhow?"))
     return(FALSE)
   
@@ -135,15 +136,35 @@ on_kmeans_stats_button_clicked <- function(button)
   # adding the na.omit here (since by default that is done in building
   # the clusters). Not sure if this is generally correct.
 
-  set.cursor("watch")
-  on.exit(set.cursor())
-
+  set.cursor("watch", "Determining cluster statistics...")
+  on.exit(set.cursor("left-ptr"))
+  while (gtkEventsPending()) gtkMainIteration()
+  
   stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
                              "crs$kmeans$cluster)\n"),
                        ifelse(sampling, "crs$sample", ""), include)
   appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  result <- try(collectOutput(stats.cmd, use.print=TRUE))
+  if (inherits(result, "try-error"))
+  {
+    if (any(grep("[cC]annot allocate (vector|memory)", result)))
+    {
+      errorDialog("E144: The call to cluster.stats appears to have failed.",
+                  "This is often due, as is the case here,",
+                  "to running out of memory.",
+                  "A quick solution is to sample the dataset, through the",
+                  "Data tab, and rebuild the cluster. On 32bit machines you may be limited to",
+                  "less than 4000 observations.")
+      setTextview(TV)
+    }
+    else
+      errorDialog("The call to cluster.stat appears to have failed.",
+                   "The error message was:", result, crv$support.msg)
+    return(FALSE)
+  }
+
   appendTextview(TV, "General cluster statistics:\n\n",
-                 collectOutput(stats.cmd, use.print=TRUE))
+                 result)
   setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
 }
 
@@ -154,7 +175,7 @@ on_kmeans_data_plot_button_clicked <- function(button)
 
   if (is.null(crs$kmeans))
   {
-    errorDialog("E132: Should not be here.", crv$support.msg)
+    errorDialog("E132: No cluster model. Please create one first.", crv$support.msg)
     return()
   }
 
@@ -193,6 +214,19 @@ on_kmeans_data_plot_button_clicked <- function(button)
   #
   # I think the default plot is quite good. plotmatrix is good, but
   # does not include the scales and takes a long time to render.
+
+  if (length(indicies) > 10 ||
+      ifelse(sample, length(crs$sample), nrow(crs$dataset)) > 1000)
+  {
+    if (! questionDialog("You have asked to plot the clusters, showing the original",
+                         "data coloured by their cluster membership. For more than",
+                         "about 10 variables or about 1000 entities this plot will",
+                         "be quite slow. It will also tie up the interface whilst",
+                         "the plot is draw. If you decide to continue, please be",
+                         "patient.\n\n",
+                         "Would you like to continue?"))
+      return(FALSE)
+  }
   
   ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
   plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",

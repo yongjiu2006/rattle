@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-11-28 17:01:29 Graham Williams>
+# Time-stamp: <2009-12-16 07:53:54 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -92,14 +92,28 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   {
     msg <- sprintf(paste("An error occured in the call to %s and modelling failed.",
                          "The error was: %s"), method, crs$survival)
-    if (gui)
+    
+    if (any(grep("Invalid survival times for this distribution", crs$survival)))
     {
-      errorDialog(msg)
-      return(NULL)
+      errorDialog("E145: The building of the survival model failed.",
+                  "The error indicates an invalid Time variable.",
+                  "This can be the case when using survreg and there is",
+                  "a zero time value (as might result from an imputation).",
+                  "Please review the source data and ensure the Time values",
+                  "are correct.")
+      setTextview(tv)
     }
-    stop(msg)
+    else
+    {
+      if (gui)
+      {
+        errorDialog(msg)
+        return(NULL)
+      }
+    }
+    return(FALSE)
   }
-  
+
   # Print the results of the modelling.
 
   if (gui)
@@ -139,6 +153,11 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
 
   theWidget("model_survival_plots_button")$
   setSensitive(state && class(crs$survival) == "coxph")
+
+  theWidget("score_class_radiobutton")$
+  setActive(class(crs$survival) == "survreg")
+  theWidget("score_probability_radiobutton")$
+  setSensitive(class(crs$survival) == "coxph")
 }
 
 plotSurvivalModel <- function()
@@ -208,7 +227,7 @@ exportSurvivalModel <- function()
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
                 attr(save.name, "includePMML"),
                 ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("survival_textview"),
+                       getTextviewContent("model_survival_textview"),
                        "\"Not Included\""),
                 attr(save.name, "exportClass")), file=save.name)
   }
@@ -230,9 +249,13 @@ genPredictSurvival <- function(dataset)
   
   is.coxph <- class(crs$survival) == "coxph"
 
-  return(sprintf(paste("crs$pr <- survival:::survmean(survfit(crs$survival,",
-                       '%s), scale=1, rmean="none")[[1]][,5]'), dataset))
+  if (is.coxph)
+    cmd <- sprintf(paste("crs$pr <- survival:::survmean(survfit(crs$survival,",
+                         '%s), scale=1, rmean="none")[[1]][,5]'), dataset)
+  else
+    cmd <- sprintf("crs$pr <- predict(crs$survival, %s)", dataset)
 
+  return(cmd)
 }
 
 genResponseSurvival <- function(dataset)

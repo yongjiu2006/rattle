@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 19:20:42 Graham Williams>
+# Time-stamp: <2009-12-17 21:33:03 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -162,8 +162,10 @@ executeModelNNet <- function()
                        '    paste(crs$nnet$coefnames, collapse=", ")))',
                        'cat(sprintf("Output: %s.\n",',
                        '    names(attr(crs$nnet$terms, "dataClasses"))[1]))',
-                       'cat("\nNetwork Weights:\n\n")',
-                       "print(summary(crs$nnet))", "cat('\n')", sep="\n")
+                       'cat(sprintf("Sum of Squares Residuals: %.4f.\n",',
+                       '    sum(residuals(crs$nnet) ^ 2)))',
+                       'cat("\n")',
+                       "print.summary.nnet.rattle(summary(crs$nnet))", "cat('\n')", sep="\n")
   else
     print.cmd <- "print(crs$nnet)"
 
@@ -249,3 +251,36 @@ exportNNetModel <- function()
 
   setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
 }
+
+print.summary.nnet.rattle <- function(x, ...)
+{
+  require(nnet)
+  cat("Neural Network build options:")
+  tconn <- diff(x$nconn)
+  ssep <- ""
+  if (tconn[length(tconn)] > x$n[2L]+1L)
+    {cat(ssep, "skip-layer connections"); ssep=";"}
+  if (x$nunits > x$nsunits && !x$softmax)
+    {cat(ssep, "linear output units"); ssep=";"}
+  if (x$entropy)
+    {cat(ssep, "entropy fitting"); ssep=";"}
+  if (x$softmax)
+    {cat(ssep, "softmax modelling"); ssep=";"}
+  if (x$decay[1L] > 0)
+    {cat(ssep, "decay=", x$decay[1L], sep=""); ssep=";"}
+  cat(".\n\nIn the following table:\n",
+      "  b  represents the bias associated with a node\n",
+      "  h1 represents hidden layer node 1\n",
+      "  i1 represents input node 1 (i.e., input variable 1)\n",
+      "  o  represents the output node\n")
+  wts <- format(round(nnet:::coef.nnet(x),2))
+  lapply(split(wts, rep(1L:x$nunits, tconn)),
+         function(x)
+         {
+           cat(sprintf("\nWeights for node %s:\n",
+                       sub("^.*->", "", names(x)[1])))
+           print(x, quote=FALSE)
+         })
+  invisible(x)
+}
+

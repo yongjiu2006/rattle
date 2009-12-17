@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-12 22:19:49 Graham Williams>
+# Time-stamp: <2009-12-17 15:59:25 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -37,7 +37,18 @@ executeClusterTab <- function()
   # Check if sampling needs executing.
 
   if (sampleNeedsExecute()) return()
-    
+
+  # 091216 Automatically handle any selected categorics by converting
+  # them to numeric, so they then become included variables. This
+  # works, but it risks suprising the user with hte addition of new
+  # variables outside their control. So let's leave it to the user to
+  # do the transforms, or use clara.
+
+  # factors <- crs$input[sapply(crs$input, function(x)
+  #                             is.factor(crs$dataset[[x]]))]
+  # sapply(factors, executeTransformRemapPerform, action="indicator",
+  #        remap.prefix="TIN")
+  
   # Kmeans and hclust only work for numeric data, so identify
   # variables to include.  Only work with the INPUT/TARGET/RISK
   # variables. That is, only exclude the IGNORE and IDENT variables.
