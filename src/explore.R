@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-21 14:54:07 Graham Williams>
+# Time-stamp: <2009-12-14 15:17:43 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -20,6 +20,27 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+
+# 091214 Not sure if we need to change this for the grid layout of
+# the grid pacakage so we can get multiple plots. But perhaps we go
+# back to just a single plot in each figure. Something like:
+
+# newPlot()
+# layout <- grid.layout(nrow = 2, ncol = 2)
+# gf = grid.frame(name="gf", layout=layout)
+# ds <- rbind(data.frame(Rainfall=crs$dataset[crs$sample,][,"Rainfall"],
+#                        RainTomorrow="All"),
+#             data.frame(Rainfall=crs$dataset[crs$sample,][crs$dataset[crs$sample,]$
+#                        RainTomorrow=="No","Rainfall"], RainTomorrow="No"),
+#            data.frame(Rainfall=crs$dataset[crs$sample,][crs$dataset[crs$sample,]$
+#                       RainTomorrow=="Yes","Rainfall"], RainTomorrow="Yes"))
+# p1 <- ggplotGrob(ggplot(ds, aes(RainTomorrow, Rainfall)) +
+#                  geom_boxplot(fill=rainbow_hcl(3),) +
+#                  opts(title="Distribution of Rainfall (sample)") +
+#                  labs(x="Rainfall\n\nRattle 2009-Dec-14 14:08:14 gjw"))
+# grid.place("gf", p1, row=1, col=1) 
 
 ########################################################################
 # EXECUTION
@@ -85,7 +106,10 @@ executeExploreTab <- function()
   if (theWidget("summary_radiobutton")$getActive())
     executeExploreSummary(dataset)
   else if (theWidget("explore_distr_radiobutton")$getActive())
-    executeExplorePlot(avdataset)
+    if (crv$appname == "RattleXX")
+      executeExplorePlot2(avdataset)
+    else
+      executeExplorePlot(avdataset)
   else if (theWidget("explore_interactive_radiobutton")$getActive())
     if (theWidget("explore_interactive_latticist_radiobutton")$getActive())
       executeExplorePlaywith(dataset)
@@ -398,6 +422,1372 @@ plotBenfordsLaw <- function(l)
   barplot2(nds, beside=TRUE, main = ttl[1], sub = ttl[2],
            xlab = "Initial Digit", ylab = "Probability")
 }
+
+executeExplorePlot2 <- function(dataset,
+                               boxplots = getSelectedVariables("boxplot"),
+                               hisplots = getSelectedVariables("hisplot"),
+                               cumplots = getSelectedVariables("cumplot"),
+                               benplots = getSelectedVariables("benplot"),
+                               barplots = getSelectedVariables("barplot"),
+                               dotplots = getSelectedVariables("dotplot"),
+                               mosplots = getSelectedVariables("mosplot"),
+                               stratify=TRUE, sampling=NULL,
+                               target=crs$target)
+{
+  # 091214 Plot the data using ggplot2.
+  #
+  # 091214 Box plots have been convereted to ggplot2
+  #
+  # The DATASET is a character string that defines the dataset to
+  # use. Information about what variables to plot and the kind of
+  # plots is obtained from the continuous_treeview and the
+  # categorical_treeview which are displayed in the Explore tab's
+  # Distribution option. The appropriate plots are displayed. 090323
+  # By having the list of varaiables to display for each type of plot
+  # set in the parameter list we can call this function to plot
+  # variables from the command line, as in using Sweave. The function
+  # remains an internal Rattle function though - only for those who
+  # know!
+
+  cat("Experimental ggplot2 Version\n")
+
+  # Obtain the selection of variables.
+
+  nboxplots <- length(boxplots)
+  nhisplots <- length(hisplots)
+  nbenplots <- length(benplots)
+  nbarplots <- length(barplots)
+  ndotplots <- length(dotplots)
+  nmosplots <- length(mosplots)
+
+  total.plots <- nboxplots + nhisplots + length(cumplots) +
+    nbenplots + nbarplots + ndotplots + nmosplots
+  
+  pmax <- theWidget("plots_per_page_spinbutton")$getValue()
+  pcnt <- 0
+
+  # Iterate over all target values if a target is defined and has
+  # less than 10 values. The plots will then also display the
+  # distributions per target value.
+
+  # 091011 Move to using the value of crs$target instead of getting it
+  # from the interface. Evenetually, pass target in as an argument so
+  # we can be independent of the GUI?
+
+  # target <- getSelectedVariables("target")
+
+  if (is.null(target))
+    targets <- NULL
+  else
+    targets <- levels(as.factor(crs$dataset[[target]]))
+
+  if (length(targets) > 10) targets <- NULL
+
+  # For now, let's plot always, since I was wondering why the Benford
+  # plot was not showing all the targets!
+  
+##   if (length(targets) > 10)
+##   {
+##     target <- NULL
+##     targets <- NULL
+##   }
+  
+  # 091011 Check if there are mosaic plots requested but there is not
+  # target - notify that the mosaic plots will not be plotted.
+
+  if (nmosplots > 0 && is.null(target))
+  {
+    infoDialog("A mosaic plot can not be displayed without identifying a target.",
+               "The requested mosaic plots will be ignored.")
+    total.plots <- total.plots - nmosplots
+    mosplots <- NULL
+    nmosplots <- 0
+  }
+
+  # Don't waste real estate if we are plotting less than number
+  # allowed per page.
+  
+  if (total.plots < pmax) pmax <- total.plots
+  
+  # Check for sampling.
+
+  if (is.null(sampling))
+  {
+    use.sample <- theWidget("data_sample_checkbutton")$getActive()
+    sampling  <- use.sample && not.null(crs$sample)
+  }
+
+  # Record other options.
+
+  annotate <- theWidget("explot_annotate_checkbutton")$getActive()
+  
+  # Split the data, first for all values.
+
+  bind.cmd <- sprintf('rbind(data.frame(%%s=%s[,"%%s"], %s="All")', dataset, target)
+
+  for (i in seq_along(targets))
+  {
+    bind.cmd <- sprintf("%s,\n            data.frame(%%s=%s",
+                        bind.cmd, dataset)
+    
+    bind.cmd <- sprintf('%s[crs$dataset%s$%s=="%s","%%s"], %s="%s")',
+                        bind.cmd,
+                        ifelse(sampling, "[crs$sample,]", ""),
+                        target, targets[i], target, targets[i])
+  }
+  
+  # Finish off the command to create the dataset for plotting.
+  
+  bind.cmd <- sprintf("%s)", bind.cmd)
+
+  # Build a list of generic datasets. This describes how to get the
+  # relevant rows from the dataset for All the data, then each of the
+  # levels of a target. Each contains a "%s" which is replace gor
+  # specific chosen variables at the time of using this construct to
+  # obtain the data for the plot. The form is:
+  #
+  # All = crs$dataset$%s
+  #
+  # or if sampling is enabled:
+  #
+  # All = crs$dataset[crs$sample,]$%s  
+  #
+  # For each level:
+  #
+  # '0' = crs$dataset[crs$dataset$Adjusted=="0",]$%s
+  #
+  # or if sampling is enabled:
+  #
+  # '0' = crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Adjusted=="0",]$%s
+  #
+  # This is a newer alternative to identifying the dataset
+  # segments. We build this list of target and a specification of the
+  # correspending data subset. Eventually move all plotting to use
+  # this approach rather than using bind.cmd.
+
+  genericDataSet <- data.frame(All=sprintf('%s$%%s', dataset))
+  for (i in seq_along(targets))
+  {
+    tmpDataSet <- data.frame(New=sprintf('%s[crs$dataset%s$%s=="%s",]$%%s',
+                               dataset,
+                               ifelse(sampling, "[crs$sample,]", ""),
+                               target, targets[i]))
+    colnames(tmpDataSet) <-  c(targets[i])
+    genericDataSet <- cbind(genericDataSet, tmpDataSet)
+  }
+
+  # Generate a plot for each variable. If there are too many
+  # variables, ask the user if we want to continue.
+
+  if (total.plots > 10 && pmax == 1)
+    if (! questionDialog("We are about to generate", total.plots,
+                         "individual plots. That's quite a few.",
+                         "You could select fewer variables, or you",
+                         "can change the number of plots per page,",
+                         "but you can also proceed if you like.",
+                         "\n\nWould you like to proceed?"))
+      return()
+
+  #---------------------------------------------------------------------
+  # 091005 If no plots are specified then generate a matrix of scatter
+  # plots following the example in the pairs function.
+  
+  if (total.plots == 0) displayPairsPlot(dataset)
+
+  #---------------------------------------------------------------------
+
+  if (nboxplots > 0)
+  {
+    # Show a box plot for numeric data. A box plot shows the
+    # distribution of numeric data graphically. The box iteself
+    # extends from the lower to the upper quartiles with the median
+    # drawn in the box. The lines then extend to the maximum and
+    # minimum points that are no more than 1.5 times the interquartile
+    # range from the median. Outliers are then also plotted as
+    # points.
+
+    # 080918 Use the colorspace package to get a better colour map. See
+    # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87 and
+    # http://statmath.wu.ac.at/~zeileis/papers/Zeileis+Hornik+Murrell-2009.pdf
+    
+    if (packageIsAvailable("colorspace"))
+      cols <- "fill=rainbow_hcl(%d)," # 090524, start = 270, end = 150),"
+    else
+      cols <- "fill=rainbow(%d),"
+
+    # 091214 Generate the compnents of the plot and then bring them
+    # togther. The specific variable name ends up being a %s, ready
+    # for substitution within the loop over the variables selected for
+    # a box plot.
+    
+    ggplot.cmd  <- sprintf("ggplot(ds, aes(%s, %%s))", target)
+    boxplot.cmd <- sprintf("geom_boxplot(%s)",
+                           sprintf(cols, length(targets)+1))
+    title.cmd <- sprintf('opts(title="Distribution of %%s%s")',
+                         ifelse(sampling, " (sample)",""))
+    sub.cmd <- sprintf('labs(x="%s\\n\\n%%s")', target)
+
+    plot.cmd <- sprintf("print(%s + %s + %s + %s)", ggplot.cmd,
+                        boxplot.cmd, title.cmd, sub.cmd)
+
+    ## 091214 I don't see how to add annotations yet. So skip all this for now.
+    
+    ## # Based on an example from Jim Holtman on r-help 070406.
+    
+    ## annotate.cmd <- paste("for (i in seq(ncol(bp$stats)))",
+    ##                       "{text(i,",
+    ##                       "bp$stats[,i] - 0.02*(max(ds$dat, na.rm=TRUE)",
+    ##                       "- min(ds$dat, na.rm=TRUE)),",
+    ##                       "labels=bp$stats[,i])}")
+    
+    ## lib.cmd <- "require(doBy, quietly=TRUE)"
+    
+    ## # TODO: Try using "by" instead of needing another package to
+    ## # provide summaryBy. Also, the new version of doBy (061006) seems
+    ## # to be outputting extra status information that makes the R
+    ## # Console a little chatty unneccessarily - perhaps this will
+    ## # disappear again - it looks like debugging information!
+    ## #
+    ## # status:
+    ## # lhsvar     : dat 
+    ## # rhsvar     : grp 
+    ## # idvar      :  
+    ## # fun.names  : mean 
+    ## # varPrefix  : mean 
+    ## # newNames   : mean.dat 
+
+    ## # Only use summaryBy if there is a target, because it fails if
+    ## # there is actually only one group in the data. Might be a new
+    ## # bug in the doBy package.
+    
+    ## if (length(targets) > 1)
+    ##   mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
+    ##                     "summaryBy(dat ~ grp, data=ds,",
+    ##                     "FUN=mean, na.rm=TRUE)$dat.mean,",
+    ##                     "pch=8)")
+    ## else
+    ##   mean.cmd <- paste(sprintf("points(1:%d,", length(targets)+1),
+    ##                     "mean(ds$dat, na.rm=TRUE),",
+    ##                     "pch=8)")
+    
+    for (s in seq_len(nboxplots))
+    {
+
+      startLog("Box Plot")
+      cmd <- paste("sprintf(bind.cmd,",
+                   paste(paste('"', rep(boxplots[s], 2*(length(targets)+1)), '"',
+                               sep=""),
+                         collapse=", "),
+                   ")")
+      cmd <- eval(parse(text=cmd))
+      appendLog(paste("Subset data for a boxplot of ",
+                      boxplots[s], " with appropriate groups.", sep=""),
+                paste("ds <-", cmd))
+      ds <- eval(parse(text=cmd))
+
+      # if (pcnt %% pmax == 0) newPlot(pmax)
+      # pcnt <- pcnt + 1
+
+      newPlot()
+
+      this.plot <- sprintf(plot.cmd, boxplots[s], boxplots[s],
+                           genPlotTitleCmd("", vector=TRUE)[2])
+      
+      appendLog("Display the plot", this.plot)
+      eval(parse(text=this.plot))
+
+      ## 091214 Annotations are not yet supported.
+      
+      ## # Add a value for the mean to each boxplot.
+      
+      ## if (packageIsAvailable("doBy", "add means to box plots"))
+      ## {
+      ##   appendLog("Use the doBy package to group the data for means.",
+      ##            lib.cmd)
+      ##   eval(parse(text=lib.cmd))
+
+      ##   appendLog("Calculate the group means.", mean.cmd)
+      ##   eval(parse(text=mean.cmd))
+      ## }
+        
+      ## # Optionally include annotations.
+
+      ## if (annotate)
+      ## {
+      ##   appendLog("Add annotations to the plot.", annotate.cmd)
+      ##   eval(parse(text=annotate.cmd))
+      ## }        
+      
+    }
+  }
+#  }
+  
+
+  ##--------------------------------------------------------------------
+  
+  if (nhisplots > 0)
+  {
+    # Plot a histogram for numeric data. 090523 Bob Muenchen suggested
+    # using a fixed colour for the bars and use the colours as in the
+    # box plots for the breakdown between class values, for
+    # consistency. I have also introduced colour for the rug and
+    # ensured the y limits are calcuated in case the density plot is
+    # higher than the histogram. The current colours are not yet right
+    # though. For binary data the distinction between the blue and
+    # gree is very difficult to see for thin lines.
+
+    #if (packageIsAvailable("RColorBrewer"))
+    #  cols <- 'col=brewer.pal(%s, "Set1")'
+    #else
+    if (packageIsAvailable("colorspace")) # 090524 Why vcd? comes from colorspace....
+      # cols <- "col=rainbow_hcl(%s, start = 270, end = 150)"
+      cols <- "col=rainbow_hcl(%s)"# 090524, start = 0, end = 150)"
+    else
+      cols <- "col=rainbow(%s)"
+
+    # 090523 The preplot.cmd was considered for use in determining the
+    # highest point of the desnity plots so that we can ensure we have
+    # enough on the y axis to draw them all. We could use xpd=NA so as
+    # not to crop, but then the y axis may not go up high enough and
+    # the density may still be higher than fits in the device, and it
+    # looks ugly.
+    #
+    # 090524 An alternative could be, as with much of Rattle, that
+    # this cropping is good enough, and the user can fine tune it
+    # themselves. But even with xpd=NA the lines look ugly. Also note
+    # that xpd=NA makes the left and right extensions of the desnity
+    # plots visible, which is not so nice.
+    #
+    # The original attempt, whereby the below hist (with plot=FALSE)
+    # was included in a preplot.cmd, did not work because somehow this
+    # plot actually interferred with multiple plots on a page.
+    #
+    # Note this tip that could help:
+    # http://wiki.r-project.org/rwiki/doku.php?id=tips:easier:tbtable
+    #
+
+    ## hs <- hist(ds[ds$grp=="All",1], breaks="fd", plot=FALSE)
+    ## dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)
+    ## rs <- max(hs$counts)/max(dens$y)
+    ## maxy <- max(dens$y*rs)
+    ## print(maxy)
+    
+    ## if (length(targets))
+    ##   for (i in 1:length(targets))
+    ##   {
+    ##     dens <- density(ds[ds$grp==targets[i], 1], na.rm=TRUE)
+    ##     maxy <- max(c(maxy, dens$y*rs))
+    ##   }
+    ## print(maxy)
+
+    # 090524 A note on using breaks in the histogram: The default is
+    # to use Sturges' rule from 1926. Rob Hyndman
+    # (http://robjhyndman.com/papers/sturges.pdf) argues that Sturges'
+    # rule is wrong. Sturges' rule leads to oversmoothed
+    # histograms. Hyndman notes that Scott's (1979) rule and Freedman
+    # and Diaconis's (1981) rule are just as simple to use as Sturges'
+    # rule, but are well-founded in statistical theory. Sturges' rule
+    # does not work for large n. Also see
+    # http://www.math.leidenuniv.nl/~gill/teaching/statistics/histogram.pdf
+    # So let's use the Freedman and Diaconis approach.
+    
+    plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="%s", ',
+                      # cols,
+                      'col="grey90"',
+                      ', ylim=c(0, %s)', #', ceiling(maxy), ')',
+                      ', breaks="fd", border=TRUE)\n',
+                      'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
+                      # 090523 Now done in preplot.cmd - not any more? 091021
+                      'rs <- max(hs$counts)/max(dens$y)\n',
+                      'lines(dens$x, dens$y*rs, type="l", ',
+                      sprintf(cols, length(targets)+1), '[1])',
+                      sep="")
+    if (stratify && length(targets))
+    {
+      plot.cmd <- paste(plot.cmd, "\n",
+                        paste(sprintf(paste('dens <- density(ds[ds$grp=="%s",',
+                                            '1], na.rm=TRUE)\n',
+                                            'rs <- max(hs$counts)/max(dens$y)\n',
+                                            'lines(dens$x, dens$y*rs, ',
+                                            'type="l", ',
+                                            '%s[%s])', sep=""),
+                                      targets,
+                                      sprintf(cols, length(targets)+1),
+                                      (seq_along(targets)+1)),
+                                      #eval(parse(text=sprintf(cols,
+                                      #             length(targets))))),
+                              collapse="\n"),
+                        sep="")
+    }
+
+    if (stratify && length(targets))
+    {
+      rug.cmd <- paste(sprintf('rug(ds[ds$grp=="%s", 1], %s[%s])', targets,
+                               sprintf(cols, length(targets)+1),
+                               seq_along(targets)+1), collapse="\n")
+    }
+    else
+    {
+      rug.cmd <- 'rug(ds[ds$grp=="All",1])'
+    }
+
+    # If the data looks more categoric then do a more usual hist
+    # plot. TODO 080811 Add in a density plot - just need to get the
+    # maximum frequency as hs$count above. BUT the density makes no
+    # sense, because the bars are the actual data, there is no
+    # grouping.
+
+    #if (packageIsAvailable("vcd"))
+    #  cols2 <- "col=rainbow_hcl(30, start = 270, end = 150)"
+    #else
+    #  cols2 <- "col=rainbow(30)"
+
+    altplot.cmd <- paste('plot(as.factor(round(ds[ds$grp=="All", 1], ',
+                         'digits=2)), col="grey90")\n',
+                         #'dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)\n',
+                         #'rs<- max(summary(as.factor(round(ds[ds$grp=="All",',
+                         #'1], digits=2))))/max(dens$y)\n',
+                         #'lines(dens$x, dens$y*rs, type="l")',
+                         sep="")
+
+    for (s in seq_len(nhisplots))
+    {
+      startLog("Plot a Histogram")
+      
+      cmd <- paste("sprintf(bind.cmd,",
+                   paste(paste('"', rep(hisplots[s], length(targets)+1), '"',
+                               sep=""),
+                         collapse=","),
+                   ")")
+      cmd <- eval(parse(text=cmd))
+      appendLog(paste("Generate just the data for a histogram of ",
+                    hisplots[s], ".", sep=""),
+              paste("ds <-", cmd))
+      ds <- eval(parse(text=cmd))
+
+      # 090524 Perform the max y calculation here for each plot
+      
+      hs <- hist(ds[ds$grp=="All",1], breaks="fd", plot=FALSE)
+      dens <- density(ds[ds$grp=="All",1], na.rm=TRUE)
+      rs <- max(hs$counts)/max(dens$y)
+      maxy <- max(dens$y*rs)
+      
+      if (length(targets))
+        for (i in 1:length(targets))
+        {
+          dens <- density(ds[ds$grp==targets[i], 1], na.rm=TRUE)
+          maxy <- max(c(maxy, dens$y*rs))
+        }
+
+      if (pcnt %% pmax == 0) newPlot(pmax)
+      pcnt <- pcnt + 1
+      
+      # Determine whether to plot a histogram of the numeric data or
+      # as a factor (is.integer and unique <= 20).
+
+      dsmin <- eval(parse(text="min(ds[ds$grp=='All',1], na.rm=TRUE)"))
+      dsmax <- eval(parse(text="max(ds[ds$grp=='All',1], na.rm=TRUE)"))
+      dsuni <- eval(parse(text="unique(ds[ds$grp=='All',1], na.rm=TRUE)"))
+
+      # 080925 Determine the likely number of bars for the plot. This
+      # does not always seem to get it correct.
+      
+      nbars <- nclass.FD(na.omit(ds[ds$grp=="All",1]))
+
+      if (length(dsuni) <= 20 && dsmax - dsmin <= 20)
+      {
+        appendLog("Plot the data.", altplot.cmd)
+        eval(parse(text=altplot.cmd))
+      }
+      else
+      {
+        # 090523 REMOVE The nbars is no longer required because we are now
+        # using a single colour.
+        #
+        # plot.cmd <- paste(preplot.cmd, sprintf(plot.cmd, nbars), sep="\n")
+        #
+        # 090524 REMOVE If I don't worry about trying to determine a maximum,
+        # simply don't crop, through using the xpd parameter as set
+        # above, then plots look ugly, so do try....
+        #
+
+        # 090524 Note the sprintf here, to dynamically specify the max
+        # y value for each individual plot.
+
+        appendLog("Plot the data.", sprintf(plot.cmd, hisplots[s], maxy))
+        eval(parse(text=sprintf(plot.cmd, hisplots[s], round(maxy))))
+        appendLog("Add a rug to illustrate density.", rug.cmd)
+        eval(parse(text=rug.cmd))
+        if (stratify && length(targets))
+        {
+          # 090524 REMOVE
+#          legend.cmd <- sprintf(paste('legend("topright", c(%s),',
+#                                      'fill=c("black", rainbow(%s)))'),
+          legend.cmd <- sprintf('legend("topright", c(%s), bty="n", %s)',
+                                paste(sprintf('"%s"', c("All", targets)),
+                                      collapse=", "),
+                                sprintf(sub("col", "fill", cols),
+                                        length(targets)+1))
+          appendLog("Add a legend to the plot.", legend.cmd)
+          eval(parse(text=legend.cmd))
+        }
+      }
+      
+      title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
+                                           hisplots[s],
+                                           ifelse(sampling, " (sample)",""),
+                                           ifelse(stratify && length(targets),
+                                                  paste("\nby", target), "")))
+      appendLog("Add a title to the plot.", title.cmd)
+      eval(parse(text=title.cmd))
+    }
+  }
+
+  #---------------------------------------------------------------------
+  
+  if (not.null(cumplots))
+  {
+    # Cumulative plot for numeric data.
+
+    nplots <- length(cumplots)
+
+    lib.cmd <- "require(Hmisc, quietly=TRUE)"
+    
+    for (s in seq_len(nplots))
+    {
+      startLog()
+
+      if (packageIsAvailable("colorspace"))
+        col <- rainbow_hcl(length(targets)+1) #, start = 30, end = 300)
+      else
+        col <- rainbow(length(targets)+1)
+      
+      plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
+                        sprintf('col="%s",', col[1]),
+                        'xlab="%s",',
+                        'ylab=expression(Proportion <= x),',
+                        'subtitles=FALSE)\n')
+      if (not.null(targets))
+        for (t in seq_along(targets))
+        {
+          plot.cmd <- paste(plot.cmd,
+                            sprintf('Ecdf(ds[ds$grp=="%s",1], ', targets[t]),
+                            sprintf('col="%s", lty=%d, ', col[t+1], t+1),
+                            'xlab="", subtitles=FALSE, add=TRUE)\n',
+                            sep="")
+        }
+
+      if (packageIsAvailable("colorspace"))
+        cols <- "col=rainbow_hcl(%d)" # 090524, start = 30, end = 300)"
+      else
+        cols <- "col=rainbow(%d)"
+
+      if (not.null(targets))
+        legend.cmd <- sprintf(paste('legend("bottomright", c(%s), bty="n", ',
+                                   cols, ", lty=1:%d,",
+                                   'inset=c(0.05,0.05))'),
+                             paste(sprintf('"%s"', c("All", targets)),
+                                   collapse=","),
+                             length(targets)+1, length(targets)+1)
+        
+      cmd <- paste("sprintf(bind.cmd,",
+                    paste(paste('"', rep(cumplots[s], length(targets)+1), '"',
+                               sep=""),
+                         collapse=","),
+                   ")")
+      cmd <- eval(parse(text=cmd))
+      appendLog(paste("Generate just the data for an Ecdf plot of",
+                    cumplots[s], "."),
+              paste("ds <-", cmd))
+       ds <- eval(parse(text=cmd))
+
+      if (pcnt %% pmax == 0) newPlot(pmax)
+      pcnt <- pcnt + 1
+
+      if (! packageIsAvailable("Hmisc", "plot cumulative charts")) break()
+
+      appendLog("Use Ecdf from the Hmisc package.", lib.cmd)
+      eval(parse(text=lib.cmd))
+
+      this.plot.cmd <- sprintf(plot.cmd, cumplots[s])
+      appendLog("Plot the data.", this.plot.cmd)
+      eval(parse(text=this.plot.cmd))
+      title.cmd <- genPlotTitleCmd(sprintf("Cumulative %s%s%s",
+                                           cumplots[s],
+                                           ifelse(sampling, " (sample)",""),
+                                           ifelse(length(targets),
+                                                  paste("\nby", target), "")))
+
+      if (not.null(targets))
+      {
+        appendLog("Add a legend to the plot.", legend.cmd)
+        eval(parse(text=legend.cmd))
+      }
+
+      appendLog("Add a title to the plot.", title.cmd)
+      eval(parse(text=title.cmd))
+    }
+  }
+
+  ##---------------------------------------------------------------------
+
+  if (nbenplots > 0)
+  {
+    ## Plot Benford's Law for numeric data.
+
+    barbutton <- theWidget("benford_bars_checkbutton")$getActive()
+    absbutton <- theWidget("benford_abs_radiobutton")$getActive()
+    posbutton <- theWidget("benford_pos_radiobutton")$getActive()
+    negbutton <- theWidget("benford_neg_radiobutton")$getActive()
+    digspin <- theWidget("benford_digits_spinbutton")$getValue()
+
+    benopts <- sprintf(', split="%s", digit=%d',
+                       ifelse(absbutton, "none",
+                              ifelse(posbutton, "positive", "negative")),
+                       digspin)
+    
+    # Using barplot2 from gplots
+    
+    lib.cmd <- "require(gplots, quietly=TRUE)"
+
+    if (packageIsAvailable("colorspace"))
+      cols <- "rainbow_hcl(%d)" # 090524, start = 30, end = 300)"
+    else
+      cols <- "rainbow(%d)"
+
+    # Calculate the expected distribution according to Benford's Law
+
+    if (digspin == 1)
+      expect.cmd <- paste('unlist(lapply(1:9, function(x) log10(1 + 1/x)))')
+    # see http://www.mathpages.com/home/kmath302/kmath302.htm
+    else if (digspin > 1) 
+      expect.cmd <- sprintf(paste('unlist(lapply(0:9, function(x) {sum(log10',
+                                  '(1 + 1/(10*(seq(10^(%d-2), ',
+                                  '(10^(%d-1))-1)) + x)))}))'),
+                            digspin, digspin)
+
+    # Construct the command to plot the distribution.
+
+    if (barbutton)
+    {
+      plot.cmd <- paste('barplot2(ds, beside=TRUE,',
+                        'col=c("black",', sprintf(cols, length(targets)+1), "),",
+                        'xlab="Distribution of the ',
+                        paste(digspin, c("st", "nd",
+                                         "rd", "th")[min(4, digspin)],
+                              sep = ""),
+                        'Digit", ylab="Probability")')
+    }
+    else
+    {
+      plot.cmd <- paste('plot(', ifelse(digspin==1, "1", "0"),
+                        ':9, ds[1,], type="b", pch=19, col=',
+                        '"black"', ', ',
+# 090524                        sprintf(cols, 1), ', ',
+                       'ylim=c(0,max(ds)), axes=FALSE, ',
+                       'xlab="Distribution of the ',
+                        paste(digspin, c("st", "nd",
+                                         "rd", "th")[min(4, digspin)],
+                              sep = ""),
+                        ' Digit',
+                        '", ylab="Probability")\n',
+                        'axis(1, at=',
+                        ifelse(digspin==1, "1", "0"),
+                        ':9)\n', 'axis(2)\n',
+                       sprintf(paste('points(%d:9, ds[2,],',
+                                     'col=%s[1], pch=19, type="b")\n'),
+                               ifelse(digspin==1, 1, 0),
+                               ifelse(is.null(target),
+                                      sprintf(cols, 1),
+                                      sprintf(cols, length(targets)+1))),
+                       sep="")
+      if (not.null(targets))
+        for (i in seq_along(targets))
+        {
+          plot.cmd <- sprintf(paste('%s\npoints(%d:9, ds[%d,],',
+                                   'col=%s[%d], pch=%d, type="b")'),
+                             plot.cmd, ifelse(digspin==1, 1, 0), i+2,
+                             sprintf(cols, length(targets)+1),
+                             i+1, 19)
+        }
+    }
+    if (packageIsAvailable("gplots", "plot a bar chart for Benford's Law"))
+    {
+      startLog("Benford's Law")
+      
+      appendLog("Use barplot2 from gplots to plot Benford's Law.", lib.cmd)
+      eval(parse(text=lib.cmd))
+      
+      appendLog("Generate the expected distribution for Benford's Law",
+               paste("expect <-", expect.cmd))
+      expect <- eval(parse(text=expect.cmd))
+
+      if (is.null(targets) && ! barbutton)
+      {
+        # Plot all Benford's plots on the one line graph
+
+        startLog()
+
+        bc <- sub("All", "%s", substr(bind.cmd, 7, nchar(bind.cmd)-1))
+        new.bind.cmd <- substr(bind.cmd, 1, 6)
+        data.cmd <- 't(as.matrix(data.frame(expect=expect'
+        plot.cmd <- paste('plot(1:9, ds[1,], type="b", ',
+                         'pch=19, col=',
+                          sprintf(cols, 1),
+                          ', ',
+                         'ylim=c(0,max(ds)), axes=FALSE, ',
+                         'xlab="Initial Digit", ylab="Probability")\n',
+                         'axis(1, at=1:9)\n', 'axis(2)\n',
+                         sep="")
+        for (s in seq_len(nbenplots))
+        {
+          new.bind.cmd <- paste(new.bind.cmd, 
+                           sprintf(bc, benplots[s], benplots[s]),
+                           ",\n     ",
+                           sep="")
+          data.cmd <- paste(data.cmd, ",\n     ",
+                           sprintf(paste('"%s"=calcInitialDigitDistr',
+                                         '(ds[ds$grp=="%s", 1]%s)', sep=""),
+                                   benplots[s], benplots[s], benopts),
+                           sep="")
+          plot.cmd <- paste(plot.cmd,
+                           sprintf(paste('points(1:9, ds[%d,],',
+                                         'col=%s[%d], pch=19, type="b")\n'),
+                                   s+1, sprintf(cols, nbenplots+1), s+1),
+                           sep="")
+        }
+        new.bind.cmd <- paste(substr(new.bind.cmd, 1,
+                                     nchar(new.bind.cmd)-7), ")",
+                            sep="")
+        data.cmd <- paste(data.cmd, ")))", sep="")
+
+        legend.cmd <- sprintf(paste('legend("%s", c(%s), bty="n", ',
+                                   'fill=%s)'),
+                              ifelse(digspin>2, "botright", "topright"),
+                              paste(sprintf('"%s"',
+                                            c("Benford", benplots)),
+                                    collapse=","),
+                              sprintf(cols, nbenplots+1))
+
+        appendLog("Generate the required data.",
+                 paste("ds <-", new.bind.cmd))
+        ds <- eval(parse(text=new.bind.cmd))
+
+        appendLog("Generate specific plot data.", paste("ds <-", data.cmd))
+        ds <- eval(parse(text=data.cmd))
+
+        if (pcnt %% pmax == 0) newPlot(pmax)
+        pcnt <- pcnt + 1
+
+        par(xpd=TRUE)
+        
+        appendLog("Now do the actual plot.", plot.cmd)
+        eval(parse(text=plot.cmd))
+
+        appendLog("Add a legend to the plot.", legend.cmd)
+        eval(parse(text=legend.cmd))
+        
+        if (sampling)
+          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law (sample)%s",
+                                               ifelse(length(targets),
+                                                  paste("\nby", target), "")))
+        else
+          title.cmd <- genPlotTitleCmd(sprintf("Benford's Law%s",
+                                               ifelse(length(targets),
+                                                      paste("\nby", target), "")))
+
+        appendLog("Add a title to the plot.", title.cmd)
+        eval(parse(text=title.cmd))
+        
+
+      }
+      else
+      {
+        # Plot multiple graphs since we have a target, and will split
+        # each graph according to the target values.
+        
+        for (s in seq_len(nbenplots))
+        {
+          startLog()
+          #
+          # Record the sizes of the subsets for the legend
+          #
+          sizes.cmd <- paste('sizes <<- (function(x)(paste(names(x), " (",',
+                             ' x, ")", sep="")))(by(ds, ds$grp, nrow))')
+          
+          data.cmd <- paste('t(as.matrix(data.frame(expect=expect,\n    ',
+                           'All=calcInitialDigitDistr(ds[ds$grp=="All", 1]',
+                            benopts, ')')
+        
+          if (not.null(targets))
+            for (t in seq_along(targets))
+              data.cmd <- paste(data.cmd, ",\n     ",
+                               sprintf('"%s"=', targets[t]),
+                               'calcInitialDigitDistr(ds[ds$grp==',
+                               sprintf('"%s", ', targets[t]), '1]',
+                                benopts, ')',
+                               sep="")
+          data.cmd <- paste(data.cmd, ")))", sep="")
+
+          if (not.null(targets))
+            if (barbutton)
+              legend.cmd <- sprintf(paste('legend("topright", c(%s), bty="n", ',
+# 090524                                         'fill=heat.colors(%d), title="%s")'),
+                                         'fill=c("black", %s))'),
+                                   paste(sprintf('"%s"',
+                                                 c("Benford", "All", targets)),
+                                         collapse=","),
+                                   sprintf(cols, length(targets)+1))
+            else
+              legend.cmd <- sprintf(paste('legend("%s", c(%s), inset=.05, bty="n",',
+                                         'fill=c("black", %s))'),
+                                    ifelse(digspin>2, "bottomright",
+                                           "topright"),
+                                    '"Benfords", sizes',
+#                                   paste(sprintf('"%s"',
+#                                                c("Benford", "All", targets)),
+#                                         collapse=","),
+                                   sprintf(cols, length(targets)+1))
+          else
+            if (barbutton)
+              legend.cmd <- paste('legend("topright", c("Benford", "All"), bty="n",',
+                                 'fill=heat.colors(2))')
+            else
+              legend.cmd <- paste('legend("topright", c("Benford", "All"), bty="n", ',
+                                  'fill=', sprintf(cols, 2), sep="")
+          
+          cmd <- paste("sprintf(bind.cmd,",
+                       paste(paste('"', rep(benplots[s], length(targets)+1),
+                                   '"', sep=""), collapse=","),
+                       ")")
+          cmd <- eval(parse(text=cmd))
+          
+          appendLog(paste("Generate just the data for the plot of",
+                         benplots[s], "."),
+                   paste("ds <-", cmd))
+          ds <- eval(parse(text=cmd))
+
+          appendLog("Generate legend entries with subset sizes.",
+                    gsub("<<-", "<-", sizes.cmd))
+          eval(parse(text=sizes.cmd))
+          
+          appendLog("Generate frequency of initial digit.",
+                   paste("ds <-", data.cmd))
+          ds <- eval(parse(text=data.cmd))
+
+          nan.cmd <- "ds[is.nan(ds)] <- 0"
+          appendLog("Ensure rows with no digits are treated as zeros.", nan.cmd)
+          ds[is.nan(ds)] <- 0
+          
+          if (pcnt %% pmax == 0) newPlot(pmax)
+          pcnt <- pcnt + 1
+
+          par(xpd=TRUE)
+          
+          appendLog("Now do the actual Benford plot.", plot.cmd)
+          eval(parse(text=plot.cmd))
+          
+          appendLog("Add a legend to the plot.", legend.cmd)
+          eval(parse(text=legend.cmd))
+          
+          if (sampling)
+            title.cmd <- genPlotTitleCmd(sprintf(paste("Benford's Law:",
+                                                       "%s (sample)%s%s"),
+                                                 benplots[s],
+                ifelse(posbutton, " (positive values)",
+                       ifelse(negbutton, " (negative values)", "")),
+                                                 ifelse(length(targets),
+                                                        paste("\nby", target), "")))
+          else
+            title.cmd <- genPlotTitleCmd(sprintf("Benford's Law: %s%s%s",
+                                                 benplots[s],
+                ifelse(posbutton, " (positive values)",
+                       ifelse(negbutton, " (negative values)", "")),
+                                                 ifelse(length(targets),
+                                                        paste("\nby", target), "")))
+          appendLog("Add a title to the plot.", title.cmd)
+          eval(parse(text=title.cmd))
+        }
+      }
+    }
+  }
+
+  #---------------------------------------------------------------------
+
+  if (nbarplots > 0)
+  {
+    # Plot a frequency plot for a categoric variable.
+
+    # Use barplot2 from gplots.
+    
+    lib.cmd <- "require(gplots, quietly=TRUE)"
+
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then one
+    # for each level) from the original genericDataSet string that
+    # will be replaced with the name of each variable as it is being
+    # plotted.
+
+    generic.data.cmd <- paste(lapply(genericDataSet,
+                                   function(x) sprintf("summary(na.omit(%s))", x)),
+                            collapse=",\n    ")
+    generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
+
+    # If the gplots package is available then generate a plot for each
+    # chosen vairable.
+    
+    if (packageIsAvailable("gplots", "plot a bar chart"))
+    {
+      startLog()
+      appendLog("Use barplot2 from gplots for the barchart.", lib.cmd)
+      eval(parse(text=lib.cmd))
+
+      for (s in seq_len(nbarplots))
+      {
+        startLog("Bar Plot")
+
+        # Construct and evaluate a command string to generate the
+        # data for the plot.
+
+        ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
+                        paste(paste('"', rep(barplots[s], length(targets)+1),
+                                    '"', sep=""), collapse=","), ")")
+        ds.cmd <- eval(parse(text=ds.cmd))
+
+        appendLog("Generate the summary data for plotting.",
+                 paste("ds <-", ds.cmd))
+        ds <- eval(parse(text=ds.cmd))
+        
+        ## Construct and evaluate the command to plot the
+        ## distribution.  Determine maxium value so that the y axis
+        ## can extend to it. We save the output from barplot2 in order
+        ## to add numbers to the plot.
+    
+        if (pcnt %% pmax == 0) newPlot(pmax)
+        pcnt <- pcnt + 1
+
+        #if (is.null(target))
+        #  ord.cmd <- 'order(ds[1,])'
+        #else
+          ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
+        appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+        ord <- eval(parse(text=ord.cmd))
+
+        cols <- sprintf(ifelse(packageIsAvailable("colorspace"),
+                               "rainbow_hcl(%s)", # 090524, start = 270, end = 150)",
+                               "rainbow(%s)"),
+                       length(targets)+1) 
+        
+        maxFreq <- max(ds)
+        plot.cmd <- sprintf(paste('barplot2(ds[,ord], beside=TRUE,',
+                                  'ylab="Frequency", xlab="%s",',
+                                  'ylim=c(0, %d), col=%s)'),
+                            barplots[s], round(maxFreq+maxFreq*0.20), cols)
+        appendLog("Plot the data.", paste("bp <- ", plot.cmd))
+        bp <- eval(parse(text=plot.cmd))
+
+        ## Construct and evaluate a command to add text to the top of
+        ## the bars in the bar chart. Only do this if there are not
+        ## too many values for the category, otherwise the numbers
+        ## look bad. I could, alternatively, scale the font?
+
+        if (ncol(bp) <= 5)
+        {
+          text.cmd <- sprintf("text(bp, ds[,ord]+%d, ds[,ord])",
+                             round(maxFreq*0.040))
+          appendLog("Add the actual frequencies.", text.cmd)
+          eval(parse(text=text.cmd))
+        }
+
+        ## Construct and evaluate a command to add a legend to the
+        ## plot, but only if there is a target, optherwise it is
+        ## obvious.
+        
+        if (not.null(targets))
+        {
+          legend.cmd <- sprintf(paste('legend("topright", bty="n", c(%s), ',
+                                     "fill=%s)"),
+                               paste(sprintf('"%s"', c("All", targets)),
+                                     collapse=","),
+                               cols)
+          appendLog("Add a legend to the plot.", legend.cmd)
+          eval(parse(text=legend.cmd))
+        }
+        
+        ## Construct and evaluate a command to add the title to the
+        ## plot.
+        
+        title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
+                                             barplots[s],
+                                             ifelse(sampling," (sample)",""),
+                                             ifelse(length(targets),
+                                                    paste("\nby", target), "")))
+        appendLog("Add a title to the plot.", title.cmd)
+        eval(parse(text=title.cmd))
+      }
+    }
+  }
+
+### REMOVE 080925 - Until work out multiple plots on one device issue.
+###   if (nbarplots > 0)
+###   {
+###     # Plot a frequency plot for a categoric variable.
+
+###     # 080817 Use barchart from lattice instead of barplot2 from
+###     # ggplots.
+
+###     lib.cmd <- "require(lattice, quietly=TRUE)"
+    
+###     # Construct a generic data command built using the genericDataSet
+###     # values. To generate a barplot we use the output of the summary
+###     # command on each element in the genericDataSet, and bring them
+###     # together into a single structure. The resulting generic.data.cmd
+###     # will have a number of "%s"s (one for the whole dataset, then one
+###     # for each level) from the original genericDataSet string that
+###     # will be replaced with the name of each variable as it is being
+###     # plotted.
+
+###     generic.data.cmd <- paste(lapply(genericDataSet,
+###                                      function(x) sprintf("summary(%s)", x)),
+###                               collapse=",\n    ")
+###     generic.data.cmd <- sprintf("cbind(%s)", generic.data.cmd)
+
+###     # If the lattice package is available then generate a plot for
+###     # each chosen vairable.
+    
+###     if (packageIsAvailable("lattice", "display a bar chart"))
+###     {
+###       startLog()
+###       appendLog("Load lattice for the barchart function.", lib.cmd)
+###       eval(parse(text=lib.cmd))
+
+###       for (s in 1:nbarplots)
+###       {
+###         startLog()
+
+###         # Construct and evaluate a command string to generate the
+###         # data for the plot.
+
+###         ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
+###                        paste(paste('"', rep(barplots[s], length(targets)+1),
+###                                  '"', sep=""), collapse=","), ")")
+###         ds.cmd <- eval(parse(text=ds.cmd))
+###         appendLog(sprintf("Generate the summary data for plotting %s.", barplots[s]),
+###                  paste("ds <-", ds.cmd))
+###         ds <- eval(parse(text=ds.cmd))
+
+###         names.cmd <- sprintf('colnames(ds) <- c(%s)',
+###                              ifelse(length(targets)==0, '"Frequency"',
+###                                     paste('"Frequency"',
+###                                           paste(sprintf('"%s"', targets),
+###                                                 collapse=", "),
+###                                           sep=", ")))
+###         appendLog("Set the appropriate column names.", names.cmd)
+###         eval(parse(text=names.cmd))
+
+###         # We don't have multiple plots on the one plot implemented yet
+###         # - should we? I would guess there is a simple way to do this
+###         # with lattice.
+        
+###         #if (pcnt %% pmax == 0) newPlot(pmax)
+###         #pcnt <- pcnt + 1
+###         newPlot(pmax)
+
+###         # Construct and evaluate the command to determine the order in
+###         # which to print the catgories, from smallest (at the bottom)
+###         # to largest.
+
+###         ord.cmd <- 'order(ds[,1])'
+###         appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+###         ord <- eval(parse(text=ord.cmd))
+
+###         plot.cmd <- sprintf(paste('print(barchart(ds[ord,%s]',
+###                                   'xlab="Frequency"',
+###                                   ifelse(length(targets)==0,
+###                                          'groups=NULL', # Just to have something!
+###                                          sprintf(paste('auto.key=list(title="%s",',
+###                                                        'cex=0.75,', 'columns=%d)'),
+###                                                  target, 2)),
+###                                   sprintf('sub="%s"', genPlotTitleCmd(vector=TRUE)),
+###                                   'main="Distribution of %s%s"))', sep=", "),
+###                             ifelse(length(targets)==0, "", "-1"),
+###                             barplots[s],
+###                             ifelse(sampling," (sample)",""))
+                            
+###         appendLog("Plot the data.", plot.cmd)
+###         eval(parse(text=plot.cmd))
+
+###       }
+###     }
+###   }
+
+  ##---------------------------------------------------------------------
+
+### REMOVE 080925 - Until work out multiple plots on one device issue.
+###   if (ndotplots > 0)
+###   {
+    
+###     # 080817 Use dotplot(lattice) instead of dotchart. 080925 But not
+###     # yet since it uses a different mechanism to get multiple plots on
+###     # one device and I've not set that up yet.
+
+###     # lib.cmd <- "require(lattice, quietly=TRUE)"
+
+###     # Construct a generic data command built using the genericDataSet
+###     # values. To generate a barplot we use the output of the summary
+###     # command on each element in the genericDataSet, and bring them
+###     # together into a single structure. The resulting generic.data.cmd
+###     # will have a number of "%s"s (one for the whole dataset, then
+###     # one for each level) from the original genericDataSet string
+###     # that will be replaced with the name of each variable as it is
+###     # being plotted.
+
+###     generic.data.cmd <- paste(lapply(genericDataSet,
+###                                    function(x) sprintf("summary(%s)", x)),
+###                             collapse=",\n    ")
+###     generic.data.cmd <- sprintf("cbind(%s)", generic.data.cmd)
+
+###     # If the lattice package is available then generate a plot for
+###     # each chosen vairable.
+    
+###     if (packageIsAvailable("lattice", "display a dot plot"))
+###     {
+###       startLog()
+###       appendLog("Load lattice for the dotplot function.", lib.cmd)
+###       eval(parse(text=lib.cmd))
+
+###       for (s in 1:ndotplots)
+###       {
+###         startLog()
+
+###         # Construct and evaluate a command string to generate the data
+###         # for the plot.
+
+###         ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
+###                         paste(paste('"', rep(dotplots[s], length(targets)+1),
+###                                     '"', sep=""), collapse=","), ")")
+###         ds.cmd <- eval(parse(text=ds.cmd))
+###         appendLog(sprintf("Generate the summary data for plotting %s.", dotplots[s]),
+###                   paste("ds <-", ds.cmd))
+###         ds <- eval(parse(text=ds.cmd))
+
+###         names.cmd <- sprintf('colnames(ds) <- c(%s)',
+###                              ifelse(length(targets)==0, '"Frequency"',
+###                                     paste('"Frequency"',
+###                                           paste(sprintf('"%s"', targets),
+###                                                 collapse=", "),
+###                                           sep=", ")))
+###         appendLog("Set the appropriate column names.", names.cmd)
+###         eval(parse(text=names.cmd))
+
+###         # Construct and evaluate the command to determine the order in
+###         # which to print the catgories, from smallest (at the bottom)
+###         # to largest.
+
+###         ord.cmd <- 'order(ds[,1])'
+###         appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+###         ord <- eval(parse(text=ord.cmd))
+
+###         # Construct and evaluate the command to plot the distribution.
+    
+###         #if (pcnt %% pmax == 0) newPlot(pmax)
+###         #pcnt <- pcnt + 1
+###         newPlot(pmax)
+      
+###         plot.cmd <- sprintf(paste('print(dotplot(ds[ord,%s]',
+###                                   'xlab="Frequency"',
+###                                   'type=c("p", "h", "a")',
+###                                   ifelse(length(targets)==0,
+###                                          'groups=NULL', # Just to have something!
+###                                          sprintf(paste('auto.key=list(title="%s",',
+###                                                        'cex=0.75,', 'columns=%d)'),
+###                                                  target, 2)),
+###                                   sprintf('sub="%s"', genPlotTitleCmd(vector=TRUE)),
+###                                   'main="Distribution of %s%s"))', sep=", "),
+###                             ifelse(length(targets)==0, "", "-1"),
+###                             dotplots[s],
+###                             ifelse(sampling," (sample)",""))
+###         appendLog("Plot the data.", plot.cmd)
+###         eval(parse(text=plot.cmd))
+###       }
+###     }
+###   }
+
+  if (ndotplots > 0)
+  {
+    
+    # Construct a generic data command built using the genericDataSet
+    # values. To generate a barplot we use the output of the summary
+    # command on each element in the genericDataSet, and bring them
+    # together into a single structure. The resulting generic.data.cmd
+    # will have a number of "%s"s (one for the whole dataset, then one
+    # for each level) from the original genericDataSet string that
+    # will be replaced with the name of each variable as it is being
+    # plotted.
+
+    generic.data.cmd <- paste(lapply(genericDataSet,
+                                   function(x) sprintf("summary(na.omit(%s))", x)),
+                            collapse=",\n    ")
+    generic.data.cmd <- sprintf("rbind(%s)", generic.data.cmd)
+
+    # This should have been removed at some stage! We seem to be using
+    # dotchart from grpahics now.
+    #
+    #    appendLog("Use dotplot from lattice for the plots.", lib.cmd)
+    #    eval(parse(text=lib.cmd))
+
+    for (s in seq_len(ndotplots))
+    {
+
+      startLog("Dot Plot")
+
+      # Construct and evaluate a command string to generate the data
+      # for the plot.
+
+      ds.cmd <- paste(sprintf("sprintf('%s',", generic.data.cmd),
+                     paste(paste('"', rep(dotplots[s], length(targets)+1),
+                                 '"', sep=""), collapse=","), ")")
+      ds.cmd <- eval(parse(text=ds.cmd))
+      appendLog("Generate the summary data for plotting.",
+               paste("ds <-", ds.cmd))
+      ds <- eval(parse(text=ds.cmd))
+
+      # Construct and evaluate the command to determine the order in
+      # which to print the catgories, from larges to smallest.
+
+      if (is.null(target))
+        ord.cmd <- 'order(ds[1,])'
+      else
+        ord.cmd <- 'order(ds[1,], decreasing=TRUE)'
+      appendLog("Sort the entries.",
+               paste("ord <-", ord.cmd))
+      ord <- eval(parse(text=ord.cmd))
+        
+      # Construct and evaluate the command to plot the distribution.
+    
+      if (pcnt %% pmax == 0) newPlot(pmax)
+      pcnt <- pcnt + 1
+      
+      titles <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
+                                        dotplots[s],
+                                        ifelse(sampling," (sample)",""),
+                                         ifelse(length(targets),
+                                                  paste("\nby", target), "")),
+                                vector=TRUE)
+
+      cols <- sprintf(ifelse(packageIsAvailable("colorspace"),
+                             "rainbow_hcl(%s)", # 090524, start = 270, end = 150)",
+                             "rainbow(%s)"),
+                      length(targets)+1) 
+
+      plot.cmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s",',
+                               'col=rev(%s),%s',
+                               'xlab="Frequency", ylab="%s", pch=19)'),
+                          # 090525 reverse the row order to get the
+                          # order I want in the dot chart - start with
+                          # All, and then the rest. It is not clear
+                          # wht dotplots does this.
+                         "ds[nrow(ds):1,ord]", titles[1], titles[2], cols,
+                         ifelse(is.null(target), "", ' labels="",'), dotplots[s])
+      appendLog("Plot the data.", plot.cmd)
+      eval(parse(text=plot.cmd))
+
+      if (not.null(target))
+      {
+        legend.cmd <- sprintf(paste('legend("bottomright", bty="n",',
+                                   'c(%s), col=%s,',
+                                   'pch=19)'),
+                              paste(sprintf('"%s"', c("All", targets)),
+                                    collapse=","),
+                              cols)
+        appendLog("Add a legend.", legend.cmd)
+        eval(parse(text=legend.cmd))
+      }
+    }
+  }
+
+  #---------------------------------------------------------------------
+
+  for (s in seq_len(nmosplots))
+  {
+
+    startLog("Mosaic Plot")
+
+    # Construct and evaluate a command string to generate the
+    # data for the plot.
+
+    if (is.null(target))
+      ds.cmd <- sprintf("table(crs$dataset%s$%s)",
+                        ifelse(sampling, "[crs$sample,]", ""),
+                        mosplots[s])
+    else
+      ds.cmd <- paste(sprintf(paste("table(crs$dataset%s$%s,",
+                                      "crs$dataset%s$%s)"),
+                              ifelse(sampling, "[crs$sample,]", ""), mosplots[s],
+                              ifelse(sampling, "[crs$sample,]", ""), target))
+    appendLog("Generate the table data for plotting.",
+              paste("ds <-", ds.cmd))
+    ds <- eval(parse(text=ds.cmd))
+
+    # Construct and evaluate the command to determin the order in
+    # which to print the catgories, from larges to smallest.
+
+      if (is.null(target))
+        ord.cmd <- 'order(ds, decreasing=TRUE)'
+      else
+        ord.cmd <- "order(apply(ds, 1, sum), decreasing=TRUE)"
+    appendLog("Sort the entries.", paste("ord <-", ord.cmd))
+    ord <- eval(parse(text=ord.cmd))
+    
+    # Construct and evaluate the command to plot the
+    # distribution.
+    
+    if (pcnt %% pmax == 0) newPlot(pmax)
+    pcnt <- pcnt + 1
+
+    if (is.null(target))
+      titles <- genPlotTitleCmd(sprintf("Mosaic of %s",
+                                        mosplots[s],
+                                        ifelse(sampling," (sample)","")),
+                                vector=TRUE)
+    else
+      titles <- genPlotTitleCmd(sprintf("Mosaic of %s %s\nby %s",
+                                        mosplots[s],
+                                        ifelse(sampling," (sample)",""),
+                                        target),
+                                vector=TRUE)
+
+    if (packageIsAvailable("colorspace"))
+      cols <- "color=rainbow_hcl(%d)" # 090524, start = 270, end = 150)"
+    else
+      cols <- "color=rainbow(%d)"
+
+    plot.cmd <- sprintf(paste('mosaicplot(ds[ord%s], main="%s", sub="%s", ',
+                              cols, '%s, cex=0.7, xlab="%s", ylab="%s")',
+                              sep=""),
+                        ifelse(is.null(target), "", ","),
+                        titles[1], titles[2], length(targets)+1,
+                        ifelse(is.null(target), "", "[-1]"),
+                        mosplots[s], target)
+    appendLog("Plot the data.", plot.cmd)
+    eval(parse(text=plot.cmd))
+  }
+  
+  # Update the status bar.
+  
+  if (total.plots > 1)
+    setStatusBar("All", total.plots, "plots generated.")
+  else if (total.plots ==  1)
+    setStatusBar("One plot generated.")
+  else
+    setStatusBar("Pairs plot generated.")
+}
+
+#-----------------------------------------------------------------------
+# Original version.
 
 executeExplorePlot <- function(dataset,
                                boxplots = getSelectedVariables("boxplot"),
@@ -1953,12 +3343,18 @@ executeExploreCorrelation <- function(dataset)
                        sep="")
     
   }
-  plot.cmd    <- paste("plotcorr(crs$cor, ",
+  MAXCORVARS <- 15
+  par.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "opar <- par(cex=0.5)\n", "")
+  opar.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "\npar(opar)", "")
+    
+  plot.cmd    <- paste(par.cmd,
+                       "plotcorr(crs$cor, ",
                        'col=colorRampPalette(c("red", "white", "blue"))(11)',
                        '[5*crs$cor + 6])\n',
                        genPlotTitleCmd("Correlation",
                                        ifelse(nas, "of Missing Values\n", ""),
                                        crs$dataname, "using", method),
+                       opar.cmd,
                        sep="")
   
   # Start logging and executing the R code.

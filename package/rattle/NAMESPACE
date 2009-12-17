@@ -22,6 +22,7 @@ export(
        predict.hclust,
        printPlot,
        printRandomForests,
+       print.summary.nnet.rattle,
        randomForest2Rules,
        rattle,
        rattle.print.rpart,

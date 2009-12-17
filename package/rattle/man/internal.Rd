@@ -1,4 +1,8 @@
 \name{rattle_gui}
+\alias{print.summary.nnet.rattle}
+\alias{on_data_target_survival_radiobutton_toggled}
+\alias{on_help_model_nnet_activate}
+\alias{on_help_model_survival_activate}
 \alias{on_model_survival_coxph_radiobutton_toggled}
 \alias{on_model_survival_plots_button_clicked}
 \alias{toga}

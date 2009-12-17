@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 17:01:03 Graham Williams>
+# Time-stamp: <2009-12-15 09:11:06 Graham Williams>
 #
 # Help Menu
 #
@@ -23,7 +23,11 @@
 
 popupTextviewHelpWindow <- function(topic)
 {
-  collectOutput(sprintf("help(%s, help_type='html')", topic), TRUE)
+  # The help_type option was introduced in 2.10.0
+  if (getRversion() <= "2.10.0")
+    collectOutput(sprintf("help(%s, htmlhelp=TRUE)", topic), TRUE)
+  else
+    collectOutput(sprintf("help(%s, help_type='html')", topic), TRUE)
 }
 
 showHelpPlus <- function(msg)

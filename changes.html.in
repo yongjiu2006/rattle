@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.10.
+    version is 2.5.11.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+492 091217 Label score target types for Survival/Prediction
+           Add sumsq to nnet output and better format weights/parameters.
+	   Ensure nnet_nodes label and spinbutton are not greyed out
+	   Various survival modelling cleanup.
+	   Capture out of memory error for kmeans
+	   Warn user if about to plot a large kmeans scatterplot.
+	   Experimental ggplot2 support - currently only box plot.
+	   For correlation plots if too many vars then reduce the text size.
 491 091207 Bug fix pmml export of nnet - better handle transforms.
     	   Bump pmml version to 1.2.21
            Change Target handling in Data tab - all radio buttons.
