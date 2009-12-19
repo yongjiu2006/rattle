@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-17 19:44:26 Graham Williams>
+# Time-stamp: <2009-12-19 07:52:34 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -84,224 +84,17 @@ on_kmeans_seed_button_clicked <- function(button)
 
 on_kmeans_stats_button_clicked <- function(button)
 {
-  # Make sure there is a cluster first.
-  
-  if (is.null(crs$kmeans))
-  {
-    errorDialog("E124: Should not be here.", crv$support.msg)
-    return()
-  }
-
-  # LIBRARY: Ensure the appropriate package is available for the
-  # plot, and log the R command and execute.
-  
-  if (!packageIsAvailable("fpc", "plot a cluster")) return()
-  lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
-  eval(parse(text=lib.cmd))
-
-  # Some background information.  Assume we have already built the
-  # cluster, and so we don't need to check so many conditions.
-
-  TV <- "kmeans_textview"
-  sampling  <- not.null(crs$sample)
-
-  include <- getNumericVariables()
-  if (length(include) == 0)
-  {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
-    return()
-  }
-
-  # 091129 For large data, the distance matrix gets very large and
-  # calculations take a long time. Under 32 bit we often run out of
-  # memory. Under 64 bit we might eventually run out of virtual
-  # memory. Pop up a warning.
-
-  if (length(crs$kmeans$cluster) > 4000 &&
-      ! questionDialog("The dataset has more than 4000 observations.",
-                       "This may be a little too large to calculate the",
-                       "required pairwsie distance matrix for this dataset.",
-                       "If you continue you may find that the command will",
-                       "fail on trying to allocate memory (on a 32 bit",
-                       "computer) or else will proceed to fill up all memory",
-                       "and thereby freeze the computer. Whlist the calculations",
-                       "are being performed the interface will also freeze.",
-                       "\n\nDo you wish to continue anyhow?"))
-    return(FALSE)
-  
-  # STATS: Log the R command and execute. 080521 TODO Fix a bug by
-  # adding the na.omit here (since by default that is done in building
-  # the clusters). Not sure if this is generally correct.
-
-  set.cursor("watch", "Determining cluster statistics...")
-  on.exit(set.cursor("left-ptr"))
-  while (gtkEventsPending()) gtkMainIteration()
-  
-  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
-                             "crs$kmeans$cluster)\n"),
-                       ifelse(sampling, "crs$sample", ""), include)
-  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
-  result <- try(collectOutput(stats.cmd, use.print=TRUE))
-  if (inherits(result, "try-error"))
-  {
-    if (any(grep("[cC]annot allocate (vector|memory)", result)))
-    {
-      errorDialog("E144: The call to cluster.stats appears to have failed.",
-                  "This is often due, as is the case here,",
-                  "to running out of memory.",
-                  "A quick solution is to sample the dataset, through the",
-                  "Data tab, and rebuild the cluster. On 32bit machines you may be limited to",
-                  "less than 4000 observations.")
-      setTextview(TV)
-    }
-    else
-      errorDialog("The call to cluster.stat appears to have failed.",
-                   "The error message was:", result, crv$support.msg)
-    return(FALSE)
-  }
-
-  appendTextview(TV, "General cluster statistics:\n\n",
-                 result)
-  setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
+  displayClusterStatsKMeans()
 }
 
 on_kmeans_data_plot_button_clicked <- function(button)
 {
-
-  # Make sure there is a cluster first.
-
-  if (is.null(crs$kmeans))
-  {
-    errorDialog("E132: No cluster model. Please create one first.", crv$support.msg)
-    return()
-  }
-
-  # Some background information.  Assume we have already built the
-  # cluster, and so we don't need to check so many conditions.
-
-  sampling  <- not.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
-
-  # We can only plot if there is more than a single variable.
-  
-  if (length(intersect(nums, indicies)) == 1)
-  {
-    infoDialog("A data plot of the clusters can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
-    return()
-  }
-
-  # PLOT: Log the R command and execute. 080521 TODO I've added in
-  # na.omit here, since when we cluster the audit data, with missing
-  # values for Age we need to ensure the data points correspond to the
-  # cluster numbers. Otherwise we get a bad looking plot!!!! But do we
-  # always need na.omit. It is not always used on bulding clusters.
-
-  # Alternative plot commands that could be considered:
-  #
-  #    plot3d (rgl) with type="s"
-  #    plotmatrix (ggplot2)
-  #    splom (lattice)
-  #
-  # I think the default plot is quite good. plotmatrix is good, but
-  # does not include the scales and takes a long time to render.
-
-  if (length(indicies) > 10 ||
-      ifelse(sample, length(crs$sample), nrow(crs$dataset)) > 1000)
-  {
-    if (! questionDialog("You have asked to plot the clusters, showing the original",
-                         "data coloured by their cluster membership. For more than",
-                         "about 10 variables or about 1000 entities this plot will",
-                         "be quite slow. It will also tie up the interface whilst",
-                         "the plot is draw. If you decide to continue, please be",
-                         "patient.\n\n",
-                         "Would you like to continue?"))
-      return(FALSE)
-  }
-  
-  ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
-  plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]), ",
-                            "col=crs$kmeans$cluster)\n%s", sep=""),
-                      ifelse(sampling, "crs$sample", ""), include, genPlotTitleCmd(""))
-  appendLog("Generate a data plot.", plot.cmd)
-
-  set.cursor("watch", "Rendering the plot. Please wait...")
-  newPlot()
-  eval(parse(text=plot.cmd))
-  set.cursor("left-ptr", "Data plot has been generated.")
+  dataPlotKMeans()
 }
 
 on_kmeans_discriminant_plot_button_clicked <- function(button)
 {
-
-  # Make sure there is a cluster first.
-
-  if (is.null(crs$kmeans))
-  {
-    errorDialog("E125: No cluster to plot.",
-                "The button should not have been sensitive.",
-                crv$support.msg)
-    return()
-  }
-
-  # The fpc package provides the plotcluster command execute.
-  
-  if (!packageIsAvailable("fpc", "plot a cluster")) return()
-  lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
-  eval(parse(text=lib.cmd))
-
-  # Some background information.  Assume we have already built the
-  # cluster, and so we don't need to check so many conditions.
-
-  sampling <- not.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
-
-  if (length(nums) == 0 || length(indicies) == 0)
-  {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
-    return()
-  }
-
-  # We can only plot if there is more than a single variable.
-  
-  if (length(intersect(nums, indicies)) == 1)
-  {
-    infoDialog("A discriminant coordinates plot can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
-    return()
-  }
-
-  # PLOT: Log the R command and execute. 080521 Add the na.omit since
-  # kmeans is usually built with this.
-
-  plot.cmd <- paste(sprintf("plotcluster(na.omit(crs$dataset[%s,%s]), ",
-                            ifelse(sampling, "crs$sample", ""), include),
-                    "crs$kmeans$cluster)\n",
-                    genPlotTitleCmd("Discriminant Coordinates",
-                                    crs$dataname), sep="")
-  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
-  newPlot()
-  eval(parse(text=plot.cmd))
-
-  setStatusBar("Discriminant coordinates plot has been generated.")
+  discriminantPlotKMeans()
 }
 
 ########################################################################
@@ -320,7 +113,7 @@ executeClusterKMeans <- function(include)
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
   
-  startLog("KMEANS CLUSTER")
+  startLog("KMeans Cluster")
 
   # SEED: Log the R command and execute.
 
@@ -369,22 +162,6 @@ executeClusterKMeans <- function(include)
 
     start.time <- Sys.time()
 
-# 080913 The tryCatch is neat, but the simle try is sufficient.
-#    
-#    errorHandler <- function(condition)
-#    {
-#     if (conditionMessage(condition)=="more cluster centers than distinct data points.")
-#       errorDialog("The data does not support the number of clusters requested.",
-#                    "Reduce the number of clusters and try again.")
-#      else
-#        message(sprintf("Error in call to %s %s",
-#                        conditionCall(condition),
-#                        conditionMessage(condition)))
-#      return(FALSE)
-#    }
-#    if (! tryCatch(eval(parse(text=kmeans.cmd)), error=errorHandler))
-#      return(FALSE)
-    
     result <- try(eval(parse(text=kmeans.cmd)), TRUE)
     time.taken <- Sys.time()-start.time
 
@@ -400,9 +177,9 @@ executeClusterKMeans <- function(include)
       return(FALSE)
     }
 
-    # SUMMARY: Show the resulting model.
+    # Summary: Show the resulting model.
 
-    appendLog("\n\n## REPORT ON CLUSTER CHARACTERISTICS", no.start=TRUE)
+    startLog("Report on Cluster Characteristics")
     appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
     appendLog("Cluster centers:", "crs$kmeans$centers")
     appendLog("Within cluster sum of squares:", "crs$kmeans$withinss")
@@ -415,7 +192,7 @@ executeClusterKMeans <- function(include)
                 collectOutput("crs$kmeans$withinss", TRUE),
                 "\n")
 
-    # Ensure the kmeans buttons are now active
+    # Ensure the kmeans information buttons are now active.
 
     theWidget("kmeans_stats_button")$setSensitive(TRUE)
     theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
@@ -598,4 +375,327 @@ genProbabilityKmeans <- function(dataset)
   # should be okay.
   
   return(genPredictKmeans(dataset))
+}
+
+########################################################################
+# Report on the model.
+
+displayClusterStatsKMeans <- function()
+{
+  # Make sure there is a cluster first.
+  
+  if (is.null(crs$kmeans))
+  {
+    errorDialog("E124: Should not be here.", crv$support.msg)
+    return()
+  }
+
+  startLog("KMeans Cluster Statistics")
+
+  # LIBRARY: Ensure the appropriate package is available for the
+  # plot, and log the R command and execute.
+  
+  if (!packageIsAvailable("fpc", "plot a cluster")) return()
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  appendLog("Cluster statistics is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
+
+  TV <- "kmeans_textview"
+  sampling  <- not.null(crs$sample)
+
+  # 091219 Why would we check this here - the cluster is already
+  # built?
+  
+  include <- getNumericVariables()
+  if (length(include) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  # 091129 For large data, the distance matrix gets very large and
+  # calculations take a long time. Under 32 bit we often run out of
+  # memory. Under 64 bit we might eventually run out of virtual
+  # memory. Pop up a warning.
+
+  large <- length(crs$kmeans$cluster) > crv$cluster.report.max.obs
+  
+  ## if (large &&
+  ##     ! questionDialog("The dataset has a large number of observations.",
+  ##                      "This may be too large to calculate the",
+  ##                      "required pairwsie distance matrix for this dataset.",
+  ##                      "If you continue you may find that the command will",
+  ##                      "fail on trying to allocate memory (on a 32 bit",
+  ##                      "computer) or else will proceed to fill up all available",
+  ##                      "memory. Whlist the calculations are being performed",
+  ##                      "the interface will not be responsive and you may not",
+  ##                      "be able to interrupt the process.",
+  ##                      "Consider saving your project before proceeding.",
+  ##                      "\n\nDo you wish to continue anyhow?"))
+  ##   return(FALSE)
+  
+  if (large &&
+      ! questionDialog("The dataset contains many observations.",
+                       "The Stats are based on a",
+                       "pairwise distance matrix which can be enormous",
+                       "(GBs for 10,000 observations).",
+                       "If you continue,", crv$appname, "will use an",
+                       "auto sampling methodology of size",
+                       crv$cluster.report.max.obs, "to calculate the Stats.",
+                       "\n\nWould you like to continue with auto sampling?"))
+      return(FALSE)
+  
+  # STATS: Log the R command and execute. 080521 TODO Fix a bug by
+  # adding the na.omit here (since by default that is done in building
+  # the clusters). Not sure if this is generally correct.
+
+  if (large)
+  {
+    large.sample.cmd <- paste("set.seed(9876)",
+                              sprintf("smpl <<- sample(length(crs$sample), %d)",
+                                      crv$cluster.report.max.obs),    
+                              sep="\n")
+    appendLog("Sample the large dataset for calculating the statistics.",
+              sub("<<", "<", large.sample.cmd))
+    eval(parse(text=large.sample.cmd))
+  }
+  
+  set.cursor("watch", "Determining cluster statistics...")
+  on.exit(set.cursor("left-ptr"))
+  while (gtkEventsPending()) gtkMainIteration()
+
+  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s]%s)),",
+                             "crs$kmeans$cluster%s)\n"),
+                       ifelse(sampling, "crs$sample", ""),
+                       include,
+                       ifelse(large, "[smpl,]", ""),
+                       ifelse(large, "[smpl]", ""))
+  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  result <- try(collectOutput(stats.cmd, use.print=TRUE))
+  if (inherits(result, "try-error"))
+  {
+    if (any(grep("[cC]annot allocate (vector|memory)", result)))
+    {
+      errorDialog("E144: The call to cluster.stats appears to have failed.",
+                  "This is often due, as is the case here,",
+                  "to running out of memory.",
+                  "A quick solution is to sample the dataset, through the",
+                  "Data tab, and rebuild the cluster. On 32bit machines you may be limited to",
+                  "less than 4000 observations.")
+      setTextview(TV)
+    }
+    else
+      errorDialog("The call to cluster.stat appears to have failed.",
+                   "The error message was:", result, crv$support.msg)
+    return(FALSE)
+  }
+
+  appendTextview(TV, "General cluster statistics:\n\n",
+                 result)
+  setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
+}
+
+dataPlotKMeans <- function()
+{
+  
+  # Make sure there is a cluster first.
+
+  if (is.null(crs$kmeans))
+  {
+    errorDialog("E132: No cluster model. Please create one first.", crv$support.msg)
+    return()
+  }
+
+  startLog("KMeans Scatterplot Matrix")
+
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
+
+  sampling  <- not.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  # We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A data plot of the clusters can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  # 091219 Check for very large data, and if so use auto sampling.
+  
+  large <- length(crs$kmeans$cluster) > crv$cluster.report.max.obs
+  manyvars <- length(indicies) > crv$scatter.max.vars
+
+  if (large && manyvars)
+  {
+    if (! questionDialog("The dataset contains many variables and observations.",
+                         "For more than", crv$scatter.max.vars,
+                         "variables and", crv$cluster.report.max.obs,
+                         "observations the plot will be cluttered and quite slow.",
+                         "The application will also wait whilst",
+                         "the plot is drawn.",
+                         "If you continue, the first", crv$scatter.max.vars,
+                         "variables will be used and", crv$appname,
+                         "will use an auto sampling methodology of size",
+                         crv$cluster.report.max.obs,
+                         "to reduce the number of observations.",
+                         "\n\nWould you like to continue with the reduced",
+                         "variables and auto sampling?"))
+      return(FALSE)
+  }
+  else if (large)
+  {
+    if (! questionDialog("The dataset contains many observations.",
+                         "For more than", crv$cluster.report.max.obs,
+                         "observations the plot will be quite slow.",
+                         "The application will also wait whilst",
+                         "the plot is drawn.",
+                         "If you continue,", crv$appname,
+                         "will use an auto sampling methodology of size",
+                         crv$cluster.report.max.obs,
+                         "to reduce the number of observations.",
+                         "\n\nWould you like to continue with auto sampling?"))
+      return(FALSE)
+  }
+  else if (manyvars)
+  {
+    if (! questionDialog("The dataset contains many variables.",
+                         "For more than", crv$scatter.max.vars,
+                         "variables the plot will be cluttered.",
+                         "The application will also wait whilst",
+                         "the plot is drawn.",
+                         "If you continue, the first", crv$scatter.max.vars,
+                         "variables will be used.",
+                         "\n\nWould you like to continue with the reduced",
+                         "variables?"))
+      return(FALSE)
+  }
+    
+  if (large)
+  {
+    large.sample.cmd <- paste("set.seed(9876)",
+                              sprintf("smpl <<- sample(length(crs$sample), %d)",
+                                      crv$cluster.report.max.obs),    
+                              sep="\n")
+    appendLog("Sample the large dataset for calculating the statistics.",
+              sub("<<", "<", large.sample.cmd))
+    eval(parse(text=large.sample.cmd))
+  }
+
+  if (manyvars)
+  {
+    top.vars.cmd <- sprintf("vars <<- 1:%d", crv$scatter.max.vars)
+    appendLog("Keep just the first 10 variables for the plot.",
+              sub("<<", "<", top.vars.cmd))
+    eval(parse(text=top.vars.cmd))
+  }
+  
+  # PLOT: Log the R command and execute. 080521 TODO I've added in
+  # na.omit here, since when we cluster the audit data, with missing
+  # values for Age we need to ensure the data points correspond to the
+  # cluster numbers. Otherwise we get a bad looking plot!!!! But do we
+  # always need na.omit. It is not always used on bulding clusters.
+
+  # Alternative plot commands that could be considered:
+  #
+  #    plot3d (rgl) with type="s"
+  #    plotmatrix (ggplot2)
+  #    splom (lattice)
+  #
+  # I think the default plot is quite good. plotmatrix is good, but
+  # does not include the scales and takes a long time to render.
+
+  
+  ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
+
+  plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]%s), ",
+                            "col=crs$kmeans$cluster)\n%s", sep=""),
+                      ifelse(sampling, "crs$sample", ""), include,
+                      ifelse(large,
+                             ifelse(manyvars, "[smpl, vars]", "[smpl,]"),
+                             ifelse(manyvars, "[vars]", "")),
+                      genPlotTitleCmd(""))
+  appendLog("Generate a data plot.", plot.cmd)
+
+  set.cursor("watch", "Rendering the plot. Please wait...")
+  newPlot()
+  eval(parse(text=plot.cmd))
+  set.cursor("left-ptr", "Data plot has been generated.")
+}
+
+discriminantPlotKMeans <- function()
+{
+
+  # Make sure there is a cluster first.
+
+  if (is.null(crs$kmeans))
+  {
+    errorDialog("E125: No cluster to plot.",
+                "The button should not have been sensitive.",
+                crv$support.msg)
+    return()
+  }
+
+  # The fpc package provides the plotcluster command execute.
+  
+  if (!packageIsAvailable("fpc", "plot a cluster")) return()
+  lib.cmd <- "require(fpc, quietly=TRUE)"
+  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  # Some background information.  Assume we have already built the
+  # cluster, and so we don't need to check so many conditions.
+
+  sampling <- not.null(crs$sample)
+  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+  if (length(nums) > 0)
+  {
+    indicies <- getVariableIndicies(crs$input)
+    include <- simplifyNumberList(intersect(nums, indicies))
+  }
+
+  if (length(nums) == 0 || length(indicies) == 0)
+  {
+    errorDialog("Clusters are currently calculated only for numeric data.",
+                "No numeric variables were found in the dataset",
+                "from amongst those having an input/target/risk role.")
+    return()
+  }
+
+  # We can only plot if there is more than a single variable.
+  
+  if (length(intersect(nums, indicies)) == 1)
+  {
+    infoDialog("A discriminant coordinates plot can not be constructed",
+               "because there is only one numeric variable available",
+               "in the data.")
+    return()
+  }
+
+  # PLOT: Log the R command and execute. 080521 Add the na.omit since
+  # kmeans is usually built with this.
+
+  plot.cmd <- paste(sprintf("plotcluster(na.omit(crs$dataset[%s,%s]), ",
+                            ifelse(sampling, "crs$sample", ""), include),
+                    "crs$kmeans$cluster)\n",
+                    genPlotTitleCmd("Discriminant Coordinates",
+                                    crs$dataname), sep="")
+  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar("Discriminant coordinates plot has been generated.")
 }

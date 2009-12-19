@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-17 11:04:28 Graham Williams>
+# Time-stamp: <2009-12-19 09:23:52 Graham Williams>
 #
 # DATA TAB
 #
@@ -1790,6 +1790,8 @@ executeSelectTab <- function()
 
   if (noDatasetLoaded()) return()
 
+  startLog("Note the user selections.")
+  
   executeSelectSample()
 
   input   <- getSelectedVariables("input")
@@ -3024,9 +3026,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   # 091206 If the target is TIME... and risk is STATUS... or
   # EVENT... then enable the Survival radiobutton.
 
-  if (is.null(target))
+  if (! length(target))
     theWidget("data_target_auto_radiobutton")$setActive(TRUE)
-  else if (! (is.null(target) || is.null(risk)) &&
+  else if (length(target) && length(risk) &&
       substr(target, 1, 4) == "TIME" &&
       (substr(risk, 1, 6) == "STATUS" ||
        substr(variables[i], 1, 5) == "EVENT"))
