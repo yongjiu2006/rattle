@@ -66,6 +66,9 @@
   
   # Model defaults
 
+  crv$cluster.report.max.obs <- 4000
+  crv$scatter.max.vars <- 5
+  
   crv$rpart.cp.default        <- 0.010
   crv$rpart.minsplit.default  <- 20
   crv$rpart.minbucket.default <- 7

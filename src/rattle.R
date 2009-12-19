@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-16 07:34:10 Graham Williams>
+# Time-stamp: <2009-12-18 09:23:25 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,7 +16,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 07 Dec 2009"
+VERSION.DATE <- "Released 17 Dec 2009"
 COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
 
 # Acknowledgements: Frank Lu has provided much feedback and has
@@ -449,9 +449,12 @@ rattle <- function(csvname=NULL)
   # also be migrating into being treated as first class models.
 
   crv$KMEANS 	<- "kmeans"
+  crv$CLARA 	<- "clara"
   crv$HCLUST 	<- "hclust"
   crv$APRIORI 	<- "apriori"
 
+  # 091218 Not yet - avoid issues with RStat release.
+  # crv$DESCRIBE <- c(crv$KMEANS, crv$CLARA, crv$HCLUST, crv$APRIORI)
   crv$DESCRIBE <- c(crv$KMEANS, crv$HCLUST, crv$APRIORI)
   
   crv$GLM   	<- "glm"
@@ -571,6 +574,7 @@ rattle <- function(csvname=NULL)
   
   crv$CLUSTER            <- theWidget("cluster_notebook")
   crv$CLUSTER.KMEANS.TAB <- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.CLARA.TAB  <- getNotebookPage(crv$CLUSTER, "clara")
   crv$CLUSTER.HCLUST.TAB <- getNotebookPage(crv$CLUSTER, "hclust")
   
   crv$MODEL           <- theWidget("model_notebook")
@@ -861,6 +865,7 @@ resetRattle <- function(new.dataset=TRUE)
   
   crs$kmeans   <- NULL
   crs$kmeans.seed <- NULL
+  crs$clara    <- NULL
   crs$hclust   <- NULL
   crs$apriori  <- NULL
   crs$page     <- ""
@@ -965,6 +970,8 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("kmeans_data_plot_button")$setSensitive(FALSE)
     theWidget("kmeans_discriminant_plot_button")$setSensitive(FALSE)
 
+    # Reset Describe -> Cluster -> Clara
+    
     # Reset Describe -> Cluster -> HClust
 
     theWidget("hclust_clusters_spinbutton")$setValue(10)
@@ -1349,7 +1356,8 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   
   if (inherits(result, "try-error"))
   {
-    if (any(grep("cannot allocate vector", result)))
+    if (any(grep("cannot allocate vector", result)) ||
+        any(grep("vector size specified is too large", result)))
       errorDialog("E141: The dataset is too large for this operation.",
                   "It is terminating now without any output.",
                   "The R Console may contain further information.")

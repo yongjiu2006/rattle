@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-29 20:38:26 Graham Williams>
+# Time-stamp: <2009-12-17 22:27:38 Graham Williams>
 #
 # Project functionality.
 #
@@ -228,6 +228,7 @@ saveProject <- function()
   crs$text$correlation <- getTextviewContent("correlation_textview")
   crs$text$prcomp <- getTextviewContent("prcomp_textview")
   crs$text$kmeans <- getTextviewContent("kmeans_textview")
+  crs$text$hclust <- getTextviewContent("hclust_textview")
   crs$text$rpart <-  getTextviewContent("rpart_textview")
   crs$text$rf <-  getTextviewContent("rf_textview")
   crs$text$esvm <-  getTextviewContent("esvm_textview")
@@ -490,6 +491,7 @@ loadProject <- function()
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
 #  crs$hclust   <- crs$hclust
+  setTextviewContents("hclust_textview", crs$text$hclust)
 
   ## MODELS - Ensure libraries are loaded.
 
@@ -588,9 +590,12 @@ loadProject <- function()
 #  crs$testset  <- crs$testset
 #  crs$testname <- crs$testname
 
-  # Ensure the Evaluate options are reset appropriately.
+  # Ensure the Evaluate options are reset appropriately. 091217 Why is
+  # rattle::: being called directly?
   
-  rattle:::configureEvaluateTab()
+  # rattle:::configureEvaluateTab()
+
+  configureEvaluateTab()
   
   # LOG
   
