@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2009-12-16 07:53:54 Graham Williams>
+# Time-stamp: <2010-01-09 12:37:13 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -90,8 +90,7 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
 
   if (inherits(crs$survival, "try-error"))
   {
-    msg <- sprintf(paste("An error occured in the call to %s and modelling failed.",
-                         "The error was: %s"), method, crs$survival)
+    msg <- errorMessageFun(method, crs$survival)
     
     if (any(grep("Invalid survival times for this distribution", crs$survival)))
     {

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-10 19:58:27 Graham Williams>
+# Time-stamp: <2010-01-09 17:02:31 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -40,7 +40,7 @@ on_hclust_dendrogram_button_clicked <- function(button)
 
 on_hclust_stats_button_clicked <- function(button)
 {
-  set.cursor("watch", "Determining cluster statistics...")
+  set.cursor("watch", Rtxt("Determining the cluster statistics...."))
   try(displayHClustStats())
   set.cursor("left-ptr", "Cluster stistics displayed. Scroll to see all.")
 }
@@ -90,7 +90,7 @@ on_hclust_data_plot_button_clicked <- function(button)
 
   # PLOT: Log the R command and execute.
 
-  set.cursor("watch", "Determining cluster statistics...")
+  set.cursor("watch", Rtxt("Determining the cluster statistics...."))
   plot.cmd <- paste(sprintf(paste("plot(crs$dataset[%s,%s], ",
                                   "col=cutree(crs$hclust, %d))\n",
                                   sep=""),
@@ -121,7 +121,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   
   if (!packageIsAvailable("fpc", "plot the cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog(Rtxt("The plot functionality is provided by the fpc package."), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
@@ -270,8 +270,7 @@ executeClusterHClust <- function(include)
       setTextview(TV)
     }
     else
-      errorDialog("The call to hclust appears to have failed.",
-                   "The error message was:", result, crv$support.msg)
+      errorDialog(errorMessageFun("hclust", result))
     return(FALSE)
   }
 
@@ -330,7 +329,7 @@ plotDendrogram <- function()
 
   # Show a busy cursor whilst drawing the plot.
 
-  set.cursor("watch", "Rendering hierarchical cluster dndrogram...")
+  set.cursor("watch", Rtxt("Rendering the hierarchical cluster dendrogram...."))
   
   # Generate the plot command to not print the xaxis labels if there
   # are too many observations.

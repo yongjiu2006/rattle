@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-16 07:23:21 Graham Williams>
+# Time-stamp: <2010-01-10 08:15:59 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -111,6 +111,8 @@ on_evaluate_score_radiobutton_toggled <- function(button)
     theWidget("score_report_label")$setSensitive(TRUE)
     theWidget("score_class_radiobutton")$setSensitive(TRUE)
     theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+    if (length(crs$survival) && class(crs$survival) == "survreg")
+      theWidget("score_probability_radiobutton")$setSensitive(FALSE)
     theWidget("score_include_label")$setSensitive(TRUE)
     theWidget("score_idents_radiobutton")$setSensitive(TRUE)
     theWidget("score_all_radiobutton")$setSensitive(TRUE)
@@ -297,19 +299,19 @@ configureEvaluateTab <- function()
   {
     if (length(active.models) == 1) # Only Survival is selected
     {
-      theWidget("score_class_radiobutton")$setLabel("Time")
-      theWidget("score_probability_radiobutton")$setLabel("Risk")
+      theWidget("score_class_radiobutton")$setLabel(Rtxt("Time"))
+      theWidget("score_probability_radiobutton")$setLabel(Rtxt("Risk"))
     }
     else
     {
-      theWidget("score_class_radiobutton")$setLabel("Class/Time")
-      theWidget("score_probability_radiobutton")$setLabel("Prob/Risk")
+      theWidget("score_class_radiobutton")$setLabel(Rtxt("Class/Time"))
+      theWidget("score_probability_radiobutton")$setLabel(Rtxt("Prob/Risk"))
     }
   }
   else if (length(active.models)) 
   {
-    theWidget("score_class_radiobutton")$setLabel("Class")
-    theWidget("score_probability_radiobutton")$setLabel("Probability")
+    theWidget("score_class_radiobutton")$setLabel(Rtxt("Class"))
+    theWidget("score_probability_radiobutton")$setLabel(Rtxt("Probability"))
   }
 }
 
@@ -539,8 +541,8 @@ executeEvaluateTab <- function()
     # We need to allow for the case where the loaded csv data does not
     # have the risk and target variables when we are scoring the data
     # (i.e., not when we are generating confusion charts and other
-    # evaluations. For scoring, it is only natural that we do not have
-    # the risk and target variables.
+    # evaluations). For scoring, it is only natural that we do not
+    # have the risk and target variables.
     
     filename <- theWidget("evaluate_filechooserbutton")$getFilename()
     crs$dwd <- dirname(filename)
@@ -559,7 +561,9 @@ executeEvaluateTab <- function()
     # Load the testset from file, but only load it if it is not
     # already loaded.
     
-    if (is.null(crs$testname) || (basename(filename) != crs$testname))
+    if (is.null(crs$testset)
+        || is.null(crs$testname)
+        || (basename(filename) != crs$testname))
     {
       # Fix filename for MS/Windows - otherwise eval/parse strips the \\.
 
@@ -567,8 +571,9 @@ executeEvaluateTab <- function()
 
       nastring <- ', na.strings=c(".", "NA", "", "?")'
       read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, encoding="%s")',
-                          filename, nastring, crs$csv.encoding)
-      appendLog("Read a file for evaluating the model", read.cmd)
+                          filename, nastring, crv$csv.encoding)
+
+      appendLog(Rtxt("Read a dataset from file for testing the model."), read.cmd)
       eval(parse(text=read.cmd))
 
       testname <- basename(filename)

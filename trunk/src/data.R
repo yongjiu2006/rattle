@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-19 09:23:52 Graham Williams>
+# Time-stamp: <2010-01-09 20:55:41 Graham Williams>
 #
 # DATA TAB
 #
@@ -38,14 +38,14 @@ overwriteModel <- function()
   # kind of opration that replaces the current model.
   
   if (not.null(listBuiltModels()))
-    return(questionDialog("You have chosen to load a dataset.",
-                          "This will clear the current project",
-                          "(dataset and models).",
-                          "If you choose not to continue",
-                          "you can save the project, and then load",
-                          "the new dataset.\n",
-                          "\nDo you wish to continue and so overwrite",
-                          "the current project?"))
+    return(questionDialog(Rtxt("You have chosen to load a dataset.",
+                               "This will clear the current project",
+                               "(dataset and models).",
+                               "If you choose not to continue",
+                               "you can save the project, and then load",
+                               "the new dataset.",
+                               "\n\nDo you wish to continue and so overwrite",
+                               "the current project?")))
   else
     return(TRUE)
 }
@@ -418,7 +418,7 @@ updateRDatasets <- function(current=NULL)
 {
   # Update a combo box with just the available data frames and matrices.
 
-  set.cursor("watch", "Determining the available datasets....")
+  set.cursor("watch", Rtxt("Determining the available datasets...."))
   
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
@@ -702,10 +702,13 @@ executeDataCSV <- function(filename=NULL)
   }
   else if (is.null(filename))
   {
-    if (! questionDialog("No CSV filename has been provided.\n",
-                         "\nWe require a dataset to be loaded.\n",
-                         "\nWould you like to use the sample",
-                         crv$sample.dataset, "dataset?"))
+    # Rtxt("weather")
+    if (! questionDialog(sprintf(Rtxt("No CSV filename has been provided.",
+                                      "\n\nWe require a dataset to be loaded.",
+                                      "\n\nWould you like to use the sample",
+                                      "%s dataset?"),
+                                 Rtxt(crv$sample.dataset))))
+      
 
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
@@ -794,7 +797,7 @@ executeDataCSV <- function(filename=NULL)
 
   startLog()
   
-  appendLog("Load CSV File", read.cmd)
+  appendLog(Rtxt("Load a CSV file."), read.cmd)
   resetRattle()
   result <- try(eval(parse(text=read.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -827,7 +830,7 @@ executeDataCSV <- function(filename=NULL)
 
 ##  showDataViewButtons()
   
-  setStatusBar("The CSV file has been loaded:", crs$dataname)
+  setStatusBar(sprintf(Rtxt("The CSV file has been loaded: %s."), crs$dataname))
 
   return(TRUE)
 }
@@ -891,8 +894,9 @@ updateRDataNames <- function(filename=NULL)
     lapply(crs$rdata.datasets, combobox$appendText)
   }
   
-  setStatusBar("Updated list of datasets available from the supplied data file.",
-               "Choose one from the Data Name box.")
+  setStatusBar(Rtxt("The list of available datasets has been updated",
+                    "from the supplied data file.",
+                    "Choose one dataset from the Data Name box."))
 }
   
 #-----------------------------------------------------------------------
@@ -925,7 +929,7 @@ updateDataLibrary <- function(current=NULL)
   # This could take a little while, so use to watch cursor to indicate
   # we are busy.
   
-  set.cursor("watch", "Determining the available datasets from all packages...")
+  set.cursor("watch", Rtxt("Determining the available datasets from all packages...."))
 
   # 090418 Suppress warnings about datasets having moved to 'datasets'
 
@@ -978,7 +982,7 @@ openODBCSetTables <- function()
   
   # Ensure the RODBC library is available or else we can not support ODBC.
 
-  if (! packageIsAvailable("RODBC", "connect to an ODBC database")) return(FALSE)
+  if (! packageIsAvailable("RODBC", Rtxt("connect to an ODBC database"))) return(FALSE)
       
   startLog("ODBC Connection")
 
@@ -1024,7 +1028,7 @@ openODBCSetTables <- function()
     lapply(crs$odbc.tables, combobox$appendText)
   }
   
-  setStatusBar("ODBC connection to database established. Now select a table.")
+  setStatusBar(Rtxt("ODBC connection to database established. Now select a table."))
 
   return(TRUE)
 }
@@ -1099,7 +1103,7 @@ resetDatasetViews <- function(input, target, risk, ident, ignore)
 
 executeDataScript <- function()
 {
-  setStatusBar("The script option is not yet implemented.")
+  setStatusBar(Rtxt("The script option is not yet implemented."))
   return(FALSE)
 }
 
@@ -1132,7 +1136,7 @@ executeDataARFF <- function()
 
   # We need the foreign package to read ARFF data.
   
-  if (! packageIsAvailable("foreign", "read an ARFF dataset")) return(FALSE)
+  if (! packageIsAvailable("foreign", Rtxt("read an ARFF dataset"))) return(FALSE)
   lib.cmd <- "require(foreign, quietly=TRUE)"
   
   # If there is a model warn about losing it.
@@ -1175,7 +1179,7 @@ executeDataARFF <- function()
 
 ##  showDataViewButtons()
   
-  setStatusBar("The ARFF data has been loaded:", crs$dataname)
+  setStatusBar(sprintf(Rtxt("The ARFF data has been loaded: %s."), crs$dataname))
 
   return(TRUE)
 }
@@ -1244,11 +1248,11 @@ executeDataODBC <- function()
     
     numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
     if (numRows > 50000)
-      if (! questionDialog("You are about to extract", numRows,
-                           "rows from the table", table,
-                           "of the", dsn.name, "ODBC connection.",
-                           "That's quite a few to load into memory.",
-                           "\n\nDo you wish to continue?"))
+      if (! questionDialog(sprintf(Rtxt("You are about to extract %d",
+                                        "rows from the table %s",
+                                        "of the %s ODBC connection.",
+                                        "\n\nDo you wish to continue?"),
+                                   numRows,  table, dsn.name)))
         return()
   }
   
@@ -1263,7 +1267,7 @@ executeDataODBC <- function()
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
   
-  setStatusBar("The ODBC data has been loaded:", crs$dataname)
+  setStatusBar(sprintf(Rtxt("The ODBC data has been loaded: %s."), crs$dataname))
 
   return(TRUE)
 }
@@ -1319,7 +1323,7 @@ executeDataRdata <- function()
   crs$dataname <- dataset
   setMainTitle(crs$dataname)
 
-  setStatusBar("The data has been loaded:", crs$dataname)
+  setStatusBar(sprintf(Rtxt("The data has been loaded: %s."), crs$dataname))
 
   return(TRUE)
 }
@@ -1377,7 +1381,7 @@ executeDataRdataset <- function()
 
   appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
 
-  setStatusBar("The R dataset is now available.")
+  setStatusBar(Rtxt("The R dataset is now available."))
 
   return(TRUE)
 }
@@ -1453,7 +1457,7 @@ executeDataLibrary <- function()
   crs$datapkg <- dspkg
   setMainTitle(crs$dataname)
   
-  setStatusBar("The R package data is now available.")
+  setStatusBar(Rtxt("The R package data is now available."))
 
   return(TRUE)
 }
@@ -1523,7 +1527,7 @@ editData <- function()
   
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
 
-  setStatusBar("The supplied data is now available.")
+  setStatusBar(Rtxt("The supplied data is now available."))
 
 }
 
@@ -1586,8 +1590,12 @@ exportDataTab <- function()
   else
     writeCSV(crs$dataset, save.name)
 
-  setStatusBar("The dataset ", ifelse(sampling, "sample ", ""),
-               "has been exported to ", save.name, sep="")
+  if (sampling)
+    msg <- Rtxt("The dataset (sample) has been exported to %s.")
+  else
+    msg <- Rtxt("The dataset has been exported to %s.")
+
+  setStatusBar(sprintf(msg, save.name))
 }  
 
 ########################################################################
@@ -2118,7 +2126,7 @@ executeSelectTab <- function()
   crv$rf.mtry.default <- floor(sqrt(length(crs$input)))
   theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
   
-  # 080505 We auto decide whether the target looks like a categorical
+  # 080505 We auto decide whether the target looks like a categoric
   # or numeric, but if it ends up being a categoric (the user
   # overrides with the type radio button) with very many classes,
   # then complain!
@@ -2127,18 +2135,18 @@ executeSelectTab <- function()
       && categoricTarget()
       && target.levels > crv$max.categories)
   {
-    if (! questionDialog("The column selected as a Target",
-                         sprintf("(%s)", target),
-                         "will be treated as a categorical variable",
-                         "since Target Type is set to Categoric.",
-                         "\n\nThe variable has more than", crv$max.categories,
-                         "distinct values",
-                         sprintf("(%d in fact).", target.levels),
-                         "That is unusual and some model builders will",
-                         "take a long time.\n\nConsider using fewer",
-                         "classes for the target categorical variable",
-                         "or select Target Type as Numeric.",
-                         "\n\nDo you want to continue anyhow?"))
+    if (! questionDialog(sprintf(Rtxt("The column selected as a Target (%s)",
+                                      "will be treated as a categoric variable",
+                                      "since Target Type is set to Categoric.",
+                                      "\n\nThe variable has %d distinct values",
+                                      "whch is greater than the threshold of %d.",
+                                      "That is unusual and some algorithms will",
+                                      "take a long time.\n\nYou may like to",
+                                      "consider using fewer classes for the",
+                                      "target categoric variable or select",
+                                      "Target Type as Numeric.",
+                                      "\n\nDo you want to continue anyhow?"),
+                                 target, target.levels, crv$max.categories)))
       return()
   }
 
@@ -2159,22 +2167,27 @@ executeSelectTab <- function()
   }
   
   # Finished - update the status bar.
-  
-  setStatusBar("Roles noted.",
-               nrow(crs$dataset), "observations by",
-               length(crs$input), "input variables.",
-               ifelse(length(crs$target) == 0,
-                      paste("NO target thus no predictive modelling nor",
-                            "sampling."),
-                      paste("The target is ", crs$target,
-                            ifelse(survivalTarget(),
-                                   paste(" with ", crs$risk,
-                                         ". Survival", sep=""),
-                                   ifelse(categoricTarget(),
-                                          sprintf(". Categoric %d. Classification",
-                                                  target.levels),
-                                          ". Numeric. Regression")),
-                            " models enabled.", sep="")))
+
+  roles.msg <- sprintf(Rtxt("Roles noted. %d observations",
+                            "and %d input variables."),
+                       nrow(crs$dataset), length(crs$input))
+  if (length(crs$target) == 0)
+    model.msg <-  Rtxt("No target thus no predictive",
+                       "modelling nor sampling.")
+
+  else if (survivalTarget())
+    model.msg <- sprintf(Rtxt("The target is %s with %s. Survival models enabled."),
+                         crs$target, crs$risk)
+  else if (categoricTarget())
+    model.msg <- sprintf(Rtxt("The target is %s. Categoric %d.",
+                              "Classification models enabled."),
+                         crs$target, target.levels)
+  else
+    model.msg <- sprintf(Rtxt("The target is %s. Numeric.",
+                              "Regression models enabled."),
+                         crs$target)
+    
+  setStatusBar(roles.msg, model.msg)
 }
 
 executeSelectSample <- function()
@@ -2476,7 +2489,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Risk",
+                                        Rtxt("Risk"),
                                         renderer,
                                         active = crv$COLUMN[["risk"]])
   
@@ -3033,16 +3046,19 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       (substr(risk, 1, 6) == "STATUS" ||
        substr(variables[i], 1, 5) == "EVENT"))
     theWidget("data_target_survival_radiobutton")$setActive(TRUE)
-  else if (is.numeric(crs$dataset[[crs$target]]) &&
-           # 080505 TODO we should put 10 as a global CONST
-           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
-    theWidget("data_target_regression_radiobutton")$setActive(TRUE)
-  else if (is.factor(crs$dataset[[crs$target]]) ||
-           (is.numeric(crs$dataset[[crs$target]]) &&
-            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
-    theWidget("data_target_classification_radiobutton")$setActive(TRUE)
+#  else if (is.numeric(crs$dataset[[crs$target]]) &&
+#           # 080505 TODO we should put 10 as a global CONST
+#           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
+#    theWidget("data_target_regression_radiobutton")$setActive(TRUE)
+#  else if (is.factor(crs$dataset[[crs$target]]) ||
+#           (is.numeric(crs$dataset[[crs$target]]) &&
+#            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
+#    theWidget("data_target_classification_radiobutton")$setActive(TRUE)
   else
-    # Unset them all - not sure we should be here ever?
+
+    # Unset them all - not sure we should be here ever? 091223 Resume
+    # to this being the default.
+    
     theWidget("data_target_auto_radiobutton")$setActive(TRUE)
     
   # Perform other setups associated with a new dataset

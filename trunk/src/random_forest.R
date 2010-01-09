@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-09-25 16:18:45 Graham Williams>
+# Time-stamp: <2010-01-09 21:14:23 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -8,6 +8,30 @@
 
 #######################################################################
 # CALLBACKS
+
+setRFOptions <- function(mtype)
+{
+  theWidget("model_rf_sample_label")$setSensitive(mtype=="randomForest")
+  theWidget("model_rf_sample_entry")$setSensitive(mtype=="randomForest")
+}
+
+on_model_rf_traditional_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    theWidget("model_rf_builder_label")$setText("randomForrest")
+    setRFOptions("randomForest")
+  }
+}
+
+on_model_rf_conditional_radiobutton_toggled <- function(button)
+{
+  if (button$getActive())
+  {
+    theWidget("model_rf_builder_label")$setText("cforest")
+    setRFOptions("cforest")
+  }
+}
 
 on_rf_importance_button_clicked <- function(button)
 {
@@ -61,83 +85,92 @@ The R package for building Random Forests is called randomForest."))
 
 ########################################################################
 #
-# MODEL RF - RANDOM FOREST
+# MODEL -> RF -> Traditional - RANDOM FOREST
 #
 
-executeModelRF <- function()
+executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 {
-  if (! packageIsAvailable("randomForest", "build a random forest model"))
-      return(FALSE)
+  if ((traditional && ! packageIsAvailable("randomForest", Rtxt("build a random forest model")))
+      || conditional && ! packageIsAvailable("party", Rtxt("build a random forest model")))
+    return(FALSE)
 
   # Initial setup 
   
   TV <- "rf_textview"
+  FUN <- ifelse(traditional, "randomForest", "cforest")
   
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   parms <- ""
 
-  # Make sure there are no included variables which have more than 32
-  # levels, which can not be handled by randomForest (perhaps a limit
-  # only on 32 bit machines)
-  
-  categoricals <- crs$input[unlist(lapply(crs$input,
-                            function(x) is.factor(crs$dataset[,x])))]
+  # For the traditional random forest make sure there are no included
+  # variables which have more than 32 levels, which can not be handled
+  # by randomForest.
 
-  for (i in categoricals)
-    if (length(levels(crs$dataset[,i])) > 32)
-    {
-      errorDialog("This implementation of randomForest does not handle",
-                  "categorical variables with more than 32 levels.",
-                  "Having a large number of levels tends to introduce bias",
-                  "into the tree algorithms.",
-                  "The variable", i, "has", length(levels(crs$dataset[,i])),
-                  "levels. \n\nPlease choose to ignore it in the",
-                  "Data tab if you wish to build a randomForest model.")
-      return(FALSE)
-    }
+  if (traditional)
+  {
+    categoricals <- crs$input[unlist(lapply(crs$input,
+                                            function(x) is.factor(crs$dataset[,x])))]
+
+    for (i in categoricals)
+      if (length(levels(crs$dataset[,i])) > 32)
+      {
+        errorDialog(sprintf(Rtxt("This implementation of random forests does not handle",
+                                 "categorical variables with more than 32 levels.",
+                                 "Having a large number of levels tends to introduce bias",
+                                 "into the tree algorithms. The variable %s has %d levels.",
+                                 "\n\nPlease choose to ignore it in the",
+                                 "Data tab if you wish to build a random forest model."),
+                            i, length(levels(crs$dataset[,i]))))
+        return(FALSE)
+      }
+  }
 
   # Retrieve options and set up parms.
 
   ntree <- theWidget("rf_ntree_spinbutton")$getValue()
-  if (ntree != crv$rf.ntree.default)
-    parms <- sprintf("%s, ntree=%d", parms, ntree)
+  # 100107 Just always use the supplied value.  if (ntree != crv$rf.ntree.default)
+  parms <- sprintf("ntree=%d", ntree)
   
   mtry <- theWidget("rf_mtry_spinbutton")$getValue()
-  if (mtry != crv$rf.mtry.default)
-    parms <- sprintf("%s, mtry=%d", parms, mtry)
+  # 100107 Just always use the supplied value.  if (mtry != crv$rf.mtry.default)
+  parms <- sprintf("%s, mtry=%d", parms, mtry)
 
-  sampsize <- theWidget("rf_sampsize_entry")$getText()
-  if (nchar(sampsize) > 0)
+  if (traditional)
   {
-    ss <- as.numeric(unlist(strsplit(sampsize, ",")))
-    if (length(ss) != num.classes)
+    sampsize <- theWidget("rf_sampsize_entry")$getText()
+    if (nchar(sampsize) > 0)
+    {
+      ss <- as.numeric(unlist(strsplit(sampsize, ",")))
+      if (length(ss) != num.classes)
       {
-        errorDialog(sprintf("The supplied sample sizes (%s)", sampsize),
-                     "needs to correspond to the number of classes",
-                     sprintf("found in the target variable '%s'.",crs$target),
-                     sprintf("Please supply exactly %d sample sizes.",
-                             num.classes))
+        errorDialog(sprintf(Rtxt("The supplied sample sizes (%s)",
+                                 "needs to correspond to the number of classes",
+                                 "found in the target variable '%s'.",
+                                 "Please supply exactly %d sample sizes."),
+                            sampsize, crs$target, num.classes))
         return(FALSE)
       }
-    ## TODO Check if sample sizes are larger than the classes!
-    parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
+      # TODO Check if sample sizes are larger than the classes!
+      parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
+    }
+    
+    # By default the MeanDecreaseGini is available for plotting. With
+    # importance MeanDecreaseAccuracy is also available, and it seems
+    # to also print the relative importance with regard class. So by
+    # default, generate them both.
+  
+    parms <- sprintf("%s, importance=TRUE", parms)
   }
+  
 
-  ## By default the MeanDecreaseGini is available for plotting. With
-  ## importance MeanDecreaseAccuracy is also available, and it seems
-  ## to also print the relative importance with regard class. So by
-  ## default, generate them both.
+  # Proximity is for unsupervised - not sure why I originally put it
+  # in here for the traditional model.
   
-  parms <- sprintf("%s, importance=TRUE", parms)
-
-  ## Proximity is for unsupervised - not sure why I originally put it
-  ## in here?
+  # if (theWidget("rf_proximity_checkbutton")$getActive())
+  #  parms <- sprintf("%s, proximity=TRUE", parms)
   
-  ##if (theWidget("rf_proximity_checkbutton")$getActive())
-  ##  parms <- sprintf("%s, proximity=TRUE", parms)
-  
-  ## Build the formula for the model. TODO We assume we will always do
-  ## classification rather than regression, at least for now.
+  # Build the formula for the model. TODO We assume we will always do
+  # classification rather than regression, at least for now.
 
   frml <- paste(ifelse(is.factor(crs$dataset[[crs$target]]),
                        crs$target,
@@ -145,18 +178,18 @@ executeModelRF <- function()
                                crs$target)),
                 "~ .")
 
-  ## List, as a string of indicies, the variables to be included. 
+  # List, as a string of indicies, the variables to be included. 
 
   included <- getIncludedVariables()
   
-  ## Some convenience booleans
+  # Some convenience booleans
 
   sampling <- not.null(crs$sample)
   including <- not.null(included)
   subsetting <- sampling || including
 
-  ## Ensure we have some data - i.e., not all records will be removed
-  ## because they have missing values.
+  # Ensure we have some data - i.e., not all records will be removed
+  # because they have missing values.
 
   dataset <- paste("crs$dataset",
                    if (subsetting) "[",
@@ -165,51 +198,70 @@ executeModelRF <- function()
                    if (including) included,
                    if (subsetting) "]",
                    sep="")
-  missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
-  result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
-  if (inherits(result, "try-error")) missing <- 0
-  dsrow.cmd <- sprintf("nrow(%s)", dataset)
-  result <- try(dsrow <- eval(parse(text=dsrow.cmd)), silent=TRUE)
-  if (inherits(result, "try-error")) dsrow <- 0
-  if (missing == dsrow)
+
+  # 100107 Deal with missing values. I've not tested whether cforest
+  # has issues with missing values.
+  
+  if (traditional)
   {
-    errorDialog("A review of the dataset has found all observations have one",
-                "or more missing values amongst the vriables selected.",
-                "A random forest can not be built from data with missing",
-                "values, and thus there are no observations left to model.",
-                "To fix this problem, you can, for example, Ignore any",
-                "variable with many (or any) missing values (NAs).",
-                "Or else employ imputation to fill in default or modelled",
-                "values for the missing cells.")
-    return()
+    missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
+    result <- try(missing <- eval(parse(text=missing.cmd)), silent=TRUE)
+    if (inherits(result, "try-error")) missing <- 0
+    dsrow.cmd <- sprintf("nrow(%s)", dataset)
+    result <- try(dsrow <- eval(parse(text=dsrow.cmd)), silent=TRUE)
+    if (inherits(result, "try-error")) dsrow <- 0
+    if (missing == dsrow)
+    {
+      errorDialog(Rtxt("All observations in the dataset have one or more",
+                       "missing values for the selected variables.",
+                       "The random forest algorithm ignores any observation",
+                       "with missing values. No observations remain from which",
+                       "to build a model.",
+                       "To fix this problem, you might, for example, Ignore any",
+                       "variable with many or any missing values.",
+                       "Or else employ imputation to fill in default or modelled",
+                       "values for the missing values."))
+      return()
+    }
   }
     
-  # Start the log
+  # Start the log.
   
-  startLog("RANDOM FOREST")
+  startLog(commonName(crv$RF))
 
-  # Load the required library.
+  # Load the required package into the library.
 
-  library.cmd <- "require(randomForest, quietly=TRUE)"
+  lib.cmd <- ifelse(traditional,
+                    "require(randomForest, quietly=TRUE)",
+                    "require(party, quietly=TRUE)")
 
-  appendLog("The randomForest package supplies the randomForest function.",
-          library.cmd)
-  eval(parse(text=library.cmd))
+  if (traditional)
+    appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
+                      "randomForest", "randomForest"),
+              lib.cmd)
+  else
+    appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
+                      "party", "cforest"),
+              lib.cmd)
+  
+  eval(parse(text=lib.cmd))
 
   # Build the model.
 
-  rf.cmd <- paste("set.seed(123)\n",
-                  "crs$rf <- randomForest(", frml, ", data=crs$dataset",
+  rf.cmd <- paste("set.seed(42)\n",
+                  "crs$rf <- ", FUN, "(", frml, ", data=crs$dataset",
                   if (subsetting) "[",
                   if (sampling) "crs$sample",
                   if (subsetting) ",",
                   if (including) included,
-                  if (subsetting) "]",
-                  parms,
-                  ", na.action=na.omit",
+                  if (subsetting) "], ",
+                  ifelse(traditional, parms,
+                         sprintf("controls=cforest_unbiased(%s)", parms)),
+                  if (traditional) ", na.action=na.omit",
                   ")", sep="")
 
-  appendLog("Build a randomForest model.", rf.cmd)
+  appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$RF)), rf.cmd)
+
   start.time <- Sys.time()
   result <- try(eval(parse(text=rf.cmd)), silent=TRUE)
 
@@ -217,13 +269,13 @@ executeModelRF <- function()
   {
     if (any(grep("cannot allocate vector", result)))
     {
-      errorDialog("The call to randomForest appears to have failed.",
-                   "This is often due, as in this case,",
-                   "to running out of memory",
-                   "as randomForest is rather memory hungry.",
-                   "A quick solution is to sample the dataset, through the",
-                   "Transform tab. On 32 bit machines you may be limited to",
-                   "less than 2000 observations.")
+      errorDialog(sprintf(Rtxt("The call to '%s' appears to have failed.",
+                               "This is often due, as in this case,",
+                               "to running out of memory.",
+                               "A quick solution is to sample the dataset, through the",
+                               "Transform tab. On 32 bit machines you may be limited to",
+                               "less than 2000 observations."),
+                          FUN))
       setTextview(TV)
     }
     else if (any(grep("NA/NaN/Inf", result)))
@@ -236,11 +288,12 @@ executeModelRF <- function()
       #
       # sum(crs$dataset[crs$sample,c(2:10, 13:14)]==-Inf, na.rm=TRUE)
       
-      errorDialog("The call to randomForest failed.",
-                   "The problem may be with the data",
-                   "containing Infinite values.",
-                   "A quick solution may be to remove variables",
-                   "with any Inf or -Inf values.")
+      errorDialog(sprintf(Rtxt("The call to '%s' failed.",
+                               "The problem may be with the data",
+                               "containing Infinite values.",
+                               "A quick solution may be to remove variables",
+                               "with any Inf or -Inf values."), FUN))
+                          
       setTextview(TV)
     }
     else if (any(grep('inherits', result)))
@@ -259,62 +312,85 @@ executeModelRF <- function()
       setTextview(TV)
     }
     else 
-      errorDialog("The call to randomForest appears to have failed.",
-                  "The error message was:", result, crv$support.msg)
+      errorDialog(errorMessageFun(FUN, paste(result, crv$support.msg, sep="\n")))
     return(FALSE)
   }
 
   # Display the resulting model.
 
   summary.cmd <- "crs$rf"
-  appendLog("Generate textual output of randomForest model.", summary.cmd)
+  appendLog(sprintf(Rtxt("Generate textual output of '%s' model."), commonName(crv$RF)),
+            summary.cmd)
 
-  if (numericTarget())
-    importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
-                            "rn[order(rn[,1], decreasing=TRUE),]",
-                            sep="\n")
+  if (traditional)
+  {
+    if (numericTarget())
+      varimp.cmd <- paste("rn <- round(importance(crs$rf), 2)",
+                              "rn[order(rn[,1], decreasing=TRUE),]",
+                              sep="\n")
+    else
+      varimp.cmd <- paste("rn <- round(importance(crs$rf), 2)",
+                              "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
+                              sep="\n")
+  }
   else
-    importance.cmd <- paste("rn <- round(importance(crs$rf), 2)",
-                            "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
-                            sep="\n")
-  appendLog("List the importance of the variables.", importance.cmd)
+  {
+    varimp.cmd <- paste("as.data.frame(sort(varimp(crs$rf),",
+                        "decreasing=TRUE))")
+  }
+  
+  appendLog(Rtxt("List the importance of the variables."), varimp.cmd)
 
+  # 100107 There is a very good importance measure from cforest that
+  # needs to go here.
+  
   resetTextview(TV)
-  addTextview(TV, paste("Summary of the Forest model",
-                        "(built using randomForest):\n\n"),
+  addTextview(TV, sprintf(Rtxt("Summary of the %s model:\n\n"), commonName(crv$RF)),
               collectOutput(summary.cmd, TRUE))
 
-  addTextview(TV, "\n\nVARIABLE IMPORTANCE:\n\n",
-              collectOutput(importance.cmd))
+  result <- try(collectOutput(varimp.cmd), silent=TRUE)
+  if (inherits(result, "try-error"))
+  {
+    msg <- errorMessageFun(ifelse(traditional, "importance", "varimp"), result)
+    errorDialog(msg)
+    return(FALSE)
+  }
+  
+  addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result)
 
-  addTextview(TV, "\n\nDISPLAY THE MODEL\n\n",
-              "To view model 5, for example, run ",
-              "printRandomForests(crs$rf, 5)",
-              "\nin the R console. Generating all 500 models takes ",
-              "quite some time.\n")
+  addTextview(TV, sprintf(Rtxt("\n\nDisplay the Model",
+                               "\n\nTo view model 5, for example, execute the",
+                               "command \n  %s\nin the R console. Generating",
+                               "all models will take quite some time.\n"),
+                          ifelse(traditional,
+                                 "printRandomForests(crs$rf, 5)",
+                                 paste('party:::prettytree(crs$rf@ensemble[[5]],',
+                                       'names(crs$rf@data@get("input")))'))))
+
+  # 100107 What is the purpose of this?
 
   if (sampling) crs$smodel <- union(crs$smodel, crv$RF)
 
   # Now that we have a model, make sure the buttons are sensitive.
 
-  showModelRFExists()
+  showModelRFExists(traditional=traditional, conditional=conditional)
 
   # Finish up.
 
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("A randomForest model has been generated.", time.msg)
+
+  reportTimeTaken(TV, time.taken, commonName(crv$RF))
+
   return(TRUE)
 }
 
-showModelRFExists <- function(state=!is.null(crs$rf))
+showModelRFExists <- function(traditional=TRUE, conditional=!traditional)
 {
   # If an rf model exists then show the various buttons on the Model
   # tab.
-  
+
+  state=!is.null(crs$rf)
+
   if (state)
   {
     theWidget("rf_importance_button")$show()
@@ -349,13 +425,32 @@ plotRandomForestImportance <- function()
   }
   
   newPlot()
-  plot.cmd <- paste('varImpPlot(crs$rf, main="")\n',
-                    genPlotTitleCmd("Variable Importance rf", crs$dataname),
-                    sep="")
-  appendLog("Plot the relative importance of the variables.", plot.cmd)
+  if (class(crs$rf) %in% "RandomForest")
+    plot.cmd <- paste('set.seed(42)',
+                      '\nv <- varimp(crs$rf)',
+                      '\nvimp <- data.frame(Variable=as.character(names(v)),',
+                      '\n                   Importance=v,',
+                      '\n                   colour=as.factor(ifelse(v<0, ',
+                      '"firebrick1", "steelblue")),',
+                      '\nrow.names=NULL, stringsAsFactors=FALSE)',
+                      '\nvimp <- with(vimp, vimp[rev(order(Importance)),])',
+                      '\np <- ggplot(vimp, aes(Variable, Importance))',
+                      '\nprint(p + geom_bar(aes(fill=colour)) + coord_flip() +',
+                      '\n          labs(x="", y="") + opts(legend.position="none"))',
+                      sep="")
+  else
+    plot.cmd <- paste('varImpPlot(crs$rf, main="")\n',
+                      genPlotTitleCmd(Rtxt("Variable Importance"),
+                                      commonName(crv$RF), crs$dataname),
+                      sep="")
+  appendLog(Rtxt("Plot the relative importance of the variables."), plot.cmd)
+
+  set.cursor("watch")
+  on.exit(set.cursor())
+
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Random Forest Importance has been plotted.")
+  setStatusBar(Rtxt("Variable Importance has been plotted."))
 }
   
 plotRandomForestError <- function()
@@ -376,13 +471,13 @@ plotRandomForestError <- function()
                                   'lty=1:3, col=1:3)'),
                             sprintf("c(%s)", paste('"', colnames(crs$rf$err.rate),
                                                    '"', sep="", collapse=", "))),
-                    genPlotTitleCmd("Error Rates rf", crs$dataname),
+                    genPlotTitleCmd(Rtxt("Error Rates"), commonName(crv$RF), crs$dataname),
                     sep="\n")
 
-  appendLog("Plot error rate as we increase the number of trees.", plot.cmd)
+  appendLog(Rtxt("Plot the error rate against the number of trees."), plot.cmd)
   eval(parse(text=plot.cmd))
   
-  setStatusBar("Random Forest Errors has been plotted.")
+  setStatusBar(Rtxt("The error rates plot has been generated."))
 }
 
 displayRandomForestTree <- function()
@@ -398,26 +493,29 @@ displayRandomForestTree <- function()
   # If tree.num is zero and there are very many trees, first warn.
 
   if (tree.num == 0 && crs$rf$ntree > 5)
-    if (! questionDialog("Displaying all rules can take quite a while.",
-                         "\n\nDo you wish to continue?"))
+    if (! questionDialog(Rtxt("Displaying all rules can take quite a while.",
+                              "\n\nDo you wish to continue?")))
       return()
   
   # Command to run.
 
-  display.cmd <- sprintf("printRandomForests(crs$rf, %d)", tree.num)
+  display.cmd <- ifelse(class(crs$rf) == "RandomForest",
+                        sprintf(paste('party:::prettytree(crs$rf@ensemble[[%d]],',
+                                      'names(crs$rf@data@get("input")))'), tree.num),
+                        sprintf("printRandomForests(crs$rf, %d)", tree.num))
 
   # Perform the action.
 
-  appendLog(sprintf("Display tree number %d.", tree.num), display.cmd)
+  appendLog(sprintf(Rtxt("Display tree number %d."), tree.num), display.cmd)
   set.cursor("watch")
-  setStatusBar("The rules are being generated...")
+  setStatusBar(Rtxt("The rules are being generated ..."))
   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
   set.cursor()
   setStatusBar(paste(ifelse(tree.num == 0,
-                            "Rules from all trees",
-                            paste("Rules from tree", tree.num)),
-                     "have been added to the textview.",
-                     "You may need to scroll the textview."))
+                            Rtxt("Rules from all trees have been added to the textview."),
+                            sprintf(Rtxt("Rules from tree %d have been added to the textview."),
+                                    tree.num)),
+                     Rtxt("You may need to scroll the textview to view the rules.")))
 }
 
 printRandomForests <- function(model, models=NULL, include.class=NULL,
@@ -426,7 +524,7 @@ printRandomForests <- function(model, models=NULL, include.class=NULL,
   # format=
   #    "VB"	Generate code that looks like VisualBasic
   
-  if (! packageIsAvailable("randomForest", "print the rule sets"))
+  if (! packageIsAvailable("randomForest", Rtxt("print the rule sets")))
     return()
 
   require(randomForest, quietly=TRUE)
@@ -537,13 +635,13 @@ ruleset.randomForest <- function(model, n=1, include.class=NULL)
   
   # include.class	Vector of predictions to include
   
-  if (! packageIsAvailable("randomForest", "generate a rule set"))
-    stop("randomForest package is required to generate rule sets")
+  if (! packageIsAvailable("randomForest", Rtxt("generate a rule set")))
+    stop(Rtxt("the 'randomForest' package is required to generate rule sets"))
 
   require(randomForest, quietly=TRUE)
 
   if (!inherits(model, "randomForest"))
-    stop("model not of class randomForest")
+    stop(Rtxt("the model is not of the 'randomForest' class"))
 
   tr <- getTree(model, n)
   tr.paths <- getRFPathNodesTraverse(tr)
@@ -623,12 +721,13 @@ printRandomForest <- function(model, n=1, include.class=NULL,
 {
   # include.class	Vector of predictions to include
   
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
+  if (! packageIsAvailable("randomForest", Rtxt("generate the rule sets")))
     return()
 
   require(randomForest, quietly=TRUE)
 
-  if (!inherits(model, "randomForest")) stop("model not of class randomForest")
+  if (!inherits(model, "randomForest"))
+    stop(Rtxt("the model is not of the 'randomForest' class"))
 
   if (format=="VB") comment="'"
   
@@ -724,7 +823,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
 
 randomForest2Rules <- function(model, models=NULL)
 {
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
+  if (! packageIsAvailable("randomForest", Rtxt("generate the rule sets")))
     return()
 
   require(randomForest, quietly=TRUE)
@@ -749,7 +848,7 @@ randomForest2Rules <- function(model, models=NULL)
 
 getRFRuleSet <- function(model, n)
 {
-  if (! packageIsAvailable("randomForest", "generate the rule sets"))
+  if (! packageIsAvailable("randomForest", Rtxt("generate the rule sets")))
     return()
 
   require(randomForest, quietly=TRUE)
@@ -932,7 +1031,7 @@ sdecimal2binary <- function(x)
 sdecimal2binary.smallEndian <- function(x)
 {
   if (x==0) return(0)
-  if (x<0) stop("Sorry, the input must be positive")
+  if (x<0) stop(Rtxt("the input must be positive"))
   dec <- x
 	 
   n <- floor(log(x)/log(2))

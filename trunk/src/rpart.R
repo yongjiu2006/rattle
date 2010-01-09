@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-28 17:01:46 Graham Williams>
+# Time-stamp: <2010-01-09 21:22:56 Graham Williams>
 #
 # RPART TAB
 #
@@ -73,8 +73,8 @@ on_rpart_plot_button_clicked <- function(button)
   if (theWidget("model_tree_rpart_radiobutton")$getActive() &&
       nrow(crs$rpart$frame) == 1)
   {
-    errorDialog("The tree consists just of a root node. Thus there is",
-                "nothing to plot.")
+    errorDialog(Rtxt("The tree consists just of a root node.",
+                     "There is nothing to plot."))
     return()
   }
 
@@ -82,7 +82,7 @@ on_rpart_plot_button_clicked <- function(button)
 
   if (theWidget("model_tree_rpart_radiobutton")$getActive())
     plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
-                      genPlotTitleCmd("Decision Tree",
+                      genPlotTitleCmd(commonName(crv$RPART),
                                       crs$dataname, "$", crs$target),
                       sep="")
   else # ctree
@@ -92,8 +92,10 @@ on_rpart_plot_button_clicked <- function(button)
   ##                           "plotcp(crs$rpart)\n",
   ##                           genPlotTitleCmd("Cross Validated Error",
   ##                                              crs$dataname, "$", crs$target))
-  appendLog(paste("Plot the resulting Tree using Rattle",
-                  "and maptools support functions."), plot.cmd)
+  appendLog(sprintf(Rtxt("Plot the resulting %s using Rattle",
+                         "and maptools support functions."),
+                    commonName(crv$RPART)),
+            plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
   
@@ -101,7 +103,7 @@ on_rpart_plot_button_clicked <- function(button)
   ## appendLog(plotcp.command)
   ## eval(parse(text=plotcp.command))
 
-  setStatusBar("Decision tree has been plotted.")
+  setStatusBar(Rtxt("The decision tree has been plotted."))
 }
 
 on_rpart_rules_button_clicked <- function(button)
@@ -119,50 +121,52 @@ on_rpart_rules_button_clicked <- function(button)
   }
 
   rules.cmd <- "asRules(crs$rpart)"
-  appendLog("List the rules from the tree using a Rattle support function.",
+  appendLog(Rtxt("List the rules from the tree using a Rattle support function."),
           rules.cmd)
-  addTextview(TV, "Tree as rules:\n\n", collectOutput(rules.cmd, TRUE),
+  addTextview(TV, paste(Rtxt("Tree as rules:"), "\n\n"), collectOutput(rules.cmd, TRUE),
               textviewSeparator())
          
-  setStatusBar(paste("The corresponding rules have been listed.",
-                     "You may need to scroll the textview to see them."))
+  setStatusBar(paste(Rtxt("The corresponding rules have been listed."),
+                     Rtxt("You may need to scroll the textview to see them.")))
 }
 
 on_help_rpart_activate <- function(action, window)
 {
-  if (showHelpPlus("A decision tree is quite the typical data mining tool,
-used widely for its ease of interpretation. It consists of a root node
-split by a single variable into two partitions. In turn, these two new
-nodes may then each be further split on a single (and usually
-different) variable. This divide and conquering continues until no
-further splitting would improve the performance of the model.
-<<>>
-While a choice of measures are available to select a variable to split
-the dataset on, the Gini measure is used, and generally is no
-different to the information measure for binary classification. To
-explore the alternatives, copy the relevant code from the Log and
-paste it into the R Console and change any of the options.
-<<>>
-Common options that a user may change from their default values are
-available.
-<<>>
-Priors: used to boost a particularly important class, by giving it a
-higher prior probability. Expects a list of numbers that sum up to 1,
-and of the same length as the number of classes in the training dataset: e.g.,
-0.5,0.5.
-<<>>
-Loss Matrix: used to weight the outcome classes differently: e.g., 0,10,1,0.
-<<>>
-Other
-options exist, but are not usually required. For example, 10-fold
-cross validation, used in deciding how to prune to the best deicision
-tree, is generally regarded as the right number. Transfering the
-commands from the Log tab into the R Console does give you full access
-to all options.
-<<>>
-Decision trees work with both numeric and categorical data.
-<<>>
-The rpart package is used to build the decision tree."))
+  if (showHelpPlus(Rtxt("A decision tree is the prototypical data mining tool,",
+                        "used widely for its ease of interpretation. It consists of a root node",
+                        "split by a single variable into two partitions. In turn, these two new",
+                        "partitions become new nodes that may then each be further split on",
+                        "a single (and usually",
+                        "different) variable. This divide and conquering continues until no",
+                        "further splitting would improve the performance of the model.",
+                        "<<>>",
+                        "While a choice of measures are available to select a variable to split",
+                        "the dataset on, the Gini measure is used, and generally is no",
+                        "different to the information measure for binary classification. To",
+                        "explore the alternatives, copy the relevant code from the Log and",
+                        "paste it into the R Console and change any of the options.",
+                        "<<>>",
+                        "Common options that a user may change from their default values are",
+                        "available.",
+                        "<<>>",
+                        "Priors: used to boost a particularly important class, by giving it a",
+                        "higher prior probability. Expects a list of numbers that sum up to 1,",
+                        "and of the same length as the number of classes in the training dataset:",
+                        "e.g.,0.5,0.5.",
+                        "<<>>",
+                        "Loss Matrix: used to weight the outcome classes differently:",
+                        "e.g., 0,10,1,0.",
+                        "<<>>",
+                        "Other",
+                        "options exist, but are not usually required. For example, 10-fold",
+                        "cross validation, used in deciding how to prune to the best decision",
+                        "tree, is generally regarded as the right number. Transfering the",
+                        "commands from the Log tab into the R Console does give you full access",
+                        "to all options.",
+                        "<<>>",
+                        "Decision trees work with both numeric and categoric data.",
+                        "<<>>",
+                        "The rpart package is used to build the decision tree.")))
   {
     require(rpart, quietly=TRUE)
     popupTextviewHelpWindow("rpart")
@@ -212,17 +216,19 @@ executeModelRPart <- function(action="build")
     pr <- as.numeric(unlist(strsplit(priors, ",")))
     if (length(pr) != num.classes)
       {
-        errorDialog(sprintf("The supplied priors (%s)", priors),
-                     "need to correspond to the number of classes",
-                     sprintf("found in the target variable '%s'.",crs$target),
-                     sprintf("Please supply exactly %d priors.", num.classes))
+        errorDialog(sprintf(Rtxt("The supplied priors (%s)",
+                                 "need to correspond to the number of classes",
+                                 "found in the target variable '%s'.",
+                                 "Please supply exactly %d priors."),
+                            priors,crs$target, num.classes))
         return(FALSE)
       }
     if (sum(pr) != 1)
       {
-        errorDialog(sprintf("The supplied priors (%s)", priors),
-                     sprintf("add up to %0.2f whereas", sum(pr)),
-                     "they need to add up 1.00")
+        errorDialog(sprintf(Rtxt("The supplied priors (%s)",
+                                 "add up to %0.2f whereas",
+                                 "they need to add up 1.00"),
+                            priors, sum(pr)))
         return(FALSE)
       }
     if (is.null(parms))
@@ -315,9 +321,10 @@ executeModelRPart <- function(action="build")
     lo <- as.numeric(unlist(strsplit(loss, ",")))
     if (length(lo) != num.classes * num.classes)
     {
-      errorDialog(sprintf("The supplied loss matrix values (%s)", loss),
-                   sprintf("need to have %d values.", num.classes*num.classes),
-                   "Please enter that many values, comma separated.")
+      errorDialog(sprintf(Rtxt("The supplied loss matrix (%s)",
+                                "needs to have %d values.",
+                                "Please enter that many values, comma separated."),
+                          loss, num.classes*num.classes))
       return(FALSE)
     }
       
@@ -352,12 +359,12 @@ executeModelRPart <- function(action="build")
   # Commands.
   
   lib.cmd <- "require(rpart, quietly=TRUE)"
-  if (! packageIsAvailable("rpart", "build decision trees")) return(FALSE)
+  if (! packageIsAvailable("rpart", Rtxt("build decision trees"))) return(FALSE)
 
   if (action %in%  c("tune", "best"))
   {
     lib.cmd <- paste(lib.cmd, "require(e1071, quietly=TRUE)", sep="\n")
-    if (! packageIsAvailable("e1071", "tune decision trees")) return(FALSE)
+    if (! packageIsAvailable("e1071", Rtxt("tune decision trees"))) return(FALSE)
   }
 
   # For now, don't use any of the other parameter settings if tune or
@@ -450,44 +457,47 @@ executeModelRPart <- function(action="build")
                                
   # Load the required library.
 
-  startLog("Decision Tree")
-  appendLog("Build a decision tree using the rpart package.", lib.cmd)
+  startLog(commonName(crv$RPART))
+  appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
+                    "rpart", "rpart"),
+            lib.cmd)
 
   eval(parse(text=lib.cmd))
 
   # Set the seed so that xerror and xstd are consistent each time
 
-  seed.cmd <- 'set.seed(123455)'
-  appendLog("Set the seed to ensure same cross validation results each time.", seed.cmd)
+  seed.cmd <- 'set.seed(42)'
+  appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
+            seed.cmd)
   eval(parse(text=seed.cmd))
 
   # Build the model.
 
-  appendLog("Build an rpart model.", rpart.cmd)
+  appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$RPART)), rpart.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
   time.taken <- Sys.time()-start.time
   if (inherits(result, "try-error"))
   {
     if (any(grep("syntax error.*weights", result)))
-      errorDialog("The call to rpart has a syntax error. This may be due",
-                   "to a syntax error in the weights formula if you have",
-                   "specified one. The error message was:", result)
+      errorDialog(sprintf(Rtxt("The call to 'rpart' has a syntax error in the",
+                               "weights formula. The error message was:\n\n%s"),
+                          result))
     else
-      errorDialog("An error occured in the call to rpart.",
-                   "the error was:", result)
+      errorDialog(errorMessageFun("rpart", result))
     return(FALSE)
   }
 
   # Display the resulting model.
 
-  appendLog("Generate textual output of the rpart model.", print.cmd)
+  appendLog(sprintf(Rtxt("Generate the textual view of the %s model."),
+                    commonName(crv$RPART)), print.cmd)
 
   resetTextview(TV)
   setTextview(TV,
-              sprintf("Summary of the %s model for %s (built using %s):\n\n",
-                      commonName("rpart"),
-                      "Classification", # 080604 TODO put the right type
+              sprintf(Rtxt("Summary of the %s model for %s (built using '%s'):\n\n"),
+                      commonName(crv$RPART),
+                      Rtxt("Classification"), # 080604 TODO put the right type
                       "rpart"),
               collectOutput(print.cmd))
 
@@ -499,12 +509,9 @@ executeModelRPart <- function(action="build")
   showModelRPartExists()
 
   # Finish up.
-  
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("An rpart model has been generated.", time.msg)
+
+  reportTimeTaken(TV, time.taken, commonName(crv$RPART))
+
   return(TRUE)
 }
 
@@ -570,9 +577,9 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
         cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
     else cat("n=", n[1], "\n\n")
     if (x$method == "class") 
-        cat("node), split, n, loss, yval, (yprob)\n")
-    else cat("node), split, n, deviance, yval\n")
-    cat("      * denotes terminal node\n\n")
+        cat(Rtxt("node), split, n, loss, yval, (yprob)\n"))
+    else cat(Rtxt("node), split, n, deviance, yval\n"))
+    cat(Rtxt("      * denotes terminal node\n\n"))
     cat(z, sep = "\n")
     return(invisible(x))
 }
@@ -584,7 +591,7 @@ asRules <- function(model, compact=FALSE, ...) UseMethod("asRules")
 
 asRules.rpart <- function(model, compact=FALSE, ...)
 {
-  if (!inherits(model, "rpart")) stop("Not a legitimate rpart tree")
+  if (!inherits(model, "rpart")) stop(Rtxt("Not a legitimate rpart tree"))
   # if (model$method != "class")) stop("Model method needs to be class")
   #
   # Get some information.
@@ -630,7 +637,7 @@ asRules.rpart <- function(model, compact=FALSE, ...)
       }
       else
       {
-        cat(sprintf(" Rule number: %s ", names[i]))
+        cat(sprintf(Rtxt(" Rule number: %s "), names[i]))
         if (rtree)
           cat(sprintf("[yval=%s cover=%d (%.0f%%)]\n",
                       yval, cover, pcover))
@@ -971,7 +978,7 @@ exportRpartModel <- function()
   
   if (noModelAvailable(crs$rpart, crv$RPART)) return(FALSE)
 
-  startLog("Export RPart Tree")
+  startLog(paste(Rtxt("Export"), commonName(crv$RPART)))
 
   save.name <- getExportSaveName(crv$RPART)
   if (is.null(save.name)) return(FALSE)
@@ -987,7 +994,7 @@ exportRpartModel <- function()
 
   if (ext == "xml")
   {
-    appendLog("Export a decision tree as PMML.",
+    appendLog(sprintf(Rtxt("Export %s as PMML."), commonName(crv$RPART)),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -1001,7 +1008,7 @@ exportRpartModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a decision tree as C code for WebFocus.",
+    appendLog(sprintf(Rtxt("Export %s as a WebFocus C routine."), commonName(crv$RPART)),
               sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name,
                       attr(save.name, "includePMML"),
@@ -1016,5 +1023,5 @@ exportRpartModel <- function()
                 attr(save.name, "exportClass")), file=save.name)
   }
           
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 }

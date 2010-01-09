@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 20:42:59 Graham Williams>
+# Time-stamp: <2010-01-09 12:30:16 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -273,8 +273,7 @@ executeModelCTree <- function()
   time.taken <- Sys.time()-start.time
   if (inherits(result, "try-error"))
   {
-    errorDialog("An error occured in the call to ctree.",
-                "The error was:", result)
+    errorDialog(errorMessageFun("ctree", result))
     return(FALSE)
   }
 
@@ -298,12 +297,9 @@ executeModelCTree <- function()
   showModelRPartExists()
 
   # Finish up.
-  
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("A ctree model has been generated.", time.msg)
+
+  reportTimeTaken(TV, time.taken, model=commonName(crv$RPART))
+
   return(TRUE)
 }
 

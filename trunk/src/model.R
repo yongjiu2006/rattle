@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-06 14:17:29 Graham Williams>
+# Time-stamp: <2010-01-09 21:21:59 Graham Williams>
 #
 # MODEL TAB
 #
@@ -234,18 +234,20 @@ on_evaluate_model_checkbutton_toggled <- function(button)
 
 commonName <- function(mtype)
 {
-  name.map <- data.frame(ada="Boost",
-                         ctree="Tree",
-                         hclust="Hierarchical Cluster",
-                         kmeans="K-Means Cluster",
-                         rf="Forest",
-                         rpart="Tree",
-                         ksvm="SVM",
-                         glm="Linear",
-                         linear="Linear",
-                         multinom="Neural Net",
-                         nnet="Neural Net",
-                         survival="Survival")
+  name.map <- data.frame(ada=Rtxt("Ada Boost"),
+                         arules=Rtxt("Association Rules"),
+                         cforest=Rtxt("Random Forest"),
+                         ctree=Rtxt("Conditional Tree"),
+                         hclust=Rtxt("Hierarchical"),
+                         kmeans=Rtxt("KMeans"),
+                         rf=Rtxt("Random Forest"),
+                         rpart=Rtxt("Decision Tree"),
+                         ksvm=Rtxt("SVM"),
+                         glm=Rtxt("Linear"),
+                         linear=Rtxt("Linear"),
+                         multinom=Rtxt("Neural Net"),
+                         nnet=Rtxt("Neural Net"),
+                         survival=Rtxt("Survival"))
   return(as.character(name.map[[mtype]]))
 }
 
@@ -253,11 +255,17 @@ numericTarget <- function()
 {
   if (length(getSelectedVariables("target")) == 0)
     return(FALSE)
-  # 091206 Move to not using the auto radio button.
-  #  else if (theWidget("data_target_auto_radiobutton")$getActive())
-  #  # 080505 TODO we should put 10 as a global CONST
-  #  return(is.numeric(crs$dataset[[crs$target]]) &&
-  #         length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
+
+  # 091206 Move to not using the auto radio button.091223 Gerry and
+  # Rado want it back
+  
+  else if (theWidget("data_target_auto_radiobutton")$getActive())
+
+    # 080505 TODO we should put 10 as a global CONST
+    
+    return(is.numeric(crs$dataset[[crs$target]]) &&
+           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
+
   else if (theWidget("data_target_classification_radiobutton")$getActive())
     return(FALSE)
   else if (theWidget("data_target_regression_radiobutton")$getActive())
@@ -282,12 +290,18 @@ categoricTarget <- function()
 {
   if (length(getSelectedVariables("target")) == 0)
     return(FALSE)
-  # 091206 Move to not using the auto radio button.
-  # else if (theWidget("data_target_auto_radiobutton")$getActive())
-  #  # 080505 TODO we should put 10 as a global CONST
-  #  return(is.factor(crs$dataset[[crs$target]]) ||
-  #         (is.numeric(crs$dataset[[crs$target]]) &&
-  #          length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
+
+  # 091206 Move to not using the auto radio button. 091223 Gerry and
+  # Rado want it back
+  
+  else if (theWidget("data_target_auto_radiobutton")$getActive())
+    
+    # 080505 TODO we should put 10 as a global CONST
+
+    return(is.factor(crs$dataset[[crs$target]]) ||
+           (is.numeric(crs$dataset[[crs$target]]) &&
+            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
+
   else if (theWidget("data_target_classification_radiobutton")$getActive())
     return(TRUE)
   else if (theWidget("data_target_regression_radiobutton")$getActive())
@@ -521,15 +535,18 @@ executeModelTab <- function()
       setStatusBar("Building", commonName(crv$ADA), "model ... failed.")
 
   }
-  if ((categoricTarget() && build.all)
-      || currentModelTab() == crv$RF)
+
+  if (build.all || currentModelTab() == crv$RF)
   {
-    setStatusBar("Building", commonName(crv$RF), "model ...")
-    if (executeModelRF())
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$RF)))
+
+    if (executeModelRF(traditional=theWidget("model_rf_traditional_radiobutton")$getActive(),
+                       conditional=theWidget("model_rf_conditional_radiobutton")$getActive()))
       theWidget("evaluate_rf_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(crv$RF), "model ... failed.")
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$RF)))
   }
+  
   if ((categoricTarget() && build.all)
       || currentModelTab() %in% c(crv$SVM, crv$KSVM))
   {
@@ -883,14 +900,12 @@ included as parameters in the exported scoring routine.\n",
   # Finish up.
   
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar(sprintf("A %s model has been generated%s.", commonName(mtype),
-                       ifelse(any(is.na(coef(crs$glm))),
-                              " with singularities", "")),
-               time.msg)
+
+  reportTimeTaken(TV, time.taken,
+                  msg=paste(sprintf(Rtxt("The %s model has been built."),
+                    commonName(mtype)),
+                    ifelse(any(is.na(coef(crs$glm))),
+                           Rtxt("Singularities exist."), "")))
   return(TRUE)
 }
 
@@ -1146,8 +1161,7 @@ executeModelSVM <- function()
       setTextview(TV)
     }
     else
-      errorDialog("The call to svm appears to have failed.",
-                  "The error message was:", result, crv$support.msg)
+      errorDialog(errorMessageFun("svm", result))
     return(FALSE)
   }
 
