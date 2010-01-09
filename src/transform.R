@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 11:37:25 Graham Williams>
+# Time-stamp: <2010-01-08 07:55:45 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1591,7 +1591,7 @@ executeTransformCleanupPerform <- function()
     # only delete entities that have missing values for non-ignored
     # variables.
 
-    if (is.null(ignore))
+    if (! length(ignore))
     {
       cases <- complete.cases(crs$dataset)
       del.cmd <- "crs$dataset <- crs$dataset[complete.cases(crs$dataset),]"

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-03-16 20:38:47 Graham Williams>
+# Time-stamp: <2010-01-09 21:24:58 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -48,7 +48,7 @@ on_associate_rules_button_clicked <-  function(action, window)
 
 generateAprioriSummary <- function(ap)
 {
- result <- sprintf("Number of Rules: %d\n\n", length(ap))
+ result <- sprintf(Rtxt("Number of Rules: %d\n\n"), length(ap))
  # 080726 Started failing.... no size for ap@lhs
  ## result <- paste(result, "Rule Length Distribution (LHS + RHS):\n\n", sep="")
  ## pp <- table(size(ap@lhs)+size(ap@rhs))
@@ -87,20 +87,21 @@ executeAssociateTab <- function()
   baskets <- theWidget("associate_baskets_checkbutton")$getActive()
   if (baskets && length(crs$ident) != 1)
   {
-    errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Data tab to be used as",
-                "the identifier of the transactions.",
-                "I found", length(crs$ident), "variables.",
-                "The entities need to be aggregated by the Ident to",
-                "create the baskets for association analysis.")
+    errorDialog(sprintf(Rtxt("Exactly one variable must be identified as an Ident",
+                             "in the Data tab to be used as",
+                             "the identifier of the transactions.",
+                             "There are %d Ident variables.",
+                             "The observations need to be aggregated by the Ident to",
+                             "create the baskets for association analysis."),
+                        length(crs$ident)))
     return()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Data tab.",
-                "This variable then identifies the items associated with each",
-                "basket or transaction in the analysis. Each basket or",
-                "transaction is uniquely identified using the Ident variable.")
+    errorDialog(Rtxt("A Target variable must be identified in the Data tab.",
+                     "This variable then identifies the items associated with each",
+                     "basket or transaction in the analysis. Each basket or",
+                     "transaction is uniquely identified using the Ident variable."))
     return()
   }
       
@@ -110,12 +111,12 @@ executeAssociateTab <- function()
   
   if (!baskets && length(include) == 0)
   {
-    errorDialog("Associations are calculated only for categorical data.",
-                "\n\nNo categorical variables were found in the dataset",
-                "from amongst those having an input role.",
-                "\n\nIf you wanted a basket analysis with the Target variable",
-                "listing the items, and the Ident variable identifying",
-                "the baskets, then please check the Baskets button.")
+    errorDialog(Rtxt("Associations are calculated only for categoric data.",
+                     "\n\nNo categoric variables were found in the dataset",
+                     "from amongst those having an input role.",
+                     "\n\nIf you wanted a basket analysis with the Target variable",
+                     "listing the items, and the Ident variable identifying",
+                     "the baskets, then please select the Baskets option."))
     return()
   }
 
@@ -126,24 +127,25 @@ executeAssociateTab <- function()
 
   if (!baskets && length(include) == 1)
   {
-    errorDialog("Associations (when not using the Baskets option)",
-                "can only be identified when there are",
-                "multiple categoric variables.",
-                "\n\nOnly one categoric variable was found",
-                sprintf('(%s)', include[1]),
-                "from amongst those having an input role.",
-                "\n\nIf you wanted a basket analysis with the Target variable",
-                "listing the items, and the Ident variable identifying",
-                "the baskets, then please check the Baskets button.")
+    errorDialog(sprintf(Rtxt("Associations, when not using the Baskets option,",
+                             "can only be identified when there are",
+                             "multiple categoric variables.",
+                             "\n\nOnly one categoric variable was found (%s)",
+                             "from amongst those having an input role.",
+                             "\n\nIf you wanted a basket analysis with the Target variable",
+                             "listing the items, and the Ident variable identifying",
+                             "the baskets, then please deselect the Baskets button."),
+                        include[1]))
     return()
   }
 
   # Ensure the arules library is available and loaded.
 
-  if (! packageIsAvailable("arules", "generate associations")) return()
-  startLog("ASSOCIATION RULES GENERATION")
+  if (! packageIsAvailable("arules", Rtxt("generate associations"))) return()
+  startLog(commonName("arules"))
   lib.cmd <- "require(arules, quietly=TRUE)"
-  appendLog("Association rules are implemented in the arules package.",
+  appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
+                    "arules", "arules"),
             lib.cmd)
   eval(parse(text=lib.cmd))
  
@@ -175,7 +177,7 @@ executeAssociateTab <- function()
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  appendLog("Generate a transactions dataset.", transaction.cmd)
+  appendLog(Rtxt("Generate a transactions dataset."), transaction.cmd)
   eval(parse(text=transaction.cmd))
 
   # Now generate the association rules.
@@ -185,24 +187,24 @@ executeAssociateTab <- function()
                        sprintf("support=%.3f, confidence=%.3f",
                                support, confidence),
                        "))", sep="")
-  appendLog("Generate the association rules.", apriori.cmd)
+  appendLog(Rtxt("Generate the association rules."), apriori.cmd)
   cmd.output <- collectOutput(apriori.cmd)
 
   # Add a summary of the rules.
 
   mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
-  appendLog("Summarise the resulting rule set.", mysummary.cmd)
+  appendLog(Rtxt("Summarise the resulting rule set."), mysummary.cmd)
 
   summary.cmd <- "summary(crs$apriori@quality)"
-  appendTextview(TV, "Summary of the Apriori Association Rules\n\n",
+  appendTextview(TV, Rtxt("Summary of the Apriori Association Rules"), "\n\n",
                  collectOutput(mysummary.cmd, use.cat=TRUE),
-                 "\nSummary of the Measures of Interestingness\n\n",
+                 "\n", Rtxt("Summary of the Measures of Interestingness"), "\n\n",
                  collectOutput(summary.cmd, use.print=TRUE))
   
-  appendTextview(TV, "Summary of the execution of the apriori command.\n",
+  appendTextview(TV, Rtxt("Summary of the execution of the apriori command.\n"),
                  cmd.output)
   
-  setStatusBar("Generated the association rules.")
+  setStatusBar(Rtxt("Generated the association rules."))
 }
 
 plotAssociateFrequencies <- function()

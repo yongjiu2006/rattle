@@ -17,7 +17,7 @@
   
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"
-  crv$log.intro <- "# Rattle is Copyright (C) 2006-2009 Togaware Pty Ltd"
+  crv$log.intro <- "# Rattle is Copyright (C) 2006-2010 Togaware Pty Ltd"
   crv$support.msg <- "Contact support@togaware.com."
   crv$library.command <- "library(rattle)"
   crv$version <- VERSION
@@ -111,7 +111,12 @@
   # .onLoad, since they get loaded and attached before rstat does.
 
   if (! exists("suppressRattleWelcome")) suppressRattleWelcome <<- FALSE
+
+  # 091221 The Rtxt does not seem to work from the rattle.R file, so
+  # do it here again.
   
+  COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2010 Togaware Pty Ltd.")
+
   if (! suppressRattleWelcome)
   {
 

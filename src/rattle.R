@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-18 09:23:25 Graham Williams>
+# Time-stamp: <2010-01-10 08:27:28 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -11,13 +11,16 @@
 # execute.R	The Execute functionality.
 #
 
+Rtxt <- function(...) gettext(paste(...), domain="R-rattle")
+
 MAJOR <- "2"
 MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Dec 2009"
-COPYRIGHT <- "Copyright (C) 2006-2009 Togaware Pty Ltd."
+VERSION.DATE <- "Released 19 Dec 2009"
+# 091223 Rtxt does not work until the rattle GUI has started, perhaps?
+COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested early versions of Rattle. Many colleagues at the
@@ -185,10 +188,11 @@ rattle <- function(csvname=NULL)
   
   # Load gloablly required packages if they are available. 
   
-  if (! packageIsAvailable("RGtk2", "display the Rattle GUI"))
-    stop("RGtk2 package is not available but is required for the GUI.")
+  if (! packageIsAvailable("RGtk2", Rtxt("display the Rattle GUI")))
+    stop(sprintf(Rtxt("The RGtk2 package is not available but is required",
+                      "for the %s GUI."), crv$appname))
 
-  if (packageIsAvailable("colorspace", "choose appropriate colors for plots"))
+  if (packageIsAvailable("colorspace", Rtxt("choose appropriate colors for plots")))
   {
     # 080921 Load here to keep the loading quiet!
     require("colorspace", quietly=TRUE)
@@ -199,8 +203,8 @@ rattle <- function(csvname=NULL)
   # Check to make sure libglade is available.
 
   if (! exists("gladeXMLNew"))
-    stop("The RGtk2 package did not find libglade installed. ",
-         "Please install it.")
+    stop(Rtxt("The RGtk2 package did not find libglade installed.",
+              "Please install it."))
 
   # On the Macintosh we seem to need to initialise all of the types
   # for the GTK widgets. So do that here.
@@ -277,10 +281,10 @@ rattle <- function(csvname=NULL)
                 silent=TRUE)
   if (inherits(result, "try-error"))
     rattleGUI <<- gladeXMLNew("rattle.glade",
-                              root="rattle_window")
+                              root="rattle_window", domain="R-rattle")
   else
     rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
-                              root="rattle_window")
+                              root="rattle_window", domain="R-rattle")
 
   # Really need an second untouched rattleGUI
   
@@ -375,7 +379,8 @@ rattle <- function(csvname=NULL)
       csvname <- file.path(getwd(), csvname)
     if (! file.exists(csvname))
     {
-      infoDialog('The supplied CSV file "', csvname, '" does not exist.')
+      infoDialog(sprintf(Rtxt("The supplied CSV filename '%s' does not exist."),
+                         csvname))
       csvname <- NULL
     }
     else
@@ -655,7 +660,7 @@ rattle <- function(csvname=NULL)
   # If the cairoDevice package is not available then turn off the
   # option in the settings menu and make it insensitive.
   
-  if (! packageIsAvailable("cairoDevice", "enable the cairo device option"))
+  if (! packageIsAvailable("cairoDevice", Rtxt("enable the cairo device option")))
   {
     theWidget("use_cairo_graphics_device")$setActive(FALSE)
     theWidget("use_cairo_graphics_device")$hide()
@@ -709,7 +714,7 @@ rattle <- function(csvname=NULL)
   if (not.null(csvname))
   {
     if (!theWidget("data_filechooserbutton")$setUri(csvname))
-      infoDialog("Internal Error: The setting of the filename box",
+      infoDialog("E146: The setting of the filename box",
                  "failed.", crv$support.msg)
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
@@ -910,8 +915,8 @@ resetRattle <- function(new.dataset=TRUE)
   crv$EVALUATE$setCurrentPage(crv$EVALUATE.CONFUSION.TAB)
   theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
   theWidget("score_class_radiobutton")$setActive(TRUE)
-  theWidget("score_class_radiobutton")$setLabel("Class")
-  theWidget("score_probability_radiobutton")$setLabel("Probability")
+  theWidget("score_class_radiobutton")$setLabel(Rtxt("Class"))
+  theWidget("score_probability_radiobutton")$setLabel(Rtxt("Probability"))
 
   # Reset the DATA tab. But we don't want to do this because
   # resetRattle is called on loading a database table, and this ends
@@ -964,7 +969,7 @@ resetRattle <- function(new.dataset=TRUE)
     # Reset Describe -> Cluster -> KMeans
 
     theWidget("kmeans_clusters_spinbutton")$setValue(10)
-    theWidget("kmeans_seed_spinbutton")$setValue(123)
+    theWidget("kmeans_seed_spinbutton")$setValue(42)
     theWidget("kmeans_runs_spinbutton")$setValue(1)
     theWidget("kmeans_stats_button")$setSensitive(FALSE)
     theWidget("kmeans_data_plot_button")$setSensitive(FALSE)
@@ -1095,9 +1100,9 @@ resetRattle <- function(new.dataset=TRUE)
   theWidget("hclust_data_plot_button")$setSensitive(FALSE)
   theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
 
-  setStatusBar(paste("To Begin: Choose the Type of data source,",
-                     "specifically identify the source,",
-                     "then click the Execute button."))
+  setStatusBar(Rtxt("To Begin: Choose the Type of data source,",
+                    "specifically identify the source,",
+                    "then click the Execute button."))
   
 }
 
@@ -1107,8 +1112,6 @@ resetRattle <- function(new.dataset=TRUE)
 "%notin%" <- function(x,y) ! x %in% y
 
 not.null <- function(x) ! is.null(x)
-
-Rtxt <- function(...) gettext(paste(...), domain="R-rattle")
 
 uri2file <- function(u)
 {
@@ -1161,16 +1164,6 @@ errorDialog <- function(...)
                                 ...,
                                 sprintf("\n\n%s %s", crv$appname, crv$version))
   connectSignal(dialog, "response", gtkWidgetDestroy)
-}
-
-errorReport <- function(cmd, result)
-{
-  # A standard command error report that is not being captured by
-  # Rattle. Eventually, all of these should be identified by Rattle
-  # and a sugggestion given as to how to avoid the error.
-  
-  errorDialog("An error occured with", cmd, crv$support.msg, "\n\n",
-              "The error was:\n\n", result)
 }
 
 questionDialog <- function(...)
@@ -1248,14 +1241,13 @@ packageIsAvailable <- function(pkg, msg=NULL)
   {
     if (not.null(msg))
       
-      infoDialog("The package", pkg, "is required to",
-                 paste(msg, ".", sep=""),
-                 "It does not appear to be installed.",
-                 "Please consider installing it, perhaps with the",
-                 "R command",
-                 sprintf('install.packages("%s"),', pkg),
-                 "to use the full",
-                 "functionality of", crv$appname)
+      infoDialog(sprintf(Rtxt("The package '%s' is required to %s.",
+                              "It does not appear to be installed.",
+                              "Please consider installing it, perhaps",
+                              "with the following R command:",
+                              "\n\ninstall.packages('%s')",
+                              "\n\nto use the full functionality of %s."),
+                              pkg, msg, pkg, crv$appname))
     return(FALSE)
   }
   else
@@ -1295,6 +1287,33 @@ sampleNeedsExecute <- function()
   return(FALSE)
 }
 
+errorMessageFun <- function(call, result)
+{
+  # 100109 Generate a message reporting an error in a function call.
+  
+  return(sprintf(Rtxt("An error occured in the call to '%s'.",
+                      "The error message was:\n\n%s\n\n%s"),
+                 call, result, crv$support.msg))
+}
+
+errorMessageCmd <- function(call, result)
+{
+  # 100109 Generate a message reporting an error in a command line.
+  
+  return(sprintf(Rtxt("An error occured in the following command:\n\n%s.",
+                      "\n\nThe error message was:\n\n%s\n\n%s"),
+                 call, result, crv$support.msg))
+}
+
+errorReport <- function(cmd, result)
+{
+  # A standard command error report that is not being captured by
+  # Rattle. Eventually, all of these should be identified by Rattle
+  # and a sugggestion given as to how to avoid the error.
+  
+  errorDialog(errorMessageCmd(cmd, result))
+}
+
 ########################################################################
 ##
 ## Simplify updates to status bar
@@ -1319,6 +1338,29 @@ setStatusBar <- function(..., sep=" ")
   while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE) # Refresh status/windows
   invisible(NULL)
 }
+
+reportTimeTaken <- function(tv, time.taken, model, msg)
+{
+  # 091224 This is called after building a model to report on how long
+  # the build took in the text view, to append the time taken to the
+  # log for information purposes, and to update the status bar. At
+  # least one of and only one of model or msg must be supplied.
+  
+  if (missing(model) && missing(msg) || (!missing(model) && !missing(msg)))
+    stop("rattle: reportTimeTaken: ",
+         "one and only one of model/msg must be supplied.")
+
+  time.msg <- sprintf(Rtxt("Time taken: %0.2f %s"),
+                      time.taken, attr(time.taken, "units"))
+  addTextview(tv, "\n", time.msg, textviewSeparator())
+  appendLog(time.msg)
+
+  if (missing(msg))
+    msg <- sprintf(Rtxt("The %s model has been built."), model)
+
+  setStatusBar(msg, time.msg)
+}
+
 
 collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
                           width=getOption("width"), envir=parent.frame())
@@ -1411,6 +1453,14 @@ isLinux <- function()
   return(.Platform$OS.type == "unix")
 }
 
+isJapanese <- function()
+{
+  # 091222 For plots and pdf export under MS/Windows. Tested by
+  # acken_sakakibara@ibi.com
+  
+  return(isWindows() && Sys.getlocale("LC_CTYPE") == "Japanese_Japan.932")
+}
+  
 
 listBuiltModels <- function(exclude=NULL)
 {
@@ -1469,11 +1519,13 @@ on_plot_copy_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
-  startLog("COPY PLOT TO CLIPBOARD")
-  appendLog(paste("Copy the plot on device", dev.num, "to the clipboard."),
+  startLog("Copy the plot to the clipboard.")
+  appendLog(sprintf(Rtxt("Copy the plot on device %d to the clipboard."), dev.num),
             sprintf('copyPlotToClipboard(%s)', dev.num))
   copyPlotToClipboard(dev.num)
-  setStatusBar(sprintf("Plot %d copied to the clipboard as a PNG.", dev.num))
+  setStatusBar(sprintf(Rtxt("Plot %d has been copied to the clipboard",
+                            "using the PNG format."),
+                       dev.num))
 }
 
 on_plot_print_button_clicked <- function(action)
@@ -1484,12 +1536,13 @@ on_plot_print_button_clicked <- function(action)
     
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
-  startLog("PRINT PLOT")
-  appendLog(paste("Print the plot on device", dev.num),
+  startLog("Print the plot.")
+  appendLog(sprintf(Rtxt("Send the plot on device %d to the printer."), dev.num),
             sprintf('printPlot(%s)', dev.num))
   printPlot(dev.num)
-  setStatusBar(sprintf("Plot %d sent to printer: %s", dev.num,
-                       options("printcmd")))
+  setStatusBar(sprintf(Rtxt("Plot %d has been sent to the printer",
+                             "using the command: %s."),
+                       dev.num, options("printcmd")))
 }
 
 on_plot_close_button_clicked <- function(action)
@@ -1512,18 +1565,29 @@ newPlot <- function(pcnt=1)
   # revert to the x11() or windows() device.
 
   if (theWidget("use_cairo_graphics_device")$getActive() &&
-      packageIsAvailable("cairoDevice", "display plots"))
+      packageIsAvailable("cairoDevice", Rtxt("display plots")))
   {
     require("cairoDevice", quietly=TRUE)
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                   silent=TRUE)
     if (inherits(result, "try-error"))
-      plotGUI <- gladeXMLNew("rattle.glade", root="plot_window")
+      plotGUI <- gladeXMLNew("rattle.glade", root="plot_window", domain="R-rattle")
     else
-      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="plot_window")
+      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="plot_window", domain="R-rattle")
     gladeXMLSignalAutoconnect(plotGUI)
     da <- plotGUI$getWidget("drawingarea")
     asCairoDevice(da)
+    if (isJapanese())
+    {
+      # 091222 Use a font that MS/Windows can display Japanese
+      # characters. Would like to use opar to record old value, but
+      # not easy to know where the end of this scope is.
+      
+      fnt.cmd <- 'par(family=windowsFont("MS Gothic"))'
+      appendLog(Rtxt("Use a Japanese font for the plots."), fnt.cmd)
+      eval(parse(text=fnt.cmd))
+    }
+    
     plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": Plot ",
                                                     dev.cur(), sep=""))
   }
@@ -1612,9 +1676,10 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 
   if (is.null(dev.list()))
   {
-    warnDialog("There are currently no active graphics devices.",
-               "So there is nothing to export!",
-               "Please Execute (F2) to obtain a plot to export.")
+    warnDialog(Rtxt("There are currently no active graphics devices.",
+                    "So there is nothing to export!",
+                    "Please click the Execute button (or press F2)",
+                    "to obtain a plot to export."))
     return()
   }
 
@@ -1664,12 +1729,13 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 #  if (get.extension(save.name) == "")
 #    save.name <- sprintf("%s.pdf", save.name)
   
-  startLog("SAVE PLOT")
-  appendLog(paste("Save the plot on device", dev.num, "to file."),
+  startLog("Save the plot to a file.")
+  appendLog(sprintf(Rtxt("Save the plot on device %d to a file."), dev.num),
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
   
   if (savePlotToFile(save.name, dev.num))
-    setStatusBar("Plot", dev.num, "exported to", save.name)
+    setStatusBar(sprintf(Rtxt("Plot %d has been exported to the file %s."),
+                         dev.num, save.name))
 }
 
 savePlotToFile <- function(file.name, dev.num=dev.cur())
@@ -1678,16 +1744,24 @@ savePlotToFile <- function(file.name, dev.num=dev.cur())
   dev.set(dev.num)
   ext <- get.extension(file.name)
   if (ext == "pdf")
-    ## Set version to 1.4 since dev.copy from a Cairo device needs
-    ## this.  It is done automatically with a warning anyhow, but
-    ## might as well avoid the warning so as not to worry anyone.
-    dev.copy(pdf, file=file.name, width=10, height=10, version="1.4")
+    # Set version to 1.4 since dev.copy from a Cairo device needs
+    # this.  It is done automatically with a warning anyhow, but might
+    # as well avoid the warning so as not to worry anyone.  091222 Add
+    # the test for Japanese to add the family option so we get
+    # Japanese fonts. This also kind of works on GNU/Linux but the
+    # viewer compains about missing fonts. Cairo_pdf works just fine
+    # on GNU/Linux, and if it works also on MS/Windows in Japanese the
+    # we will go with that.
+    #if (isJapanese())
+    #  dev.copy(pdf, file=file.name, width=10, height=10, version="1.4", family="Japan1")
+    #else
+    dev.copy(Cairo_pdf, file=file.name, width=10, height=10)
   else if (ext == "png")
     dev.copy(png, file=file.name, width=1000, height=1000)
   else if (ext == "jpg")
     dev.copy(jpeg, file=file.name, width=1000, height=1000)
   else if (ext == "svg")
-    if (packageIsAvailable("RSvgDevice", "to save plot to SVG format"))
+    if (packageIsAvailable("RSvgDevice", Rtxt("save a plot to SVG format")))
     {
       require("RSvgDevice")
       dev.copy(devSVG, file=file.name, width=10, height=10)
@@ -1698,7 +1772,8 @@ savePlotToFile <- function(file.name, dev.num=dev.cur())
     dev.copy(win.metafile, file=file.name, width=10, height=10)
   else
   {
-    infoDialog(sprintf("The specified extension '%s' is not supported.", ext))
+    infoDialog(sprintf(Rtxt("The supplied filename extension '%s'",
+                            "is not supported."), ext))
     return(FALSE)
   }
   dev.off()
@@ -1730,7 +1805,7 @@ my.savePlot <- function (filename = "Rplot",
   devlist <- dev.list()
   devcur <- match(device, devlist, NA)
   if (is.na(devcur))
-    stop("no such device")
+    stop(Rtxt("No such device."))
   devname <- names(devlist)[devcur]
   #if (devname != "windows")
   #  stop("can only copy from 'windows' devices")
@@ -1869,7 +1944,7 @@ get.stem <- function(path)
 
 plotNetwork <- function(flow)
 {
-  if (! packageIsAvailable("network", "draw the network plot")) return()
+  if (! packageIsAvailable("network", Rtxt("draw the network plot"))) return()
   require(network, quietly=TRUE)
   
   flow.net <- network(as.matrix(flow))
@@ -1946,7 +2021,7 @@ on_rattle_window_delete_event <- function(action, window)
 {
   if (crv$close %in% c("quit", "ask"))
   {
-    msg <- sprintf("Do you want to terminate %s?", crv$appname)
+    msg <-sprintf(Rtxt("Do you want to terminate %s?"), crv$appname)
     if (!questionDialog(msg))
       return(TRUE)
     else
@@ -1981,7 +2056,7 @@ closeRattle <- function(ask=FALSE)
 {
   if (ask || crv$close %in% c("quit", "ask"))
   {  
-    msg <- sprintf("Do you want to terminate %s?", crv$appname)
+    msg <- sprintf(Rtxt("Do you want to terminate %s?"), crv$appname)
     if (!questionDialog(msg)) return(FALSE)
   }
   
@@ -2050,9 +2125,9 @@ on_about_menu_activate <-  function(action, window)
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
-    about <- gladeXMLNew("rattle.glade", root="aboutdialog")
+    about <- gladeXMLNew("rattle.glade", root="aboutdialog", domain="R-rattle")
   else
-    about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog")
+    about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog", domain="R-rattle")
 
   ab <- about$getWidget("aboutdialog")
   ab$setVersion(crv$version)

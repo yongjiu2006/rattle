@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-19 07:52:34 Graham Williams>
+# Time-stamp: <2010-01-09 21:14:07 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -113,12 +113,13 @@ executeClusterKMeans <- function(include)
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
   
-  startLog("KMeans Cluster")
+  startLog(commonName(crv$KMEANS))
 
   # SEED: Log the R command and execute.
 
   seed.cmd <- sprintf('set.seed(%d)', seed)
-  appendLog("Set the seed to get the same clusters each time.", seed.cmd)
+  appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
+            seed.cmd)
   eval(parse(text=seed.cmd))
 
   # Calculate the centers
@@ -136,8 +137,8 @@ executeClusterKMeans <- function(include)
     if (nruns > 1)
     {
       lib.cmd <- "require(fpc, quietly=TRUE)"
-      if (! packageIsAvailable("fpc", "kmeans runs")) return(FALSE)
-      appendLog("The kmeansruns functionality is provided by the fpc package.",
+      if (! packageIsAvailable("fpc", Rtxt("run kmeans multiple times"))) return(FALSE)
+      appendLog(Rtxt("The 'fpc' package provides the 'kmeansruns' function."),
                 lib.cmd)
       eval(parse(text=lib.cmd))
 
@@ -155,8 +156,8 @@ executeClusterKMeans <- function(include)
                             include, centers)
     }
     
-    appendLog(sprintf("Generate a kmeans cluster of size %s%s%s.", nclust,
-                      ifelse(nruns>1, " choosing the best from ", ""),
+    appendLog(sprintf(Rtxt("Generate a kmeans cluster of size %s%s%s."), nclust,
+                      ifelse(nruns>1, Rtxt(" choosing the best from "), ""),
                       ifelse(nruns>1, nruns, "")),
               kmeans.cmd)
 
@@ -169,26 +170,25 @@ executeClusterKMeans <- function(include)
     {
       if (any(grep("more cluster centers than distinct data points", result))||
           any(grep("cannot take a sample larger than the population", result)))
-        errorDialog("The data does not support the number of clusters",
-                    "requested. Reduce the number of clusters and try again.")
+        errorDialog(Rtxt("The data does not support the number of clusters",
+                         "requested. Reduce the number of clusters and try again."))
       else
-        errorDialog("The cluster build failed.",
-                    "The error was:", result)
+        errorDialog(errorMessageFun("kmeans", result))
       return(FALSE)
     }
 
     # Summary: Show the resulting model.
 
-    startLog("Report on Cluster Characteristics")
-    appendLog("Cluster sizes:", "paste(crs$kmeans$size, collapse=' ')")
-    appendLog("Cluster centers:", "crs$kmeans$centers")
-    appendLog("Within cluster sum of squares:", "crs$kmeans$withinss")
+    startLog(Rtxt("Report on the cluster characteristics."))
+    appendLog(Rtxt("Cluster sizes:"), "paste(crs$kmeans$size, collapse=' ')")
+    appendLog(Rtxt("Cluster centers:"), "crs$kmeans$centers")
+    appendLog(Rtxt("Within cluster sum of squares:"), "crs$kmeans$withinss")
     resetTextview(TV)
-    setTextview(TV, "Cluster Sizes\n\n",
+    setTextview(TV, Rtxt("Cluster sizes:"), "\n\n",
                 collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
-                "\n\nCluster centroids.\n\n",
+                "\n\n", Rtxt("Cluster centers:"), "\n\n",
                 collectOutput("crs$kmeans$centers", TRUE),
-                "\n\nWithin cluster sum of squares.\n\n",
+                "\n\n", Rtxt("Within cluster sum of squares:"), "\n\n",
                 collectOutput("crs$kmeans$withinss", TRUE),
                 "\n")
 
@@ -214,28 +214,24 @@ executeClusterKMeans <- function(include)
     }
     time.taken <- Sys.time()-start.time
     resetTextview(TV)
-    setTextview(TV, "We have iterated over multiple cluster sizes ",
-                "from 2 to ", nclust, " clusters.\n\n",
-                "The plot displays the sum(withinss) for each clustering\n",
-                "and the change of this from the previous clustering\n",
-                "with the plot starting with 3 clusters\n")
+    setTextview(TV, sprintf(Rtxt("We have iterated over cluster sizes",
+                                 "from 2 to %d clusters.\n\n",
+                                 "The plot displays the 'sum(withinss)' for each clustering\n",
+                                 "and the change in this value from the previous clustering.\n",
+                                 "Plotting starts from 3 clusters.\n"), nclust))
     newPlot()
     plot(3:nclust, c(css[3:nclust]), ylim=c(0, max(css[3:nclust])),
          type="b", lty=1, col="blue",
-         xlab="Number of Clusters", ylab="Sum of WithinSS",
-         main="Sum of WithinSS Over Number of Clusters")
+         xlab=Rtxt("Number of Clusters"), ylab=Rtxt("Sum of WithinSS"),
+         main=Rtxt("Sum of WithinSS Over Number of Clusters"))
     points(3:nclust, css[2:(nclust-1)]-css[3:nclust],
            type="b", pch=4, lty=2, col="red")
-    legend("topright", c("Sum(WithinSS)", "Diff previous Sum(WithinSS)"),
+    legend("topright", c(Rtxt("Sum(WithinSS)"), Rtxt("Diff previous Sum(WithinSS)")),
            col=c("blue", "red"), lty=c(1, 2), pch=c(1,4), inset=0.05)
   }
 
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("The K Means cluster has been generated.",
-               time.msg )
+  reportTimeTaken(TV, time.taken, model=commonName(crv$KMEANS))
+
   return(TRUE)
 }
 
@@ -248,14 +244,14 @@ exportKMeansTab <- function(file)
   
   if (is.null(crs$kmeans))
   {
-    errorDialog("No kmeans cluster model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
+    errorDialog(Rtxt("No kmeans cluster model is available. Be sure to build",
+                     "the model before trying to export it! You will need",
+                     "to press the Execute button (F2) in order to build the",
+                     "model."))
     return()
   }
 
-  startLog("EXPORT KMEANS")
+  startLog(paste(Rtxt("Export"), commonName(crv$KMEANS)))
   
   save.name <- getExportSaveName("kmeans")
   if (is.null(save.name)) return(FALSE)
@@ -273,7 +269,7 @@ exportKMeansTab <- function(file)
 
   if (ext == "xml")
   {
-    appendLog("Export cluster as PMML.",
+    appendLog(sprintf(Rtxt("Export %s as PMML."), commonName(crv$KMEANS)),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -281,7 +277,7 @@ exportKMeansTab <- function(file)
   {
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a cluster model as C code for WebFocus.",
+    appendLog(sprintf(Rtxt("Export %s as a WebFocus C routine."), commonName(crv$KMEANS)),
               sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name,
                       attr(save.name, "includePMML"),
@@ -296,7 +292,7 @@ exportKMeansTab <- function(file)
                 attr(save.name, "exportClass")), file=save.name)
   }
   
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 
 }
 
@@ -390,14 +386,14 @@ displayClusterStatsKMeans <- function()
     return()
   }
 
-  startLog("KMeans Cluster Statistics")
+  startLog(Rtxt("Generate statistics for the clustering."))
 
   # LIBRARY: Ensure the appropriate package is available for the
   # plot, and log the R command and execute.
   
-  if (!packageIsAvailable("fpc", "plot a cluster")) return()
+  if (!packageIsAvailable("fpc", Rtxt("plot a cluster"))) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("Cluster statistics is provided by the fpc package.", lib.cmd)
+  appendLog(Rtxt("Clustering statistics are provided by the fpc package."), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
@@ -412,9 +408,9 @@ displayClusterStatsKMeans <- function()
   include <- getNumericVariables()
   if (length(include) == 0)
   {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+    errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
+                     "No numeric variables were found in the dataset",
+                     "from amongst those having an input/target/risk role."))
     return()
   }
 
@@ -440,14 +436,15 @@ displayClusterStatsKMeans <- function()
   ##   return(FALSE)
   
   if (large &&
-      ! questionDialog("The dataset contains many observations.",
-                       "The Stats are based on a",
-                       "pairwise distance matrix which can be enormous",
-                       "(GBs for 10,000 observations).",
-                       "If you continue,", crv$appname, "will use an",
-                       "auto sampling methodology of size",
-                       crv$cluster.report.max.obs, "to calculate the Stats.",
-                       "\n\nWould you like to continue with auto sampling?"))
+      ! questionDialog(sprintf(Rtxt("The dataset contains many observations.",
+                                    "The statistics are based on a",
+                                    "pairwise distance matrix which can be enormous",
+                                    "(GBs for 10,000 observations).",
+                                    "If you continue, %s will use an",
+                                    "auto sampling methodology of size",
+                                    "%d to calculate the statistics.",
+                                    "\n\nWould you like to continue with auto sampling?"),
+                               crv$appname, crv$cluster.report.max.obs)))
       return(FALSE)
   
   # STATS: Log the R command and execute. 080521 TODO Fix a bug by
@@ -456,16 +453,16 @@ displayClusterStatsKMeans <- function()
 
   if (large)
   {
-    large.sample.cmd <- paste("set.seed(9876)",
-                              sprintf("smpl <<- sample(length(crs$sample), %d)",
+    large.sample.cmd <- paste("set.seed(42)",
+                              sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
                                       crv$cluster.report.max.obs),    
                               sep="\n")
-    appendLog("Sample the large dataset for calculating the statistics.",
+    appendLog(Rtxt("Select a sample from the dataset to calculate the statistics."),
               sub("<<", "<", large.sample.cmd))
     eval(parse(text=large.sample.cmd))
   }
   
-  set.cursor("watch", "Determining cluster statistics...")
+  set.cursor("watch", Rtxt("Determining the cluster statistics...."))
   on.exit(set.cursor("left-ptr"))
   while (gtkEventsPending()) gtkMainIteration()
 
@@ -475,7 +472,7 @@ displayClusterStatsKMeans <- function()
                        include,
                        ifelse(large, "[smpl,]", ""),
                        ifelse(large, "[smpl]", ""))
-  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
+  appendLog(Rtxt("The cluster statistics are provided by the fpc package."), stats.cmd)
   result <- try(collectOutput(stats.cmd, use.print=TRUE))
   if (inherits(result, "try-error"))
   {
@@ -490,14 +487,14 @@ displayClusterStatsKMeans <- function()
       setTextview(TV)
     }
     else
-      errorDialog("The call to cluster.stat appears to have failed.",
-                   "The error message was:", result, crv$support.msg)
+      errorDialog(errorMessageFun("cluster.stat", result))
     return(FALSE)
   }
 
-  appendTextview(TV, "General cluster statistics:\n\n",
+  appendTextview(TV, Rtxt("General cluster statistics:"), "\n\n",
                  result)
-  setStatusBar("K Means cluster statistics have been generated. Scroll to view.")
+  setStatusBar(paste(Rtxt("KMeans cluster statistics have been generated."),
+                     Rtxt("You may need to scroll the textview to see them.")))
 }
 
 dataPlotKMeans <- function()
@@ -511,7 +508,7 @@ dataPlotKMeans <- function()
     return()
   }
 
-  startLog("KMeans Scatterplot Matrix")
+  startLog(Rtxt("Display a scatterplot matrix for the KMeans clustering."))
 
   # Some background information.  Assume we have already built the
   # cluster, and so we don't need to check so many conditions.
@@ -528,9 +525,9 @@ dataPlotKMeans <- function()
   
   if (length(intersect(nums, indicies)) == 1)
   {
-    infoDialog("A data plot of the clusters can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
+    infoDialog(Rtxt("A data plot of the clusters can not be constructed",
+                    "because there is only one numeric variable available",
+                    "in the data."))
     return()
   }
 
@@ -541,56 +538,56 @@ dataPlotKMeans <- function()
 
   if (large && manyvars)
   {
-    if (! questionDialog("The dataset contains many variables and observations.",
-                         "For more than", crv$scatter.max.vars,
-                         "variables and", crv$cluster.report.max.obs,
-                         "observations the plot will be cluttered and quite slow.",
-                         "The application will also wait whilst",
-                         "the plot is drawn.",
-                         "If you continue, the first", crv$scatter.max.vars,
-                         "variables will be used and", crv$appname,
-                         "will use an auto sampling methodology of size",
-                         crv$cluster.report.max.obs,
-                         "to reduce the number of observations.",
-                         "\n\nWould you like to continue with the reduced",
-                         "variables and auto sampling?"))
+    if (! questionDialog(sprintf(Rtxt("The dataset contains many variables and observations.",
+                                      "For more than %d variables and %d",
+                                      "observations the plot will be cluttered and quite slow.",
+                                      "The application will also wait whilst",
+                                      "the plot is drawn.",
+                                      "If you continue, the first %d variables will be used and",
+                                      "%s will use an auto sampling methodology of size %d",
+                                      "to reduce the number of observations.",
+                                      "\n\nWould you like to continue with the reduced",
+                                      "variables and auto sampling?"),
+                                 crv$scatter.max.vars, crv$cluster.report.max.obs,
+                                 crv$scatter.max.vars, crv$appname, crv$cluster.report.max.obs)))
       return(FALSE)
   }
   else if (large)
   {
-    if (! questionDialog("The dataset contains many observations.",
-                         "For more than", crv$cluster.report.max.obs,
-                         "observations the plot will be quite slow.",
-                         "The application will also wait whilst",
-                         "the plot is drawn.",
-                         "If you continue,", crv$appname,
-                         "will use an auto sampling methodology of size",
-                         crv$cluster.report.max.obs,
-                         "to reduce the number of observations.",
-                         "\n\nWould you like to continue with auto sampling?"))
+    if (! questionDialog(sprintf(Rtxt("The dataset contains many observations.",
+                                      "For more than %d",
+                                      "observations the plot will be quite slow.",
+                                      "The application will also wait whilst",
+                                      "the plot is drawn. If you continue, %s",
+                                      "will use an auto sampling methodology of size %d",
+                                      "to reduce the number of observations.",
+                                      "\n\nWould you like to continue with auto sampling?"),
+                                 crv$cluster.report.max.obs, crv$appname,
+                                 crv$cluster.report.max.obs)))
       return(FALSE)
   }
   else if (manyvars)
   {
-    if (! questionDialog("The dataset contains many variables.",
-                         "For more than", crv$scatter.max.vars,
-                         "variables the plot will be cluttered.",
-                         "The application will also wait whilst",
-                         "the plot is drawn.",
-                         "If you continue, the first", crv$scatter.max.vars,
-                         "variables will be used.",
-                         "\n\nWould you like to continue with the reduced",
-                         "variables?"))
+    if (! questionDialog(sprintf(Rtxt("The dataset contains many variables.",
+                                      "For more than %d",
+                                      "variables the plot will be cluttered.",
+                                      "The application will also wait whilst",
+                                      "the plot is drawn.",
+                                      "If you continue, the first %d",
+                                      "variables will be used.",
+                                      "\n\nWould you like to continue with the reduced",
+                                      "variables?"),
+                                 crv$scatter.max.vars, crv$scatter.max.vars)))
       return(FALSE)
   }
     
   if (large)
   {
-    large.sample.cmd <- paste("set.seed(9876)",
-                              sprintf("smpl <<- sample(length(crs$sample), %d)",
-                                      crv$cluster.report.max.obs),    
+    large.sample.cmd <- paste("set.seed(42)",
+                              sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
+                                      crv$cluster.report.max.obs),
                               sep="\n")
-    appendLog("Sample the large dataset for calculating the statistics.",
+    appendLog(Rtxt("Select a sample from the dataset to calculate the statistics."),
               sub("<<", "<", large.sample.cmd))
     eval(parse(text=large.sample.cmd))
   }
@@ -598,7 +595,8 @@ dataPlotKMeans <- function()
   if (manyvars)
   {
     top.vars.cmd <- sprintf("vars <<- 1:%d", crv$scatter.max.vars)
-    appendLog("Keep just the first 10 variables for the plot.",
+    appendLog(sprintf(Rtxt("Keep just the first %d variables for the plot."),
+                      crv$scatter.max.vars),
               sub("<<", "<", top.vars.cmd))
     eval(parse(text=top.vars.cmd))
   }
@@ -628,12 +626,12 @@ dataPlotKMeans <- function()
                              ifelse(manyvars, "[smpl, vars]", "[smpl,]"),
                              ifelse(manyvars, "[vars]", "")),
                       genPlotTitleCmd(""))
-  appendLog("Generate a data plot.", plot.cmd)
+  appendLog(Rtxt("Generate a data plot."), plot.cmd)
 
-  set.cursor("watch", "Rendering the plot. Please wait...")
+  set.cursor("watch", Rtxt("Rendering the plot. Please wait...."))
   newPlot()
   eval(parse(text=plot.cmd))
-  set.cursor("left-ptr", "Data plot has been generated.")
+  set.cursor("left-ptr", Rtxt("The data plot has been generated."))
 }
 
 discriminantPlotKMeans <- function()
@@ -653,7 +651,7 @@ discriminantPlotKMeans <- function()
   
   if (!packageIsAvailable("fpc", "plot a cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("The plot functionality is provided by the fpc package.", lib.cmd)
+  appendLog(Rtxt("The plot functionality is provided by the fpc package."), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
@@ -669,9 +667,9 @@ discriminantPlotKMeans <- function()
 
   if (length(nums) == 0 || length(indicies) == 0)
   {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+    errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
+                     "No numeric variables were found in the dataset",
+                     "from amongst those having an input/target/risk role."))
     return()
   }
 
@@ -679,9 +677,8 @@ discriminantPlotKMeans <- function()
   
   if (length(intersect(nums, indicies)) == 1)
   {
-    infoDialog("A discriminant coordinates plot can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
+    infoDialog(Rtxt("A discriminant coordinates plot can not be constructed",
+                    "because there is only one numeric variable available."))
     return()
   }
 
@@ -693,9 +690,9 @@ discriminantPlotKMeans <- function()
                     "crs$kmeans$cluster)\n",
                     genPlotTitleCmd("Discriminant Coordinates",
                                     crs$dataname), sep="")
-  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
+  appendLog(Rtxt("Generate a discriminant coordinates plot."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Discriminant coordinates plot has been generated.")
+  setStatusBar(Rtxt("A discriminant coordinates plot has been generated."))
 }

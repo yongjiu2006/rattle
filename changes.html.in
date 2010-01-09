@@ -6,13 +6,21 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.12.
+    version is 2.5.13.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+494 100110 Wrong encoding on loading CSV for evaluation (George Dontas)
+	   Mark translations: ada, ada_gui, kmeans, random_forest, data, rpart 
+	   Add initial support for cforest: Traditional/Conditional
+	   DRY code cleanup: reportTimeTaken errorMessageFun
+	   Clear the Log on rattle reset (Tony Nolan)
+	   Turn probabilities off for Survival Regression scoring.
+	   All seeds unified to 42.
+	   Update citation with publication of RJournal article.
 493 091219 Prepare for addition of Clara under Cluster.
     	   Capture memory error for Stats of KMeans.
 	   Bug fix reset of data tab when no target or risk selected.

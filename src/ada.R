@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2009-03-16 20:36:04 Graham Williams>
+# Time-stamp: <2010-01-09 15:41:59 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -110,31 +110,31 @@ buildModelAda <- function(formula,
   ## setStatusBar for a summary of what has been done.
 
   gui <- not.null(tv)
-  if (gui) startLog("ADA BOOST")
+  if (gui) startLog(commonName(crv$ADA))
 
-  ## Load the required package into the library.
+  # Load the required package into the library.
 
   lib.cmd <-  "require(ada, quietly=TRUE)"
-  if (! packageIsAvailable("ada", "build an AdaBoost model")) return(FALSE)
-  if (gui) appendLog("Require the ada package.", lib.cmd)
+  if (! packageIsAvailable("ada", Rtxt("build an AdaBoost model"))) return(FALSE)
+  if (gui) appendLog(Rtxt("The `ada' package implements the boost algorithm."), lib.cmd)
   eval(parse(text=lib.cmd))
 
-  ## Construct the appropriate rpart control.
+  # Construct the appropriate rpart control.
   
   control <- sprintf(paste(", control=rpart.control(maxdepth=%d,",
                            "cp=%f, minsplit=%d, xval=%d)"),
                      maxdepth, cp, minsplit, xval)
   
-  ## Build a model. Note that there is randomness in this
-  ## implementation of AdaBoost, so set the seed to get the same
-  ## result each time.
+  # Build a model. Note that there is randomness in this
+  # implementation of AdaBoost, so set the seed to get the same result
+  # each time.
 
   model.cmd <- paste(sprintf("set.seed(%d)\n", seed),
                      "ada(", formula, ", data=", dataset,
                      control, ", iter=", ntree, ")",
                      sep="")
 
-  if (gui) appendLog("Build the adaboost model.",
+  if (gui) appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$ADA)),
                      gsub('ada\\(', 'crs$ada <- ada(', model.cmd))
 
   # Note that this crs$ada is not the global crs$ada! We use it here
@@ -148,8 +148,7 @@ buildModelAda <- function(formula,
 
   if (inherits(crs$ada, "try-error"))
   {
-    msg <- paste("An error occured in the call to ada and modelling failed.",
-                  "The error was:", crs$ada)
+    msg <- errorMessageFun("ada", crs$ada)
     if (gui)
     {
       errorDialog(msg)
@@ -163,22 +162,17 @@ buildModelAda <- function(formula,
   if (gui)
   {
     print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
-    appendLog("Print the results of the modelling.", print.cmd)
+    appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
-                  "Summary of the Boost model (built using ada):\n\n",
+                  sprintf(Rtxt("Summary of the %s model:\n\n"),
+                          commonName(crv$ADA)),
                   collectOutput(print.cmd))
   }
 
-  ## Finish up.
+  # Finish up.
   
-  if (gui)
-  {
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                        attr(time.taken, "units"))
-    appendTextview(tv, "\n", time.msg)
-    appendLog(time.msg)
-    setStatusBar("An adaboost model has been generated.", time.msg)
-  }
+  if (gui) reportTimeTaken(tv, time.taken, model=commonName(crv$ADA))
+
   return(crs$ada)
 }
 
@@ -201,13 +195,13 @@ continueModelAda <- function(niter)
   
   tv <- theWidget("ada_textview")
   gui <- not.null(tv)
-  if (gui) startLog("ADA BOOST UPDATE")
+  if (gui) startLog(Rtxt("Ada Boost Update"))
   
   ## Load the required package into the library.
 
   lib.cmd <-  "require(ada, quietly=TRUE)"
-  if (! packageIsAvailable("ada", "update an AdaBoost model")) return(FALSE)
-  if (gui) appendLog("Require the ada package.", lib.cmd)
+  if (! packageIsAvailable("ada", Rtxt("update the AdaBoost model"))) return(FALSE)
+  if (gui) appendLog(sprintf(Rtxt("Require the %s package."), "ada"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   ## We use the gdata funtion remove.vars to simply remove
@@ -215,8 +209,8 @@ continueModelAda <- function(niter)
   ## simpler.
 
   lib.cmd <-  "require(gdata, quietly=TRUE)"
-  if (! packageIsAvailable("gdata", "update the AdaBoost model")) return(FALSE)
-  if (gui) appendLog("Require the gdata package for remove.vars.", lib.cmd)
+  if (! packageIsAvailable("gdata", Rtxt("update the AdaBoost model"))) return(FALSE)
+  if (gui) appendLog(sprintf(Rtxt("Require the %s package."), "gdata"), lib.cmd)
   eval(parse(text=lib.cmd))
   
   ## Build up the update command, which needs the data rather than
@@ -229,7 +223,7 @@ continueModelAda <- function(niter)
                               '%s$%s, n.iter=%s)'),
                         dname, vname, dname, vname, niter)
 
-  if (gui) appendLog("Update the adaboost model.",
+  if (gui) appendLog(Rtxt("Update the adaboost model."),
                      gsub('update\\(', 'crs$ada <- update(', update.cmd))
 
   start.time <- Sys.time()
@@ -238,8 +232,7 @@ continueModelAda <- function(niter)
   
   if (inherits(crs$ada, "try-error"))
   {
-    msg <- paste("An error occured in the call to ada and modelling failed.",
-                  "The error was:", crs$ada)
+    msg <- errorMessageFun("ada", crs$ada)
     if (gui)
     {
       errorDialog(msg)
@@ -248,26 +241,26 @@ continueModelAda <- function(niter)
     stop(msg)
   }
 
-  ## Print the results of the modelling.
+  # Print the results of the modelling.
 
   if (gui)
   {
     print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
-    appendLog("Print the results of the modelling.", print.cmd)
+    appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
-                  "Summary of the updated adaboost modelling:\n\n",
+                  paste(Rtxt("Summary of the updated AdaBoost model:"), "\n\n"),
                   collectOutput(print.cmd))
   }
 
-  ## Finish up.
+  # Finish up.
   
   if (gui)
   {
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                        attr(time.taken, "units"))
+    time.msg <- timeTaken(time.taken)
     appendTextview(tv, "\n", time.msg)
     appendLog(time.msg)
-    setStatusBar("An adaboost model has been updated.", time.msg)
+    setStatusBar(sprintf(Rtxt("The %s model has been updated."),
+                         commonName(crv$ADA)), time.msg)
   }
 
 #  crs$ada <<- crs$ada

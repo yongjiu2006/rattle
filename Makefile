@@ -396,3 +396,15 @@ realclean: clean
 .PHONY: backup
 backup:
 	rsync -a src bovj.redirectme.net:BACKUP/rattle/
+
+.Phony: ja
+ja: locals
+	LANGUAGE=ja R CMD BATCH rattle_ja.R
+
+.Phony: cn
+cn: locals
+	LANGUAGE=zh_CN R CMD BATCH rattle_ja.R
+
+.PHONY: rstat
+rstat: locals
+	R CMD BATCH rstat.R

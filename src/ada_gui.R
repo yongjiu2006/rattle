@@ -2,7 +2,7 @@
 ##
 ## This is a model "module" for the rattle GUI interface
 ##
-## Time-stamp: <2009-10-02 11:04:44 Graham Williams>
+## Time-stamp: <2009-12-23 18:49:12 Graham Williams>
 ##
 ## Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -100,11 +100,12 @@ listTreesAdaGui <- function()
 
   if (tree.num > length(crs$ada$model$trees))
   {
-    errorDialog(sprintf("You have requested tree number %d,", tree.num),
-                "but there are only", length(crs$ada$model$trees),
-                "trees in the model.",
-                "Choose a tree number between 1",
-                sprintf("and %d.", length(crs$ada$model$trees)))
+    errorDialog(sprintf(Rtxt("You have requested tree number %d,",
+                             "but there are only %d trees in the model.",
+                             "Choose a tree number between 1 and %d."),
+                        tree.num,
+                        length(crs$ada$model$trees),
+                        length(crs$ada$model$trees)))
     return(FALSE)
   }
   
@@ -114,10 +115,11 @@ listTreesAdaGui <- function()
 
   ## Perform the action.
 
-  appendLog(sprintf("Display tree number %d.", tree.num), display.cmd)
+  appendLog(sprintf(Rtxt("Display tree number %d."), tree.num), display.cmd)
   addTextview(TV, collectOutput(display.cmd, TRUE), textviewSeparator())
-  setStatusBar(paste("Tree", tree.num, "has been added to the textview.",
-                     "You may need to scroll the textview to see it."))
+  setStatusBar(sprintf(Rtxt("Tree %d has been added to the textview.",
+                            "You may need to scroll the textview to see it."),
+                       tree.num))
 }
 
 drawTreesAdaGui <- function()
@@ -130,11 +132,12 @@ drawTreesAdaGui <- function()
 
   if (tree.num > length(crs$ada$model$trees))
   {
-    errorDialog(sprintf("You have requested tree number %d,", tree.num),
-                "but there are only", length(crs$ada$model$trees),
-                "trees in the model.",
-                "Choose a tree number between 1",
-                sprintf("and %d.", length(crs$ada$model$trees)))
+    errorDialog(sprintf(Rtxt("You have requested tree number %d,",
+                             "but there are only %d trees in the model.",
+                             "Choose a tree number between 1 and %d."),
+                        tree.num,
+                        length(crs$ada$model$trees),
+                        length(crs$ada$model$trees)))
     return(FALSE)
   }
   
@@ -145,14 +148,14 @@ drawTreesAdaGui <- function()
 
   # Perform the action.
 
-  appendLog(sprintf("Display tree number %d.", tree.num), draw.cmd)
+  appendLog(sprintf(Rtxt("Display tree number %d."), tree.num), draw.cmd)
   eval(parse(text=draw.cmd))
-  setStatusBar("Tree", tree.num, "has been drawn.")
+  setStatusBar(sprintf(Rtxt("Tree %d has been drawn."), tree.num))
 }
 
 setGuiDefaultsAda <- function(stumps=FALSE)
 {
-  theWidget("ada_target_label")$setText("No target selected")
+  theWidget("ada_target_label")$setText(Rtxt("No target selected"))
   
   if (stumps)
   {
@@ -234,9 +237,11 @@ continueModelAdaGui <- function()
 
   if (niter <= crs$ada$iter)
   {
-    infoDialog(sprintf("The new Number of Trees, %d, is no larger", niter),
-               sprintf("than the old Number of Trees, %d.", crs$ada$iter),
-               "Thus there is nothing to do.")
+    infoDialog(sprintf(Rtxt("The new Number of Trees, %d, is no larger",
+                            "than the old Number of Trees, %d,",
+                            "and so there is nothing to do.",
+                            "You may like to choose a larger number of trees."),
+                            niter, crs$ada$iter))
     return()
   }
 
