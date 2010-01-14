@@ -17,9 +17,14 @@ loadTooltips <- function()
 
   for (tt in getNodeSet(doc, "//tooltip"))
   {
+    # 100110 format the tooltip. blank lines are retained, but other
+    # line breaks are ignored.
+    tip <- gsub("XoX", "\\\n\\\n",
+                gsub("\n *", " ",
+                     gsub("\n *\n *", "XoX", xmlValue(tt))))
     wd <- theWidget(xmlGetAttr(tt, 'widget'))
-    wd["tooltip-text"] <- xmlValue(tt)
-
+    wd["tooltip-text"] <- Rtxt(tip)
+#print(tip)
     # 090214 The MS/Windows RGtk2 is compiled with an older GTK, even
     # though a user might have GTK 2.12.8 installed.  Thus,
     # setTooltipText is not avilable and so we use the above setting

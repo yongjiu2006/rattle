@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 21:14:07 Graham Williams>
+# Time-stamp: <2010-01-10 15:30:24 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -494,7 +494,7 @@ displayClusterStatsKMeans <- function()
   appendTextview(TV, Rtxt("General cluster statistics:"), "\n\n",
                  result)
   setStatusBar(paste(Rtxt("KMeans cluster statistics have been generated."),
-                     Rtxt("You may need to scroll the textview to see them.")))
+                     Rtxt("You may need to scroll the textview to view them.")))
 }
 
 dataPlotKMeans <- function()

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 20:55:41 Graham Williams>
+# Time-stamp: <2010-01-14 20:28:44 Graham Williams>
 #
 # DATA TAB
 #
@@ -215,6 +215,14 @@ updateFilenameFilters <- function(button, fname)
       ff$setName("TXT Files")
       ff$addPattern("*.txt")
       button$addFilter(ff)
+
+      if (isWindows())
+      {
+        ff <- gtkFileFilterNew()
+        ff$setName("Excel Files")
+        ff$addPattern("*.xls*")
+        button$addFilter(ff)
+      }
     
       ff <- gtkFileFilterNew()
       ff$setName("All Files")
@@ -261,6 +269,57 @@ updateFilenameFilters <- function(button, fname)
   # mouse is moved, for example.
   
   while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+}
+
+newSampling <- function()
+{
+  return(crv$appname != "RStat")
+}
+
+validateSampleEntry <- function()
+{
+  sampling <- theWidget("data_sample_entry")$getText()
+  sampling <- as.integer(strsplit(sampling, "/")[[1]])
+
+  result <- TRUE
+
+  if (sampling[1] == 0)
+  {
+    errorDialog(Rtxt("A training set partition of 0 does not make sense.",
+                     "\n\nPlease choose a non-zero, positive proportion, up to 100."))
+    result <- FALSE
+  }  
+  else if (any(sampling < 0))
+  {
+    errorDialog(Rtxt("A partition proporiton of less than 0 does not make sense.",
+                     "\n\nPlease choose proporitions in the range 0-100."))
+    result <- FALSE
+  }  
+  else if (sum(sampling) != 100)
+  {
+    errorDialog(sprintf(Rtxt("The sum of the partition proportions does not add",
+                             "to 100 (percent): %d + %d + %d = %d.",
+                             "\n\nPlease rectify."),
+                        sampling[1], sampling[2], sampling[3], sum(sampling)))
+    result <- FALSE
+  }
+
+  return(result)
+}
+
+
+
+parseSampleEntry <- function()
+{
+  sampling <- theWidget("data_sample_entry")$getText()
+  sampling <- as.integer(strsplit(sampling, "/")[[1]])
+
+  return(sampling)
+}
+
+getTrainingPercent <- function()
+{
+  return(parseSampleEntry()[1])
 }
 
 ########################################################################
@@ -560,6 +619,7 @@ executeDataTab <- function(csvname=NULL)
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
+    theWidget("data_sample_entry")$setText(crv$default.sample)
   }
   else
     resetRattle(new.dataset=FALSE)
@@ -585,7 +645,11 @@ executeDataTab <- function(csvname=NULL)
   # but get the current value. Otherwise, the sample size is always
   # reset to 70 on each Execute of the Data tab - not desired. Now
   # need to only reset it to 70 on loading a new dataset.
-  per <- theWidget("sample_percentage_spinbutton")$getValue()
+
+  if (newSampling())
+    per <- getTrainingPercent()
+  else
+    per <- theWidget("sample_percentage_spinbutton")$getValue()
   srows <- round(nrows * per / 100)
   theWidget("sample_count_spinbutton")$setRange(1,nrows)
   theWidget("sample_count_spinbutton")$setValue(srows)
@@ -623,6 +687,9 @@ executeDataTab <- function(csvname=NULL)
   # unexpected warnings about changes having been made but not
   # EXECTUEd. [071125]
 
+  if (theWidget("data_sample_checkbutton")$getActive() &&
+      ! validateSampleEntry()) return(FALSE)
+  
   # TODO 080520 Change the name to updateRoles.
   
   executeSelectTab()
@@ -705,7 +772,7 @@ executeDataCSV <- function(filename=NULL)
     # Rtxt("weather")
     if (! questionDialog(sprintf(Rtxt("No CSV filename has been provided.",
                                       "\n\nWe require a dataset to be loaded.",
-                                      "\n\nWould you like to use the sample",
+                                      "\n\nWould you like to use the example",
                                       "%s dataset?"),
                                  Rtxt(crv$sample.dataset))))
       
@@ -789,6 +856,13 @@ executeDataCSV <- function(filename=NULL)
                               'encoding="%s")'),
                         crv$sample.dataset, crv$csv.encoding)
                               
+  else if (isWindows() && tolower(get.extension(filename)) %in% c("xls", "xlsx"))
+    # 100114 A quick hack to allow reading MS/Excel files.
+    read.cmd <- sprintf(paste("require(RODBC, quietly=TRUE)",
+                              'con <- odbcConnectExcel("%s")',
+                              'crs$dataset <- sqlFetch(con, "Sheet1")',
+                              "odbcClose(con)",
+                              sep="\n"), sub("file:///", "", filename))
   else
     read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s, encoding="%s")',
                         filename, hdr, sep, nastring, crv$csv.encoding)
@@ -797,7 +871,7 @@ executeDataCSV <- function(filename=NULL)
 
   startLog()
   
-  appendLog(Rtxt("Load a CSV file."), read.cmd)
+  appendLog(Rtxt("Load the data."), read.cmd)
   resetRattle()
   result <- try(eval(parse(text=read.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
@@ -1066,7 +1140,8 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
     theWidget("sample_count_spinbutton")$setRange(1,nrows)
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
-
+    theWidget("data_sample_entry")$setText(crv$default.sample)
+    
     executeSelectSample()
   }
 
@@ -1621,6 +1696,7 @@ on_data_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(TRUE)
     theWidget("sample_seed_spinbutton")$setSensitive(TRUE)
     theWidget("sample_seed_button")$setSensitive(TRUE)
+    theWidget("data_sample_entry")$setSensitive(TRUE)
     # 090617 Do not show this label in the tool bar - It is mixing
     # information with actions and thus is conceptually not a good
     # thing to do. [Rado]
@@ -1634,9 +1710,10 @@ on_data_sample_checkbutton_toggled <- function(button)
     theWidget("sample_count_label")$setSensitive(FALSE)
     theWidget("sample_seed_spinbutton")$setSensitive(FALSE)
     theWidget("sample_seed_button")$setSensitive(FALSE)
+    theWidget("data_sample_entry")$setSensitive(FALSE)
     # theWidget("explore_sample_label")$hide()
   }
-  crs$sample <- NULL
+  crs$sample <- crs$train <- crs$validate <- crs$test <- NULL
   setStatusBar()
 }
 
@@ -2213,24 +2290,56 @@ executeSelectSample <- function()
 
   if (theWidget("data_sample_checkbutton")$getActive())
   {
-    #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
-    #ssize <- floor(nrow(crs$dataset)*ssize/100)
-    ssize <- theWidget("sample_count_spinbutton")$getValue()
+    if (newSampling())
+    {
+      ssizes <- parseSampleEntry()
+      ssize <- floor(nrow(crs$dataset) * ssizes[1] / 100)
+      vsize <- floor(nrow(crs$dataset) * ssizes[2] / 100)
+      if (ssizes[3] == 0)
+        tsize <- 0
+      else
+        tsize <- nrow(crs$dataset) - ssize - vsize
+    }
+    else
+      #ssize <- theWidget("sample_percentage_spinbutton")$getValue()
+      #ssize <- floor(nrow(crs$dataset)*ssize/100)
+      ssize <- theWidget("sample_count_spinbutton")$getValue()
 
     seed <- theWidget("sample_seed_spinbutton")$getValue()
-    
-    sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
-                        "crs$sample <- sample(nrow(crs$dataset), ", ssize,
-                        ")", sep="")
 
-    appendLog("Build a random sample for modelling.", sample.cmd)
+    if (newSampling())
+    {
+      sample.cmd <- sprintf(paste("set.seed(%d)",
+                                  "\ncrs$sample <- crs$train <-",
+                                  "sample(nrow(crs$dataset), %d)"), seed, ssize)
+      if (vsize > 0)
+        sample.cmd <- sprintf(paste("%s\ncrs$validate <-",
+                                    "sample(setdiff(seq_len(nrow(crs$dataset)),",
+                                    "crs$train), %d)"), sample.cmd, vsize)
+      else
+        sample.cmd <- sprintf("%s\ncrs$validate <- NULL", sample.cmd)
+      if (tsize > 0)
+        sample.cmd <- sprintf(paste("%s\ncrs$test <-",
+                                    "setdiff(setdiff(seq_len(nrow(crs$dataset)),",
+                                    "crs$train), crs$validate)"), sample.cmd)
+      else
+        sample.cmd <- sprintf("%s\ncrs$test <- NULL", sample.cmd)
+    }
+    else
+    {
+      sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+                          "crs$sample <- sample(nrow(crs$dataset), ", ssize,
+                          ")", sep="")
+    }
+
+    appendLog("Build the training/validate/test datasets.", sample.cmd)
     eval(parse(text=sample.cmd))
-
   }
   else
   {
-    crs$sample <- NULL
+    crs$sample <- crs$train <- crs$validate <- crs$test <- NULL
 
+    theWidget("evaluate_validation_radiobutton")$setSensitive(FALSE)
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
     if (not.null(.RATTLE.SCORE.IN))
       theWidget("evaluate_csv_radiobutton")$setActive(TRUE)
@@ -2880,7 +2989,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     numeric.var <- is.numeric(crs$dataset[[variables[i]]])
     possible.categoric <- (unique.count <= crv$max.categories ||
-                           theWidget("data_target_classification_radiobutton")$
+                           theWidget("data_target_categoric_radiobutton")$
                            getActive())
     
     # Convert internal class to printable form.
@@ -3049,11 +3158,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 #  else if (is.numeric(crs$dataset[[crs$target]]) &&
 #           # 080505 TODO we should put 10 as a global CONST
 #           length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
-#    theWidget("data_target_regression_radiobutton")$setActive(TRUE)
+#    theWidget("data_target_numeric_radiobutton")$setActive(TRUE)
 #  else if (is.factor(crs$dataset[[crs$target]]) ||
 #           (is.numeric(crs$dataset[[crs$target]]) &&
 #            length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
-#    theWidget("data_target_classification_radiobutton")$setActive(TRUE)
+#    theWidget("data_target_categoric_radiobutton")$setActive(TRUE)
   else
 
     # Unset them all - not sure we should be here ever? 091223 Resume

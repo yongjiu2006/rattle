@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 08:27:28 Graham Williams>
+# Time-stamp: <2010-01-14 16:47:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -18,7 +18,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Dec 2009"
+VERSION.DATE <- "Released 10 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -861,6 +861,9 @@ resetRattle <- function(new.dataset=TRUE)
     crs$sample   <- NULL
     crs$sample.on <- TRUE
     crs$sample.seed <- NULL
+    crs$tain <- NULL # 100110 For now use crs$sample for the sample until migrate rstat
+    crs$validate <- NULL
+    crs$test <- NULL
     crs$testset  <- NULL
     crs$testname <- NULL
     crs$transforms <- NULL
@@ -927,14 +930,15 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("sample_count_spinbutton")$setValue(0)
     theWidget("data_sample_checkbutton")$setActive(FALSE)
     theWidget("data_target_auto_radiobutton")$setActive(TRUE)
+    theWidget("data_sample_entry")$setText("70/15/15")
   }
   
-  # 080520 Don't turn these off - it makes sesne to allow the user to
+  # 080520 Don't turn these off - it makes sense to allow the user to
   # set these options even before the dataset is loaded.
   
   # theWidget("target_type_radiobutton")$setSensitive(FALSE)
-  # theWidget("data_target_classification_radiobutton")$setSensitive(FALSE)
-  # theWidget("data_target_regression_radiobutton")$setSensitive(FALSE)
+  # theWidget("data_target_categoric_radiobutton")$setSensitive(FALSE)
+  # theWidget("data_target_numeric_radiobutton")$setSensitive(FALSE)
   
 ##   theWidget("odbc_dsn_entry")$setText("")
 ##   theWidget("odbc_combobox")$setActive(-1)
@@ -1100,8 +1104,8 @@ resetRattle <- function(new.dataset=TRUE)
   theWidget("hclust_data_plot_button")$setSensitive(FALSE)
   theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
 
-  setStatusBar(Rtxt("To Begin: Choose the Type of data source,",
-                    "specifically identify the source,",
+  setStatusBar(Rtxt("To Begin: Choose the data source,",
+                    "specify the details,",
                     "then click the Execute button."))
   
 }
@@ -1264,10 +1268,10 @@ sampleNeedsExecute <- function()
   if (theWidget("data_sample_checkbutton")$getActive()
       && is.null(crs$sample))
   {
-    errorDialog("Sampling is active but has not been Executed.",
-                "Either ensure you Execute the sampling by clicking",
-                "the Execute button on the Transform tab,",
-                "or else de-activate Sampling on the Transform tab.")
+    errorDialog(Rtxt("Sampling is active but has not been Executed.",
+                     "Either ensure you Execute the sampling by clicking",
+                     "the Execute button on the Transform tab,",
+                     "or else de-activate Sampling on the Data tab."))
     return(TRUE)
   }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 21:22:56 Graham Williams>
+# Time-stamp: <2010-01-10 15:30:32 Graham Williams>
 #
 # RPART TAB
 #
@@ -127,7 +127,7 @@ on_rpart_rules_button_clicked <- function(button)
               textviewSeparator())
          
   setStatusBar(paste(Rtxt("The corresponding rules have been listed."),
-                     Rtxt("You may need to scroll the textview to see them.")))
+                     Rtxt("You may need to scroll the textview to view them.")))
 }
 
 on_help_rpart_activate <- function(action, window)
@@ -577,8 +577,8 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
         cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
     else cat("n=", n[1], "\n\n")
     if (x$method == "class") 
-        cat(Rtxt("node), split, n, loss, yval, (yprob)\n"))
-    else cat(Rtxt("node), split, n, deviance, yval\n"))
+        cat("node), split, n, loss, yval, (yprob)\n")
+    else cat("node), split, n, deviance, yval\n")
     cat(Rtxt("      * denotes terminal node\n\n"))
     cat(z, sep = "\n")
     return(invisible(x))

@@ -1,4 +1,6 @@
 \name{rattle_gui}
+\alias{on_model_rf_conditional_radiobutton_toggled}
+\alias{on_model_rf_traditional_radiobutton_toggled}
 \alias{print.summary.nnet.rattle}
 \alias{on_data_target_survival_radiobutton_toggled}
 \alias{on_help_model_nnet_activate}

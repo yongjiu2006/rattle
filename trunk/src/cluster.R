@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-18 09:06:28 Graham Williams>
+# Time-stamp: <2010-01-10 09:12:03 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -73,7 +73,8 @@ executeClusterTab <- function()
   {
     # 091218 A place holder for now. After RStat release, add this.
     #if (
-        executeClusterClara(include)#)
+        #executeClusterClara(include)#)
+    infoDialog(Rtxt("Not yet implemented."))
       
 #      theWidget("evaluate_clara_checkbutton")$setActive(TRUE)
   }
