@@ -6,13 +6,18 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.13.
+    version is 2.5.14.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+495 100115 Explicitly support train/validate/test datasets
+           Support loading of Excel files directly on MS/Windows
+	   Add tooltips into the translation framework.
+	   Enable tooltips again for GNU/Linux
+	   
 494 100110 Wrong encoding on loading CSV for evaluation (George Dontas)
 	   Mark translations: ada, ada_gui, kmeans, random_forest, data, rpart 
 	   Add initial support for cforest: Traditional/Conditional

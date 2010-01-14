@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-01-09 15:41:59 Graham Williams>
+# Time-stamp: <2010-01-10 09:10:08 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -254,16 +254,10 @@ continueModelAda <- function(niter)
 
   # Finish up.
   
-  if (gui)
-  {
-    time.msg <- timeTaken(time.taken)
-    appendTextview(tv, "\n", time.msg)
-    appendLog(time.msg)
-    setStatusBar(sprintf(Rtxt("The %s model has been updated."),
-                         commonName(crv$ADA)), time.msg)
-  }
+  if (gui) reportTimeTaken(tv, time.taken, model=commonName(crv$ADA),
+                           msg=sprintf(Rtxt("The %s model has been updated."),
+                             commonName(crv$ADA)))
 
-#  crs$ada <<- crs$ada
   return()
 }
 

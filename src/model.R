@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 21:21:59 Graham Williams>
+# Time-stamp: <2010-01-10 14:56:01 Graham Williams>
 #
 # MODEL TAB
 #
@@ -266,9 +266,9 @@ numericTarget <- function()
     return(is.numeric(crs$dataset[[crs$target]]) &&
            length(levels(as.factor(crs$dataset[[crs$target]]))) > 10)
 
-  else if (theWidget("data_target_classification_radiobutton")$getActive())
+  else if (theWidget("data_target_categoric_radiobutton")$getActive())
     return(FALSE)
-  else if (theWidget("data_target_regression_radiobutton")$getActive())
+  else if (theWidget("data_target_numeric_radiobutton")$getActive())
     return(TRUE)
   else
     return(FALSE)
@@ -302,9 +302,9 @@ categoricTarget <- function()
            (is.numeric(crs$dataset[[crs$target]]) &&
             length(levels(as.factor(crs$dataset[[crs$target]]))) <= 10))
 
-  else if (theWidget("data_target_classification_radiobutton")$getActive())
+  else if (theWidget("data_target_categoric_radiobutton")$getActive())
     return(TRUE)
-  else if (theWidget("data_target_regression_radiobutton")$getActive())
+  else if (theWidget("data_target_numeric_radiobutton")$getActive())
     return(FALSE)
   else
     return(FALSE)

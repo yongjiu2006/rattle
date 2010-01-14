@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 21:14:23 Graham Williams>
+# Time-stamp: <2010-01-10 15:30:16 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -515,7 +515,7 @@ displayRandomForestTree <- function()
                             Rtxt("Rules from all trees have been added to the textview."),
                             sprintf(Rtxt("Rules from tree %d have been added to the textview."),
                                     tree.num)),
-                     Rtxt("You may need to scroll the textview to view the rules.")))
+                     Rtxt("You may need to scroll the textview to view them.")))
 }
 
 printRandomForests <- function(model, models=NULL, include.class=NULL,

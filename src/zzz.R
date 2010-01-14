@@ -17,8 +17,9 @@
   
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"
-  crv$log.intro <- "# Rattle is Copyright (C) 2006-2010 Togaware Pty Ltd"
-  crv$support.msg <- "Contact support@togaware.com."
+  crv$log.intro <- paste("#", sprintf(Rtxt("%s is Copyright (c) 2006-2010 %s."),
+                                      "Rattle", "Togaware Pty Ltd"))
+  crv$support.msg <- sprintf(Rtxt("Contact %s."), "support@togaware.com")
   crv$library.command <- "library(rattle)"
   crv$version <- VERSION
 
@@ -46,8 +47,9 @@
   
   crv$load.tooltips <- TRUE
   
-  if (.Platform$OS.type == "unix")
-    crv$load.tooltips <- FALSE # Not working in general on Linux
+#100110 testing for Rtxt
+#  if (.Platform$OS.type == "unix")
+#    crv$load.tooltips <- FALSE # Not working in general on Linux
   
   crv$verbose <- TRUE # Add sub titles to plots ...
 
@@ -58,6 +60,7 @@
   crv$project.extensions <- c("rattle", "rstat") # Extensions for projects  
   crv$ident.min.rows <- 300 # Unique factors/ints > than this are idents
   crv$default.train.percentage <- 70 # The default sample percentage value.
+  crv$default.sample <- "70/15/15" # The default train/validate/test split.
   
   # Log constants
 
@@ -115,13 +118,13 @@
   # 091221 The Rtxt does not seem to work from the rattle.R file, so
   # do it here again.
   
-  COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2010 Togaware Pty Ltd.")
+  COPYRIGHT <- sprintf(Rtxt("Copyright (c) 2006-2010 %s."), "Togaware Pty Ltd")
 
   if (! suppressRattleWelcome)
   {
 
     cat(sprintf(paste(Rtxt("Rattle: Graphical interface for data mining using R."),
-                      Rtxt("\nVersion"),
+                      "\n", Rtxt("Version"),
                       " %s ", COPYRIGHT, "\n", sep=""), VERSION))
     if ("rattle" %in% getOption("defaultPackages"))
       rattle()

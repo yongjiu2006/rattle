@@ -1180,7 +1180,7 @@
                     <child>
                       <widget class="GtkLabel" id="data_type_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Type:</property>
+                        <property name="label" translatable="yes">Source:</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1191,7 +1191,7 @@
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="data_csv_radiobutton">
-                        <property name="label" translatable="yes">CSV File</property>
+                        <property name="label" translatable="yes">Spreadsheet</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -1380,7 +1380,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">5</property>
-                            <property name="text" translatable="no">,</property>
+                            <property name="text">,</property>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -1630,20 +1630,8 @@
                     <property name="visible">True</property>
                     <property name="spacing">10</property>
                     <child>
-                      <widget class="GtkCheckButton" id="data_reload_checkbutton">
-                        <property name="label" translatable="yes">Reload</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="draw_indicator">True</property>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="GtkCheckButton" id="data_sample_checkbutton">
-                        <property name="label" translatable="yes">Sample</property>
+                        <property name="label" translatable="yes">Partition</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -1655,12 +1643,25 @@
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">5</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkEntry" id="data_sample_entry">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">&#x25CF;</property>
+                        <property name="width_chars">8</property>
+                        <property name="text">70/15/15</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="sample_percentage_label">
-                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Percentage:</property>
@@ -1673,7 +1674,6 @@
                     </child>
                     <child>
                       <widget class="GtkSpinButton" id="sample_percentage_spinbutton">
-                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="adjustment">70 0 100 1 10 0</property>
@@ -1688,7 +1688,6 @@
                     </child>
                     <child>
                       <widget class="GtkLabel" id="sample_count_label">
-                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Count:</property>
@@ -1702,7 +1701,6 @@
                     <child>
                       <widget class="GtkSpinButton" id="sample_count_spinbutton">
                         <property name="width_request">80</property>
-                        <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="adjustment">0 0 1000000000 1 10 0</property>
@@ -1960,7 +1958,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkRadioButton" id="data_target_classification_radiobutton">
+                                  <widget class="GtkRadioButton" id="data_target_categoric_radiobutton">
                                     <property name="label" translatable="yes">Categoric</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -1977,7 +1975,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkRadioButton" id="data_target_regression_radiobutton">
+                                  <widget class="GtkRadioButton" id="data_target_numeric_radiobutton">
                                     <property name="label" translatable="yes">Numeric</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2576,7 +2574,7 @@
                                 <child>
                                   <widget class="GtkLabel" id="label44">
                                     <property name="visible">True</property>
-                                    <property name="label" translatable="no">                  </property>
+                                    <property name="label">                  </property>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7738,12 +7736,29 @@ ANOVA RBF (anovadot)</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
+                        <property name="image_position">top</property>
                         <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="evaluate_validation_radiobutton">
+                        <property name="label" translatable="yes">Validation</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">evaluate_training_radiobutton</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -7760,7 +7775,7 @@ ANOVA RBF (anovadot)</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -7777,7 +7792,7 @@ ANOVA RBF (anovadot)</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -7789,7 +7804,7 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -7806,7 +7821,7 @@ ANOVA RBF (anovadot)</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">5</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -7818,7 +7833,7 @@ ANOVA RBF (anovadot)</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="position">6</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </widget>
@@ -8747,8 +8762,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">save</property>
+    <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
