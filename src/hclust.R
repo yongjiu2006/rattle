@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 17:02:31 Graham Williams>
+# Time-stamp: <2010-01-20 07:58:56 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -121,7 +121,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   
   if (!packageIsAvailable("fpc", "plot the cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog(Rtxt("The plot functionality is provided by the fpc package."), lib.cmd)
+  appendLog(packageProvides("fpc", "plotcluster"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
@@ -194,8 +194,7 @@ executeClusterHClust <- function(include)
   if (packageIsAvailable("amap", "perform an efficient hcluster"))
   {
     amap.available <- TRUE
-    appendLog("The hcluster function is provided by the amap package.",
-              lib.cmd)
+    appendLog(packageProvides("amap", "hcluster"), lib.cmd)
     eval(parse(text=lib.cmd))
   }
   else
@@ -324,7 +323,7 @@ plotDendrogram <- function()
 
   lib.cmd <- "require(cba, quietly=TRUE)"
   if (! packageIsAvailable("cba", "plot a dendrogram")) return(FALSE)
-  appendLog("The plot functionality is provided by the cba package.", lib.cmd)
+  appendLog(packageProvides("cba", "plot"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Show a busy cursor whilst drawing the plot.
@@ -382,7 +381,7 @@ displayHClustStats <- function()
   
   if (!packageIsAvailable("fpc", "calculate cluster statistics")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog("Cluster stats is provided by the fpc package.", lib.cmd)
+  appendLog(packageProvides("fpc", "cluster.stats"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # 090323 Don't reset the textview since we want to reatin the build
@@ -449,7 +448,7 @@ displayHClustStats <- function()
 
 ##   lib.cmd <- "require(cba, quietly=TRUE)"
 ##   if (! packageIsAvailable("cba", "generate a seriation plot")) return()
-##   appendLog("Seriation is provided by the cba package.", lib.cmd)
+##   appendLog(packageProvides("cba", "Seriation"), lib.cmd)
 ##   eval(parse(text=lib.cmd))
   
 ##   ## Some background information.

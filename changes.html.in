@@ -13,11 +13,15 @@
    </p>
 
 <pre>
+496 100122 Add experimental support for biclustering
+    	   Add temporary fix for translations not showing in glade on MS/Windows.
+	   Streamline common text into packageProvides for translations and DRY.
+	   Support loading of Excel 2007 (.xslx) files on MS/Windows
+	   Mark up explore.R for translations.
 495 100115 Explicitly support train/validate/test datasets
            Support loading of Excel files directly on MS/Windows
 	   Add tooltips into the translation framework.
 	   Enable tooltips again for GNU/Linux
-	   
 494 100110 Wrong encoding on loading CSV for evaluation (George Dontas)
 	   Mark translations: ada, ada_gui, kmeans, random_forest, data, rpart 
 	   Add initial support for cforest: Traditional/Conditional

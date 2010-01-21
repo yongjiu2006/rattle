@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 21:24:58 Graham Williams>
+# Time-stamp: <2010-01-20 07:49:28 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -144,9 +144,7 @@ executeAssociateTab <- function()
   if (! packageIsAvailable("arules", Rtxt("generate associations"))) return()
   startLog(commonName("arules"))
   lib.cmd <- "require(arules, quietly=TRUE)"
-  appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
-                    "arules", "arules"),
-            lib.cmd)
+  appendLog(packageProvides("arules", "arules"), lib.cmd)
   eval(parse(text=lib.cmd))
  
   # Initialise the textview.

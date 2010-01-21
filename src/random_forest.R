@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 15:30:16 Graham Williams>
+# Time-stamp: <2010-01-20 07:47:51 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -137,7 +137,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   if (traditional)
   {
-    sampsize <- theWidget("rf_sampsize_entry")$getText()
+    sampsize <- theWidget("model_rf_sample_entry")$getText()
     if (nchar(sampsize) > 0)
     {
       ss <- as.numeric(unlist(strsplit(sampsize, ",")))
@@ -236,13 +236,9 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
                     "require(party, quietly=TRUE)")
 
   if (traditional)
-    appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
-                      "randomForest", "randomForest"),
-              lib.cmd)
+    appendLog(packageProvides("randomForest", "randomForest"), lib.cmd)
   else
-    appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
-                      "party", "cforest"),
-              lib.cmd)
+    appendLog(packageProvides("party", "cforest"), lib.cmd)
   
   eval(parse(text=lib.cmd))
 

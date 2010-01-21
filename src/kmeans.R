@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 15:30:24 Graham Williams>
+# Time-stamp: <2010-01-21 21:51:42 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -98,7 +98,7 @@ on_kmeans_discriminant_plot_button_clicked <- function(button)
 }
 
 ########################################################################
-# EXECUTION
+# Execution
 
 executeClusterKMeans <- function(include)
 {
@@ -115,7 +115,7 @@ executeClusterKMeans <- function(include)
   
   startLog(commonName(crv$KMEANS))
 
-  # SEED: Log the R command and execute.
+  # Set the seed so we can repeat.
 
   seed.cmd <- sprintf('set.seed(%d)', seed)
   appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
@@ -138,8 +138,7 @@ executeClusterKMeans <- function(include)
     {
       lib.cmd <- "require(fpc, quietly=TRUE)"
       if (! packageIsAvailable("fpc", Rtxt("run kmeans multiple times"))) return(FALSE)
-      appendLog(Rtxt("The 'fpc' package provides the 'kmeansruns' function."),
-                lib.cmd)
+      appendLog(packageProvides('fpc', 'kmeansruns'), lib.cmd)
       eval(parse(text=lib.cmd))
 
       kmeans.cmd <- sprintf(paste('crs$kmeans <-',
@@ -393,7 +392,7 @@ displayClusterStatsKMeans <- function()
   
   if (!packageIsAvailable("fpc", Rtxt("plot a cluster"))) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog(Rtxt("Clustering statistics are provided by the fpc package."), lib.cmd)
+  appendLog(packageProvides("fpc", "cluster.stats"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
@@ -472,7 +471,7 @@ displayClusterStatsKMeans <- function()
                        include,
                        ifelse(large, "[smpl,]", ""),
                        ifelse(large, "[smpl]", ""))
-  appendLog(Rtxt("The cluster statistics are provided by the fpc package."), stats.cmd)
+  appendLog(packageProvides("fpc", "cluster.stats"), stats.cmd)
   result <- try(collectOutput(stats.cmd, use.print=TRUE))
   if (inherits(result, "try-error"))
   {
@@ -651,7 +650,7 @@ discriminantPlotKMeans <- function()
   
   if (!packageIsAvailable("fpc", "plot a cluster")) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
-  appendLog(Rtxt("The plot functionality is provided by the fpc package."), lib.cmd)
+  appendLog(packageProvides("fpc", "plotcluster"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Some background information.  Assume we have already built the
