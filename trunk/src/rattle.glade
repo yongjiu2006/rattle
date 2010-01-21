@@ -1036,7 +1036,6 @@
                 <child>
                   <widget class="GtkToolButton" id="new_button">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">New</property>
                     <property name="stock_id">gtk-new</property>
                     <signal name="clicked" handler="on_new_button_clicked"/>
                   </widget>
@@ -4169,7 +4168,6 @@ Spearman</property>
                 </child>
                 <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow34">
-                    <property name="height_request">350</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
@@ -4246,6 +4244,7 @@ Spearman</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">kmeans_radiobutton</property>
+                        <signal name="toggled" handler="on_clara_radiobutton_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -4267,6 +4266,22 @@ Spearman</property>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="biclust_radiobutton">
+                        <property name="label" translatable="yes">BiCluster</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">kmeans_radiobutton</property>
+                        <signal name="toggled" handler="on_biclust_radiobutton_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                   </widget>
@@ -4508,15 +4523,42 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <widget class="GtkVBox" id="vbox36">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <widget class="GtkScrolledWindow" id="scrolledwindow12">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <child>
+                              <widget class="GtkTextView" id="clara_textview">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label62">
+                      <widget class="GtkLabel" id="label20">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">clara</property>
                       </widget>
                       <packing>
-                        <property name="position">2</property>
+                        <property name="position">1</property>
                         <property name="tab_fill">False</property>
                         <property name="type">tab</property>
                       </packing>
@@ -4800,9 +4842,50 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label18">
+                      <widget class="GtkLabel" id="label62">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">hclust</property>
+                      </widget>
+                      <packing>
+                        <property name="position">2</property>
+                        <property name="tab_fill">False</property>
+                        <property name="type">tab</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkVBox" id="vbox33">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <widget class="GtkScrolledWindow" id="scrolledwindow11">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <child>
+                              <widget class="GtkTextView" id="biclust_textview">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label18">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">biclust</property>
                       </widget>
                       <packing>
                         <property name="position">2</property>
@@ -6511,16 +6594,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6533,8 +6606,17 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkLabel" id="label182">
-                                <property name="visible">True</property>
                                 <property name="xpad">5</property>
                                 <property name="label" translatable="yes">Class Weights:</property>
                               </widget>
@@ -6546,7 +6628,6 @@ ANOVA RBF (anovadot)</property>
                             </child>
                             <child>
                               <widget class="GtkEntry" id="svm_classweights_entry">
-                                <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                               </widget>
                               <packing>

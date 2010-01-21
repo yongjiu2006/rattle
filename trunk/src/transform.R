@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-08 07:55:45 Graham Williams>
+# Time-stamp: <2010-01-20 08:02:24 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -337,7 +337,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
   {
     if (! packageIsAvailable("reshape", "normalize data")) return()
     lib.cmd <- "require(reshape, quietly=TRUE)"
-    appendLog("The reshape package provides the rescaler function.", lib.cmd)
+    appendLog(packageProvides("reshape", "rescaler"), lib.cmd)
     eval(parse(text=lib.cmd))
   }
 

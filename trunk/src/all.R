@@ -1,5 +1,6 @@
 #options(error=recover) # Any errors will invoke recover() for debugging
 #options(error=browser) # Any errors will invoke recover() for debugging
+#options(error=NULL) # Turn it off
 #options(warn=2) # For development treat any warnings as errors
 
 source("rattle.R")
@@ -30,6 +31,8 @@ source("tooltips.R")
 source("transform.R")
 source("help.R")
 source("survival.R")
+source("biclust.R")
+source("clara.R")
 
 source("pmml.R")
 source("pmml.arules.R")

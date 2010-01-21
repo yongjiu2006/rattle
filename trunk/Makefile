@@ -45,6 +45,8 @@ R_SOURCE = \
 	src/ada_gui.R \
 	src/audit.R \
 	src/associate.R \
+	src/biclust.R \
+	src/clara.R \
 	src/cluster.R \
 	src/ctree.R \
 	src/data.R \

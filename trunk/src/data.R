@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-14 20:28:44 Graham Williams>
+# Time-stamp: <2010-01-20 07:54:27 Graham Williams>
 #
 # DATA TAB
 #
@@ -220,7 +220,12 @@ updateFilenameFilters <- function(button, fname)
       {
         ff <- gtkFileFilterNew()
         ff$setName("Excel Files")
-        ff$addPattern("*.xls*")
+        ff$addPattern("*.xls")
+        button$addFilter(ff)
+
+        ff <- gtkFileFilterNew()
+        ff$setName("Excel 2007 Files")
+        ff$addPattern("*.xlsx")
         button$addFilter(ff)
       }
     
@@ -859,10 +864,13 @@ executeDataCSV <- function(filename=NULL)
   else if (isWindows() && tolower(get.extension(filename)) %in% c("xls", "xlsx"))
     # 100114 A quick hack to allow reading MS/Excel files.
     read.cmd <- sprintf(paste("require(RODBC, quietly=TRUE)",
-                              'con <- odbcConnectExcel("%s")',
+                              'con <- odbcConnectExcel%s("%s")',
                               'crs$dataset <- sqlFetch(con, "Sheet1")',
                               "odbcClose(con)",
-                              sep="\n"), sub("file:///", "", filename))
+                              sep="\n"),
+                        ifelse(tolower(get.extension(filename)) == "xlsx",
+                               "2007", ""),
+                        sub("file:///", "", filename))
   else
     read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s, encoding="%s")',
                         filename, hdr, sep, nastring, crv$csv.encoding)
@@ -1233,7 +1241,7 @@ executeDataARFF <- function()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
   
-  appendLog("The foreign package provides a function to read arff.", lib.cmd)
+  appendLog(packageProvides("foreign", "read.arff"), lib.cmd)
   eval(parse(text=lib.cmd))
 
   appendLog("Load ARFF File", read.cmd)
@@ -1666,7 +1674,7 @@ exportDataTab <- function()
     writeCSV(crs$dataset, save.name)
 
   if (sampling)
-    msg <- Rtxt("The dataset (sample) has been exported to %s.")
+    msg <- Rtxt("The training dataset has been exported to %s.")
   else
     msg <- Rtxt("The dataset has been exported to %s.")
 

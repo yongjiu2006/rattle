@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 14:56:01 Graham Williams>
+# Time-stamp: <2010-01-21 21:45:08 Graham Williams>
 #
 # MODEL TAB
 #
@@ -236,6 +236,7 @@ commonName <- function(mtype)
 {
   name.map <- data.frame(ada=Rtxt("Ada Boost"),
                          arules=Rtxt("Association Rules"),
+                         biclust=Rtxt("BiCluster"),
                          cforest=Rtxt("Random Forest"),
                          ctree=Rtxt("Conditional Tree"),
                          hclust=Rtxt("Hierarchical"),
@@ -539,9 +540,10 @@ executeModelTab <- function()
   if (build.all || currentModelTab() == crv$RF)
   {
     setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$RF)))
-
-    if (executeModelRF(traditional=theWidget("model_rf_traditional_radiobutton")$getActive(),
-                       conditional=theWidget("model_rf_conditional_radiobutton")$getActive()))
+    if (executeModelRF(traditional=theWidget("model_rf_traditional_radiobutton")$
+                       getActive(),
+                       conditional=theWidget("model_rf_conditional_radiobutton")$
+                       getActive()))
       theWidget("evaluate_rf_checkbutton")$setActive(TRUE)
     else
       setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$RF)))
@@ -1039,18 +1041,18 @@ setGuiDefaultsSVM <- function(kernel=NULL)
 
 executeModelSVM <- function()
 {
-  ## DESCRIPTION
-  ## Build a support vector machine predictor.
-  ##
-  ## RETURNS
-  ## Ignored.
-  ##
-  ## DETAILS There are two model builders for SVMs: The e1071 version
-  ## is older and is supported by tune, and the kernlab version is
-  ## much more extensive. I did move back to e1071 because I thought
-  ## issues around the handling of NAs in kernlab a problem, but
-  ## essentially I think it is an issue with svm using all variables,
-  ## so I had to clean up my handling of NAs.
+  # DESCRIPTION
+  # Build a support vector machine predictor.
+  #
+  # RETURNS
+  # Ignored.
+  #
+  # DETAILS There are two model builders for SVMs: The e1071 version
+  # is older and is supported by tune, and the kernlab version is
+  # much more extensive. I did move back to e1071 because I thought
+  # issues around the handling of NAs in kernlab a problem, but
+  # essentially I think it is an issue with svm using all variables,
+  # so I had to clean up my handling of NAs.
   
   useKernlab <- theWidget("kernlab_radiobutton")$getActive()
 
@@ -1065,7 +1067,7 @@ executeModelSVM <- function()
     if (packageIsAvailable("kernlab", "build an SVM model using ksvm"))
     {
       libCmd <- "require(kernlab, quietly=TRUE)"
-      appendLog("The kernlab package supplies the ksvm function.", libCmd)
+      appendLog(packageProvides('kernlab', 'ksvm'), libCmd)
     }
     else
       return(FALSE)
@@ -1075,7 +1077,7 @@ executeModelSVM <- function()
     if (packageIsAvailable("e1071", "build an SVM model using svm"))
     {
       libCmd <- "require(e1071, quietly=TRUE)"
-      appendLog("The e1071 package supplies the svm function.", libCmd)
+      appendLog(packageProvides('e1071', 'svm'), libCmd)
     }
     else
       return(FALSE)

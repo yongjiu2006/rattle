@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 09:12:03 Graham Williams>
+# Time-stamp: <2010-01-21 21:42:28 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -82,6 +82,11 @@ executeClusterTab <- function()
   {
     if (executeClusterHClust(include))
       theWidget("evaluate_hclust_checkbutton")$setActive(TRUE)
+  }
+  else if (theWidget("biclust_radiobutton")$getActive())
+  {
+    executeClusterBiclust(include)
+#      theWidget("evaluate_biclust_checkbutton")$setActive(TRUE)
   }
 }
 

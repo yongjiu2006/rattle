@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-14 16:47:42 Graham Williams>
+# Time-stamp: <2010-01-21 21:17:21 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -18,7 +18,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 10 Jan 2010"
+VERSION.DATE <- "Released 15 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -168,7 +168,7 @@ rattle <- function(csvname=NULL)
     .onLoad()
     .onAttach()
   }
-  
+
   # 090309 Reset the environment, crs, which stores the curret Rattle
   # state and used extensively throughout Rattle as a global
   # state. Not ideal for functional programming and only a hopefully
@@ -296,6 +296,14 @@ rattle <- function(csvname=NULL)
 
   setMainTitle()
   configureGUI()
+
+  # 100120 A temporary fix for MS/Windows where translations of stock
+  # items don't seem to be happening. It works just fine for
+  # GNU/Linux. We probably only want to do this if we have a foreign
+  # locale.
+  
+#  if (isWindows()) fixTranslations()
+  
   if (crv$load.tooltips) loadTooltips()
 
   if (not.null(crv$show.timestamp) && crv$show.timestamp)
@@ -456,10 +464,11 @@ rattle <- function(csvname=NULL)
   crv$KMEANS 	<- "kmeans"
   crv$CLARA 	<- "clara"
   crv$HCLUST 	<- "hclust"
+  crv$BICLUST 	<- "biclust"
   crv$APRIORI 	<- "apriori"
 
   # 091218 Not yet - avoid issues with RStat release.
-  # crv$DESCRIBE <- c(crv$KMEANS, crv$CLARA, crv$HCLUST, crv$APRIORI)
+  # crv$DESCRIBE <- c(crv$KMEANS, crv$CLARA, crv$HCLUST, crv$BICLUST, crv$APRIORI)
   crv$DESCRIBE <- c(crv$KMEANS, crv$HCLUST, crv$APRIORI)
   
   crv$GLM   	<- "glm"
@@ -577,10 +586,11 @@ rattle <- function(csvname=NULL)
   crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, "prcomp")
   crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, "interactive")
   
-  crv$CLUSTER            <- theWidget("cluster_notebook")
-  crv$CLUSTER.KMEANS.TAB <- getNotebookPage(crv$CLUSTER, "kmeans")
-  crv$CLUSTER.CLARA.TAB  <- getNotebookPage(crv$CLUSTER, "clara")
-  crv$CLUSTER.HCLUST.TAB <- getNotebookPage(crv$CLUSTER, "hclust")
+  crv$CLUSTER             <- theWidget("cluster_notebook")
+  crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, "clara")
+  crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, "hclust")
+  crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, "biclust")
   
   crv$MODEL           <- theWidget("model_notebook")
   crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, crv$RPART)
@@ -739,10 +749,11 @@ configureGUI <- function()
   # Toolbar
 
   theWidget("report_toolbutton")$show()
-  
+
   id.string <- paste('<span foreground="blue">',
                      '<i>', crv$appname, '</i> ',
-                     '<i>Version ', crv$version, '</i> ',
+                     '<i>Version ', VERSION, '</i> ',
+#100115 Why is crv$version not being updated?                     '<i>Version ', crv$version, '</i> ',
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
 
@@ -762,6 +773,17 @@ configureGUI <- function()
   else
     crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
 }
+
+fixTranslations <- function()
+{
+  trans <- matrix(c("data_target_survival_radiobutton", Rtxt("Survival"),
+                    "data_filename_label", Rtxt("Filename:")),
+                     ncol=2, byrow=TRUE)
+
+  for (r in seq_len(nrow(trans)))
+    theWidget(trans[r,1])$setLabel(trans[r,2])
+}
+
 
 displayWelcomeTabMessage <- function()
 {
@@ -875,6 +897,7 @@ resetRattle <- function(new.dataset=TRUE)
   crs$kmeans.seed <- NULL
   crs$clara    <- NULL
   crs$hclust   <- NULL
+  crs$biclust  <- NULL
   crs$apriori  <- NULL
   crs$page     <- ""
   crs$smodel   <- NULL
@@ -989,6 +1012,8 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("hclust_stats_button")$setSensitive(FALSE)
     theWidget("hclust_data_plot_button")$setSensitive(FALSE)
     theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
+    
+    # Reset Describe -> Cluster -> Biclust
     
     # Reset Predict -> Tree -> RPart
   
@@ -1431,8 +1456,8 @@ theWidget <- function(widget)
 
 getNotebookPage <- function(notebook, label)
 {
-  ## Obtain the notebook page number given its tab's label's text.
-  ## Return NULL if the label is not found.
+  # Obtain the notebook page number given its tab's label's text.
+  # Return NULL if the label is not found.
 
   for (i in 0:(notebook$getNPages()-1))
    if (notebook$getTabLabelText(notebook$getNthPage(i)) == label)

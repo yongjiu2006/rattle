@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 15:30:32 Graham Williams>
+# Time-stamp: <2010-01-21 21:50:27 Graham Williams>
 #
 # RPART TAB
 #
@@ -458,9 +458,7 @@ executeModelRPart <- function(action="build")
   # Load the required library.
 
   startLog(commonName(crv$RPART))
-  appendLog(sprintf(Rtxt("The '%s' package supplies the '%s' function."),
-                    "rpart", "rpart"),
-            lib.cmd)
+  appendLog(packageProvides("rpart", "rpart"), lib.cmd)
 
   eval(parse(text=lib.cmd))
 
@@ -488,17 +486,18 @@ executeModelRPart <- function(action="build")
     return(FALSE)
   }
 
-  # Display the resulting model.
+  # Summary: Show the resulting model.
 
-  appendLog(sprintf(Rtxt("Generate the textual view of the %s model."),
+  appendLog(sprintf(Rtxt("Generate a textual view of the %s model."),
                     commonName(crv$RPART)), print.cmd)
 
   resetTextview(TV)
   setTextview(TV,
-              sprintf(Rtxt("Summary of the %s model for %s (built using '%s'):\n\n"),
+              sprintf(Rtxt("Summary of the %s model for %s (built using '%s'):"),
                       commonName(crv$RPART),
                       Rtxt("Classification"), # 080604 TODO put the right type
                       "rpart"),
+              "\n\n",
               collectOutput(print.cmd))
 
   if (sampling) crs$smodel <- union(crs$smodel, crv$RPART)

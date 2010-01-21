@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 11:49:04 Graham Williams>
+# Time-stamp: <2010-01-20 07:47:34 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -147,3 +147,9 @@ exportLogTab <- function()
 
   setStatusBar("The log has been exported to", save.name)
 }
+
+packageProvides <- function(pkg, fun)
+{
+  return(sprintf(Rtxt("The '%s' package provides the '%s' function."), pkg, fun))
+}
+
