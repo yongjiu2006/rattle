@@ -13,11 +13,11 @@ rattle.print.summary.multinom(x, digits = x$digits, ...)
 }
 \arguments{
   
-  \item{x}{}
+  \item{x}{An rpart object.}
 
-  \item{digits}{}
+  \item{digits}{Number of digist to print for numbers.}
 
-  \item{...}{}
+  \item{...}{Other arguments.}
   
 }
 \details{

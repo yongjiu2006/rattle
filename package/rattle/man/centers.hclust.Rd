@@ -15,11 +15,11 @@ centers.hclust(x, h, nclust=10, use.median=FALSE)
   
   \item{x}{The data used to build the cluster.}
 
-  \item{h}{}
+  \item{h}{A hclust object.}
 
-  \item{nclust}{}
+  \item{nclust}{Number of clusters.}
 
-  \item{use.median}{}
+  \item{use.median}{Use meadion instead of mean.}
 
 }
 \details{

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-20 07:54:27 Graham Williams>
+# Time-stamp: <2010-01-22 17:29:32 Graham Williams>
 #
 # DATA TAB
 #
@@ -2520,7 +2520,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "No.",
+                                       Rtxt("No."),
                                        renderer,
                                        text= crv$CONTINUOUS[["number"]])
   
@@ -2530,7 +2530,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Variable",
+                                        Rtxt("Variable"),
                                         renderer, 
                                         text = crv$COLUMN[["variable"]])
 
@@ -2538,7 +2538,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
-                                       "Variable",
+                                       Rtxt("Variable"),
                                        renderer, 
                                        text = crv$IMPUTE[["variable"]])
 
@@ -2554,7 +2554,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Variable",
+                                       Rtxt("Variable"),
                                        renderer, 
                                        text = crv$CONTINUOUS[["variable"]])
 
@@ -2564,7 +2564,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Data Type",
+                                        Rtxt("Data Type"),
                                         renderer,
                                         text = crv$COLUMN[["type"]])
   
@@ -2578,7 +2578,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Input",
+                                        Rtxt("Input"),
                                         renderer,
                                         active = crv$COLUMN[["input"]])
   
@@ -2592,7 +2592,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Target",
+                                        Rtxt("Target"),
                                         renderer,
                                         active = crv$COLUMN[["target"]])
   
@@ -2620,7 +2620,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Ident",
+                                        Rtxt("Ident"),
                                         renderer,
                                         active = crv$COLUMN[["ident"]])
   
@@ -2634,7 +2634,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", item.toggled, model)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Ignore",
+                                        Rtxt("Ignore"),
                                         renderer,
                                         active = crv$COLUMN[["ignore"]]) 
 
@@ -2647,7 +2647,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "Bar Plot",
+                                       Rtxt("Bar Plot"),
                                        renderer,
                                        active = crv$CATEGORICAL[["barplot"]])
   
@@ -2659,7 +2659,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "Dot Plot",
+                                       Rtxt("Dot Plot"),
                                        renderer,
                                        active = crv$CATEGORICAL[["dotplot"]])
   
@@ -2670,7 +2670,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", cat_toggled, categorical)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "Mosaic",
+                                       Rtxt("Mosaic"),
                                        renderer,
                                        active = crv$CATEGORICAL[["mosplot"]])
   
@@ -2683,7 +2683,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Box Plot",
+                                       Rtxt("Box Plot"),
                                        renderer,
                                        active = crv$CONTINUOUS[["boxplot"]])
   
@@ -2694,7 +2694,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Histogram",
+                                       Rtxt("Histogram"),
                                        renderer,
                                        active = crv$CONTINUOUS[["hisplot"]])
   
@@ -2705,7 +2705,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Cumulative",
+                                       Rtxt("Cumulative"),
                                        renderer,
                                        active = crv$CONTINUOUS[["cumplot"]])
   
@@ -2716,7 +2716,7 @@ initialiseVariableViews <- function()
   connectSignal(renderer, "toggled", con_toggled, continuous)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Benford",
+                                       Rtxt("Benford"),
                                        renderer,
                                        active = crv$CONTINUOUS[["benplot"]])
   
@@ -2726,7 +2726,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "Comment",
+                                        Rtxt("Comment"),
                                         renderer,
                                         text = crv$COLUMN[["comment"]])
   
@@ -2734,7 +2734,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
-                                       "Data Type and Number Missing",
+                                       Rtxt("Data Type and Number Missing"),
                                         renderer,
                                         text = crv$IMPUTE[["comment"]])
 
@@ -2742,7 +2742,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "Levels",
+                                       Rtxt("Levels"),
                                        renderer,
                                        text = crv$CATEGORICAL[["comment"]])
 
@@ -2750,7 +2750,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   con.offset <-
     conview$insertColumnWithAttributes(-1,
-                                       "Min; Median/Mean; Max",
+                                       Rtxt("Min; Median/Mean; Max"),
                                        renderer,
                                        text = crv$CONTINUOUS[["comment"]])
 
@@ -3003,11 +3003,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Convert internal class to printable form.
     
     prcl <- cl[1]
-    prcl <- gsub('ident', 'Ident', prcl)
-    prcl <- gsub('factor', 'Categoric', prcl)
-    prcl <- gsub('ordered', 'Categoric', prcl)
-    prcl <- gsub('integer', 'Numeric', prcl)
-    prcl <- gsub('numeric', 'Numeric', prcl)
+    prcl <- gsub("ident", Rtxt("Ident"), prcl)
+    prcl <- gsub("factor", Rtxt("Categoric"), prcl)
+    prcl <- gsub("ordered", Rtxt("Categoric"), prcl)
+    prcl <- gsub("integer", Rtxt("Numeric"), prcl)
+    prcl <- gsub("numeric", Rtxt("Numeric"), prcl)
     
     # Every variable goes into the VARIABLES treeview.
 
@@ -3027,14 +3027,14 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                            #       "", "NO code export. "),
                                         ## 090110 Show unique for all ifelse(numeric.var,# &&
                                                #possible.categoric,
-                                               sprintf("Unique: %d ",
+                                               sprintf(Rtxt("Unique: %d "),
                                                        unique.count),## ""),
                                         ifelse(missing.count > 0,
-                                               sprintf("Missing: %d ",
+                                               sprintf(Rtxt("Missing: %d "),
                                                        missing.count), ""),
                                        
                                         ifelse(prcl == "constant",
-                                               sprintf("Value: %s ",
+                                               sprintf(Rtxt("Value: %s "),
                                                        unique.value), ""),
                                         sep=""))
 

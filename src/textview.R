@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-06 14:03:47 Graham Williams>
+# Time-stamp: <2010-01-22 19:03:41 Graham Williams>
 #
 # Textview widget support
 #
@@ -223,14 +223,16 @@ resetTextviews <- function(tv=NULL)
            function(tt)
            {
              wd <- xmlGetAttr(tt, 'widget')
-             resetTextview(wd, xmlValue(tt), tvsep=FALSE)
+             print(xmlValue(tt))
+             resetTextview(wd, Rtxt(xmlValue(tt)), tvsep=FALSE)
            })
   else
     sapply(getNodeSet(doc, "//textview"),
            function(tt)
            {
              wd <- xmlGetAttr(tt, 'widget')
-             if (wd %in% tv) resetTextview(wd, xmlValue(tt), tvsep=FALSE)
+             print(xmlValue(tt))
+             if (wd %in% tv) resetTextview(wd, Rtxt(xmlValue(tt)), tvsep=FALSE)
            })
   invisible()
 }

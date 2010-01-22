@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:17:21 Graham Williams>
+# Time-stamp: <2010-01-22 19:26:27 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -18,7 +18,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 15 Jan 2010"
+VERSION.DATE <- "Released 22 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -530,92 +530,100 @@ rattle <- function(csvname=NULL)
   # that are needed for removing and inserting tabs in the notebook,
   # depending on the selected paradigm. TODO Paradigms have gone as of
   # 080519 so we may not need all this machinery now!
-  
+
   crv$NOTEBOOK <- theWidget("notebook")
 
-  crv$NOTEBOOK.DATA.NAME <- "Data"
+  # 100122 The Rtxt is required for these since Glade will translate
+  # these labels.
+  
+  crv$NOTEBOOK.DATA.NAME <- Rtxt("Data")
 
-  crv$NOTEBOOK.TEST.NAME <- "Test"
+  crv$NOTEBOOK.TEST.NAME <- Rtxt("Test")
 
-  crv$NOTEBOOK.EXPLORE.NAME <- "Explore"
+  crv$NOTEBOOK.EXPLORE.NAME <- Rtxt("Explore")
 
-  crv$NOTEBOOK.TRANSFORM.NAME <- "Transform"
+  crv$NOTEBOOK.TRANSFORM.NAME <- Rtxt("Transform")
 
-  crv$NOTEBOOK.CLUSTER.NAME    <- "Cluster"
+  crv$NOTEBOOK.CLUSTER.NAME    <- Rtxt("Cluster")
   crv$NOTEBOOK.CLUSTER.WIDGET <- theWidget("cluster_tab_widget")
   crv$NOTEBOOK.CLUSTER.LABEL  <- theWidget("cluster_tab_label")
 
-  crv$NOTEBOOK.ASSOCIATE.NAME    <- "Associate"
+  crv$NOTEBOOK.ASSOCIATE.NAME    <- Rtxt("Associate")
   crv$NOTEBOOK.ASSOCIATE.WIDGET <- theWidget("associate_tab_widget")
   crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
-  crv$NOTEBOOK.MODEL.NAME     <- "Model"
+  crv$NOTEBOOK.MODEL.NAME     <- Rtxt("Model")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
   crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 
-  crv$NOTEBOOK.EVALUATE.NAME    <- "Evaluate"
+  crv$NOTEBOOK.EVALUATE.NAME    <- Rtxt("Evaluate")
   crv$NOTEBOOK.EVALUATE.WIDGET <- theWidget("evaluate_tab_widget")
   crv$NOTEBOOK.EVALUATE.LABEL  <- theWidget("evaluate_tab_label")
 
-  crv$NOTEBOOK.LOG.NAME       <- "Log"
+  crv$NOTEBOOK.LOG.NAME       <- Rtxt("Log")
 
+  # 100122 Every call to getNotebookPage will need the second argument
+  # wrapped with an Rtxt. Glade translates these on loading.
+  
   # 080921 Define the DATA tab pages
 
   crv$DATA.NOTEBOOK 	<- theWidget("data_notebook")
-  crv$DATA.CORPUS.TAB      <- getNotebookPage(crv$DATA.NOTEBOOK, "corpus")
-  crv$DATA.CSV.TAB         <- getNotebookPage(crv$DATA.NOTEBOOK, "csv")
+  crv$DATA.CORPUS.TAB      <- getNotebookPage(crv$DATA.NOTEBOOK, Rtxt("corpus"))
+  crv$DATA.CSV.TAB         <- getNotebookPage(crv$DATA.NOTEBOOK, Rtxt("csv"))
 
   crv$DATA.DISPLAY.NOTEBOOK     <- theWidget("data_display_notebook")
-  crv$DATA.DISPLAY.TREEVIEW.TAB <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "treeview")
-  crv$DATA.DISPLAY.WELCOME.TAB  <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK, "welcome")
+  crv$DATA.DISPLAY.TREEVIEW.TAB <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK,
+                                                   Rtxt("treeview"))
+  crv$DATA.DISPLAY.WELCOME.TAB  <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK,
+                                                   Rtxt("welcome"))
 
   # Define the TRANSFORM tab pages
   
   crv$TRANSFORM               <- theWidget("transform_notebook")
   # TODO 080423 Change to RESCALE
-  crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, "normalise")
-  crv$TRANSFORM.IMPUTE.TAB    <- getNotebookPage(crv$TRANSFORM, "impute")
-  crv$TRANSFORM.REMAP.TAB     <- getNotebookPage(crv$TRANSFORM, "remap")
-  crv$TRANSFORM.OUTLIER.TAB   <- getNotebookPage(crv$TRANSFORM, "outlier")
-  crv$TRANSFORM.CLEANUP.TAB   <- getNotebookPage(crv$TRANSFORM, "cleanup")
+  crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, Rtxt("normalise"))
+  crv$TRANSFORM.IMPUTE.TAB    <- getNotebookPage(crv$TRANSFORM, Rtxt("impute"))
+  crv$TRANSFORM.REMAP.TAB     <- getNotebookPage(crv$TRANSFORM, Rtxt("remap"))
+  crv$TRANSFORM.OUTLIER.TAB   <- getNotebookPage(crv$TRANSFORM, Rtxt("outlier"))
+  crv$TRANSFORM.CLEANUP.TAB   <- getNotebookPage(crv$TRANSFORM, Rtxt("cleanup"))
 
   crv$EXPLORE                 <- theWidget("explore_notebook")
-  crv$EXPLORE.SUMMARY.TAB     <- getNotebookPage(crv$EXPLORE, "summary")
-  crv$EXPLORE.PLOT.TAB        <- getNotebookPage(crv$EXPLORE, "explot")
-  crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, "correlation")
-  crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, "prcomp")
-  crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, "interactive")
+  crv$EXPLORE.SUMMARY.TAB     <- getNotebookPage(crv$EXPLORE, Rtxt("summary"))
+  crv$EXPLORE.PLOT.TAB        <- getNotebookPage(crv$EXPLORE, Rtxt("explot"))
+  crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("correlation"))
+  crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, Rtxt("prcomp"))
+  crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("interactive"))
   
   crv$CLUSTER             <- theWidget("cluster_notebook")
-  crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, "kmeans")
-  crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, "clara")
-  crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, "hclust")
-  crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, "biclust")
+  crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("kmeans"))
+  crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, Rtxt("clara"))
+  crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("hclust"))
+  crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, Rtxt("biclust"))
   
   crv$MODEL           <- theWidget("model_notebook")
-  crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, crv$RPART)
-  crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, crv$GLM)
-  crv$MODEL.ADA.TAB   <- getNotebookPage(crv$MODEL, crv$ADA)
+  crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, Rtxt("rpart"))
+  crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("glm"))
+  crv$MODEL.ADA.TAB   <- getNotebookPage(crv$MODEL, Rtxt("ada"))
   ## crv$MODEL.GBM.TAB   <- getNotebookPage(crv$MODEL, .GBM)
-  crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, crv$RF)
-  crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, crv$SVM)
-  crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, crv$NNET)
-  crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, crv$SURVIVAL)
+  crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, Rtxt("rf"))
+  crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("svm"))
+  crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, Rtxt("nnet"))
+  crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, Rtxt("survival"))
   
   crv$SVMNB           <- theWidget("svm_notebook")
-  crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, "esvm")
-  crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, "ksvm")
+  crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("esvm"))
+  crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("ksvm"))
   
   crv$EVALUATE                 <- theWidget("evaluate_notebook")
-  crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, "confusion")
-  crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, "risk")
-  crv$EVALUATE.LIFT.TAB        <- getNotebookPage(crv$EVALUATE, "lift")
-  crv$EVALUATE.ROC.TAB         <- getNotebookPage(crv$EVALUATE, "roc")
-  crv$EVALUATE.PRECISION.TAB   <- getNotebookPage(crv$EVALUATE, "precision")
-  crv$EVALUATE.SENSITIVITY.TAB <- getNotebookPage(crv$EVALUATE, "sensitivity")
-  crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, "costcurve")
-  crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, "pvo")
-  crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, "score")
+  crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("confusion"))
+  crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, Rtxt("risk"))
+  crv$EVALUATE.LIFT.TAB        <- getNotebookPage(crv$EVALUATE, Rtxt("lift"))
+  crv$EVALUATE.ROC.TAB         <- getNotebookPage(crv$EVALUATE, Rtxt("roc"))
+  crv$EVALUATE.PRECISION.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("precision"))
+  crv$EVALUATE.SENSITIVITY.TAB <- getNotebookPage(crv$EVALUATE, Rtxt("sensitivity"))
+  crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("costcurve"))
+  crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, Rtxt("pvo"))
+  crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, Rtxt("score"))
   
   # Turn off the sub-notebook tabs.
 
@@ -789,27 +797,33 @@ displayWelcomeTabMessage <- function()
 {
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.WELCOME.TAB)
   resetTextview("rattle_welcome_textview",
-                paste("Welcome to Rattle (rattle.togaware.com).\n",
-                      "\nRattle is a free graphical user",
-                      "interface for Data Mining, developed using R.",
-                      "R is a free software environment",
-                      "for statistical computing and graphics.",
-                      "Together they provide a sophisticated",
-                      "environments for data mining,",
-                      "statistical analyses, and data visualisation.",
-                      "\n\nSee the Help menu for extensive support in",
-                      "using Rattle.",
-                      "The Togaware Desktop Data Mining Survival Guide",
-                      "includes Rattle documentation",
-                      "and is available from",
-                      "datamining.togaware.com",
-                      "\n\nRattle is licensed under the",
-                      "GNU General Public License, Version 2.",
-                      "Rattle comes with ABSOLUTELY NO WARRANTY.",
-                      "See Help -> About for details.",
-                      "\n\nRattle version", crv$version,
-                      "Copyright (C) 2006-2009 Togaware Pty Ltd",
-                      "\nRattle is a registered trademark of Togaware Pty Ltd"),
+                paste(Rtxt("Welcome to Rattle (rattle.togaware.com)."),
+                      "\n\n",
+                      Rtxt("Rattle is a free graphical user",
+                           "interface for Data Mining, developed using R.",
+                           "R is a free software environment",
+                           "for statistical computing and graphics.",
+                           "Together they provide a sophisticated",
+                           "environments for data mining,",
+                           "statistical analyses, and data visualisation."),
+                      "\n\n",
+                      Rtxt("See the Help menu for extensive support in",
+                           "using Rattle.",
+                           "The Togaware Desktop Data Mining Survival Guide",
+                           "includes Rattle documentation",
+                           "and is available from",
+                           "datamining.togaware.com"),
+                      "\n\n",
+                      Rtxt("Rattle is licensed under the",
+                           "GNU General Public License, Version 2.",
+                           "Rattle comes with ABSOLUTELY NO WARRANTY.",
+                           "See Help -> About for details."),
+                      "\n\n",
+                      sprintf(Rtxt("Rattle version %s Copyright 2006-2010 Togaware Pty Ltd"),
+                              crv$version),
+                      "\n",
+                      Rtxt("Rattle is a registered trademark of Togaware Pty Ltd"),
+                      sep=""),
                 tvsep=FALSE)
 }
 

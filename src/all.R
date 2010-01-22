@@ -3,6 +3,10 @@
 #options(error=NULL) # Turn it off
 #options(warn=2) # For development treat any warnings as errors
 
+# Testing
+#bindtextdomain("R-rattle", dirname="/home/gjw/projects/rattle/package/rattle/inst/po/")
+#Sys.setenv(LANGUAGE="no")
+
 source("rattle.R")
 source("zzz.R")
 source("associate.R")

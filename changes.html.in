@@ -6,13 +6,17 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.14.
+    version is 2.5.16.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
 <pre>
+497 100122 Fix documentation with missing argumnet descriptions
+    	   Add translations to all GUI tabs - needed for tab changing to work
+	   Add translations for table headings in Data textview.
+	   Include textviews text into translation framework
 496 100122 Add experimental support for biclustering
     	   Add temporary fix for translations not showing in glade on MS/Windows.
 	   Streamline common text into packageProvides for translations and DRY.
