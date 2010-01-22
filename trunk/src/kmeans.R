@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:51:42 Graham Williams>
+# Time-stamp: <2010-01-22 08:20:00 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -235,7 +235,7 @@ executeClusterKMeans <- function(include)
 }
 
 ########################################################################
-# EXPORT
+# Export
 
 exportKMeansTab <- function(file)
 {
@@ -296,7 +296,7 @@ exportKMeansTab <- function(file)
 }
 
 ########################################################################
-# SCORE
+# Score
 
 predict.kmeans <- function(object, data, ...)
 {

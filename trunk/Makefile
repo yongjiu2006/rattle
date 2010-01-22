@@ -403,6 +403,10 @@ backup:
 ja: locals
 	LANGUAGE=ja R CMD BATCH rattle_ja.R
 
+.Phony: no
+no: locals
+	LANGUAGE=no R CMD BATCH rattle_ja.R
+
 .Phony: cn
 cn: locals
 	LANGUAGE=zh_CN R CMD BATCH rattle_ja.R

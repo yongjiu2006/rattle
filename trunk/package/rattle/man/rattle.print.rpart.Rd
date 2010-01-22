@@ -14,17 +14,17 @@ rattle.print.rpart(x, minlength = 0, spaces = 2, cp,
 }
 \arguments{
   
-  \item{x}{}
+  \item{x}{An rpart object.}
 
-  \item{minlength}{}
+  \item{minlength}{The minimum length.}
 
-  \item{spaces}{}
+  \item{spaces}{How much to indent.}
 
-  \item{cp}{}
+  \item{cp}{Complexity parameter}
 
-  \item{digits}{}
+  \item{digits}{Number of digits to display for numbers.}
 
-  \item{...}{}
+  \item{...}{Other arguments.}
 
 }
 \details{

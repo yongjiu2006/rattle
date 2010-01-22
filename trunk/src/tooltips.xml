@@ -99,8 +99,7 @@
   <tooltip widget="data_target_numeric_radiobutton">Set target type to be
     numeric for Regression.</tooltip>
   <tooltip widget="label1">Load a dataset.</tooltip>
-  <tooltip widget="summary_radiobutton">Summarise the
-    dataset.</tooltip>
+  <tooltip widget="summary_radiobutton">Summarise the dataset.</tooltip>
   <tooltip widget="explore_interactive_ggobi_radiobutton">Run the
     external GGobi data visualisation application, if
     available.</tooltip>

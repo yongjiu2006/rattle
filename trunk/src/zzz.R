@@ -129,6 +129,6 @@
     if ("rattle" %in% getOption("defaultPackages"))
       rattle()
     else
-      cat(Rtxt("Type 'rattle()' to shake, rattle, and roll your data.\n"))
+      cat(Rtxt("Type 'rattle()' to shake, rattle, and roll your data."), "\n")
   }
 }
