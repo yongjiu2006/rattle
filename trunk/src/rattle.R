@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-22 19:26:27 Graham Williams>
+# Time-stamp: <2010-01-30 08:01:12 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -11,14 +11,23 @@
 # execute.R	The Execute functionality.
 #
 
-Rtxt <- function(...) gettext(paste(...), domain="R-rattle")
+Rtxt <- function(...)
+{
+  # 100130 Currently, on Windows we are waiting for 2.12.17 of  RGtk2 with
+  # rgtk2_bindtextdomain().
+  
+  if (.Platform$OS.type == "windows")
+    paste(...)
+  else
+    gettext(paste(...), domain="R-rattle")
+}
 
 MAJOR <- "2"
 MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Jan 2010"
+VERSION.DATE <- "Released 23 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -552,7 +561,7 @@ rattle <- function(csvname=NULL)
   crv$NOTEBOOK.ASSOCIATE.WIDGET <- theWidget("associate_tab_widget")
   crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
-  crv$NOTEBOOK.MODEL.NAME     <- Rtxt("Model")
+  crv$NOTEBOOK.MODEL.NAME     <- theWidget("model_tab_label")$getLabel() # Rtxt("Model")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
   crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 

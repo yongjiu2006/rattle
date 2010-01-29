@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-22 08:27:01 Graham Williams>
+# Time-stamp: <2010-01-23 07:13:10 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -56,7 +56,7 @@ executeClusterBiclust <- function(include)
   
   startLog(commonName(crv$BICLUST))
 
-  # Load the required pacakge.
+  # Load the required package.
   
   lib.cmd <- "require(biclust, quietly=TRUE)"
   if (! packageIsAvailable("biclust", Rtxt("perform bicluster analysis"))) return(FALSE)

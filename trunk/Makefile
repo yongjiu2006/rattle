@@ -1,10 +1,4 @@
-# TARGETS
-#
-# local:	Build and install into the local machine's R archive
-# check:	Ask R to check that the package looks okay
-# html:		Build the HTML documents and view in a browser
-# install:	Build and copy the package across to the public www
-# access:	Have a look at who might be downloading rattle
+# See INSTRUCTIONS
 
 PACKAGE=package/rattle
 DESCRIPTION=$(PACKAGE)/DESCRIPTION
@@ -241,11 +235,13 @@ install: build pbuild ibuild zip rattle_src.zip # check pcheck
 			dmsurvivor.Rnw;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			dmsurvivor.Rnw)
-	mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
-	mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
+	#mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
+	#mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
-	lftp -f .lftp
+	# 100123 Do I still want to keep these updated? lftp -f .lftp
+
+# 100123 Updated the build process
 
 check: build
 	R CMD check $(PACKAGE)
@@ -256,6 +252,12 @@ pcheck: pbuild
 icheck: ibuild
 	R CMD check $(IPACKAGE)
 
+ucheck: build
+	sh ./upload_uwe.sh
+
+cran: build
+	sh ./upload_cran.sh
+
 # For development, temporarily remove the NAMESPACE so all is exposed.
 
 devbuild:
@@ -265,7 +267,9 @@ devbuild:
 	R CMD build package/rattle
 	mv NAMESPACE package/rattle/
 
-build: data rattle_$(VERSION).tar.gz
+# 100123 Updated the build process
+
+build: $(REPOSITORY)/rattle_$(VERSION).tar.gz $(REPOSITORY)/rattle_$(VERSION).zip
 
 pbuild: data pmml_$(PVERSION).tar.gz
 
@@ -280,19 +284,26 @@ rattle_src.zip:
 	mv rattle_src.zip /var/www/access/
 	chmod go+r /var/www/access/rattle_src.zip
 
-rattle_$(VERSION).tar.gz: $(SOURCE)
+# 100123 Updated the build process.
+
+$(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) weather
 	rm -f package/rattle/R/*
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
-             src/rattle.R
+		src/rattle.R
+	perl -pi -e "s|Revision: [0-9]*|Revision: $(SVNREVIS)|" \
+		src/rattle.R
 	perl -pi -e "s|^PACKAGEID <- \"11_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \
-             src/rstat.R
+		src/rstat.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
+	cp ChangeLog NEWS package/rattle/inst/
 	cp odf/data_summary.odt package/rattle/inst/odt/
-	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) |\
-	perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
-	R CMD build $(PACKAGE)
+	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) \
+	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	chmod -R go+rX $(PACKAGE)
+	R CMD build $(PACKAGE)
+	R CMD INSTALL --library=/usr/local/lib/R/site-library rattle_$(VERSION).tar.gz
+	mv rattle_$(VERSION).tar.gz $(REPOSITORY)
 
 pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	cp $(PSOURCE) package/pmml/R/
@@ -300,6 +311,8 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
 	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
+	mv pmml_$(PVERSION).tar.gz $(REPOSITORY)
+	#mv pmml_$(PVERSION).zip $(REPOSITORY)
 
 rstat_$(IVERSION).tar.gz: $(ISOURCE)
 	cp $(ISOURCE) package/rstat/R/
@@ -328,23 +341,31 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/Projects/Togaware/www/site/rattle/
 
-package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
+WEATHER= weather.RData weatherAUS.RData
+
+package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile weather
 	R --no-save --quiet < support/weather.R
 	chmod go+r weather*.RData weather*.csv weathe*r.arff weather_missing*.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
 	cp weather.RData weather.csv weather.arff weather_missing.csv src/
-	cp weather.RData weatherCanberra.RData weatherSydney.RData package/rattle/data/
-	cp weather.csv weatherCanberra.csv weatherSydney.csv package/rattle/inst/csv/
-	cp weather.arff weatherCanberra.arff weatherSydney.arff package/rattle/inst/arff/
+	cp weather.RData weatherAUS.RData package/rattle/data/
+	cp weather.csv package/rattle/inst/csv/
+	cp weather.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/Projects/Togaware/www/site/rattle/
 
-zip: local plocal ilocal
+$(REPOSITORY)/rattle_$(VERSION).zip: $(REPOSITORY)/rattle_$(VERSION).tar.gz
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
-	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
-	>| pmml_$(PVERSION).zip
-	(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
-	>| rstat_$(IVERSION).zip
+	mv rattle_$(VERSION).zip $(REPOSITORY)
+
+zip: build plocal ilocal
+	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
+	>| rattle_$(VERSION).zip
+	#mv rattle_$(VERSION).zip $(REPOSITORY)
+	#(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
+	#>| pmml_$(PVERSION).zip
+	#(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
+	#>| rstat_$(IVERSION).zip
 
 txt:
 	R CMD Rd2txt package/rattle/man/rattle.Rd
@@ -362,7 +383,7 @@ local: rattle_$(VERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
 
 plocal: pmml_$(PVERSION).tar.gz
-	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
+	R CMD INSTALL --library=/usr/local/lib/R/site-library repository/$^
 
 ilocal: rstat_$(IVERSION).tar.gz
 	R CMD INSTALL --library=/usr/local/lib/R/site-library $^
@@ -397,7 +418,7 @@ realclean: clean
 
 .PHONY: backup
 backup:
-	rsync -a src bovj.redirectme.net:BACKUP/rattle/
+	rsync -a src "/home/gjw/Ubuntu One/dmsurvivor"
 
 .Phony: ja
 ja: locals

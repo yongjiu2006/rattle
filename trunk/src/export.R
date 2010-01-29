@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-23 06:26:14 Graham Williams>
+# Time-stamp: <2010-01-28 12:14:14 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -184,17 +184,18 @@ dispatchExportButton <- function()
   
 getExportSaveName <- function(mtype)
 {
-  # 090117 Request a filename to save the model to and return as a
-  # string that filename.
+  # 090117 Request a filename to save the model to and return the
+  # filename as a string.
 
-  # Require the pmml package for either exporting to PMML or C (via
-  # PMML).
+  # Require the pmml package for either exporting to PMML or C (which
+  # goes via PMML).
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
   if (! (exists("pmml") ||
-         packageIsAvailable("pmml", paste("export a", commonName(mtype), "model"))))
+         packageIsAvailable("pmml", sprintf(Rtxt("export a %s model"),
+                                            commonName(mtype)))))
       return(NULL)
-  appendLog("Load the PMML package to export a model.", lib.cmd)
+  appendLog(packageProvides("pmml", "pmml"), lib.cmd)
   # Load the package unless we already have a pmml defined (through source).
   if (! exists("pmml")) eval(parse(text=lib.cmd))
 
@@ -255,10 +256,6 @@ getExportSaveName <- function(mtype)
       else
         dialogGUI$
     getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
-    
-    if (mtype %in% c("survival"))
-      dialogGUI$
-      getWidget("export_filechooser_probabilities_radiobutton")$setActive(TRUE)
 
     # 081218 Add glm when implemented.
     
@@ -272,6 +269,32 @@ getExportSaveName <- function(mtype)
 
       dialogGUI$
       getWidget("export_filechooser_probabilities_radiobutton")$setSensitive(FALSE)
+    }
+
+    if (mtype %in% c("survival"))
+    {
+      dialogGUI$
+      getWidget("export_filechooser_class_radiobutton")$setLabel(Rtxt("Time"))
+
+      dialogGUI$
+      getWidget("export_filechooser_probabilities_radiobutton")$setLabel(Rtxt("Risk"))
+
+      dialogGUI$
+      getWidget("export_filechooser_probabilities_radiobutton")$
+      setActive(class(crs$survival) == "coxph")
+
+      if (class(crs$survival) == "coxph")
+      {
+        dialogGUI$
+        getWidget("export_filechooser_probabilities_radiobutton")$
+        setSensitive(TRUE)
+      }
+      else
+      {
+        dialogGUI$
+        getWidget("export_filechooser_class_radiobutton")$
+        setSensitive(TRUE)
+      }
     }
   }
 

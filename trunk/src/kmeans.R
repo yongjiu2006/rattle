@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-22 08:20:00 Graham Williams>
+# Time-stamp: <2010-01-23 07:59:11 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -122,11 +122,14 @@ executeClusterKMeans <- function(include)
             seed.cmd)
   eval(parse(text=seed.cmd))
 
+  # Determine the dataset to use.
+
+  ds <- sprintf("na.omit(crs$dataset[%s,%s])", ifelse(sampling, "crs$sample", ""), include)
+  
   # Calculate the centers
 
   if (usehclust)
-    centers <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",
-                       ifelse(sampling, "crs$sample", ""), include, nclust)
+    centers <- sprintf("centers.hclust(%s, crs$hclust, %d)", ds, nclust)
   else
     centers <- nclust
   
@@ -141,18 +144,11 @@ executeClusterKMeans <- function(include)
       appendLog(packageProvides('fpc', 'kmeansruns'), lib.cmd)
       eval(parse(text=lib.cmd))
 
-      kmeans.cmd <- sprintf(paste('crs$kmeans <-',
-                                  'kmeansruns(crs$dataset[%s,%s],',
-                                  '%s, runs=%s)'),
-                            ifelse(sampling, "crs$sample", ""),
-                            include, centers, nruns)
+      kmeans.cmd <- sprintf('crs$kmeans <- kmeansruns(%s, %s, runs=%s)', ds, centers, nruns)
     }
     else
     {
-      kmeans.cmd <- sprintf(paste('crs$kmeans <- kmeans(',
-                                  'na.omit(crs$dataset[%s,%s]), %s)', sep=""),
-                            ifelse(sampling, "crs$sample", ""),
-                            include, centers)
+      kmeans.cmd <- sprintf('crs$kmeans <- kmeans(%s, %s)', ds, centers)
     }
     
     appendLog(sprintf(Rtxt("Generate a kmeans cluster of size %s%s%s."), nclust,
@@ -176,19 +172,28 @@ executeClusterKMeans <- function(include)
       return(FALSE)
     }
 
-    # Summary: Show the resulting model.
+    # Show the resulting model.
 
+    size.cmd <- "paste(crs$kmeans$size, collapse=' ')"
+    means.cmd <- sprintf("mean(%s)", ds)
+    centres.cmd <- "crs$kmeans$centers"
+    withinss.cmd <- "crs$kmeans$withinss"
+    
     startLog(Rtxt("Report on the cluster characteristics."))
-    appendLog(Rtxt("Cluster sizes:"), "paste(crs$kmeans$size, collapse=' ')")
-    appendLog(Rtxt("Cluster centers:"), "crs$kmeans$centers")
-    appendLog(Rtxt("Within cluster sum of squares:"), "crs$kmeans$withinss")
+    appendLog(Rtxt("Cluster sizes:"), size.cmd)
+    appendLog(Rtxt("Data means:"), means.cmd)
+    appendLog(Rtxt("Cluster centers:"), centres.cmd)
+    appendLog(Rtxt("Within cluster sum of squares:"), withinss.cmd)
+
     resetTextview(TV)
     setTextview(TV, Rtxt("Cluster sizes:"), "\n\n",
-                collectOutput("paste(crs$kmeans$size, collapse=' ')", TRUE),
+                collectOutput(size.cmd, TRUE),
+                "\n\n", Rtxt("Data means:"), "\n\n",
+                collectOutput(means.cmd),
                 "\n\n", Rtxt("Cluster centers:"), "\n\n",
-                collectOutput("crs$kmeans$centers", TRUE),
+                collectOutput(centres.cmd, TRUE),
                 "\n\n", Rtxt("Within cluster sum of squares:"), "\n\n",
-                collectOutput("crs$kmeans$withinss", TRUE),
+                collectOutput(withinss.cmd, TRUE),
                 "\n")
 
     # Ensure the kmeans information buttons are now active.

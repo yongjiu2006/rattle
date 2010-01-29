@@ -6,13 +6,25 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.17.
+    version is 2.5.18.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
    </p>
 
+<p>
+<b>The changelog below is no longer maintained.</b>
+
+See the CRAN <a
+href="http://cran.r-project.org/web/packages/rattle/NEWS">NEWS</a> and
+<a
+href="http://cran.r-project.org/web/packages/rattle/ChangeLog">ChangeLog</a>
+files.
+
 <pre>
+
+499 100130 Move the change log to the package ChangeLog file.
+           Keep this as an archive, but now refer to the package file.
 498 100123 Quick fix - remove unwanted print statements.
 497 100122 Fix documentation with missing argumnet descriptions
     	   Add translations to all GUI tabs - needed for tab changing to work
