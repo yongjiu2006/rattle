@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-01-09 12:37:13 Graham Williams>
+# Time-stamp: <2010-01-28 11:36:17 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -61,7 +61,7 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   # summary of what has been done.
 
   gui <- not.null(tv)
-  if (gui) startLog("Survival Model")
+  if (gui) startLog(Rtxt("Survival Model"))
 
   # Load the required package into the library.
 
@@ -161,6 +161,8 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
 
 plotSurvivalModel <- function()
 {
+  startLog(Rtxt("Survival Plot"))
+
   plot.cmd <- paste('plot(survfit(crs$survival), xlab=crs$target,',
                     'ylab="Survival Probability", col=3)\n',
                     genPlotTitleCmd('Survival Chart', crs$target, 'to',

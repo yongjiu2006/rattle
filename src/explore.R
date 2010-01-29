@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-22 16:51:48 Graham Williams>
+# Time-stamp: <2010-01-26 19:41:17 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -24,7 +24,7 @@
 ########################################################################
 
 # 091214 Not sure if we need to change this for the grid layout of
-# the grid pacakage so we can get multiple plots. But perhaps we go
+# the grid package so we can get multiple plots. But perhaps we go
 # back to just a single plot in each figure. Something like:
 
 # newPlot()
@@ -617,8 +617,10 @@ executeExplorePlot2 <- function(dataset,
     ggplot.cmd  <- sprintf("ggplot(ds, aes(%s, %%s))", target)
     boxplot.cmd <- sprintf("geom_boxplot(%s)",
                            sprintf(cols, length(targets)+1))
-    title.cmd <- sprintf('opts(title="Distribution of %%s%s")',
-                         ifelse(sampling, " (sample)",""))
+    title.cmd <- sprintf('opts(title="Distribution of %%s%s%s")',
+                         ifelse(sampling, " (sample)",""),
+                         ifelse(stratify && length(targets),
+                                paste("\nby", target), ""))
     sub.cmd <- sprintf('labs(x="%s\\n\\n%%s")', target)
 
     plot.cmd <- sprintf("print(%s + %s + %s + %s)", ggplot.cmd,
@@ -2074,7 +2076,7 @@ executeExplorePlot <- function(dataset,
       
       if (packageIsAvailable("doBy", Rtxt("add means to box plots")))
       {
-        appendLog(pacakgeProvides("doBy", "summaryBy"), lib.cmd)
+        appendLog(packageProvides("doBy", "summaryBy"), lib.cmd)
         eval(parse(text=lib.cmd))
 
         appendLog(Rtxt("Calculate the group means."), mean.cmd)
@@ -2091,9 +2093,11 @@ executeExplorePlot <- function(dataset,
       
       # Add a title to the plot.
       
-      title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s",
-                                          boxplots[s],
-                                          ifelse(sampling, " (sample)","")))
+      title.cmd <- genPlotTitleCmd(sprintf("Distribution of %s%s%s",
+                                           boxplots[s],
+                                           ifelse(sampling, " (sample)",""),
+                                           ifelse(stratify && length(targets),
+                                                  paste("\nby", target), "")))
       appendLog(Rtxt("Add a title to the plot."), title.cmd)
       eval(parse(text=title.cmd))
     }
