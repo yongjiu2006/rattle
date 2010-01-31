@@ -59,9 +59,5 @@ rattle(csvname=NULL)
 #ifdef unix
 rattle(system.file("csv", "weather.csv", package = "rattle"))
 #endif
-
-# Upgrade rattle to the latest beta version.
-
-\dontrun{install.packages("rattle", repos="http://rattle.togaware.com")}
 }
 \keyword{environment}

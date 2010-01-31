@@ -1,0 +1,106 @@
+Changes in 2.5.20 2010-01-31 11:08:20 Graham Williams
+-----------------------------------------------------
+
+The weather dataset disappeared - restore it.
+
+
+Changes in 2.5.19 2010-01-30 10:33:50 Graham Williams
+-----------------------------------------------------
+
+This is mainly minor tweaking and bug fixing.
+
+Turn translations off for MS/Windows until the RGtk2 package is
+updated to 2.12.18. Michael Lawrence is adding a binding to
+rgtk2_bindtextdomain so that under MW/Windows we can get Glade to also
+access the right libraries for internationalisation. Works just fine
+under Linux.
+
+The weather dataset is being cleaned up and made more complete, to
+capture data from more weather stations in Australia.
+
+
+Changes in 2.5.18 2010-01-23 12:13:45 Graham Williams
+-----------------------------------------------------
+
+Bug fix - left unwanted print statements. Need to pay more attention
+to John Chambers!
+
+
+Changes in 2.5.17 2010-01-22 22:41:05 Graham Williams
+-----------------------------------------------------
+
+Some minor fixes.
+
+More work on translations, particularly the user interface elements
+through the glade file.
+
+
+Changes in 2.5.16 2010-01-22 12:11:25 Graham Williams
+-----------------------------------------------------
+
+Summary of recent changes, as reported to the rattle-user group at
+Google groups.
+
+This version includes: 
+
+A move from sampling into just two datasets to the more traditional 
+three datasets: Train/Validate/Test. The Train dataset is used as 
+before for building models. The Validate is used to measure the 
+performance of the model and then for the user to tune the model 
+building parameters, to build the next "better" model, etc. The Test 
+dataset is then a true hold out dataset (not used at all in the 
+process otherwise) so a better unbiased estimate of error is obtained. 
+The user can now specify partitions as 70/15/15, or 50/25/25, etc. Or 
+70/30 (or just 70) to get previous behaviour (i.e., only a Train/Test 
+dataset). 
+
+Ongoing markup of all text messages within Rattle to support 
+translations to other human languages. The framework for this is 
+already in place now, and some sample but limited translations are 
+available. For example, on GNU/Linux (at least), try: 
+
+> Sys.setenv(LANGUAGE="ja") 
+> library(rattle) 
+> rattle() 
+
+for some Japanese translations. Offers to translate to other languages 
+are most welcome. 
+
+An initial implementation of biclustering under the Cluster tab. 
+Biclustering looks for the best clustering of subsets of the data. It 
+subsets both the observations and the variables. Only very basic 
+support for now, but the interface will grow to provide choice in the 
+algorithm used and options associated with each algorithm. The clara 
+algorithm for clustering is also expected to be supported soon. See 
+http://bm2.genes.nig.ac.jp/RGM2/pkg.php?p=biclust and 
+http://www.statistik.uni-dortmund.de/useR-2008/slides/Kaiser+Leisch.pdf 
+
+Experimental support for conditional trees and conditional random 
+forests using the party package. Conditional trees and forests are 
+newer approaches to building decision trees and address various bias 
+issues. See http://journal.r-project.org/archive/2009-2/RJournal_2009-2_Strobl~et... 
+
+Survival modelling. 
+
+Direct read of an Excel spreadsheet on MS/Windows. On the Data tab, 
+the CSV option is now labelled Spreadsheet. Identify a .xls or .xlsx 
+file, and Rattle will read the data from the spreadsheet. This is 
+still experimental. If it gets used I'll improve it. Currently, only 
+the first sheet is loaded, and only if it is called Sheet1 (the 
+default), and only if the data starts in row 1. 
+
+Tooltips re-enabled for GNU/Linux. Most users will now be using new 
+versions of the GTK libraries. The older version was having issues 
+with tooltips on GNU/Linux. 
+
+Improved PMML support. Togaware also provides modules to export PMML 
+models as standalone C code - this is not open source yet (it will be 
+eventually). The functionality is commercially available as part of 
+the RStat offering through Information builder's WebFocus product, and 
+from Togaware. PMML models can also be depoyed on the Amazon cloud 
+through Zementis' offerings. 
+
+Experimental support for ggplot2. This is a little hidden for now, 
+but a pointer for future development. 
+
+See the old change log for more history.

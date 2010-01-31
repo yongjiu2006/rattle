@@ -1,0 +1,24 @@
+rattle (2.5.20) stable; urgency=low
+
+  * Restore missing weather.csv file.
+  
+  * Add to Google code: weather.R ChangeLog NEWS ToDo upload_uwe.sh
+    upload_cran.sh.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 31 Jan 2010 11:07:55 +1100
+
+rattle (2.5.19) unstable; urgency=low
+
+  * Ensure the right labels (Time/Risk rather than Class/Prob) displayed
+    in filechooser when exporting a survival model.
+  
+  * Model tab renamed as Predictive.
+  
+  * Ensure boxplots have same "by ..." in the main title.
+  
+  * Update the weather dataset and include many more weather stations in
+    the weatherAUS dataset.
+  
+  * Rtxt does no translations when running on MS/Windows (for now).
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 30 Jan 2010 09:28:18 +1100
