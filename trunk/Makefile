@@ -102,6 +102,7 @@ default: local plocal ilocal
 
 .PHONY: ibirstat
 ibirstat: zip
+	mv $@??????????.zip archive
 	-diff ibi/rstat.R src >| ibi/updates
 	-diff ibi/pmml.transforms.R src >> ibi/updates
 	-diff ibi/pmmltocibi.R src >> ibi/updates
@@ -269,6 +270,7 @@ devbuild:
 
 # 100123 Updated the build process
 
+.PHONY: build
 build: $(REPOSITORY)/rattle_$(VERSION).tar.gz $(REPOSITORY)/rattle_$(VERSION).zip
 
 pbuild: data pmml_$(PVERSION).tar.gz
@@ -329,7 +331,7 @@ R4X:
 # then regualrly updated versions.
 
 .PHONY: data
-data: package/rattle/data/audit.RData package/rattle/data/weather.RData
+data: package/rattle/data/audit.RData weather
 
 package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	R --no-save --quiet < support/audit.R
@@ -341,17 +343,19 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 	cp audit.arff package/rattle/inst/arff/
 	cp audit.csv /home/gjw/Projects/Togaware/www/site/rattle/
 
-WEATHER= weather.RData weatherAUS.RData
-
+.PHONY: weather
+weather: package/rattle/data/weather.RData
 package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile weather
 	R --no-save --quiet < support/weather.R
-	chmod go+r weather*.RData weather*.csv weathe*r.arff weather_missing*.csv
+	chmod go+r weather*.RData weather.csv weather.arff weather_missing.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
 	cp weather.RData weather.csv weather.arff weather_missing.csv src/
 	cp weather.RData weatherAUS.RData package/rattle/data/
 	cp weather.csv package/rattle/inst/csv/
 	cp weather.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/Projects/Togaware/www/site/rattle/
+	mv weather*.RData archive
+	mv weather.csv weather.arff weather_missing.csv archive
 
 $(REPOSITORY)/rattle_$(VERSION).zip: $(REPOSITORY)/rattle_$(VERSION).tar.gz
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \

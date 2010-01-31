@@ -1,0 +1,408 @@
+------------------------------------------------------------------------
+Periodically save the log tab to a backup file
+2009-11-05 05:08:38 Graham Williams
+
+------------------------------------------------------------------------
+Move to using ggplot2.
+2008-01-31 12:14:03 Graham Williams
+
+The plots might be more standardised, modern, simpler to generate, and
+much more powerfull than plot and lattice.
+
+------------------------------------------------------------------------
+091103 Nolan's group wihtout a categoric chose (Tony Nolan)
+090929 Rattle View data with many columns has issues (Liyin Xue)
+090928 Add in a tutorial mode - cf log tab (Tony Nolan)
+090928 Extend printRFRules for regression (Michael Fogliani)
+081222 Add CSV Separator and Header information to filechooser instead of tab
+
+090512 Clustering via fuzzy c-means (e1071) algorithm (Iliya Georgiev)
+090109 Add RVM (as cf SVM) (Gabriel Ibarra)
+090109 Allow a SQL select to choose the data you want (Eberhard W. Lisse)
+090109 Support PostgreSQL (RdbiPgSQL) and MySQL (RMySQL) (Eberhard W. Lisse)
+090105 Use F1 for getting Help (Gabor Grothendieck)
+090105 Implement Log as separate window (Gabor Grothendieck)
+090124 Explore using igraph (Rado)
+090304 Use Weights in correlation and cluster analysis (Al Jones)
+
+080131 Add earth to Rattle (William Bert Craytor)
+080528 Migrate rattle from libglade to GtkBuilder
+       http://www.micahcarrick.com/12-24-2007/gtk-glade-tutorial-part-1.html
+       http://www.micahcarrick.com/05-30-2008/gtk-builder-libglade-faq.html
+080416 Log transform +ve/-ve (Linday Clayton)
+080416 C-stat eval for interval target (Linda Clayton)
+080729 Use rsq.rpart, plotcp, to plot errors with Errors button on Tree option
+080716 Risk Charts for regression by using rank
+080711 Replace Distributions with laticist/playwith (Felix Andrews)
+080629 Capture transformations in PMML
+080627 Allow categorics with hclust
+080627 Auto normalise variables in clustering?
+080627 Move to using pam since can handle missing and categorics
+080626 Add a transpose option (Tony Nolan)
+080531 Migrate from libglade to GtkBuilder
+080529 Parallel Coords plot with target to colour lines (ggobi)
+080529 Add ADTrees to Rattle 
+080526 Add transforms: log(n+1); asin(sqrt(x)); sqrt(x); x^(1/3); 1/x (Norrie)
+080525 Use "norm" for multivariate normalisation:
+       prelim.norm, em.nrom, imp.norm - stratify by target values
+080520 Bug: Ada trees show -1/1 rather than 0/1?
+0080518 Remove correlated + near constant columns in transform tab
+       See http://cheminfo.informatics.indiana.edu/~rguha/code/R/
+080518 Implement knn regression as in
+       http://cheminfo.informatics.indiana.edu/~rguha/code/R/
+080512 Fix scoring for multiple class classification
+080513 Introduce Ensemble scoring to add scores together (see NetFlix).
+080427 Fix Draw of decision tree for Regression
+080512 Notice $ amounts and , in thousands and treat as numeric (Tony Nolan)
+080521 Use dprep's ce.impute to impute: mean, median, knn
+080521 Use dprep functionality for feature selection +++
+080521 Use dprep for outlier detection
+080513 Add a R command console where paradigms were (Tony Nolan)
+080517 Add a macros menu with canned R templates (Tony Nolan)
+080511 Move to using guiDo from plotAndPlayGTK
+080511 Move to using playwith from plotAndPlayGTK for plots
+080511 Add support for scagnostics package
+080504 Allow risk charts without a RISK identified
+080502 Put PMML.COPYRIGHT into .Rattle
+080502 Add report info to PMML export of GLM
+080501 Fix cluster export to CSV to export the whole dataset
+080429 Add a SQLiteDF data option
+080427 Report pmml.nnet error to Zementis
+080427 Fix Draw of decision tree for Regression
+080427 On Score be sure to include the commands in log.
+080426 Add "Transform" check button on Evaluate tab (active when Score and CSV)
+       that will perform same transformations on the scoring dataset. (Tony)
+080427 Fix export of PMML for rpart
+080421 For assoc, if ID is not unique, set Baskets to checked
+080422 Complete read.pmml function for rpart.
+080419 Accumlate the transforms and apply to new CSV score file (Tom Neice)
+080418 Change plots to be tabbed plots with second tab being parameters that
+       lay behind the model whose performance is being plotted.
+080418 Load rattle script files (.ras) for data, score, test:
+080418 Allow txt score file (perhaps automatic if training data is txt)
+080408 Transform Tab, "Filter" textbox for rows to keep
+080330 After Transform refreshes list, keep same selections?
+080318 Migrate all global variables into the crv$ structure - avoid warnings
+080315 Add a Last Dataset/Project option (Tony Nolan)
+080305 Implement silhouette plot for kmeans clusters
+080203 Ed Cox: Add row selection to Select Tab (perhaps using "subset").
+080203 Ed Cox: Bug when using ODBC data source multiple times.
+060921 Pareto, zipf (ginger.hpl.hp.com/shl/papers/ranking/ranking.html) (Stu)
+070106 Transform: Implement mean/median from knn imputations (Daniel Medri)
+071215 Display rsq.rpart - the r squared fit by splits.
+071216 Add date conversion to Remap: as.Date(COLUMN, format="%d-%m-%Y")
+071216 Rename binning to not conflict with sm's binning.
+
+071205 Add in Randy Goebel's association rule visualisation (AI07)
+071125 Use relaimpo  to calculate relative importance of variables:
+       calc.relimp(Adjusted ~ ., audit[,c(2,7,9:10,13)], 
+       type = c("lmg", "last", "first", "betasq", "pratt") )
+070422 Disable drag and drop from the file open dialogs (Ray Lindsay).
+070406 For the cairo plot window, introduce keyboard shortcuts.
+070325 Add a Defaults button to each model builder.
+070130 Explore->Distr check buttons train/test/csv (csv from Evaluate tab)
+070330 Add selection of clustering: diana, agnus, fanny, etc.
+070421 Ensure the Help menu is complete.
+061019 Numerous graphics extensions (Geir Nilsen)
+070401 Add a File Type combo box to graphics save.
+070514 FileChooser to also show file sizes (Tony Nolan)
+070324 Implement dendrogram zoom using rgl (see plot3d example)?
+070321 For the View textview, keep first row (headers) static as "edit()" does
+070321 Implement own Edit textview to edit dataset, instead of ugly "edit()"
+060703 Kmeans: If a target exists, generate a hot spots display.
+070305 Add a "best k" finder using hclust (Daniele Medri)
+060821 Explore->Distributions: Clear = clear all radio buttons
+070317 Keep the cwd info local to Rattle rather than globally changing.
+070317 Add arffname as a parameter to the rattle function call.
+070109 Evaluate: add compare distributions radio button (Ray Lindsay)
+070311 Replace radio buttons with icons (Graham Williams)
+070319 Make the Explore:Summary:Find button do "Find Next" and remove Next.
+070317 Make the Explore:Summary:Find search case insensitive.
+070121 Each textview have default explanatory text
+061001 Choice of Kernel for SVMs. 
+070319 Introduce a progress bar for all activities (Tony Nolan)
+070114 Add textmining.R to Rattle
+060723 Simplify RF rule sets
+070220 Auto update feature(Tony Nolan)
+070201 Investigate party for rattle (Daniel Medri)
+070201 Invetigate rmpi for rattle (Daniel Medri)
+070105 Implement knn model builder (Yale)
+060001 Implement bagged boosted stumps (Jeremy Barnes)
+070316 Implement "expert" settings for each model (Liyin Xue)
+========================================================================
+Description: Implement nnet (Yale)
+Proposer: 
+DateProposed: 
+Status: 
+Effort: 
+Required: 
+Completed: 
+
+061230 This is not so satraightforward. I want this for two class
+prediction, so need a framework for building a model and then
+generating the predictions.  Currently the following is not quite
+it....
+
+crs$nnet <- nnet(as.factor(Adjusted) ~ ., data=......, size=1, na.action=na.omit)predict(crs$nnet, crs$dataset[crs$sample,c(1:6,9,12)], type="class")
+
+
+========================================================================
+Description: Optionally add cluster statistics.
+Proposer: Graham Williams
+DateProposed: 20 Oct 2006
+Status: Done for kmeans. Do for hclust
+Effort: 2 hours
+Required: 
+
+This would be something like the output of
+
+library(fpc)
+cluster.stats(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), crs$kmeans$cluster)
+
+Can it be pretty printed for the textview?
+
+Also, move to using buttons to generate plots and additional statistics.
+
+Currently to do - in hclust, enable the number of clusters and the
+statstics and discriminant plot. Whenever the number of clusters
+changes, update the internal crs variable to record this. And the
+buttons then work from this??? Perhaps.
+
+========================================================================
+Decsription: Improve hclust options
+Proposer: Stuart Hamilton
+DateProposed: 12 Oct 2006
+Status: Suggested
+Effort: 2 hours
+Required: 
+
+Explore hclust and then cutree options for hclust. Then also include
+the cluster.stats summary.
+
+crs$hclust <- hclust(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), "ave")
+cluster.stats(dist(crs$dataset[crs$sample,c(2,7,9:10,12)]), cutree(crs$hclust,10))
+plotcluster(crs$dataset[crs$sample,c(2,7,9:10,12)], cutree(crs$hclust,10))
+
+========================================================================
+Decsription: Move to using kmeansCBI etc for all clustering.
+Proposer: Graham Williams
+DateProposed: 20 Oct 2006
+Status: Suggested
+Effort: 4 hours
+Required: 
+
+Seems to provide a uniform interface and uniform output.
+
+But each model produces a lot more output. Do I really want to have
+all of that included in the model? crs will get large.
+
+========================================================================
+Decsription: Multiple evaluation plots for kmeans
+Proposer: Graham Williams
+DateProposed: 21 October 2006
+Status: Suggested
+Effort: 2 hours
+Required: 
+Completed: 
+
+plotcluster in fpc can plot many different plots. Perhaps plot several
+in the one plot. Need to determine which ones would be useful.
+
+########################################################################
+IMPUTATION
+
+------------------------------------------------------------------------
+
+mix has mi.inference but did not look like it did what I was wanting.
+
+------------------------------------------------------------------------
+
+EMV has knn for imputation from knn. Works only on numeric matrix.
+
+------------------------------------------------------------------------
+
+mice looks promising but get errors:
+
+mp <- mice(crs$dataset)
+
+ iter imp variable
+  1   1  Employment  Employment.d.1  Occupation  Occupation.d.1  AccountsError in nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax = TRUE,  :
+        too many (1683) weights
+
+However, 
+
+md.patter(crs$datset) gives very useful information:
+
+     ID Age Education Marital Income Sex Deductions Hours Adjustment Adjusted
+1859  1   1         1       1      1   1          1     1          1        1
+   1  1   1         1       1      1   1          1     1          1        1
+  40  1   1         1       1      1   1          1     1          1        1
+  97  1   1         1       1      1   1          1     1          1        1
+   3  1   1         1       1      1   1          1     1          1        1
+      0   0         0       0      0   0          0     0          0        0
+     Accounts Employment Occupation
+1859        1          1          1   0
+   1        1          1          0   1
+  40        0          1          1   1
+  97        1          0          0   2
+   3        0          0          0   3
+           43        100        101 244
+
+Here, 1859 entities have no missing values (i.e, a row of 1's and the
+final column is 0). 1 entity has a missing value for Occupation only
+(i.e, a row of 1's except under occupation where it is 0, and the
+final column is 1, indicating just 1 missing value). 40 entities have
+missing values for Accounts only, 90 have missing values for both
+Employment and Occupation, and 3 entities for all of Account,
+Employment and Occupation.
+
+This would be very useful information to include in Rattle.
+
+------------------------------------------------------------------------
+
+Amelia II http://gking.harvard.edu/amelia/ Is this really primarily
+for time series? An initial test indicates not much from this. Could
+not get categoricals working.
+
+output <- amelia(data=ds[,c(1,2,7,9,10,12,13)], m=1)
+
+========================================================================
+
+OLD
+
+Implement Marco's Transform/Cut/Factorise code?
+
+Version 2.2
+
+  General: 
+    Export functionality
+
+  Data Tab:
+    Access SQLite database
+
+  Evaluate Tab: 
+    Implement distribution comparison
+    Generate plots to compare distributions
+    Model Type = "All" for all built models or use check boxes?
+
+  Model tab
+    Use tune to build the best model: rpart, randomForest, svm
+
+
+TODO
+
+  General:
+    Export each model to PMML, SQL, and standalone R script.
+    Add an argument to rattle to load the csv file.
+    Add a button to run an R script? (Tony Nolan)
+    Add R commands to status line as they are run (Tony Nolan)
+    Use rgl for sophisticated graphics?
+
+  Data:
+    Drop down data type for each variable perform transform (Robert Williams)
+
+  Cluster:
+    Multiple kmeans and plot to find best k (Enrico)
+
+  Models:
+    Neural Networks using netalg
+    Bayesian using bayesm
+
+  Plots:
+    All plots into a Cairo tabbed window!
+
+========================================================================
+
+MAJOR
+
+Export button
+	For Explore tab's Distribution option, export bunch of plots.
+	Export of Model should generate PMML of the model.
+	Export of Explore->Plot should generate PDF or PNGs of the plots.
+
+
+
+
+Can hier cluster rescale images (Linda)
+
+========================================================================
+
+POSSIBLE
+
+Data tab's ODBC option
+	Allow username and password to be specified
+	Allow a filename (abc.mdb or efg.xls) and use appropriate calls
+		crs$odbc <- odbcConnectExcel("h:/sample.xls")
+		crs$odbc <- odbcConnectAccess("h:/sample.mdb")
+
+Memory
+	Have a look at biglm for lm on blocks of data - can do 23 million rows
+
+========================================================================
+
+Rewrite based on example code from Rcmdr as in QCUGUI
+Identify where Warnings occur and use suppressWarnings(code...)
+When execute, for each categorical, if num levels differ, report in TV
+Automatically identify bad boxplots (outliers) and do log.
+Graphs to compare distributions of the same variables between datasets 
+Write article for Newsletter
+prcomp: NAs in data cause failure - temp soln is use na.omit(ds) and warn.
+For each textview, add initial text to explain the point (c.f. prcomp)
+##   2-way tables work (heatmap over cells chi-square significant) (Rohan)
+##   Add t/z test and chi2 test in explore tab (Tony)
+##   Some solution to the blotches in the hierarchical clusters (Linda)
+##   Automatically add in an optimal line to risk plot?
+##   Add a Cancel/Stop button (Michael)
+##   Kernel optimisation ala KXEN.
+##   Model visualisation for SVMs 
+##   Better report generation for direct inclusion in reports! 
+##   3D visualisation of SVM in R (Tony)
+##   Outputs - generate a report in Word (Tony)
+##   For each library command, check it is available, as with rpart.
+##   Need some checks to ensure the weight ends up numeric.
+##   Add a threshold value (e.g. 0.2) for use in the Evaluation charts (Ed Cox)
+##   For HierCor (and others) convert factors to integers (Tony)
+##   Allow Variable types to be changed e.g., factor to integer? (Tony)
+##   Save file with ID, Decision (use threshold), Probability (Ed Cox, Fuchun)
+##   Evaluate: Add OOB evaluations (Eugene)
+##   MODEL RF: Should sampsize be a proportion
+##   Seriation plot: add a mouse hover to provide extra info (Tony)
+##   Seriation plot: Click to plot all below the click (Tony)
+##   Seriation plot: cf Tony's terrain plot and explain
+##   Hierachical clustering to highlight targets (hot spots).
+##   Get AUC as a measure for ROC curves.
+##   Add seriation/colour denrogram www.lirmm.fr/~caraux/PermutMatrix/ (Stuart)
+##   Variables: For ratios SAS/EM quantile transform is good - Rohan
+##   Add a new Score tab to score a new dataset and save the results. (Fuchun)
+##   Explain lift better in the lift tooltip.
+##   For multiple targets, choose a different logistic regression method.
+##   Print any text view via a Print button.
+##   Add MARS (mda package).
+##   CLUSTER HIERCOR: Set text size based on # of branches?
+##   EVALUATE: Give error if Variables changed but model not regenerated.
+##   MISC: When changing tabs, warn if modified but not executed.
+##   BUG: Sample 10% not noticed until ENTER????
+##   MISC: Run quit.rattle() when root window destroyed.
+##   DATA: Get header, rows, sep, and na.strings working
+##   MODEL RPART: Use print.rules.cmd string for log and eval
+##   MODEL: GBM: Implement and document new options
+##   EVALUATE RISK: If VARIABLE empty, then just do no Risk curve.
+##   EVALUATE: Error when test set has factor levels different to train
+##   EVALUATE: Use the text areas to describe the charts.
+##   EVALUATE: When Sampling, be sure to apply to only the sample.
+##   EVALUATE: Add grids to all plots
+##   INIT: Make filename the first active widget. TAB then to Execute.
+##   MODEL: Multiple models then optimise with best?
+##   Help -> Search ... brings up a text entry box
+##   Help -> Function ... brings up a text entry box
+##   DATA: In the file chooser replace Open with Select?
+##   Seriation plot: set point size to tiny (at least can save as PDF to zoom).
+##   VARIABLES: Could colour the text in Variable column according to role.
+##   MODEL note when sample has changed, model not updated and we eveluate
+##	SAMPLE: Use sample.split of caTools to partition test/train on
+##	target to maintain outcome ratio (and thus more likely to
+##	ensure there are samples from each class, unlike any old
+##	sample).  This does not get around the problem with sampling
+##	not including all possible levels for the input variables so it
+##	won't help where the testset does not have all possible
+##	levels. RandomForest will still complain on the predict.

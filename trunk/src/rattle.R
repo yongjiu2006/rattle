@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-30 08:01:12 Graham Williams>
+# Time-stamp: <2010-01-31 09:02:56 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,7 +27,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 23 Jan 2010"
+VERSION.DATE <- "Released 30 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
