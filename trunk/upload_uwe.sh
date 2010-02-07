@@ -1,6 +1,9 @@
 #
 # Auto upload to MS/Windows R Check
 
+TARGET=/R-devel
+#TARGET=/R-release
+
 MAJOR=$(egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR=$(egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 SVNREVIS=$(svn info | egrep 'Revision:' |  cut -d" " -f 2)
@@ -13,7 +16,7 @@ ftp -n -i << _EOF_
 open 129.217.207.166
 user anonymous Graham.Williams@togaware.com
 bin
-cd /R-devel
+cd ${TARGET}
 lcd repository
 put ${LATEST}
 quit

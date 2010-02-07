@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-20 07:58:56 Graham Williams>
+# Time-stamp: <2010-02-07 06:21:53 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -191,10 +191,10 @@ executeClusterHClust <- function(include)
   # seconds!
 
   lib.cmd <- "require(amap, quietly=TRUE)"
-  if (packageIsAvailable("amap", "perform an efficient hcluster"))
+  if (packageIsAvailable("amap", Rtxt("perform an efficient hierarchical clustering")))
   {
     amap.available <- TRUE
-    appendLog(packageProvides("amap", "hcluster"), lib.cmd)
+    appendLog(packageProvides("amap", "hclusterpar"), lib.cmd)
     eval(parse(text=lib.cmd))
   }
   else
@@ -211,11 +211,12 @@ executeClusterHClust <- function(include)
   
   if (nbproc != 1 && ! amap.available)
   {
-    errorDialog("The amap package is not available and so the efficient",
-                "and parallel hcluster is not available.",
-                "Please set the number of processors to 1 to proceed",
-                "with using the single processor hclust instead.",
-                "Be aware that the amap version is over 10 times faster.")
+    errorDialog(Rtxt("The 'amap' package is not available and so the efficient",
+                     "and parallel hcluster is not available.",
+                     "Please set the number of processors to 1 to proceed",
+                     "with using the single processor hclust instead.",
+                     "Be aware that the amap version is over 10 times faster.",
+                     "You may ant to install the 'amap' package."))
     return(FALSE)
   }
   
@@ -329,6 +330,7 @@ plotDendrogram <- function()
   # Show a busy cursor whilst drawing the plot.
 
   set.cursor("watch", Rtxt("Rendering the hierarchical cluster dendrogram...."))
+  on.exit(set.cursor("left-ptr", ""))
   
   # Generate the plot command to not print the xaxis labels if there
   # are too many observations.
@@ -357,9 +359,7 @@ plotDendrogram <- function()
     appendLog("Add in rectangles to show the clusters.", rect.cmd)
     eval(parse(text=rect.cmd))
   }
-  
-  set.cursor("left-ptr", "")
-}
+  }
 
 displayHClustStats <- function()
 {
@@ -394,21 +394,23 @@ displayHClustStats <- function()
 
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   sampling  <- not.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
+#  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
+#  if (length(nums) > 0)
+#  {
+#    indicies <- getVariableIndicies(crs$input)
+#    include <- simplifyNumberList(intersect(nums, indicies))
+#  }
+#
+#  if (length(nums) == 0 || length(indicies) == 0)
+#  {
+#    errorDialog("Clusters are currently calculated only for numeric data.",
+#                "No numeric variables were found in the dataset",
+#                "from amongst those having an input/target/risk role.")
+#    return()
+#  }
 
-  if (length(nums) == 0 || length(indicies) == 0)
-  {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
-    return()
-  }
-
+  include <- getNumericVariables()
+  
   # Cluster centers.
 
   centers.cmd <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",

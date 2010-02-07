@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-11 17:50:37 Graham Williams>
+# Time-stamp: <2010-02-06 06:45:34 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -2941,16 +2941,26 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
 
     par(op)
 
+    # 100206 Move the pseudo-R squared to the plot itself.
+
+    legend.cmd <- paste('legend("bottomright",',
+                        'sprintf("Pseudo R-square=%s", fitcorr),',
+                        'bty="n")')
+    appendLog(Rtxt("Include a psuedo R-square on the plot"), legend.cmd)
+    eval(parse(text=legend.cmd))
+    
     # TODO Add to LOG
 
-    # Add decorations
+    # Add decorations. 100206 Rado suggested not including the
+    # filename, but probably still want an indication of whether it is
+    # a test or training dataset that is part of the testname - but
+    # need to extract that.
 
-    decorcmd <- paste(genPlotTitleCmd("Predicted vs. Observed", mtype,
-                                      testname, "\n", "Pseudo R-square=",
-                                      fitcorr),
-                    '\ngrid()', sep="")
-    appendLog("Add decorations to the plot.", decorcmd)
-    eval(parse(text=decorcmd))
+    title.cmd <- paste(genPlotTitleCmd("Predicted vs. Observed\n", commonName(mtype),
+                                       "Model\n", testname),
+                       '\ngrid()', sep="")
+    appendLog(Rtxt("Add a title and grid to the plot."), title.cmd)
+    eval(parse(text=title.cmd))
 
   }
   return("Pr v Ob plot generated.")

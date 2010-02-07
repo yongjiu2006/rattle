@@ -298,7 +298,7 @@ $(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) weather
 		src/rstat.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
-	cp ChangeLog NEWS package/rattle/inst/
+	cp ChangeLog NEWS INSTALL package/rattle/inst/
 	cp odf/data_summary.odt package/rattle/inst/odt/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) \
 	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)

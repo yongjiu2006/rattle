@@ -10,7 +10,7 @@ Suggests: RGtk2, ada, amap, arules, biclust, cairoDevice, car,
   cba, colorspace, doBy, e1071, ellipse, fEcofin, 
   fBasics, foreign, fpc, gdata, gtools, gplots, 
   gWidgetsRGtk2, Hmisc, kernlab, latticist, Matrix, mice, network, 
-  nnet, odfWeave, party, playwith, randomForest, reshape, rggobi, ROCR,
+  nnet, odfWeave, party, playwith, psych, randomForest, reshape, rggobi, ROCR,
   RODBC, rpart, RSvgDevice, survival, timeDate, XML
 Description: Rattle (the R Analytic Tool To Learn Easily) provides a 
   Gnome (RGtk2) based interface to R functionality for data mining. 
