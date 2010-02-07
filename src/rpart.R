@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:50:27 Graham Williams>
+# Time-stamp: <2010-02-03 21:59:50 Graham Williams>
 #
 # RPART TAB
 #
@@ -817,14 +817,14 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
         }
         else {
             if (sp["ncat"] < 0) 
-                op <- "< - >"
-            else op <- "> - <"
+                op <- "< =>"
+            else op <- ">= <"
             string <- paste(v, op, round(val, decimals))
         }
     }
     else {
         val <- substring(as.character(tframe$splits[1, 1]), 2)
-        string <- paste(as.character(v), "< - >", round(val, decimals))
+        string <- paste(as.character(v), "<= >", round(val, decimals))
     }
     text.default(x[1], y[1], string, cex = cex)
     if (nodeinfo)
@@ -892,15 +892,15 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
         }
         else {
           if (sp["ncat"] < 0) 
-            op <- "< - >"
-          else op <- "> - <"
+            op <- "< =>"
+          else op <- expression(">= <")
           string <- paste(v, op, round(val, decimals))
         }
       }
       else {
         val <- substring(as.character(tframe$splits[i, 
                                                     1]), 2)
-        string <- paste(as.character(v), "< - >", round(val, decimals))
+        string <- paste(as.character(v), "< =>", round(val, decimals))
       }
       text.default(x[i], y[i], string, cex = cex)
       if (nodeinfo) {

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-26 19:41:17 Graham Williams>
+# Time-stamp: <2010-01-31 14:08:02 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -3182,6 +3182,8 @@ displayPairsPlot <- function(dataset)
   # If there are more than 6 input/target/risk variables, then
   # randomly sample down to 6 since larger than that is harder to
   # read.
+  #
+  # 100131 Try out the pairs.panels function from the psych package.
 
   newPlot(1)
   
@@ -3219,19 +3221,35 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
     vars <- simplifyNumberList(sort(sample(vars, 6)))
   }
 
-  # The plot command is the pairs function from the graphics package
-  # (and hence always available).
-
-  plot.cmd <- paste(sprintf("pairs(%s[%s],", dataset, vars),
-                    "diag.panel=panel.hist,",
-                    "upper.panel=panel.smooth,",
-                    "lower.panel=panel.cor)")
-
   startLog(Rtxt("Scatter Plot"))
-  appendLog(Rtxt("Define support functions for the plot."), pre.cmd)
-  eval(parse(text=pre.cmd))
-  appendLog(Rtxt("Display a pairs (scatter) plot. Note random selection of variables",
-                 "if there are more than 6."), plot.cmd)
+
+  if (packageIsAvailable("psych"))
+  {
+    # 100131 Use the pairs.panels function from the psych package
+    # which does the panels functions for us.
+
+    lib.cmd <- "require(psych, quietly=TRUE)"
+    appendLog(packageProvides("psych", "pairs.panels"), lib.cmd)
+    eval(parse(text=lib.cmd))
+  
+    plot.cmd <- paste(sprintf("pairs.panels(%s[%s],", dataset, vars), "scale=TRUE)")
+  }
+  else
+  {
+    # The plot command is the pairs function from the graphics package
+    # (and hence always available).
+
+    plot.cmd <- paste(sprintf("pairs(%s[%s],", dataset, vars),
+                      "diag.panel=panel.hist,",
+                      "upper.panel=panel.cor,",
+                      "lower.panel=panel.smooth)")
+
+    appendLog(Rtxt("Define support functions for the plot."), pre.cmd)
+    eval(parse(text=pre.cmd))
+  }
+
+   appendLog(Rtxt("Display a pairs (scatter) plot. Note random selection of variables",
+                  "if there are more than 6."), plot.cmd)
   eval(parse(text=plot.cmd))
 }
   

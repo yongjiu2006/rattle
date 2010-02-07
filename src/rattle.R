@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-31 09:02:56 Graham Williams>
+# Time-stamp: <2010-02-01 19:05:18 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -16,9 +16,9 @@ Rtxt <- function(...)
   # 100130 Currently, on Windows we are waiting for 2.12.17 of  RGtk2 with
   # rgtk2_bindtextdomain().
   
-  if (.Platform$OS.type == "windows")
-    paste(...)
-  else
+#  if (.Platform$OS.type == "windows")
+#    paste(...)
+#  else
     gettext(paste(...), domain="R-rattle")
 }
 
@@ -27,7 +27,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 30 Jan 2010"
+VERSION.DATE <- "Released 31 Jan 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 

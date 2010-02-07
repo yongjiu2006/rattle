@@ -1,3 +1,22 @@
+rattle (2.5.21) stable; urgency=low
+
+  * Re-enable gettext on MS/Windows, even though RGtk2 2.12.18 has not
+    fixed the bindtextdomain problem with glade files and package supplied
+    translations.
+  
+  * Change the tree plot to us "< =>" and ">= <" to clearly identify which
+    branch the "=" results go. Could not figure out how to get expression
+    to us a "ge" symbol.
+  
+  * Improve formatting of the PvO plots.
+  
+  * Use the pairs.panels function from the psych package for the default
+    scatterplot on the Explore tab.
+  
+  * Add INSTALL file.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 07 Feb 2010 15:03:22 +1100
+
 rattle (2.5.20) stable; urgency=low
 
   * Restore missing weather.csv file.
