@@ -252,9 +252,10 @@
     hierarchy.</tooltip>
   <tooltip widget="hclust_dendrogram_button">Display a dendrogram plot
     of the hierarchical cluster.</tooltip>
-  <tooltip widget="associate_baskets_checkbutton">Baskets are
+  <tooltip widget="associate_baskets_checkbutton">If checked, baskets are
     identified by the ident variable and items in the basket by the
-    target variable.</tooltip>
+    target variable. Otherwise a basket is the collection of input
+    variables.</tooltip>
   <tooltip widget="associate_plot_frequency_button">Plot the frequency
     of the more common items. The support value is used. This is also
     the items that have enough support to appear in the association

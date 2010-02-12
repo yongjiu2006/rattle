@@ -1,13 +1,56 @@
-------------------------------------------------------------------------
-Periodically save the log tab to a backup file
-2009-11-05 05:08:38 Graham Williams
+Help Menu
 
-------------------------------------------------------------------------
-Move to using ggplot2.
-2008-01-31 12:14:03 Graham Williams
+  ------------------------------------------------------------------------
+  2010-02-13 08:11:18 Graham Williams
 
-The plots might be more standardised, modern, simpler to generate, and
-much more powerfull than plot and lattice.
+  Add a simple R command syntax to each Rattle help text.
+  ------------------------------------------------------------------------
+
+
+Data Tab
+
+  Variable selection
+
+    Variable type
+
+      ----------------------------------------------------------------------
+      2010-02-13 08:02:46 Graham Williams, Robert Williams
+
+      Turn the Data Type column into a combo box to allow variable
+      types to change in situ.
+      ----------------------------------------------------------------------
+
+    Variable role
+
+      ----------------------------------------------------------------------
+      2010-02-13 08:02:46 Graham Williams, Tony Nolan
+
+      Replace the radio buttons with a single combo box. This will
+      allow further choices for the roles.
+      ----------------------------------------------------------------------
+
+Explore Tab
+
+  Distributions option
+
+    ----------------------------------------------------------------------
+    2008-01-31 12:14:03 Graham Williams
+
+    Move to using ggplot2. The plots might be more standardised,
+    modern, simpler to generate, and much more powerfull than plot and
+    lattice.
+    ----------------------------------------------------------------------
+
+Log Tab
+
+  ------------------------------------------------------------------------
+  2009-11-05 05:08:38 Graham Williams
+
+  Periodically save the log tab to a backup file.
+  ------------------------------------------------------------------------
+
+
+Unsorted list:
 
 ------------------------------------------------------------------------
 091103 Nolan's group wihtout a categoric chose (Tony Nolan)
@@ -299,7 +342,6 @@ TODO
     Use rgl for sophisticated graphics?
 
   Data:
-    Drop down data type for each variable perform transform (Robert Williams)
 
   Cluster:
     Multiple kmeans and plot to find best k (Enrico)
