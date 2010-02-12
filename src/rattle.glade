@@ -6,6 +6,7 @@
     <property name="visible">True</property>
     <property name="title" translatable="yes">Rattle: Effective Data Mining with R</property>
     <property name="role">Rattle</property>
+    <property name="default_height">650</property>
     <signal name="delete_event" handler="on_rattle_window_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
@@ -1536,8 +1537,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="action">select-folder</property>
                             <property name="local_only">False</property>
+                            <property name="action">select-folder</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -6592,16 +6593,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6610,6 +6601,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>

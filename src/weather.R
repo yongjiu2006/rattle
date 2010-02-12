@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-31 10:30:14 Graham Williams>
+# Time-stamp: <2010-02-13 09:40:16 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -103,6 +103,12 @@ acquireWeatherData <- function(write.to.file=FALSE)
 
   fname <- "weather.csv"
   write.csv(weather, fname, row.names=FALSE)
+
+  # 100213 We might not actually include this as it adds about 400K to
+  # the package, taking it from 900K to 1.3M
+  
+  fname <- "weatherAUS.csv"
+  write.csv(weatherAUS, fname, row.names=FALSE)
 
   # 090628 Should really now convert all of the variables to their
   # appropraite data types, with Date as a Date, numeric variables as

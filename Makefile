@@ -240,7 +240,7 @@ install: build pbuild ibuild zip rattle_src.zip # check pcheck
 	#mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
-	# 100123 Do I still want to keep these updated? lftp -f .lftp
+	lftp -f .lftp
 
 # 100123 Updated the build process
 
@@ -345,7 +345,7 @@ package/rattle/data/audit.RData: support/audit.R src/audit.R Makefile
 
 .PHONY: weather
 weather: package/rattle/data/weather.RData
-package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile weather
+package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	R --no-save --quiet < support/weather.R
 	chmod go+r weather*.RData weather.csv weather.arff weather_missing.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
