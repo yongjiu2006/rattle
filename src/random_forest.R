@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-20 07:47:51 Graham Williams>
+# Time-stamp: <2010-03-02 20:35:21 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -55,7 +55,7 @@ decision trees from different samples of the dataset, and while
 building each tree, random subsets of the available variables are
 considered for splitting the data at each node of the tree. A simple
 majority vote is then used for prediction in the case of
-classificaiton (and average for regression).
+classification (and average for regression).
 RandomForest's are generally robust against overfitting.
 <<>>
 The default is to build 500 trees and to select the square root of the
@@ -64,7 +64,7 @@ resulting model is generally not very sensitive to the choice of these
 parameters.
 <<>>
 Any observation with missing values will be ignored, which may lead to some
-suprises, like many fewer observations to model when many missing values
+surprises, like many fewer observations to model when many missing values
 exist. It can also lead to losing all examples of a particular class!
 <<>>
 An estimate of the error rate is provided as the out-of-bag (OOB)

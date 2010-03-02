@@ -1,7 +1,62 @@
+rattle (2.5.23) stable; urgency=low
+
+  * Catch "arules" error in converting data to transactions when baskets
+    contain repeated items.
+
+  * When data tab is executed, and so crs$rpart is reset to NULL, always
+    remove the Draw/Rules button from the Tree option of the Predictive
+    tab.
+  
+  * Add code to fix translations that are not being loaded when using
+    RGtk2 on MS/Windows. All is okay on GNU/Linux, but RGtk2 seems not to
+    get the right locale for loaded Glade file. The fix is to traverse the
+    GUI and change all labels, on starting up Rattle. RGtk2 authors tried
+    to fix but it remains an issue.
+  
+  * Ensure rpart is reset on resetting rattle.
+  
+  * Rework handling of tab pages because a Japanese translation on
+    MS/Windows is having issues with the following call (nd=notebook)
+    nb$getTabLabelText(nb$getNthPage(nb$getCurrentPage())) returning what
+    looks like Shift-JIS encoding of the string rather than UTF-8, and
+    hence not string matching the expected tab label.
+  
+  * Fix spelling errors on help menu and ensure help for all topics is
+    covered.
+  
+  * For nnet, use MaxNWts=10000 (default is 1000) to allow larger nets by
+    default, and capture the error message when this is exceeded and
+    better explain what to do.
+  
+  * Ensure we don't export an empty dataset when choosing export on the
+    data tab.
+  
+  * Capture arules error message when there are repeated items in one
+    basket, and explain this more clearly.
+  
+  * For rpart use information as the default split rather than Gini - makes
+    little if any difference.
+  
+  * Allow showHelpPlus to have an extra/alternative question that is
+    displayed.
+  
+  * All random seeds should be 42.
+  
+  * Reset kmeans tab on loading a project.
+  
+  * Add dozen more weather stations to the weatherAUS dataset.
+
+  * Improve the logic for the display of the Report radio buttons on the
+    Evaluate tab.
+  
+  * Spelling correction to a number of tooltips.
+  
+ --
+
 rattle (2.5.22) stable; urgency=low
 
-  * Default window height is 650, but not forced, so that the window
-    nicely fills a netbook screen.
+  * Default window height is 650, but not forced so that the window
+    nicely fills a netbook screen if maximised.
   
   * Bump R dependency to 2.8.0 in line with update of the CITATION file.
 

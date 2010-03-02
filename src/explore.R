@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-31 14:08:02 Graham Williams>
+# Time-stamp: <2010-02-26 21:04:58 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -1783,7 +1783,7 @@ executeExplorePlot2 <- function(dataset,
   else if (total.plots ==  1)
     setStatusBar(Rtxt("One plot has been generated."))
   else
-    setStatusBar(Rtxt("A pairs plot has benen generated."))
+    setStatusBar(Rtxt("A pairs plot has been generated."))
 }
 
 #-----------------------------------------------------------------------
@@ -3169,7 +3169,7 @@ executeExplorePlot <- function(dataset,
   else if (total.plots ==  1)
     setStatusBar(Rtxt("One plot has been generated."))
   else
-    setStatusBar(Rtxt("A pairs plot has benen generated."))
+    setStatusBar(Rtxt("A pairs plot has been generated."))
 }
 
 displayPairsPlot <- function(dataset)
@@ -3280,7 +3280,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
   startLog(Rtxt("GGobi Data Exploration"))
   appendLog(packageProvides("rggobi", "rggobi"), lib.cmd)
   eval(parse(text=lib.cmd))
-  appendLog(Rtxt("Launch the GGobi data visualization applicaiton."),
+  appendLog(Rtxt("Launch the GGobi data visualization application."),
             gsub("<<-", "<-", ggobi.cmd))
   eval(parse(text=ggobi.cmd))
   

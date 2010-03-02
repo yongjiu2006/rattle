@@ -160,7 +160,7 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="export_menu">
-                        <property name="label">Export</property>
+                        <property name="label" translatable="yes">Export</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_export_button_clicked"/>
@@ -437,6 +437,14 @@
                                 <property name="label" translatable="yes">_Distributions</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_help_distributions_activate"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkMenuItem" id="latticist1">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">_Latticist</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_latticist_activate"/>
                               </widget>
                             </child>
                             <child>
@@ -924,6 +932,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">R_OC</property>
                                 <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_roc_activate"/>
                               </widget>
                             </child>
                             <child>
@@ -931,6 +940,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_Precision</property>
                                 <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_precision_activate"/>
                               </widget>
                             </child>
                             <child>
@@ -946,6 +956,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Pr _v Ob</property>
                                 <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_prvob_activate"/>
                               </widget>
                             </child>
                             <child>
@@ -953,6 +964,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Sc_ore</property>
                                 <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_help_score_activate"/>
                               </widget>
                             </child>
                           </widget>
@@ -987,7 +999,7 @@
             </child>
             <child>
               <widget class="GtkImageMenuItem" id="rattle_menu">
-                <property name="label">imagemenuitem</property>
+                <property name="label">Rattle</property>
                 <property name="visible">True</property>
                 <property name="use_stock">False</property>
                 <signal name="activate" handler="on_rattle_menu_activate"/>
@@ -1089,7 +1101,7 @@
                 <child>
                   <widget class="GtkToolButton" id="export_button">
                     <property name="visible">True</property>
-                    <property name="label">Export</property>
+                    <property name="label" translatable="yes">Export</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-connect</property>
                     <signal name="clicked" handler="on_export_button_clicked"/>
@@ -1537,8 +1549,8 @@
                           <widget class="GtkFileChooserButton" id="data_corpus_location_filechooserbutton">
                             <property name="width_request">200</property>
                             <property name="visible">True</property>
-                            <property name="local_only">False</property>
                             <property name="action">select-folder</property>
+                            <property name="local_only">False</property>
                             <property name="title" translatable="yes">Select A Folder</property>
                           </widget>
                           <packing>
@@ -2123,7 +2135,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label1">
+              <widget class="GtkLabel" id="notebook_data_label">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Data</property>
               </widget>
@@ -6593,6 +6605,16 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6601,16 +6623,6 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -8842,8 +8854,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
+    <property name="action">save</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>

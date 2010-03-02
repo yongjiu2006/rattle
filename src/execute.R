@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-11-05 21:42:29 Graham Williams>
+# Time-stamp: <2010-03-01 06:23:51 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -25,7 +25,7 @@ on_execute_button_clicked <- function(action, window)
 {
   # Wrap up the actual call with a "try" so that the watch cursor
   # turns off even on error.
-  
+
   setStatusBar()
 
   # 081117 This ensures spinbuttons, for example, lose focus and hence
@@ -40,7 +40,7 @@ on_execute_button_clicked <- function(action, window)
   # Ctrl-C in the console, and that does interrupt the Rattle process,
   # but I can't work out how to get a Ctrl-C (or perhaps an ESC) in
   # the Rattle GUI to cause an interrupt.
-  
+
   set.cursor("watch")
   tryCatch(dispatchExecuteButton(),
            interrupt=function(m) setStatusBar("Processing interrupted by user."),
@@ -53,10 +53,10 @@ on_execute_button_clicked <- function(action, window)
 #                                   setStatusBar("Processing interrupted by user."),
 #                                   finally=set.cursor()))
 #  collect()
-  
+
   # 090103 Return nothing, otherwise we get the results from the
   # tryCatch above.
-  
+
   return()
 }
 
@@ -65,8 +65,8 @@ dispatchExecuteButton <- function()
   # Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)
-  
-  if (ct == crv$NOTEBOOK.DATA.NAME) 
+
+  if (ct == crv$NOTEBOOK.DATA.NAME)
   {
     executeDataTab()
   }
@@ -101,7 +101,7 @@ dispatchExecuteButton <- function()
     # word wrap when a model was Executed if it had more than 2
     # classes, since a message is printed about ROCR etc not handling
     # any more than 2 classes.
-    
+
     theWidget("confusion_textview")$setWrapMode("none")
     executeEvaluateTab()
   }

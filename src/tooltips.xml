@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <rattle-tooltips>
   <tooltip widget="quit_menu">Quit from the application.</tooltip>
-  <tooltip widget="execute_menu">Execute to have the current tab take
-    effect.</tooltip>
+  <tooltip widget="execute_menu">Execute the current tab to have it
+    take effect (shortcut is F2).</tooltip>
   <tooltip widget="verbose_menuitem">If enabled, display timestamps in
     plots.</tooltip>
   <tooltip widget="tooltips_menuitem">Enable tooltips under
@@ -12,8 +12,8 @@
     R graphics device for your installation.</tooltip>
   <tooltip widget="rattle_menu">Double click to browse to the Rattle
     home page.</tooltip>
-  <tooltip widget="execute_button">Execute current tab (shortcut is
-    F2).</tooltip>
+  <tooltip widget="execute_button">Execute the current tab to have it
+    take effect (shortcut is F2).</tooltip>
   <tooltip widget="new_button">Start a new project.</tooltip>
   <tooltip widget="open_button">Open an existing project.</tooltip>
   <tooltip widget="save_button">Save the current project to
@@ -23,7 +23,7 @@
   <tooltip widget="quit_button">Quit the application, closing all
     graphics displays and the R console.</tooltip>
   <tooltip widget="data_csv_radiobutton">Load data from a comma
-    separated value (CSV) file, as might be expeorted from a
+    separated value (CSV) file, as might be exported from a
     spreadsheet or database.</tooltip>
   <tooltip widget="data_arff_radiobutton">Load data from an ARFF file
     (CSV with data types) as is used with the Weka data mining
@@ -45,12 +45,12 @@
     select a dataset file to load.</tooltip>
   <tooltip widget="data_separator_entry">The default column separator
     is a comma, but tabs (\t) are also common, often in .txt
-    files..</tooltip>
+    files.</tooltip>
   <tooltip widget="data_header_checkbutton">Indicates whether the
     first row of the datafile is the names of the columns. Otherwise,
     random names will be made up.</tooltip>
   <tooltip widget="data_odbc_dsn_entry">Enter the name of a known ODBC
-    sata source.</tooltip>
+    data source.</tooltip>
   <tooltip widget="data_odbc_limit_spinbutton">Number of rows to
     retrieve from the table.</tooltip>
   <tooltip widget="data_corpus_location_filechooserbutton">Folder
@@ -95,7 +95,7 @@
   <tooltip widget="data_target_auto_radiobutton">Determine target type
     automatically.</tooltip>
   <tooltip widget="data_target_categoric_radiobutton">Set target type to be
-    categorical for Classification.</tooltip>
+    categoric for Classification.</tooltip>
   <tooltip widget="data_target_numeric_radiobutton">Set target type to be
     numeric for Regression.</tooltip>
   <tooltip widget="label1">Load a dataset.</tooltip>
@@ -106,7 +106,7 @@
   <tooltip widget="explore_correlation_radiobutton">Show the pairwise
     correlations between each numeric variable.</tooltip>
   <tooltip widget="prcomp_radiobutton">Perform a principal components
-    analysis of the numeric data in the daatset.</tooltip>
+    analysis of the numeric data in the dataset.</tooltip>
   <tooltip widget="explore_sample_label">To turn sampling off, uncheck
     the Partition checkbox in the Data tab.</tooltip>
   <tooltip widget="summary_checkbutton">Summary, including Min,
@@ -172,8 +172,8 @@
     or type changes.</tooltip>
   <tooltip widget="cleanup_radiobutton">Delete entites or
     variables.</tooltip>
-  <tooltip widget="transform_notebook">Multiply out the slected
-    categoricals into a new single variable.</tooltip>
+  <tooltip widget="transform_notebook">Multiply out the selected
+    categorics into a new single variable.</tooltip>
   <tooltip widget="rescale_matrix_radiobutton">For the selected
     numeric variables (one or more variables, considered as a matrix)
     divide each cell by the matrix total.</tooltip>
@@ -185,7 +185,7 @@
   <tooltip widget="normalise_scale01_radiobutton">Rescale to the range
     0-1.</tooltip>
   <tooltip widget="normalise_bygroup_radiobutton">Specify two
-    variables (numerical + categorical) and group by the categorical
+    variables (numeric + categoric) and group by the categoric
     to normalise the numeric between 0 and 100.</tooltip>
   <tooltip widget="normalise_rank_radiobutton">Change the values into
     a rank order.</tooltip>
@@ -216,10 +216,10 @@
   <tooltip widget="label15">Set the number of bins to
     construct.</tooltip>
   <tooltip widget="remap_bins_spinbutton">Number of bins.</tooltip>
-  <tooltip widget="remap_indicator_radiobutton">Turn a categorical
+  <tooltip widget="remap_indicator_radiobutton">Turn a categoric
     into a collection of numeric (0,1) variables.</tooltip>
   <tooltip widget="remap_joincat_radiobutton">Combine multiple
-    categorics into just one.</tooltip>
+    categoric variables into just one.</tooltip>
   <tooltip widget="delete_ignored_radiobutton">Delete any variables
     that are marked as having role Ignore.</tooltip>
   <tooltip widget="delete_selected_radiobutton">Delete those variables
@@ -257,7 +257,7 @@
     target variable. Otherwise a basket is the collection of input
     variables.</tooltip>
   <tooltip widget="associate_plot_frequency_button">Plot the frequency
-    of the more common items. The support value is used. This is also
+    of the more common items. The support value is used. This includes
     the items that have enough support to appear in the association
     rules.</tooltip>
   <tooltip widget="rpart_radiobutton">Build a model using the popular
@@ -351,11 +351,11 @@
     display.</tooltip>
   <tooltip widget="ada_list_button">List the decision trees in the
     textview.</tooltip>
-  <tooltip widget="ada_errors_button">Plot error rate prgressively for
+  <tooltip widget="ada_errors_button">Plot error rate progressively for
     the number of trees built. Useful for deciding the optimal number
     of trees to build. </tooltip>
-  <tooltip widget="ada_importance_button">Show the relative impartance
-    of variabels. Useful to see which variables play the most
+  <tooltip widget="ada_importance_button">Show the relative importance
+    of variables. Useful to see which variables play the most
     important roles in the model.</tooltip>
   <tooltip widget="ada_defaults_button">Reset the options to
     correspond to the default values.</tooltip>
@@ -366,7 +366,7 @@
     model is fairly insensitive to changes here.</tooltip>
   <tooltip widget="rf_mtry_spinbutton">The number of variables that
     will be considered at any time in deciding how to partition the
-    dataset. For classificaiton the default is the square root of the
+    dataset. For classification the default is the square root of the
     number of variables. The model is generally not very sensitive to
     this value.</tooltip>
   <tooltip widget="model_rf_sample_entry">Specify sample size for each
@@ -384,8 +384,8 @@
     THIS IS BEING REPLACED BY A Importance Button</tooltip>
   <tooltip widget="rf_proximity_checkbutton">THIS IS BEING REMOVE - IS
     IT NEEDED?</tooltip>
-  <tooltip widget="rf_importance_button">Show the relative impartance
-    of variabels. Useful to see which variables play the most
+  <tooltip widget="rf_importance_button">Show the relative importance
+    of variables. Useful to see which variables play the most
     important roles.</tooltip>
   <tooltip widget="rf_errors_button">Plot error rate prgressively for
     the number of trees built. Useful for deciding the optimal number
@@ -406,17 +406,17 @@
   <tooltip widget="evaluate_confusion_radiobutton">An error matrix simply lists
     in tabular form the number of predicted cases that are correct
     (true positives and true negatives) and incorrect (false positives
-    and false negatives). Both the raw numbers and the proporations
+    and false negatives). Both the raw numbers and the proportions
     will be displayed in two tables.</tooltip>
   <tooltip widget="evaluate_risk_radiobutton">A risk chart is used in Analytics
     to plot caseload versus performance data. While traditional plots
     (e.g., ROC Curves) plot false positives against true positives,
     this Risk Chart plots additional information, replacing the x-axis
     with Caseload (the number of cases predicted as hits by the model)
-    and the y-axis with Performance. A Risk Variable is idetified from
+    and the y-axis with Performance. A Risk Variable is identified from
     the dataset. This is a measure of the amount of risk associated
     with each case (e.g., dollars recovered from a fraudulent claim)
-    and the plot shows how much of the total risk is recevered for any
+    and the plot shows how much of the total risk is recovered for any
     particular caseload. The number of cases recovered (the precision)
     and the strike rate are also shown.</tooltip>
   <tooltip widget="evaluate_lift_radiobutton">A lift chart plots the
@@ -424,13 +424,13 @@
     (TP+FP)/TOTAL.</tooltip>
   <tooltip widget="evaluate_roc_radiobutton">An ROC curve plots the true
     positive rate against the false positive rate. A better model is
-    one with largeer area under the curve (better AUC).</tooltip>
+    one with larger area under the curve (better AUC).</tooltip>
   <tooltip widget="evaluate_precision_radiobutton">Plot precision (the positive
     predictive value) against recall (the true positive
     rate).</tooltip>
   <tooltip widget="evaluate_sensitivity_radiobutton">This plots sensitivity
     (the true positive rate, also called recall) against the
-    specificity (the true negative rate</tooltip>
+    specificity (the true negative rate).</tooltip>
   <tooltip widget="evaluate_score_radiobutton">Score the data and save to
     file.</tooltip>
   <tooltip widget="label132">Choose one or more available models to
@@ -464,5 +464,14 @@
     are written to file.</tooltip>
   <tooltip widget="evaluate_tab_label">Evaluate the models.</tooltip>
   <tooltip widget="log_tab_label">Show a complete log of all R
-    commands. Useful to save as an R script.</tooltip>
+    commands. Useful to save as an R script for documentation and
+    repeatability.</tooltip>
+  <tooltip widget="log_export_comments_checkbutton">When unchecked,
+    only the actual R commands will be exported to file, otherwise
+    everything we see in the Log is exported.</tooltip>
+  <tooltip widget="log_export_rename_checkbutton">Rattle variables are
+  prefixed with the string 'crs$'. You can choose to use your own
+  string to prefix your variables on exporting the Log.</tooltip>
+<tooltip widget="log_export_rename_entry">Choose the prefix to be used
+  to identify Rattle variables when this Log is exported.</tooltip>
 </rattle-tooltips>

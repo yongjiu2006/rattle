@@ -197,10 +197,6 @@ meld:
 diff:
 	svn diff
 
-.PHONY: translations
-translations:
-	(cd package/rattle/po; make)
-
 .PHONY: install
 install: build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
@@ -271,7 +267,14 @@ devbuild:
 # 100123 Updated the build process
 
 .PHONY: build
-build: $(REPOSITORY)/rattle_$(VERSION).tar.gz $(REPOSITORY)/rattle_$(VERSION).zip
+build: weather translations \
+	$(REPOSITORY)/rattle_$(VERSION).tar.gz \
+	$(REPOSITORY)/rattle_$(VERSION).zip
+
+.PHONY: translations
+translations:
+	(cd src; make R-rattle.pot)
+	(cd po; make updates; make all)
 
 pbuild: data pmml_$(PVERSION).tar.gz
 
@@ -288,7 +291,7 @@ rattle_src.zip:
 
 # 100123 Updated the build process.
 
-$(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) weather
+$(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	rm -f package/rattle/R/*
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
 		src/rattle.R
@@ -298,7 +301,8 @@ $(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) weather
 		src/rstat.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
-	cp ChangeLog NEWS INSTALL package/rattle/inst/
+	cp ChangeLog INSTALL package/rattle/inst/
+	cp rattle.Rnw package/rattle/inst/doc/
 	cp odf/data_summary.odt package/rattle/inst/odt/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) \
 	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
@@ -398,8 +402,15 @@ access:
 python:
 	python rattle.py
 
-test:
-	R --no-save --quiet < regression.R 
+test: $(REPOSITORY)/rattle_$(VERSION).tar.gz
+	LANGUAGE=ja r test.R
+#	read -p "Press Enter to continue: "
+#	LANGUAGE=es r test.R
+#	read -p "Press Enter to continue: "
+#	LANGUAGE=de r test.R
+#	read -p "Press Enter to continue: "
+
+#	R --no-save --quiet < regression.R 
 
 ptest:
 	r ptest.R
@@ -425,7 +436,7 @@ backup:
 	rsync -a src "/home/gjw/Ubuntu One/dmsurvivor"
 
 .Phony: ja
-ja: locals
+ja: build
 	LANGUAGE=ja R CMD BATCH rattle_ja.R
 
 .Phony: no

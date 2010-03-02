@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-22 17:29:32 Graham Williams>
+# Time-stamp: <2010-03-01 19:28:11 Graham Williams>
 #
 # DATA TAB
 #
@@ -38,12 +38,12 @@ overwriteModel <- function()
   # kind of opration that replaces the current model.
   
   if (not.null(listBuiltModels()))
-    return(questionDialog(Rtxt("You have chosen to load a dataset.",
+    return(questionDialog(Rtxt("You have chosen to load a new dataset.",
                                "This will clear the current project",
                                "(dataset and models).",
                                "If you choose not to continue",
-                               "you can save the project, and then load",
-                               "the new dataset.",
+                               "you can then save the current project before",
+                               "loading the new dataset.",
                                "\n\nDo you wish to continue and so overwrite",
                                "the current project?")))
   else
@@ -886,15 +886,19 @@ executeDataCSV <- function(filename=NULL)
   {
     if (any(grep("cannot open the connection", result)))
     {
-      errorDialog("The file you specified could not be found:\n\n  ",
-                  filename, "\n\nPlease check the filename and try again.")
+      errorDialog(sprintf(Rtxt("The file you specified could not be found:",
+                               "\n\n\t%s",
+                               "\n\nPlease check the filename and try again."),
+                          filename))
       return(FALSE)
     }
-    else if (any(grep("no lines available in input", result)))
+    else if (any(grep("no lines available in input", result))
+             | any(grep("first five rows are empty: giving up", result)))
     {
-      errorDialog("The file you specified:\n\n\t",
-                  filename, "\n\nis empty. ",
-                  "Please check the filename and try again.")
+      errorDialog(sprintf(Rtxt("The file you specified is empty:",
+                               "\n\n\t%s",
+                               "\n\nPlease check the file and try again."),
+                          filename))
       return(FALSE)
     }
     else
@@ -1575,6 +1579,13 @@ editData <- function()
 
   if (is.null(crs$dataset))
     assign.cmd <- 'crs$dataset <- edit(data.frame())'
+  # 100215 Would like to do the following but results are not saved
+  # into crs$dataset. Perhaps it is an environment issue.
+#    else if (packageIsAvailable("RGtk2DfEdit", Rtxt("RGtk2 data frame editor")))
+#    {
+#      require(RGtk2DfEdit)
+#      assign.cmd <- 'editobj <- dfedit(crs$dataset, dataset.name="crs$dataset")'
+#    }
   else
     assign.cmd <- 'crs$dataset <- edit(crs$dataset)'
   
@@ -1616,6 +1627,15 @@ editData <- function()
 
 exportDataTab <- function()
 {
+  # Don't export an empty dataset.
+
+  if (is.null(crs$dataset))
+  {
+    errorDialog(Rtxt("There is no dataset loaded, and so",
+                     "there is nothing to export."))
+    return(FALSE)
+  }
+
   sampling <- theWidget("data_sample_checkbutton")$getActive()
 
   # Obtain filename to write the dataset as CSV to.
@@ -2546,7 +2566,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "Variable",
+                                       Rtxt("Variable"),
                                        renderer, 
                                        text = crv$CATEGORICAL[["variable"]])
 
@@ -3003,6 +3023,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # Convert internal class to printable form.
     
     prcl <- cl[1]
+    prcl <- gsub("constant", Rtxt("Constant"), prcl)
     prcl <- gsub("ident", Rtxt("Ident"), prcl)
     prcl <- gsub("factor", Rtxt("Categoric"), prcl)
     prcl <- gsub("ordered", Rtxt("Categoric"), prcl)

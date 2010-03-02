@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-06 06:45:34 Graham Williams>
+# Time-stamp: <2010-03-01 21:59:09 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -102,15 +102,20 @@ on_evaluate_score_radiobutton_toggled <- function(button)
 
   if (button$getActive())
   {
+    make.sensitive <- (#length(active.models) == 1 &&
+                       !(theWidget("evaluate_kmeans_checkbutton")$getActive() ||
+                         theWidget("evaluate_hclust_checkbutton")$getActive())
+                       && ! numericTarget())
+
     # Show the Score textview.
 
     crv$EVALUATE$setCurrentPage(crv$EVALUATE.SCORE.TAB)
 
     # Configure the Report/Include options
 
-    theWidget("score_report_label")$setSensitive(TRUE)
-    theWidget("score_class_radiobutton")$setSensitive(TRUE)
-    theWidget("score_probability_radiobutton")$setSensitive(TRUE)
+    theWidget("score_report_label")$setSensitive(make.sensitive)
+    theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
+    theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
     if (length(crs$survival) && class(crs$survival) == "survreg")
       theWidget("score_probability_radiobutton")$setSensitive(FALSE)
     theWidget("score_include_label")$setSensitive(TRUE)
@@ -280,12 +285,19 @@ configureEvaluateTab <- function()
 #                     (existsCategoricModel()
 #                      && predictive.model
 #                      && ! multinomialTarget()))
-#
-#  theWidget("score_report_label")$setSensitive(make.sensitive)
-#  theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
-#  theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
 
-  default.to.class <- (theWidget("evaluate_rpart_checkbutton")$getActive() ||
+  make.sensitive <- (#length(active.models) == 1 &&
+                     !(theWidget("evaluate_kmeans_checkbutton")$getActive() ||
+                       theWidget("evaluate_hclust_checkbutton")$getActive())
+                     && ! numericTarget())
+
+  theWidget("score_report_label")$setSensitive(make.sensitive)
+  theWidget("score_class_radiobutton")$setSensitive(make.sensitive)
+  theWidget("score_probability_radiobutton")$setSensitive(make.sensitive)
+
+  default.to.class <- (theWidget("evaluate_kmeans_checkbutton")$getActive() ||
+                       theWidget("evaluate_hclust_checkbutton")$getActive() ||
+                       theWidget("evaluate_rpart_checkbutton")$getActive() ||
                        theWidget("evaluate_ada_checkbutton")$getActive() ||
                        theWidget("evaluate_rf_checkbutton")$getActive() ||
                        theWidget("evaluate_ksvm_checkbutton")$getActive() ||
