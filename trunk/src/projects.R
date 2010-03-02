@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-04 21:46:21 Graham Williams>
+# Time-stamp: <2010-02-24 06:56:08 Graham Williams>
 #
 # Project functionality.
 #
@@ -467,7 +467,7 @@ loadProject <- function()
     if (not.null(crs$sample.seed))
       theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
     else
-      theWidget("sample_seed_spinbutton")$setValue(123)
+      theWidget("sample_seed_spinbutton")$setValue(42)
     theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   else
@@ -492,9 +492,11 @@ loadProject <- function()
   if (not.null(crs$kmeans.seed))
     theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
-    theWidget("kmeans_seed_spinbutton")$setValue(123)
+    theWidget("kmeans_seed_spinbutton")$setValue(42)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
+  showModelKMeansExists()
+  
 #  crs$hclust   <- crs$hclust
   setTextviewContents("hclust_textview", crs$text$hclust)
 

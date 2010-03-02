@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2009-12-17 21:33:03 Graham Williams>
+# Time-stamp: <2010-03-01 22:28:53 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -141,6 +141,7 @@ executeModelNNet <- function()
                      sprintf(",\n        size=%d", size),
                      if (numericTarget()) ", linout=TRUE",
                      ", skip=TRUE",
+                     ", MaxNWts=10000",
                      ", trace=FALSE, maxit=1000",
                      ")", sep="")
 
@@ -148,7 +149,20 @@ executeModelNNet <- function()
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
-    errorReport(model.cmd, result)
+    if (any(grep("too many", result)))
+    {
+      errorDialog(sprintf(Rtxt("The call to 'nnet' has failed.",
+                               "This appears to be due to there being too many",
+                               "links and nodes in the neural network architecture.",
+                               "You may want to reduce the number of nodes in the",
+                               "hidden layer, or reduce the number of input variables,",
+                               "particularly any categoric variables.",
+                               "The actual error was:\n\n%s"),
+                          result))
+      setTextview(TV)
+    }
+else
+errorReport(model.cmd, result)
     return(FALSE)
   }
   

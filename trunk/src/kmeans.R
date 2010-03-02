@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-23 07:59:11 Graham Williams>
+# Time-stamp: <2010-02-24 07:00:51 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -198,9 +198,8 @@ executeClusterKMeans <- function(include)
 
     # Ensure the kmeans information buttons are now active.
 
-    theWidget("kmeans_stats_button")$setSensitive(TRUE)
-    theWidget("kmeans_data_plot_button")$setSensitive(TRUE)
-    theWidget("kmeans_discriminant_plot_button")$setSensitive(TRUE)
+    showModelKMeansExists()
+
   }
   else # Iterate over the clusters.
   {
@@ -238,6 +237,21 @@ executeClusterKMeans <- function(include)
 
   return(TRUE)
 }
+
+# 100224 Added to support resetting buttons on loading a
+# project. Modelled on showModelExistsRPart.
+
+showModelKMeansExists <- function(state=!is.null(crs$kmeans))
+{
+  # If a kmeans model exists then make available the Stats, Data Plot,
+  # and Discriminate Plot buttons on the Descriptive tab.
+  
+  theWidget("kmeans_stats_button")$setSensitive(state)
+  theWidget("kmeans_data_plot_button")$setSensitive(state)
+  theWidget("kmeans_discriminant_plot_button")$setSensitive(state)
+
+}
+
 
 ########################################################################
 # Export

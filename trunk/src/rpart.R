@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-03 21:59:50 Graham Williams>
+# Time-stamp: <2010-03-02 20:34:36 Graham Williams>
 #
 # RPART TAB
 #
@@ -160,7 +160,7 @@ on_help_rpart_activate <- function(action, window)
                         "Other",
                         "options exist, but are not usually required. For example, 10-fold",
                         "cross validation, used in deciding how to prune to the best decision",
-                        "tree, is generally regarded as the right number. Transfering the",
+                        "tree, is generally regarded as the right number. Transferring the",
                         "commands from the Log tab into the R Console does give you full access",
                         "to all options.",
                         "<<>>",
@@ -203,6 +203,11 @@ executeModelRPart <- function(action="build")
   control <- NULL
   parms <- NULL
 
+  # 100222 Use information as the default split method, as per a
+  # machine learning view of the approach.
+
+  parms <- ', parms=list(split="information")'
+  
   # Obtain the value of the tuning controls
 
   tune.controls <- theWidget("rpart_tune_entry")$getText()
@@ -234,7 +239,7 @@ executeModelRPart <- function(action="build")
     if (is.null(parms))
       parms <- sprintf(", parms=list(prior=c(%s))", priors)
     else
-      parms <- gsub(")$", sprintf(", prior=c(%s)", priors), parms)
+      parms <- gsub(")$", sprintf(", prior=c(%s))", priors), parms)
   }
 
   # Retrieve the Min Split and check if it is different from the
@@ -474,7 +479,7 @@ executeModelRPart <- function(action="build")
   appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$RPART)), rpart.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=rpart.cmd)), silent=TRUE)
-  time.taken <- Sys.time()-start.time
+  time.taken <- Sys.time() - start.time
   if (inherits(result, "try-error"))
   {
     if (any(grep("syntax error.*weights", result)))

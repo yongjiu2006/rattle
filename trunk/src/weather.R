@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-13 09:40:16 Graham Williams>
+# Time-stamp: <2010-02-28 11:43:56 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -45,24 +45,47 @@ acquireWeatherData <- function(write.to.file=FALSE)
   
   locations <- matrix(c(
                         2002,	"Albury",
+                        2005,   "BadgerysCreek",
+                        2029,   "Cobar",
+                        2030,   "CoffsHarbour",
+                        2084,   "Moree",
                         2098,	"Newcastle",
+                        2099,   "NorahHead",
+                        2100,   "NorfolkIsland",
                         2111,	"Penrith",
+                        2119,   "Richmond",
                         2124, 	"Sydney",
+                        2125,   "SydneyAirport",
+                        2139,   "WaggaWagga",
+                        2145,   "Williamtown",
                         2146,	"Wollongong",
                         2801, 	"Canberra",
                         2802,	"Tuggeranong",
                         2804, 	"MountGinini",
                         3005,	"Ballarat",
                         3008,	"Bendigo",
+                        3022,   "Sale",
+                        3049,   "MelbourneAirport",
                         3050, 	"Melbourne",
+                        3051,   "Mildura",
+                        3068,   "Portland",
+                        3079,   "Watsonia",
+                        3101,   "Dartmoor",
                         4019, 	"Brisbane",
                         4024,	"Cairns",
                         4050, 	"GoldCoast",
                         4128, 	"Townsville",
                         5002, 	"Adelaide",
                         5041,	"MountGambier",
+                        5049,   "Nuriootpa",
+                        5072,   "Woomera",
                         6001,	"Albany",
+                        6081,   "Witchcliffe",
+                        6108,   "PearceRAAF",
                         6111, 	"Perth",
+                        6110,   "PerthAirport",
+                        6119,   "SalmonGums",
+                        6138,   "Walpole",
                         7021, 	"Hobart",
                         7025,	"Launceston",
                         8002,	"AliceSprings",
@@ -85,7 +108,7 @@ acquireWeatherData <- function(write.to.file=FALSE)
   
   for (l in 1:nrow(locations))
     updateWeatherLocation(locations[l, "name"], locations[l, "stnID"],
-                          write.to.file, backto=6)
+                          write.to.file, backto=2)
 
   # 100123 Create the combined weather dataset, which is more like
   # what we might expect as the first attempt to data mine - large and

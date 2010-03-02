@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-19 11:24:49 Graham Williams>
+# Time-stamp: <2010-03-02 20:48:12 Graham Williams>
 #
 # Help Menu
 #
@@ -30,12 +30,11 @@ popupTextviewHelpWindow <- function(topic)
     collectOutput(sprintf("help(%s, help_type='html')", topic), TRUE)
 }
 
-showHelpPlus <- function(msg)
+showHelpPlus <- function(msg, extra=Rtxt("Would you like to view the R help?"))
 {
   if (! questionDialog(paste(gsub(" <<>> ", "\n\n",
                                   gsub("\n", " ", msg)),
-                             "Would you like to view the R help?",
-                             sep="\n\n")))
+                             extra, sep="\n\n")))
     return(FALSE)
   else
     return(TRUE)
@@ -104,10 +103,10 @@ either of which may be categoric or numeric.
 <<>>
 dataset = A collection of data.
 <<>>
-observation = An object or entity of interest, descibed by variables.
+observation = An object or entity of interest, described by variables.
 Also called a record, object, row or entity.
 <<>>
-variable = The data items used to describe an enitity.
+variable = The data items used to describe an entity.
 Also called an attribute, feature or column.
 <<>>
 input variable = A measured or preset data item.
@@ -119,7 +118,7 @@ Also called response or dependent variable.
 <<>>
 categoric variable = A variable that takes on a value from a fixed
 set of values. In R these are called factors and the possible values
-are refered to as the levels of the factor.
+are referred to as the levels of the factor.
 <<>>
 numeric variable = A variable that has values that are integers or real
 numbers.")
@@ -241,13 +240,13 @@ categoric by default).
 <<>>
 Modify the roles as appropriate for each variable.
 <<>>
-    Input: Used for modelling.
+    Input: Used for modeling.
 <<>>
-    Target: Output for modelling.
+    Target: Output for modeling.
 <<>>
     Risk: A variable used in the Risk Chart
 <<>>
-    Ident: An identify for unique observations in the data set.
+    Ident: An identifier for unique observations in the data set.
 <<>>
     Ignore: Do not use this variable
 <<>>
@@ -273,15 +272,17 @@ dataset, times 10, adding 1 to it to give numbers from 1 up.")
 
 on_help_sample_activate <- function(action, window)
 {
-  showHelp("Sampling is activated by default, randomly choosing 70%% of the
-data for a training dataset and 30%% for a test dataset. The training dataset
-is used to build models whilst the test dataset is used to evaluate the
+  showHelp("Partitioning (sampling is activated by default, randomly choosing 70% of the
+data for a training dataset, 15% for a validataion dataset, and
+15% for a test dataset. The training dataset
+is used to build models, the validation dataset to tune the models,
+and the test dataset is used to evaluate the
 models on otherwise unseen data.
 <<>>
 A new random sample is extracted each time the tab is executed. However,
 you will get the same random sample each time, for a given seed. Changing the
 seed allows different random samples to be extracted. This could be useful in
-testing the sensitivity of modelling with different training sets.")
+testing the sensitivity of modeling with different training sets.")
 }
 
 ########################################################################
@@ -315,7 +316,7 @@ in the distribution of the data. A high kurtosis indicates a sharper peak
 and fatter tails while a lower kurtosis indicates a more rounded peak
 with wider shoulders.
 <<>>
-The skewness indicates the assymetry of the distribution. A positive skew
+The skewness indicates the asymmetry of the distribution. A positive skew
 indicates that the tail to the right is longer, and a negative skew that the
 tail to the left is longer.
 <<>>
@@ -343,18 +344,33 @@ information about the distributions of data."))
     popupTextviewHelpWindow("boxplot")
 }
 
+on_help_latticist_activate <- function(action, window)
+{
+  if (showHelpPlus( "The Latticist application is used to visually explore
+a dataset. Latticist is an R-based interactive data visualizer."))
+    if (packageIsAvailable("rggobi", Rtxt("explore the data using GGobi")))
+      {
+        require(rggobi, quietly=TRUE)
+        popupTextviewHelpWindow("latticist")
+      }
+}
+
 on_help_ggobi_activate <- function(action, window)
 {
-  if (showHelpPlus( "Run the GGobi application to visually explore
-your data. GGobi is a very powerful interactive visualiser.
-You will need to have the separate GGobi application installed,
+  if (showHelpPlus( "GGobi application is used to visually explore
+a dataset. GGobi is a very powerful interactive visualizer.
+The separate GGobi application will need to have been installed,
 as well as the rggobi R package."))
-    popupTextviewHelpWindow("ggobi")
+    if (packageIsAvailable("rggobi", Rtxt("explore data")))
+      {
+        require(latticist, quietly=TRUE)
+        popupTextviewHelpWindow("ggobi")
+      }
 }
 
 on_help_correlation_activate <- function(action, window)
 {
-  if (showHelpPlus( "A pairwise correlation between each numeric variable
+  if (showHelpPlus( "A pair wise correlation between each numeric variable
 is calculated and displayed numerically in the text window whilst
 a graphic plot is also generated. The plot uses circles and colour to
 indicate the strength of any correlation.
@@ -369,7 +385,7 @@ on_help_hierarchical_correlation_activate <- function(action, window)
 of the correlations between the variables of the dataset is generated, and
 presented pictorially as a dendrogram.  From the dendrogram you can
 see groups of variables that are highly correlated. The code uses the
-cor() function to gnerate the correlations between the variables, the
+cor() function to generate the correlations between the variables, the
 hclust() function to perform the hierarchical clustering, and converts
 the result to a dendrogram, using as.dendrogram(), for plotting."))
   {
@@ -391,19 +407,19 @@ of the variation.
 After performing the analysis two plots will appear. The bar chart or scree plot
 shows the importance of each component. The importance is based on how much
 variance each component explains. Generally, we can use this plot to how many
-prinicple components we may want to keep if we were to use them in modelling.
+principle components we may want to keep if we were to use them in modeling.
 <<>>
 The second plot (a biplot) remaps the data points from their original
 coordinates to coordinates of the first two principal coordinates.
 The vectors drawn give an indication of how much
 of a role each variable plays in each of the two components, showing their correlation
-to the components. The axis are labelled with the correlation, to be
+to the components. The axes are labeled with the correlation, to be
 interpreted for the variables, and the values of the principal
 components, to be interpreted for the data points.
 <<>>
 There will be as many components as there are (numeric) variables in
 the dataset, but by discarding those components contributing very
-little, you may end up with fewer variables for modelling. The textual information
+little, you may end up with fewer variables for modeling. The textual information
 provided can be used to guide the choice of which variables are included.
 The final table will clearly identify how much of the variation in the data
 is accounted for by each component.
@@ -413,7 +429,7 @@ than the original variables, so you may like to instead identify those
 variables that contribute most to the first few principal components.
 <<>>
 The prcomp() function is used to generate the principal components
-which are then displayed in the textview and the relative importance
+which are then displayed in the text view and the relative importance
 of the components is plotted.
 <<>>
 Note that only numeric data is included in the analysis."))
@@ -426,7 +442,7 @@ Note that only numeric data is included in the analysis."))
 on_help_test_kolmogorov_smirnov_activate <- function(action, window)
 {
   if (showHelpPlus("The Kolmogorov-Smirnov test is a test to determine whether
-the two samples are similarly distributed, without saying what kind of distriubtion
+two samples are similarly distributed, without saying what kind of distribution
 they have.
 <<>>
 The fBasics package provides the ks2Test function to perform the
@@ -551,10 +567,10 @@ The new variable will have a prefix of R01_.")
 on_help_transform_medianmad_activate <- function(action, window)
 {
   showHelp("-Median/MAD is a robust version of the standard z-score transform.
-The variable's median value is subtracted from each value, and each is then
+The median value is subtracted from each value, and each is then
 divided by the median absolute deviation, which is basically the median of
 the residuals
-or deivations from the data's median, as in Xi-median(X). The resulting
+or deviations from the data's median, as in Xi-median(X). The resulting
 variable will have a median of 0.
 It is more resilient to outliers than the normal z-score.
 The new variable will have a prefix of RMD_.")
@@ -592,8 +608,8 @@ divided by the total.")
 
 on_help_transform_impute_zero_activate <- function(action, window)
 {
-  showHelp('Imputation is used to fill in the missing values in the data.
-The Zero/Missing imputation is a very simplle method.
+  showHelp('Imputation is used to fill in the missing values in the dataset.
+The Zero/Missing imputation is a very simple method.
 It uses a constant value (0 for numeric data
 and the new level, "missing" for categoric data)
 to replace each missing value in the selected variable(s).
@@ -616,7 +632,7 @@ variables distribution, and hence result in poor models.")
 
 on_help_transform_impute_median_activate <- function(action, window)
 {
-  showHelp("Imputation is used to fill in the missing values in the data.
+  showHelp("Imputation is used to fill in the missing values in the dataset.
 The Median imputation uses the median (the middle value)
 of the variable to replace each missing value in the selected variable(s).
 <<>>
@@ -626,18 +642,18 @@ variables distribution, and hence result in poor models.")
 
 on_help_transform_impute_mode_activate <- function(action, window)
 {
-  showHelp("Imputation is used to fill in the missing values in the data.
-The Mode imputation uses the mode (the most frequently occuring value)
+  showHelp("Imputation is used to fill in the missing values in the dataset.
+The Mode imputation uses the mode (the most frequently occurring value)
 of the variable to replace each missing value in the selected variable(s).
 <<>>
 Note that this kind of imputation is not recommended as it could change the
-variables distribution, and hence result in poor models.")
+variable's distribution, and hence result in poor models.")
 }
 
 
 on_help_transform_impute_constant_activate <- function(action, window)
 {
-  showHelp("Imputation is used to fill in the missing values in the data.
+  showHelp("Imputation is used to fill in the missing values in the dataset.
 The Constant imputation uses the supplied constant value
 to replace each missing value in the selected variable(s).
 <<>>
@@ -654,7 +670,7 @@ on_help_transform_remap_quantiles_activate <- function(action, window)
   if (showHelpPlus("Binning based on quantiles will divide the population up
 into nearly equally sized groups."))
   {
-    popupTextviewHelpWindow("quantiles")
+    popupTextviewHelpWindow("quantile")
   }
 }
 
@@ -721,7 +737,7 @@ on_help_transform_cleanup_missing_activate <- function(action, window)
 
 on_help_transform_cleanup_emissing_activate <- function(action, window)
 {
-  showHelp("Remove any observations (rows) that have any mising values.")
+  showHelp("Remove any observations (rows) that have any missing values.")
 }
 
 ########################################################################
@@ -780,7 +796,7 @@ The R function glm() is used for regression."))
 on_help_support_vector_machine_activate <- function(action, window)
 {
   if (showHelpPlus("SVM (Support Vector Machine) is a modern approach
-to modelling where the data is mapped to a higher dimensional space so
+to modeling where the data is mapped to a higher dimensional space so
 that it is more likely that we can find vectors separating the classes.
 Rattle deploys ksvm from the kernlab package."))
   {
@@ -799,8 +815,8 @@ Rattle deploys ksvm from the kernlab package."))
 
 on_help_model_nnet_activate <- function(action, window)
 {
-  if (showHelpPlus("A Neural Network is quite an old approach to modelling.
-The structure used for modelling imitates a human's neural network. The idea
+  if (showHelpPlus("A Neural Network is quite an old approach to modeling.
+The structure used for modeling imitates a human's neural network. The idea
 is to build a network of neurons connected by synapses, and instead of
 propagating electrical signals, the network propagates numbers. Mathematically,
 this can be described quite nicely in a relatively straightforward, if not simple,
@@ -819,7 +835,7 @@ on_help_model_survival_activate <- function(action, window)
   if (showHelpPlus("A Survival Model deals with so called censored data.
 This is data that for each patient, for example, records how long they
 have survived so far. When a patient dies, then we have a record of how
-long they survived until deat. We all eventually die, and so in this respect, the
+long they survived until death. We all eventually die, and so in this respect, the
 data we have is censored. The Target variables are thus the time so far, and whether
 or not the event has occurred (recorded as the Status).
 Rattle uses the functionality provided by the survival package."))
@@ -837,7 +853,7 @@ on_help_confusion_table_activate <- function(action, window)
   if (showHelpPlus("An error matrix concisely reports the performance
 of a model against a testing dataset. Generally, the number of observations
 predicted by the model into each of the classes is presented against the
-actual class to which that observation belongs. Rattle reports two error matricies.
+actual class to which that observation belongs. Rattle reports two error matrices.
 The first is the raw observation counts whilst the second reports the
 percentages."))
   {
@@ -848,7 +864,7 @@ percentages."))
 on_help_risk_chart_activate <- function(action, window)
 {
   showHelp("A risk chart plots population proportion along the X axis and a
-perforamnce measure along the Y axis. If a Risk variable is identified in the
+performance measure along the Y axis. If a Risk variable is identified in the
 Data tab then the amount of risk covered is included in the chart (the red line).
 The green line indicates the proportion of known targets that are identified
 for any proportion of the population covered. The diagonal black line is a baseline,
@@ -857,12 +873,36 @@ indicating performance if cases were selected randomly.")
 
 on_help_cost_curve_activate <- function(action, window)
 {
-  showHelp("A cost curve ...")
+  showHelp("A cost curve plots the probability cost function against the
+normalized expected cost for a range of possible thresholds for the family of
+models.")
 }
 
 on_help_lift_activate <- function(action, window)
 {
-  showHelp("A lift chart ...")
+  showHelp("A lift chart plots the lift in perforamace to be obtained
+from different thresholds for the model predicting 0/1.")
+}
+
+on_help_roc_activate <- function(action, window)
+{
+  showHelp("An ROC curve plots the true positives against the false positives.")
+}
+
+on_help_precision_activate <- function(action, window)
+{
+  showHelp("A precision chart plots recall against precision.")
+}
+
+on_help_prvob_activate <- function(action, window)
+{
+  showHelp("The Pr v Ob chart plots the predicted values against the observed values.")
+}
+
+on_help_score_activate <- function(action, window)
+{
+  showHelp("The Score option will apply the selected models to a dataset, saving the
+results to file.")
 }
 
 on_help_sensitivity_activate <- function(action, window)
@@ -883,9 +923,21 @@ is simply the count of false positives divided by the number of negatives
 
 on_help_log_activate <- function(action, window)
 {
-  showHelp("The Log tab records the underlying commands that
-Rattle generates and passes over to R to execute.
-You can save the Log commands to file to run at a later stage,
-or you can paste the commands into the current R console to do
-more than Rattle can support.")
+  if (showHelpPlus(Rtxt("The Log tab records the underlying commands that
+Rattle generates and passes to R for execution. This allows
+you to learn about the underlying R commands, and supports
+documentation and repeatability.
+<<>>
+You can export the Log commands to a file and then run that file as
+an R script file at a later stage. The R 'source()' command is used
+to execute an R script file.
+<<>>
+You can also select specific commands and paste them into the attached
+R console, and then modify the command, perhaps to add further
+options that Rattle does not currently support, or simply to experiment
+with directly interacting with R."),
+                   extra=Rtxt("Would you like to view the R help on the 'source' command?")))
+    {
+      popupTextviewHelpWindow("source")
+    }
 }

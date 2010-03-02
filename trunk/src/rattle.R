@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-01 19:05:18 Graham Williams>
+# Time-stamp: <2010-03-01 20:05:48 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -15,7 +15,7 @@ Rtxt <- function(...)
 {
   # 100130 Currently, on Windows we are waiting for 2.12.17 of  RGtk2 with
   # rgtk2_bindtextdomain().
-  
+
 #  if (.Platform$OS.type == "windows")
 #    paste(...)
 #  else
@@ -27,7 +27,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 07 Feb 2010"
+VERSION.DATE <- "Released 13 Feb 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -111,7 +111,7 @@ COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 #   work for them! 090316 Finally removed all <<- assignments into the
 #   environments, since, as Chambers (2008) page 124 points out a
 #   reference to the environemt ralways refers to the same
-#   environment. 
+#   environment.
 #
 #   Be aware that the trick of doing
 #
@@ -135,7 +135,7 @@ overwritePackageFunction <- function(fname, fun, pkg)
   # namespace of the package. Thus it does not make sense to use this
   # overwrite function to overwrite an exported function, since the
   # overwrite will not be seen externally to the package.
-  
+
   re <- eval(parse(text=sprintf("environment(%s)", pkg)))
   unlockBinding(fname, re)
   assign(fname, fun, re)
@@ -150,7 +150,7 @@ rattle <- function(csvname=NULL)
   # tab as to whether the varaiable (i.e., a transformed variable) can
   # be exported to PMML we need pmml to be loaded. Thus pmml is now a
   # "Depends:" in the DESCRIPTION file.
-  
+
   # If crv$tooltiphack is TRUE then gtkMain is called on focus,
   # blocking the R console, but at least tooltips work. On losing
   # focus gtkMainQuit is called, and thus the console is no longer
@@ -160,7 +160,7 @@ rattle <- function(csvname=NULL)
 
   # 080906 If crv$close="quit" then when the window close is pressed, we
   # also quit R.
-  
+
   # 080319 Create global crv and crs to avoid many "no visible
   # binding" messages from "R CMD check" by adding all hidden
   # variables to crs and crv. Previously they all began with "." as in
@@ -172,7 +172,7 @@ rattle <- function(csvname=NULL)
   # 090303 Make sure crv has been defined. This was necessitated
   # because CHECK does not run .onLoad in checking.
 
-  if (! exists("crv")) 
+  if (! exists("crv"))
   {
     .onLoad()
     .onAttach()
@@ -183,20 +183,20 @@ rattle <- function(csvname=NULL)
   # state. Not ideal for functional programming and only a hopefully
   # small deviation from Chamber's (2008) Prime Directive principle,
   # and similar to the "option" exception to the Prime Directive!
-  
+
   crs <<- new.env()
 
   # crv$tooltiphack <<- tooltiphack # Record the value globally
 
   # 090525 Move to having the Setting option work on Linux. This
   # remove all this tooltip stuff.
-  
+
   # if (crv$tooltiphack) crv$load.tooltips <- TRUE
 
   crv$.gtkMain <- FALSE # Initially gtkMain is not running.
-  
-  # Load gloablly required packages if they are available. 
-  
+
+  # Load gloablly required packages if they are available.
+
   if (! packageIsAvailable("RGtk2", Rtxt("display the Rattle GUI")))
     stop(sprintf(Rtxt("The RGtk2 package is not available but is required",
                       "for the %s GUI."), crv$appname))
@@ -206,7 +206,7 @@ rattle <- function(csvname=NULL)
     # 080921 Load here to keep the loading quiet!
     require("colorspace", quietly=TRUE)
   }
-  
+
   require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
 
   # Check to make sure libglade is available.
@@ -225,7 +225,7 @@ rattle <- function(csvname=NULL)
     # $ grep '<widget' rattle.glade | sed 's|^.*widget class="||' |\
     #   sed 's|".*$||' | sort -u | sed 's|^Gtk|gtk|' |\
     #   awk '{printf("%sGetType()\n", $1)}'
-    
+
     gtkAboutDialogGetType()
     gtkAlignmentGetType()
     gtkButtonGetType()
@@ -266,9 +266,9 @@ rattle <- function(csvname=NULL)
     gtkWidgetGetType()
     gtkWindowGetType()
   }
-  
+
   # Ensure the About dialog will respond to the Quit button.
-  
+
   on_aboutdialog_response <<- gtkWidgetDestroy
 
   # When an error is reported to the R Console, include a time stamp.
@@ -285,7 +285,7 @@ rattle <- function(csvname=NULL)
 
   # Try firstly to load the glade file from the installed rattle
   # package, if it exists. Otherwise, look locally.
-  
+
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
@@ -296,7 +296,7 @@ rattle <- function(csvname=NULL)
                               root="rattle_window", domain="R-rattle")
 
   # Really need an second untouched rattleGUI
-  
+
   Global_rattleGUI <<-rattleGUI
 
   # 090206 Tune the interface to suit needs, and in particular allow
@@ -307,12 +307,12 @@ rattle <- function(csvname=NULL)
   configureGUI()
 
   # 100120 A temporary fix for MS/Windows where translations of stock
-  # items don't seem to be happening. It works just fine for
+  # items by RGtk2 don't seem to be happening. It works just fine for
   # GNU/Linux. We probably only want to do this if we have a foreign
   # locale.
-  
-#  if (isWindows()) fixTranslations()
-  
+
+  if (isWindows()) fixTranslations()
+
   if (crv$load.tooltips) loadTooltips()
 
   if (not.null(crv$show.timestamp) && crv$show.timestamp)
@@ -322,7 +322,7 @@ rattle <- function(csvname=NULL)
   # 090708 Set the icon for the current window, and then make it the
   # default for all other windows. We do it here rather than earlier
   # in case configureGUI is overriddent to not change the icon.
-  
+
   theWidget("rattle_window")$setIcon(crv$icon)
   if (! is.null(crv$icon)) gtkWindowSetDefaultIcon(crv$icon)
 
@@ -332,14 +332,14 @@ rattle <- function(csvname=NULL)
   # at the startup of Rattle on closing Rattle. Not necessarily a good
   # idea since the knowing user may actually also change options
   # whilst Rattle is running.
-  
+
   crv$options <- options(scipen=5)
 
   # 080924 Load of a supplied data file occurs here, but may take time
   # and whilst the UI is not fully set up yet, we see the Welcome
   # screen in Rattle displayed in plugins for 30 seconds or so. So
   # perhaps move it to later in the process.
-  
+
   # Load data from the file identified by the csvname supplied in the
   # call to Rattle, or from the environment variable RATTLE_DATA if
   # defined, or from the variable .RATTLE.DATA (as might be defined in
@@ -347,26 +347,26 @@ rattle <- function(csvname=NULL)
 
   # First, always execute any .Rattle file in the current working
   # directory.
-  
+
   # When reading the .Rattle file and identifying a dataset to load,
   # for some reason the stats package will not have been loaded at
   # this stage. The symptom is that median is not defined. So make
   # sure it is always available.
 
   require(stats, quietly=TRUE)
-  
+
   if (file.exists(".Rattle")) source(".Rattle")
 
   if (is.null(csvname))
   {
     # Use the .Rattle settings first, but these might be overriden if
     # the environment variable is defined.
-    
+
     if (! is.null(.RATTLE.DATA)) csvname <- .RATTLE.DATA
 
     # Obtain the value of the RATTLE_DATA environment variable and if
     # it is defined then use that at the csvname.
-    
+
     if ((.rattle.data <- Sys.getenv("RATTLE_DATA")) != "")
       csvname <- .rattle.data
   }
@@ -383,14 +383,14 @@ rattle <- function(csvname=NULL)
                 "data file to load using the Filename button.")
     csvname <- NULL
   }
-  
+
   if (not.null(csvname))
   {
     csvname <- path.expand(csvname)
 
     # If it does not look like an absolute path then add in the
     # current location to make it absolute.
-    
+
     if (substr(csvname, 1, 1) %notin% c("\\", "/")
         && substr(csvname, 2, 2) != ":")
       csvname <- file.path(getwd(), csvname)
@@ -417,7 +417,7 @@ rattle <- function(csvname=NULL)
         csvname <- paste("file://", csvname, sep="")
     }
   }
-    
+
   # Keep the loading of Hmisc quiet.
 
   options(Hverbose=FALSE)
@@ -429,7 +429,7 @@ rattle <- function(csvname=NULL)
   # location for finding rattle.glade. Assumes the call to source is
   # something like: source("abc/def/rattle.R"). The better alternative
   # might be to tell people to use the chdir=TRUE option in source.
-  
+
   ##s <- as.character(sys.calls())
   ##n <- grep("source", s)
   ##p <- gsub("\.R..$", ".glade", gsub("source..", "", s[n]))
@@ -437,13 +437,13 @@ rattle <- function(csvname=NULL)
   # Constants: I would like these available within this package, but
   # not outside? Do I use assign in some way? That is, how to keep
   # these constants within the package only.
-  
+
   # TODO Put these constants into the top level of this file, defined
   # as NULL. Then keep these double arrow assignments here. I think
   # then that they will stay with the package, but not be in
   # .GlobalEnv because the package scope will be found before the top
   # level.
-  
+
   ########################################################################
   # PACKAGE GLOBAL CONSTANTS
   #
@@ -452,18 +452,18 @@ rattle <- function(csvname=NULL)
   # locally. TODO Needs cleaning up.
   #
   # Various Treeview Columns
-  
+
   crv$COLUMN <- c(number = 0, variable = 1, type = 2, input = 3,
                    target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
-  
+
   crv$IMPUTE <- c(number=0, variable=1, comment=2)
-  
+
   crv$CATEGORICAL <- c(number = 0, variable = 1, barplot = 2,
                        dotplot = 3, mosplot = 4, comment = 5)
-  
+
   crv$CONTINUOUS <-  c(number = 0, variable = 1, boxplot = 2,
                        hisplot = 3, cumplot = 4, benplot = 5, comment = 6)
-  
+
   # Create constants naming DESCRIBE (i.e., the descriptive model
   # builders) and PREDICT (i.e., the predictive model builders). Note
   # that these are migrating into the crv variable, but not all are
@@ -479,7 +479,7 @@ rattle <- function(csvname=NULL)
   # 091218 Not yet - avoid issues with RStat release.
   # crv$DESCRIBE <- c(crv$KMEANS, crv$CLARA, crv$HCLUST, crv$BICLUST, crv$APRIORI)
   crv$DESCRIBE <- c(crv$KMEANS, crv$HCLUST, crv$APRIORI)
-  
+
   crv$GLM   	<- "glm"
   crv$RPART 	<- "rpart"
   #GBM <- "gbm"
@@ -492,11 +492,11 @@ rattle <- function(csvname=NULL)
 
   crv$PREDICT <- c(crv$RPART, crv$ADA, crv$RF, crv$KSVM, crv$GLM,
                      crv$NNET, crv$SURVIVAL)
-  
+
   # PACKAGE STATE VARIABLE
-  
+
   # 090309 The following is now taken care of in .onLoad as defined in
-  # zzz.R. 
+  # zzz.R.
 
   ## if (TRUE)
   ##   crs <<- new.env()
@@ -544,7 +544,7 @@ rattle <- function(csvname=NULL)
 
   # 100122 The Rtxt is required for these since Glade will translate
   # these labels.
-  
+
   crv$NOTEBOOK.DATA.NAME <- Rtxt("Data")
 
   crv$NOTEBOOK.TEST.NAME <- Rtxt("Test")
@@ -573,7 +573,7 @@ rattle <- function(csvname=NULL)
 
   # 100122 Every call to getNotebookPage will need the second argument
   # wrapped with an Rtxt. Glade translates these on loading.
-  
+
   # 080921 Define the DATA tab pages
 
   crv$DATA.NOTEBOOK 	<- theWidget("data_notebook")
@@ -585,9 +585,23 @@ rattle <- function(csvname=NULL)
                                                    Rtxt("treeview"))
   crv$DATA.DISPLAY.WELCOME.TAB  <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK,
                                                    Rtxt("welcome"))
+  if (isJapanese())
+  {
+    # 100227 For some reason the following is not working properly:
+    #   nb <- rattle:::theWidget("notebook")
+    #   nb$getTabLabelText(nb$getNthPage(0))
+    # The result should be the same as
+    #   rattle:::Rtxt("Data")
+    # It appears the UTF is being interpreted as Shift-JIS
+    # So hardcode these (perhaps a growing list)
+    
+    crv$DATA.DISPLAY.TREEVIEW.TAB <- 0
+    crv$DATA.DISPLAY.WELCOME.TAB  <- 1
+  }
+  
 
   # Define the TRANSFORM tab pages
-  
+
   crv$TRANSFORM               <- theWidget("transform_notebook")
   # TODO 080423 Change to RESCALE
   crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, Rtxt("normalise"))
@@ -602,13 +616,13 @@ rattle <- function(csvname=NULL)
   crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("correlation"))
   crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, Rtxt("prcomp"))
   crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("interactive"))
-  
+
   crv$CLUSTER             <- theWidget("cluster_notebook")
   crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("kmeans"))
   crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, Rtxt("clara"))
   crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("hclust"))
   crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, Rtxt("biclust"))
-  
+
   crv$MODEL           <- theWidget("model_notebook")
   crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, Rtxt("rpart"))
   crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("glm"))
@@ -618,11 +632,11 @@ rattle <- function(csvname=NULL)
   crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("svm"))
   crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, Rtxt("nnet"))
   crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, Rtxt("survival"))
-  
+
   crv$SVMNB           <- theWidget("svm_notebook")
   crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("esvm"))
   crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("ksvm"))
-  
+
   crv$EVALUATE                 <- theWidget("evaluate_notebook")
   crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("confusion"))
   crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, Rtxt("risk"))
@@ -633,11 +647,11 @@ rattle <- function(csvname=NULL)
   crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("costcurve"))
   crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, Rtxt("pvo"))
   crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, Rtxt("score"))
-  
+
   # Turn off the sub-notebook tabs.
 
   # Sys.sleep(5) 080924 to test delays....
-  
+
   crv$DATA.NOTEBOOK$setShowTabs(FALSE)
   crv$DATA.DISPLAY.NOTEBOOK$setShowTabs(FALSE)
   crv$EXPLORE$setShowTabs(FALSE)
@@ -648,7 +662,7 @@ rattle <- function(csvname=NULL)
 
   ########################################################################
   # Connect the callbacks.
-  
+
   gladeXMLSignalAutoconnect(rattleGUI)
 
   # Enable the tooltips Settings option on GNU/Linux. Under MS/Windows
@@ -662,19 +676,19 @@ rattle <- function(csvname=NULL)
 
   ########################################################################
   # User interface initialisations.
-  
+
   initialiseVariableViews()
-  
+
   # Ensure the filechooserbutton by default will filter CSVs.
 
   updateFilenameFilters("data_filechooserbutton", "CSV")
-  
+
   # Do not enable ARFF option for versions before 2.5.0 where it was
   # not included in the foreign package.
 
   if (!exists("getRversion", baseenv()) || getRversion() <= "2.4.0")
     theWidget("arff_radiobutton")$hide()
-  
+
   theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
   #theWidget("glm_family_comboboxentry")$setActive(0)
   theWidget("svm_kernel_comboboxentry")$setActive(0)
@@ -686,13 +700,13 @@ rattle <- function(csvname=NULL)
 
   # If the cairoDevice package is not available then turn off the
   # option in the settings menu and make it insensitive.
-  
+
   if (! packageIsAvailable("cairoDevice", Rtxt("enable the cairo device option")))
   {
     theWidget("use_cairo_graphics_device")$setActive(FALSE)
     theWidget("use_cairo_graphics_device")$hide()
   }
-  
+
   # Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   #
   # Brian D. Ripley 15 Jul 2007 07:57:49 +0100 requested the memory mod
@@ -721,7 +735,7 @@ rattle <- function(csvname=NULL)
 
    # Tooltips work when gtkMain is called, but the console is blocked
    # and need gtkMainQuit.
-  
+
   # if (tooltiphack) gtkMain()
 
   # TODO Add a console into Rattle to interact with R.
@@ -729,13 +743,13 @@ rattle <- function(csvname=NULL)
   # 080510 Display a relevant welcome message in the textview.
 
   displayWelcomeTabMessage()
-  
+
   initiateLog()
-  
+
   # Make sure the text is shown on startup.
-  
+
   while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
-  
+
   # Now deal with any arguments to rattle.
 
   if (not.null(csvname))
@@ -751,9 +765,9 @@ rattle <- function(csvname=NULL)
   ## theWidget("csv_filechooserbutton")$setFilename("audi.csv")
 
   # Call resetRattle to ensure all textviews get their default texts
-  
+
   resetRattle(FALSE)
-  
+
   invisible()
 }
 
@@ -769,8 +783,10 @@ configureGUI <- function()
 
   id.string <- paste('<span foreground="blue">',
                      '<i>', crv$appname, '</i> ',
-                     '<i>Version ', VERSION, '</i> ',
-#100115 Why is crv$version not being updated?                     '<i>Version ', crv$version, '</i> ',
+                     '<i>', Rtxt("Version"), ' ', VERSION, '</i> ',
+                     # 100115 It was found that crv$version we not
+                     # being updated so use VERSION instead. Not sure
+                     # why.
                      '<i><span underline="single">togaware.com</span></i>',
                      '</span>', sep="")
 
@@ -791,16 +807,44 @@ configureGUI <- function()
     crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
 }
 
-fixTranslations <- function()
+## fixTranslations <- function()
+## {
+## #  trans <- matrix(c("export_button", Rtxt("Export")),
+## #                  ncol=2, byrow=TRUE)
+##   if (isWindows())
+##   {
+##     trans <- #rbind(trans,
+##                    matrix(c("notebook_data_label", Rtxt("Data"),
+##                             "data_target_survival_radiobutton", Rtxt("Survival"),
+##                             "data_filename_label", Rtxt("Filename:")),
+##                           ncol=2, byrow=TRUE)#)
+##   for (r in seq_len(nrow(trans)))
+##     theWidget(trans[r,1])$setLabel(trans[r,2])
+##   }
+
+## }
+
+fixTranslations <- function(w=theWidget("rattle_window"))
 {
-  trans <- matrix(c("data_target_survival_radiobutton", Rtxt("Survival"),
-                    "data_filename_label", Rtxt("Filename:")),
-                     ncol=2, byrow=TRUE)
+  # Ignore these since they are already translated and we end up with
+  # a corrupted string passing through to Rtxt again.
 
-  for (r in seq_len(nrow(trans)))
-    theWidget(trans[r,1])$setLabel(trans[r,2])
+  if (w$getName() %in% c("execute_button", "new_button", "open_button",
+                         "save_button", "stop_button", "quit_button"))
+    return()
+  
+  if ("GtkLabel" %in% class(w))
+    w$setLabel(Rtxt(w$getLabel()))
+  else if ("GtkNotebook" %in% class(w))
+    lapply(gtkChildren(w),
+           function(wc)
+             w$getTabLabel(wc)$setLabel(Rtxt(w$getTabLabelText(wc))))
+
+  #  if ("GtkLabel" %in% class(w)) w$setLabel("Fred")
+  if ("GtkContainer" %in% class(w))
+    lapply(gtkChildren(w), fixTranslations)
+  return()
 }
-
 
 displayWelcomeTabMessage <- function()
 {
@@ -828,8 +872,9 @@ displayWelcomeTabMessage <- function()
                            "Rattle comes with ABSOLUTELY NO WARRANTY.",
                            "See Help -> About for details."),
                       "\n\n",
-                      sprintf(Rtxt("Rattle version %s Copyright 2006-2010 Togaware Pty Ltd"),
-                              crv$version),
+                      sprintf(Rtxt("Rattle Version %s.",
+                                   "Copyright 2006-2010 Togaware Pty Ltd"),
+                              VERSION),
                       "\n",
                       Rtxt("Rattle is a registered trademark of Togaware Pty Ltd"),
                       sep=""),
@@ -852,12 +897,12 @@ gtkmain_handler <- function(widget, event)
 {
   # 090525 Can't get this one working yet - to be able to turn
   # tooltips on and off. playwith does it?
-  
+
   #if (! theWidget("tooltip_menuitem")$getActive())
   #  return(gtkmainquit_handler(widget, event))
-  
+
   # Switch to GTK event loop while the window is in focus (for tooltips)
-  
+
   if (! crv$.gtkMain)
   {
     crv$.gtkMain <- TRUE
@@ -887,7 +932,7 @@ resetRattle <- function(new.dataset=TRUE)
   # options.
 
   if (new.dataset) setMainTitle()
-  
+
   if (new.dataset)
   {
     # Initialise CRS
@@ -915,7 +960,7 @@ resetRattle <- function(new.dataset=TRUE)
   }
 
   # Clear out all current models.
-  
+
   crs$kmeans   <- NULL
   crs$kmeans.seed <- NULL
   crs$clara    <- NULL
@@ -950,13 +995,13 @@ resetRattle <- function(new.dataset=TRUE)
   theWidget("impute_constant_entry")$setText("")
   theWidget("remap_quantiles_radiobutton")$setActive(TRUE)
   theWidget("delete_ignored_radiobutton")$setActive(TRUE)
-  
+
   crv$EXPLORE$setCurrentPage(crv$EXPLORE.SUMMARY.TAB)
   theWidget("summary_radiobutton")$setActive(TRUE)
 
   crv$CLUSTER$setCurrentPage(crv$CLUSTER.KMEANS.TAB)
   theWidget("kmeans_radiobutton")$setActive(TRUE)
-  
+
   crv$MODEL$setCurrentPage(crv$MODEL.RPART.TAB)
   theWidget("rpart_radiobutton")$setActive(TRUE)
   #theWidget("all_models_radiobutton")$setActive(TRUE)
@@ -978,14 +1023,14 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("data_target_auto_radiobutton")$setActive(TRUE)
     theWidget("data_sample_entry")$setText("70/15/15")
   }
-  
+
   # 080520 Don't turn these off - it makes sense to allow the user to
   # set these options even before the dataset is loaded.
-  
+
   # theWidget("target_type_radiobutton")$setSensitive(FALSE)
   # theWidget("data_target_categoric_radiobutton")$setSensitive(FALSE)
   # theWidget("data_target_numeric_radiobutton")$setSensitive(FALSE)
-  
+
 ##   theWidget("odbc_dsn_entry")$setText("")
 ##   theWidget("odbc_combobox")$setActive(-1)
 ##   theWidget("odbc_limit_spinbutton")$setValue(0)
@@ -1015,7 +1060,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("test_groupby_target_label")$setText("No Target")
     theWidget("test_groupby_checkbutton")$setSensitive(TRUE)
     theWidget("test_groupby_target_label")$setSensitive(TRUE)
-    
+
     # Reset Describe -> Cluster -> KMeans
 
     theWidget("kmeans_clusters_spinbutton")$setValue(10)
@@ -1026,7 +1071,7 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("kmeans_discriminant_plot_button")$setSensitive(FALSE)
 
     # Reset Describe -> Cluster -> Clara
-    
+
     # Reset Describe -> Cluster -> HClust
 
     theWidget("hclust_clusters_spinbutton")$setValue(10)
@@ -1035,11 +1080,11 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("hclust_stats_button")$setSensitive(FALSE)
     theWidget("hclust_data_plot_button")$setSensitive(FALSE)
     theWidget("hclust_discriminant_plot_button")$setSensitive(FALSE)
-    
+
     # Reset Describe -> Cluster -> Biclust
-    
+
     # Reset Predict -> Tree -> RPart
-  
+
     theWidget("model_tree_priors_entry")$setText("")
     theWidget("model_tree_loss_entry")$setText("")
     theWidget("rpart_minsplit_spinbutton")$setValue(crv$rpart.minsplit.default)
@@ -1048,15 +1093,14 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("rpart_minbucket_spinbutton")$setValue(crv$rpart.minbucket.default)
     theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
     theWidget("model_tree_rpart_radiobutton")$setActive(TRUE)
-    showModelRPartExists()
 
     # Reset Predict -> ADA
-  
+
     showModelAdaExists()
     setGuiDefaultsAda()
-  
+
     # Reset Predict -> RF
-  
+
     showModelRFExists()
 
     # Reset Predict -> SVM
@@ -1066,7 +1110,7 @@ resetRattle <- function(new.dataset=TRUE)
     # Reset Predict -> Survival
 
     setGuiDefaultsSurvival()
-    
+
     # Update EXPLORE, MODEL and EVALUATE targets
 
     theWidget("explot_target_label")$setText("No target selected")
@@ -1085,24 +1129,24 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("nnet_target_label")$setText("No target selected")
 
     theWidget("evaluate_risk_label")$setText("No risk variable selected")
-  
+
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)
     theWidget("evaluate_filechooserbutton")$setFilename("")
     theWidget("evaluate_rdataset_combobox")$setActive(-1)
 
     # If there is a .RATTLE.SCORE.IN defined, as might be from a .Rattle
     # file, then use that for the filename of the CSV evaluate option.
-  
+
     if (! is.null(.RATTLE.SCORE.IN))
     {
       scorename <- .RATTLE.SCORE.IN
       if (not.null(scorename))
       {
         scorename <- path.expand(scorename)
-      
+
         # If it does not look like an absolute path then add in the
         # current location to make it absolute.
-      
+
         if (substr(scorename, 1, 1) %notin% c("\\", "/")
             && substr(scorename, 2, 2) != ":")
           scorename <- file.path(getwd(), scorename)
@@ -1113,7 +1157,7 @@ resetRattle <- function(new.dataset=TRUE)
                       ".RATTLE.SCORE.IN variable)",
                       "does not exist. We will continue",
                       "as if it had not been speficied.")
-        
+
           # Remove the variable (from the global environment where the
           # source command will have plade the bindings) so the rest of
           # the code continues to work on the assumption that it has not
@@ -1129,7 +1173,11 @@ resetRattle <- function(new.dataset=TRUE)
       }
     }
   }
-  
+
+  # 100224 Things to do irrespective of whether it is a new dataset.
+
+  showModelRPartExists()
+
   #091112 resetEvaluateTab("all_inactive")
   #091112 resetEvaluateTab("all_insensitive")
   resetEvaluateTab()
@@ -1155,7 +1203,7 @@ resetRattle <- function(new.dataset=TRUE)
   setStatusBar(Rtxt("To Begin: Choose the data source,",
                     "specify the details,",
                     "then click the Execute button."))
-  
+
 }
 
 ########################################################################
@@ -1191,7 +1239,7 @@ infoDialog <- function(...)
 {
   # If the RGtk2 package's functions are not available, then just
   # issue a warning instead of a popup.
-  
+
   if (exists("gtkMessageDialogNew"))
   {
     dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "info", "close",
@@ -1199,7 +1247,7 @@ infoDialog <- function(...)
     connectSignal(dialog, "response", gtkWidgetDestroy)
   }
   else
-    # 080706 This fails the MS/Windows check with "crv" not defined????? 
+    # 080706 This fails the MS/Windows check with "crv" not defined?????
     if (! isWindows()) warning(...)
 }
 
@@ -1238,7 +1286,7 @@ notImplemented <- function(action, window)
   aname <- action$getName()
   result <- try(atype <- action$typeName(), silent=TRUE)
   if (inherits(result, "try-error")) atype <- NULL
-  
+
   infoDialog(sprintf(paste("The function you activated (via %s)",
                             "%s is not yet implemented."),
                       aname,
@@ -1292,7 +1340,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
   if (pkg %notin% rownames(installed.packages()))
   {
     if (not.null(msg))
-      
+
       infoDialog(sprintf(Rtxt("The package '%s' is required to %s.",
                               "It does not appear to be installed.",
                               "Please consider installing it, perhaps",
@@ -1312,7 +1360,7 @@ sampleNeedsExecute <- function()
   # TRUE.
 
   # If sampling is active, make sure there is a sample.
-  
+
   if (theWidget("data_sample_checkbutton")$getActive()
       && is.null(crs$sample))
   {
@@ -1342,7 +1390,7 @@ sampleNeedsExecute <- function()
 errorMessageFun <- function(call, result)
 {
   # 100109 Generate a message reporting an error in a function call.
-  
+
   return(sprintf(Rtxt("An error occured in the call to '%s'.",
                       "The error message was:\n\n%s\n\n%s"),
                  call, result, crv$support.msg))
@@ -1351,7 +1399,7 @@ errorMessageFun <- function(call, result)
 errorMessageCmd <- function(call, result)
 {
   # 100109 Generate a message reporting an error in a command line.
-  
+
   return(sprintf(Rtxt("An error occured in the following command:\n\n%s.",
                       "\n\nThe error message was:\n\n%s\n\n%s"),
                  call, result, crv$support.msg))
@@ -1362,7 +1410,7 @@ errorReport <- function(cmd, result)
   # A standard command error report that is not being captured by
   # Rattle. Eventually, all of these should be identified by Rattle
   # and a sugggestion given as to how to avoid the error.
-  
+
   errorDialog(errorMessageCmd(cmd, result))
 }
 
@@ -1397,7 +1445,7 @@ reportTimeTaken <- function(tv, time.taken, model, msg)
   # the build took in the text view, to append the time taken to the
   # log for information purposes, and to update the status bar. At
   # least one of and only one of model or msg must be supplied.
-  
+
   if (missing(model) && missing(msg) || (!missing(model) && !missing(msg)))
     stop("rattle: reportTimeTaken: ",
          "one and only one of model/msg must be supplied.")
@@ -1447,7 +1495,7 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   {
     result <- try(commandsink <- capture.output(eval(parse(text=command), envir=envir)))
   }
-  
+
   if (inherits(result, "try-error"))
   {
     if (any(grep("cannot allocate vector", result)) ||
@@ -1473,24 +1521,96 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
 theWidget <- function(widget)
 {
   rattleGUI <- Global_rattleGUI # Global - to avoid a "NOTE" from "R CMD check"
-  
+
   return(rattleGUI$getWidget(widget))
+}
+
+getNotebookPageLabel <- function(nb, page)
+{
+  # Given a notebook object and a numeric page (from 0 to npages-1),
+  # return the label on the tab for that page.
+  
+  # 100301 Japanese on MS/Windows returns what might be a Shift-JIS
+  # string from nb$getTabLabelText(nb$getNthPage(nb$getCurrentPage()))
+  # rather than UTF-8, and so the tab name comparisons fail. For now
+  # we assume the tab ordering, and so get the tab page number and
+  # then map that to the tab label.
+  
+  if (! isJapanese()) # Test this first to avoid too much testing otherwise.
+    label <- nb$getTabLabelText(nb$getNthPage(page))
+  else if (nb == crv$NOTEBOOK)
+    label <- switch(page+1,
+                    Rtxt("Data"),
+                    Rtxt("Explore"),
+                    Rtxt("Test"),
+                    Rtxt("Transform"),
+                    Rtxt("Cluster"),
+                    Rtxt("Associate"),
+                    Rtxt("Predictive"), # Should be Model for RStat
+                    Rtxt("Evaluate"),
+                    Rtxt("Log"))
+  else if (nb == crv$EXPLORE)
+    label <- switch(page+1,
+                    Rtxt("summary"),
+                    Rtxt("explot"),
+                    Rtxt("correlation"),
+                    Rtxt("prcomp"),
+                    Rtxt("interactive"))
+  else if (nb == crv$TRANSFORM)
+    label <- switch(page+1,
+                    Rtxt("normalise"),
+                    Rtxt("impute"),
+                    Rtxt("remap"),
+                    Rtxt("outliers"),
+                    Rtxt("cleanup"))
+  else if (nb == crv$CLUSTER)
+    label <- switch(page+1,
+                    Rtxt("kmeans"),
+                    Rtxt("clara"),
+                    Rtxt("hclust"),
+                    Rtxt("biclust"))
+  else if (nb == crv$MODEL)
+    label <- switch(page+1,
+                    Rtxt("rpart"),
+                    Rtxt("ada"),
+                    Rtxt("rf"),
+                    Rtxt("svm"),
+                    Rtxt("glm"),
+                    Rtxt("nnet"),
+                    Rtxt("gbm"),
+                    Rtxt("survival"))
+  else if (nb == crv$EVALUATE)
+    label <- switch(page+1,
+                    Rtxt("confusion"),
+                    Rtxt("lift"),
+                    Rtxt("roc"),
+                    Rtxt("precision"),
+                    Rtxt("sensitivity"),
+                    Rtxt("risk"),
+                    Rtxt("pvo"),
+                    Rtxt("score"),
+                    Rtxt("costcurve"))
+  else
+    # Fall through to the default.
+    label <- nb$getTabLabelText(nb$getNthPage(page))
+  
+  return(label)
 }
 
 getNotebookPage <- function(notebook, label)
 {
-  # Obtain the notebook page number given its tab's label's text.
-  # Return NULL if the label is not found.
+  # Obtain the notebook page number given its tab's label's text
+  # (already translated using Rtxt when it is passed in.  Return NULL
+  # if the label is not found.
 
   for (i in 0:(notebook$getNPages()-1))
-   if (notebook$getTabLabelText(notebook$getNthPage(i)) == label)
-     return(i)
+   if (getNotebookPageLabel(notebook, i) == label) return(i)
   return(NULL)
 }
 
 getCurrentPageLabel <- function(nb)
 {
-  return(nb$getTabLabelText(nb$getNthPage(nb$getCurrentPage())))
+  return(getNotebookPageLabel(nb, nb$getCurrentPage()))
 }
 
 isWindows <- function()
@@ -1509,14 +1629,13 @@ isJapanese <- function()
 {
   # 091222 For plots and pdf export under MS/Windows. Tested by
   # acken_sakakibara@ibi.com
-  
+
   return(isWindows() && Sys.getlocale("LC_CTYPE") == "Japanese_Japan.932")
 }
-  
 
 listBuiltModels <- function(exclude=NULL)
 {
-  # Build a list of models that have been built. 
+  # Build a list of models that have been built.
   models <- c()
   for (m in setdiff(c(crv$PREDICT, crv$DESCRIBE), exclude))
     if (not.null(eval(parse(text=sprintf("crs$%s", m)))))
@@ -1528,7 +1647,7 @@ listBuiltModels <- function(exclude=NULL)
 ## {
 ##   # REMOVE THIS FUNCTION - SEE NOTES BELOW. Simply assign direct to
 ##   # crs$dwd and don't setwd.
-  
+
 ##   # Record the default location for data. Also set R's current working
 ##   # directory to the path. Note that I expect that for projects we
 ##   # record the path as crs$pwd outside of this function but we don't
@@ -1538,7 +1657,7 @@ listBuiltModels <- function(exclude=NULL)
 ##   # record it in crs$dwd and then use
 ##   # dialog$setCurrentFolder(crs$dwd), as I am doing now (080319) for
 ##   # projects.
-  
+
 ##   if (not.null(filename))
 ##   {
 ##     crs$dwd <- dirname(filename)
@@ -1560,7 +1679,7 @@ on_plot_save_button_clicked <- function(action)
   #
   # Also, export to pdf (from Cairo) is not too good it seems. Gets a
   # grey rather than white background. PNG and JPEG look just fine.
-  # This is being fixed by Michael Lawrence.  
+  # This is being fixed by Michael Lawrence.
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
@@ -1585,7 +1704,7 @@ on_plot_print_button_clicked <- function(action)
   ## To know which window we are called from we extract the plot
   ## number from the window title!!!. This then ensures we save the
   ## right device.
-    
+
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
   startLog("Print the plot.")
@@ -1611,7 +1730,7 @@ on_plot_close_button_clicked <- function(action)
 newPlot <- function(pcnt=1)
 {
   # Create a new device into which the plot is to go.
-  
+
   # Trial the use of the Cairo device. This was the only place I
   # needed to change to switch over to the Cairo device. As backup,
   # revert to the x11() or windows() device.
@@ -1634,12 +1753,12 @@ newPlot <- function(pcnt=1)
       # 091222 Use a font that MS/Windows can display Japanese
       # characters. Would like to use opar to record old value, but
       # not easy to know where the end of this scope is.
-      
+
       fnt.cmd <- 'par(family=windowsFont("MS Gothic"))'
       appendLog(Rtxt("Use a Japanese font for the plots."), fnt.cmd)
       eval(parse(text=fnt.cmd))
     }
-    
+
     plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": Plot ",
                                                     dev.cur(), sep=""))
   }
@@ -1745,11 +1864,11 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
-  
+
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname),
                                 "_", name, ".pdf", sep=""))
-  
+
   ff <- gtkFileFilterNew()
   if (isWindows())
     ff$setName("Graphics Files (pdf png jpg svg wmf)")
@@ -1761,12 +1880,12 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
   ff$addPattern("*.svg")
   if (isWindows()) ff$addPattern("*.wmf")
   dialog$addFilter(ff)
-  
+
   ff <- gtkFileFilterNew()
   ff$setName("All Files")
   ff$addPattern("*")
   dialog$addFilter(ff)
-  
+
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
@@ -1777,14 +1896,14 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
     dialog$destroy()
     return()
   }
-  
+
 #  if (get.extension(save.name) == "")
 #    save.name <- sprintf("%s.pdf", save.name)
-  
+
   startLog("Save the plot to a file.")
   appendLog(sprintf(Rtxt("Save the plot on device %d to a file."), dev.num),
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
-  
+
   if (savePlotToFile(save.name, dev.num))
     setStatusBar(sprintf(Rtxt("Plot %d has been exported to the file %s."),
                          dev.num, save.name))
@@ -1833,7 +1952,7 @@ savePlotToFile <- function(file.name, dev.num=dev.cur())
   return(TRUE)
 }
 
-printPlot <- function(dev.num=dev.cur()) 
+printPlot <- function(dev.num=dev.cur())
 {
   cur <- dev.cur()
   dev.set(dev.num)
@@ -1843,7 +1962,7 @@ printPlot <- function(dev.num=dev.cur())
     dev.print()
   dev.set(cur)
 }
-  
+
 # This one seems to have some assumption about the device it is saving
 # from and causes a memory fault if it is Cairo! Best not to use it
 # for now, and the Gtk clipboard stuff does work under Windows.
@@ -1881,7 +2000,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
     crv$appname <- "Rattle"
     crv$verbose <- TRUE
   }
-  
+
   main = paste(...)
   if(vector)
   {
@@ -1893,7 +2012,7 @@ genPlotTitleCmd <- function(..., vector=FALSE)
     return(c(main, sub))
   }
   else
-  {  
+  {
     if (! crv$verbose)
       sub <- ""
     else
@@ -1918,11 +2037,11 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
   # textview widgets do exist, the getWind0w returned NULL unless the
   # textview had been visited. So, instead, loop through the
   # textviews.
-  
+
   # lapply(allTextviews(), function(x) theWidget(x)$
   #            getWindow("GTK_TEXT_WINDOW_TEXT")$
   #            setCursor(gdkCursorNew(cursor)))
-  
+
   for (tv in allTextviews())
   {
     win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
@@ -1967,11 +2086,11 @@ simplifyNumberList <- function(nums)
   result <- sub('c\\(,', 'c(', sprintf("c(%s)", result))
   return(result)
 }
-    
+
 get.extension <- function(path)
 {
   ## Extract and return the extension part of a filename
-  
+
   parts <- strsplit(path, "\\.")[[1]]
   if (length(parts) > 1)
     last <- parts[length(parts)]
@@ -1985,7 +2104,7 @@ get.stem <- function(path)
   # Given a filename PATH extract the basename, and from this, the
   # name without an extension.  090718 If the PATH supplied is a
   # string with no extension than just return the PATH.
-  
+
   parts <- strsplit(basename(path), "\\.")[[1]]
   if (length(parts) > 1)
     last <- paste(parts[seq_len(length(parts)-1)], collapse=".")
@@ -1998,7 +2117,7 @@ plotNetwork <- function(flow)
 {
   if (! packageIsAvailable("network", Rtxt("draw the network plot"))) return()
   require(network, quietly=TRUE)
-  
+
   flow.net <- network(as.matrix(flow))
 
   # Change the line widths to represent the magnitude of the flow.
@@ -2007,7 +2126,7 @@ plotNetwork <- function(flow)
   flow.log <- log10(flow) # Log 10 to get magnitude
   flow.log[flow.log==0] <- 1 # Set any 0's to 1 as the base case
   flow.log[flow.log==-Inf] <- 0 # Set resulting -Infinty (log10(0)) values to 0
-  flow.mag <- round(flow.log) # Round them to 
+  flow.mag <- round(flow.log) # Round them to
 
   # Add color to indicate the magnitude.  Use heat colours to
   # indicate the magnitude of the flow, from yellow to red.
@@ -2016,9 +2135,9 @@ plotNetwork <- function(flow)
   flow.col <- flow.mag
   for (i in seq_along(heat)) flow.col[flow.col==i] <- heat[i]
   flow.col <- sapply(flow.col, as.character)
-  
+
   # Record the magnitude of flow coming into any label and use this to
-  # scale the entity labels. 
+  # scale the entity labels.
 
   entity.sizes <- round(log10(apply(flow, 2, sum)))
   entity.sizes[entity.sizes==-Inf] <- 0
@@ -2027,7 +2146,7 @@ plotNetwork <- function(flow)
 
   # A warning that "par()$cxy * label.cex" have missmatched
   # dimensions. par()$cxy is of length 2? Should be 1?
-  
+
   suppressWarnings(plot(flow.net, displaylabels=TRUE, usecurve=TRUE,
                         mode="circle",
                         edge.lwd=flow.mag*1.5, edge.col=flow.col,
@@ -2048,7 +2167,7 @@ update_comboboxentry_with_dataframes <- function(action, window)
   # data frames and matrices.
 
   current <- theWidget("data_name_combobox")$getActiveText()
-  
+
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
@@ -2089,7 +2208,7 @@ close_rattle <- function(action, window)
   # 090401 This callback seems to be called after the window is
   # destroyed!!!  So the question serves no purpose... Not clear how
   # to fix that.
-  
+
   closeRattle()
 }
 
@@ -2107,11 +2226,11 @@ quit_rattle <- function(action, window)
 closeRattle <- function(ask=FALSE)
 {
   if (ask || crv$close %in% c("quit", "ask"))
-  {  
+  {
     msg <- sprintf(Rtxt("Do you want to terminate %s?"), crv$appname)
     if (!questionDialog(msg)) return(FALSE)
   }
-  
+
   # Don't remove the graphics for now. In moving to the Cairo device,
   # this blanks the device, but does not destroy the containing
   # window. I wonder if there is some way to get a list of the plot
@@ -2138,7 +2257,7 @@ closeRattle <- function(ask=FALSE)
   # 080511 Restore options to how they were when Rattle was started.
 
   options(crv$options)
-  
+
   # if (crv$tooltiphack) gtkMainQuit() # Only needed if gtkMain is run.
 
   # 080906 Deal with R not finishing up when rattle is called from
@@ -2147,13 +2266,13 @@ closeRattle <- function(ask=FALSE)
   if (crv$close == "quit") quit(save="no")
 
 }
-  
-interrupt_rattle <- function(action, window) 
+
+interrupt_rattle <- function(action, window)
 {
   # The multicore or fork packages may provide some hope under
   # GNU/Linux, but not MS/Wdinwos. Under MS the Esc seems to send a
   # SIGBREAK to the R process. How to do that?
-  
+
   infoDialog("This operation is not yet functioning.")
 }
 
@@ -2185,7 +2304,7 @@ on_about_menu_activate <-  function(action, window)
   ab$setVersion(crv$version)
 
   configureAbout(ab)
-  
+
   gladeXMLSignalAutoconnect(about)
 }
 
@@ -2195,14 +2314,14 @@ configureAbout <- function(ab)
   ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
                         "All rights reserved."))
 }
- 
+
 
 on_paste1_activate <- notImplemented
 on_copy1_activate <- notImplemented
 
 on_tooltips_activate <- function(action, window)
 {
-  
+
   ## infoDialog("Currently this functionality is not implemented.",
   ##             "It is awaiting some insight into how to get hold of",
   ##             "the glade GtkTooltips group, which can then be",
@@ -2220,7 +2339,7 @@ on_tooltips_activate <- function(action, window)
   ## {
   ##   infoDialog("Currently the functionality to turn tooltips off",
   ##              "is not implemented.")
-  ## }    
+  ## }
 }
 
 on_verbose_menuitem_toggled <- function(action, window)
@@ -2303,7 +2422,7 @@ switchToPage <- function(page)
 {
 
   # Blank the status bar whenever we change pages
-  
+
   setStatusBar()
 
   # This function used to accept numeric pages, so check for that and
@@ -2311,12 +2430,12 @@ switchToPage <- function(page)
   # (page numbers used to be fixed).
 
   if (is.numeric(page))
-    page <- crv$NOTEBOOK$getTabLabelText(crv$NOTEBOOK$getNthPage(page))
+    page <- getNotebookPageLabel(crv$NOTEBOOK, page)
 
   # 091112 This is now done in configureEvaluateTab.
   ## if (page == crv$NOTEBOOK.EVALUATE.NAME)
   ## {
-    
+
   ##   # On moving to the EVALUATE page, ensure each built model's
   ##   # checkbox is active, and check the active model's checkbox, but
   ##   # leave all the other as they are.
@@ -2331,7 +2450,7 @@ switchToPage <- function(page)
   ##     lapply(mtypes,
   ##            function(x) theWidget(paste(x, "_evaluate_checkbutton",
   ##                                           sep=""))$setSensitive(TRUE))
-      
+
   ##     if (is.null(crs$page) || crs$page == crv$NOTEBOOK.MODEL.NAME)
   ##     {
   ##       # By default check the current model's check button if we
@@ -2352,7 +2471,7 @@ switchToPage <- function(page)
   # sure why anyone would push the execute button anyhow, so maybe
   # this is just better to result in an errorDialog rather than extra
   # logic here to greyt out the button?
-  
+
   if (page == crv$NOTEBOOK.LOG.NAME)
   {
     theWidget("execute_button")$setSensitive(FALSE)
@@ -2363,10 +2482,9 @@ switchToPage <- function(page)
     theWidget("execute_button")$setSensitive(TRUE)
     theWidget("execute_menu")$setSensitive(TRUE)
   }
-    
+
   # Record the current page so when we change we know which was last.
 
   crs$page <- page
 
 }
-

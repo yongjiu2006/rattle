@@ -9,6 +9,15 @@ Help Menu
 
 Data Tab
 
+  Edit button
+
+    ----------------------------------------------------------------------
+    2010-02-15 06:29:01 Graham Williams
+    
+    Start using RGtk2DfEdit once I figure out how to save the results
+    into crs$dataset. Note that it may not be available on MS/Windows.
+    ----------------------------------------------------------------------
+
   Variable selection
 
     Variable type
