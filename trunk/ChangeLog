@@ -1,3 +1,17 @@
+rattle (2.5.24) stable; urgency=low
+
+  * Revamp the help text, and put into the Rtxt translation framework.
+  
+  * Fix the height of the data name widget (the library option was growing
+    the width for some reason).
+  
+  * For Evaluate, add Full and Enter as dataset options. Enter will pop up
+    an editor with the final row from the dataset, allowing you to add
+    rows or modify the supplied row. We supply the row so that we have an
+    example to work from. Full uses the whole original dataset.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 06 Mar 2010 14:17:12 +1100
+
 rattle (2.5.23) stable; urgency=low
 
   * Catch "arules" error in converting data to transactions when baskets
@@ -51,7 +65,7 @@ rattle (2.5.23) stable; urgency=low
   
   * Spelling correction to a number of tooltips.
   
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 03 Mar 2010 06:50:58 +1100
 
 rattle (2.5.22) stable; urgency=low
 

@@ -370,10 +370,10 @@ zip: build plocal ilocal
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
 	#mv rattle_$(VERSION).zip $(REPOSITORY)
-	#(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
-	#>| pmml_$(PVERSION).zip
-	#(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
-	#>| rstat_$(IVERSION).zip
+	(cd /usr/local/lib/R/site-library; zip -r9 - pmml) \
+	>| pmml_$(PVERSION).zip
+	(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
+	>| rstat_$(IVERSION).zip
 
 txt:
 	R CMD Rd2txt package/rattle/man/rattle.Rd

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-01 19:28:11 Graham Williams>
+# Time-stamp: <2010-03-04 19:21:46 Graham Williams>
 #
 # DATA TAB
 #
@@ -296,8 +296,9 @@ validateSampleEntry <- function()
   }  
   else if (any(sampling < 0))
   {
-    errorDialog(Rtxt("A partition proporiton of less than 0 does not make sense.",
-                     "\n\nPlease choose proporitions in the range 0-100."))
+    errorDialog(Rtxt("A proportion of less than 0 for the partition",
+                     "does not make sense.",
+                     "\n\nPlease choose proportions in the range 0-100."))
     result <- FALSE
   }  
   else if (sum(sampling) != 100)
