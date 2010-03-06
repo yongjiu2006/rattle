@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-01 21:59:09 Graham Williams>
+# Time-stamp: <2010-03-06 14:17:04 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -121,6 +121,7 @@ on_evaluate_score_radiobutton_toggled <- function(button)
     theWidget("score_include_label")$setSensitive(TRUE)
     theWidget("score_idents_radiobutton")$setSensitive(TRUE)
     theWidget("score_all_radiobutton")$setSensitive(TRUE)
+    theWidget("evaluate_enterdata_radiobutton")$setSensitive(TRUE)
 
     #091112 I don't think this belongs here anymore.
 #    if (not.null(crs$kmeans))
@@ -136,6 +137,7 @@ on_evaluate_score_radiobutton_toggled <- function(button)
     theWidget("score_include_label")$setSensitive(FALSE)
     theWidget("score_idents_radiobutton")$setSensitive(FALSE)
     theWidget("score_all_radiobutton")$setSensitive(FALSE)
+    theWidget("evaluate_enterdata_radiobutton")$setSensitive(FALSE)
   }
   setStatusBar()
 }
@@ -248,12 +250,13 @@ configureEvaluateTab <- function()
   for (b in c("training", "csv", "rdataset"))
     theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
 
-  # When we have partitoining enabled, select the appropriate default.
+  # When we have partitioning enabled, select the appropriate default.
 
   if (theWidget("data_sample_checkbutton")$getActive())
   {
     theWidget("evaluate_validation_radiobutton")$setSensitive(length(crs$validate))
     theWidget("evaluate_testing_radiobutton")$setSensitive(length(crs$test))
+    theWidget("evaluate_fulldata_radiobutton")$setSensitive(TRUE)
     if (length(crs$validate))
       theWidget("evaluate_validation_radiobutton")$setActive(TRUE)
     else
@@ -263,8 +266,11 @@ configureEvaluateTab <- function()
   {
     theWidget("evaluate_validation_radiobutton")$setSensitive(FALSE)
     theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
+    theWidget("evaluate_fulldata_radiobutton")$setSensitive(FALSE)
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)
   }
+  
+  theWidget("evaluate_enterdata_radiobutton")$setSensitive(FALSE)
 
   #----------------------------------------------------------------------
 
@@ -1063,7 +1069,7 @@ executeEvaluateTab <- function()
     return()
   }
 
-  # DISPATCH
+  # Dispatch to the appropriate function.
 
   if (theWidget("evaluate_confusion_radiobutton")$getActive())
     msg <- executeEvaluateConfusion(respcmd, testset, testname)
@@ -2389,6 +2395,23 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   # TODO: Would this be better as the Export functionality for the
   # Evaluate tab? 081227 Add cluster export in here.
 
+  # 100306 Allow data to be entered manually, and score that.
+  
+  entered <- theWidget("evaluate_enterdata_radiobutton")$getActive()
+  
+  if (entered)
+  {
+    if (! is.null(crs$entered))
+      crs$entered <- edit(crs$entered) # Use previously manually entered data.
+    else
+      crs$entered <- edit(crs$dataset[nrow(crs$dataset),
+                                      c(crs$ident, crs$input, crs$target)])
+    probcmd <- lapply(probcmd, function(x) sub("crs\\$dataset", "crs$entered", x))
+    respcmd <- lapply(respcmd, function(x) sub("crs\\$dataset", "crs$entered", x))
+    testset <- lapply(testset, function(x) sub("crs\\$dataset", "crs$entered", x))
+    testname <- "manually entered data"
+  }
+      
   # Obtain information from the interface: what other data is to be
   # included with the scores.
 
@@ -2398,59 +2421,63 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   else if (theWidget("score_all_radiobutton")$getActive())
     sinclude <- "all"
 
-  # Obtain the filename to write the scores to.  We ask the user for a
-  # filename if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
-  # TODO should we add getwd() to the RATTLE_SCORE or
-  # .RATTLE.SCORE.OUT if a relative path.
-
-  fname <- Sys.getenv("RATTLE_SCORE")
-  if (fname == "" && not.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
-
-  if (fname == "")
+  if (! entered)
   {
-    # The default filename is the testname with spaces replaced by
-    # "_", etc., and then "_score" is appended, and then "_all" or
-    # "_idents" to indicate what other columns are included.
+  
+    # Obtain the filename to write the scores to.  We ask the user for a
+    # filename if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
+    # TODO should we add getwd() to the RATTLE_SCORE or
+    # .RATTLE.SCORE.OUT if a relative path.
+    
+    fname <- Sys.getenv("RATTLE_SCORE")
+    if (fname == "" && not.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
 
-    default <- sprintf("%s_score_%s.csv",
-                       gsub(" ", "_",
-                            gsub("\\.[[:alnum:]]*", "",
-                                 gsub("(\\[|\\])", "",
-                                      gsub("\\*", "", testname)))),
-                       sinclude)
-    # fname <- paste(getwd(), default, sep="/")
-
-    dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
-                                   "gtk-cancel", GtkResponseType["cancel"],
-                                   "gtk-save", GtkResponseType["accept"])
-    dialog$setDoOverwriteConfirmation(TRUE)
-
-    if(not.null(testname)) dialog$setCurrentName(default)
-
-    #dialog$setCurrentFolder(crs$dwd) Generates errors.
-
-    ff <- gtkFileFilterNew()
-    ff$setName("CSV Files")
-    ff$addPattern("*.csv")
-    dialog$addFilter(ff)
-
-    ff <- gtkFileFilterNew()
-    ff$setName("All Files")
-    ff$addPattern("*")
-    dialog$addFilter(ff)
-
-    if (dialog$run() == GtkResponseType["accept"])
+    if (fname == "")
     {
-      fname <- dialog$getFilename()
-      dialog$destroy()
-    }
-    else
-    {
-      dialog$destroy()
-      return()
+      # The default filename is the testname with spaces replaced by
+      # "_", etc., and then "_score" is appended, and then "_all" or
+      # "_idents" to indicate what other columns are included.
+      
+      default <- sprintf("%s_score_%s.csv",
+                         gsub(" ", "_",
+                              gsub("\\.[[:alnum:]]*", "",
+                                   gsub("(\\[|\\])", "",
+                                        gsub("\\*", "", testname)))),
+                         sinclude)
+      # fname <- paste(getwd(), default, sep="/")
+      
+      dialog <- gtkFileChooserDialog("Score Files", NULL, "save",
+                                     "gtk-cancel", GtkResponseType["cancel"],
+                                     "gtk-save", GtkResponseType["accept"])
+      dialog$setDoOverwriteConfirmation(TRUE)
+      
+      if(not.null(testname)) dialog$setCurrentName(default)
+      
+      #dialog$setCurrentFolder(crs$dwd) Generates errors.
+      
+      ff <- gtkFileFilterNew()
+      ff$setName("CSV Files")
+      ff$addPattern("*.csv")
+      dialog$addFilter(ff)
+      
+      ff <- gtkFileFilterNew()
+      ff$setName("All Files")
+      ff$addPattern("*")
+      dialog$addFilter(ff)
+      
+      if (dialog$run() == GtkResponseType["accept"])
+      {
+        fname <- dialog$getFilename()
+        dialog$destroy()
+      }
+      else
+      {
+        dialog$destroy()
+        return()
+      }
     }
   }
-
+  
   # Score the data with each model, collect the outputs, and then
   # write them all at once to file.
   #
@@ -2671,11 +2698,6 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
 
   sdata <- eval(parse(text=scoreset))
 
-  appendLog("Output the combined data.",
-            "write.csv(cbind(sdata, crs$pr), ",
-            sprintf('file="%s", ', fname),
-            "row.names=FALSE)")
-
   # 081107 Special case: for multinom, multiple probs are saved, plus
   # the decision. But the decision as a dataframe used to become the
   # column "glm.glm". I used to change that to "glm" but using a cbind
@@ -2690,12 +2712,27 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname)
   rcol <- grep("rpart.", colnames(scores))
   if (length(rcol)) colnames(scores)[rcol[length(rcol)]] <- "rpart"
 
-  writeCSV(cbind(sdata, scores), file=fname)
-
+  if (entered)
+  {
+    resetTextview("score_textview",
+                  Rtxt("Scores for the manually entered data.\n\n"),
+                  collectOutput("cbind(sdata, scores)", envir=environment()))
+    return.msg <- Rtxt("The manually entered data has been scored.")
+  }
+  else
+  {
+    appendLog("Output the combined data.",
+              "write.csv(cbind(sdata, crs$pr), ",
+              sprintf('file="%s", ', fname),
+              "row.names=FALSE)")
+    writeCSV(cbind(sdata, scores), file=fname)
+    return.msg <- sprintf(Rtxt("Scores have been saved to the file %s"), fname)
+  }
+  
   # StatusBar is enough so don't pop up a dialog?
   # infoDialog("The scores have been saved into the file", fname)
-
-  return(paste("Scores have been saved to the file", fname))
+  
+  return(return.msg)
 }
 
 #-----------------------------------------------------------------------
@@ -2958,7 +2995,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
     legend.cmd <- paste('legend("bottomright",',
                         'sprintf("Pseudo R-square=%s", fitcorr),',
                         'bty="n")')
-    appendLog(Rtxt("Include a psuedo R-square on the plot"), legend.cmd)
+    appendLog(Rtxt("Include a pseudo R-square on the plot"), legend.cmd)
     eval(parse(text=legend.cmd))
     
     # TODO Add to LOG

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-01 20:05:48 Graham Williams>
+# Time-stamp: <2010-03-06 14:08:41 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,7 +27,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Feb 2010"
+VERSION.DATE <- "Released 03 Mar 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1470,8 +1470,6 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   # with sprintf() you probably want cat(), but if you have a vector
   # of formatted text and you want to look at it (as data), print()
   # would be better.
-
-  # TODO Should we be using collect.output?
 
   owidth <- getOption("width")
   options(width=width)
