@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2009-12-07 06:36:20 Graham Williams>
+# Time-stamp: <2010-03-28 11:47:53 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -36,6 +36,9 @@ pmml <- function(model,
 
 ########################################################################
 # UTILITY FUNCTIONS
+
+markupSpecials <- function(x)
+  gsub("<", "&lt;", gsub(">", "&gt;", gsub("&", "&amp;", x)))
 
 generateCopyright <- function()
 {
@@ -238,7 +241,7 @@ pmmlDataDictionary <- function(field, dataset=NULL)
       for (j in seq_along(field$levels[[field$name[i]]]))
         data.fields[[i]][[j]] <- xmlNode("Value",
                                          attrs=c(value=
-                                           field$levels[[field$name[i]]][j]))
+                                           markupSpecials(field$levels[[field$name[i]]][j])))
   }
   data.dictionary$children <- data.fields
 

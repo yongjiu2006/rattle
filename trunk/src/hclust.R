@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-07 06:21:53 Graham Williams>
+# Time-stamp: <2010-03-27 08:30:42 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -42,7 +42,7 @@ on_hclust_stats_button_clicked <- function(button)
 {
   set.cursor("watch", Rtxt("Determining the cluster statistics...."))
   try(displayHClustStats())
-  set.cursor("left-ptr", "Cluster stistics displayed. Scroll to see all.")
+  set.cursor("left-ptr", Rtxt("Cluster statistics displayed. Scroll to see all."))
 }
 
 on_hclust_data_plot_button_clicked <- function(button)
@@ -52,8 +52,8 @@ on_hclust_data_plot_button_clicked <- function(button)
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E133: No cluster to plot.",
-                "The button should not have been sensitive.",
+    errorDialog(Rtxt("No cluster to plot.",
+                     "The button should not have been sensitive."),
                 crv$support.msg)
     return()
   }
@@ -72,9 +72,9 @@ on_hclust_data_plot_button_clicked <- function(button)
 
   if (length(nums) == 0 || length(indicies) == 0)
   {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+    errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
+                     "No numeric variables were found in the dataset",
+                     "from amongst those having an input/target/risk role."))
     return()
   }
 
@@ -82,9 +82,9 @@ on_hclust_data_plot_button_clicked <- function(button)
   
   if (length(intersect(nums, indicies)) == 1)
   {
-    infoDialog("A data plot can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
+    infoDialog(Rtxt("A data plot can not be constructed",
+                    "because there is only one numeric variable available",
+                    "in the data."))
     return()
   }
 
@@ -97,11 +97,11 @@ on_hclust_data_plot_button_clicked <- function(button)
                             ifelse (sampling, "crs$sample", ""), include,
                             num.clusters),
                     genPlotTitleCmd(""))
-  appendLog("Generate a data plot.", plot.cmd)
+  appendLog(Rtxt("Generate a data plot."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
-  set.cursor("left-ptr", "Data plot has been generated.")
+  set.cursor("left-ptr", Rtxt("Data plot has been generated."))
 }
 
 on_hclust_discriminant_plot_button_clicked <- function(button)
@@ -111,15 +111,15 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E128: No cluster to plot.",
-                "The button should not have been sensitive.",
+    errorDialog(Rtxt("No cluster to plot.",
+                     "The button should not have been sensitive."),
                 crv$support.msg)
     return()
   }
 
   # The fpc package provides the plotcluster command.
   
-  if (!packageIsAvailable("fpc", "plot the cluster")) return()
+  if (!packageIsAvailable("fpc", Rtxt("plot the cluster"))) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog(packageProvides("fpc", "plotcluster"), lib.cmd)
   eval(parse(text=lib.cmd))
@@ -138,9 +138,9 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
   if (length(nums) == 0 || length(indicies) == 0)
   {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+    errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
+                     "No numeric variables were found in the dataset",
+                     "from amongst those having an input/target/risk role."))
     return()
   }
 
@@ -148,9 +148,9 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
   
   if (length(intersect(nums, indicies)) == 1)
   {
-    infoDialog("A discriminant coordinates plot can not be constructed",
-               "because there is only one numeric variable available",
-               "in the data.")
+    infoDialog(Rtxt("A discriminant coordinates plot can not be constructed",
+                    "because there is only one numeric variable available",
+                    "in the data."))
     return()
   }
 
@@ -160,13 +160,13 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
                                   "cutree(crs$hclust, %d))\n"),
                             ifelse(sampling, "crs$sample", ""), include,
                             num.clusters),
-                    genPlotTitleCmd("Discriminant Coordinates",
+                    genPlotTitleCmd(Rtxt("Discriminant Coordinates"),
                                     crs$dataname), sep="")
-  appendLog("Generate a discriminant coordinates plot.", plot.cmd)
+  appendLog(Rtxt("Generate a discriminant coordinates plot."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Discriminant coordinates plot has been generated.")
+  setStatusBar(Rtxt("Discriminant coordinates plot has been generated."))
 }
 
 ########################################################################
@@ -200,10 +200,26 @@ executeClusterHClust <- function(include)
   else
     amap.available <- FALSE
   
-  # Obtain interface information.
+  # Obtain interface information. 100319 Need to account for
+  # transaltions in getting the function options.
 
   dist <- theWidget("hclust_distance_combobox")$getActiveText()
+  dist.opts <- paste("euclidean", "maximum", "manhattan", "canberra",
+                     "binary", "pearson", "correlation", "spearman",
+                     sep="\n")
+  dist.rtxt <- Rtxt (dist.opts)
+  dist.opts <- strsplit(dist.opts, "\n")[[1]]
+  dist.rtxt <- strsplit(dist.rtxt, "\n")[[1]]
+  dist <- dist.opts[which(dist == dist.rtxt)]
+  
   link <- theWidget("hclust_link_combobox")$getActiveText()
+  link.opts <- paste("complete", "ward", "single", "average", "mcquitty",
+                     "median", "centroid", sep="\n")
+  link.rtxt <- Rtxt (link.opts)
+  link.opts <- strsplit(link.opts, "\n")[[1]]
+  link.rtxt <- strsplit(link.rtxt, "\n")[[1]]
+  link <- link.opts[which(link == link.rtxt)]
+  
   nbproc <- theWidget("hclust_nbproc_spinbutton")$getValue()
 
   # Check if user has requested more than a single processor, and if
@@ -247,8 +263,8 @@ executeClusterHClust <- function(include)
 
   # Log the R command.
 
-  startLog("HIERARCHICAL CLUSTER")
-  appendLog("Generate a hierarchical cluster of the data.",
+  startLog(Rtxt("Hierarchical Cluster"))
+  appendLog(Rtxt("Generate a hierarchical cluster of the data."),
           hclust.cmd)
   
   # Perform the commands.
@@ -260,13 +276,13 @@ executeClusterHClust <- function(include)
   {
     if (any(grep("[cC]annot allocate (vector|memory)", result)))
     {
-      errorDialog("E143: The call to hclust appears to have failed.",
-                  "This is often due, as is the case here,",
-                  "to running out of memory",
-                  "as hclust is rather memory hungry.",
-                  "A quick solution is to sample the dataset, through the",
-                  "Data tab. On 32bit machines you may be limited to",
-                  "less than 2000 observations.")
+      errorDialog(Rtxt("The call to hclust appears to have failed.",
+                       "This is often due, as is the case here,",
+                       "to running out of memory",
+                       "as hclust is rather memory hungry.",
+                       "A quick solution is to sample the dataset, through the",
+                       "Data tab. On 32bit machines you may be limited to",
+                       "less than 2000 observations."))
       setTextview(TV)
     }
     else
@@ -274,7 +290,7 @@ executeClusterHClust <- function(include)
     return(FALSE)
   }
 
-  setTextview(TV, "Hiearchical Cluster\n", collectOutput("crs$hclust", TRUE))
+  setTextview(TV, Rtxt("Hierachical Cluster"), "\n", collectOutput("crs$hclust", TRUE))
 
   theWidget("hclust_dendrogram_button")$setSensitive(TRUE)
   theWidget("hclust_clusters_label")$setSensitive(TRUE)
@@ -283,17 +299,15 @@ executeClusterHClust <- function(include)
   theWidget("hclust_data_plot_button")$setSensitive(TRUE)
   theWidget("hclust_discriminant_plot_button")$setSensitive(TRUE)
 
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("A hierarchical cluster has been generated.", time.msg)
+  reportTimeTaken(TV, time.taken,
+                  msg=Rtxt("A hierarchical cluster has been generated."))
+  
   return(TRUE)
 }
 
 centers.hclust <- function(x, h, nclust=10, use.median=FALSE)
 {
-  if (!inherits(h, "hclust")) stop("Not a legitimate hclust opbject")
+  if (!inherits(h, "hclust")) stop(Rtxt("Not a legitimate hclust object"))
     
   if (class(x) != "matrix") x <- as.matrix(x)
   if (use.median)
@@ -313,9 +327,8 @@ plotDendrogram <- function()
 
   if (is.null(crs$hclust))
   {
-    errorDialog("E126: Should not be here.",
-                "There is no Hierarchical Cluster yet we are",
-                "trying to plot it.", crv$support.msg)
+    errorDialog(Rtxt("There is no Hierarchical Cluster yet we are",
+                     "trying to plot it."), crv$support.msg)
     return()
   }
 
@@ -323,7 +336,7 @@ plotDendrogram <- function()
   # should already be loaded. But check anyhow.
 
   lib.cmd <- "require(cba, quietly=TRUE)"
-  if (! packageIsAvailable("cba", "plot a dendrogram")) return(FALSE)
+  if (! packageIsAvailable("cba", Rtxt("plot a dendrogram"))) return(FALSE)
   appendLog(packageProvides("cba", "plot"), lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -341,12 +354,12 @@ plotDendrogram <- function()
     limit <- ""
   plot.cmd <- paste(sprintf('plot(crs$hclust, main="", sub="", xlab=""%s)\n',
                             limit),
-                    genPlotTitleCmd("Cluster Dendrogram", crs$dataname),
+                    genPlotTitleCmd(Rtxt("Cluster Dendrogram"), crs$dataname),
                     sep="")
 
   # Log the R command and execute.
   
-  appendLog("Generate a dendrogram plot.", plot.cmd)
+  appendLog(Rtxt("Generate a dendrogram plot."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -356,7 +369,7 @@ plotDendrogram <- function()
   if (nclust > 1 && nclust <= length(crs$hclust$height))
   {
     rect.cmd <- sprintf("rect.hclust(crs$hclust, k=%d)", nclust)
-    appendLog("Add in rectangles to show the clusters.", rect.cmd)
+    appendLog(Rtxt("Add in rectangles to show the clusters."), rect.cmd)
     eval(parse(text=rect.cmd))
   }
   }
@@ -371,15 +384,15 @@ displayHClustStats <- function()
   
   if (is.null(crs$hclust))
   {
-    errorDialog("E127: No cluster to plot.",
-                "The button should not have been sensitive.",
+    errorDialog(Rtxt("No cluster to plot.",
+                     "The button should not have been sensitive."),
                 crv$support.msg)
     return()
   }
 
   # The fpc package provides is available for cluster.stats function.
   
-  if (!packageIsAvailable("fpc", "calculate cluster statistics")) return()
+  if (!packageIsAvailable("fpc", Rtxt("calculate cluster statistics"))) return()
   lib.cmd <- "require(fpc, quietly=TRUE)"
   appendLog(packageProvides("fpc", "cluster.stats"), lib.cmd)
   eval(parse(text=lib.cmd))
@@ -415,8 +428,8 @@ displayHClustStats <- function()
 
   centers.cmd <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
-  appendLog("List the suggested cluster centers for each cluster", centers.cmd)
-  appendTextview(TV, "Cluster means:\n\n",
+  appendLog(Rtxt("List the suggested cluster centers for each cluster"), centers.cmd)
+  appendTextview(TV, Rtxt("Cluster means:"), "\n\n",
                  collectOutput(centers.cmd, use.print=TRUE))
   
   # STATS: Log the R command and execute.
@@ -425,11 +438,11 @@ displayHClustStats <- function()
                              "cutree(crs$hclust, %d))\n"),
                        ifelse(sampling, "crs$sample", ""), include,
                        nclust)
-  appendLog("Generate cluster statistics using the fpc package.", stats.cmd)
-  appendTextview(TV, "General cluster statistics:\n\n",
+  appendLog(Rtxt("Generate cluster statistics using the fpc package."), stats.cmd)
+  appendTextview(TV, Rtxt("General cluster statistics:"), "\n\n",
                  collectOutput(stats.cmd, use.print=TRUE))
 
-  setStatusBar("HClust cluster statistics have been generated.")
+  setStatusBar(Rtxt("HClust cluster statistics have been generated."))
 }
 
 ## THIS IS NOT EVEN RELATED TO hclust!!!! USES PAM
@@ -491,10 +504,10 @@ exportHClustTab <- function(file)
   
   if (is.null(crs$hclust))
   {
-    errorDialog("No hierarchical cluster model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
+    errorDialog(Rtxt("No hierarchical cluster model is available. Be sure to build",
+                     "the model before trying to export it! You will need",
+                     "to press the Execute button (F2) in order to build the",
+                     "model."))
     return()
   }
 
@@ -504,7 +517,7 @@ exportHClustTab <- function(file)
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   include <- getNumericVariables()
   
-  startLog("EXPORT HCLUST")
+  startLog(Rtxt("Export Hclust"))
   
   save.name <- getExportSaveName("hclust")
   if (is.null(save.name)) return(FALSE)
@@ -525,7 +538,7 @@ exportHClustTab <- function(file)
 
   if (ext == "xml")
   {
-    appendLog("Export hierarchical cluster as PMML.",
+    appendLog(Rtxt("Export hierarchical cluster as PMML."),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -533,7 +546,7 @@ exportHClustTab <- function(file)
   {
     save.name <- tolower(save.name)
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export hieracrchical cluster model as C code for WebFocus.",
+    appendLog(Rtxt("Export hieracrchical cluster model as C code for WebFocus."),
               sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),
@@ -548,7 +561,7 @@ exportHClustTab <- function(file)
                 attr(save.name, "exportClass")), file=save.name)
   }
   
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."), toupper(ext), save.name))
 
 }
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-09 12:30:16 Graham Williams>
+# Time-stamp: <2010-03-23 21:59:09 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -52,17 +52,20 @@ executeModelCTree <- function()
     pr <- as.numeric(unlist(strsplit(priors, ",")))
     if (length(pr) != num.classes)
       {
-        errorDialog(sprintf("The supplied priors (%s)", priors),
-                     "need to correspond to the number of classes",
-                     sprintf("found in the target variable '%s'.",crs$target),
-                     sprintf("Please supply exactly %d priors.", num.classes))
+        errorDialog(sprintf(Rtxt("The supplied priors (%s)",
+                                 "need to correspond to the number of classes",
+                                 "found in the target variable '%s'.",
+                                 "Please supply exactly %d priors."),
+                            priors, crs$target, num.classes))
         return(FALSE)
       }
     if (sum(pr) != 1)
       {
-        errorDialog(sprintf("The supplied priors (%s)", priors),
-                     sprintf("add up to %0.2f whereas", sum(pr)),
-                     "they need to add up 1.00")
+        errorDialog(sprintf(Rtxt("The supplied priors (%s)",
+                                 "add up to %0.2f whereas",
+                                 "they need to add up 1.00.",
+                                 "Please provide appropriate priors."),
+                            priors, sum(pr)))
         return(FALSE)
       }
     if (is.null(parms))
@@ -191,7 +194,7 @@ executeModelCTree <- function()
   # Commands.
   
   lib.cmd <- "require(party, quietly=TRUE)"
-  if (! packageIsAvailable("party", "build conditional trees")) return(FALSE)
+  if (! packageIsAvailable("party", Rtxt("build conditional trees"))) return(FALSE)
 
 ##   if (action %in%  c("tune", "best"))
 ##   {
@@ -254,8 +257,8 @@ executeModelCTree <- function()
                                
   # Load the required library.
 
-  startLog("CONDITIONAL INFERENCE TREE")
-  appendLog("Build a conditional tree using the party package.", lib.cmd)
+  startLog(Rtxt("Conditional inference tree."))
+  appendLog(Rtxt("Build a conditional tree using the party package."), lib.cmd)
 
   eval(parse(text=lib.cmd))
 
@@ -267,7 +270,7 @@ executeModelCTree <- function()
 
   # Build the model.
 
-  appendLog("Build a ctree model.", fit.cmd)
+  appendLog(Rtxt("Build a ctree model."), fit.cmd)
   start.time <- Sys.time()
   result <- try(eval(parse(text=fit.cmd)), silent=TRUE)
   time.taken <- Sys.time()-start.time
@@ -279,15 +282,15 @@ executeModelCTree <- function()
 
   # Display the resulting model.
 
-  appendLog("Generate summary of the ctree model.", print.cmd)
+  appendLog(Rtxt("Generate summary of the ctree model."), print.cmd)
 
   resetTextview(TV)
   setTextview(TV,
-              sprintf("Summary of the %s model for %s (built using %s):\n\n",
+              sprintf(Rtxt("Summary of the %s model for %s (built using '%s'):\n"),
                       commonName("ctree"),
-                      "Classification", # 080604 TODO put the right type
+                      Rtxt("Classification"), # 080604 TODO put the right type
                       "ctree"),
-              collectOutput(print.cmd))
+              collectOutput(print.cmd), "\n")
 
   if (sampling) crs$smodel <- union(crs$smodel, crv$RPART)
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-01 22:28:53 Graham Williams>
+# Time-stamp: <2010-03-25 22:12:55 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -81,8 +81,8 @@ executeModelNNet <- function()
 
   startLog("Neural Network")
   lib.cmd <-  "require(nnet, quietly=TRUE)"
-  if (! packageIsAvailable("nnet", "build a neural network")) return(FALSE)
-  appendLog("Build a neural network model using the nnet package.", lib.cmd)
+  if (! packageIsAvailable("nnet", Rtxt("build a neural network"))) return(FALSE)
+  appendLog(Rtxt("Build a neural network model using the nnet package."), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Build the formula for the model.
@@ -183,25 +183,20 @@ errorReport(model.cmd, result)
   else
     print.cmd <- "print(crs$nnet)"
 
-  appendLog("Print the results of the modelling.", print.cmd)
+  appendLog(Rtxt("Print the results of the modelling."), print.cmd)
   resetTextview(TV)
   setTextview(TV,
-              paste("Summary of the Neural Net model (built using ",
-                    ifelse(numericTarget() || binomialTarget(),
-                           "nnet", "multinom"), "):\n\n",
-                    sep=""),
+              sprintf(Rtxt("Summary of the Neural Net model (built using %s):"),
+                      ifelse(numericTarget() || binomialTarget(),
+                             Rtxt("nnet"), Rtxt("multinom"))),
               collectOutput(print.cmd))
 
   # Now that we have a model, make sure appropriate actions are sensitive.
   
   # Finish up.
-  
-  time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar("A neural network model has been generated.", time.msg)
+
+  reportTimeTaken(TV, time.taken, commonName(crv$NNET))
+
   return(TRUE)
 }
 
@@ -239,7 +234,7 @@ exportNNetModel <- function()
                              ", transforms=crs$transforms", ""))
   if (ext == "xml")
   {
-    appendLog("Export the Neural Net model as PMML.",
+    appendLog(Rtxt("Export the Neural Net model as PMML."),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -248,7 +243,7 @@ exportNNetModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export the Neural Net model as C code for WebFocus.",
+    appendLog(Rtxt("Export the Neural Net model as C code for WebFocus."),
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),
@@ -263,13 +258,13 @@ exportNNetModel <- function()
                 attr(save.name, "exportClass")), file=save.name)
   }
 
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."), toupper(ext), save.name))
 }
 
 print.summary.nnet.rattle <- function(x, ...)
 {
   require(nnet)
-  cat("Neural Network build options:")
+  cat(Rtxt("Neural Network build options:"))
   tconn <- diff(x$nconn)
   ssep <- ""
   if (tconn[length(tconn)] > x$n[2L]+1L)

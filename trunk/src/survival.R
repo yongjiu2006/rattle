@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-01-28 11:36:17 Graham Williams>
+# Time-stamp: <2010-03-26 06:46:15 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -27,7 +27,9 @@ setGuiDefaultsSurvival <- function()
   theWidget("model_survival_time_var_label")$setText("No time variable selected")
   theWidget("model_survival_status_var_label")$setText("No status variable selected")
   theWidget("model_survival_coxph_radiobutton")$setActive(TRUE)
-  theWidget("model_survival_plots_button")$setSensitive(FALSE)
+  theWidget("model_survival_plots_label")$setSensitive(FALSE)
+  theWidget("model_survival_plot_survival_button")$setSensitive(FALSE)
+  theWidget("model_survival_plot_residual_button")$setSensitive(FALSE)
 }
 
 on_model_survival_coxph_radiobutton_toggled <- function(button)
@@ -40,9 +42,16 @@ on_model_survival_coxph_radiobutton_toggled <- function(button)
     theWidget("model_survival_function_label")$setText("survreg")
 }
 
-on_model_survival_plots_button_clicked <- function(button)
+on_model_survival_plot_survival_button_clicked <- function(button)
 {
   plotSurvivalModel()
+  if (crv$appname == "RStat") plotResidualModels()
+}
+
+
+on_model_survival_plot_residual_button_clicked <- function(button)
+{
+  plotResidualModels()
 }
 
 
@@ -92,14 +101,14 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   {
     msg <- errorMessageFun(method, crs$survival)
     
-    if (any(grep("Invalid survival times for this distribution", crs$survival)))
+    if (any(grep(Rtxt("Invalid survival times for this distribution"), crs$survival)))
     {
-      errorDialog("E145: The building of the survival model failed.",
-                  "The error indicates an invalid Time variable.",
-                  "This can be the case when using survreg and there is",
-                  "a zero time value (as might result from an imputation).",
-                  "Please review the source data and ensure the Time values",
-                  "are correct.")
+      errorDialog(Rtxt("E145: The building of the survival model failed.",
+                       "The error indicates an invalid Time variable.",
+                       "This can be the case when using survreg and there is",
+                       "a zero time value (as might result from an imputation).",
+                       "Please review the source data and ensure the Time values",
+                       "are correct."))
       setTextview(tv)
     }
     else
@@ -118,9 +127,9 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   if (gui)
   {
     print.cmd <- "summary(crs$survival)"
-    appendLog("Print the results of the modelling.", print.cmd)
+    appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
-                  sprintf("Summary of the Survival model (built using %s):\n\n", method),
+                  sprintf(Rtxt("Summary of the Survival model (built using %s):\n\n"), method),
                   collectOutput(print.cmd))
     if (method=="coxph")
     {
@@ -139,7 +148,7 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
                         attr(time.taken, "units"))
     appendTextview(tv, "\n", time.msg)
     appendLog(time.msg)
-    setStatusBar("A survival model has been generated.", time.msg)
+    setStatusBar(Rtxt("A survival model has been generated."), time.msg)
   }
   return(crs$survival)
 }
@@ -150,8 +159,12 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
   # buttons that require the model to exist. For the Survival model
   # this will be the plot functions.
 
-  theWidget("model_survival_plots_button")$
-  setSensitive(state && class(crs$survival) == "coxph")
+  if (state && class(crs$survival) == "coxph")
+  {
+    theWidget("model_survival_plots_label")$setSensitive(TRUE)
+    theWidget("model_survival_plot_survival_button")$setSensitive(TRUE)
+    theWidget("model_survival_plot_residual_button")$setSensitive(TRUE)
+  }
 
   theWidget("score_class_radiobutton")$
   setActive(class(crs$survival) == "survreg")
@@ -161,7 +174,7 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
 
 plotSurvivalModel <- function()
 {
-  startLog(Rtxt("Survival Plot"))
+  startLog(Rtxt("Survival chart"))
 
   plot.cmd <- paste('plot(survfit(crs$survival), xlab=crs$target,',
                     'ylab="Survival Probability", col=3)\n',
@@ -171,11 +184,30 @@ plotSurvivalModel <- function()
                  "the most recent survival model."), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
-  
-  plot.cmd <- paste('plot(cox.zph(crs$survival), var=1)\n',
-                    genPlotTitleCmd('Scaled Schoenfeld Residuals'), sep="")
-  appendLog(paste("Plot the graphical test of proportional hazards",
-                  "(scaled Schoenfeld residuals) on variable 1."),
+}
+
+plotResidualModels <- function()
+{
+  startLog(Rtxt("Survival model residuals plot."))
+
+  plot.cmd <- paste('temp <- cox.zph(crs$survival)',
+# 100325 This works but wait for IBI go ahead and testing for RStat
+                    'nr <- nrow(temp$var)',
+                    sprintf('opar <- par(mfrow=c(%d, 3))',
+                            trunc((nrow(cox.zph(crs$survival)$var)+2)/3)),
+                    'vnum <- 1',
+                    'for (vnum in 1:nr)',
+                    '{',
+                    '  plot(temp, var=vnum)',
+                    '  abline(0, 0, lty=3)',
+                    '  # A linear fit.',
+                    '  abline(lm(temp$y[,vnum] ~ temp$x)$coefficients, lty=4, col=3)',
+                    '}',
+                    # Any way to get a title on the whole plot?
+                    # genPlotTitleCmd("Scaled Schoenfeld Residuals"),
+                    'par(opar)',
+                    sep="\n")
+  appendLog("Plot the scaled Schoenfeld residuals of proportional hazards.",
             plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))

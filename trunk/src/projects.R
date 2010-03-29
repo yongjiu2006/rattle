@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-24 06:56:08 Graham Williams>
+# Time-stamp: <2010-03-24 07:34:02 Graham Williams>
 #
 # Project functionality.
 #
@@ -78,14 +78,14 @@ newProject <- function()
 {
   if ( not.null(listBuiltModels()) )
   {
-    if (! questionDialog("You have requested to start a new project.",
-                         "\n\nThis will clear the current project (dataset",
-                         "and models).",
-                         "\n\nIf you choose not to continue you can save",
-                         "the project, and then start a new project.",
-                         "\n\nDo you wish to continue, and overwrite the",
-                         "current project?"
-                         ))
+    if (! questionDialog(Rtxt("You have requested to start a new project.\n\n",
+                              "This will clear the current project (dataset",
+                              "and models).\n\n",
+                              "If you choose not to continue you can save",
+                              "the project, and then start a new project.\n\n",
+                              "Do you wish to continue, and overwrite the",
+                              "current project?"
+                              )))
       return()
   }
 
@@ -153,7 +153,7 @@ saveProject <- function()
 
   # Obtain a filename to save to.
   
-  dialog <- gtkFileChooserDialog("Save Project", NULL, "save",
+  dialog <- gtkFileChooserDialog(Rtxt("Save Project"), NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
@@ -168,18 +168,18 @@ saveProject <- function()
   if (length(crv$project.extensions))
   {
     ff <- gtkFileFilterNew()
-    ff$setName("Projects")
+    ff$setName(Rtxt("Projects"))
     lapply(paste("*.", crv$project.extensions, sep=""), ff$addPattern)
     dialog$addFilter(ff)
   }
  
   ff <- gtkFileFilterNew()
-  ff$setName("RData Files")
+  ff$setName(Rtxt("RData Files"))
   ff$addPattern("*.Rdata")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   
@@ -205,12 +205,12 @@ saveProject <- function()
 
   if (tolower(save.ext) %notin% c(crv$project.extensions, "rdata"))
   {
-    if (filter.name == "Projects")
+    if (filter.name == Rtxt("Projects"))
     {
       if (save.ext != crv$project.extensions[1])
         save.name <- sprintf("%s.%s", save.name, crv$project.extensions[1])
     }
-    else if (filter.name == "RData Files")
+    else if (filter.name == Rtxt("RData Files"))
     {
       if (save.ext != "Rdata")
         save.name <- sprintf("%s.Rdata", save.name)
@@ -288,12 +288,12 @@ saveProject <- function()
     crs$rf.opt$proximity <- theWidget("rf_proximity_checkbutton")$getActive()
   }
     
-  crs$svm.opt$kernel <- theWidget("svm_kernel_comboboxentry")$getActive()
+  crs$svm.opt$kernel <- theWidget("svm_kernel_combobox")$getActive()
 
   set.cursor("watch")
   on.exit(set.cursor())
   startLog()
-  appendLog("Saved the project data (variable crs) to file.",
+  appendLog(Rtxt("Save the project data (variable crs) to file."),
             sprintf('save(crs, file="%s", compress=TRUE)', save.name))
   save(crs, file=save.name, compress=TRUE)
 
@@ -301,7 +301,7 @@ saveProject <- function()
   
   crs$pwd <- dirname(save.name)
   
-  setStatusBar("The current project has been saved to", save.name)
+  setStatusBar(sprintf(Rtxt("The current project has been saved to '%s'"), save.name))
 }
 
 loadProject <- function()
@@ -310,22 +310,20 @@ loadProject <- function()
 
   if ( not.null(listBuiltModels()) )
   {
-    if (! questionDialog("You have chosen to load a project.\n\n",
-                         "This will clear the old project (dataset and",
-                         "models) which may not have been saved.",
-                         "If you choose not to continue you can save",
-                         "the project, and then load the new project.",
-                         "\n\n",
-                         "Do you wish to continue, and overwrite the",
-                         "current project?"
-                         ))
-        
+    if (! questionDialog(Rtxt("You have chosen to load a project.\n\n",
+                              "This will clear the old project (dataset and",
+                              "models) which may not have been saved.",
+                              "If you choose not to continue you can save",
+                              "the project, and then load the new project.",
+                              "\n\n",
+                              "Do you wish to continue, and overwrite the",
+                              "current project?")))
       return()
   }
 
   # Request the rattle filename to be loaded
 
-  dialog <- gtkFileChooserDialog("Open Project", NULL, "load",
+  dialog <- gtkFileChooserDialog(Rtxt("Open Project"), NULL, "load",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-open", GtkResponseType["accept"])
 
@@ -334,18 +332,18 @@ loadProject <- function()
   if (length(crv$project.extensions))
   {
     ff <- gtkFileFilterNew()
-    ff$setName("Projects")
+    ff$setName(Rtxt("Projects"))
     lapply(paste("*.", crv$project.extensions, sep=""), ff$addPattern)
     dialog$addFilter(ff)
   }
   
   ff <- gtkFileFilterNew()
-  ff$setName("RData Files")
+  ff$setName(Rtxt("RData Files"))
   ff$addPattern("*.Rdata")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   
@@ -361,8 +359,7 @@ loadProject <- function()
   }
 
   if (!file.exists(load.name))
-    if (! questionDialog("The project file", load.name,
-                         "does not exist?"))
+    if (! questionDialog(sprintf(Rtxt("The project file '%s' does not exist?"), load.name)))
       return()
   
   # Load the file
@@ -578,7 +575,7 @@ loadProject <- function()
     theWidget("e1071_radiobutton")$setActive(TRUE)
 
   if (not.null(crs$svm.opt$kernel))
-    theWidget("svm_kernel_comboboxentry")$setActive(crs$svm.opt$kernel)
+    theWidget("svm_kernel_combobox")$setActive(crs$svm.opt$kernel)
 
   # EVALUATE
 
@@ -608,8 +605,7 @@ loadProject <- function()
   
   setTextviewContents("log_textview", crs$text$log)
   startLog()
-  appendLog("Reloaded the project data (variable crs) from file.",
-           sprintf('load("%s")', load.name))
-  setStatusBar("Project loaded from", load.name)
-
+  appendLog(Rtxt("Reload the project data (variable crs) from file."),
+            sprintf('load("%s")', load.name))
+  setStatusBar(sprintf(Rtxt("Project loaded from '%s'"), load.name))
 }

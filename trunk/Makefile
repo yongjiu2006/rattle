@@ -354,11 +354,11 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	chmod go+r weather*.RData weather.csv weather.arff weather_missing.csv
 	cp weather.RData weather.csv weather.arff weather_missing.csv data/
 	cp weather.RData weather.csv weather.arff weather_missing.csv src/
-	cp weather.RData weatherAUS.RData package/rattle/data/
+	cp locationsAUS.RData weather.RData weatherAUS.RData package/rattle/data/
 	cp weather.csv package/rattle/inst/csv/
 	cp weather.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/Projects/Togaware/www/site/rattle/
-	mv weather*.RData archive
+	mv locationsAUS.RData weather*.RData archive
 	mv weather.csv weather.arff weather_missing.csv archive
 
 $(REPOSITORY)/rattle_$(VERSION).zip: $(REPOSITORY)/rattle_$(VERSION).tar.gz

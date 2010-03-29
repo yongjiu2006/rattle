@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-06 14:08:41 Graham Williams>
+# Time-stamp: <2010-03-28 18:42:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -22,12 +22,17 @@ Rtxt <- function(...)
     gettext(paste(...), domain="R-rattle")
 }
 
+# This is used to avoid the string being identified as a translation, as in
+# RtxtNT(paste(vals ...))
+
+RtxtNT <- Rtxt
+
 MAJOR <- "2"
 MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 03 Mar 2010"
+VERSION.DATE <- "Released 06 Mar 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -299,19 +304,28 @@ rattle <- function(csvname=NULL)
 
   Global_rattleGUI <<-rattleGUI
 
+  set.cursor("watch")
+  on.exit(set.cursor())
+
   # 090206 Tune the interface to suit needs, and in particular allow
   # packages to overwrite these functions so that the interface can be
   # tuned to suit plugins.
 
   setMainTitle()
   configureGUI()
-
+  setDefaultsGUI()
+  
   # 100120 A temporary fix for MS/Windows where translations of stock
   # items by RGtk2 don't seem to be happening. It works just fine for
   # GNU/Linux. We probably only want to do this if we have a foreign
   # locale.
 
-  if (isWindows()) fixTranslations()
+  if (isWindows())
+  {
+    fixTranslations()
+    translateComboBoxes()
+    translateMenus()
+  }
 
   if (crv$load.tooltips) loadTooltips()
 
@@ -377,10 +391,11 @@ rattle <- function(csvname=NULL)
 
   if (not.null(csvname) && substr(csvname, 1, 4) == "http")
   {
-    errorDialog("URLs for the CSV filename are not currently supported.",
-                sprintf("\n\nWe found %s.", csvname),
-                "\n\nWe will continue but you will need to choose a",
-                "data file to load using the Filename button.")
+    errorDialog(sprintf(Rtxt("URLs for the CSV filename are not currently supported.",
+                             "\n\nWe found %s.",
+                             "\n\nWe will continue but you will need to choose a",
+                             "data file to load using the Filename button."),
+                        csvname))
     csvname <- NULL
   }
 
@@ -561,7 +576,8 @@ rattle <- function(csvname=NULL)
   crv$NOTEBOOK.ASSOCIATE.WIDGET <- theWidget("associate_tab_widget")
   crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
-  crv$NOTEBOOK.MODEL.NAME     <- theWidget("model_tab_label")$getLabel() # Rtxt("Model")
+  #crv$NOTEBOOK.MODEL.NAME     <- theWidget("model_tab_label")$getLabel()
+  crv$NOTEBOOK.MODEL.NAME     <- Rtxt("Predictive")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
   crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 
@@ -691,7 +707,7 @@ rattle <- function(csvname=NULL)
 
   theWidget("model_tree_include_missing_checkbutton")$setActive(FALSE)
   #theWidget("glm_family_comboboxentry")$setActive(0)
-  theWidget("svm_kernel_comboboxentry")$setActive(0)
+  theWidget("svm_kernel_combobox")$setActive(0)
 
   ## Check if some external applications are available and if not
   ## de-sensitise their functionality.
@@ -755,8 +771,7 @@ rattle <- function(csvname=NULL)
   if (not.null(csvname))
   {
     if (!theWidget("data_filechooserbutton")$setUri(csvname))
-      infoDialog("E146: The setting of the filename box",
-                 "failed.", crv$support.msg)
+      infoDialog(Rtxt("The setting of the filename box failed."), crv$support.msg)
     # Make sure GUI updates
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
     executeDataTab(csvname)
@@ -807,30 +822,32 @@ configureGUI <- function()
     crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
 }
 
-## fixTranslations <- function()
-## {
-## #  trans <- matrix(c("export_button", Rtxt("Export")),
-## #                  ncol=2, byrow=TRUE)
-##   if (isWindows())
-##   {
-##     trans <- #rbind(trans,
-##                    matrix(c("notebook_data_label", Rtxt("Data"),
-##                             "data_target_survival_radiobutton", Rtxt("Survival"),
-##                             "data_filename_label", Rtxt("Filename:")),
-##                           ncol=2, byrow=TRUE)#)
-##   for (r in seq_len(nrow(trans)))
-##     theWidget(trans[r,1])$setLabel(trans[r,2])
-##   }
-
-## }
+setDefaultsGUI <- function()
+{
+  # 100315 Handle CSV defaults typical in Europe, as suggested by
+  # Denis Brion.
+  
+  decimal <- Sys.localeconv()["decimal_point"]
+  if (decimal == ",")
+  {
+    theWidget("data_separator_entry")$setText(";")
+    theWidget("data_decimal_entry")$setText(",")
+  }
+}  
 
 fixTranslations <- function(w=theWidget("rattle_window"))
 {
   # Ignore these since they are already translated and we end up with
-  # a corrupted string passing through to Rtxt again.
+  # a corrupted string passing through to Rtxt again. generally they
+  # are Stock Items.
 
   if (w$getName() %in% c("execute_button", "new_button", "open_button",
-                         "save_button", "stop_button", "quit_button"))
+                         "save_button", "stop_button", "quit_button",
+                         "data_filechooserbutton", "data_sample_checkbutton",
+                         "continuous_clear_button", "categorical_clear_button",
+                         "data_script_radiobutton", "model_linear_radiobutton",
+                         "glm_linear_radiobutton", "execute_menu",
+                         "print_textview_menu", "about_menu"))
     return()
   
   if ("GtkLabel" %in% class(w))
@@ -843,7 +860,64 @@ fixTranslations <- function(w=theWidget("rattle_window"))
   #  if ("GtkLabel" %in% class(w)) w$setLabel("Fred")
   if ("GtkContainer" %in% class(w))
     lapply(gtkChildren(w), fixTranslations)
+  
   return()
+}
+
+translateMenus <- function()
+{
+  # 100328 The menus were not getting fixed, since we need to
+  # specifically traverse them it seems.
+  
+  menus <- c("tools_menu", "settings_menu", "help_menu",
+             "help_data_menu", "help_explore_menu", "help_test_menu",
+             "help_transform_menu", "help_transform_rescale_menu",
+             "help_transform_impute_menu", "help_transform_remap_menu",
+             "help_transform_cleanup_menu", "help_cluster_menu", "help_model_menu",
+             "help_evaluate_menu")
+  sapply(sapply(menus, theWidget), fixTranslations)
+}
+
+
+translateComboBoxes <- function()
+{
+  # 100313 We do this in the code when we are running MS/Windows
+  # because the list is not translated using GTK+.
+
+  combos <- c("data_odbc_table_combobox", "explore_correlation_method_combobox",
+              "svm_kernel_combobox")
+  printNode <- function(model, path, iter, data)
+    {vals <<- c(vals, model$getValue(iter, 0)$value); integer(1)}
+  for (cb in combos)
+  {
+    # Iterate over the current entries and get label, then set label
+    # to Rtxt value.
+
+    # Get the actual object.
+    
+    cbw <- theWidget(cb)
+
+    # Retrieve the current entries for the combobox.
+    
+    vals <- NULL
+    cbw$getModel()$foreach(printNode)
+
+    # Clear the current entries
+    
+    cbw$getModel()$clear()
+
+    # Add the translated entries. Note that for entries defined in
+    # glade, the actual string that is translated is made up of all of
+    # the entries concatenated, with "\n" separating them. So we need
+    # to reconstructt this string, translate, then split, then
+    # appendText for each one.
+    
+    sapply(strsplit(RtxtNT(paste(vals, collapse="\n")), "\n")[[1]], cbw$appendText)
+
+    # Reset default choice. Assume to be 0.
+    
+    cbw$setActive(0)
+  }
 }
 
 displayWelcomeTabMessage <- function()
@@ -1113,7 +1187,7 @@ resetRattle <- function(new.dataset=TRUE)
 
     # Update EXPLORE, MODEL and EVALUATE targets
 
-    theWidget("explot_target_label")$setText("No target selected")
+    theWidget("explot_target_label")$setText("No Target")
     theWidget("explot_annotate_checkbutton")$setActive(FALSE)
     theWidget("summary_find_entry")$setText("")
     theWidget("benford_bars_checkbutton")$setActive(FALSE)
@@ -1121,12 +1195,12 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("benford_digits_spinbutton")$setValue(1)
     theWidget("explore_correlation_method_combobox")$setActive(0)
 
-    theWidget("glm_target_label")$setText("No target selected")
-    theWidget("rpart_target_label")$setText("No target selected")
-    ##theWidget("gbm_target_label")$setText("No target selected")
-    theWidget("rf_target_label")$setText("No target selected")
-    theWidget("svm_target_label")$setText("No target selected")
-    theWidget("nnet_target_label")$setText("No target selected")
+    theWidget("glm_target_label")$setText("No Target")
+    theWidget("rpart_target_label")$setText("No Target")
+    ##theWidget("gbm_target_label")$setText("No Target")
+    theWidget("rf_target_label")$setText("No Target")
+    theWidget("svm_target_label")$setText("No Target")
+    theWidget("nnet_target_label")$setText("No Target")
 
     theWidget("evaluate_risk_label")$setText("No risk variable selected")
 
@@ -1152,11 +1226,12 @@ resetRattle <- function(new.dataset=TRUE)
           scorename <- file.path(getwd(), scorename)
         if (! file.exists(scorename))
         {
-          errorDialog("The specified SCORE file", sprintf('"%s"', scorename),
-                      "(sourced from the .Rattle file through the",
-                      ".RATTLE.SCORE.IN variable)",
-                      "does not exist. We will continue",
-                      "as if it had not been speficied.")
+          errorDialog(sprintf(Rtxt("The specified SCORE file '%s'",
+                                   "(sourced from the .Rattle file through the",
+                                   ".RATTLE.SCORE.IN variable)",
+                                   "does not exist. We will continue",
+                                   "as if it had not been speficied."),
+                              scorename))
 
           # Remove the variable (from the global environment where the
           # source command will have plade the bindings) so the rest of
@@ -1264,6 +1339,7 @@ errorDialog <- function(...)
                                 ...,
                                 sprintf("\n\n%s %s", crv$appname, crv$version))
   connectSignal(dialog, "response", gtkWidgetDestroy)
+  return(FALSE)
 }
 
 questionDialog <- function(...)
@@ -1287,9 +1363,9 @@ notImplemented <- function(action, window)
   result <- try(atype <- action$typeName(), silent=TRUE)
   if (inherits(result, "try-error")) atype <- NULL
 
-  infoDialog(sprintf(paste("The function you activated (via %s)",
-                            "%s is not yet implemented."),
-                      aname,
+  infoDialog(sprintf(Rtxt("The function you activated (via %s)",
+                          "%s is not yet implemented."),
+                     aname,
                      ifelse(is.null(atype), "", sprintf("of type %s", atype))))
 #  infoDialog(sprintf(paste("The function you activated (via %s)",
 #                            "of type %s is not yet implemented."),
@@ -1303,11 +1379,11 @@ noDatasetLoaded <- function()
 
   if (is.null(crs$dataset))
   {
-    errorDialog("No dataset has been loaded at this time.",
-                "\n\nAt a minimum, please load a dataset from the Data tab",
-                "before attempting any other operation.",
-                "\n\nBe sure to Execute the Data tab once the",
-                "data source has been specified.")
+    errorDialog(Rtxt("No dataset has been loaded at this time.",
+                     "\n\nAt a minimum, please load a dataset from the Data tab",
+                     "before attempting any other operation.",
+                     "\n\nBe sure to Execute the Data tab once the",
+                     "data source has been specified."))
     return(TRUE)
   }
   else
@@ -1324,11 +1400,12 @@ variablesHaveChanged <- function(action)
       length(crs$ident) != length(getSelectedVariables("ident")) ||
       length(crs$input) != length(getSelectedVariables("input")))
   {
-    errorDialog("It appears that there have been some changes made",
-                "to the variables in the",
-                "Data tab that have not been Executed.",
-                "\n\nPlease click Execute on the Data tab before",
-                paste(action, ".", sep=""))
+    errorDialog(sprintf(Rtxt("It appears that there have been changes made",
+                             "to the variables in the",
+                             "Data tab without the tab being Executed.",
+                             "\n\nPlease click Execute on the Data tab before",
+                             "%s."),
+                        action))
     return(TRUE)
   }
   else
@@ -1421,7 +1498,7 @@ errorReport <- function(cmd, result)
 
 setMainTitle <- function(title=NULL)
 {
-  standard <- "R Data Miner - [Rattle]"
+  standard <- Rtxt("R Data Miner - [Rattle]")
   if (is.null(title))
     theWidget("rattle_window")$setTitle(standard)
   else
@@ -1447,8 +1524,8 @@ reportTimeTaken <- function(tv, time.taken, model, msg)
   # least one of and only one of model or msg must be supplied.
 
   if (missing(model) && missing(msg) || (!missing(model) && !missing(msg)))
-    stop("rattle: reportTimeTaken: ",
-         "one and only one of model/msg must be supplied.")
+    stop(Rtxt("rattle: reportTimeTaken:",
+              "one and only one of model/msg must be supplied."))
 
   time.msg <- sprintf(Rtxt("Time taken: %0.2f %s"),
                       time.taken, attr(time.taken, "units"))
@@ -1498,14 +1575,15 @@ collectOutput <- function(command, use.print=FALSE, use.cat=FALSE,
   {
     if (any(grep("cannot allocate vector", result)) ||
         any(grep("vector size specified is too large", result)))
-      errorDialog("E141: The dataset is too large for this operation.",
-                  "It is terminating now without any output.",
-                  "The R Console may contain further information.")
+      errorDialog(Rtxt("E141: The dataset is too large for this operation.",
+                       "It is terminating now without any output.",
+                       "The R Console may contain further information."))
     else
-      errorDialog(sprintf("E142: A command has failed: %s.", command),
-                  "The action you requested has not been completed.",
-                  "Refer to the R Console for details.")
-    commandsink <- "NO OUTPUT GENERATED"
+      errorDialog(sprintf(Rtxt("E142: A command has failed\n\n%s\n\n",
+                               "The action you requested has not been completed.",
+                               "Refer to the R Console for details."),
+                          command))
+    commandsink <- Rtxt("No output generated.")
   }
   options(width=owidth)
   return(paste(commandsink, collapse="\n"))
@@ -1688,7 +1766,7 @@ on_plot_copy_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
-  startLog("Copy the plot to the clipboard.")
+  startLog(Rtxt("Copy the plot to the clipboard."))
   appendLog(sprintf(Rtxt("Copy the plot on device %d to the clipboard."), dev.num),
             sprintf('copyPlotToClipboard(%s)', dev.num))
   copyPlotToClipboard(dev.num)
@@ -1705,7 +1783,7 @@ on_plot_print_button_clicked <- function(action)
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
-  startLog("Print the plot.")
+  startLog(Rtxt("Print the plot."))
   appendLog(sprintf(Rtxt("Send the plot on device %d to the printer."), dev.num),
             sprintf('printPlot(%s)', dev.num))
   printPlot(dev.num)
@@ -1757,7 +1835,8 @@ newPlot <- function(pcnt=1)
       eval(parse(text=fnt.cmd))
     }
 
-    plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": Plot ",
+    plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": ",
+                                                    Rtxt("Plot"), " ",
                                                     dev.cur(), sep=""))
   }
   else if (.Platform$GUI %in% c("X11", "unknown"))
@@ -1855,7 +1934,8 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
   # Obtain a filename to save to. Ideally, this would also prompt for
   # the device to export, and the fontsize, etc.
 
-  dialog <- gtkFileChooserDialog(paste("Export Graphics (.pdf, .png, .jpg, .svg",
+  dialog <- gtkFileChooserDialog(paste(Rtxt("Export Graphics"),
+                                       " (.pdf, .png, .jpg, .svg",
                                        ifelse(isWindows(), ", wmf", ""),
                                        ")", sep=""),
                                  NULL, "save",
@@ -1869,9 +1949,9 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 
   ff <- gtkFileFilterNew()
   if (isWindows())
-    ff$setName("Graphics Files (pdf png jpg svg wmf)")
+    ff$setName(paste(Rtxt("Graphics Files"), "(pdf png jpg svg wmf)"))
   else
-    ff$setName("Graphics Files (pdf png jpg svg)")
+    ff$setName(paste(Rtxt("Graphics Files"), "(pdf png jpg svg)"))
   ff$addPattern("*.pdf")
   ff$addPattern("*.png")
   ff$addPattern("*.jpg")
@@ -1880,7 +1960,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
 
@@ -1898,7 +1978,7 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 #  if (get.extension(save.name) == "")
 #    save.name <- sprintf("%s.pdf", save.name)
 
-  startLog("Save the plot to a file.")
+  startLog(Rtxt("Save the plot to a file."))
   appendLog(sprintf(Rtxt("Save the plot on device %d to a file."), dev.num),
             sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
 
@@ -2310,7 +2390,7 @@ configureAbout <- function(ab)
 {
   ab["program-name"] <- "Rattle"
   ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
-                        "All rights reserved."))
+                        Rtxt("All rights reserved.")))
 }
 
 

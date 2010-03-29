@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-20 07:47:34 Graham Williams>
+# Time-stamp: <2010-03-27 14:52:48 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -34,34 +34,34 @@ initiateLog <- function()
   if (! is.null(crv$log.intro))
     appendTextview("log_textview", crv$log.intro, tvsep=FALSE)
 
-  startLog(paste(sprintf("%s version %s user '%s'",
+  startLog(paste(sprintf(Rtxt("%s version %s user '%s'"),
                          crv$appname, crv$version, Sys.info()["user"]),
-           #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
-          "\n\n# Export this log textview to a file using the Export button or the Tools
-# menu to save a log of all activity. This facilitates repeatability. Exporting
-# to file 'myrf01.R', for example, allows us to the type in the R Console
-# the command 'source(\"myrf01.R\")' to repeat the process automatically.
-# Generally, we may want to edit the file to suit our needs. We can also directly
-# edit this current log textview to record additional information before exporting.
-#
-# Saving and loading projects also retains this log.
-
-",
+                 #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
+                 "\n\n",
+                 Rtxt("# Export this log textview to a file using the Export button or the Tools",
+                      "\n# menu to save a log of all activity. This facilitates repeatability. Exporting",
+                      "\n# to file 'myrf01.R', for example, allows us to the type in the R Console",
+                      "\n# the command source('myrf01.R') to repeat the process automatically.",
+                      "\n# Generally, we may want to edit the file to suit our needs. We can also directly",
+                      "\n# edit this current log textview to record additional information before exporting.",
+                      "\n#",
+                      "\n# Saving and loading projects also retains this log."),
+                 "\n\n",
                  crv$library.command,
-                 "
-
-# This log generally records the process of building a model. However, with very
-# little effort the log can be used to score a new dataset. The logical variable
-# 'building' is used to toggle between generating transformations, as when building
-# a model, and simply using the transformations, as when scoring a dataset.
-
-building <- TRUE
-scoring  <- ! building",
-                 ifelse(packageIsAvailable("colorspace"), "
-
-# The colorspace package is used to generate the colours used in plots, if available.
-
-library(colorspace)", ""), sep=""))
+                 "\n\n",
+                 Rtxt("# This log generally records the process of building a model. However, with very",
+                      "\n# little effort the log can be used to score a new dataset. The logical variable",
+                      "\n# 'building' is used to toggle between generating transformations, as when building",
+                      "\n# a model, and simply using the transformations, as when scoring a dataset."),
+                 "\nbuilding <- TRUE",
+                 "\nscoring  <- ! building\n",
+                 ifelse(packageIsAvailable("colorspace"),
+                        paste("\n",
+                              Rtxt("# The colorspace package is used to generate the colours used in plots,",
+                                   "if available."),
+                              "\n\n",
+                              "library(colorspace)", sep=""), ""),
+                 sep=""))
 
 }
 
@@ -74,7 +74,7 @@ startLog <- function(msg=NULL)
   if (! exists("rattleGUI")) return()
 
   appendLog(paste("\n\n#", paste(rep("=", 60), collapse=""),
-                  "\n# ", crv$appname, " timestamp: ", Sys.time(),
+                  "\n# ", crv$appname, " ", Rtxt("timestamp:"), " ", Sys.time(),
                   " ", version$platform, sep=""),
           no.start=TRUE)
   if (not.null(msg))
@@ -103,7 +103,7 @@ exportLogTab <- function()
 {
   # Obtain filename to the LOG textview to.
   
-  dialog <- gtkFileChooserDialog("Export Log", NULL, "save",
+  dialog <- gtkFileChooserDialog(Rtxt("Export Log"), NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
@@ -112,12 +112,12 @@ exportLogTab <- function()
     dialog$setCurrentName(sprintf("%s_script.R", get.stem(crs$dataname)))
 
   ff <- gtkFileFilterNew()
-  ff$setName("R Files")
+  ff$setName(Rtxt("R Files"))
   ff$addPattern("*.R")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   
@@ -145,7 +145,7 @@ exportLogTab <- function()
   }
   write(save.text, save.name)
 
-  setStatusBar("The log has been exported to", save.name)
+  setStatusBar(sprintf(Rtxt("The log has been exported to '%s'."), save.name))
 }
 
 packageProvides <- function(pkg, fun)

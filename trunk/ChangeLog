@@ -1,3 +1,26 @@
+rattle (2.5.25) unstable; urgency=low
+
+  * Start using the RGtk2DfEdit for the View and Edit buttons of the Data
+    tab, and the Enter/Score option of the Evaluate tab. RGtk2DfEdit
+    provides a spreadhseet like interface to the data. Various data
+    editing options are available. Also press = to run an arbitrary R
+    command on selected data (e.g. select two columns of data and issue
+    the plot command).
+  
+  * Add further markup of text for translations.
+  
+  * Support specification of the character used for decimal points (to
+    suit some European usage).
+  
+  * Fix bug in exporting XML - replace & with &amp;
+  
+  * Survival plots - split survival chart plot from residuals plots, and
+    plot all residuals.
+
+  * Fix logic behind what is greyed out in the Test tab.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 29 Mar 2010 19:37:25 +1100
+
 rattle (2.5.24) stable; urgency=low
 
   * Revamp the help text, and put into the Rtxt translation framework.

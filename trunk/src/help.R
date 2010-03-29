@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-06 12:02:43 Graham Williams>
+# Time-stamp: <2010-03-28 20:59:55 Graham Williams>
 #
 # Help Menu
 #
@@ -30,10 +30,10 @@ popupTextviewHelpWindow <- function(topic)
     collectOutput(sprintf("help(%s, help_type='html')", topic), TRUE)
 }
 
-showHelpPlus <- function(msg, extra=Rtxt("Would you like to view the R help?"))
+showHelpPlus <- function(..., extra=Rtxt("Would you like to view the R help?"))
 {
   if (! questionDialog(paste(gsub(" <<>> ", "\n\n",
-                                  gsub("\n", " ", msg)),
+                                  gsub("\n", " ", ...)),
                              extra, sep="\n\n")))
     return(FALSE)
   else
@@ -187,9 +187,9 @@ on_help_arff_activate <- function(action, window)
 on_help_rdata_file_activate <- function(action, window)
 {
   showHelp(Rtxt("Choose this if you have data stored in an R dataset",
-           "(usually with a filename extension of .Rdata).",
-           "The named file will be loaded and any data frames found in there will",
-           "be listed for selection."))
+                "(usually with a filename extension of .Rdata).",
+                "The named file will be loaded and any data frames found in there will",
+                "be listed for selection."))
 }
 
 on_help_data_library_activate <- function(action, window)
@@ -287,7 +287,7 @@ on_help_sample_activate <- function(action, window)
   showHelp(Rtxt("Partitioning (sampling) is activated by default,",
                 "randomly choosing 70% of the",
                 "data for a training dataset,",
-                "15% for a validataion dataset, and",
+                "15% for a validation dataset, and",
                 "15% for a test dataset. The training dataset",
                 "is used to build models, the validation dataset",
                 "to tune the models,",
@@ -358,55 +358,62 @@ on_help_summary_activate <- function(action, window)
 
 on_help_distributions_activate <- function(action, window)
 {
-  if (showHelpPlus( "Choose from various plot types to display",
-                   "information about the distributions of data."))
+  if (showHelpPlus(Rtxt("Choose from various plot types to display",
+                        "information about the distributions of data.")))
     popupTextviewHelpWindow("boxplot")
 }
 
 on_help_latticist_activate <- function(action, window)
 {
-  if (showHelpPlus( "The Latticist application is used to visually explore",
-                   "a dataset. Latticist is an R-based interactive data visualizer."))
-    if (packageIsAvailable("rggobi", viewDocMsg("latticist")))
+  if (showHelpPlus(Rtxt("The Latticist application is used to visually explore",
+                        "a dataset. Latticist is an R-based interactive",
+                        "data visualizer.")))
+    if (packageIsAvailable("latticist", viewDocMsg("latticist")))
       {
-        require(rggobi, quietly=TRUE)
+        require(latticist, quietly=TRUE)
         popupTextviewHelpWindow("latticist")
       }
 }
 
 on_help_ggobi_activate <- function(action, window)
 {
-  if (showHelpPlus( "GGobi application is used to visually explore",
-                   "a dataset. GGobi is a very powerful interactive visualizer.",
-                   "The separate GGobi application will need to have been installed,",
-                   "as well as the rggobi R package."))
-    if (packageIsAvailable("rggobi", viewDocMsg("ggobi")))
+  if (showHelpPlus(Rtxt("GGobi application is used to visually explore",
+                        "a dataset. GGobi is a very powerful interactive visualizer.",
+                        "The separate GGobi application will need to have been",
+                        " installed, as well as the rggobi R package.")))
+    if (packageIsAvailable("rggobi", viewDocMsg("rggobi")))
       {
-        require(latticist, quietly=TRUE)
-        popupTextviewHelpWindow("ggobi")
+        require(rggobi, quietly=TRUE)
+        popupTextviewHelpWindow("rggobi")
       }
 }
 
 on_help_correlation_activate <- function(action, window)
 {
-  if (showHelpPlus( "A pair wise correlation between each numeric variable
-is calculated and displayed numerically in the text window whilst",
-                   "a graphic plot is also generated. The plot uses circles and colour to",
-                   "indicate the strength of any correlation.",
-                   "<<>>",
-                   "The R function cor() is used to produce the correlation data."))
+  if (showHelpPlus(Rtxt("A pair wise correlation between each numeric variable",
+                        "is calculated and displayed numerically in the text window",
+                        "whilst a graphic plot is also generated. The plot uses circles",
+                        "and colour to indicate the strength of any correlation.",
+                        "<<>>",
+                        "The R function cor() is used to produce the",
+                        "correlation data.")))
     popupTextviewHelpWindow("cor")
 }
 
 on_help_hierarchical_correlation_activate <- function(action, window)
 {
-  if (showHelpPlus( "A hierarchical cluster",
-                   "of the correlations between the variables of the dataset is generated, and",
-                   "presented pictorially as a dendrogram.  From the dendrogram you can",
-                   "see groups of variables that are highly correlated. The code uses the",
-                   "cor() function to generate the correlations between the variables, the",
-                   "hclust() function to perform the hierarchical clustering, and converts",
-                   "the result to a dendrogram, using as.dendrogram(), for plotting."))
+  if (showHelpPlus(Rtxt("A hierarchical cluster of the correlations between",
+                        "the variables of the dataset is generated, and",
+                        "presented pictorially as a dendrogram.  From the",
+                        "dendrogram you can",
+                        "see groups of variables that are highly correlated.",
+                        "The code uses the",
+                        "cor() function to generate the correlations between",
+                        "the variables, the",
+                        "hclust() function to perform the hierarchical",
+                        "clustering, and converts",
+                        "the result to a dendrogram, using as.dendrogram(),",
+                        "for plotting.")))
   {
     popupTextviewHelpWindow("cor")
     popupTextviewHelpWindow("hclust")
@@ -418,40 +425,40 @@ on_help_hierarchical_correlation_activate <- function(action, window)
 on_help_principal_components_activate <- function(action, window)
 {
   if (showHelpPlus(Rtxt("Principal components analysis identifies",
-                   "a collection of derived variables (expressed as a linear combination",
-                   "of the other variables) that account for the variance",
-                   "in the data. Often, the first few components account for the majority",
-                   "of the variation.",
-                   "<<>>",
-                   "After performing the analysis two plots will appear. The bar chart or scree plot",
-                   "shows the importance of each component. The importance is based on how much",
-                   "variance each component explains. Generally, we can use this plot to how many",
-                   "principle components we may want to keep if we were to use them in modeling.",
-                   "<<>>",
-                   "The second plot (a biplot) remaps the data points from their original",
-                   "coordinates to coordinates of the first two principal coordinates.",
-                   "The vectors drawn give an indication of how much",
-                   "of a role each variable plays in each of the two components, showing their correlation",
-                   "to the components. The axes are labeled with the correlation, to be",
-                   "interpreted for the variables, and the values of the principal",
-                   "components, to be interpreted for the data points.",
-                   "<<>>",
-                   "There will be as many components as there are (numeric) variables in",
-                   "the dataset, but by discarding those components contributing very",
-                   "little, you may end up with fewer variables for modeling. The textual information",
-                   "provided can be used to guide the choice of which variables are included.",
-                   "The final table will clearly identify how much of the variation in the data",
-                   "is accounted for by each component.",
-                   "<<>>",
-                   "Interpretability may reduce through using the derived variables rather",
-                   "than the original variables, so you may like to instead identify those",
-                   "variables that contribute most to the first few principal components.",
-                   "<<>>",
-                   "The prcomp() function is used to generate the principal components",
-                   "which are then displayed in the text view and the relative importance",
-                   "of the components is plotted.",
-                   "<<>>",
-                   "Note that only numeric data is included in the analysis.")))
+                        "a collection of derived variables (expressed as a linear combination",
+                        "of the other variables) that account for the variance",
+                        "in the data. Often, the first few components account for the majority",
+                        "of the variation.",
+                        "<<>>",
+                        "After performing the analysis two plots will appear. The bar chart or scree plot",
+                        "shows the importance of each component. The importance is based on how much",
+                        "variance each component explains. Generally, we can use this plot to how many",
+                        "principle components we may want to keep if we were to use them in modeling.",
+                        "<<>>",
+                        "The second plot (a biplot) remaps the data points from their original",
+                        "coordinates to coordinates of the first two principal coordinates.",
+                        "The vectors drawn give an indication of how much",
+                        "of a role each variable plays in each of the two components, showing their correlation",
+                        "to the components. The axes are labeled with the correlation, to be",
+                        "interpreted for the variables, and the values of the principal",
+                        "components, to be interpreted for the data points.",
+                        "<<>>",
+                        "There will be as many components as there are (numeric) variables in",
+                        "the dataset, but by discarding those components contributing very",
+                        "little, you may end up with fewer variables for modeling. The textual information",
+                        "provided can be used to guide the choice of which variables are included.",
+                        "The final table will clearly identify how much of the variation in the data",
+                        "is accounted for by each component.",
+                        "<<>>",
+                        "Interpretability may reduce through using the derived variables rather",
+                        "than the original variables, so you may like to instead identify those",
+                        "variables that contribute most to the first few principal components.",
+                        "<<>>",
+                        "The prcomp() function is used to generate the principal components",
+                        "which are then displayed in the text view and the relative importance",
+                        "of the components is plotted.",
+                        "<<>>",
+                        "Note that only numeric data is included in the analysis.")))
     popupTextviewHelpWindow("prcomp")
 }
 
@@ -778,14 +785,18 @@ on_help_kmeans_activate <- function(action, window)
 
 on_help_cluster_hclust_activate <- function(action, window)
 {
-  if (showHelpPlus(Rtxt("A hierarchical cluster is build as a hierachy of clusters,",
-                   "starting with each observation defining its own cluster. The two closest clusters are then",
-                   "cobined to generate a new cluster. This is repeated until all observations are in the",
-                   "one cluster. Thus a hierachy is generated.",
-                   "<<>>",
-                   "A complete clustering is built. After building, we can choose a specific number of",
-                   "clusters that appear 'right' by viewing the dendrogram. Statistics about the chosen",
-                   "number of clusters can then be produced.")))
+  if (showHelpPlus(Rtxt("A hierarchical cluster is built as a hierarchy of clusters,",
+                        "starting with each observation defining its own cluster.",
+                        "The two closest clusters are then",
+                        "combined to generate a new cluster.",
+                        "This is repeated until all observations are in the",
+                        "one cluster. Thus a hierachy is generated.",
+                        "<<>>",
+                        "A complete clustering is built. After building,",
+                        "we can choose a specific number of",
+                        "clusters that appear 'correct' by viewing the dendrogram.",
+                        "Statistics about the chosen",
+                        "number of clusters can then be produced.")))
   {
     popupTextviewHelpWindow("hclust")
   }
@@ -850,13 +861,16 @@ on_help_model_nnet_activate <- function(action, window)
 
 on_help_model_survival_activate <- function(action, window)
 {
-  if (showHelpPlus(Rtxt("A Survival Model deals with so called censored data.",
-                   "This is data that for each patient, for example, records how long they",
-                   "have survived so far. When a patient dies, then we have a record of how",
-                   "long they survived until death. We all eventually die, and so in this respect, the",
-                   "data we have is censored. The Target variables are thus the time so far, and whether",
-                   "or not the event has occurred (recorded as the Status).",
-                   "Rattle uses the functionality provided by the survival package.")))
+  if (showHelpPlus(Rtxt("A Survival Model is used to analyze time-to-event data and to generate",
+                        "estimated survival curves that show how the probability of the event to",
+                        "occur changes over time. In manufacturing, survival analysis is used to",
+                        "estimate the time to failure of components and parts; in healthcare it is used",
+                        "to estimate the survival probability of patients; in various participation",
+                        "programs it is used to estimate the expected time a person will participate in a",
+                        "program.   COXPH Survival Analysis will estimate the risk of an even occurring",
+                        "for a particular observation relative to the risk for the observed population.",
+                        "Parametric Survival Analysis will estimate the expected time within which",
+                        "the event will occur.")))
   {
     if (packageIsAvailable("survival", viewDocMsg("coxph")))
     {
@@ -898,7 +912,7 @@ on_help_cost_curve_activate <- function(action, window)
 
 on_help_lift_activate <- function(action, window)
 {
-  showHelp(Rtxt("A lift chart plots the lift in perforamace to be obtained",
+  showHelp(Rtxt("A lift chart plots the lift in performance that is obtained",
            "from different thresholds for the model predicting 0/1."))
 }
 

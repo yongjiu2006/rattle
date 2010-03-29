@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-02 20:35:21 Graham Williams>
+# Time-stamp: <2010-03-28 20:59:33 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -50,33 +50,33 @@ on_rf_print_tree_button_clicked <- function(button)
 
 on_help_randomForest_activate <- function(action, window)
 {
-  if (showHelpPlus("The randomForest algorithm builds multiple
-decision trees from different samples of the dataset, and while
-building each tree, random subsets of the available variables are
-considered for splitting the data at each node of the tree. A simple
-majority vote is then used for prediction in the case of
-classification (and average for regression).
-RandomForest's are generally robust against overfitting.
-<<>>
-The default is to build 500 trees and to select the square root of the
-number of variables as the subset to choose from at each node. The
-resulting model is generally not very sensitive to the choice of these
-parameters.
-<<>>
-Any observation with missing values will be ignored, which may lead to some
-surprises, like many fewer observations to model when many missing values
-exist. It can also lead to losing all examples of a particular class!
-<<>>
-An estimate of the error rate is provided as the out-of-bag (OOB)
-estimate. This applies each tree to the data that was not used in
-building the tree to give a quite accurate estimate of the error
-rate.
-<<>>
-The Sample Size can be used to down-sample larger classes.
-For a two-class problem with, for example, 5000 in class 0 and 250 in class 1,
-a Sample Size of \"250, 250\" will usually give a more \"balanced\" classifier.
-<<>>
-The R package for building Random Forests is called randomForest."))
+  if (showHelpPlus(Rtxt("The randomForest algorithm builds multiple",
+                        "decision trees from different samples of the dataset, and while",
+                        "building each tree, random subsets of the available variables are",
+                        "considered for splitting the data at each node of the tree. A simple",
+                        "majority vote is then used for prediction in the case of",
+                        "classification (and average for regression).",
+                        "RandomForest's are generally robust against over fitting.",
+                        "<<>>",
+                        "The default is to build 500 trees and to select the square root of the",
+                        "number of variables as the subset to choose from at each node. The",
+                        "resulting model is generally not very sensitive to the choice of these",
+                        "parameters.",
+                        "<<>>",
+                        "Any observation with missing values will be ignored, which may lead to some",
+                        "surprises, like many fewer observations to model when many missing values",
+                        "exist. It can also lead to losing all examples of a particular class!",
+                        "<<>>",
+                        "An estimate of the error rate is provided as the out-of-bag (OOB)",
+                        "estimate. This applies each tree to the data that was not used in",
+                        "building the tree to give a quite accurate estimate of the error",
+                        "rate.",
+                        "<<>>",
+                        "The Sample Size can be used to down-sample larger classes.",
+                        "For a two-class problem with, for example, 5000 in class 0 and 250 in class 1,",
+                        "a Sample Size of '250, 250' will usually give a more 'balanced' classifier.",
+                        "<<>>",
+                        "The R package for building Random Forests is called randomForest.")))
     {
       require(randomForest, quietly=TRUE)
       popupTextviewHelpWindow("randomForest")
@@ -299,12 +299,12 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
       # been fixed. Of course i could try to figure it out myself, but
       # it would probably take some effort!
       
-      errorDialog("The call to randomForest failed.",
-                  "You probably have version 4.5-25.",
-                  "This is a known problem and is fixed in 4.5-26.",
-                  "Please install a newer version of randomForest.\n",
-                  '\ninstall.packages("randomForest",\n',
-                  '    repos="http://rattle.togaware.com")')
+      errorDialog(Rtxt("The call to randomForest failed.",
+                       "You probably have version 4.5-25.",
+                       "This is a known problem and is fixed in 4.5-26.",
+                       "Please install a newer version of randomForest.\n",
+                       "\ninstall.packages('randomForest',\n",
+                       "    repos='http://rattle.togaware.com')"))
       setTextview(TV)
     }
     else 
@@ -414,8 +414,8 @@ plotRandomForestImportance <- function()
 
   if (is.null(crs$rf))
   {
-    errorDialog("E123: This is an unexpected error.",
-                "There is no RF and attempting to plot importance.",
+    errorDialog(Rtxt("E123: This is an unexpected error.",
+                     "There is no RF and attempting to plot importance."),
                 crv$support.msg)
     return()
   }
@@ -455,8 +455,8 @@ plotRandomForestError <- function()
 
   if (is.null(crs$rf))
   {
-    errorDialog("E129: This is an unexpected error.",
-                "There is no RF and attempting to plot errors.",
+    errorDialog(Rtxt("E129: This is an unexpected error.",
+                     "There is no RF and attempting to plot errors."),
                 crv$support.msg)
     return()
   }

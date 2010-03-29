@@ -3,7 +3,7 @@ Help Menu
   ------------------------------------------------------------------------
   2010-02-13 08:11:18 Graham Williams
 
-  Add a simple R command syntax to each Rattle help text.
+  Add a simple R command syntax example to each Rattle help text.
   ------------------------------------------------------------------------
 
 
@@ -14,8 +14,9 @@ Data Tab
     ----------------------------------------------------------------------
     2010-02-15 06:29:01 Graham Williams
     
-    Start using RGtk2DfEdit once I figure out how to save the results
-    into crs$dataset. Note that it may not be available on MS/Windows.
+    Start using RGtk2DfEdit once I figure out how to save the
+    results. Note that it may not be available on MS/Windows.
+
     ----------------------------------------------------------------------
 
   Variable selection
