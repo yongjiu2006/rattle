@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:42:28 Graham Williams>
+# Time-stamp: <2010-03-29 05:17:17 Graham Williams>
 #
 # Implement cluster functionality.
 #
@@ -32,7 +32,7 @@ executeClusterTab <- function()
 
   # If it looks like the VARIABLES page has not been executed, complain..
 
-  if (variablesHaveChanged()) return()
+  if (variablesHaveChanged(Rtxt("building clusters"))) return()
 
   # Check if sampling needs executing.
 
@@ -56,9 +56,9 @@ executeClusterTab <- function()
   include <- getNumericVariables()
   if (! length(include))
   {
-    errorDialog("Clusters are currently calculated only for numeric data.",
-                "No numeric variables were found in the dataset",
-                "from amongst those having an input/target/risk role.")
+    errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
+                     "No numeric variables were found in the dataset",
+                     "from amongst those having an input/target/risk role."))
     return()
   }
 
@@ -108,7 +108,7 @@ exportClusterTab <- function()
   }
   else
   {
-    errorDialog("PMML export for this model is not yet implemented.")
+    errorDialog(Rtxt("PMML export for this model is not yet implemented."))
     return()
   }
 }

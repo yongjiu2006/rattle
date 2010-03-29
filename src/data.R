@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-04 19:21:46 Graham Williams>
+# Time-stamp: <2010-03-24 21:59:03 Graham Williams>
 #
 # DATA TAB
 #
@@ -27,6 +27,10 @@
 # anyone be interested in manually entering some data - use Gnumeric
 # or some other spreadsheet to do that.
 #
+########################################################################
+# TODO
+#
+# 100308 Consider using vcdExtras for displaying categoric data.
 
 ########################################################################
 # UTILITIES
@@ -62,6 +66,8 @@ dataTabShow <- function(...)
              "data_filechooserbutton",
              "data_separator_label",
              "data_separator_entry",
+             "data_decimal_label",
+             "data_decimal_entry",
              "data_header_checkbutton",
              "data_name_label",
              "data_name_combobox",
@@ -85,7 +91,7 @@ showDataViewButtons <- function(action=TRUE)
   # (action=FALSE) is not currently used but cold be in the future,
   # probably when we click New project.
 
-  if (! is.logical(action)) warning("action must be a logical")
+  if (! is.logical(action)) warning(Rtxt("action must be a logical"))
     
   theWidget("data_view_button")$setSensitive(action)
   theWidget("data_edit_button")$setSensitive(action)
@@ -202,69 +208,69 @@ updateFilenameFilters <- function(button, fname)
 
   if (fname == "CSV")
   {
-    if (! (length(filters) && filters[[1]]$getName() == "CSV Files"))
+    if (! (length(filters) && filters[[1]]$getName() == Rtxt("CSV Files")))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
       ff <- gtkFileFilterNew()
-      ff$setName("CSV Files")
+      ff$setName(Rtxt("CSV Files"))
       ff$addPattern("*.csv")
       button$addFilter(ff)
     
       ff <- gtkFileFilterNew()
-      ff$setName("TXT Files")
+      ff$setName(Rtxt("TXT Files"))
       ff$addPattern("*.txt")
       button$addFilter(ff)
 
       if (isWindows())
       {
         ff <- gtkFileFilterNew()
-        ff$setName("Excel Files")
+        ff$setName(Rtxt("Excel Files"))
         ff$addPattern("*.xls")
         button$addFilter(ff)
 
         ff <- gtkFileFilterNew()
-        ff$setName("Excel 2007 Files")
+        ff$setName(Rtxt("Excel 2007 Files"))
         ff$addPattern("*.xlsx")
         button$addFilter(ff)
       }
     
       ff <- gtkFileFilterNew()
-      ff$setName("All Files")
+      ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
       button$addFilter(ff)
     }
   }
   else if (fname == "ARFF")
   {
-    if (! (length(filters) && filters[[1]]$getName() == "ARFF Files"))
+    if (! (length(filters) && filters[[1]]$getName() == Rtxt("ARFF Files")))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
       ff <- gtkFileFilterNew()
-      ff$setName("ARFF Files")
+      ff$setName(Rtxt("ARFF Files"))
       ff$addPattern("*.arff")
       button$addFilter(ff)
       
       ff <- gtkFileFilterNew()
-      ff$setName("All Files")
+      ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
       button$addFilter(ff)
     }
   }
   else if (fname == "Rdata")
   {
-    if (! (length(filters) && filters[[1]]$getName() == "Rdata Files"))
+    if (! (length(filters) && filters[[1]]$getName() == Rtxt("Rdata Files")))
     {
       lapply(filters, function(x) button$removeFilter(x))
 
       ff <- gtkFileFilterNew()
-      ff$setName("Rdata Files")
+      ff$setName(Rtxt("Rdata Files"))
       ff$addPattern("*.R[Dd]ata")
       button$addFilter(ff)
     
       ff <- gtkFileFilterNew()
-      ff$setName("All Files")
+      ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
       button$addFilter(ff)
     }
@@ -339,6 +345,8 @@ on_data_csv_radiobutton_toggled <- function(button)
                 "data_filechooserbutton",
                 "data_separator_label",
                 "data_separator_entry",
+                "data_decimal_label",
+                "data_decimal_entry",
                 "data_header_checkbutton")
     updateFilenameFilters("data_filechooserbutton", "CSV")
     if (not.null(crs$data.tab.csv.filename))
@@ -510,7 +518,7 @@ updateRDatasets <- function(current=NULL)
     if (not.null(current) && current %in% dl)
       cbox$setActive(which(sapply(dl, function(x) x==current))[1]-1)
   }
-  set.cursor(message="Data Names updated.")
+  set.cursor(message=Rtxt("Data Names updated."))
 }
 
 on_data_target_survival_radiobutton_toggled <- function(button)
@@ -523,17 +531,15 @@ on_data_target_survival_radiobutton_toggled <- function(button)
   
   if (button$getActive())
   {
-    target$setTitle("Time")
-    risk$setTitle("Status")
+    target$setTitle(Rtxt("Time"))
+    risk$setTitle(Rtxt("Status"))
   }
   else
   {
-    target$setTitle("Target")
-    risk$setTitle("Risk")
+    target$setTitle(Rtxt("Target"))
+    risk$setTitle(Rtxt("Risk"))
   }
 }
-
-      
 
 ########################################################################
 # EXECUTE
@@ -835,13 +841,19 @@ executeDataCSV <- function(filename=NULL)
 
   if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
-  # Get the separator to use.
+  # Get the separator and decimal to use.
 
   sep = theWidget("data_separator_entry")$getText()
   if (sep != ",")
     sep <- sprintf(', sep="%s"', sep)
   else
     sep <- ""
+
+  dec = theWidget("data_decimal_entry")$getText()
+  if (dec != ".")
+    dec <- sprintf(', dec="%s"', dec)
+  else
+    dec <- ""
 
   # Check whether we expect a header or not.
 
@@ -873,8 +885,8 @@ executeDataCSV <- function(filename=NULL)
                                "2007", ""),
                         sub("file:///", "", filename))
   else
-    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s, encoding="%s")',
-                        filename, hdr, sep, nastring, crv$csv.encoding)
+    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s, encoding="%s")',
+                        filename, hdr, sep, dec, nastring, crv$csv.encoding)
   
   # Start logging and executing the R code.
 
@@ -902,10 +914,39 @@ executeDataCSV <- function(filename=NULL)
                           filename))
       return(FALSE)
     }
+    else if (any(grep("duplicate", result)))
+    {
+      errorDialog(sprintf(Rtxt("The dataset loaded from the file:",
+                               "\n\n\t%s",
+                               "\n\nhas duplicate columns.",
+                               "This is sometimes due to using an incorrect",
+                               "separator (%s) or decimal point (%s) in the file.",
+                               "\n\nThe actual error message was: %s",
+                               "\nPlease check the file format and the defaults",
+                             "set in the Data tab and try again."),
+                          filename, theWidget("data_separator_entry")$getText(),
+                          theWidget("data_decimal_entry")$getText(), result))
+      return(FALSE)
+    }
     else
-      errorReport(read.cmd, result)
+      return(errorReport(read.cmd, result))
   }
-    
+
+  if (ncol(result) < 2)
+  {
+    errorDialog(sprintf(Rtxt("The data from the file:",
+                             "\n\n\t%s",
+                             "\n\ncontains only a single column.",
+                             "This is not usually what is expected and",
+                             "is often due to using something other than the default",
+                             "separator (%s) and decimal point (%s) in the file.",
+                             "\n\nPlease check the file format and the defaults",
+                             "set in the Data tab and try again."),
+                        filename, theWidget("data_separator_entry")$getText(),
+                        theWidget("data_decimal_entry")$getText()))
+    return(FALSE)
+  }
+  
   crs$dataname <- basename(filename)
   setMainTitle(crs$dataname)
 
@@ -967,7 +1008,7 @@ updateRDataNames <- function(filename=NULL)
 
   startLog()
   
-  appendLog("Load an Rdata file containing R objects.", load.cmd)
+  appendLog(Rtxt("Load an Rdata file containing R objects."), load.cmd)
   set.cursor("watch")
   eval(parse(text=load.cmd), .GlobalEnv) # Env so datasets are globally available.
   set.cursor()
@@ -1071,9 +1112,9 @@ openODBCSetTables <- function()
 
   if (! packageIsAvailable("RODBC", Rtxt("connect to an ODBC database"))) return(FALSE)
       
-  startLog("ODBC Connection")
+  startLog(Rtxt("Open an ODBC connection."))
 
-  appendLog("Require the RODBC library.", lib.cmd)
+  appendLog(Rtxt("Require the RODBC library."), lib.cmd)
   set.cursor("watch")
   eval(parse(text=lib.cmd))
   set.cursor()
@@ -1084,25 +1125,25 @@ openODBCSetTables <- function()
 
   odbcCloseAll()
   
-  appendLog("Open the connection to the ODBC service.", connect.cmd)
+  appendLog(Rtxt("Open the connection to the ODBC service."), connect.cmd)
   result <- try(eval(parse(text=connect.cmd)))
   if (inherits(result, "try-error"))
   {
-    errorDialog("The attempt to open the ODBC connection failed.",
-                "Please check that the DSN is correct.",
-                "See the R Console for further details.")
+    errorDialog(Rtxt("The attempt to open the ODBC connection failed.",
+                     "Please check that the DSN is correct.",
+                     "See the R Console for further details."))
     return(FALSE)
   }
   
-  appendLog("Load the names of available tables.", tables.cmd)
+  appendLog(Rtxt("Load the names of available tables."), tables.cmd)
   set.cursor("watch")
   result <- try(eval(parse(text=tables.cmd)))
   set.cursor()
   if (inherits(result, "try-error"))
   {
-    errorDialog("The attempt to query the ODBC connection failed.",
-                "Please check that the DSN is correct.",
-                "See the R Console for further details.")
+    errorDialog(Rtxt("The attempt to query the ODBC connection failed.",
+                     "Please check that the DSN is correct.",
+                     "See the R Console for further details."))
     return(FALSE)
   }
 
@@ -1200,7 +1241,7 @@ executeDataARFF <- function()
 
   if (!exists("getRversion", baseenv()) || getRversion() <= "2.4.0")
   {
-    infoDialog("Support for ARFF is only available in R 2.5.0 and beyond.")
+    infoDialog(Rtxt("Support for ARFF is only available in R 2.5.0 and beyond."))
     return(FALSE)
   }
 
@@ -1212,8 +1253,8 @@ executeDataARFF <- function()
 
   if (is.null(filename))
   {
-    errorDialog("No ARFF Filename has been chosen yet.",
-                "You must choose one before execution.")
+    errorDialog(Rtxt("No ARFF Filename has been chosen yet.",
+                     "You must choose one before execution."))
     return(FALSE)
   }
 
@@ -1249,13 +1290,13 @@ executeDataARFF <- function()
   appendLog(packageProvides("foreign", "read.arff"), lib.cmd)
   eval(parse(text=lib.cmd))
 
-  appendLog("Load ARFF File", read.cmd)
+  appendLog(Rtxt("Load an ARFF file."), read.cmd)
   resetRattle()
   eval(parse(text=read.cmd))
   crs$dataname <- basename(filename)
   setMainTitle(crs$dataname)
 
-  # appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  # appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
   ##appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
   ##                collectOutput(str.cmd))
   
@@ -1290,12 +1331,11 @@ executeDataODBC <- function()
 
   if (class(crs$odbc) != "RODBC")
   {
-    errorDialog("A connection to an ODBC data source name (DSN) has not been",
-                "established.",
-                "Please enter the DSN and press Enter.",
-                "This will also populate the list of tables to choose from.",
-                "After establishing the connection you can choose a table",
-                "or else enter a specific SQL query to retrieve a dataset.")
+    errorDialog(Rtxt("A connection to an ODBC data source name (DSN) has not been",
+                     "established. Please enter the DSN and press the Enter key.",
+                     "This will also populate the list of tables to choose from.",
+                     "After establishing the connection you can choose a table",
+                     "or else enter a specific SQL query to retrieve a dataset."))
     return(FALSE)
   }
   
@@ -1303,11 +1343,11 @@ executeDataODBC <- function()
   
   if (sql.query == "" && is.null(table))
   {
-    errorDialog("No table nor SQL query has been specified.",
-                "Please identify the name of the table you wish to load.",
-                "All tables in the connected database are listed",
-                "once a connection is made.",
-                "\n\nAlternatively, enter a query to retrieve a dataset.")
+    errorDialog(Rtxt("No table nor SQL query has been specified.",
+                     "Please identify the name of the table you wish to load.",
+                     "All tables in the connected database are listed",
+                     "once a connection is made.",
+                     "\n\nAlternatively, enter a query to retrieve a dataset."))
     return(FALSE)
   }
 
@@ -1347,13 +1387,13 @@ executeDataODBC <- function()
   # Start logging and executing the R code.
 
   startLog()
-  appendLog("Load From ODBC Database Table", assign.cmd)
+  appendLog(Rtxt("Load dataset from ODBC database table."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- table
   setMainTitle(crs$dataname)
 
-  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
   
   setStatusBar(sprintf(Rtxt("The ODBC data has been loaded: %s."), crs$dataname))
 
@@ -1372,8 +1412,8 @@ executeDataRdata <- function()
 
   if (is.null(filename))
   {
-    errorDialog("No Rdata Filename has been chosen yet.",
-                 "You must choose one before execution.")
+    errorDialog(Rtxt("No Rdata filename has been chosen yet.",
+                     "You must choose one before execution."))
     return(FALSE)
   }
 
@@ -1384,11 +1424,11 @@ executeDataRdata <- function()
   
   if (is.null(dataset))
   {
-    errorDialog("No R dataset name has been specified.",
-                "Please identify the name of the R dataset.",
-                "Any data frames that were found in the loaded Rdata",
-                "file are available to choose from in the Data Name",
-                "combo box.")
+    errorDialog(Rtxt("No R dataset name has been specified.",
+                     "Please identify the name of the R dataset.",
+                     "Any data frames that were found in the loaded Rdata",
+                     "file are available to choose from in the Data Name",
+                     "combo box."))
     return(FALSE)
   }
 
@@ -1405,7 +1445,7 @@ executeDataRdata <- function()
 
   startLog()
   
-  appendLog("Load RData File", assign.cmd)
+  appendLog(Rtxt("Load an RData file."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- dataset
@@ -1432,11 +1472,10 @@ executeDataRdataset <- function()
   
   if (is.null(dataset))
   {
-    errorDialog("No R dataset name has been specified.",
-                "Please identify the name of the R dataset.",
-                "Any data frames that exist in the R Console",
-                "are available to choose from in the Data Name",
-                "combo box.")
+    errorDialog(Rtxt("No R dataset name has been specified.",
+                     "Please identify the name of the R dataset.",
+                     "Any data frames that exist in the R Console",
+                     "are available from the Data Name combo box."))
     return(FALSE)
   }
 
@@ -1455,7 +1494,7 @@ executeDataRdataset <- function()
   #theWidget(TV)$setWrapMode("none") # On for welcome msg
   #resetTextview(TV)
   
-  appendLog("Load R Data Frame", assign.cmd)
+  appendLog(Rtxt("Load an R data frame."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   crs$dataname <- dataset
@@ -1467,7 +1506,7 @@ executeDataRdataset <- function()
   
   names(crs$dataset) <- make.names(names(crs$dataset))
 
-  appendLog("Display a simple summary (structure) of the dataset.", str.cmd)
+  appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
 
   setStatusBar(Rtxt("The R dataset is now available."))
 
@@ -1484,9 +1523,9 @@ executeDataLibrary <- function()
 
   if (is.null(dataset))
   {
-    errorDialog("No dataset from the R libraries has been specified.",
-                "\n\nPlease identify the name of the dataset",
-                "you wish to load using the Data Name chooser.")
+    errorDialog(Rtxt("No dataset from the R libraries has been specified.",
+                     "\n\nPlease identify the name of the dataset",
+                     "you wish to load using the Data Name chooser."))
     return(FALSE)
   }
 
@@ -1526,18 +1565,18 @@ executeDataLibrary <- function()
 
   startLog()
   
-  appendLog("Load R Dataset", assign.cmd)
+  appendLog(Rtxt("Load an R dataset."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
   if (class(crs$dataset) != "data.frame")
   {
-    errorDialog(sprintf("The selected dataset, '%s', from the '%s' package",
-                        adsname, dspkg),
-                "is not of class data frame (the data type).",
-                sprintf("Its data class is '%s.'", class(crs$dataset)),
-                "This is not currently supported by", crv$appname,
-                "and so it  can not be loaded. Perhaps choose a different",
-                "dataset from the library.")
+    errorDialog(sprintf(Rtxt("The selected dataset, '%s', from the '%s' package",
+                             "is not of class data frame (the data type).",
+                             "Its data class is '%s.'",
+                             "This is not currently supported by %s",
+                             "and so it  can not be loaded. Perhaps choose a different",
+                             "dataset from the library."),
+                        adsname, dspkg, class(crs$dataset), crv$appname))
     return(FALSE)
   }
   
@@ -1552,21 +1591,29 @@ executeDataLibrary <- function()
 
 viewData <- function()
 {
-  result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
-                silent=TRUE)
-  if (inherits(result, "try-error"))
-    viewdataGUI <- gladeXMLNew("rattle.glade", root="viewdata_window")
+  if (packageIsAvailable("RGtk2DfEdit")) # Rtxt("RGtk2 data frame editor")
+  {
+    require(RGtk2DfEdit)
+    dfedit(crs$dataset, size=c(800, 400), pretty_print=TRUE)
+  }
   else
-    viewdataGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+  {
+    result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
+                  silent=TRUE)
+    if (inherits(result, "try-error"))
+      viewdataGUI <- gladeXMLNew("rattle.glade", root="viewdata_window")
+    else
+      viewdataGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
                                root="viewdata_window")
-  gladeXMLSignalAutoconnect(viewdataGUI)
-  tv <- viewdataGUI$getWidget("viewdata_textview")
-  tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
-  op <- options(width=10000)
-  tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
-  options(op)
-  viewdataGUI$getWidget("viewdata_window")$
-  setTitle(paste(crv$appname, ": Data Viewer", sep=""))
+    gladeXMLSignalAutoconnect(viewdataGUI)
+    tv <- viewdataGUI$getWidget("viewdata_textview")
+    tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+    op <- options(width=10000)
+    tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
+    options(op)
+    viewdataGUI$getWidget("viewdata_window")$
+    setTitle(paste(crv$appname, ": ", Rtxt("Data Viewer"), sep=""))
+  }
 }
     
 editData <- function()
@@ -1581,12 +1628,28 @@ editData <- function()
   if (is.null(crs$dataset))
     assign.cmd <- 'crs$dataset <- edit(data.frame())'
   # 100215 Would like to do the following but results are not saved
-  # into crs$dataset. Perhaps it is an environment issue.
-#    else if (packageIsAvailable("RGtk2DfEdit", Rtxt("RGtk2 data frame editor")))
-#    {
-#      require(RGtk2DfEdit)
-#      assign.cmd <- 'editobj <- dfedit(crs$dataset, dataset.name="crs$dataset")'
-#    }
+  # into crs$dataset. Perhaps it is an environment issue. So I can
+  # save the results into a global variable instead, and use the R
+  # Dataset tab to access this modified dataset.
+   else if (packageIsAvailable("RGtk2DfEdit"))
+    {
+      require(RGtk2DfEdit)
+      assign.cmd <- paste('rattle.edit.obj <<-',
+                          'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
+                          'size=c(800, 400), pretty_print=TRUE)\n',
+                          'gSignalConnect(rattle.edit.obj, "unrealize",',
+                          'data=rattle.edit.obj,\n',
+                          '  function(obj, data)\n',
+                          '  {\n',
+                          '    assign("rattle.edited.dataset", data$getDataFrame(),',
+                          '    envir=.GlobalEnv)\n',
+                          '  })')
+      infoDialog(Rtxt("RGtk2DfEdit will be used to edit",
+                      "a data frame called 'rattle.edited.dataset'. Once you have",
+                      "finished editting and closed the",
+                      "window you can load this data frame",
+                      "using the R Dataset option of the Data tab."))
+    }
   else
     assign.cmd <- 'crs$dataset <- edit(crs$dataset)'
   
@@ -1596,7 +1659,7 @@ editData <- function()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
   
-  appendLog("Edit A Data Set Manually", assign.cmd)
+  appendLog(Rtxt("Edit A Data Set Manually"), assign.cmd)
   
   # These are needed because resetRattle clears everything
 
@@ -1664,12 +1727,12 @@ exportDataTab <- function()
   # what I want anyhow!
 
   ff <- gtkFileFilterNew()
-  ff$setName("CSV Files")
+  ff$setName(Rtxt("CSV Files"))
   ff$addPattern("*.csv")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   
@@ -1904,7 +1967,7 @@ executeSelectTab <- function()
 
   if (noDatasetLoaded()) return()
 
-  startLog("Note the user selections.")
+  startLog(Rtxt("Note the user selections."))
   
   executeSelectSample()
 
@@ -1920,12 +1983,9 @@ executeSelectTab <- function()
 
   if (length(target) > 1)
   {
-    errorDialog("More than a single target has been identified (",
-                 paste(sprintf("%s:%s",
-                               getSelectedVariables("target", FALSE),
-                               target), collapse=" "),
-                 "). Only a single target is allowed.",
-                 sep="")
+    errorDialog(sprintf(Rtxt("More than a single target has been identified (%s:%s).",
+                             "Only a single target is allowed."),
+                        getSelectedVariables("target", FALSE), target))
     return()
   }
   
@@ -1940,15 +2000,12 @@ executeSelectTab <- function()
 
   if (length(risk) > 1)
   {
-    errorDialog("More than a single ",
-                ifelse(survivalTarget(), "Status", "Risk"),
-                " variable has been identified (",
-                paste(sprintf("%s:%s",
-                              getSelectedVariables("risk", FALSE),
-                              risk), collapse=" "),
-                "). Only a single variable is allowed.\n",
-                "\nPlease change the role of one of the variables.",
-                sep="")
+    errorDialog(sprintf(Rtxt("More than a single %s",
+                             "variable has been identified (%s:%s).",
+                             "Only a single variable is allowed.\n",
+                             "\nPlease change the role of one of the variables."),
+                        ifelse(survivalTarget(), "Status", "Risk"),
+                        getSelectedVariables("risk", FALSE), risk))
     return()
   }
 
@@ -1956,11 +2013,10 @@ executeSelectTab <- function()
 
   if (length(risk) && ! is.numeric(crs$dataset[[risk]]))
   {
-    errorDialog("The variable selected for your",
-                ifelse(survivalTarget(), "Status", "Risk"),
-                sprintf("(%s)", risk),
-                "is not numeric.",
-                "\n\nPlease select a numeric variable.")
+    errorDialog(sprintf(Rtxt("The variable selected for your %s (%s)",
+                             "is not numeric.",
+                             "\n\nPlease select a numeric variable."),
+                        ifelse(survivalTarget(), "Status", "Risk"), risk))
     return()
   }
 
@@ -1985,9 +2041,9 @@ executeSelectTab <- function()
 
       if (identifiers[vars][i] %notin% allvars)
       {
-        errorDialog("The Weight Calculator contains the variable",
-                     identifiers[vars][i], "which is not known in the",
-                     "dataset.")
+        errorDialog(sprintf(Rtxt("The Weight Calculator contains the variable %s",
+                                 "which is not known in the dataset."),
+                            identifiers[vars][i]))
         return()
       }
 
@@ -1996,12 +2052,12 @@ executeSelectTab <- function()
       if (identifiers[vars][i] %notin%
                         union(ident, union(target, union(ignore, risk))))
       {
-        infoDialog("You have used the variable",
-                    identifiers[vars][i],
-                    "in the weights formula but it is an input.",
-                    "This is unusual since it is both an input variable",
-                    "and used to weight the outputs.",
-                    "It is suggested that you ignore the variable.")
+        infoDialog(sprintf(Rtxt("You have used the variable %s",
+                                "in the weights formula but it is an input.",
+                                "This is unusual since it is both an input variable",
+                                "and used to weight the outputs.",
+                                "It is suggested that you ignore this variable."),
+                           identifiers[vars][i]))
       }
       
       # For each Weights variable, replace with full reference to
@@ -2028,7 +2084,7 @@ executeSelectTab <- function()
   convertOneMany <- function(x)
     switch(min(length(x)+1, 3), 'NULL', sprintf('"%s"', x),
            sprintf('c("%s")', paste(x, collapse='", "')))
-  appendLog("The following selections of variables has been made.",
+  appendLog(Rtxt("The following variable selections have been noted."),
             'crs$input <- ', convertOneMany(input),
             '\ncrs$target <- ', convertOneMany(target),
             '\ncrs$risk <- ', convertOneMany(risk),
@@ -2049,8 +2105,10 @@ executeSelectTab <- function()
   
   # Update MODEL targets
 
-  the.target <- sprintf("Target: %s", ifelse(is.null(target), "None", target))
-  the.risk <- sprintf("Status: %s", ifelse(is.null(risk), "None", risk))
+  the.target <- ifelse(length(target), sprintf(Rtxt("Target: %s"), target),
+                       Rtxt("No Target"))
+  the.risk <- ifelse(length(risk), sprintf(Rtxt("Status: %s"), risk),
+                     Rtxt("No Risk"))
 
   theWidget("explot_target_label")$setText(the.target)
 
@@ -2065,8 +2123,8 @@ executeSelectTab <- function()
   theWidget("nnet_target_label")$setText(the.target)
 
   theWidget("model_survival_radiobutton")$setSensitive(TRUE)
-  theWidget("model_survival_time_var_label")$setText(sub("Target:",
-                                                         "Time:", the.target))
+  theWidget("model_survival_time_var_label")$setText(sub(Rtxt("Target:"),
+                                                         Rtxt("Time:"), the.target))
   theWidget("model_survival_status_var_label")$setText(the.risk) 
   
   # Update MODEL weights
@@ -2074,11 +2132,11 @@ executeSelectTab <- function()
   if (not.null(weights))
   {
     weights.display <- gsub('crs\\$dataset\\$', '', weights)
-    the.weight <- sprintf("Weights: %s", weights.display)
+    the.weight <- sprintf(Rtxt("Weights: %s"), weights.display)
     # 080815 Just display Weights if there is a weights value, and
     # empty otherwise.
     # theWidget("model_tree_rpart_weights_label")$setText(the.weight)
-    theWidget("model_tree_rpart_weights_label")$setText("Weights in use.")
+    theWidget("model_tree_rpart_weights_label")$setText(Rtxt("Weights in use."))
   }
   else
   {
@@ -2263,12 +2321,12 @@ executeSelectTab <- function()
       && !length(risk)
       && survivalTarget())
   {
-    errorDialog("You have chosen Survial models as the target type,",
-                "but no Status variable has been identified.",
-                "Survival models require both a Time and a Status",
-                "variable.\n",
-                "\nPlease identify the Status variable and then",
-                "Execute this tab once again.")
+    errorDialog(Rtxt("You have chosen Survial models as the target type,",
+                     "but no Status variable has been identified.",
+                     "Survival models require both a Time and a Status",
+                     "variable.\n",
+                     "\nPlease identify the Status variable and then",
+                     "Execute this tab once again."))
     return(FALSE)
   }
   
@@ -2361,7 +2419,7 @@ executeSelectSample <- function()
                           ")", sep="")
     }
 
-    appendLog("Build the training/validate/test datasets.", sample.cmd)
+    appendLog(Rtxt("Build the training/validate/test datasets."), sample.cmd)
     eval(parse(text=sample.cmd))
   }
   else
@@ -2517,7 +2575,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
-                                        "No.",
+                                        Rtxt("No."),
                                         renderer,
                                         text= crv$COLUMN[["number"]])
   
@@ -2525,7 +2583,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
-                                       "No.",
+                                       Rtxt("No."),
                                        renderer,
                                        text= crv$IMPUTE[["number"]])
   
@@ -2533,7 +2591,7 @@ initialiseVariableViews <- function()
   renderer$set(xalign = 0.0)
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
-                                       "No.",
+                                       Rtxt("No."),
                                        renderer,
                                        text= crv$CATEGORICAL[["number"]])
   
@@ -2873,7 +2931,8 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   
   # Update the Model tab with the selected default target
 
-  the.target <- sprintf("Target: %s", ifelse(is.null(target), "None", target))
+  the.target <- ifelse(length(target), sprintf(Rtxt("Target: %s"), target),
+                       Rtxt("No Target"))
 
   theWidget("explot_target_label")$setText(the.target)
 
@@ -3113,7 +3172,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       # Generate text for the missing values bit.
 
       if (missing.count > 0)
-        mtext <- sprintf(" %d missing values", missing.count)
+        mtext <- sprintf(Rtxt(" %d missing values"), missing.count)
       else
         mtext <- ""
       
@@ -3267,10 +3326,10 @@ inputVariables <- function(numonly=FALSE)
 
   if (is.null(crs$input))
   {
-    errorDialog("No input variables have been selected.",
-                 "This doesn't make a lot of sense.",
-                 "Please choose some input variables before proceeding.")
-    stop("no input variables specified")
+    errorDialog(Rtxt("No input variables have been selected.",
+                     "This doesn't make a lot of sense.",
+                     "Please choose some input variables before proceeding."))
+    stop(Rtxt("no input variables specified"))
   }
     
   if (numonly)

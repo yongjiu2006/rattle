@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-02 20:34:36 Graham Williams>
+# Time-stamp: <2010-03-26 08:06:19 Graham Williams>
 #
 # RPART TAB
 #
@@ -397,54 +397,57 @@ executeModelRPart <- function(action="build")
                        ifelse(is.null(control), "", control),
                        ")", sep="")
 
-    print.cmd <- paste("rattle.print.rpart(crs$rpart)", "printcp(crs$rpart)", sep="\n")
+    print.cmd <- paste("rattle.print.rpart(crs$rpart)", "printcp(crs$rpart)",
+                       'cat("\n")', sep="\n")
 
-    # 090126 Add error matrix.
+    # 090126 Add error matrix. 100321 Don't add the error matricies -
+    # they are more a standard evaluation and belong in the Evaluate
+    # tab.
     
-    if (categoricTarget())
-    {
-      pds.string <- paste("crs$dataset",
-                          if (subsetting) "[",
-                          if (sampling) "-crs$sample",
-                          if (subsetting) ", ",
-                          if (including) included,
-                          if (subsetting) "]", sep="")
-      print.cmd <- paste(print.cmd, "\n",
-                         'cat("\\n',
-                         ifelse(sampling, "TEST ", "TRAINING "),
-                         'DATA Error Matrix - Counts\\n\\n")\n',
-                         "print(table(predict(crs$rpart, ",
-                         pds.string, ', type="class"),', 
-                         pds.string, '$', crs$target,
-                         ', dnn=c("Predicted", "Actual")))\n',
-                         'cat("\n")\n',
-                         sep="")
-      print.cmd <- paste(print.cmd, "\n",
-                         'cat("\\n',
-                         ifelse(sampling, "TEST ", "TRAINING "),
-                         'DATA Error Matrix - Percentages\\n\\n")\n',
-                         "print(round(100*table(predict(crs$rpart, ",
-                         pds.string, ', type="class"),', 
-                         pds.string, '$', crs$target,
-                         ', dnn=c("Predicted", "Actual"))/nrow(',
-                         pds.string, ")))\n",
-                         'cat("\n")\n',
-                         sep="")
-    }
+  ##   if (categoricTarget())
+  ##   {
+  ##     pds.string <- paste("crs$dataset",
+  ##                         if (subsetting) "[",
+  ##                         if (sampling) "-crs$sample",
+  ##                         if (subsetting) ", ",
+  ##                         if (including) included,
+  ##                         if (subsetting) "]", sep="")
+  ##     print.cmd <- paste(print.cmd, "\n",
+  ##                        'cat("\\n',
+  ##                        ifelse(sampling, "Validation ", "Training "),
+  ##                        'dataset error matrix - counts\\n\\n")\n',
+  ##                        "print(table(predict(crs$rpart, ",
+  ##                        pds.string, ', type="class"),', 
+  ##                        pds.string, '$', crs$target,
+  ##                        ', dnn=c("Predicted", "Actual")))\n',
+  ##                        'cat("\n")\n',
+  ##                        sep="")
+  ##     print.cmd <- paste(print.cmd, "\n",
+  ##                        'cat("\\n',
+  ##                        ifelse(sampling, "Validation ", "Training "),
+  ##                        'dataset error matrix - percentages\\n\\n")\n',
+  ##                        "print(round(100*table(predict(crs$rpart, ",
+  ##                        pds.string, ', type="class"),', 
+  ##                        pds.string, '$', crs$target,
+  ##                        ', dnn=c("Predicted", "Actual"))/nrow(',
+  ##                        pds.string, ")))\n",
+  ##                        'cat("\n")\n',
+  ##                        sep="")
+  ##   }
   }
   else if (action == "tune")
   {
     rpart.cmd <- paste("crs$tune.rpart <- tune.rpart(", frml, ", data=crs$dataset",
-                     if (subsetting) "[",
-                     if (sampling) "crs$sample",
-                     if (subsetting) ",",
-                     if (including) included,
-                     if (subsetting) "]",
-                     sprintf(", %s", tune.controls),
-                     ")", sep="")
+                       if (subsetting) "[",
+                       if (sampling) "crs$sample",
+                       if (subsetting) ",",
+                       if (including) included,
+                       if (subsetting) "]",
+                       sprintf(", %s", tune.controls),
+                       ")", sep="")
 
     print.cmd <- paste("print(crs$tune.rpart)", "plot(crs$tune.rpart)", sep="\n")
-  }
+    }
   else if (action == "best")
   {
     # This won't work - best.rpart usese the tune.control() structure
@@ -546,7 +549,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
                                 digits = getOption("digits"), ...) 
 {
     if (!inherits(x, "rpart")) 
-        stop("Not legitimate rpart object")
+        stop(Rtxt("Not a legitimate rpart object."))
     if (!is.null(x$frame$splits)) 
         x <- rpconvert(x)
     if (!missing(cp)) 

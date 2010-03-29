@@ -75,21 +75,21 @@ are testing for a change, usually from one time period to another.
 
 Distribution of the Data
 
-  Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
-  Wilcoxon Signed Rank    Non-parametric    Do paired samples have the same distribution?
+* Kolomogorov-Smirnov     Non-parametric    Are the distributions the same?
+* Wilcoxon Signed Rank    Non-parametric    Do paired samples have the same distribution?
 
 Location of the Average
 
-  T-test               Parametric        Are the means the same?
-  Wilcoxon Rank-Sum    Non-parametric    Are the medians the same?
+* T-test               Parametric        Are the means the same?
+* Wilcoxon Rank-Sum    Non-parametric    Are the medians the same?
 
 Variation in the Data
 
-  F-test    Parametric    Are the variances the same?
+* F-test    Parametric    Are the variances the same?
 
 Correlation
 
-  Correlation    Pearsons    Are the values from the paired samples correlated?</textview>
+* Correlation    Pearsons    Are the values from the paired samples correlated?</textview>
   <textview widget="kmeans_textview">KMeans Clustering
 
 A cluster analysis will identify groups within a dataset. The KMeans
@@ -97,8 +97,7 @@ clustering algorithm will search for K clusters (which you specify).
 The resulting K clusters are represented by the mean or average
 values of each of the variables.
 
-By default KMeans only works with numeric variables.
-</textview>
+By default KMeans only works with numeric variables.</textview>
   <textview widget="hclust_textview">Hierarchical Clustering</textview>
   <textview widget="associate_textview">Association Rule Analysis
 
@@ -106,8 +105,7 @@ Association analysis identifies relationships or affinities between
 entities and/or between variables. These relationships are then
 expressed as a collection of association rules. The approach has been
 particularly successful in mining very large transaction databases. It
-is also often referred to as basket (as in shopping basket) analysis.
-</textview>
+is also often referred to as basket (as in shopping basket) analysis.</textview>
   <textview widget="rpart_textview">Decision Tree Model
 
 A decision tree model is one of the most common data mining models. It
@@ -146,14 +144,12 @@ family, such as Poisson, Logistic, etc.
 If the target has just two possible outcomes it is transformed using a
 logistic or probit function.  A probit regression gives similar
 results to the logistic regression, but often with smaller
-coefficients.
-</textview>
+coefficients.</textview>
   <textview widget="ada_textview">Adaptive Boosting Model
 
 The basic idea of boosting is to associate a weight with each entity
 in the dataset. A series of models are built and the weights are
-increased (boosted) if a model incorrectly classifies the entity.
-</textview>
+increased (boosted) if a model incorrectly classifies the entity.</textview>
   <textview widget="rf_textview">Random Forest Model
 
 A random forest is an ensemble (i.e., a collection) of un-pruned
@@ -168,8 +164,7 @@ importance of each variable.
 
 A random forest model is typically made up of tens or hundreds of
 decision trees. Use the Errors button to view the rate of decrease of
-the model error as the number of trees increases.
-</textview>
+the model error as the number of trees increases.</textview>
   <textview widget="esvm_textview">Support Vector Machine Model</textview>
   <textview widget="ksvm_textview">Support Vector Machine Model
 
@@ -180,8 +175,7 @@ terminology of SVM we talk about the space between regions containing
 data points in different classes as being the margin between those
 classes. The support vectors are used to identify a hyperplane (when
 we are talking about many dimensions in the data, or a line if we were
-talking about only two dimensional data) that separates the classes.
-</textview>
+talking about only two dimensional data) that separates the classes.</textview>
   <textview widget="nnet_textview">Neural Network Model
 
 Build a model that is based on the idea of multiple layers of neurons
@@ -204,15 +198,22 @@ For a binary classification model the cells of the error matrix are
 referred to, from the top left going clockwise, as the True Negatives,
 False Negatives, True Positives, and False Positives.
 
-An error matrix is also known as a confusion matrix.
-</textview>
+An error matrix is also known as a confusion matrix.</textview>
   <textview widget="risk_textview">Risk Chart
 
 A risk chart provides an effective approach to presenting the performance of a model. 
 
 The default chart displays caseload versus performance.</textview>
-  <textview widget="lift_textview">Lift Chart</textview>
-  <textview widget="roc_textview">ROC Curve</textview>
+  <textview widget="lift_textview">Lift Chart
+
+A lift chart identifies the gain in performance offered by the model.</textview>
+  <textview widget="roc_textview">ROC Curve
+
+An ROC (receiver operator characteristic) curve compares the false
+positive rate to the true positive rate. We can access the trade off
+the number of observations that are incorrectly classified
+as positives against the number of observations that are correctly
+classified as positives.</textview>
   <textview widget="precision_textview">Precision Chart</textview>
   <textview widget="sensitivity_textview">Sensitivity Chart</textview>
   <textview widget="costcurve_textview">Cost Curve</textview>
@@ -237,6 +238,5 @@ as Identifier (plus the Target and the Score), or else all of the
 variables.
 
 The name of a CSV file into which the results will be written will be
-prompted for.
-</textview>
+prompted for.</textview>
 </rattle-textviews>

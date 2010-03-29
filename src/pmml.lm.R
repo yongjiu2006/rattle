@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2009-12-06 21:29:19 Graham Williams>
+# Time-stamp: <2010-03-25 06:57:46 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -283,7 +283,7 @@ pmml.lm <- function(model,
                               as.numeric(coeff[which(coeffnames == tmp)]))
         predictorNode <- xmlNode("CategoricalPredictor",
                                  attrs=c(name=name,
-                                   value=l, coefficient=coefficient))
+                                   value=markupSpecials(l), coefficient=coefficient))
         regTable <- append.XMLNode(regTable, predictorNode)
       }
     }

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-01 06:23:51 Graham Williams>
+# Time-stamp: <2010-03-18 07:05:34 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -107,8 +107,8 @@ dispatchExecuteButton <- function()
   }
   else
   {
-    errorDialog("dispatchExecuteButton: Called with unknown tab.",
-                crv$support.msg)
+    errorDialog(Rtxt("'dispatchExecuteButton' has been called with unknown tab."),
+                "\n\n", crv$support.msg)
     return()
   }
 }

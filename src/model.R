@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:45:08 Graham Williams>
+# Time-stamp: <2010-03-29 05:52:04 Graham Williams>
 #
 # MODEL TAB
 #
@@ -378,7 +378,7 @@ executeModelTab <- function()
 
   # If VARIABLES has some ignores but crs$ignore is NULL, complain.
 
-  if (variablesHaveChanged("building a model")) return()
+  if (variablesHaveChanged(Rtxt("building a model"))) return()
 
   # If the WeightCalculator has changed but it is not the same as
   # crs$weight, complain. This doesn't work any more since we add
@@ -390,13 +390,12 @@ executeModelTab <- function()
   if (not.null(crs$weights)
       && weights.display != theWidget("weight_entry")$getText())
   {
-    errorDialog("You appear to have changed the formula for calculating the",
-                "weights on the Data tab without executing the tab.",
-                "The previous formula",
-                sprintf('was "%s" and it is now "%s".', crs$weights,
-                        theWidget("weight_entry")$getText()),
-                "Please be sure to execute the Data tab",
-                "before continuing.")
+    errorDialog(sprintf(Rtxt("You appear to have changed the formula for calculating",
+                             "the weights on the Data tab without executing the tab.",
+                             "The previous formula was '%s' and it is now '%s'.",
+                             "Please be sure to execute the Data tab",
+                             "before continuing."),
+                        crs$weights, theWidget("weight_entry")$getText()))
     return()
   }
     
@@ -404,10 +403,10 @@ executeModelTab <- function()
 
   if (length(crs$target) == 0)
   {
-    errorDialog("No target has been specified.",
-                "Please identify the target using the Data tab.",
-                "Be sure to Execute the tab once the target has",
-                "been identified.")
+    errorDialog(Rtxt("No target has been specified.",
+                     "Please identify the target using the Data tab.",
+                     "Be sure to Execute the tab once the target has",
+                     "been identified."))
     return()
   }
 
@@ -427,12 +426,12 @@ executeModelTab <- function()
     theWidget("confusion_textview")$setWrapMode("word")
     resetTextview("confusion_textview")
     appendTextview("confusion_textview",
-                   "Note that the target you have chosen has more than",
-                   "2 classes. Some functionality on the Evaluate tab",
-                   "will not be available. In particular, the ROCR",
-                   "package (Lift, ROC, Precision, and Sensitivity",
-                   "charts) and the Risk Chart only handle binary",
-                   "classification.", sep=" ")
+                   Rtxt("Note that the target you have chosen has more than",
+                        "2 classes. Some functionality on the Evaluate tab",
+                        "will not be available. In particular, the ROCR",
+                        "package (Lift, ROC, Precision, and Sensitivity",
+                        "charts) and the Risk Chart only handle binary",
+                        "classification."))
   }
   else if (numericTarget())
   {
@@ -476,39 +475,42 @@ executeModelTab <- function()
   {
     if (theWidget("rpart_build_radiobutton")$getActive())
     {
-      setStatusBar("Building", commonName(crv$RPART), "model ...")
+      setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$RPART)))
 
       if (theWidget("model_tree_ctree_radiobutton")$getActive())
       {
         if (executeModelCTree())
           theWidget("evaluate_rpart_checkbutton")$setActive(TRUE)
         else
-          setStatusBar("Building", commonName("ctree"), "model ... failed.")
+          setStatusBar(sprintf(Rtxt("Building %s model ... failed."),
+                               commonName("ctree")))
       }
       else
       {
         if (executeModelRPart())
             theWidget("evaluate_rpart_checkbutton")$setActive(TRUE)
         else
-          setStatusBar("Building", commonName(crv$RPART), "model ... failed.")
+          setStatusBar(sprintf(Rtxt("Building %s model ... failed."),
+                               commonName(crv$RPART)))
       }
     }
     else if (theWidget("rpart_tune_radiobutton")$getActive())
     {
-      setStatusBar("Tuning", commonName(crv$RPART), "model ...")
+      setStatusBar(sprintf(Rtxt("Tuning %s model ..."), commonName(crv$RPART)))
       if (! executeModelRPart("tune"))
-        setStatusBar("Tuning", commonName(crv$RPART), "model ... failed.")
+        setStatusBar(sprintf(Rtxt("Tuning %s model ... failed"), commonName(crv$RPART)))
     }
     else if (theWidget("rpart_best_radiobutton")$getActive())
     {
-      setStatusBar("Building best", commonName(crv$RPART), "model ...")
+      setStatusBar(sprintf(Rtxt("Building best %s model ..."), commonName(crv$RPART)))
       if (! executeModelRPart("best"))
-        setStatusBar("Building best", commonName(crv$RPART), "model ... failed.")
+        setStatusBar(sprintf(Rtxt("Building best %s model ... failed"),
+                             commonName(crv$RPART)))
     }
     else # That's all the radio buttons - we should not be here.
     {
-      errorDialog("Tried building an rpart model with option not",
-                  "one of build/tune/best. This should not be possible.",
+      errorDialog(Rtxt("Tried building an rpart model with option not",
+                       "one of build/tune/best. This should not be possible."),
                   crv$support.msg)
       return(FALSE)
       
@@ -517,7 +519,7 @@ executeModelTab <- function()
   if ((binomialTarget() && build.all)
       || currentModelTab() == crv$ADA)
   {
-    setStatusBar("Building", commonName(crv$ADA), "model ...")
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$ADA)))
     crs$ada <-
       buildModelAda(formula,
                     dataset,
@@ -533,8 +535,7 @@ executeModelTab <- function()
       theWidget("evaluate_ada_checkbutton")$setActive(TRUE)
     }
     else
-      setStatusBar("Building", commonName(crv$ADA), "model ... failed.")
-
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$ADA)))
   }
 
   if (build.all || currentModelTab() == crv$RF)
@@ -611,7 +612,7 @@ executeModelTab <- function()
     time.taken <- Sys.time()-start.time
     time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
                         attr(time.taken, "units"))
-    setStatusBar("All models have been generated.", time.msg)
+    setStatusBar(Rtxt("All models have been generated."), time.msg)
   }
 }
 
@@ -769,17 +770,17 @@ executeModelGLM <- function()
   else if (family == "Multinomial")
   {
     lib.cmd <-  "require(nnet, quietly=TRUE)"
-    if (! packageIsAvailable("nnet", "build a mulitnomial model")) return(FALSE)
-    appendLog("Build a multinomial model using the nnet package.", lib.cmd)
+    if (! packageIsAvailable("nnet", Rtxt("build a mulitnomial model"))) return(FALSE)
+    appendLog(Rtxt("Build a multinomial model using the nnet package."), lib.cmd)
     eval(parse(text=lib.cmd))
 
     car.available <- TRUE
     lib.cmd <- "require(car, quietly=TRUE)"
-    if (! packageIsAvailable("car", "evaluate a mulitnomial model"))
+    if (! packageIsAvailable("car", Rtxt("evaluate a mulitnomial model")))
       car.avaiable <- FALSE
     else
     {
-      appendLog("Sumarise the a multinomial model using the car package.", lib.cmd)
+      appendLog(Rtxt("Sumarise the multinomial model using the car package."), lib.cmd)
       eval(parse(text=lib.cmd))
     }
     
@@ -815,7 +816,7 @@ executeModelGLM <- function()
   
   # Build the model.
 
-  appendLog("Build a Regression model.",
+  appendLog(Rtxt("Build a Regression model."),
             model.cmd, sep="")
   start.time <- Sys.time()
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
@@ -826,12 +827,17 @@ executeModelGLM <- function()
       find.num.weights <- regexpr('\\([0-9]*\\)', result)
       num.weights <- substr(result, find.num.weights,
                             find.num.weights + attr(find.num.weights, "match.length")-1)
-      errorDialog("The Multinomial model build has failed, with too many weights",
-                  num.weights,
-                  "needing to be calculated. Perhaps consider reducing the",
-                  "number of categoric variables with unique values (if you have",
-                  "such variables in your input data) or perhaps treating the target",
-                  "variable as numeric and perform a numeric linear regression.")
+      errorDialog(sprintf(Rtxt("The Multinomial model build has failed,",
+                               "with too many weights (%d)",
+                               "needing to be calculated.",
+                               "Perhaps consider reducing the",
+                               "number of categoric variables with",
+                               "unique values (if you have",
+                               "such variables in your input data)",
+                               "or perhaps treating the target",
+                               "variable as numeric and perform a",
+                               "numeric linear regression."),
+                          num.weights))
       setTextview(TV)
     }        
     else if (any(grep("contrasts can be applied only to factors with 2", result)))
@@ -853,8 +859,9 @@ executeModelGLM <- function()
       setTextview(TV)
     }
     else
-      errorDialog("The regression model appears to have failed.",
-                  "The error message was:", result, crv$support.msg)
+      errorDialog(Rtxt("The regression model appears to have failed.",
+                       "The error message was:"),
+                  result, crv$support.msg)
     return(FALSE)
   }
   
@@ -954,7 +961,7 @@ exportRegressionModel <- function()
 
   if (noModelAvailable(crs$glm, crv$GLM)) return(FALSE)
 
-  startLog("Export Regression")
+  startLog(Rtxt("Export regression model."))
 
   save.name <- getExportSaveName(crv$GLM)
   if (is.null(save.name)) return(FALSE)
@@ -968,7 +975,7 @@ exportRegressionModel <- function()
 
   if (ext == "xml")
   {
-    appendLog("Export regression as PMML.",
+    appendLog(Rtxt("Export regression as PMML."),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -982,7 +989,7 @@ exportRegressionModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
     
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a regression model as C code for WebFocus.",
+    appendLog(Rtxt("Export a regression model as C code for WebFocus."),
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),
@@ -997,7 +1004,8 @@ exportRegressionModel <- function()
                 attr(save.name, "exportClass")), file=save.name)
   }
   
-  setStatusBar("The", toupper(ext), "file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."),
+                       toupper(ext), save.name))
 }
 
 #------------------------------------------------------------------------
@@ -1006,18 +1014,18 @@ exportRegressionModel <- function()
 # Eventually the following will go into svm_gui.R, using the same
 # conventions as in ada.R.
 
-on_svm_kernel_comboboxentry_changed <- function(action, window)
+on_svm_kernel_combobox_changed <- function(action, window)
 {
-  krnl <- theWidget("svm_kernel_comboboxentry")$getActiveText()
+  krnl <- theWidget("svm_kernel_combobox")$getActiveText()
   krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
-  setGuiDefaultsSVM(krnl)
+  if (length(krnl)) setGuiDefaultsSVM(krnl)
 }
 
 setGuiDefaultsSVM <- function(kernel=NULL)
 {
   if (is.null(kernel))
   {
-    theWidget("svm_kernel_comboboxentry")$setActive(0)
+    theWidget("svm_kernel_combobox")$setActive(0)
     theWidget("svm_classweights_entry")$setText("")
     theWidget("svm_poly_degree_spinbutton")$setValue(1)
   }
@@ -1058,13 +1066,13 @@ executeModelSVM <- function()
 
   TV <- ifelse(useKernlab, "ksvm_textview", "esvm_textview")
   
-  startLog("Support Vector Machine")
+  startLog(Rtxt("Support vector machine."))
 
   ## Library.
 
   if (useKernlab)
   {
-    if (packageIsAvailable("kernlab", "build an SVM model using ksvm"))
+    if (packageIsAvailable("kernlab", Rtxt("build an SVM model using ksvm")))
     {
       libCmd <- "require(kernlab, quietly=TRUE)"
       appendLog(packageProvides('kernlab', 'ksvm'), libCmd)
@@ -1074,7 +1082,7 @@ executeModelSVM <- function()
   }
   else
   {
-    if (packageIsAvailable("e1071", "build an SVM model using svm"))
+    if (packageIsAvailable("e1071", Rtxt("build an SVM model using svm")))
     {
       libCmd <- "require(e1071, quietly=TRUE)"
       appendLog(packageProvides('e1071', 'svm'), libCmd)
@@ -1097,7 +1105,7 @@ executeModelSVM <- function()
 
   ## Interface options.
 
-  krnl <- theWidget("svm_kernel_comboboxentry")$getActiveText()
+  krnl <- theWidget("svm_kernel_combobox")$getActiveText()
   krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
 
   if (krnl == "polydot")
@@ -1149,17 +1157,17 @@ executeModelSVM <- function()
   svmCmd <- paste(svmCmd, ")", sep="")
 
   start.time <- Sys.time()
-  appendLog("Build a support vector machine model.", svmCmd)
+  appendLog(Rtxt("Build a Support Vector Machine model."), svmCmd)
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
   if (inherits(result, "try-error"))
   {
     if (any(grep("cannot allocate vector", result)))
     {
-      errorDialog("The call to svm has failed, running out of memory.",
-                  "The support vector machine algorithm is rather memory hungry.",
-                  "A quick solution is to down sample the dataset, through the",
-                  "Data tab. On 32 bit machines you may be limited to",
-                   "less than 10,000 entities.")
+      errorDialog(Rtxt("The call to svm has failed, running out of memory.",
+                       "The support vector machine algorithm is rather memory hungry.",
+                       "A quick solution is to down sample the dataset, through the",
+                       "Data tab. On 32 bit machines you may be limited to",
+                       "less than 10,000 entities."))
       setTextview(TV)
     }
     else
@@ -1173,11 +1181,12 @@ executeModelSVM <- function()
     summaryCmd <- "crs$ksvm"
   else
     summaryCmd <- "crs$svm"
-  appendLog("Generate textual output of the svm model.", summaryCmd)
+  appendLog(Rtxt("Generate textual output of the svm model."), summaryCmd)
   resetTextview(TV)
-  setTextview(TV, sprintf(paste("Summary of the %s model",
-                                "(built using ksvm):\n\n"),
+  setTextview(TV, sprintf(Rtxt("Summary of the %s model",
+                               "(built using ksvm):"),
                           commonName("ksvm")),
+              "\n\n",
               collectOutput(summaryCmd, TRUE), "\n")
 
   if (sampling)
@@ -1193,7 +1202,7 @@ executeModelSVM <- function()
                       attr(time.taken, "units"))
   addTextview(TV, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
-  setStatusBar(sprintf("A %s model has been generated.",
+  setStatusBar(sprintf(Rtxt("A %s model has been generated."),
                        ifelse(useKernlab, crv$KSVM, crv$SVM)), time.msg)
   return(TRUE)
 }
@@ -1204,18 +1213,18 @@ exportSVMModel <- function()
   
   if (is.null(crs$ksvm))
   {
-    errorDialog("No SVM model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
+    errorDialog(Rtxt("No SVM model is available. Be sure to build",
+                     "the model before trying to export it! You will need",
+                     "to press the Execute button (F2) in order to build the",
+                     "model."))
     return()
   }
 
   # Require the pmml package
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export SVM model")) return(FALSE)
-  appendLog("Load the PMML package to export a SVM model.", lib.cmd)
+  if (! packageIsAvailable("pmml", Rtxt("export SVM model"))) return(FALSE)
+  appendLog(Rtxt("Load the PMML package to export a SVM model."), lib.cmd)
   # Load the package unless we already have a pmml defined (through source).
   if (! exists("pmml")) eval(parse(text=lib.cmd))
   
@@ -1253,11 +1262,11 @@ exportSVMModel <- function()
 #  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
   pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
-  appendLog("Export a SVM model as PMML.",
+  appendLog(Rtxt("Export a SVM model as PMML."),
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  setStatusBar("The PMML file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The PMML file '%s' has been written."), save.name))
 }
 
 ##----------------------------------------------------------------------
@@ -1332,13 +1341,15 @@ exportModelTab <- function()
   
   if (any(!sapply(crs$input, pmmlCanExport)))
   {
-    if (!questionDialog("In exporting the model the following variables appear to be",
-                        "transformations that are not currently supported for export.",
-                        "Be aware that the results will not perform the",
-                        "transformations.\n\n",
+    if (!questionDialog(Rtxt("In exporting the model the following variables appear",
+                             "to be transformations that are not currently supported",
+                             "for export. Be aware that the results will not",
+                             "perform the transformations."),
+                        "\n\n",
                         paste(names(which(!sapply(crs$input, pmmlCanExport))),
                               collapse=", "),
-                        "\n\nDo you wish to continue?"))
+                        "\n\n",
+                        Rtxt("Do you wish to continue?")))
       return()
   }
   
@@ -1364,7 +1375,7 @@ exportModelTab <- function()
   }
   else
   {
-    errorDialog("PMML export for this model is not yet implemented.")
+    errorDialog(Rtxt("PMML export for this model is not yet implemented."))
     return()
   }
 }

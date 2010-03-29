@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-20 08:02:24 Graham Williams>
+# Time-stamp: <2010-03-27 08:34:57 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -255,9 +255,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
   if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix", "log")
       && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste('We can not rescale using "%s"',
-                             "on a categoric variable.",
-                             "Ignoring: %s."),
+    infoDialog(sprintf(Rtxt("We can not rescale using '%s'",
+                            "on a categoric variable.",
+                            "Ignoring: %s."),
                        action, paste(variables[which(classes == "factor")],
                                      collapse=", ")))
     variables <- variables[-which(classes == "factor")] # Remove the factors.
@@ -266,9 +266,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
   if (!length(variables))
   {
-    warnDialog(paste("No variables have been selected for rescaling.",
-                     "Please select some variables and Execute again."))
-    setStatusBar("No variables selected to be rescaling.")
+    warnDialog(Rtxt("No variables have been selected for rescaling.",
+                    "Please select some variables and Execute again."))
+    setStatusBar(Rtxt("No variables selected to be rescaling."))
     return(FALSE)
   }
   
@@ -301,8 +301,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
     
     if (numnumerics == 0)
     {
-      infoDialog(paste("We must have a numeric variable to normalize for the",
-                       "By Group option. Please select one numeric variable."))
+      infoDialog(Rtxt("We must have a numeric variable to normalize for the",
+                      "By Group option.\n\nPlease select one numeric variable."))
       return()
     }
 
@@ -311,9 +311,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
     
     if (numfactors > 1)
     {
-      infoDialog(paste("We only support By Group with a single categoric",
-                       "variable for now. \n\nPlease select just one",
-                       "categoric."))
+      infoDialog(Rtxt("We only support By Group with a single categoric",
+                      "variable for now.\n\nPlease select just one",
+                      "categoric."))
       return()
     }
 
@@ -328,14 +328,14 @@ executeTransformNormalisePerform <- function(variables=NULL,
     }
   }
   
-  startLog("RESCALE Variables")
+  startLog(Rtxt("Transform variables by rescaling."))
   
   # Make sure we have the reshape library from where the rescaler
   # function comes.
   
   if (action %in% c("scale01", "rank", "medianad", "bygroup"))
   {
-    if (! packageIsAvailable("reshape", "normalize data")) return()
+    if (! packageIsAvailable("reshape", Rtxt("normalize data"))) return()
     lib.cmd <- "require(reshape, quietly=TRUE)"
     appendLog(packageProvides("reshape", "rescaler"), lib.cmd)
     eval(parse(text=lib.cmd))
@@ -361,7 +361,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                'c("%s")],',
                                "na.rm=TRUE)"),
                          paste(variables, collapse='", "'))
-    appendLog("Calculate matrix total", total.cmd)
+    appendLog(Rtxt("Calculate the matrix total."), total.cmd)
     eval(parse(text=total.cmd))
   }
     
@@ -390,9 +390,9 @@ executeTransformNormalisePerform <- function(variables=NULL,
       median.cmd <- sprintf('median(crs$dataset[["%s"]], na.rm=TRUE)', v)
       if (eval(parse(text=median.cmd)) == 0)
       {
-        warnDialog(sprintf('The variable "%s" has a median of 0.', v),
-                   "We can not compute the Median/MAD Rescaler",
-                   "for this variable.")
+        warnDialog(sprintf(Rtxt("The variable '%s' has a median of 0.",
+                                "We cannot compute the Median/MAD Rescaler",
+                                "for this variable."), v))
         next()
       }
     }
@@ -406,7 +406,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
     # Take a copy of the variable to be imputed.
     
-    appendLog(sprintf("RESCALE %s.", v), copy.cmd)
+    appendLog(sprintf(Rtxt("Rescale %s."), v), copy.cmd)
     eval(parse(text=copy.cmd))
     
     # Determine what action to perform.
@@ -415,7 +415,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     {
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-',
                                 'scale(crs$dataset[["%s"]])[,1]'), vname, v)
-      norm.comment <- "Recenter and rescale the data around 0."
+      norm.comment <- Rtxt("Recenter and rescale the data around 0.")
 
       # Record the transformation for inclusion in PMML.
 
@@ -440,7 +440,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "range")'),
                           vname, v)
-      norm.comment <- "Rescale to [0,1]."
+      norm.comment <- Rtxt("Rescale to [0,1].")
 
       # Record the transformation for inclusion in PMML.
 
@@ -466,7 +466,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "rank")'),
                           vname, v)
-      norm.comment <- "Convert values to ranks."
+      norm.comment <- Rtxt("Convert values to ranks.")
 
       # How would we rank a new item? Thus, can we actually use a rank
       # in a transform?
@@ -482,8 +482,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'rescaler((crs$dataset[["%s"]]), "robust")'),
                           vname, v)
-      norm.comment <- paste("Rescale by subtracting median and dividing",
-                            "by median abs deviation.")
+      norm.comment <- Rtxt("Rescale by subtracting median and dividing",
+                           "by median abs deviation.")
 
       # Record the transformation for inclusion in PMML.
       
@@ -533,7 +533,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
                             vname, vname)
 
       
-      norm.comment <- "Rescale to 0-100 within each group."
+      norm.comment <- Rtxt("Rescale to 0-100 within each group.")
 
       # 090606 Record the transformation for inclusion in PMML.
       
@@ -546,7 +546,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
       norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
                                 'crs$dataset[["%s"]]/matrix.total'),
                           vname, v)
-      norm.comment <- "Divide variable values by matrix total."
+      norm.comment <- Rtxt("Divide variable values by matrix total.")
 
       # 090606 Is this still needed with the new data structure?
       # 090117 Remove any old instances of the same transform. Could
@@ -579,7 +579,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                 '\n  crs$dataset[crs$dataset[["%s"]] == -Inf &',
                                 '! is.na(crs$dataset[["%s"]]), "%s"] <- NA'),
                           vname, v, vname, vname, vname)
-      norm.comment <- "Take a log transform of the variable - treat -Inf as NA."
+      norm.comment <- Rtxt("Take a log transform of the variable - treat -Inf as NA.")
 
       # Record the transformation for inclusion in PMML.
 
@@ -597,7 +597,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
               "\n}")
     eval(parse(text=norm.cmd))
     if (! is.null(norm.score.command))
-      appendLog("When scoring transform using the training data parameters.",
+      appendLog(Rtxt("When scoring transform using the training data parameters."),
                 "if (scoring)\n{\n  ", norm.score.command, "\n}")
     
     # Now update the variable roles.
@@ -644,14 +644,14 @@ executeTransformNormalisePerform <- function(variables=NULL,
     
     # Update the status bar
 
-    setStatusBar(sprintf(paste("Normalized variables added to the dataset",
-                               "with '%s' prefix."), vprefix))
+    setStatusBar(sprintf(Rtxt("Normalized variables added to the dataset",
+                              "with '%s' prefix."), vprefix))
   }
   else
   {
-    warnDialog(paste("No variables have been selected for rescaling.",
-                     "Please select some variables and Execute again."))
-    setStatusBar("No variables selected to be rescaling.")
+    warnDialog(Rtxt("No variables have been selected for rescaling.",
+                    "Please select some variables and Execute again."))
+    setStatusBar(Rtxt("No variables selected to be rescaling."))
   }
 }  
 
@@ -707,8 +707,8 @@ executeTransformImputePerform <- function()
   }, TRUE)
 
   if (is.null(imputed)) 
-    warnDialog(paste("No variables have been selected for imputation.",
-                     "Please select some variables and Execute again."))
+    warnDialog(Rtxt("No variables have been selected for imputation.",
+                    "Please select some variables and Execute again."))
 
   # We check here if the action is mean or median, and we have any
   # categoric variables to be imputed. If so put up an info dialogue
@@ -720,8 +720,8 @@ executeTransformImputePerform <- function()
 
   if (action %in% c("mean", "median") && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste("We can not impute the %s for a",
-                             "categoric variable. Ignoring: %s."),
+    infoDialog(sprintf(Rtxt("We can not impute the %s for a",
+                            "categoric variable. Ignoring: %s."),
                        action, paste(imputed[which(classes == "factor")],
                                      collapse=", ")))
     imputed <- imputed[-which(classes == "factor")] # Remove the factors.
@@ -737,14 +737,14 @@ executeTransformImputePerform <- function()
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
 
-  if (length(imputed) > 0) startLog("MISSING VALUE IMPUTATION")
+  if (length(imputed) > 0) startLog(Rtxt("Perform missing value imputation."))
 
   # [TODO 071124] The following code could be tidied up quite a
   # bit. It has evolved. Bits of the code handling the categorics
   # were copied from the numeric parts and vice versa, and they do it
   # different ways. Should try to do it the same way. Works for now!
       
-  startLog("IMPUTE Missing Values")
+  startLog(Rtxt("Transform variables by imputing missing values."))
   
   for (z in imputed)
   {
@@ -766,7 +766,7 @@ executeTransformImputePerform <- function()
 
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
+        appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
         eval(parse(text=copy.cmd))
              
         # If "Missing" is not currently a category for this variable,
@@ -778,7 +778,7 @@ executeTransformImputePerform <- function()
                                       'c(levels(crs$dataset[["%s"]]),',
                                       '"Missing")'),
                                 vname, vname)
-          appendLog('Add a new category "Missing" to the variable',
+          appendLog(Rtxt("Add a new category 'Missing' to the variable"),
                     levels.cmd)
           eval(parse(text=levels.cmd))
         }
@@ -789,7 +789,7 @@ executeTransformImputePerform <- function()
                                      'crs$dataset[["%s"]])] <- "Missing"',
                                      sep=""),
                                vname, z)
-        appendLog('Change all NAs to "Missing"', missing.cmd)
+        appendLog(Rtxt("Change all NAs to 'Missing'"), missing.cmd)
         eval(parse(text=missing.cmd))
 
         # 090630 I seemed to have only recorded these transforms for
@@ -810,7 +810,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
-        appendLog("Change all NAs to the modal value (not advisable).",
+        appendLog(Rtxt("Change all NAs to the modal value (not advisable)."),
                   imp.cmd)
         eval(parse(text=imp.cmd))
       }
@@ -818,7 +818,7 @@ executeTransformImputePerform <- function()
       {
         # Take a copy of the variable to be imputed.
     
-        appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
+        appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
         eval(parse(text=copy.cmd))
              
         val <- theWidget("impute_constant_entry")$getText()
@@ -832,7 +832,7 @@ executeTransformImputePerform <- function()
                                       'c(levels(crs$dataset[["%s"]]),',
                                       sprintf('"%s")', val)),
                                 vname, vname)
-          appendLog(sprintf('Add a new category "%s" to the variable', val), 
+          appendLog(sprintf(Rtxt("Add a new category '%s' to the variable"), val), 
                     levels.cmd)
           eval(parse(text=levels.cmd))
         }
@@ -840,22 +840,22 @@ executeTransformImputePerform <- function()
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- "%s"', sep=""), vname, z, val)
-        appendLog(sprintf("Change all NAs to the constant value: %s", val),
+        appendLog(sprintf(Rtxt("Change all NAs to the constant value: %s"), val),
                   imp.cmd)
         eval(parse(text=imp.cmd))
       }
       else
-        infoDialog(sprintf(paste("The option to impute the %s for the",
-                                 "categoric variable (%s) is not (yet)",
-                                 "available."), action, z))
+        infoDialog(sprintf(Rtxt("The option to impute the %s for the",
+                                "categoric variable (%s) is not (yet)",
+                                "available."), action, z))
     }
     else
     {
-      imp.val <- "Not Yet Implemented"
+      imp.val <- Rtxt("Not yet implemented.")
       
       # Take a copy of the variable to be imputed.
     
-      appendLog(sprintf("IMPUTE %s.", z), copy.cmd)
+      appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
       eval(parse(text=copy.cmd))
       
       # Determine what action to perform.
@@ -865,7 +865,7 @@ executeTransformImputePerform <- function()
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
                                  " <- 0", sep=""), vname, z)
-        imp.comment <- "Change all NAs to 0."
+        imp.comment <- Rtxt("Change all NAs to 0.")
         imp.val <- 0
 
         # Record the transformation for inclusion in PMML.
@@ -882,7 +882,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- mean(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
-        imp.comment <- "Change all NAs to the mean value (not advisable)."
+        imp.comment <- Rtxt("Change all NAs to the mean value (not advisable).")
         imp.val <- mean(crs$dataset[[z]], na.rm=TRUE)
 
         # Record the transformation for inclusion in PMML.
@@ -896,7 +896,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- median(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
-        imp.comment <- "Change all NAs to the median (not advisable)."
+        imp.comment <- Rtxt("Change all NAs to the median (not advisable).")
         imp.val <- median(crs$dataset[[z]], na.rm=TRUE)
 
         # Record the transformation for inclusion in PMML.
@@ -910,7 +910,7 @@ executeTransformImputePerform <- function()
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- modalvalue(crs$dataset[["%s"]], ',
                                  "na.rm=TRUE)", sep=""), vname, z, z)
-        imp.comment <- "Change all NAs to the modal value (not advisable)."
+        imp.comment <- Rtxt("Change all NAs to the modal value (not advisable).")
         imp.val <- modalvalue(crs$dataset[[z]], na.rm=TRUE)
 
         # Record the transformation for inclusion in PMML.
@@ -923,15 +923,15 @@ executeTransformImputePerform <- function()
         val <- theWidget("impute_constant_entry")$getText()
         if (is.na(as.numeric(val)))
         {
-          errorDialog(sprintf(paste('The supplied value of "%s" for the variable "%s"',
-                                    'is not numeric. Please supply a numeric value.'),
+          errorDialog(sprintf(Rtxt("The supplied value of '%s' for the variable '%s'",
+                                   "is not numeric. Please supply a numeric value."),
                               val, z))
           next
         }
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
                                  '[is.na(crs$dataset[["%s"]])]',
                                  ' <- %s ', sep=""), vname, z, val)
-        imp.comment <- sprintf("Change all NAs to the constant: %s.", val)
+        imp.comment <- sprintf(Rtxt("Change all NAs to the constant: %s."), val)
         imp.val <- val
 
         # Record the transformation for inclusion in PMML.
@@ -943,7 +943,7 @@ executeTransformImputePerform <- function()
       appendLog(imp.comment, "if (building)\n{\n  ",  
                 imp.cmd, "\n}")
       eval(parse(text=imp.cmd))
-      appendLog("When scoring, transform using the training data parameters:",
+      appendLog(Rtxt("When scoring, transform using the training data parameters:"),
                 "if (scoring)\n{\n",
                 sprintf(paste('  crs$dataset[["%s"]]',
                               '[is.na(crs$dataset[["%s"]])] <- %s',
@@ -991,12 +991,12 @@ executeTransformImputePerform <- function()
 
     # Update the status bar
 
-    setStatusBar(sprintf(paste("Imputed variables added to the dataset",
-                               "with '%s_' prefix."), vprefix))
+    setStatusBar(sprintf(Rtxt("Imputed variables added to the dataset",
+                              "with '%s_' prefix."), vprefix))
   }
   else
   {
-    setStatusBar("No variables selected to be imputed.")
+    setStatusBar(Rtxt("No variables selected to be imputed."))
   }
 }  
 
@@ -1037,9 +1037,9 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
   }
 
   method <- match.arg(method)
-  if(is.factor(x)) stop("this var is already a factor")
-  if (is.data.frame(x)) stop("is needed an object of class data.frame")
-  if (length(x) < bins) stop("more classes than obs")
+  if(is.factor(x)) stop(Rtxt("This variable is already a factor."))
+  if (is.data.frame(x)) stop(Rtxt("An object of class data.frame is required."))
+  if (length(x) < bins) stop(Rtxt("There are more classes than observations."))
   
   # Binning
 
@@ -1059,7 +1059,7 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
     }
     else
     {
-      cat("Warning: var not considered\n")
+      cat(Rtxt("Warning: the variable is not considered.\n"))
       return(NULL)
     }
   }
@@ -1078,7 +1078,7 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
     }
     else
     {
-      cat("Warning: var not considered\n")
+      cat(Rtxt("Warning: the variable is not considered.\n"))
       return(NULL)	
     }
   }
@@ -1115,7 +1115,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   
   if (length(vars) == 0)
   {
-    infoDialog("Please select some variables to remap first. Then Execute.")
+    infoDialog(Rtxt("Please select some variables to remap first. Then Execute."))
     return()
   }
 
@@ -1138,48 +1138,48 @@ executeTransformRemapPerform <- function(vars=NULL,
       action <- "quantiles"
       num.bins <- theWidget("remap_bins_spinbutton")$getValue()
       remap.prefix <- sprintf("BQ%d", num.bins)
-      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                     "using quantiles."), num.bins)
+      remap.comment <- sprintf(Rtxt("Bin the variable(s) into %d bins",
+                                    "using quantiles."), num.bins)
     }
     else if (theWidget("remap_kmeans_radiobutton")$getActive())
     {
       action <- "kmeans"
       num.bins <- theWidget("remap_bins_spinbutton")$getValue()
       remap.prefix <- sprintf("BK%d", num.bins)
-      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                     "using kmeans."), num.bins)
+      remap.comment <- sprintf(Rtxt("Bin the variable(s) into %d bins",
+                                    "using kmeans."), num.bins)
     }
     else if (theWidget("remap_eqwidth_radiobutton")$getActive())
     {
       action <- "eqwidth"
       num.bins <- theWidget("remap_bins_spinbutton")$getValue()
       remap.prefix <- sprintf("BE%d", num.bins)
-      remap.comment <- sprintf(paste("Bin the variable(s) into %d bins",
-                                     "using equal widths."), num.bins)
+      remap.comment <- sprintf(Rtxt("Bin the variable(s) into %d bins",
+                                    "using equal widths."), num.bins)
     }
     else if (theWidget("remap_indicator_radiobutton")$getActive())
     {
       action <- "indicator"
       remap.prefix <- "TIN"
-      remap.comment <- "Turn a factor into indicator variables."
+      remap.comment <- Rtxt("Turn a factor into indicator variables.")
     }
     else if (theWidget("remap_joincat_radiobutton")$getActive())
     {
       action <- "joincat"
       remap.prefix <- "TJN"
-      remap.comment <- "Turn two factors into one factor"
+      remap.comment <- Rtxt("Turn two factors into one factor.")
     }
     else if (theWidget("remap_asfactor_radiobutton")$getActive())
     {
       action <- "asfactor"
       remap.prefix <- "TFC"
-      remap.comment <- "Transform into a Factor."
+      remap.comment <- Rtxt("Transform into a factor.")
     }
     else if (theWidget("remap_asnumeric_radiobutton")$getActive())
     {
       action <- "asnumeric"
       remap.prefix <- "TNM"
-      remap.comment <- "Transform into a Numeric."
+      remap.comment <- Rtxt("Transform into a numeric.")
     }
   }
   
@@ -1189,9 +1189,9 @@ executeTransformRemapPerform <- function(vars=NULL,
 
   if (action %in% c("indicator") && length(vars) > 1)
   {
-    errorDialog("The Indicator Variable transform can only be performed",
-                "one variable at a time. Please select just one variable",
-                "to transform.")
+    errorDialog(Rtxt("The Indicator Variable transform can only be performed",
+                     "one variable at a time. Please select just one variable",
+                     "to transform."))
     return(FALSE)
   }
   
@@ -1204,26 +1204,26 @@ executeTransformRemapPerform <- function(vars=NULL,
   if (action %in% c("quantiles", "kmeans", "eqwidth", "log", "asfactor")
       && "factor" %in% classes)
   {
-    infoDialog(sprintf(paste("Only numeric data is permissible for the %s transform.",
-                             "\n\nIgnoring: %s."),
+    infoDialog(sprintf(Rtxt("Only numeric data is permissible for the %s transform.",
+                            "\n\nIgnoring: %s."),
                        switch(action,
-                              quantiles="Quantiles",
-                              kmeans="KMeans",
-                              eqwidth="Equal Width",
-                              log="Log",
-                              asfactor="As Categoric"),
+                              quantiles=Rtxt("Quantiles"),
+                              kmeans=Rtxt("KMeans"),
+                              eqwidth=Rtxt("Equal Width"),
+                              log=Rtxt("Log"),
+                              asfactor=Rtxt("As Categoric")),
                        paste(vars[which(classes == "factor")], collapse=", ")))
     vars <- vars[-which(classes == "factor")] # Remove the factors.
   }
   if (action %in% c("indicator", "joincat", "asnumeric")
       && ("numeric" %in% classes || "integer" %in% classes))
   {
-    infoDialog(sprintf(paste("Only non numeric data is permissible for the %s",
-                             " transform.\n\nIgnoring: %s."),
+    infoDialog(sprintf(Rtxt("Only non numeric data is permissible for the %s",
+                            " transform.\n\nIgnoring: %s."),
                        switch(action,
-                              indicator="Indicator Variable",
-                              joincat="Join Categorics",
-                              asnumeric="As Numeric"),
+                              indicator=Rtxt("Indicator Variable"),
+                              joincat=Rtxt("Join Categorics"),
+                              asnumeric=Rtxt("As Numeric")),
                        paste(vars[which(classes == "numeric" |
                                         classes == "integer")],
                              collapse=", ")))
@@ -1283,14 +1283,14 @@ executeTransformRemapPerform <- function(vars=NULL,
   {
     if (length(vars) > 2)
     {
-      infoDialog("A join of only two categoric variables at a time is allowed.",
-                 "Please select just two categoric variables, then Execute.")
+      infoDialog(Rtxt("A join of only two categoric variables at a time is allowed.",
+                      "Please select just two categoric variables, then Execute."))
       return()
     }
     if (length(vars) < 2)
     {
-      infoDialog("A join of categoric variables requires two categoric variables.",
-                 "Please select two categoric variables, then Execute.")
+      infoDialog(Rtxt("A join of categoric variables requires two categoric variables.",
+                      "Please select two categoric variables, then Execute."))
       return()
     }
     
@@ -1343,7 +1343,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   
   # Perform the remapping.
 
-  startLog("REMAP Variables")
+  startLog(Rtxt("Remap variables."))
   appendLog(remap.comment,
             # 090601 build/score difference only for some remap ops.
             ifelse(action %in% c('quantiles', 'kmeans', "eqwidth"),
@@ -1391,7 +1391,7 @@ executeTransformRemapPerform <- function(vars=NULL,
                 breaks=as.vector(breaks))
     crs$transforms <- union.transform(crs$transforms, vname, lst)
     
-    appendLog("When scoring, use the training data parameters to bin new data.",
+    appendLog(Rtxt("When scoring, use the training data parameters to bin new data."),
               "if (scoring)\n{\n",
               # Print the transforms based on the training parameters
               paste(sprintf(paste('  crs$dataset[["%s"]] <- ',
@@ -1404,7 +1404,7 @@ executeTransformRemapPerform <- function(vars=NULL,
                                   ")", sep="")),
                     collapse="\n"),
               # Comment the transforms based on the test parameters.
-              '\n\n# Alternatively, use the min/max from the new data\n\n',
+              Rtxt("\n\n# Alternatively, use the min/max from the new data.\n\n"),
               paste(sprintf(paste('#  crs$dataset[["%s"]] <- ',
                                   'cut(crs$dataset[["%s"]],\n#    ',
                                   '%s,\n#    include.lowest=TRUE)',
@@ -1529,8 +1529,8 @@ executeTransformRemapPerform <- function(vars=NULL,
   
   # Update the status bar
   
-  setStatusBar(sprintf(paste("Remapped variables added to the dataset",
-                             "with '%s_' prefix."), remap.prefix))
+  setStatusBar(sprintf(Rtxt("Remapped variables added to the dataset",
+                            "with '%s_' prefix."), remap.prefix))
 }
 
 #-----------------------------------------------------------------------
@@ -1550,7 +1550,7 @@ executeTransformCleanupPerform <- function()
 
   if (theWidget("delete_ignored_radiobutton")$getActive())
   {
-    if (variablesHaveChanged("deleting the selected ignored variables")) return()
+    if (variablesHaveChanged(Rtxt("deleting the selected ignored variables"))) return()
     to.delete <- getSelectedVariables("ignore")
   }    
   else if (theWidget("delete_selected_radiobutton")$getActive())
@@ -1567,7 +1567,7 @@ executeTransformCleanupPerform <- function()
 
     if (length(to.delete) == 0)
     {
-      infoDialog("Please select some variables to delete first. Then Execute.")
+      infoDialog(Rtxt("Please select some variables to delete first. Then Execute."))
       return()
     }
   }
@@ -1604,17 +1604,17 @@ executeTransformCleanupPerform <- function()
                          simplifyNumberList(getVariableIndicies(ignore)))
     }
     
-    if (! questionDialog(sprintf(paste("We are about to delete %d",
-                                       "entites from the in-memory dataset."),
-                                 sum(!cases)),
-                         "These have missing values for some of the",
-                         "non-Ignore variables.\n\nAre you sure you",
-                         "want to delete these entites?"))
+    if (! questionDialog(sprintf(Rtxt("We are about to delete %d",
+                                      "entities from the in-memory dataset.",
+                                      "These have missing values for some of the",
+                                      "non-Ignore variables.\n\nAre you sure you",
+                                      "want to delete these entities?"),
+                                 sum(!cases))))
       return()
 
     # Perform the deletions.
   
-    appendLog("Remove rows with missing values", del.cmd)
+    appendLog(Rtxt("Remove rows with missing values."), del.cmd)
     eval(parse(text=del.cmd))
 
   }
@@ -1622,20 +1622,20 @@ executeTransformCleanupPerform <- function()
   if (!theWidget("delete_naents_radiobutton")$getActive())
   {
     
-    if (! questionDialog("We are about to delete the following variables",
-                         "from the in-memory dataset.",
-                         "This will permanently remove them from",
-                         "the memory copy of the data, but will not",
-                         "affect any file system copy.\n\n",
-                         "Delete:",
-                         paste(to.delete, collapse=", "),
-                         "\n\nAre you sure you want to delete these",
-                         "variables?"))
+    if (! questionDialog(sprintf(Rtxt("We are about to delete the following variables",
+                                      "from the in-memory dataset.",
+                                      "This will permanently remove them from",
+                                      "the memory copy of the data, but will not",
+                                      "affect any file system copy.\n\n",
+                                      "Delete: %s",
+                                      "\n\nAre you sure you want to delete these",
+                                      "variables?"),
+                                 paste(to.delete, collapse=", "))))
       return()
 
     del.cmd <- paste(sprintf('crs$dataset$%s <- NULL', to.delete),
                      collapse="\n")
-    del.comment <- "Remove specific variables from the dataset."
+    del.comment <- Rtxt("Remove specific variables from the dataset.")
 
     # Perform the deletions.
   
@@ -1668,5 +1668,5 @@ executeTransformCleanupPerform <- function()
 
   # Update the status bar
 
-  setStatusBar("The deletions from the dataset have been completed.")
+  setStatusBar(Rtxt("The deletions from the dataset have been completed."))
 }

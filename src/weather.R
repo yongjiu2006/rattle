@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-28 11:43:56 Graham Williams>
+# Time-stamp: <2010-03-08 08:30:56 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -97,6 +97,8 @@ acquireWeatherData <- function(write.to.file=FALSE)
   locations <- locations[c("stnID", "name", "stnNum", "latitude", "longitude")]
 
   write.csv(locations, "weather/locations.csv")
+  locationsAUS <- locations
+  save(locationsAUS, file="locationsAUS.RData")
   
   # 090327 We download each dataset, and keep one constant for the
   # book. The "weatherCanberra", "weatherSydney", ... datasets are

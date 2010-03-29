@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-04 09:19:49 Graham Williams>
+# Time-stamp: <2010-03-07 15:37:58 Graham Williams>
 #
 # Reporting support
 #
@@ -20,6 +20,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+# TODO
+# 100307 Consider moving to using reporttools and using Sweave instead
 
 on_report_toolbutton_clicked <- function(action, window)
 {
@@ -96,14 +99,19 @@ reportDataTab <- function()
   if (file.exists("../odf/data_summary.odt"))
   {
     summary <- "../odf/data_summary.odt" # For Testing
-    warning("Rattle Report is using local template ../odf", immediate.=TRUE)
+    warning(Rtxt("Rattle Report is using local template ../odf"), immediate.=TRUE)
   } 
   else
     summary <- system.file("odt", "data_summary.odt", package="rattle")
 
   ofile <- paste(getwd(), "data_summary_rattle.odt", sep="/")
-  
-  odfWeave(summary, ofile, control=odfWeaveControl(verbose=FALSE))
+
+  cmd <- sprintf('odfWeave(summary, "%s", control=odfWeaveControl(verbose=FALSE))',
+                 ofile)
+
+  appendLog(Rtxt("Generate a data report."), cmd)
+
+  eval(parse(text=cmd))
 
   setStatusBar(sprintf("Report written to %s.", ofile))
 

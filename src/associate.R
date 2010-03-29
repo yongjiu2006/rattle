@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-14 08:54:12 Graham Williams>
+# Time-stamp: <2010-03-29 05:16:39 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -20,6 +20,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+# TODO
+#
+# 100308 Implement arulesSequences
 
 ########################################################################
 #
@@ -69,7 +74,7 @@ executeAssociateTab <- function()
 
   # If it looks like the DATA page has not been executed, complain..
 
-  if (variablesHaveChanged()) return()
+  if (variablesHaveChanged(Rtxt("identifying association rules"))) return()
 
   # Check if sampling needs executing.
 
@@ -228,7 +233,8 @@ plotAssociateFrequencies <- function()
 
   ## If it looks like the VARIABLES page has not been executed, complain..
 
-  if (variablesHaveChanged()) return()
+  if (variablesHaveChanged(Rtxt("building and then plotting association rules")))
+    return(FALSE)
 
   ## Check if sampling needs executing.
 
@@ -237,20 +243,20 @@ plotAssociateFrequencies <- function()
   baskets <- theWidget("associate_baskets_checkbutton")$getActive()
   if (baskets && length(crs$ident) != 1)
   {
-    errorDialog("Exactly one variable must be identified as an Ident",
-                "in the Data tab to be used as",
-                "the identifier of the transactions.",
-                "I found", length(crs$ident), "variables.",
-                "The entities need to be aggregated by the Ident to",
-                "create the baskets for association analysis.")
+    errorDialog(sprintf(Rtxt("Exactly one variable must be identified as an Ident",
+                             "in the Data tab to be used as the identifier of the transactions.",
+                             "There were %s variables found.",
+                             "The entities need to be aggregated by the Ident to",
+                             "create the baskets for association analysis."),
+                        length(crs$ident)))
     return()
   }
   if (baskets && length(crs$target) != 1)
   {
-    errorDialog("You need to specify a Target variable in the Data tab.",
-                "This vairable then identifies the items associated with each",
-                "basket or transaction in the analysis. Each basket or",
-                "transaction is uniquely identified using the Ident variable.")
+    errorDialog(Rtxt("You need to specify a Target variable in the Data tab.",
+                     "This vairable then identifies the items associated with each",
+                     "basket or transaction in the analysis. Each basket or",
+                     "transaction is uniquely identified using the Ident variable."))
     return()
   }
 
@@ -259,21 +265,21 @@ plotAssociateFrequencies <- function()
   include <- getCategoricVariables()
   if (! baskets && length(include) == 0)
   {
-    errorDialog("Associations are calculated only for categoric variables.",
-                "No categorical variables were found in the dataset",
-                "from amongst those having an Input role.",
-                "\n\nIf instead you wanted a basket analysis with the Target variable",
-                "listing the items, and the Ident variable identifying",
-                "the baskets, then please click the Baskets button.")
+    errorDialog(Rtxt("Associations are calculated only for categoric variables.",
+                     "No categorical variables were found in the dataset",
+                     "from amongst those having an Input role.\n\n",
+                     "If instead you wanted a basket analysis with the Target variable",
+                     "listing the items, and the Ident variable identifying",
+                     "the baskets, then please click the Baskets button."))
     return()
   }
 
   ## Ensure the arules library is available and loaded.
 
-  if (! packageIsAvailable("arules", "generate associations")) return()
-  startLog("RELATIVE FREQUENCIES PLOT")
+  if (! packageIsAvailable("arules", Rtxt("generate associations"))) return()
+  startLog(Rtxt("Relative Frequencies Plot"))
   lib.cmd <- "require(arules, quietly=TRUE)"
-  appendLog("Association rules are implemented in the arules package.", lib.cmd)
+  appendLog(Rtxt("Association rules are implemented in the 'arules' package."), lib.cmd)
   eval(parse(text=lib.cmd))
  
   # Required information
@@ -299,7 +305,7 @@ plotAssociateFrequencies <- function()
                              sprintf('crs$dataset[%s,%s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
-  appendLog("Generate a transactions dataset.", transaction.cmd)
+  appendLog(Rtxt("Generate a transactions dataset."), transaction.cmd)
   eval(parse(text=transaction.cmd))
 
   # Now plot the relative frequencies.
@@ -307,10 +313,10 @@ plotAssociateFrequencies <- function()
   plot.cmd <- paste("itemFrequencyPlot(crs$transactions, support=",
                     support, ", cex=0.8)", sep="")
   newPlot()
-  appendLog("Plot the relative frequecies.", plot.cmd)
+  appendLog(Rtxt("Plot the relative frequencies."), plot.cmd)
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Generated the relative frequency plot.")
+  setStatusBar(Rtxt("Generated the relative frequency plot."))
 }
 
 listAssociateRules <- function()
@@ -323,8 +329,8 @@ listAssociateRules <- function()
   
   if (is.null(crs$apriori))
   {
-    errorDialog("You first need to generate the association rules.",
-                "Perhaps you need to click the Execute button.")
+    errorDialog(Rtxt("You first need to generate the association rules.",
+                     "Perhaps you need to click the Execute button."))
     return()
   }
 
@@ -356,7 +362,7 @@ listAssociateRules <- function()
 #                          lift, '),  by="confidence")')
 #    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
 #                          lift, '),  by="confidence"))')
-  appendLog("List rules.", summary1.cmd)
+  appendLog(Rtxt("List rules."), summary1.cmd)
   # print(summary1.cmd)
   ## This returns "" 080429 when "lift > 1.3" is included in the
   ## subset command.
@@ -369,7 +375,7 @@ listAssociateRules <- function()
 ##   close(zz)
 ##   result <- paste(commandsink, collapse="\n")
   # print(result) # DEBUG
-  appendTextview(TV, "Top Rules\n\n", result, "\n")
+  appendTextview(TV, Rtxt("Top Rules"), "\n\n", result, "\n")
                  #"\n\nKnown Bug: If nothing appears above, ",
                  #"set the Lift to 0.0\n")
 #                 paste('inspect(SORT(subset(crs$apriori, lift >',
@@ -381,8 +387,8 @@ listAssociateRules <- function()
 #  appendLog("List all rules.", summary.cmd)
 #  appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
 
-  setStatusBar(paste("Finished listing the rules",
-                     "- scroll the text window to view the rules."))
+  setStatusBar(Rtxt("Finished listing the rules",
+                    "- scroll the text window to view the rules."))
 }
 
 ########################################################################
@@ -400,24 +406,24 @@ exportAssociateTab <- function()
   
   if (is.null(crs$apriori))
   {
-    errorDialog("No association rules model is available. Be sure to build",
-                "the model before trying to export it! You will need",
-                "to press the Execute button (F2) in order to build the",
-                "model.")
+    errorDialog(Rtxt("No association rules model is available. Be sure to build",
+                     "the model before trying to export it! You will need",
+                     "to press the Execute button (F2) in order to build the",
+                     "model."))
     return()
   }
 
   # Require the pmml package
   
   lib.cmd <- "require(pmml, quietly=TRUE)"
-  if (! packageIsAvailable("pmml", "export associate rules")) return(FALSE)
-  appendLog("Load the PMML package to export association rules.", lib.cmd)
+  if (! packageIsAvailable("pmml", Rtxt("export association rules"))) return(FALSE)
+  appendLog(Rtxt("Load the PMML package to export association rules."), lib.cmd)
   # Load the package unless we already have a pmml defined (through source).
   if (! exists("pmml")) eval(parse(text=lib.cmd))
   
   # Obtain filename to write the PMML to.
   
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+  dialog <- gtkFileChooserDialog(Rtxt("Export PMML"), NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
@@ -426,12 +432,12 @@ exportAssociateTab <- function()
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_arules.xml", sep=""))
 
   ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
+  ff$setName(Rtxt("PMML Files"))
   ff$addPattern("*.xml")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   
@@ -453,9 +459,9 @@ exportAssociateTab <- function()
   # i.e., not inside the string thaat is being parsed.
 
   pmml.cmd <- 'pmml(crs$apriori)'
-  appendLog("Export association rules as PMML.",
+  appendLog(Rtxt("Export association rules as PMML."),
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
 
-  setStatusBar("The PMML file", save.name, "has been written.")
+  setStatusBar(sprintf(Rtxt("The PMML file '%s' has been written."), save.name))
 }

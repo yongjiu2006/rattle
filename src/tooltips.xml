@@ -43,9 +43,12 @@
     the CSV file to be loaded.</tooltip>
   <tooltip widget="data_filechooserbutton">Open a file chooser to
     select a dataset file to load.</tooltip>
-  <tooltip widget="data_separator_entry">The default column separator
-    is a comma, but tabs (\t) are also common, often in .txt
-    files.</tooltip>
+  <tooltip widget="data_separator_entry">The default field separator
+    is a comma, but the semicolon (;) is common in Europe where the
+    comma is the decimal point. Another common separator is the tab
+    (\t) as used in .txt files.</tooltip>
+  <tooltip widget="data_decimal_entry">The default decimal point is a
+    period, but the comma (,) is common in Europe.</tooltip>
   <tooltip widget="data_header_checkbutton">Indicates whether the
     first row of the datafile is the names of the columns. Otherwise,
     random names will be made up.</tooltip>
@@ -100,6 +103,10 @@
     numeric for Regression.</tooltip>
   <tooltip widget="label1">Load a dataset.</tooltip>
   <tooltip widget="summary_radiobutton">Summarise the dataset.</tooltip>
+  <tooltip widget="explore_distr_radiobutton">Generate various plots
+  to explore the distribution of the data.</tooltip>
+  <tooltip widget="explore_interactive_radiobutton">Interactively
+    explore the data.</tooltip>
   <tooltip widget="explore_interactive_ggobi_radiobutton">Run the
     external GGobi data visualisation application, if
     available.</tooltip>
@@ -114,16 +121,19 @@
     factors.</tooltip>
   <tooltip widget="describe_checkbutton">Concise description including
     missing, unique, sum, mean, and the lowest and highest
-    values. </tooltip>
+    values.</tooltip>
   <tooltip widget="basics_checkbutton">Various basic measures of
     numeric data, including missing, min, max, quartiles, mean, sum,
-    skewness, kurtosis. </tooltip>
+    skewness, kurtosis.</tooltip>
   <tooltip widget="kurtosis_checkbutton">Summarise just the kurtosis -
     useful for comparing between all numeric variables at
     once.</tooltip>
   <tooltip widget="skewness_checkbutton">Summarise just the skewness -
     useful for comparing between all numeric variables at
     once.</tooltip>
+  <tooltip widget="missing_checkbutton">Generate a table that records
+    the pattern of missing values reports the frequency of each
+    pattern.</tooltip>
   <tooltip widget="explore_correlation_na_checkbutton">Whether we should
     display the correlation between missing values.</tooltip>
   <tooltip widget="benford_bars_checkbutton">Generate a bar plot
@@ -234,6 +244,9 @@
     kmeans algorithm.</tooltip>
   <tooltip widget="hclust_radiobutton">Build an agglomerative
     hierarchical cluster.</tooltip>
+  <tooltip widget="biclust_radiobutton">Cluster by identifying
+    suitable subsets of both the variables and the
+    observations.</tooltip>
   <tooltip widget="kmeans_seed_button">Update the seed with a random
     number.</tooltip>
   <tooltip widget="kmeans_seed_spinbutton">Random number generator

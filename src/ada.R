@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-01-10 09:10:08 Graham Williams>
+# Time-stamp: <2010-03-27 08:45:57 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -295,9 +295,9 @@ plotImportanceAda <- function()
 
   if (is.null(crs$ada))
   {
-    errorDialog("E135: Should not be here.",
-                "There is no ADA model and attempting to plot importance.",
-                "The button should not be active.", crv$support.msg)
+    errorDialog(Rtxt("E135: Should not be here.",
+                     "There is no ADA model and attempting to plot importance.",
+                     "The button should not be active."), crv$support.msg)
     return()
   }
 
@@ -305,10 +305,10 @@ plotImportanceAda <- function()
   
   newPlot()
   plot.cmd <- "varplot(crs$ada)"
-  appendLog("Plot the relative importance of the variables.", plot.cmd)
+  appendLog(Rtxt("Plot the relative importance of the variables."), plot.cmd)
   eval(parse(text=plot.cmd))
 
-  setStatusBar("ADA Variable Importance has been plotted.")
+  setStatusBar(Rtxt("Variable Importance has been plotted."))
 }
   
 plotErrorsAda <- function()
@@ -320,9 +320,8 @@ plotErrorsAda <- function()
 
   if (is.null(crs$ada))
   {
-    errorDialog("E136: Should not be here.",
-                "There is no ADA model and attempting to plot error.",
-                "The button should not be active.", crv$support.msg)
+    errorDialog(Rtxt("E136: There is no ADA model and attempting to plot error.",
+                     "The button should not be active."), crv$support.msg)
     return()
   }
 
@@ -330,10 +329,10 @@ plotErrorsAda <- function()
   
   newPlot()
   plot.cmd <- "plot(crs$ada)" #, kappa=TRUE)"
-  appendLog("Plot the error rate as we increase the number of trees.", plot.cmd)
+  appendLog(Rtxt("Plot the error rate as we increase the number of trees."), plot.cmd)
   eval(parse(text=plot.cmd))
 
-  setStatusBar("Ada errors has been plotted.")
+  setStatusBar(Rtxt("Ada errors has been plotted."))
 }
 
 listTreesAda <- function(model, trees=0)
@@ -343,7 +342,7 @@ listTreesAda <- function(model, trees=0)
   if (trees == 0) trees=1:ntrees
   for (i in trees)
   {
-    cat(sprintf("\nTree %d of %d: \n", i, ntrees))
+    cat(sprintf(Rtxt("\nTree %d of %d:\n"), i, ntrees))
     print(model$model$trees[[i]])
   }
 }
@@ -359,22 +358,22 @@ drawTreesAda <- function(model,
   {
     newPlot()
     drawTreeNodes(model$model$trees[[i]])
-    eval(parse(text=genPlotTitleCmd(sprintf("Tree %d of %d%s", i,
+    eval(parse(text=genPlotTitleCmd(sprintf(Rtxt("Tree %d of %d%s"), i,
                  ntrees, title))))
   }
 }
 
 displayHelpAda <- function()
 {
-  if (showHelpPlus("Boosting builds multiple, but generally simple, models.
-The models might be decision trees that have just one split - these
-are often called decision stumps. After building each model any
-training entities that the model misclassifies are boosted - they are
-given more weight or more importance in the next model building
-step. The resulting model is then the weighted sum of the ensemble of
-models built.
-<<>>
-The ada package is used to build the boosted model."))
+  if (showHelpPlus(Rtxt("Boosting builds multiple, but generally simple, models. The",
+                        "models might be decision trees that have just one split -",
+                        "these are often called decision stumps. After building each",
+                        "model any training entities that the model misclassifies",
+                        "are boosted - they are given more weight or more importance",
+                        "in the next model building step. The resulting model is",
+                        "then the weighted sum of the ensemble of models built.",
+                        "<<>>",
+                        "The ada package is used to build the boosted model.")))
     {
       require(ada, quietly=TRUE)
       popupTextviewHelpWindow("ada")

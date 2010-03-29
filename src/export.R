@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-28 12:14:14 Graham Williams>
+# Time-stamp: <2010-03-12 22:15:11 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -73,8 +73,8 @@ dispatchExportButton <- function()
     # the same as clicking the Execute button.
     executeEvaluateTab()
   else
-    infoDialog("No export functionality is available for the",
-               ct, "tab. Nothing done.")
+    infoDialog(sprintf(Rtxt("No export functionality is available for the",
+                            "%s tab. Nothing done."), ct))
 }
 
 ## This is handled by the Cairo device save button now. Might want to
@@ -219,7 +219,7 @@ getExportSaveName <- function(mtype)
 
   dialog <- dialogGUI$getWidget("export_filechooserdialog")
 
-  if (crv$export.to.c.available) dialog$setTitle("Export C or PMML")
+  if (crv$export.to.c.available) dialog$setTitle(Rtxt("Export C or PMML"))
   #dialog$setIcon(crv$icon)
   
   if(not.null(crs$dataname))
@@ -230,18 +230,18 @@ getExportSaveName <- function(mtype)
   if (crv$export.to.c.available)
   {
     ff <- gtkFileFilterNew()
-    ff$setName("C Files")
+    ff$setName(Rtxt("C Files"))
     ff$addPattern("*.c")
     dialog$addFilter(ff)
   }
 
   ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
+  ff$setName(Rtxt("PMML Files"))
   ff$addPattern("*.xml")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
 

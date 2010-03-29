@@ -95,7 +95,7 @@
   Global_rattleGUI <<- NULL
   viewdataGUI <<- NULL
   on_aboutdialog_response <<- NULL
-
+  
 }
 
 # 080417 The R manual for .onLoad says to use .onAttach for startup
