@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-28 21:46:18 Graham Williams>
+# Time-stamp: <2010-03-30 11:22:45 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -618,8 +618,7 @@ executeEvaluateTab <- function()
       read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, encoding="%s")',
                           filename, nastring, crv$csv.encoding)
 
-      appendLog(Rtxt("Read a dataset from file for testing the model."),
-                read.cmd)
+      appendLog(Rtxt("Read a dataset from file for testing the model."), read.cmd)
       eval(parse(text=read.cmd))
 
       testname <- basename(filename)
@@ -1179,9 +1178,8 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
 
     # Log the R commands and execute them.
 
-    appendLog(crv$start.log.comment,
-              sprintf(Rtxt("Generate an Error Matrix for the %s model."),
-                      commonName(mtype)), no.start=TRUE)
+    appendLog(sprintf(Rtxt("Generate an Error Matrix for the %s model."),
+                      commonName(mtype)))
     appendLog(sprintf(Rtxt("Obtain the response from the %s model."),
                       commonName(mtype)), respcmd[[mtype]])
 
@@ -1697,7 +1695,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   else
     opar <- par(lwd=2)
   plot(c(0,100), c(0,100), type='l', col=1,
-       xlab="Caseload (%)", ylab="Performance (%)",
+       xlab=Rtxt("Caseload (%)"), ylab=Rtxt("Performance (%)"),
        ylim=c(0,100), xlim=c(0,100))
   grid.plot()
   if (not.null(title))
@@ -1740,13 +1738,13 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   col <- c(col,3,4)
   if (not.null(optimal))
   {
-    legend <- c(legend, "Optimal")
+    legend <- c(legend, Rtxt("Optimal"))
     lty <- c(lty,6)
     col <- c(col,"plum")
   }
   if (not.null(chosen))
   {
-    legend <- c(legend, "Chosen")
+    legend <- c(legend, Rtxt("Chosen"))
     lty <- c(lty,6)
     col <- c(col,"grey")
   }
@@ -1757,7 +1755,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   {
     lifts <- seq(pr[1], 100, pr[1])
     axis(4, at=lifts, labels=seq(1, length(lifts)))
-    mtext("Lift", side=4, line=3)
+    mtext(Rtxt("Lift"), side=4, line=3)
   }
 
   #
@@ -2422,20 +2420,20 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
       # after the data has been editted. Tom is fixing this up for
       # RGtk2DfEdit so I will be able to start using it then.
       require(RGtk2DfEdit)
-      infoDialog(Rtxt("RGtk2DfEdit will be used to edit",
-                      "a data frame called 'rattle.entered.dataset'. Once you have",
-                      "edited the dataset and the window is closed the dataset",
-                      "will be scored."))
-      dsname <- "rattle.entered.dataset"
+#      infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
+#                      "a data frame called 'rattle.entered.dataset'. Once you have",
+#                      "edited the dataset and the window is closed the dataset",
+#                      "will be scored."))
+      dsname <- ".rattle.entered.dataset"
       if (exists(dsname))
-        rattle.edit.obj <<- dfedit(rattle.entered.dataset, size=c(800, 400),
-                                   pretty_print=TRUE)
+        rattle.edit.obj <- dfedit(rattle.entered.dataset, size=c(800, 400),
+                                  pretty_print=TRUE)
       else
-        rattle.edit.obj <<- dfedit(crs$dataset[nrow(crs$dataset),
-                                               c(crs$ident, crs$input, crs$target)],
-                                   size=c(800, 400), dataset.name=dsname,
-                                   pretty_print=TRUE)
-
+        rattle.edit.obj <- dfedit(crs$dataset[nrow(crs$dataset),
+                                              c(crs$ident, crs$input, crs$target)],
+                                  size=c(800, 400), dataset.name=dsname,
+                                  pretty_print=TRUE)
+      
       probcmd <- lapply(probcmd, function(x) sub("crs\\$dataset", dsname, x))
       respcmd <- lapply(respcmd, function(x) sub("crs\\$dataset", dsname, x))
       testset <- lapply(testset, function(x) sub("crs\\$dataset", dsname, x))

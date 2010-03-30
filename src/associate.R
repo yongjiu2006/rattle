@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-29 05:16:39 Graham Williams>
+# Time-stamp: <2010-03-30 11:09:13 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -53,7 +53,7 @@ on_associate_rules_button_clicked <-  function(action, window)
 
 generateAprioriSummary <- function(ap)
 {
- result <- sprintf(Rtxt("Number of Rules: %d\n\n"), length(ap))
+ result <- sprintf(paste(Rtxt("Number of Rules: %d"), "\n\n"), length(ap))
  # 080726 Started failing.... no size for ap@lhs
  ## result <- paste(result, "Rule Length Distribution (LHS + RHS):\n\n", sep="")
  ## pp <- table(size(ap@lhs)+size(ap@rhs))
@@ -219,7 +219,8 @@ executeAssociateTab <- function()
                  "\n", Rtxt("Summary of the Measures of Interestingness"), "\n\n",
                  collectOutput(summary.cmd, use.print=TRUE))
   
-  appendTextview(TV, Rtxt("Summary of the execution of the apriori command.\n"),
+  appendTextview(TV, Rtxt("Summary of the execution of the apriori command."),
+                 "\n",
                  cmd.output)
   
   setStatusBar(Rtxt("Generated the association rules."))

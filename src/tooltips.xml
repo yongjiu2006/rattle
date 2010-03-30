@@ -134,6 +134,9 @@
   <tooltip widget="missing_checkbutton">Generate a table that records
     the pattern of missing values reports the frequency of each
     pattern.</tooltip>
+  <tooltip widget="explore_crosstab_checkbutton">Generate cross
+    tabulations for each categoric variable with the target
+    variable.</tooltip>
   <tooltip widget="explore_correlation_na_checkbutton">Whether we should
     display the correlation between missing values.</tooltip>
   <tooltip widget="benford_bars_checkbutton">Generate a bar plot

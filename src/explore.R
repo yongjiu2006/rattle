@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-25 21:42:42 Graham Williams>
+# Time-stamp: <2010-03-30 21:38:25 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -142,11 +142,13 @@ executeExploreSummary <- function(dataset)
   do.kurtosis <- theWidget("kurtosis_checkbutton")$getActive()
   do.skewness <- theWidget("skewness_checkbutton")$getActive()
   do.missing  <- theWidget("missing_checkbutton")$getActive()
+  do.crosstab <- theWidget("explore_crosstab_checkbutton")$getActive()
 
   # Make sure something has been selected.
   
   if (! (do.summary || do.describe || do.basics ||
-         do.kurtosis || do.skewness || do.missing))
+         do.kurtosis || do.skewness || do.missing ||
+         do.crosstab))
   {
     infoDialog(Rtxt("No summary type has been selected.",
                     "Please click at least one checkbox."))
@@ -270,11 +272,12 @@ executeExploreSummary <- function(dataset)
 
         appendLog(Rtxt("Summarise the kurtosis of the numeric data."), kurtosis.cmd)
         appendTextview(TV,
-                       Rtxt("Kurtosis for each numeric variable of the dataset.\n",
-                             "Larger values mean sharper peaks and flatter tails.\n",
-                             "Positive values indicate an acute peak around the mean.\n",
-                             "Negative values indicate a smaller peak around ",
-                             "the mean.\n\n"),
+                       Rtxt("Kurtosis for each numeric variable of the dataset.",
+                            "\nLarger values mean sharper peaks and flatter tails.",
+                            "\nPositive values indicate an acute peak around the mean.",
+                            "\nNegative values indicate a smaller peak around ",
+                            "the mean."),
+                       "\n\n",
                        collectOutput(kurtosis.cmd, TRUE))
       }
 
@@ -288,7 +291,8 @@ executeExploreSummary <- function(dataset)
         appendLog(Rtxt("Summarise the skewness of the numeric data."), skewness.cmd)
         appendTextview(TV,
                        Rtxt("Skewness for each numeric variable of the dataset.",
-                            "\nPositive means the right tail is longer.\n\n"),
+                            "\nPositive means the right tail is longer."),
+                       "\n\n",
                        collectOutput(skewness.cmd, TRUE))
       }
     }
@@ -322,12 +326,40 @@ executeExploreSummary <- function(dataset)
       appendLog(Rtxt("Generate a summary of the missing values in the dataset."),
                 summary.cmd)
       appendTextview(TV,
-                     Rtxt("Missing Value Summary\n\n"),
+                     Rtxt("Missing Value Summary"),
+                     "\n\n",
                      collectOutput(summary.cmd, TRUE))
     }
   }
 
-  ## Report completion to the user through the Status Bar.
+  if (do.crosstab)
+  {
+    if (packageIsAvailable("descr", Rtxt("produce a cross tabulation")))
+    {
+      lib.cmd <- "require(descr, quietly=TRUE)"
+      appendLog(packageProvides("CrossTable", "descr"), lib.cmd)
+      eval(parse(text=lib.cmd))
+      crosstab.cmd <- paste(sprintf("for (i in %s)", getCategoricVariables()),
+                            "\n{",
+                            "\n",
+                            sprintf(paste(" cat(sprintf('%s',",
+                                          "names(crs$dataset)[i], crs$target))"),
+                                    Rtxt("CrossTab of %s by target variable %s")),
+                            "\n  print(CrossTable(crs$dataset[[i]],",
+                            "crs$dataset[[crs$target]], expected=TRUE, format='SAS'))",
+                            "\n  cat('========================================\n\n')",
+                            "\n}")
+      appendLog(Rtxt("Generate cross tabulations for categoric data."),
+                crosstab.cmd)
+      appendTextview(TV,
+                     Rtxt("Cross tabulations:"),
+                     "\n\n",
+                     collectOutput(crosstab.cmd, TRUE))
+      
+    }
+  }
+  
+  # Report completion to the user through the Status Bar.
   
   setStatusBar(Rtxt("Data summary generated."))
 }

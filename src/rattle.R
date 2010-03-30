@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-28 18:42:07 Graham Williams>
+# Time-stamp: <2010-03-30 10:57:02 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 06 Mar 2010"
+VERSION.DATE <- "Released 29 Mar 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1758,14 +1758,14 @@ on_plot_save_button_clicked <- function(action)
   # This is being fixed by Michael Lawrence.
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  dev.num <- as.integer(sub(".* ", "", ttl))
   savePlotToFileGui(dev.num)
 }
 
 on_plot_copy_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  dev.num <- as.integer(sub(".* ", "", ttl))
   startLog(Rtxt("Copy the plot to the clipboard."))
   appendLog(sprintf(Rtxt("Copy the plot on device %d to the clipboard."), dev.num),
             sprintf('copyPlotToClipboard(%s)', dev.num))
@@ -1782,7 +1782,7 @@ on_plot_print_button_clicked <- function(action)
   ## right device.
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub("Rattle: Plot ", "", ttl))
+  dev.num <- as.integer(sub(".* ", "", ttl))
   startLog(Rtxt("Print the plot."))
   appendLog(sprintf(Rtxt("Send the plot on device %d to the printer."), dev.num),
             sprintf('printPlot(%s)', dev.num))
@@ -1795,7 +1795,7 @@ on_plot_print_button_clicked <- function(action)
 on_plot_close_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub(paste(crv$appname, ": Plot ", sep=""), "", ttl))
+  devnum <- as.integer(sub(".* ", "", ttl))
   dev.off(devnum)
   pw <- action$getParentWindow()
   pw$destroy()
@@ -1820,7 +1820,8 @@ newPlot <- function(pcnt=1)
     if (inherits(result, "try-error"))
       plotGUI <- gladeXMLNew("rattle.glade", root="plot_window", domain="R-rattle")
     else
-      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"), root="plot_window", domain="R-rattle")
+      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+                             root="plot_window", domain="R-rattle")
     gladeXMLSignalAutoconnect(plotGUI)
     da <- plotGUI$getWidget("drawingarea")
     asCairoDevice(da)

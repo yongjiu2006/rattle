@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-28 20:59:33 Graham Williams>
+# Time-stamp: <2010-03-30 11:18:23 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -341,7 +341,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   # needs to go here.
   
   resetTextview(TV)
-  addTextview(TV, sprintf(Rtxt("Summary of the %s model:\n\n"), commonName(crv$RF)),
+  addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
+              "\n\n",
               collectOutput(summary.cmd, TRUE))
 
   result <- try(collectOutput(varimp.cmd), silent=TRUE)
@@ -354,8 +355,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   
   addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result)
 
-  addTextview(TV, sprintf(Rtxt("\n\nDisplay the Model",
-                               "\n\nTo view model 5, for example, execute the",
+  addTextview(TV, sprintf(Rtxt("\n \nDisplay the Model",
+                               "\n \nTo view model 5, for example, execute the",
                                "command \n  %s\nin the R console. Generating",
                                "all models will take quite some time.\n"),
                           ifelse(traditional,
@@ -733,7 +734,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
   
   ## Initialise the output
 
-  cat(sprintf("%sRandom Forest Model %d\n\n", comment, n))
+  cat(sprintf("%sRandom Forest Model %d", comment, n), "\n\n")
 
   ## Generate a simple form for each rule.
 
@@ -758,7 +759,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
 
     if (! is.null(include.class) && target %notin% include.class) next()
     
-    cat(sprintf("%sTree %d Rule %d Node %d %s\n\n",
+    cat(sprintf("%sTree %d Rule %d Node %d %s\n \n",
                 comment, n, i, nodenum,
                 ifelse(is.null(target), "Regression (to do - extract predicted value)",
                        paste("Decision", target))))

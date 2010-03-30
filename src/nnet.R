@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-25 22:12:55 Graham Williams>
+# Time-stamp: <2010-03-29 20:23:01 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -147,6 +147,7 @@ executeModelNNet <- function()
 
   appendLog("Build the NNet model.", model.cmd)
   result <- try(eval(parse(text=model.cmd)), silent=TRUE)
+  time.taken <- Sys.time() - start.time
   if (inherits(result, "try-error"))
   {
     if (any(grep("too many", result)))
