@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-29 05:52:04 Graham Williams>
+# Time-stamp: <2010-03-30 07:35:49 Graham Williams>
 #
 # MODEL TAB
 #
@@ -553,29 +553,29 @@ executeModelTab <- function()
   if ((categoricTarget() && build.all)
       || currentModelTab() %in% c(crv$SVM, crv$KSVM))
   {
-    setStatusBar("Building", commonName(crv$KSVM), "model ...")
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$KSVM)))
     if (executeModelSVM())
       theWidget("evaluate_ksvm_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(crv$KSVM), "model ... failed.")
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$KSVM)))
 
   }
   if (build.all || currentModelTab() == crv$GLM)
   {
-    setStatusBar("Building", commonName(crv$GLM), "model ...")
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$GLM)))
     if (executeModelGLM())
       theWidget("evaluate_glm_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(crv$GLM), "model ... failed.")
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$GLM)))
   }
   if ((theWidget("nnet_radiobutton")$isSensitive() && build.all)
       || currentModelTab() == crv$NNET)
   {
-    setStatusBar("Building", commonName(crv$NNET), "model ...")
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$NNET)))
     if (executeModelNNet())
       theWidget("evaluate_nnet_checkbutton")$setActive(TRUE)
     else
-      setStatusBar("Building", commonName(crv$NNET), "model ... failed.")
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$NNET)))
   }
   if (currentModelTab() == crv$SURVIVAL)
   {
@@ -588,7 +588,7 @@ executeModelTab <- function()
                      if (including) included,
                      if (subsetting) "]",
                      sep="")
-    setStatusBar("Building", commonName(crv$SURVIVAL), "model ...")
+    setStatusBar(sprintf(Rtxt("Building %s model ..."), commonName(crv$SURVIVAL)))
       # ?? survfit(Surv(RISK_MM, as.numeric(RainTomorrow)) ~ MinTemp, data=crs$dataset)
     formula <- sprintf("Surv(%s, %s) ~ %s",
                        crs$target, crs$risk, paste(crs$input, collapse=" + "))
@@ -604,13 +604,14 @@ executeModelTab <- function()
       theWidget("evaluate_survival_checkbutton")$setActive(TRUE)
     }
     else
-      setStatusBar("Building", commonName(crv$SURVIVAL), "model ... failed.")
+      setStatusBar(sprintf(Rtxt("Building %s model ... failed."),
+                           commonName(crv$SURVIVAL)))
   }
   
   if (build.all)
   {
     time.taken <- Sys.time()-start.time
-    time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
+    time.msg <- sprintf(Rtxt("Time taken: %0.2f %s"), time.taken,
                         attr(time.taken, "units"))
     setStatusBar(Rtxt("All models have been generated."), time.msg)
   }
@@ -780,7 +781,7 @@ executeModelGLM <- function()
       car.avaiable <- FALSE
     else
     {
-      appendLog(Rtxt("Sumarise the multinomial model using the car package."), lib.cmd)
+      appendLog(Rtxt("Summarise the multinomial model using the car package."), lib.cmd)
       eval(parse(text=lib.cmd))
     }
     
@@ -1195,15 +1196,12 @@ executeModelSVM <- function()
     else
       crs$smodel <- union(crs$smodel, crv$SVM)
 
-  ## Finish up.
+  # Finish up.
 
   time.taken <- Sys.time()-start.time
-  time.msg <- sprintf("Time taken: %0.2f %s", time.taken,
-                      attr(time.taken, "units"))
-  addTextview(TV, "\n", time.msg, textviewSeparator())
-  appendLog(time.msg)
-  setStatusBar(sprintf(Rtxt("A %s model has been generated."),
-                       ifelse(useKernlab, crv$KSVM, crv$SVM)), time.msg)
+
+  reportTimeTaken(TV, time.taken, ifelse(useKernlab, crv$KSVM, crv$SVM))
+
   return(TRUE)
 }
 
@@ -1230,7 +1228,7 @@ exportSVMModel <- function()
   
   # Obtain filename to write the PMML to.
   
-  dialog <- gtkFileChooserDialog("Export PMML", NULL, "save",
+  dialog <- gtkFileChooserDialog(Rtxt("Export PMML"), NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
@@ -1239,12 +1237,12 @@ exportSVMModel <- function()
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_ksvm.xml", sep=""))
 
   ff <- gtkFileFilterNew()
-  ff$setName("PMML Files")
+  ff$setName(Rtxt("PMML Files"))
   ff$addPattern("*.xml")
   dialog$addFilter(ff)
 
   ff <- gtkFileFilterNew()
-  ff$setName("All Files")
+  ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
   

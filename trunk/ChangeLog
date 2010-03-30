@@ -1,3 +1,19 @@
+rattle (2.5.26) unstable; urgency=low
+
+  * Add Cross Tab option to Explore tab to generate cross tabulations of
+    each categoric variable by the target variable. (Luke Lake)
+
+  * Bug fix - improve how we obtain the plot number from the title,
+    particularly in the context of translations.
+  
+  * Further translation markup.
+
+  * Clean up the use of dfedit.
+  
+  * Minor improvement to spacing in Log tab.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Tue, 30 Mar 2010 21:37:29 +1100
+
 rattle (2.5.25) unstable; urgency=low
 
   * Start using the RGtk2DfEdit for the View and Edit buttons of the Data

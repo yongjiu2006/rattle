@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-27 14:52:48 Graham Williams>
+# Time-stamp: <2010-03-30 07:22:31 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -38,26 +38,37 @@ initiateLog <- function()
                          crv$appname, crv$version, Sys.info()["user"]),
                  #sprintf("# Started %s by %s\n\n", Sys.time(), Sys.info()["user"]),
                  "\n\n",
-                 Rtxt("# Export this log textview to a file using the Export button or the Tools",
-                      "\n# menu to save a log of all activity. This facilitates repeatability. Exporting",
-                      "\n# to file 'myrf01.R', for example, allows us to the type in the R Console",
-                      "\n# the command source('myrf01.R') to repeat the process automatically.",
-                      "\n# Generally, we may want to edit the file to suit our needs. We can also directly",
-                      "\n# edit this current log textview to record additional information before exporting.",
-                      "\n#",
+                 Rtxt("# Export this log textview to a file using the Export",
+                      "button or the Tools",
+                      "\n# menu to save a log of all activity. This facilitates",
+                      "repeatability. Exporting",
+                      "\n# to file 'myrf01.R', for example, allows us to the",
+                      "type in the R Console",
+                      "\n# the command source('myrf01.R') to repeat the",
+                      "process automatically.",
+                      "\n# Generally, we may want to edit the file to",
+                      "suit our needs. We can also directly",
+                      "\n# edit this current log textview to record",
+                      "additional information before exporting.",
+                      "\n",
                       "\n# Saving and loading projects also retains this log."),
                  "\n\n",
                  crv$library.command,
                  "\n\n",
-                 Rtxt("# This log generally records the process of building a model. However, with very",
-                      "\n# little effort the log can be used to score a new dataset. The logical variable",
-                      "\n# 'building' is used to toggle between generating transformations, as when building",
-                      "\n# a model, and simply using the transformations, as when scoring a dataset."),
-                 "\nbuilding <- TRUE",
+                 Rtxt("# This log generally records the process of building a model.",
+                      "However, with very",
+                      "\n# little effort the log can be used to score a new dataset.",
+                      "The logical variable",
+                      "\n# 'building' is used to toggle between generating",
+                      "transformations, as when building",
+                      "\n# a model, and simply using the transformations,",
+                      "as when scoring a dataset."),
+                 "\n\nbuilding <- TRUE",
                  "\nscoring  <- ! building\n",
                  ifelse(packageIsAvailable("colorspace"),
                         paste("\n",
-                              Rtxt("# The colorspace package is used to generate the colours used in plots,",
+                              Rtxt("# The colorspace package is used to generate",
+                                   "the colours used in plots,",
                                    "if available."),
                               "\n\n",
                               "library(colorspace)", sep=""), ""),
@@ -73,7 +84,8 @@ startLog <- function(msg=NULL)
   
   if (! exists("rattleGUI")) return()
 
-  appendLog(paste("\n\n#", paste(rep("=", 60), collapse=""),
+  appendLog(paste("\n\n#",
+                  paste(rep("=", 60), collapse=""),
                   "\n# ", crv$appname, " ", Rtxt("timestamp:"), " ", Sys.time(),
                   " ", version$platform, sep=""),
           no.start=TRUE)
@@ -81,14 +93,21 @@ startLog <- function(msg=NULL)
     appendLog(paste(sep="", crv$start.log.comment, msg), no.start=TRUE)
 }
 
-appendLog <- function(start, ..., sep=" ", no.start=FALSE)
+appendLog <- function(start, cont=NULL, ..., sep=" ", no.start=FALSE)
 {
-  if (! exists("rattleGUI")) return()
+  # 100330 cont is used to identify whether there is more than a
+  # single string to print. If not, then don't include the
+  # crv$end.log.comment otherwise there is too much white space in the
+  # log.
   
+  if (! exists("rattleGUI")) return()
+
   if (no.start)
-    msg <- paste(sep=sep, start, ...)
+    msg <- paste(sep=sep, start, cont, ...)
+  else if (is.null(cont))
+    msg <- paste(sep="", crv$start.log.comment, start)
   else
-    msg <- paste(sep="", crv$start.log.comment, start, crv$end.log.comment, ...)
+    msg <- paste(sep="", crv$start.log.comment, start, crv$end.log.comment, cont, ...)
   if (length(msg) == 0) msg <-""
 
   # Always place text at the end, irrespective of where the cursor is.

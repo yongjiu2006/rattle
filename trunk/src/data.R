@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-24 21:59:03 Graham Williams>
+# Time-stamp: <2010-03-29 20:12:34 Graham Williams>
 #
 # DATA TAB
 #
@@ -781,7 +781,6 @@ executeDataCSV <- function(filename=NULL)
   }
   else if (is.null(filename))
   {
-    # Rtxt("weather")
     if (! questionDialog(sprintf(Rtxt("No CSV filename has been provided.",
                                       "\n\nWe require a dataset to be loaded.",
                                       "\n\nWould you like to use the example",
@@ -1594,7 +1593,8 @@ viewData <- function()
   if (packageIsAvailable("RGtk2DfEdit")) # Rtxt("RGtk2 data frame editor")
   {
     require(RGtk2DfEdit)
-    dfedit(crs$dataset, size=c(800, 400), pretty_print=TRUE)
+    dfedit(crs$dataset, dataset.name=Rtxt("Changes will not be saved"),
+           size=c(800, 400), pretty_print=TRUE)
   }
   else
   {
@@ -1634,21 +1634,24 @@ editData <- function()
    else if (packageIsAvailable("RGtk2DfEdit"))
     {
       require(RGtk2DfEdit)
-      assign.cmd <- paste('rattle.edit.obj <<-',
-                          'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
-                          'size=c(800, 400), pretty_print=TRUE)\n',
-                          'gSignalConnect(rattle.edit.obj, "unrealize",',
-                          'data=rattle.edit.obj,\n',
-                          '  function(obj, data)\n',
-                          '  {\n',
-                          '    assign("rattle.edited.dataset", data$getDataFrame(),',
-                          '    envir=.GlobalEnv)\n',
-                          '  })')
-      infoDialog(Rtxt("RGtk2DfEdit will be used to edit",
-                      "a data frame called 'rattle.edited.dataset'. Once you have",
-                      "finished editting and closed the",
-                      "window you can load this data frame",
-                      "using the R Dataset option of the Data tab."))
+      assign.cmd <- paste('rattle.edit.obj <-',
+                          'dfedit(crs$dataset,',
+                          'size=c(800, 400), pretty_print=TRUE)')
+      ## assign.cmd <- paste('rattle.edit.obj <<-',
+      ##                     'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
+      ##                     'size=c(800, 400), pretty_print=TRUE)\n',
+      ##                     'gSignalConnect(rattle.edit.obj, "unrealize",',
+      ##                     'data=rattle.edit.obj,\n',
+      ##                     '  function(obj, data)\n',
+      ##                     '  {\n',
+      ##                     '    assign("rattle.edited.dataset", data$getDataFrame(),',
+      ##                     '    envir=.GlobalEnv)\n',
+      ##                     '  })')
+      ## infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
+      ##                 "a data frame called 'rattle.edited.dataset'. Once you have",
+      ##                 "finished editting and closed the",
+      ##                 "window you can load this data frame",
+      ##                 "using the R Dataset option of the Data tab."))
     }
   else
     assign.cmd <- 'crs$dataset <- edit(crs$dataset)'

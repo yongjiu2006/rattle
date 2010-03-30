@@ -7,7 +7,7 @@ Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.8.0), pmml (>= 1.2.13)
 Suggests: RGtk2, ada, amap, arules, biclust, cairoDevice, car, 
-  cba, colorspace, doBy, e1071, ellipse, fEcofin, 
+  cba, colorspace, descr, doBy, e1071, ellipse, fEcofin, 
   fBasics, foreign, fpc, gdata, gtools, gplots, 
   gWidgetsRGtk2, Hmisc, kernlab, latticist, Matrix, mice, network, 
   nnet, odfWeave, party, playwith, psych, randomForest, reshape, rggobi,

@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-03-26 06:46:15 Graham Williams>
+# Time-stamp: <2010-03-30 11:06:11 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -129,13 +129,17 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
     print.cmd <- "summary(crs$survival)"
     appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
-                  sprintf(Rtxt("Summary of the Survival model (built using %s):\n\n"), method),
+                  sprintf(Rtxt("Summary of the Survival model (built using %s):"),
+                          method),
+                  "\n\n",
                   collectOutput(print.cmd))
     if (method=="coxph")
     {
       print.cmd <- paste(print.cmd, "cox.zph(crs$survival)", sep="; ")
-      appendTextview(tv, tvsep=FALSE, "\n\nTest the proportional hazards ",
-                     "assumption for a Cox regression model:\n\n",
+      appendTextview(tv, tvsep=FALSE, "\n\n",
+                     Rtxt("Test the proportional hazards ",
+                          "assumption for a Cox regression model:"),
+                     "\n\n",
                      collectOutput(print.cmd))
     }
   }
