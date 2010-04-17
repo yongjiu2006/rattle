@@ -52,10 +52,19 @@
   <tooltip widget="data_header_checkbutton">Indicates whether the
     first row of the datafile is the names of the columns. Otherwise,
     random names will be made up.</tooltip>
-  <tooltip widget="data_odbc_dsn_entry">Enter the name of a known ODBC
-    data source.</tooltip>
+  <tooltip widget="data_odbc_dsn_entry">Enter a known ODBC
+    data source name (DSN). Then press the Enter key to query the
+    database for a list of available tables.</tooltip>
+  <tooltip widget="data_odbc_table_combobox">After specifying a DSN a
+  list of available tables will appear here. One table is to be chosen
+  to be loaded.</tooltip>
   <tooltip widget="data_odbc_limit_spinbutton">Number of rows to
     retrieve from the table.</tooltip>
+  <tooltip widget="data_odbc_believeNRows_checkbutton">Some ODBC
+  drivers use pre-fetching which confuses the row counts (often by
+  returning a fetch limit rather than a row count). If not all rows are
+  retrieved after Execution, uncheck this option to not believe the
+  reported row count.</tooltip>
   <tooltip widget="data_corpus_location_filechooserbutton">Folder
     containing the corpus and optionally a target.csv file.</tooltip>
   <tooltip widget="data_corpus_strip_checkbutton">Remove extra
@@ -93,7 +102,7 @@
     variables to ignore, simply select the required variables in the
     list below and click this Ignore button.</tooltip>
   <tooltip widget="weight_entry">Enter an R formula for calculating a
-    weight for each entity. Variables can be named in the
+    weight for each observation. Variables can be named in the
     formula.</tooltip>
   <tooltip widget="data_target_auto_radiobutton">Determine target type
     automatically.</tooltip>
@@ -183,7 +192,7 @@
     values.</tooltip>
   <tooltip widget="remap_radiobutton">Remap variables through binning
     or type changes.</tooltip>
-  <tooltip widget="cleanup_radiobutton">Delete entites or
+  <tooltip widget="cleanup_radiobutton">Delete observations or
     variables.</tooltip>
   <tooltip widget="transform_notebook">Multiply out the selected
     categorics into a new single variable.</tooltip>
@@ -221,7 +230,7 @@
   <tooltip widget="label14">Partition a numeric variable into a number
     of bins.</tooltip>
   <tooltip widget="remap_quantiles_radiobutton">Each bin will have
-    approximately the same number of entities.</tooltip>
+    approximately the same number of observations.</tooltip>
   <tooltip widget="remap_kmeans_radiobutton">A kmeans clustering will
     be used to bin the variable.</tooltip>
   <tooltip widget="remap_eqwidth_radiobutton">The min to max range
@@ -239,7 +248,7 @@
     selected below.</tooltip>
   <tooltip widget="delete_navars_radiobutton">Delete any variable with
     any missing values.</tooltip>
-  <tooltip widget="delete_naents_radiobutton">Delete any entities with
+  <tooltip widget="delete_naents_radiobutton">Delete any observations with
     any missing value.</tooltip>
   <tooltip widget="sample_tab_label">Transform the data in various
     ways.</tooltip>
@@ -291,14 +300,14 @@
   <tooltip widget="all_models_radiobutton">Build one model of each
     type using the specified parameters.</tooltip>
   <tooltip widget="boost_radiobutton">Build multiple simple models,
-    boosting entities hard to classify, combined into an
+    boosting observations hard to classify, combined into an
     ensemble.</tooltip>
   <tooltip widget="model_tree_priors_label">prior</tooltip>
   <tooltip widget="model_tree_loss_label">loss</tooltip>
   <tooltip widget="label39">minsplit</tooltip>
   <tooltip widget="rpart_minsplit_spinbutton">This is the minimum
-    number of entities that must exist in a dataset at any node in
-    order for a split of that node to be attempted. The default is
+    number of observations that must exist in a node resulting from a
+    split before a split will be performed. The default is
     20.</tooltip>
   <tooltip widget="model_tree_priors_entry">Set the prior
     probabilities for each class. E.g. for two classes: 0.5,0.5. Must
@@ -307,7 +316,7 @@
     differently. E.g., 0,10,1,0 (TN, FN, FP, TP).</tooltip>
   <tooltip widget="label84">minbucket</tooltip>
   <tooltip widget="rpart_minbucket_spinbutton">This is the minimum
-    number of entities allowed in any leaf node of the decision
+    number of observations allowed in any leaf node of the decision
     tree. The default value is one thrid of the Min Split.</tooltip>
   <tooltip widget="model_tree_cp_label">cp</tooltip>
   <tooltip widget="label57">maxdepth</tooltip>
@@ -345,7 +354,7 @@
     to be depth 0. Note that a depth beyond 30 will give nonsense
     results on 32-bit machines. The default is 30.</tooltip>
   <tooltip widget="ada_minsplit_spinbutton">This is the minimum
-    number of entities that must exist in a dataset at any node in
+    number of observations that must exist in a dataset at any node in
     order for a split of that node to be attempted. The default is
     20.</tooltip>
   <tooltip widget="ada_cp_spinbutton">The complexity parameter

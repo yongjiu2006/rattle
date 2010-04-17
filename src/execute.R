@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-18 07:05:34 Graham Williams>
+# Time-stamp: <2010-04-08 15:24:20 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -23,6 +23,14 @@
 
 on_execute_button_clicked <- function(action, window)
 {
+  # 100402 Allow Execute to be running just once, irrespective of the
+  # number of times the Execute button is clicked. Otherwise we get a
+  # second load of a CSV dataset whilst still loading the first.
+  
+  if (! is.null(crv$executing) && crv$executing) return()
+  crv$executing <- TRUE
+  on.exit(crv$executing <- FALSE)
+
   # Wrap up the actual call with a "try" so that the watch cursor
   # turns off even on error.
 
@@ -43,7 +51,7 @@ on_execute_button_clicked <- function(action, window)
 
   set.cursor("watch")
   tryCatch(dispatchExecuteButton(),
-           interrupt=function(m) setStatusBar("Processing interrupted by user."),
+           interrupt=function(m) setStatusBar(Rtxt("Processing interrupted by user.")),
            finally=set.cursor())
 
 #  require(multicore)
@@ -65,6 +73,7 @@ dispatchExecuteButton <- function()
   # Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)
+  Encoding(ct) <- "UTF-8" # 100408 For French, but see if it's okay always!
 
   if (ct == crv$NOTEBOOK.DATA.NAME)
   {
@@ -107,7 +116,7 @@ dispatchExecuteButton <- function()
   }
   else
   {
-    errorDialog(Rtxt("'dispatchExecuteButton' has been called with unknown tab."),
+    errorDialog(Rtxt("'dispatchExecuteButton' has been called with an unknown tab."),
                 "\n\n", crv$support.msg)
     return()
   }

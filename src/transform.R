@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-27 08:34:57 Graham Williams>
+# Time-stamp: <2010-04-17 11:10:50 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1319,18 +1319,21 @@ executeTransformRemapPerform <- function(vars=NULL,
                                      sep=""),
                                remap.prefix, vars, vars),
                        collapse="\n")
+
     # 090718 Remap the levels to correspond to how the transform will
     # appear when exported to PMML.
 
     ol <- NULL # 090808 Keep "R check" happy.
-    remap.cmd <- paste(remap.cmd,
-                       sprintf('  ol <- levels(crs$dataset[["%s_%s"]])',
-                               remap.prefix, vars),
-                       "lol <- length(ol)",
-                       paste('  nl <- c(sprintf("[%s,%s]", ol[1], ol[1]),',
-                             'sprintf("(%s,%s]", ol[-lol], ol[-1]))'),
-                       sprintf('  levels(crs$dataset[["%s_%s"]]) <- nl',
-                               remap.prefix, vars), sep="\n")
+
+    relevel.cmd <- paste(sprintf('\n  ol <- levels(crs$dataset[["%s_%s"]])',
+                                 remap.prefix, vars),
+                         "  lol <- length(ol)",
+                         paste('  nl <- c(sprintf("[%s,%s]", ol[1], ol[1]),',
+                               'sprintf("(%s,%s]", ol[-lol], ol[-1]))'),
+                         sprintf('  levels(crs$dataset[["%s_%s"]]) <- nl',
+                                 remap.prefix, vars),
+                         sep="\n", collapse="\n")
+    remap.cmd <- paste(remap.cmd, relevel.cmd, sep="\n")
   }
   else if (action == "asnumeric")
   {
@@ -1458,23 +1461,32 @@ executeTransformRemapPerform <- function(vars=NULL,
     # with the bins, thus the breaks may now need to be determined
     # from the second value of each level. However, we used the
     # variable "ol" above to record the old levels, so we can use that
-    # as the breaks.
-    
-    # 090718 breaks <- as.numeric(levels(crs$dataset[[vname]]))
-    breaks <- as.numeric(ol)
-    breaks <- c(breaks[1], breaks)
-    lst <- list(orig=vars, type=remap.prefix, status="active", breaks=breaks)
-    crs$transforms <- union.transform(crs$transforms,
-                                      paste(remap.prefix, vars, sep="_"),
-                                      lst)
+    # as the breaks. 100417 But this use of ol does npot work when
+    # there is more than a single transform. So get the breaks from
+    # the original transformation.
+
+    for (v in vars)
+    {
+      # 090718 breaks <- as.numeric(levels(crs$dataset[[vname]]))
+      breaks <- as.numeric(levels(as.factor(crs$dataset[[v]])))
+      # 100417 breaks <- as.numeric(ol)
+      breaks <- c(breaks[1], breaks)
+      lst <- list(orig=v, type=remap.prefix, status="active", breaks=breaks)
+      crs$transforms <- union.transform(crs$transforms,
+                                        paste(remap.prefix, v, sep="_"),
+                                        lst)
+    }
   }
   else if (action == "asnumeric")
   {
-    lst <- list(orig=vars, type=remap.prefix, status="active",
-                levels=levels(crs$dataset[[vars]]))
-    crs$transforms <- union.transform(crs$transforms,
-                                      paste(remap.prefix, vars, sep="_"),
-                                      lst)
+    for (v in vars)
+    {
+      lst <- list(orig=v, type=remap.prefix, status="active",
+                  levels=levels(crs$dataset[[v]]))
+      crs$transforms <- union.transform(crs$transforms,
+                                        paste(remap.prefix, v, sep="_"),
+                                        lst)
+    }
   }
   
   # Record the new variables as having an INPUT role. 090110

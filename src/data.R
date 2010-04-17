@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-29 20:12:34 Graham Williams>
+# Time-stamp: <2010-04-17 08:05:31 Graham Williams>
 #
 # DATA TAB
 #
@@ -129,7 +129,15 @@ dataNeedsLoading <- function()
       || theWidget("data_arff_radiobutton")$getActive())
   {
   
-    filename <- theWidget("data_filechooserbutton")$getUri()  
+    filename <- theWidget("data_filechooserbutton")$getUri()
+
+    # 100409 Do the URLdecode here, then encode as UTF-8. Previously
+    # no UTF-8 and the URLdecode was done 5 separate times below. The
+    # mtime below did not URLdecode, but do so now, and make sure it
+    # still works. Seems okay.
+    
+    filename <- URLdecode(filename)
+    Encoding(filename) <- "UTF-8"
 
     if (is.null(filename) || is.null(crs$dwd))
       return(TRUE)
@@ -137,15 +145,15 @@ dataNeedsLoading <- function()
     if (isWindows())
     {
       # MS/Windows is not case sensitive.
-      if (tolower(URLdecode(basename(filename)))
+      if (tolower(basename(filename))
           != tolower(crs$dataname) ||
-          tolower(dirname(URLdecode(filename))) != tolower(crs$dwd))
+          tolower(dirname(filename)) != tolower(crs$dwd))
         return(TRUE)
     }
     else
     {
-      if (URLdecode(basename(filename)) != crs$dataname ||
-          dirname(URLdecode(filename)) != crs$dwd)
+      if (basename(filename) != crs$dataname ||
+          dirname(filename) != crs$dwd)
         return(TRUE)
     }
 
@@ -707,6 +715,7 @@ executeDataTab <- function(csvname=NULL)
   executeSelectTab()
 
   resetTestTab()
+  setGuiDefaultsSurvival()
 
   # Set the risk label appropriately.
   
@@ -746,7 +755,7 @@ executeDataCSV <- function(filename=NULL)
 
   if (is.null(filename))
     filename <- theWidget("data_filechooserbutton")$getUri()
-  
+
   # If no filename has been supplied give the user the option to use
   # the Rattle supplied sample dataset.
 
@@ -827,8 +836,11 @@ executeDataCSV <- function(filename=NULL)
     }
   }
   else
+  {
     filename <- URLdecode(filename)
-
+    Encoding(filename) <- "UTF-8" # 100408 For Japanese, otherwise dirname fails. Try for all.
+  }
+  
   crs$dwd <- dirname(filename)
   crs$mtime <- urlModTime(filename)
   
@@ -947,6 +959,7 @@ executeDataCSV <- function(filename=NULL)
   }
   
   crs$dataname <- basename(filename)
+  Encoding(crs$dataname) <- "UTF-8"
   setMainTitle(crs$dataname)
 
   # Update the Data Tab Treeview and Samples.
@@ -1323,6 +1336,7 @@ executeDataODBC <- function()
   table <- theWidget("data_odbc_table_combobox")$getActiveText()
   row.limit <- theWidget("data_odbc_limit_spinbutton")$getValue()
   believe.nrows <- theWidget("data_odbc_believeNRows_checkbutton")$getActive()
+  # warn.many <- theWidget("data_odbc_warnmany_checkbutton")$getActive()
   sql.query <- "" # theWidget("odbc_sql_entry")$getText()
   
   # If the ODBC channel has not been openned, then tell the user how
@@ -1374,12 +1388,12 @@ executeDataODBC <- function()
     # number of rows.
     
     numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
-    if (numRows > 50000)
-      if (! questionDialog(sprintf(Rtxt("You are about to extract %d",
+    if (crv$odbc.large != 0 && numRows > crv$odbc.large)
+      if (! questionDialog(sprintf(Rtxt("You are about to extract %s",
                                         "rows from the table %s",
                                         "of the %s ODBC connection.",
                                         "\n\nDo you wish to continue?"),
-                                   numRows,  table, dsn.name)))
+                                   numRows, table, dsn.name)))
         return()
   }
   
@@ -1594,7 +1608,7 @@ viewData <- function()
   {
     require(RGtk2DfEdit)
     dfedit(crs$dataset, dataset.name=Rtxt("Changes will not be saved"),
-           size=c(800, 400), pretty_print=TRUE)
+           size=c(800, 400))
   }
   else
   {
@@ -1607,7 +1621,7 @@ viewData <- function()
                                root="viewdata_window")
     gladeXMLSignalAutoconnect(viewdataGUI)
     tv <- viewdataGUI$getWidget("viewdata_textview")
-    tv$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+    tv$modifyFont(pangoFontDescriptionFromString(crv$textview.font))
     op <- options(width=10000)
     tv$getBuffer()$setText(collectOutput("print(crs$dataset)"))
     options(op)
@@ -1636,10 +1650,10 @@ editData <- function()
       require(RGtk2DfEdit)
       assign.cmd <- paste('rattle.edit.obj <-',
                           'dfedit(crs$dataset,',
-                          'size=c(800, 400), pretty_print=TRUE)')
+                          'size=c(800, 400))')
       ## assign.cmd <- paste('rattle.edit.obj <<-',
       ##                     'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
-      ##                     'size=c(800, 400), pretty_print=TRUE)\n',
+      ##                     'size=c(800, 400))\n',
       ##                     'gSignalConnect(rattle.edit.obj, "unrealize",',
       ##                     'data=rattle.edit.obj,\n',
       ##                     '  function(obj, data)\n',
@@ -2417,8 +2431,11 @@ executeSelectSample <- function()
     }
     else
     {
+      # 100417 Even for RStat make sure we maintain crs$train as it is
+      # now starting to be used.
+      
       sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
-                          "crs$sample <- sample(nrow(crs$dataset), ", ssize,
+                          "crs$sample <- crs$train <- sample(nrow(crs$dataset), ", ssize,
                           ")", sep="")
     }
 
@@ -3134,7 +3151,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
       # Check if it can be exported to PMML.
 
-      etype <- ifelse(pmmlCanExport(variables[i]), "", ". NO code export")
+      etype <- ifelse(pmmlCanExport(variables[i]), "", Rtxt(". No code export"))
 
       # Generate correct Rattle terminology for the variable
       # class. 090731 We denote an integer as Numeric, to be
@@ -3142,7 +3159,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
-        dtype <- sprintf("Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]",
+        dtype <- sprintf(Rtxt("Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]"),
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
@@ -3151,26 +3168,26 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                          as.integer(median(crs$dataset[[variables[i]]],
                                          na.rm=TRUE)),
                          ifelse(sum(is.na(crs$dataset[[variables[i]]])),
-                                sprintf("; miss=%d",
+                                sprintf(Rtxt("; miss=%d"),
                                         sum(is.na(crs$dataset[[variables[i]]]))),
                                 ""),
-                         ifelse(variables[i] %in% ignore, "; ignored", ""))
+                         ifelse(variables[i] %in% ignore, Rtxt("; ignored"), ""))
       else if (cl == "numeric")
-        dtype <- sprintf("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s%s]",
+        dtype <- sprintf(Rtxt("Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s%s]"),
                          min(crs$dataset[[variables[i]]], na.rm=TRUE),
                          max(crs$dataset[[variables[i]]], na.rm=TRUE),
                          unique.count,
                          mean(crs$dataset[[variables[i]]], na.rm=TRUE),
                          median(crs$dataset[[variables[i]]], na.rm=TRUE),
                          ifelse(missing.count > 0,
-                                sprintf("; miss=%d", missing.count), ""),
-                         ifelse(variables[i] %in% ignore, "; ignored", ""))
+                                sprintf(Rtxt("; miss=%d"), missing.count), ""),
+                         ifelse(variables[i] %in% ignore, Rtxt("; ignored"), ""))
       else if (substr(cl, 1, 6) == "factor")
-        dtype <- sprintf("Categorical [%s levels%s%s]",
+        dtype <- sprintf(Rtxt("Categorical [%s levels%s%s]"),
                          length(levels(crs$dataset[[variables[i]]])),
                          ifelse(missing.count > 0,
-                                sprintf("; miss=%d", missing.count), ""),
-                         ifelse(variables[i] %in% ignore, "; ignored", ""))
+                                sprintf(Rtxt("; miss=%d"), missing.count), ""),
+                         ifelse(variables[i] %in% ignore, Rtxt("; ignored"), ""))
 
       # Generate text for the missing values bit.
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-24 07:34:02 Graham Williams>
+# Time-stamp: <2010-03-31 11:13:55 Graham Williams>
 #
 # Project functionality.
 #
@@ -84,8 +84,7 @@ newProject <- function()
                               "If you choose not to continue you can save",
                               "the project, and then start a new project.\n\n",
                               "Do you wish to continue, and overwrite the",
-                              "current project?"
-                              )))
+                              "current project?")))
       return()
   }
 

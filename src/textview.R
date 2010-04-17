@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 05:44:30 Graham Williams>
+# Time-stamp: <2010-04-10 19:54:44 Graham Williams>
 #
 # Textview widget support
 #
@@ -42,6 +42,11 @@
 
 allTextviews <- function()
 {
+  # 100407 The log_textview is not included here. This is probably
+  # because we don't want to reset it anytime, so that it is a
+  # copmlete log. But then it's font is not being set to monospace
+  # like all the rest. So that needs a special initialisation.
+  
   return(c("summary_textview", "interactive_textview",
            "correlation_textview",
            "prcomp_textview", "test_textview", "kmeans_textview",
@@ -88,7 +93,7 @@ resetTextview <- function(tv, ..., sep="", tvsep=TRUE)
                 "We found a", class(tv)[1], crv$support.msg)
     return(FALSE)
   }
-  wid$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+  if (! isJapanese()) wid$modifyFont(pangoFontDescriptionFromString(crv$textview.font))
   msg <- paste(sep=sep, ...)
   if (length(msg) > 0)
   {

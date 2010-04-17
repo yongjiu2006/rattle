@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-28 20:59:55 Graham Williams>
+# Time-stamp: <2010-04-17 13:46:16 Graham Williams>
 #
 # Help Menu
 #
@@ -138,32 +138,32 @@ on_help_data_fex_activate <- function(action, window)
 on_help_csv_activate <- function(action, window)
 {
   if (showHelpPlus(Rtxt("Data can be loaded from",
-                        "a comma separated value CSV file, as might be generated",
-                        "by spreadsheets and databases,",
-                        "including Excel, Gnumeric, SAS/EM, QueryMan,",
-                        "and many other applications.",
-                        "This is a good option for importing data.",
-                        "<<>>",
-                        "The CSV file is assumed to begin with a header row,",
-                        "listing the names of the variables. ",
-                        "The remainder of the file is expected to consist of",
-                        "rows of data that record",
-                        "information about the observations,",
-                        "with fields generally separated by commas",
-                        "recording the values of the variables for this observation.",
-                        "<<>>",
-                        "Use the Separator box to choose a separator",
-                        "other than the default comma.",
-                        "A common alternative is a tab (\\t),",
-                        "or simply leave it blank to have",
-                        "any white space act as a separator.",
-                        "<<>>",
-                        "A URL can be supplied in the Location:",
-                        "text box so that a CSV file can be",
-                        "loaded from the network.",
-                        "<<>>",
-                        "The corresponding R code uses the",
-                        "simple 'read.csv' function.")))
+                         "a comma separated value CSV file, as might be generated",
+                         "by spreadsheets and databases,",
+                         "including Excel, Gnumeric, SAS/EM, QueryMan,",
+                         "and many other applications.",
+                         "This is a good option for importing data.",
+                         "<<>>",
+                         "The CSV file is assumed to begin with a header row,",
+                         "listing the names of the variables. ",
+                         "The remainder of the file is expected to consist of",
+                         "rows of data that record",
+                         "information about the observations,",
+                         "with fields generally separated by commas",
+                         "recording the values of the variables for this observation.",
+                         "<<>>",
+                         "Use the Separator box to choose a separator",
+                         "other than the default comma.",
+                         "A common alternative is a tab,",
+                         "or simply leave it blank to have",
+                         "any white space act as a separator.",
+                         "<<>>",
+                         "A URL can be supplied in the Location:",
+                         "text box so that a CSV file can be",
+                         "loaded from the network.",
+                         "<<>>",
+                         "The corresponding R code uses the",
+                         "simple 'read.csv' function.")))
     popupTextviewHelpWindow("read.csv") }
 
 on_help_arff_activate <- function(action, window)
@@ -790,7 +790,7 @@ on_help_cluster_hclust_activate <- function(action, window)
                         "The two closest clusters are then",
                         "combined to generate a new cluster.",
                         "This is repeated until all observations are in the",
-                        "one cluster. Thus a hierachy is generated.",
+                        "one cluster. Thus a hierarchy is generated.",
                         "<<>>",
                         "A complete clustering is built. After building,",
                         "we can choose a specific number of",
@@ -801,6 +801,31 @@ on_help_cluster_hclust_activate <- function(action, window)
     popupTextviewHelpWindow("hclust")
   }
 }
+
+on_help_associate_menuitem_activate <- function(action, window)
+{
+  if (showHelpPlus(Rtxt("Association rule mining finds interesting relationships",
+                        "among data items in large data sets.  A typical and widely",
+                        "used example of association rule mining is Market Basket",
+                        "Analysis, in which customer purchases are analyzed to",
+                        "determine what items are frequently purchased together.",
+                        "This analysis can guide decisions about the placement of",
+                        "items. For example, items that are frequently purchased",
+                        "together might be displayed on the same shelf.",
+                        "<<>>",
+                        "Association rules provide information in the form of",
+                        "'if-then' statements. For example, if cookies are",
+                        "purchased, milk is going to be purchased, too, with 80",
+                        "percent confidence. These rules are probabilistic in",
+                        "nature, as the frequencies are computed from the data.")))
+
+    if (packageIsAvailable("arules", viewDocMsg("apriori")))
+    {
+      require(arules, quietly=TRUE)
+      popupTextviewHelpWindow("apriori")
+    }
+}
+
 
 ########################################################################
 # MODEL TAB
@@ -882,12 +907,13 @@ on_help_model_survival_activate <- function(action, window)
 
 on_help_confusion_table_activate <- function(action, window)
 {
-  if (showHelpPlus(Rtxt("An error matrix concisely reports the performance",
-                   "of a model against a testing dataset. Generally, the number of observations",
-                   "predicted by the model into each of the classes is presented against the",
-                   "actual class to which that observation belongs. Rattle reports two error matrices.",
-                   "The first is the raw observation counts whilst the second reports the",
-                   "percentages.")))
+  if (showHelpPlus(Rtxt("An error (or confusion) matrix concisely reports the performance",
+                        "of a model against a testing dataset. Generally, the number of observations",
+                        "predicted by the model into each of the classes is presented against the",
+                        "actual class to which that observation belongs.",
+                        "Rattle reports two error matrices.",
+                        "The first is the raw observation counts whilst the second reports the",
+                        "percentages.")))
   {
     popupTextviewHelpWindow("table")
   }

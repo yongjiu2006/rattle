@@ -30,12 +30,29 @@
   # and Acken sees CP932 for Japanese.
   
   crv$csv.encoding <- "UTF-8"
+
+  # 100410 All monofonts come out vertically aligned in Japanese???
+  
+  crv$textview.font <- "monospace 10" # Japanese vertically aligned - bad periods/commas
+  # crv$textview.font <- "Courier New 10" # Okay but not found on MS/Windows
+  # crv$textview.font <- "Bitstream Vera Sans Mono 10" # Better?
+  # crv$textview.font <- "Andale Mono 10" # Not very nice
+  # crv$textview.font <- "ＭＳ ゴシック" # Not mono
+  # crv$textview.font <- "Sans Italic 12" # For fun.
   
   crv$show.timestamp <- FALSE
   ## crv$tooltiphack <- FALSE
   crv$close <- "ask"
   # crv$sample.dataset <- "audit"
   crv$sample.dataset <- "weather"
+
+  # 100402 Record whether the Execute button is currently in
+  # action. The problem is that in loading a CSV file if the Execute
+  # button is double clicked then it starts twice, before it knows
+  # what it is doing, and loads the data twice, then copmlains about
+  # two targets selected.
+
+  crv$executing <- FALSE
   
   # 090525 Always load tooltips - now use Settings option to enable on
   # GNU/Linux. 090622 But on older installations we still get the
@@ -61,14 +78,19 @@
   crv$ident.min.rows <- 300 # Unique factors/ints > than this are idents
   crv$default.train.percentage <- 70 # The default sample percentage value.
   crv$default.sample <- "70/15/15" # The default train/validate/test split.
+
+  # Popup a warning above this many rows in the table being loaded via
+  # ODBC
+
+  crv$odbc.large <- 50000
   
   # Log constants
 
   crv$start.log.comment <- "\n\n# "	# Assume paste with sep=""
   crv$end.log.comment   <- "\n\n"	# Assume paste with sep=""
-  
-  # Model defaults
 
+  # Model defaults
+  
   crv$cluster.report.max.obs <- 4000
   crv$scatter.max.vars <- 5
   

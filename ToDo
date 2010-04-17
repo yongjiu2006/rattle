@@ -1,23 +1,13 @@
 Help Menu
 
   ------------------------------------------------------------------------
-  2010-02-13 08:11:18 Graham Williams
+  2010-02-13 08:11:18 Graham Williams, Tony Nolan
 
   Add a simple R command syntax example to each Rattle help text.
   ------------------------------------------------------------------------
 
 
 Data Tab
-
-  Edit button
-
-    ----------------------------------------------------------------------
-    2010-02-15 06:29:01 Graham Williams
-    
-    Start using RGtk2DfEdit once I figure out how to save the
-    results. Note that it may not be available on MS/Windows.
-
-    ----------------------------------------------------------------------
 
   Variable selection
 
@@ -50,6 +40,17 @@ Explore Tab
     modern, simpler to generate, and much more powerfull than plot and
     lattice.
     ----------------------------------------------------------------------
+
+Test Tab
+
+  ------------------------------------------------------------------------
+  2010-04-03 17:43:34 Graham Williams, Luke Lake
+
+  Add "Categoric Tests: O Cross Tab" to then allow two categorics to
+  be selected and then do a cross tab of them. I.e., replace Sample 1
+  and Sample 2 combo boxes with list of Categorics when this option is
+  chosen.
+  ------------------------------------------------------------------------
 
 Log Tab
 

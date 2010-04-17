@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 10:57:02 Graham Williams>
+# Time-stamp: <2010-04-16 20:44:46 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 29 Mar 2010"
+VERSION.DATE <- "Released 30 Mar 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -279,10 +279,8 @@ rattle <- function(csvname=NULL)
   # When an error is reported to the R Console, include a time stamp.
 
   options(error=function()
-          cat(sprintf("%s timestamp (for the error above): %s\n%s\n",
-                      crv$appname, Sys.time(),
-                      paste(rep("^", 72), collapse=""))))
-
+          cat(sprintf(Rtxt("%s timestamp (for the error above):"), crv$appname),
+              sprintf("%s\n%s\n", Sys.time(), paste(rep("^", 72), collapse=""))))
 
   # Keep the loading of Hmisc quiet.
 
@@ -558,7 +556,8 @@ rattle <- function(csvname=NULL)
   crv$NOTEBOOK <- theWidget("notebook")
 
   # 100122 The Rtxt is required for these since Glade will translate
-  # these labels.
+  # these labels. These labels are for tabs that are visible in the
+  # GUI.
 
   crv$NOTEBOOK.DATA.NAME <- Rtxt("Data")
 
@@ -587,20 +586,24 @@ rattle <- function(csvname=NULL)
 
   crv$NOTEBOOK.LOG.NAME       <- Rtxt("Log")
 
-  # 100122 Every call to getNotebookPage will need the second argument
-  # wrapped with an Rtxt. Glade translates these on loading.
+  # 100122 Every call to getNotebookPage used to need the second
+  # argument wrapped with an Rtxt. Glade translates these on
+  # loading. 100416 But that was causing issues. Let's instead ensure
+  # these tabs, which are never visible, remain in English, not
+  # translated, and we use them directly as English throughout the
+  # Rattle code.
 
   # 080921 Define the DATA tab pages
 
   crv$DATA.NOTEBOOK 	<- theWidget("data_notebook")
-  crv$DATA.CORPUS.TAB      <- getNotebookPage(crv$DATA.NOTEBOOK, Rtxt("corpus"))
-  crv$DATA.CSV.TAB         <- getNotebookPage(crv$DATA.NOTEBOOK, Rtxt("csv"))
+  crv$DATA.CORPUS.TAB      <- getNotebookPage(crv$DATA.NOTEBOOK, "corpus")
+  crv$DATA.CSV.TAB         <- getNotebookPage(crv$DATA.NOTEBOOK, "csv")
 
   crv$DATA.DISPLAY.NOTEBOOK     <- theWidget("data_display_notebook")
   crv$DATA.DISPLAY.TREEVIEW.TAB <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK,
-                                                   Rtxt("treeview"))
+                                                   "treeview")
   crv$DATA.DISPLAY.WELCOME.TAB  <- getNotebookPage(crv$DATA.DISPLAY.NOTEBOOK,
-                                                   Rtxt("welcome"))
+                                                   "welcome")
   if (isJapanese())
   {
     # 100227 For some reason the following is not working properly:
@@ -620,49 +623,49 @@ rattle <- function(csvname=NULL)
 
   crv$TRANSFORM               <- theWidget("transform_notebook")
   # TODO 080423 Change to RESCALE
-  crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, Rtxt("normalise"))
-  crv$TRANSFORM.IMPUTE.TAB    <- getNotebookPage(crv$TRANSFORM, Rtxt("impute"))
-  crv$TRANSFORM.REMAP.TAB     <- getNotebookPage(crv$TRANSFORM, Rtxt("remap"))
-  crv$TRANSFORM.OUTLIER.TAB   <- getNotebookPage(crv$TRANSFORM, Rtxt("outlier"))
-  crv$TRANSFORM.CLEANUP.TAB   <- getNotebookPage(crv$TRANSFORM, Rtxt("cleanup"))
+  crv$TRANSFORM.NORMALISE.TAB <- getNotebookPage(crv$TRANSFORM, "normalise")
+  crv$TRANSFORM.IMPUTE.TAB    <- getNotebookPage(crv$TRANSFORM, "impute")
+  crv$TRANSFORM.REMAP.TAB     <- getNotebookPage(crv$TRANSFORM, "remap")
+  crv$TRANSFORM.OUTLIER.TAB   <- getNotebookPage(crv$TRANSFORM, "outlier")
+  crv$TRANSFORM.CLEANUP.TAB   <- getNotebookPage(crv$TRANSFORM, "cleanup")
 
   crv$EXPLORE                 <- theWidget("explore_notebook")
-  crv$EXPLORE.SUMMARY.TAB     <- getNotebookPage(crv$EXPLORE, Rtxt("summary"))
-  crv$EXPLORE.PLOT.TAB        <- getNotebookPage(crv$EXPLORE, Rtxt("explot"))
-  crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("correlation"))
-  crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, Rtxt("prcomp"))
-  crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, Rtxt("interactive"))
+  crv$EXPLORE.SUMMARY.TAB     <- getNotebookPage(crv$EXPLORE, "summary")
+  crv$EXPLORE.PLOT.TAB        <- getNotebookPage(crv$EXPLORE, "explot")
+  crv$EXPLORE.CORRELATION.TAB <- getNotebookPage(crv$EXPLORE, "correlation")
+  crv$EXPLORE.PRCOMP.TAB      <- getNotebookPage(crv$EXPLORE, "prcomp")
+  crv$EXPLORE.INTERACTIVE.TAB <- getNotebookPage(crv$EXPLORE, "interactive")
 
   crv$CLUSTER             <- theWidget("cluster_notebook")
-  crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("kmeans"))
-  crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, Rtxt("clara"))
-  crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, Rtxt("hclust"))
-  crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, Rtxt("biclust"))
+  crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, "clara")
+  crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, "hclust")
+  crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, "biclust")
 
   crv$MODEL           <- theWidget("model_notebook")
-  crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, Rtxt("rpart"))
-  crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("glm"))
-  crv$MODEL.ADA.TAB   <- getNotebookPage(crv$MODEL, Rtxt("ada"))
+  crv$MODEL.RPART.TAB <- getNotebookPage(crv$MODEL, "rpart")
+  crv$MODEL.GLM.TAB   <- getNotebookPage(crv$MODEL, "glm")
+  crv$MODEL.ADA.TAB   <- getNotebookPage(crv$MODEL, "ada")
   ## crv$MODEL.GBM.TAB   <- getNotebookPage(crv$MODEL, .GBM)
-  crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, Rtxt("rf"))
-  crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, Rtxt("svm"))
-  crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, Rtxt("nnet"))
-  crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, Rtxt("survival"))
+  crv$MODEL.RF.TAB    <- getNotebookPage(crv$MODEL, "rf")
+  crv$MODEL.SVM.TAB   <- getNotebookPage(crv$MODEL, "svm")
+  crv$MODEL.NNET.TAB   <- getNotebookPage(crv$MODEL, "nnet")
+  crv$MODEL.SURVIVAL.TAB <- getNotebookPage(crv$MODEL, "survival")
 
   crv$SVMNB           <- theWidget("svm_notebook")
-  crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("esvm"))
-  crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, Rtxt("ksvm"))
+  crv$SVMNB.ESVM.TAB  <- getNotebookPage(crv$SVMNB, "esvm")
+  crv$SVMNB.KSVM.TAB  <- getNotebookPage(crv$SVMNB, "ksvm")
 
   crv$EVALUATE                 <- theWidget("evaluate_notebook")
-  crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("confusion"))
-  crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, Rtxt("risk"))
-  crv$EVALUATE.LIFT.TAB        <- getNotebookPage(crv$EVALUATE, Rtxt("lift"))
-  crv$EVALUATE.ROC.TAB         <- getNotebookPage(crv$EVALUATE, Rtxt("roc"))
-  crv$EVALUATE.PRECISION.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("precision"))
-  crv$EVALUATE.SENSITIVITY.TAB <- getNotebookPage(crv$EVALUATE, Rtxt("sensitivity"))
-  crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, Rtxt("costcurve"))
-  crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, Rtxt("pvo"))
-  crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, Rtxt("score"))
+  crv$EVALUATE.CONFUSION.TAB   <- getNotebookPage(crv$EVALUATE, "confusion")
+  crv$EVALUATE.RISK.TAB        <- getNotebookPage(crv$EVALUATE, "risk")
+  crv$EVALUATE.LIFT.TAB        <- getNotebookPage(crv$EVALUATE, "lift")
+  crv$EVALUATE.ROC.TAB         <- getNotebookPage(crv$EVALUATE, "roc")
+  crv$EVALUATE.PRECISION.TAB   <- getNotebookPage(crv$EVALUATE, "precision")
+  crv$EVALUATE.SENSITIVITY.TAB <- getNotebookPage(crv$EVALUATE, "sensitivity")
+  crv$EVALUATE.COSTCURVE.TAB   <- getNotebookPage(crv$EVALUATE, "costcurve")
+  crv$EVALUATE.PVO.TAB         <- getNotebookPage(crv$EVALUATE, "pvo")
+  crv$EVALUATE.SCORE.TAB       <- getNotebookPage(crv$EVALUATE, "score")
 
   # Turn off the sub-notebook tabs.
 
@@ -843,11 +846,23 @@ fixTranslations <- function(w=theWidget("rattle_window"))
 
   if (w$getName() %in% c("execute_button", "new_button", "open_button",
                          "save_button", "stop_button", "quit_button",
-                         "data_filechooserbutton", "data_sample_checkbutton",
+                         "data_filechooserbutton",
                          "continuous_clear_button", "categorical_clear_button",
-                         "data_script_radiobutton", "model_linear_radiobutton",
-                         "glm_linear_radiobutton", "execute_menu",
-                         "print_textview_menu", "about_menu"))
+                         "execute_menu",
+                         "print_textview_menu", "about_menu",
+                         "evaluate_filechooserbutton"))
+    return()
+
+  # 100410 The following should be translated, unless we are in RStat
+  # where they are named Regression rather than Linear, or are not
+  # used, or otherwise differently handled.
+  
+  if (crv$appname == "RStat" && w$getName() %in%
+      c("data_sample_checkbutton",
+        "data_script_radiobutton",
+        "model_linear_radiobutton",
+        "glm_linear_radiobutton",
+        "evaluate_glm_checkbutton"))
     return()
   
   if ("GtkLabel" %in% class(w))
@@ -884,8 +899,11 @@ translateComboBoxes <- function()
   # 100313 We do this in the code when we are running MS/Windows
   # because the list is not translated using GTK+.
 
-  combos <- c("data_odbc_table_combobox", "explore_correlation_method_combobox",
-              "svm_kernel_combobox")
+  combos <- c("data_odbc_table_combobox",
+              "explore_correlation_method_combobox",
+              "svm_kernel_combobox", "hclust_distance_combobox",
+              "hclust_link_combobox")
+  
   printNode <- function(model, path, iter, data)
     {vals <<- c(vals, model$getValue(iter, 0)$value); integer(1)}
   for (cb in combos)
@@ -1131,7 +1149,7 @@ resetRattle <- function(new.dataset=TRUE)
     #theWidget("test_vars1_combobox")$setActive(-1)
     #theWidget("test_vars2_combobox")$setActive(-1)
     theWidget("test_groupby_checkbutton")$setActive(TRUE)
-    theWidget("test_groupby_target_label")$setText("No Target")
+    theWidget("test_groupby_target_label")$setText(Rtxt("No Target"))
     theWidget("test_groupby_checkbutton")$setSensitive(TRUE)
     theWidget("test_groupby_target_label")$setSensitive(TRUE)
 
@@ -1187,7 +1205,7 @@ resetRattle <- function(new.dataset=TRUE)
 
     # Update EXPLORE, MODEL and EVALUATE targets
 
-    theWidget("explot_target_label")$setText("No Target")
+    theWidget("explot_target_label")$setText(Rtxt("No Target"))
     theWidget("explot_annotate_checkbutton")$setActive(FALSE)
     theWidget("summary_find_entry")$setText("")
     theWidget("benford_bars_checkbutton")$setActive(FALSE)
@@ -1195,14 +1213,14 @@ resetRattle <- function(new.dataset=TRUE)
     theWidget("benford_digits_spinbutton")$setValue(1)
     theWidget("explore_correlation_method_combobox")$setActive(0)
 
-    theWidget("glm_target_label")$setText("No Target")
-    theWidget("rpart_target_label")$setText("No Target")
+    theWidget("glm_target_label")$setText(Rtxt("No Target"))
+    theWidget("rpart_target_label")$setText(Rtxt("No Target"))
     ##theWidget("gbm_target_label")$setText("No Target")
-    theWidget("rf_target_label")$setText("No Target")
-    theWidget("svm_target_label")$setText("No Target")
-    theWidget("nnet_target_label")$setText("No Target")
+    theWidget("rf_target_label")$setText(Rtxt("No Target"))
+    theWidget("svm_target_label")$setText(Rtxt("No Target"))
+    theWidget("nnet_target_label")$setText(Rtxt("No Target"))
 
-    theWidget("evaluate_risk_label")$setText("No risk variable selected")
+    theWidget("evaluate_risk_label")$setText(Rtxt("No risk variable selected"))
 
     theWidget("evaluate_training_radiobutton")$setActive(TRUE)
     theWidget("evaluate_filechooserbutton")$setFilename("")
@@ -1492,9 +1510,9 @@ errorReport <- function(cmd, result)
 }
 
 ########################################################################
-##
-## Simplify updates to status bar
-##
+#
+# Simplify updates to status bar
+#
 
 setMainTitle <- function(title=NULL)
 {
@@ -1502,9 +1520,12 @@ setMainTitle <- function(title=NULL)
   if (is.null(title))
     theWidget("rattle_window")$setTitle(standard)
   else
+  {
+    Encoding(title) <- "UTF-8" # 100415 Just in case? Japanese window title not proper in RStat
     theWidget("rattle_window")$setTitle(sub("]",
                                             sprintf(" (%s)]", title),
                                             standard))
+  }
 }
 
 setStatusBar <- function(..., sep=" ")
@@ -1528,7 +1549,12 @@ reportTimeTaken <- function(tv, time.taken, model, msg)
               "one and only one of model/msg must be supplied."))
 
   time.msg <- sprintf(Rtxt("Time taken: %0.2f %s"),
-                      time.taken, attr(time.taken, "units"))
+                      time.taken, Rtxt (attr(time.taken, "units")))
+
+  # Rtxt("secs") Rtxt("mins") So that the above units gets
+  # translated. Note also the gap after Rtxt above to avoid it being
+  # picked up as a string to be translated.
+  
   addTextview(tv, "\n", time.msg, textviewSeparator())
   appendLog(time.msg)
 
@@ -1611,64 +1637,71 @@ getNotebookPageLabel <- function(nb, page)
   # rather than UTF-8, and so the tab name comparisons fail. For now
   # we assume the tab ordering, and so get the tab page number and
   # then map that to the tab label.
+
+  # 100408 Remove the special code for Japanese - instead, we simply
+  # need to ensure the encoding of the string returned from GTK is
+  # UTF-8 rather than "unknown". That seems to fix the problem.
+
+  # TODO - Remove the commented code.
   
-  if (! isJapanese()) # Test this first to avoid too much testing otherwise.
+  ## if (! isJapanese()) # Test this first to avoid too much testing otherwise.
     label <- nb$getTabLabelText(nb$getNthPage(page))
-  else if (nb == crv$NOTEBOOK)
-    label <- switch(page+1,
-                    Rtxt("Data"),
-                    Rtxt("Explore"),
-                    Rtxt("Test"),
-                    Rtxt("Transform"),
-                    Rtxt("Cluster"),
-                    Rtxt("Associate"),
-                    Rtxt("Predictive"), # Should be Model for RStat
-                    Rtxt("Evaluate"),
-                    Rtxt("Log"))
-  else if (nb == crv$EXPLORE)
-    label <- switch(page+1,
-                    Rtxt("summary"),
-                    Rtxt("explot"),
-                    Rtxt("correlation"),
-                    Rtxt("prcomp"),
-                    Rtxt("interactive"))
-  else if (nb == crv$TRANSFORM)
-    label <- switch(page+1,
-                    Rtxt("normalise"),
-                    Rtxt("impute"),
-                    Rtxt("remap"),
-                    Rtxt("outliers"),
-                    Rtxt("cleanup"))
-  else if (nb == crv$CLUSTER)
-    label <- switch(page+1,
-                    Rtxt("kmeans"),
-                    Rtxt("clara"),
-                    Rtxt("hclust"),
-                    Rtxt("biclust"))
-  else if (nb == crv$MODEL)
-    label <- switch(page+1,
-                    Rtxt("rpart"),
-                    Rtxt("ada"),
-                    Rtxt("rf"),
-                    Rtxt("svm"),
-                    Rtxt("glm"),
-                    Rtxt("nnet"),
-                    Rtxt("gbm"),
-                    Rtxt("survival"))
-  else if (nb == crv$EVALUATE)
-    label <- switch(page+1,
-                    Rtxt("confusion"),
-                    Rtxt("lift"),
-                    Rtxt("roc"),
-                    Rtxt("precision"),
-                    Rtxt("sensitivity"),
-                    Rtxt("risk"),
-                    Rtxt("pvo"),
-                    Rtxt("score"),
-                    Rtxt("costcurve"))
-  else
-    # Fall through to the default.
-    label <- nb$getTabLabelText(nb$getNthPage(page))
+    Encoding(label) <- "UTF-8"
+  ## else if (nb == crv$NOTEBOOK)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("Data"),
+  ##                   Rtxt ("Explore"),
+  ##                   Rtxt ("Test"),
+  ##                   Rtxt ("Transform"),
+  ##                   Rtxt ("Cluster"),
+  ##                   Rtxt ("Associate"),
+  ##                   Rtxt ("Predictive"),
+  ##                   Rtxt ("Evaluate"),
+  ##                   Rtxt ("Log"))
+  ## else if (nb == crv$EXPLORE)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("summary"),
+  ##                   Rtxt ("explot"),
+  ##                   Rtxt ("correlation"),
+  ##                   Rtxt ("prcomp"),
+  ##                   Rtxt ("interactive"))
+  ## else if (nb == crv$TRANSFORM)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("normalise"),
+  ##                   Rtxt ("impute"),
+  ##                   Rtxt ("remap"),
+  ##                   Rtxt ("outliers"),
+  ##                   Rtxt ("cleanup"))
+  ## else if (nb == crv$CLUSTER)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("kmeans"),
+  ##                   Rtxt ("clara"),
+  ##                   Rtxt ("hclust"),
+  ##                   Rtxt ("biclust"))
+  ## else if (nb == crv$MODEL)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("rpart"),
+  ##                   Rtxt ("ada"),
+  ##                   Rtxt ("rf"),
+  ##                   Rtxt ("svm"),
+  ##                   Rtxt ("glm"),
+  ##                   Rtxt ("nnet"),
+  ##                   Rtxt ("gbm"),
+  ##                   Rtxt ("survival"))
+  ## else if (nb == crv$EVALUATE)
+  ##   label <- switch(page+1,
+  ##                   Rtxt ("confusion"),
+  ##                   Rtxt ("lift"),
+  ##                   Rtxt ("roc"),
+  ##                   Rtxt ("precision"),
+  ##                   Rtxt ("sensitivity"),
+  ##                   Rtxt ("risk"),
+  ##                   Rtxt ("pvo"),
+  ##                   Rtxt ("score"),
+  ##                   Rtxt ("costcurve"))
+  ## else
+  ##   # Fall through to the default.
+  ##   label <- nb$getTabLabelText(nb$getNthPage(page))
   
   return(label)
 }
@@ -1758,21 +1791,20 @@ on_plot_save_button_clicked <- function(action)
   # This is being fixed by Michael Lawrence.
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub(".* ", "", ttl))
-  savePlotToFileGui(dev.num)
+  savePlotToFileGui(dev.num(ttl))
 }
 
 on_plot_copy_button_clicked <- function(action)
 {
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub(".* ", "", ttl))
+  dn <- dev.num(ttl)
   startLog(Rtxt("Copy the plot to the clipboard."))
-  appendLog(sprintf(Rtxt("Copy the plot on device %d to the clipboard."), dev.num),
-            sprintf('copyPlotToClipboard(%s)', dev.num))
-  copyPlotToClipboard(dev.num)
+  appendLog(sprintf(Rtxt("Copy the plot on device %d to the clipboard."), dn),
+            sprintf('copyPlotToClipboard(%s)', dn))
+  copyPlotToClipboard(dn)
   setStatusBar(sprintf(Rtxt("Plot %d has been copied to the clipboard",
                             "using the PNG format."),
-                       dev.num))
+                       dn))
 }
 
 on_plot_print_button_clicked <- function(action)
@@ -1782,24 +1814,44 @@ on_plot_print_button_clicked <- function(action)
   ## right device.
 
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  dev.num <- as.integer(sub(".* ", "", ttl))
+  dn <- dev.num(ttl)
   startLog(Rtxt("Print the plot."))
-  appendLog(sprintf(Rtxt("Send the plot on device %d to the printer."), dev.num),
-            sprintf('printPlot(%s)', dev.num))
-  printPlot(dev.num)
+  appendLog(sprintf(Rtxt("Send the plot on device %d to the printer."), dn),
+            sprintf('printPlot(%s)', dn))
+  printPlot(dn)
   setStatusBar(sprintf(Rtxt("Plot %d has been sent to the printer",
                              "using the command: %s."),
-                       dev.num, options("printcmd")))
+                       dn, options("printcmd")))
 }
 
 on_plot_close_button_clicked <- function(action)
 {
+  # 100408 For some Japanese strings the title returned is not in the
+  # right encoding (on MS/Windows) and we get the error:
+  #
+  #   以下にエラー sub(".* ", "", ttl) : input string 1 is invalid in this locale
+  #
+  # Need to work out another way of getting the device number to
+  # close, since dev.cur() does not do it.
+
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
-  devnum <- as.integer(sub(".* ", "", ttl))
-  dev.off(devnum)
+  dn <- dev.num(ttl)
+  dev.off(dn)
   pw <- action$getParentWindow()
   pw$destroy()
 }
+
+dev.num <- function(title)
+{
+  # 100408 Return the device number for the device with the given
+  # title. This was needed because Japanes on MS/Windows was returning
+  # a title in some encoding that was not the original, and sub(".* ",
+  # "", ttl) was failing.
+
+  Encoding(title) <- "UTF-8"
+  return(as.integer(sub(".* ", "", title)))
+}
+  
 
 ########################################################################
 
@@ -2352,7 +2404,7 @@ interrupt_rattle <- function(action, window)
   # GNU/Linux, but not MS/Wdinwos. Under MS the Esc seems to send a
   # SIGBREAK to the R process. How to do that?
 
-  infoDialog("This operation is not yet functioning.")
+  infoDialog(Rtxt("This operation is not yet functional."))
 }
 
 ########################################################################

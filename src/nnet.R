@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-29 20:23:01 Graham Williams>
+# Time-stamp: <2010-03-31 11:19:40 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -190,6 +190,7 @@ errorReport(model.cmd, result)
               sprintf(Rtxt("Summary of the Neural Net model (built using %s):"),
                       ifelse(numericTarget() || binomialTarget(),
                              Rtxt("nnet"), Rtxt("multinom"))),
+              "\n\n",
               collectOutput(print.cmd))
 
   # Now that we have a model, make sure appropriate actions are sensitive.

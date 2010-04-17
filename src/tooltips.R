@@ -23,7 +23,7 @@ loadTooltips <- function()
                 gsub("\n *", " ",
                      gsub("\n *\n *", "XoX", xmlValue(tt))))
     wd <- theWidget(xmlGetAttr(tt, 'widget'))
-    wd["tooltip-text"] <- Rtxt(tip)
+    wd["tooltip-text"] <- Rtxt (tip) # 100408 Space after Rtxt is intentional.
 #print(tip)
     # 090214 The MS/Windows RGtk2 is compiled with an older GTK, even
     # though a user might have GTK 2.12.8 installed.  Thus,

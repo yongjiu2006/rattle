@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 21:38:25 Graham Williams>
+# Time-stamp: <2010-04-16 22:40:49 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -347,7 +347,7 @@ executeExploreSummary <- function(dataset)
                                     Rtxt("CrossTab of %s by target variable %s")),
                             "\n  print(CrossTable(crs$dataset[[i]],",
                             "crs$dataset[[crs$target]], expected=TRUE, format='SAS'))",
-                            "\n  cat('========================================\n\n')",
+                            "\n  cat(paste(rep('=', 70), collapse=''), '\n\n')",
                             "\n}")
       appendLog(Rtxt("Generate cross tabulations for categoric data."),
                 crosstab.cmd)
@@ -853,6 +853,7 @@ executeExplorePlot <- function(dataset,
     # So let's use the Freedman and Diaconis approach.
     
     plot.cmd <- paste('hs <- hist(ds[ds$grp=="All",1], main="", xlab="%s", ',
+                      sprintf('ylab="%s", ', Rtxt("Frequency")),
                       # cols,
                       'col="grey90"',
                       ', ylim=c(0, %s)', #', ceiling(maxy), ')',
@@ -1025,7 +1026,7 @@ executeExplorePlot <- function(dataset,
       plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
                         sprintf('col="%s",', col[1]),
                         'xlab="%s",',
-                        'ylab=expression(Proportion <= x),',
+                        sprintf('ylab=expression(%s <= x),', Rtxt("Proportion")),
                         'subtitles=FALSE)\n')
       if (not.null(targets))
         for (t in seq_along(targets))
@@ -3390,14 +3391,22 @@ executeExploreCorrelation <- function(dataset)
   ordered <- theWidget("explore_correlation_ordered_checkbutton")$getActive()
 
   # Map the GUI options to the right names - in case the translation
-  # (like Japanese) has translated the options.
+  # (like Japanese) has translated the options. 100331 The
+  # getActiveText here is returning garbage (繝斐い繧ｽ繝ｳ) instead of
+  # (ピアソ). So tried using getActive to get the index instead, but
+  # then found that Encoding is the right approach.
   
-  method.orig <- method <- theWidget("explore_correlation_method_combobox")$getActiveText()
+  method <- theWidget("explore_correlation_method_combobox")$getActiveText()
+  Encoding(method) <- "UTF-8"
+  ##method <- theWidget("explore_correlation_method_combobox")$getActive() + 1
+  method.orig <- method
   method.opts <- paste("Pearson", "Kendall", "Spearman", sep="\n")
   method.rtxt <- Rtxt (method.opts)
   method.opts <- strsplit(method.opts, "\n")[[1]]
   method.rtxt <- strsplit(method.rtxt, "\n")[[1]]
-  method <-tolower( method.opts[which(method == method.rtxt)])
+  method <-tolower(method.opts[which(method == method.rtxt)])
+  ##method.orig <- method.rtxt[method]
+  ##method <-tolower(method.opts[method])
 
   # Warn if there are too many variables. An alternative is to offer
   # to just plot the variables with the highest amount of correlation.
@@ -3469,9 +3478,13 @@ executeExploreCorrelation <- function(dataset)
   par.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "opar <- par(cex=0.5)\n", "")
   opar.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "\npar(opar)", "")
 
+  # 100416 I don't know why I need to do this, but without it I get an error.
+
+  Encoding(method.orig) <- "unknown"
+  
   if (nas)
-    title.txt <- sprintf(Rtxt("Correlation of Missing Values\n%s using %s"), crs$dataname,
-                         method.orig)
+    title.txt <- sprintf(Rtxt("Correlation of Missing Values\n%s using %s"),
+                         crs$dataname, method.orig)
   else
     title.txt <- sprintf(Rtxt("Correlation %s using %s"), crs$dataname, method.orig)
                        
@@ -3536,9 +3549,17 @@ executeExploreHiercor <- function(dataset)
     return()
   }
 
-  # Obtain user interface settings.
+  # Obtain user interface settings. 100407 Map the translated string
+  # from the GUI to the correct English version.
 
-  method <- tolower(theWidget("explore_correlation_method_combobox")$getActiveText())
+  # method <- tolower(theWidget("explore_correlation_method_combobox")$getActiveText())
+  method <- theWidget("explore_correlation_method_combobox")$getActive() + 1
+  method.opts <- paste("Pearson", "Kendall", "Spearman", sep="\n")
+  method.rtxt <- Rtxt (method.opts)
+  method.opts <- strsplit(method.opts, "\n")[[1]]
+  method.rtxt <- strsplit(method.rtxt, "\n")[[1]]
+  method.orig <- method.rtxt[method]
+  method <-tolower(method.opts[method])
   
   # Check that we have sufficient data
 
@@ -3576,8 +3597,8 @@ executeExploreHiercor <- function(dataset)
                       'lab.cex = ', fontsize, ', lab.col = "tomato"), ',
                       'edgePar = list(col = "gray", lwd = 2)',
                       ')\n',
-                      genPlotTitleCmd(Rtxt("Variable Correlation Clusters\n"),
-                                     crs$dataname, Rtxt("using"), method),'\n',
+                      genPlotTitleCmd(paste(Rtxt("Variable Correlation Clusters"), "\n", sep=""),
+                                     crs$dataname, Rtxt("using"), method.orig), '\n',
                       'par(op)\n',
                       sep="")
 

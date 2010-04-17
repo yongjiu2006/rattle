@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-26 08:06:19 Graham Williams>
+# Time-stamp: <2010-03-31 15:03:43 Graham Williams>
 #
 # RPART TAB
 #
@@ -357,7 +357,7 @@ executeModelRPart <- function(action="build")
   
   # Some convenience booleans
 
-  sampling  <- not.null(crs$sample)
+  sampling  <- not.null(crs$train)
   including <- not.null(included)
   subsetting <- sampling || including
   
@@ -380,7 +380,7 @@ executeModelRPart <- function(action="build")
   {
     ds.string <- paste("crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ", ",
                        if (including) included,
                        if (subsetting) "]", sep="")
@@ -389,7 +389,7 @@ executeModelRPart <- function(action="build")
                        ifelse(is.null(crs$weights), "",
                               sprintf(", weights=(%s)%s",
                                       crs$weights,
-                                      ifelse(sampling, "[crs$sample]", ""))),
+                                      ifelse(sampling, "[crs$train]", ""))),
                        ', method=',
                        ifelse(categoricTarget(),
                               '"class"', '"anova"'),
@@ -439,7 +439,7 @@ executeModelRPart <- function(action="build")
   {
     rpart.cmd <- paste("crs$tune.rpart <- tune.rpart(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -453,7 +453,7 @@ executeModelRPart <- function(action="build")
     # This won't work - best.rpart usese the tune.control() structure
     rpart.cmd <- paste("crs$rpart <- best.rpart(", frml, ", data=crs$dataset",
                      if (subsetting) "[",
-                     if (sampling) "crs$sample",
+                     if (sampling) "crs$train",
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 07:35:49 Graham Williams>
+# Time-stamp: <2010-04-16 06:29:22 Graham Williams>
 #
 # MODEL TAB
 #
@@ -455,12 +455,12 @@ executeModelTab <- function()
   
   formula <- paste(crs$target, "~ .")
   included <- getIncludedVariables()
-  sampling <- not.null(crs$sample)
+  sampling <- not.null(crs$train)
   including <- not.null(included)
   subsetting <- sampling || including
   dataset <- paste("crs$dataset",
                    if (subsetting) "[",
-                   if (sampling) "crs$sample",
+                   if (sampling) "crs$train",
                    if (subsetting) ",",
                    if (including) included,
                    if (subsetting) "]",
@@ -577,13 +577,16 @@ executeModelTab <- function()
     else
       setStatusBar(sprintf(Rtxt("Building %s model ... failed."), commonName(crv$NNET)))
   }
-  if (currentModelTab() == crv$SURVIVAL)
+  # 100416 The currentModelTab returns "Survival" for the
+  # translations, but "survival" for English? Yet the above work? Need
+  # to know why, but as a temporary fix, convert to lower here.
+  if (tolower(currentModelTab()) == crv$SURVIVAL)
   {
     included <- getIncludedVariables(risk=TRUE)
     including <- not.null(included)
     dataset <- paste("crs$dataset",
                      if (subsetting) "[",
-                     if (sampling) "crs$sample",
+                     if (sampling) "crs$train",
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",
@@ -660,11 +663,11 @@ executeModelGLM <- function()
   
   # Some convenience booleans.
 
-  sampling  <- not.null(crs$sample)
+  sampling  <- not.null(crs$train)
   including <- not.null(included)
   subsetting <- sampling || including
   
-  startLog("Regression")
+  startLog(Rtxt("Regression model"))
 
   if (family == "Logistic" || family == "Probit")
   {
@@ -679,7 +682,7 @@ executeModelGLM <- function()
 
     model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -721,7 +724,7 @@ executeModelGLM <- function()
     
     model.cmd <- paste("crs$glm <- lm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -740,7 +743,7 @@ executeModelGLM <- function()
 
     model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -757,7 +760,7 @@ executeModelGLM <- function()
 
     model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -789,7 +792,7 @@ executeModelGLM <- function()
                        "multinom",
                        "(", frml, ", data=crs$dataset",
                        if (subsetting) "[",
-                       if (sampling) "crs$sample",
+                       if (sampling) "crs$train",
                        if (subsetting) ",",
                        if (including) included,
                        if (subsetting) "]",
@@ -806,7 +809,7 @@ executeModelGLM <- function()
                                'cor(apply(crs$glm$fitted.values, 1, ',
                                'function(x) which(x == max(x))),\n',
                                'as.integer(crs$dataset',
-                               ifelse(sampling, '[crs$sample,]', ''),
+                               ifelse(sampling, '[crs$train,]', ''),
                                '[omitted,]$',
                                crs$target, '))))\n', sep=""),
                          "cat('==== ANOVA ====\n')",
@@ -868,11 +871,12 @@ executeModelGLM <- function()
   
   # Summarise the model.
 
-  appendLog(paste("Summary of the resulting", commonName("glm"), "model"), summary.cmd)
+  appendLog(sprintf(Rtxt("Generate a textual view of the %s model."),
+                    commonName(crv$GLM)), summary.cmd)
   
   resetTextview(TV)
-  setTextview(TV, sprintf(paste("Summary of the %s %s model",
-                                "(built using %s):\n"),
+  setTextview(TV, sprintf(Rtxt("Summary of the %s %s model",
+                               "(built using %s):\n"),
                           family, "Regression",
                           ifelse(family == "Linear", "lm",
                                  ifelse(family == "Multinomial", "multinom", "glm"))),
@@ -1120,7 +1124,7 @@ executeModelSVM <- function()
   
   ## Convenience booleans.
 
-  sampling   <- not.null(crs$sample)
+  sampling   <- not.null(crs$train)
   including  <- not.null(included)
   subsetting <- sampling || including
 
@@ -1142,7 +1146,7 @@ executeModelSVM <- function()
     svmCmd <- paste("crs$svm <- svm(", frml, ", data=crs$dataset", sep="")
   svmCmd <- paste(svmCmd,
                    if (subsetting) "[",
-                   if (sampling) "crs$sample",
+                   if (sampling) "crs$train",
                    if (subsetting) ",",
                    if (including) included,
                    if (subsetting) "]",
@@ -1182,7 +1186,8 @@ executeModelSVM <- function()
     summaryCmd <- "crs$ksvm"
   else
     summaryCmd <- "crs$svm"
-  appendLog(Rtxt("Generate textual output of the svm model."), summaryCmd)
+  appendLog(sprintf(Rtxt("Generate a textual view of the %s model."),
+                    commonName(crv$SVM)), summaryCmd)
   resetTextview(TV)
   setTextview(TV, sprintf(Rtxt("Summary of the %s model",
                                "(built using ksvm):"),
