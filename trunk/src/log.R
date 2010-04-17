@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 07:22:31 Graham Williams>
+# Time-stamp: <2010-04-10 15:24:00 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -31,6 +31,11 @@ on_log_export_rename_checkbutton_toggled <- function(button)
 
 initiateLog <- function()
 {
+  # 100407 Change the font to monospace, like all other textviews.
+  
+  if (! isJapanese())
+    theWidget("log_textview")$modifyFont(pangoFontDescriptionFromString(crv$textview.font))
+  
   if (! is.null(crv$log.intro))
     appendTextview("log_textview", crv$log.intro, tvsep=FALSE)
 

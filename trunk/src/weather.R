@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-08 08:30:56 Graham Williams>
+# Time-stamp: <2010-04-04 11:43:16 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -123,6 +123,7 @@ acquireWeatherData <- function(write.to.file=FALSE)
   # stability for the book.
 
   weather <- subset(weatherAUS, Date <= "2008/10/31" & Location == "Canberra")
+  rownames(weather) <- NULL
 
   # Save the dataset to a CSV file for inclusion with rattle.
 
@@ -165,7 +166,11 @@ acquireWeatherData <- function(write.to.file=FALSE)
 
   cat(sprintf("\nweatherAUS: %d rows by %d columns and %d weather stations.\n",
               nrow(weatherAUS), ncol(weatherAUS), length(unique(weatherAUS$Location))))
-  
+
+  # ToDo - extract info for each weather station
+
+  dfc <- aggregate(weatherAUS$Location, weatherAUS["Location"], length)
+  dfd <- aggregate(weatherAUS$Date, weatherAUS["Location"], min)
 }
 
 updateWeatherLocation <- function(name, stnID, write.to.file, backto=14)

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-27 08:30:42 Graham Williams>
+# Time-stamp: <2010-04-13 06:04:08 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -179,7 +179,7 @@ executeClusterHClust <- function(include)
   # up).
 
   TV <- "hclust_textview"
-  theWidget(TV)$modifyFont(pangoFontDescriptionFromString("monospace 10"))
+  theWidget(TV)$modifyFont(pangoFontDescriptionFromString(crv$textview.font))
   
   # TODO : If data is large put up a question about wanting to
   # continue?
@@ -204,6 +204,7 @@ executeClusterHClust <- function(include)
   # transaltions in getting the function options.
 
   dist <- theWidget("hclust_distance_combobox")$getActiveText()
+  Encoding(dist) <- "UTF-8"
   dist.opts <- paste("euclidean", "maximum", "manhattan", "canberra",
                      "binary", "pearson", "correlation", "spearman",
                      sep="\n")
@@ -213,6 +214,7 @@ executeClusterHClust <- function(include)
   dist <- dist.opts[which(dist == dist.rtxt)]
   
   link <- theWidget("hclust_link_combobox")$getActiveText()
+  Encoding(link) <- "UTF-8"
   link.opts <- paste("complete", "ward", "single", "average", "mcquitty",
                      "median", "centroid", sep="\n")
   link.rtxt <- Rtxt (link.opts)

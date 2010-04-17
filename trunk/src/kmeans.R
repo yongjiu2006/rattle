@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-02-24 07:00:51 Graham Williams>
+# Time-stamp: <2010-04-16 23:09:58 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -552,7 +552,7 @@ dataPlotKMeans <- function()
   # 091219 Check for very large data, and if so use auto sampling.
   
   large <- length(crs$kmeans$cluster) > crv$cluster.report.max.obs
-  manyvars <- length(indicies) > crv$scatter.max.vars
+  manyvars <- length(intersect(nums, indicies)) > crv$scatter.max.vars
 
   if (large && manyvars)
   {
@@ -634,7 +634,6 @@ dataPlotKMeans <- function()
   # I think the default plot is quite good. plotmatrix is good, but
   # does not include the scales and takes a long time to render.
 
-  
   ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
 
   plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]%s), ",

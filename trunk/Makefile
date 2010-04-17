@@ -111,9 +111,9 @@ ibirstat: zip
 	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates
 	cp src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/
 
-.PHONY: jie
-jie:
-	tar zcvf jie`date +%y%m%d%H%M`.tar.gz \
+.PHONY: tom
+tom:
+	tar zcvf tom`date +%y%m%d%H%M`.tar.gz \
 	src/ada_gui.R \
 	src/ada.R \
 	src/all.R \
@@ -145,7 +145,6 @@ jie:
 	src/pmml.read.R \
 	src/pmml.rpart.R \
 	src/pmml.rsf.R \
-	src/pmmltocibi.R \
 	src/pmmltoc.R \
 	src/pmml.transforms.R \
 	src/pmml.coxph.R \
@@ -155,7 +154,6 @@ jie:
 	src/rattle.R \
 	src/report.R \
 	src/rpart.R \
-	src/rstat.R \
 	src/survival.R \
 	src/test.R \
 	src/textminer.R \

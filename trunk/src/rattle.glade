@@ -160,8 +160,9 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="export_menu">
-                        <property name="label" translatable="yes">Export</property>
+                        <property name="label" translatable="yes">Exp_ort</property>
                         <property name="visible">True</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_export_button_clicked"/>
                         <child internal-child="image">
@@ -179,8 +180,9 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="data3">
-                        <property name="label">_Data</property>
+                        <property name="label" translatable="yes">_Data</property>
                         <property name="visible">True</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_tools_data_activate"/>
                         <child internal-child="image">
@@ -234,7 +236,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="model2">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Model</property>
+                        <property name="label" translatable="yes">_Predictive</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_tools_model_activate"/>
                       </widget>
@@ -819,12 +821,13 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Ass_ociate</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_help_associate_menuitem_activate"/>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkMenuItem" id="help_model_menuitem">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Model</property>
+                        <property name="label" translatable="yes">_Predictive</property>
                         <property name="use_underline">True</property>
                         <child>
                           <widget class="GtkMenu" id="help_model_menu">
@@ -1475,6 +1478,7 @@
                         <child>
                           <widget class="GtkEntry" id="data_odbc_dsn_entry">
                             <property name="can_focus">True</property>
+                            <property name="width_chars">10</property>
                             <signal name="activate" handler="open_odbc_set_combo"/>
                           </widget>
                           <packing>
@@ -1519,7 +1523,7 @@
                         <child>
                           <widget class="GtkSpinButton" id="data_odbc_limit_spinbutton">
                             <property name="can_focus">True</property>
-                            <property name="max_length">10</property>
+                            <property name="width_chars">6</property>
                             <property name="adjustment">0 0 1000000000 1 100 0</property>
                             <property name="climb_rate">1</property>
                           </widget>
@@ -1542,6 +1546,9 @@
                             <property name="fill">False</property>
                             <property name="position">15</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </widget>
                     </child>
@@ -1647,9 +1654,9 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label26">
+                      <widget class="GtkLabel" id="data_corpus_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">corpus</property>
+                        <property name="label">corpus</property>
                       </widget>
                       <packing>
                         <property name="position">6</property>
@@ -2505,9 +2512,9 @@
                           </widget>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label74">
+                          <widget class="GtkLabel" id="explore_summary_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">summary</property>
+                            <property name="label">summary</property>
                           </widget>
                           <packing>
                             <property name="tab_fill">False</property>
@@ -2823,9 +2830,9 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label107">
+                          <widget class="GtkLabel" id="explore_explot_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">explot</property>
+                            <property name="label">explot</property>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -2938,9 +2945,9 @@ Spearman</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label75">
+                          <widget class="GtkLabel" id="explore_correlation_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">correlation</property>
+                            <property name="label">correlation</property>
                           </widget>
                           <packing>
                             <property name="position">2</property>
@@ -3027,9 +3034,9 @@ Spearman</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label104">
+                          <widget class="GtkLabel" id="explore_prcomp_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">prcomp</property>
+                            <property name="label">prcomp</property>
                           </widget>
                           <packing>
                             <property name="position">3</property>
@@ -3109,9 +3116,9 @@ Spearman</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label9">
+                          <widget class="GtkLabel" id="explore_interactive_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">interactive</property>
+                            <property name="label">interactive</property>
                           </widget>
                           <packing>
                             <property name="position">4</property>
@@ -3746,10 +3753,10 @@ Spearman</property>
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label4">
+                      <widget class="GtkLabel" id="transform_normalise_tab_label">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">normalise</property>
+                        <property name="label">normalise</property>
                       </widget>
                       <packing>
                         <property name="tab_fill">False</property>
@@ -3883,9 +3890,9 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label156">
+                      <widget class="GtkLabel" id="transform_impute_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">impute</property>
+                        <property name="label">impute</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
@@ -4089,9 +4096,9 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label157">
+                      <widget class="GtkLabel" id="transform_remap_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">remap</property>
+                        <property name="label">remap</property>
                       </widget>
                       <packing>
                         <property name="position">2</property>
@@ -4110,9 +4117,9 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label158">
+                      <widget class="GtkLabel" id="transform_outliers_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">outliers</property>
+                        <property name="label">outliers</property>
                       </widget>
                       <packing>
                         <property name="position">3</property>
@@ -4220,10 +4227,10 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label5">
+                      <widget class="GtkLabel" id="transform_cleanup_tab_label">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">cleanup</property>
+                        <property name="label">cleanup</property>
                       </widget>
                       <packing>
                         <property name="position">4</property>
@@ -4585,9 +4592,9 @@ Spearman</property>
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label61">
+                      <widget class="GtkLabel" id="cluster_kmeans_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">kmeans</property>
+                        <property name="label">kmeans</property>
                       </widget>
                       <packing>
                         <property name="tab_fill">False</property>
@@ -4625,9 +4632,9 @@ Spearman</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label20">
+                      <widget class="GtkLabel" id="cluster_clara_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">clara</property>
+                        <property name="label">clara</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
@@ -4659,7 +4666,6 @@ Spearman</property>
                                 <property name="spacing">5</property>
                                 <child>
                                   <widget class="GtkLabel" id="label30">
-                                    <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes">Build Options:</property>
@@ -4774,7 +4780,6 @@ centroid</property>
                                 <property name="spacing">5</property>
                                 <child>
                                   <widget class="GtkLabel" id="label32">
-                                    <property name="width_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes">Cluster Options:</property>
@@ -4914,9 +4919,9 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label62">
+                      <widget class="GtkLabel" id="cluster_hclust_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">hclust</property>
+                        <property name="label">hclust</property>
                       </widget>
                       <packing>
                         <property name="position">2</property>
@@ -4955,9 +4960,9 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label18">
+                      <widget class="GtkLabel" id="cluster_biclust_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">biclust</property>
+                        <property name="label">biclust</property>
                       </widget>
                       <packing>
                         <property name="position">2</property>
@@ -5466,7 +5471,7 @@ centroid</property>
                                   <widget class="GtkLabel" id="model_tree_builder_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">rpart</property>
+                                    <property name="label">rpart</property>
                                     <property name="width_chars">15</property>
                                   </widget>
                                   <packing>
@@ -5848,7 +5853,7 @@ centroid</property>
                     <child>
                       <widget class="GtkLabel" id="model_tree_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">rpart</property>
+                        <property name="label">rpart</property>
                       </widget>
                       <packing>
                         <property name="tab_fill">False</property>
@@ -5891,10 +5896,10 @@ centroid</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="label148">
+                                  <widget class="GtkLabel" id="model_ada_builder_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">ada</property>
+                                    <property name="label">ada</property>
                                     <property name="width_chars">15</property>
                                   </widget>
                                   <packing>
@@ -6227,9 +6232,9 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="ada_tab_label">
+                      <widget class="GtkLabel" id="model_ada_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">ada</property>
+                        <property name="label">ada</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
@@ -6318,7 +6323,7 @@ centroid</property>
                                   <widget class="GtkLabel" id="model_rf_builder_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">randomForest</property>
+                                    <property name="label">randomForest</property>
                                     <property name="width_chars">15</property>
                                   </widget>
                                   <packing>
@@ -6569,9 +6574,9 @@ centroid</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label77">
+                      <widget class="GtkLabel" id="model_rf_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">rf</property>
+                        <property name="label">rf</property>
                       </widget>
                       <packing>
                         <property name="position">2</property>
@@ -6696,16 +6701,6 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="svm_poly_degree_label">
-                                <property name="label" translatable="yes">Degree:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkSpinButton" id="svm_poly_degree_spinbutton">
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">1 1 10 1 2 0</property>
@@ -6714,6 +6709,16 @@ ANOVA RBF (anovadot)</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="svm_poly_degree_label">
+                                <property name="label" translatable="yes">Degree:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -6811,9 +6816,9 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label105">
+                      <widget class="GtkLabel" id="model_svm_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">svm</property>
+                        <property name="label">svm</property>
                       </widget>
                       <packing>
                         <property name="position">3</property>
@@ -7030,7 +7035,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkLabel" id="model_linear_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">glm</property>
+                        <property name="label">glm</property>
                       </widget>
                       <packing>
                         <property name="position">4</property>
@@ -7077,7 +7082,7 @@ ANOVA RBF (anovadot)</property>
                                   <widget class="GtkLabel" id="nnet_builder_label">
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">nnet</property>
+                                    <property name="label">nnet</property>
                                     <property name="width_chars">15</property>
                                   </widget>
                                   <packing>
@@ -7192,9 +7197,9 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="nnet_tab_label">
+                      <widget class="GtkLabel" id="model_nnet_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">nnet</property>
+                        <property name="label">nnet</property>
                       </widget>
                       <packing>
                         <property name="position">5</property>
@@ -7231,10 +7236,10 @@ ANOVA RBF (anovadot)</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label127">
+                              <widget class="GtkLabel" id="model_gbm_label">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">gbm</property>
+                                <property name="label">gbm</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -7317,9 +7322,9 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label31">
+                      <widget class="GtkLabel" id="model_gbm_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">gbm</property>
+                        <property name="label">gbm</property>
                       </widget>
                       <packing>
                         <property name="position">6</property>
@@ -7338,8 +7343,10 @@ ANOVA RBF (anovadot)</property>
                             <child>
                               <widget class="GtkLabel" id="model_survival_time_var_label">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">No time variable selected</property>
-                                <property name="width_chars">24</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">5</property>
+                                <property name="label" translatable="yes">No time variable has been selected</property>
+                                <property name="width_chars">35</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -7349,8 +7356,9 @@ ANOVA RBF (anovadot)</property>
                             <child>
                               <widget class="GtkLabel" id="model_survival_status_var_label">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">No event variable selected</property>
-                                <property name="width_chars">25</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">No status variable has been selected</property>
+                                <property name="width_chars">35</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -7498,9 +7506,9 @@ ANOVA RBF (anovadot)</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label33">
+                      <widget class="GtkLabel" id="model_survival_tab_label">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">survival</property>
+                        <property name="label">survival</property>
                       </widget>
                       <packing>
                         <property name="position">7</property>
@@ -7746,7 +7754,8 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkLabel" id="label132">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Model:   </property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Model:</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -7768,6 +7777,7 @@ ANOVA RBF (anovadot)</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="padding">4</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -7931,7 +7941,7 @@ ANOVA RBF (anovadot)</property>
                     <child>
                       <widget class="GtkLabel" id="label103">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Data: </property>
+                        <property name="label" translatable="yes">Data:</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -8044,7 +8054,6 @@ ANOVA RBF (anovadot)</property>
                         <property name="width_request">100</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
-                        <property name="title" translatable="yes">Select A CSV File</property>
                         <property name="width_chars">15</property>
                       </widget>
                       <packing>
@@ -8112,7 +8121,7 @@ ANOVA RBF (anovadot)</property>
                         <property name="sensitive">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">No risk variable currently selected</property>
-                        <property name="width_chars">28</property>
+                        <property name="width_chars">45</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -8259,9 +8268,9 @@ ANOVA RBF (anovadot)</property>
                           </widget>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label46">
+                          <widget class="GtkLabel" id="evaluate_confusion_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">confusion</property>
+                            <property name="label">confusion</property>
                           </widget>
                           <packing>
                             <property name="tab_fill">False</property>
@@ -8294,9 +8303,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label47">
+                          <widget class="GtkLabel" id="evaluate_lift_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">lift</property>
+                            <property name="label">lift</property>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -8330,9 +8339,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label48">
+                          <widget class="GtkLabel" id="evaluate_roc_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">roc</property>
+                            <property name="label">roc</property>
                           </widget>
                           <packing>
                             <property name="position">2</property>
@@ -8366,9 +8375,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label49">
+                          <widget class="GtkLabel" id="evaluate_precision_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">precision</property>
+                            <property name="label">precision</property>
                           </widget>
                           <packing>
                             <property name="position">3</property>
@@ -8402,9 +8411,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label50">
+                          <widget class="GtkLabel" id="evaluate_sensitivity_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">sensitivity</property>
+                            <property name="label">sensitivity</property>
                           </widget>
                           <packing>
                             <property name="position">4</property>
@@ -8438,9 +8447,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label51">
+                          <widget class="GtkLabel" id="evaluate_risk_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">risk</property>
+                            <property name="label">risk</property>
                           </widget>
                           <packing>
                             <property name="position">5</property>
@@ -8467,9 +8476,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label40">
+                          <widget class="GtkLabel" id="evaluate_pvo_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">pvo</property>
+                            <property name="label">pvo</property>
                           </widget>
                           <packing>
                             <property name="position">6</property>
@@ -8496,9 +8505,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label41">
+                          <widget class="GtkLabel" id="evaluate_score_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">score</property>
+                            <property name="label">score</property>
                           </widget>
                           <packing>
                             <property name="position">7</property>
@@ -8525,9 +8534,9 @@ ANOVA RBF (anovadot)</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label42">
+                          <widget class="GtkLabel" id="evaluate_costcurve_tab_label">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">costcurve</property>
+                            <property name="label">costcurve</property>
                           </widget>
                           <packing>
                             <property name="position">8</property>

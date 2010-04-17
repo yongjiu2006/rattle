@@ -1,3 +1,28 @@
+rattle (2.5.27) unstable; urgency=low
+
+  * Further translation fixes. In particular, use Encoding(...getText())
+    <- "UTF-8" to ensure strings from the GUI ate UTF-8, and not unknown.
+  
+  * Ensure training dataset rather than sample dataset nomenclature is now
+    used.
+  
+  * Ensure execute button can only be clicked once while it is processing.
+  
+  * Survival plot buttons need to be made sensitive as appropriate.
+  
+  * For Japanese on MS/Windows do not use monospace font since this ends
+    up vertically cenbtering periods and commas (and all other
+    characters). Need a fixed width font that does not do this, but for
+    now we put up with variable width font.
+
+  * Revert to using only English for all hidden tab labels.
+  
+  * Improved identification of current plot number.
+  
+  * Bug fix multiple vars selected for asnumeric and ascategoric
+    transforms.
+ --
+
 rattle (2.5.26) unstable; urgency=low
 
   * Add Cross Tab option to Explore tab to generate cross tabulations of

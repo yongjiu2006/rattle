@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-03-30 11:06:11 Graham Williams>
+# Time-stamp: <2010-04-17 13:21:08 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -24,8 +24,8 @@
 
 setGuiDefaultsSurvival <- function()
 {
-  theWidget("model_survival_time_var_label")$setText("No time variable selected")
-  theWidget("model_survival_status_var_label")$setText("No status variable selected")
+  theWidget("model_survival_time_var_label")$setText(Rtxt("No time variable selected"))
+  theWidget("model_survival_status_var_label")$setText(Rtxt("No status variable selected"))
   theWidget("model_survival_coxph_radiobutton")$setActive(TRUE)
   theWidget("model_survival_plots_label")$setSensitive(FALSE)
   theWidget("model_survival_plot_survival_button")$setSensitive(FALSE)
@@ -40,12 +40,17 @@ on_model_survival_coxph_radiobutton_toggled <- function(button)
     # 091114 This is the only other alternative for now, so only use
     # the one callback unless we add alternative buidlers.
     theWidget("model_survival_function_label")$setText("survreg")
+
+  activate.buttons <- button$getActive() && ! is.null(crs$survival)
+
+  theWidget("model_survival_plots_label")$setSensitive(activate.buttons)
+  theWidget("model_survival_plot_survival_button")$setSensitive(activate.buttons)
+  theWidget("model_survival_plot_residual_button")$setSensitive(activate.buttons)
 }
 
 on_model_survival_plot_survival_button_clicked <- function(button)
 {
   plotSurvivalModel()
-  if (crv$appname == "RStat") plotResidualModels()
 }
 
 
@@ -75,8 +80,8 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   # Load the required package into the library.
 
   lib.cmd <-  "require(survival, quietly=TRUE)"
-  if (! packageIsAvailable("survival", "build a Survival model")) return(NULL)
-  if (gui) appendLog("Require the survival package.", lib.cmd)
+  if (! packageIsAvailable("survival", Rtxt("build a Survival model"))) return(NULL)
+  if (gui) appendLog(Rtxt("Require the survival package."), lib.cmd)
   eval(parse(text=lib.cmd))
 
   # Build a model. 
@@ -84,7 +89,7 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   method <- ifelse(method=="para", "survreg", "coxph")
   model.cmd <- sprintf("%s(%s, data=%s)", method, formula, dataset)
 
-  if (gui) appendLog("Build the Survival model.",
+  if (gui) appendLog(Rtxt("Build the Survival model."),
                      sprintf('crs$survival <- %s', model.cmd))
 
   # Note that this crs$survival is not the global crs$survival! We use
@@ -178,7 +183,7 @@ showModelSurvivalExists <- function(state=!is.null(crs$survival))
 
 plotSurvivalModel <- function()
 {
-  startLog(Rtxt("Survival chart"))
+  startLog(Rtxt("Survival chart."))
 
   plot.cmd <- paste('plot(survfit(crs$survival), xlab=crs$target,',
                     'ylab="Survival Probability", col=3)\n',
@@ -194,24 +199,26 @@ plotResidualModels <- function()
 {
   startLog(Rtxt("Survival model residuals plot."))
 
+  # 100417 Use the max number per page count from the plots page.
+  
+  pmax <- theWidget("plots_per_page_spinbutton")$getValue()
+
   plot.cmd <- paste('temp <- cox.zph(crs$survival)',
-# 100325 This works but wait for IBI go ahead and testing for RStat
+                    sprintf("pmax <- %d", pmax),
+                    "pcnt <- 0",
                     'nr <- nrow(temp$var)',
-                    sprintf('opar <- par(mfrow=c(%d, 3))',
-                            trunc((nrow(cox.zph(crs$survival)$var)+2)/3)),
-                    'vnum <- 1',
+                    "if (nr < pmax) pmax <- nr",
                     'for (vnum in 1:nr)',
                     '{',
+                    '  if (pcnt %% pmax == 0) newPlot(pmax)',
+                    '  pcnt <- pcnt + 1',
                     '  plot(temp, var=vnum)',
                     '  abline(0, 0, lty=3)',
                     '  # A linear fit.',
                     '  abline(lm(temp$y[,vnum] ~ temp$x)$coefficients, lty=4, col=3)',
                     '}',
-                    # Any way to get a title on the whole plot?
-                    # genPlotTitleCmd("Scaled Schoenfeld Residuals"),
-                    'par(opar)',
                     sep="\n")
-  appendLog("Plot the scaled Schoenfeld residuals of proportional hazards.",
+  appendLog(Rtxt("Plot the scaled Schoenfeld residuals of proportional hazards."),
             plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
@@ -226,7 +233,7 @@ exportSurvivalModel <- function()
 
   if (noModelAvailable(crs$survival, crv$SURVIVAL)) return(FALSE)
 
-  startLog("Export Survival Model")
+  startLog(Rtxt("Export survival model."))
 
   save.name <- getExportSaveName(crv$SURVIVAL)
   if (is.null(save.name)) return(FALSE)
@@ -240,7 +247,7 @@ exportSurvivalModel <- function()
 
   if (ext == "xml")
   {
-    appendLog("Export Survival regression as PMML.",
+    appendLog(Rtxt("Export survival regression as PMML."),
               sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
     saveXML(eval(parse(text=pmml.cmd)), save.name)
   }
@@ -254,7 +261,7 @@ exportSurvivalModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
     
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog("Export a Survival regression model as C code for WebFocus.",
+    appendLog(Rtxt("Export a Survival regression model as C code for WebFocus."),
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),
