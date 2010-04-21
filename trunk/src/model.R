@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-16 06:29:22 Graham Williams>
+# Time-stamp: <2010-04-17 16:03:21 Graham Williams>
 #
 # MODEL TAB
 #
@@ -710,7 +710,9 @@ executeModelGLM <- function()
                          'cat(sprintf("Pseudo R-Square (optimistic): %.8f\n",',
                          '             cor(crs$glm$y, crs$glm$fitted.values)))',
                          "cat('\n==== ANOVA ====\n\n')",
-                         'print(anova(crs$glm, test="Chisq"))', sep="\n")
+                         'print(anova(crs$glm, test="Chisq"))',
+                         'print("\n")',
+                         sep="\n")
   }
   else if (family == "Linear")
   {
@@ -732,7 +734,9 @@ executeModelGLM <- function()
 
     summary.cmd <- paste("print(summary(crs$glm))",
                          "cat('==== ANOVA ====\n\n')",
-                         "print(anova(crs$glm))", sep="\n")
+                         "print(anova(crs$glm))",
+                         'print("\n")',
+                         sep="\n")
   }
   else if (family == "Gaussian")
   {
@@ -752,7 +756,9 @@ executeModelGLM <- function()
 
     summary.cmd <- paste("print(summary(crs$glm))",
                          "cat('==== ANOVA ====\n\n')",
-                         "print(anova(crs$glm))", sep="\n")
+                         "print(anova(crs$glm))",
+                         'print("\n")',
+                         sep="\n")
   }
   else if (family == "Poisson")
   {
@@ -769,7 +775,8 @@ executeModelGLM <- function()
 
     summary.cmd <- paste("print(summary(crs$glm))",
                          "cat('==== ANOVA ====\n\n')",
-                         "print(anova(crs$glm))", sep="\n")
+                         "print(anova(crs$glm))",
+                         'print("\n")', sep="\n")
   }
   else if (family == "Multinomial")
   {
@@ -814,6 +821,7 @@ executeModelGLM <- function()
                                crs$target, '))))\n', sep=""),
                          "cat('==== ANOVA ====\n')",
                          "print(Anova(crs$glm))",
+                         'print("\n")',
                          sep="\n")
 
   }
