@@ -1,3 +1,17 @@
+rattle (2.5.28) stable; urgency=low
+
+  * Minor format changes for glm and rf model output.
+  
+  * Capture additional survival model error and suggest a solution.
+  
+  * Remove spurious additional plot for Survival Residual plot.
+  
+  * Update log tab labels to be more generic.
+  
+  * Update tooltips to be generic and add survival tooltips.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Thu, 22 Apr 2010 06:21:58 +1000
+
 rattle (2.5.27) unstable; urgency=low
 
   * Further translation fixes. In particular, use Encoding(...getText())
@@ -21,7 +35,8 @@ rattle (2.5.27) unstable; urgency=low
   
   * Bug fix multiple vars selected for asnumeric and ascategoric
     transforms.
- --
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Thu, 22 Apr 2010 06:17:20 +1000
 
 rattle (2.5.26) unstable; urgency=low
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 11:18:23 Graham Williams>
+# Time-stamp: <2010-04-17 15:54:26 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -355,14 +355,15 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   
   addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result)
 
-  addTextview(TV, sprintf(Rtxt("\n \nDisplay the Model",
-                               "\n \nTo view model 5, for example, execute the",
+  addTextview(TV, sprintf(Rtxt("\n\nDisplay the Model",
+                               "\n\nTo view model 5, for example, execute the",
                                "command \n  %s\nin the R console. Generating",
-                               "all models will take quite some time.\n"),
+                               "all models will take quite some time."),
                           ifelse(traditional,
                                  "printRandomForests(crs$rf, 5)",
                                  paste('party:::prettytree(crs$rf@ensemble[[5]],',
-                                       'names(crs$rf@data@get("input")))'))))
+                                       'names(crs$rf@data@get("input")))'))),
+              "\n")
 
   # 100107 What is the purpose of this?
 

@@ -8596,7 +8596,7 @@ ANOVA RBF (anovadot)</property>
                     </child>
                     <child>
                       <widget class="GtkCheckButton" id="log_export_rename_checkbutton">
-                        <property name="label" translatable="yes">Rename Rattle Variables: From crs$ to</property>
+                        <property name="label" translatable="yes">Rename Internal Variables: From crs$ to</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>

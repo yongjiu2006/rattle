@@ -103,13 +103,21 @@ default: local plocal ilocal
 .PHONY: ibirstat
 ibirstat: zip
 	mv $@??????????.zip archive
-	-diff ibi/rstat.R src >| ibi/updates
+	-echo "Diff in rstat.R" >| ibi/updates
+	-diff ibi/rstat.R src >> ibi/updates
+	-echo "Diff in pmml.transforms.R" >> ibi/updates
 	-diff ibi/pmml.transforms.R src >> ibi/updates
+	-echo "Diff in pmmltocibi.R" >> ibi/updates
 	-diff ibi/pmmltocibi.R src >> ibi/updates
+	-echo "Diff in R-en.po" >> ibi/updates
+	-diff ibi/R-en.po po >> ibi/updates
+	-cp ibi/updates archive/updates`date +%y%m%d%H%M`
 	zip $@`date +%y%m%d%H%M`.zip \
 	rattle_$(VERSION).zip pmml_$(PVERSION).zip rstat_$(IVERSION).zip \
-	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates
+	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates \
+	po/R-en.po
 	cp src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/
+	cp po/R-en.po ibi/
 
 .PHONY: tom
 tom:

@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-04-17 13:21:08 Graham Williams>
+# Time-stamp: <2010-04-21 06:50:07 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -108,12 +108,22 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
     
     if (any(grep(Rtxt("Invalid survival times for this distribution"), crs$survival)))
     {
-      errorDialog(Rtxt("E145: The building of the survival model failed.",
+      errorDialog(Rtxt("The building of the survival model failed.",
                        "The error indicates an invalid Time variable.",
                        "This can be the case when using survreg and there is",
                        "a zero time value (as might result from an imputation).",
                        "Please review the source data and ensure the Time values",
                        "are correct."))
+      setTextview(tv)
+    }
+    else if (any(grep(Rtxt("NA/NaN/Inf in foreign function call"), crs$survival)))
+    {
+      errorDialog(Rtxt("Your data contains variables with too many categoric values.",
+                       "Please reduce the number of categoric values or remove any",
+                       "identifier variables from the input variables in order to",
+                       "generate a survival model.",
+                       "\n\nThe actual error message was:"),
+                  "\n\n", paste(crs$survival, "\n"))
       setTextview(tv)
     }
     else
@@ -220,7 +230,6 @@ plotResidualModels <- function()
                     sep="\n")
   appendLog(Rtxt("Plot the scaled Schoenfeld residuals of proportional hazards."),
             plot.cmd)
-  newPlot()
   eval(parse(text=plot.cmd))
 }
 

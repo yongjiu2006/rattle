@@ -29,7 +29,7 @@
     (CSV with data types) as is used with the Weka data mining
     tool.</tooltip>
   <tooltip widget="data_rdataset_radiobutton">Associate a pre-existing
-    R dataset for use in Rattle.</tooltip>
+    R dataset for use.</tooltip>
   <tooltip widget="data_library_radiobutton">Choose one of the
     datasets supplied by any of the installed R packages.</tooltip>
   <tooltip widget="data_rdata_radiobutton">Load data from a R
@@ -105,11 +105,14 @@
     weight for each observation. Variables can be named in the
     formula.</tooltip>
   <tooltip widget="data_target_auto_radiobutton">Determine target type
-    automatically.</tooltip>
+    automatically as either Categoric or Numeric.</tooltip>
   <tooltip widget="data_target_categoric_radiobutton">Set target type to be
     categoric for Classification.</tooltip>
   <tooltip widget="data_target_numeric_radiobutton">Set target type to be
     numeric for Regression.</tooltip>
+  <tooltip widget="data_target_survival_radiobutton">Set target type to be
+    suitable for Survival Analysis, requiring both Time and Status
+    variables to be identified.</tooltip>
   <tooltip widget="label1">Load a dataset.</tooltip>
   <tooltip widget="summary_radiobutton">Summarise the dataset.</tooltip>
   <tooltip widget="explore_distr_radiobutton">Generate various plots
@@ -297,8 +300,10 @@
   <tooltip widget="nnet_radiobutton">Build a Regression (numeric
     target) or Classification (categoric target) model with
     nnet/multinom respectively.</tooltip>
+  <tooltip widget="model_survival_radiobutton">Build a model for
+    survival times.</tooltip>
   <tooltip widget="all_models_radiobutton">Build one model of each
-    type using the specified parameters.</tooltip>
+    type (except Survival) using the specified parameters.</tooltip>
   <tooltip widget="boost_radiobutton">Build multiple simple models,
     boosting observations hard to classify, combined into an
     ensemble.</tooltip>
@@ -494,9 +499,9 @@
   <tooltip widget="log_export_comments_checkbutton">When unchecked,
     only the actual R commands will be exported to file, otherwise
     everything we see in the Log is exported.</tooltip>
-  <tooltip widget="log_export_rename_checkbutton">Rattle variables are
+  <tooltip widget="log_export_rename_checkbutton">Internal variables are
   prefixed with the string 'crs$'. You can choose to use your own
   string to prefix your variables on exporting the Log.</tooltip>
 <tooltip widget="log_export_rename_entry">Choose the prefix to be used
-  to identify Rattle variables when this Log is exported.</tooltip>
+  to identify internal variables when this Log is exported.</tooltip>
 </rattle-tooltips>
