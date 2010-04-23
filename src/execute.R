@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-08 15:24:20 Graham Williams>
+# Time-stamp: <2010-04-24 07:12:07 Graham Williams>
 #
 # Implement functionality associated with the Execute button and Menu.
 #
@@ -73,7 +73,8 @@ dispatchExecuteButton <- function()
   # Check which tab of notebook and dispatch to appropriate execute action
 
   ct <- getCurrentPageLabel(crv$NOTEBOOK)
-  Encoding(ct) <- "UTF-8" # 100408 For French, but see if it's okay always!
+  # REMOVE 100424 No longer required here - this is done earlier now.
+  # Encoding(ct) <- "UTF-8" # 100408 For French, but see if it's okay always!
 
   if (ct == crv$NOTEBOOK.DATA.NAME)
   {
@@ -117,6 +118,7 @@ dispatchExecuteButton <- function()
   else
   {
     errorDialog(Rtxt("'dispatchExecuteButton' has been called with an unknown tab."),
+                "\n\n", ct,
                 "\n\n", crv$support.msg)
     return()
   }

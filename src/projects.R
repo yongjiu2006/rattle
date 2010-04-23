@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-31 11:13:55 Graham Williams>
+# Time-stamp: <2010-04-24 05:34:13 Graham Williams>
 #
 # Project functionality.
 #
@@ -496,6 +496,8 @@ loadProject <- function()
 #  crs$hclust   <- crs$hclust
   setTextviewContents("hclust_textview", crs$text$hclust)
 
+  showModelHClustExists() # 100424 Enable appropriate widgets if hclust exists.
+  
   ## MODELS - Ensure libraries are loaded.
 
 #  crs$page     <- crs$page

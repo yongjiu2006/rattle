@@ -100,8 +100,22 @@ SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
 default: local plocal ilocal
 
+.PHONY: ibidiff
+ibidiff: zip
+	-echo "Diff in rstat.R" >| updates
+	-diff ibi/rstat.R src >> updates
+	-echo "Diff in pmml.transforms.R" >> updates
+	-diff ibi/pmml.transforms.R src >> updates
+	-echo "Diff in pmmltocibi.R" >> updates
+	-diff ibi/pmmltocibi.R src >> updates
+	-echo "Diff in R-en.po" >> updates
+	-diff ibi/R-en.po po >> updates
+	most updates
+	rm -f updates
+
 .PHONY: ibirstat
 ibirstat: zip
+	most ibi/updates
 	mv $@??????????.zip archive
 	-echo "Diff in rstat.R" >| ibi/updates
 	-diff ibi/rstat.R src >> ibi/updates
@@ -112,6 +126,7 @@ ibirstat: zip
 	-echo "Diff in R-en.po" >> ibi/updates
 	-diff ibi/R-en.po po >> ibi/updates
 	-cp ibi/updates archive/updates`date +%y%m%d%H%M`
+	most ibi/updates
 	zip $@`date +%y%m%d%H%M`.zip \
 	rattle_$(VERSION).zip pmml_$(PVERSION).zip rstat_$(IVERSION).zip \
 	src/rstat.R src/pmml.transforms.R src/pmmltocibi.R ibi/updates \

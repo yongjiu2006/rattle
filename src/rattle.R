@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-16 20:44:46 Graham Williams>
+# Time-stamp: <2010-04-23 07:08:26 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 17 Apr 2010"
+VERSION.DATE <- "Released 22 Apr 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -576,7 +576,8 @@ rattle <- function(csvname=NULL)
   crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
   #crv$NOTEBOOK.MODEL.NAME     <- theWidget("model_tab_label")$getLabel()
-  crv$NOTEBOOK.MODEL.NAME     <- Rtxt("Predictive")
+  if (is.null(crv$NOTEBOOK.MODEL.NAME)) # 100423 Fix for RStat using Model
+    crv$NOTEBOOK.MODEL.NAME <- Rtxt("Predictive")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
   crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 

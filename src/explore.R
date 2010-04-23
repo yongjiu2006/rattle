@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-16 22:40:49 Graham Williams>
+# Time-stamp: <2010-04-24 06:03:50 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -3478,7 +3478,8 @@ executeExploreCorrelation <- function(dataset)
   par.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "opar <- par(cex=0.5)\n", "")
   opar.cmd <- ifelse(nrow(crs$cor) > MAXCORVARS, "\npar(opar)", "")
 
-  # 100416 I don't know why I need to do this, but without it I get an error.
+  # 100416 I don't know why I need to do this, but without it I get an
+  # error from the sprintf.
 
   Encoding(method.orig) <- "unknown"
   

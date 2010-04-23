@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-13 06:04:08 Graham Williams>
+# Time-stamp: <2010-04-24 05:32:48 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -294,13 +294,8 @@ executeClusterHClust <- function(include)
 
   setTextview(TV, Rtxt("Hierachical Cluster"), "\n", collectOutput("crs$hclust", TRUE))
 
-  theWidget("hclust_dendrogram_button")$setSensitive(TRUE)
-  theWidget("hclust_clusters_label")$setSensitive(TRUE)
-  theWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
-  theWidget("hclust_stats_button")$setSensitive(TRUE)
-  theWidget("hclust_data_plot_button")$setSensitive(TRUE)
-  theWidget("hclust_discriminant_plot_button")$setSensitive(TRUE)
-
+  showModelHClustExists()
+  
   reportTimeTaken(TV, time.taken,
                   msg=Rtxt("A hierarchical cluster has been generated."))
   
@@ -496,6 +491,21 @@ displayHClustStats <- function()
   
 ##   setStatusBar("Seriation plot completed.")
 ## }
+
+# 100424 Support resetting of widgets on loading a project.
+
+showModelHClustExists <- function(state=!is.null(crs$hclust))
+{
+  # If a model exists then make available the appropriate widgets.
+  
+  theWidget("hclust_dendrogram_button")$setSensitive(TRUE)
+  theWidget("hclust_clusters_label")$setSensitive(TRUE)
+  theWidget("hclust_clusters_spinbutton")$setSensitive(TRUE)
+  theWidget("hclust_stats_button")$setSensitive(TRUE)
+  theWidget("hclust_data_plot_button")$setSensitive(TRUE)
+  theWidget("hclust_discriminant_plot_button")$setSensitive(TRUE)
+
+}
 
 ########################################################################
 # EXPORT
