@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-16 23:09:58 Graham Williams>
+# Time-stamp: <2010-04-24 05:29:56 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -251,7 +251,6 @@ showModelKMeansExists <- function(state=!is.null(crs$kmeans))
   theWidget("kmeans_discriminant_plot_button")$setSensitive(state)
 
 }
-
 
 ########################################################################
 # Export

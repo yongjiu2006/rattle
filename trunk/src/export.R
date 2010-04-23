@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-12 22:15:11 Graham Williams>
+# Time-stamp: <2010-04-24 06:11:51 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -73,8 +73,13 @@ dispatchExportButton <- function()
     # the same as clicking the Execute button.
     executeEvaluateTab()
   else
-    infoDialog(sprintf(Rtxt("No export functionality is available for the",
-                            "%s tab. Nothing done."), ct))
+    {
+      # 100424 This is required for MS/Windows and Japanese and
+      # sprintf for some reason - presumably a bug.
+      if (isJapanese()) Encoding(ct) <- "unknown"
+      infoDialog(sprintf(Rtxt("No export functionality is available for the",
+                              "%s tab. Nothing done."), ct))
+    }
 }
 
 ## This is handled by the Cairo device save button now. Might want to

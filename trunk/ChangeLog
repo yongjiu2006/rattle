@@ -1,3 +1,18 @@
+rattle (2.5.29) stable; urgency=low
+
+  * Add the translation file.
+  
+  * Fix an Encoding/sprintf issue for Japanese on MS/Windows.
+  
+  * Allow crv$NOTEBOOK.MODEL.NAME to be overridden by other packages
+    (RStat).
+  
+  * When dispatch fails be sure to include the label on which it fails.
+  
+  * Ensure HClust Options are re-enabled on loading a project.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 24 Apr 2010 07:32:02 +1000
+
 rattle (2.5.28) stable; urgency=low
 
   * Minor format changes for glm and rf model output.
