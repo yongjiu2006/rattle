@@ -1,3 +1,17 @@
+rattle (2.5.30) stable; urgency=low
+
+  * On MS/Windows with Japanese, read.csv needs encoding option set with
+    file rather than with read.csv (for UTF-8) but seems okay under other
+    scenarios.
+  
+  * On MS/Windows with Japanese (UTF-8) the encoding of the variables
+    selected for transforming needs to be UTF-8 for much of the process,
+    but "unknown" when using Rtxt and sprintf (when substituting the
+    variable names) to ensure resulting message is correctly matched for
+    encodings.
+
+ --
+
 rattle (2.5.29) stable; urgency=low
 
   * Add the translation file.
