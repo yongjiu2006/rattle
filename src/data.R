@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-17 08:05:31 Graham Williams>
+# Time-stamp: <2010-04-29 07:18:26 Graham Williams>
 #
 # DATA TAB
 #
@@ -896,8 +896,24 @@ executeDataCSV <- function(filename=NULL)
                                "2007", ""),
                         sub("file:///", "", filename))
   else
-    read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s, encoding="%s")',
-                        filename, hdr, sep, dec, nastring, crv$csv.encoding)
+
+    # 100428 With read.csv("...", encoding="UTF-8") column names that
+    # are purely UTF-8 see the trailing comma as part of the column
+    # name, and so get merged with the next column. Need to ensure the
+    # encodng option is included in the file argument instead. I think
+    # that readTableHeader might be the culprit., but not tested. TODO
+    # This will need fixing everywhere that read.csv is used.
+
+    # 10429 Only use file(..., encoding) for Japanese. Otherwise
+    # put the encoding as argument to read.csv which always works on
+    # Linux?
+    
+    if (isJapanese())
+      read.cmd <- sprintf('crs$dataset <- read.csv(file("%s", encoding="%s")%s%s%s%s)',
+                          filename, crv$csv.encoding, hdr, sep, dec, nastring)
+    else
+      read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s, encoding="%s")',
+                          filename, hdr, sep, dec, nastring, crv$csv.encoding)
   
   # Start logging and executing the R code.
 

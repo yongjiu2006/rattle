@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-17 11:10:50 Graham Williams>
+# Time-stamp: <2010-04-30 06:43:51 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -232,6 +232,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     {
       variables <<- c(variables, model$get(iter, 1)[[1]])
     }, TRUE)
+    if (length(variables)) Encoding(variables) <- "UTF-8"
   }
 
   # We check here if the action is rescale, and we have any
@@ -255,11 +256,16 @@ executeTransformNormalisePerform <- function(variables=NULL,
   if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix", "log")
       && "factor" %in% classes)
   {
+    # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
+    # encoded variable we get garbage, so convert to unknown then back
+    # again. Making the Rtxt UTF-8 does not fix it.
+    Encoding(variables) <- "unknown"
     infoDialog(sprintf(Rtxt("We can not rescale using '%s'",
                             "on a categoric variable.",
                             "Ignoring: %s."),
                        action, paste(variables[which(classes == "factor")],
                                      collapse=", ")))
+    Encoding(variables) <- "UTF-8"
     variables <- variables[-which(classes == "factor")] # Remove the factors.
     if (length(variables) == 0) return()
   }
@@ -390,9 +396,14 @@ executeTransformNormalisePerform <- function(variables=NULL,
       median.cmd <- sprintf('median(crs$dataset[["%s"]], na.rm=TRUE)', v)
       if (eval(parse(text=median.cmd)) == 0)
       {
+        # 100428 BUG When using Rtxt in sprintf, and substituting a
+        # UTF-8 encoded variable we get garbage, so convert to unknown
+        # then back again. Making the Rtxt UTF-8 does not fix it.
+        Encoding(v) <- "unknown"
         warnDialog(sprintf(Rtxt("The variable '%s' has a median of 0.",
                                 "We cannot compute the Median/MAD Rescaler",
                                 "for this variable."), v))
+        Encoding(v) <- "UTF-8"
         next()
       }
     }
@@ -405,8 +416,13 @@ executeTransformNormalisePerform <- function(variables=NULL,
     cl <- class(crs$dataset[[v]])
 
     # Take a copy of the variable to be imputed.
-    
+
+    # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
+    # encoded variable we get garbage, so convert to unknown then back
+    # again. Making the Rtxt UTF-8 does not fix it.
+    Encoding(v) <- "unknown"
     appendLog(sprintf(Rtxt("Rescale %s."), v), copy.cmd)
+    Encoding(v) <- "UTF-8"
     eval(parse(text=copy.cmd))
     
     # Determine what action to perform.
@@ -705,6 +721,8 @@ executeTransformImputePerform <- function()
   {
     imputed <<- c(imputed, model$get(iter, 1)[[1]])
   }, TRUE)
+  if (length(imputed)) Encoding(imputed) <- "UTF-8"
+
 
   if (is.null(imputed)) 
     warnDialog(Rtxt("No variables have been selected for imputation.",
@@ -720,10 +738,15 @@ executeTransformImputePerform <- function()
 
   if (action %in% c("mean", "median") && "factor" %in% classes)
   {
+    # 100429 BUG When using Rtxt in sprintf, and substituting a UTF-8
+    # encoded variable we get garbage, so convert to unknown then back
+    # again. Making the Rtxt UTF-8 does not fix it.
+    Encoding(imputed) <- "unknown"
     infoDialog(sprintf(Rtxt("We can not impute the %s for a",
                             "categoric variable. Ignoring: %s."),
                        action, paste(imputed[which(classes == "factor")],
                                      collapse=", ")))
+    Encoding(imputed) <- "UTF-8"
     imputed <- imputed[-which(classes == "factor")] # Remove the factors.
   }
   
@@ -765,8 +788,13 @@ executeTransformImputePerform <- function()
       {
 
         # Take a copy of the variable to be imputed.
-    
+
+        # 100429 BUG When using Rtxt in sprintf, and substituting a
+        # UTF-8 encoded variable we get garbage, so convert to unknown
+        # then back again. Making the Rtxt UTF-8 does not fix it.
+        Encoding(z) <- "unknown"
         appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
+        Encoding(z) <- "UTF-8"
         eval(parse(text=copy.cmd))
              
         # If "Missing" is not currently a category for this variable,
@@ -818,7 +846,12 @@ executeTransformImputePerform <- function()
       {
         # Take a copy of the variable to be imputed.
     
+        # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
+        # encoded variable we get garbage, so convert to unknown then back
+        # again. Making the Rtxt UTF-8 does not fix it.
+        Encoding(z) <- "unknown"
         appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
+        Encoding(z) <- "UTF-8"
         eval(parse(text=copy.cmd))
              
         val <- theWidget("impute_constant_entry")$getText()
@@ -845,9 +878,16 @@ executeTransformImputePerform <- function()
         eval(parse(text=imp.cmd))
       }
       else
+      {
+        # 100429 BUG When using Rtxt in sprintf, and substituting a
+        # UTF-8 encoded variable we get garbage, so convert to unknown
+        # then back again. Making the Rtxt UTF-8 does not fix it.
+        Encoding(z) <- "unknown"
         infoDialog(sprintf(Rtxt("The option to impute the %s for the",
                                 "categoric variable (%s) is not (yet)",
                                 "available."), action, z))
+        Encoding(z) <- "UTF-8"
+      }
     }
     else
     {
@@ -855,7 +895,12 @@ executeTransformImputePerform <- function()
       
       # Take a copy of the variable to be imputed.
     
+      # 100429 BUG When using Rtxt in sprintf, and substituting a
+      # UTF-8 encoded variable we get garbage, so convert to unknown
+      # then back again. Making the Rtxt UTF-8 does not fix it.
+      Encoding(z) <- "unknown"
       appendLog(sprintf(Rtxt("Impute %s."), z), copy.cmd)
+      Encoding(z) <- "UTF-8"
       eval(parse(text=copy.cmd))
       
       # Determine what action to perform.
@@ -923,9 +968,15 @@ executeTransformImputePerform <- function()
         val <- theWidget("impute_constant_entry")$getText()
         if (is.na(as.numeric(val)))
         {
+          # 100429 BUG When using Rtxt in sprintf, and substituting a
+          # UTF-8 encoded variable we get garbage, so convert to
+          # unknown then back again. Making the Rtxt UTF-8 does not
+          # fix it.
+          Encoding(z) <- "unknown"
           errorDialog(sprintf(Rtxt("The supplied value of '%s' for the variable '%s'",
                                    "is not numeric. Please supply a numeric value."),
                               val, z))
+          Encoding(z) <- "UTF-8"
           next
         }
         imp.cmd <- sprintf(paste('crs$dataset[["%s"]]',
@@ -1111,6 +1162,7 @@ executeTransformRemapPerform <- function(vars=NULL,
     {
       vars <<- c(vars, model$get(iter, 1)[[1]])
     }, TRUE)
+    if (length(vars)) Encoding(vars) <- "UTF-8"
   }
   
   if (length(vars) == 0)
@@ -1204,6 +1256,10 @@ executeTransformRemapPerform <- function(vars=NULL,
   if (action %in% c("quantiles", "kmeans", "eqwidth", "log", "asfactor")
       && "factor" %in% classes)
   {
+    # 100429 BUG When using Rtxt in sprintf, and substituting a UTF-8
+    # encoded variable we get garbage, so convert to unknown then back
+    # again. Making the Rtxt UTF-8 does not fix it.
+    Encoding(vars) <- "unknown"
     infoDialog(sprintf(Rtxt("Only numeric data is permissible for the %s transform.",
                             "\n\nIgnoring: %s."),
                        switch(action,
@@ -1213,11 +1269,16 @@ executeTransformRemapPerform <- function(vars=NULL,
                               log=Rtxt("Log"),
                               asfactor=Rtxt("As Categoric")),
                        paste(vars[which(classes == "factor")], collapse=", ")))
+    Encoding(vars) <- "UTF-8"
     vars <- vars[-which(classes == "factor")] # Remove the factors.
   }
   if (action %in% c("indicator", "joincat", "asnumeric")
       && ("numeric" %in% classes || "integer" %in% classes))
   {
+    # 100429 BUG When using Rtxt in sprintf, and substituting a UTF-8
+    # encoded variable we get garbage, so convert to unknown then back
+    # again. Making the Rtxt UTF-8 does not fix it.
+    Encoding(vars) <- "unknown"
     infoDialog(sprintf(Rtxt("Only non numeric data is permissible for the %s",
                             " transform.\n\nIgnoring: %s."),
                        switch(action,
@@ -1227,6 +1288,7 @@ executeTransformRemapPerform <- function(vars=NULL,
                        paste(vars[which(classes == "numeric" |
                                         classes == "integer")],
                              collapse=", ")))
+    Encoding(vars) <- "UTF-8"
     vars <- vars[-which(classes == "numeric" | classes == "integer")]
   }
 
@@ -1576,6 +1638,7 @@ executeTransformCleanupPerform <- function()
     {
       to.delete <<- c(to.delete, model$get(iter, 1)[[1]])
     }, TRUE)
+    if (length(to.delete)) Encoding(to.delete) <- "UTF-8"
 
     if (length(to.delete) == 0)
     {
@@ -1633,7 +1696,12 @@ executeTransformCleanupPerform <- function()
 
   if (!theWidget("delete_naents_radiobutton")$getActive())
   {
-    
+    mapped <- FALSE
+    if ("UTF-8" %in% Encoding(to.delete))
+    {
+      mapped <- TRUE
+      Encoding(to.delete) <- "unknown"
+    }    
     if (! questionDialog(sprintf(Rtxt("We are about to delete the following variables",
                                       "from the in-memory dataset.",
                                       "This will permanently remove them from",
@@ -1644,6 +1712,7 @@ executeTransformCleanupPerform <- function()
                                       "variables?"),
                                  paste(to.delete, collapse=", "))))
       return()
+    if (mapped) Encoding(to.delete) <- "UTF-8"
 
     del.cmd <- paste(sprintf('crs$dataset$%s <- NULL', to.delete),
                      collapse="\n")
