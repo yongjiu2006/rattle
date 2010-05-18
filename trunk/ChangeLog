@@ -1,3 +1,18 @@
+rattle (2.5.31) stable; urgency=low
+
+  * Add rattle.info() to list information for debugging purposes.
+  
+  * Bump pmml to 1.2.22
+  
+  * Fixes from wenching.lin@zementis.com: Extension in Header should be
+    first element. Coefficients in regression models should not be NA (as
+    will be for singularities), but replace with, and so no impact of
+    change.
+  
+  * Ensure Survival defaults are reset appropriately.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 19 May 2010 09:50:39 +1000
+
 rattle (2.5.30) stable; urgency=low
 
   * On MS/Windows with Japanese, read.csv needs encoding option set with
@@ -10,7 +25,7 @@ rattle (2.5.30) stable; urgency=low
     variable names) to ensure resulting message is correctly matched for
     encodings.
 
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 19 May 2010 09:47:12 +1000
 
 rattle (2.5.29) stable; urgency=low
 
