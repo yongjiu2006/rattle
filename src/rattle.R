@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-23 07:08:26 Graham Williams>
+# Time-stamp: <2010-05-15 08:43:06 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 24 Apr 2010"
+VERSION.DATE <- "Released 01 May 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -148,6 +148,17 @@ overwritePackageFunction <- function(fname, fun, pkg)
 }
 
 toga <- function() browseURL("http://rattle.togaware.com")
+
+rattle.info <- function()
+{
+  cat(sprintf("Rattle Version: %s\n", crv$version))
+  si <- Sys.info()
+  for (i in seq_along(si))
+    cat(sprintf("%s%s: %s\n", toupper(substr(names(si)[i], 1, 1)),
+                substring(names(si)[i], 2), si[i]))
+  
+}
+
 
 rattle <- function(csvname=NULL)
 {

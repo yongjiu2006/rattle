@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-29 07:18:26 Graham Williams>
+# Time-stamp: <2010-05-05 06:00:58 Graham Williams>
 #
 # DATA TAB
 #
@@ -711,11 +711,15 @@ executeDataTab <- function(csvname=NULL)
       ! validateSampleEntry()) return(FALSE)
   
   # TODO 080520 Change the name to updateRoles.
+
+  setGuiDefaultsSurvival() # 100505 Moved here from below
   
   executeSelectTab()
 
   resetTestTab()
-  setGuiDefaultsSurvival()
+# 100505 Move to before executeSelectTab, ohterwise the labels get set
+# back to stating no variables selected.
+ # setGuiDefaultsSurvival()
 
   # Set the risk label appropriately.
   
