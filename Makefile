@@ -273,8 +273,14 @@ icheck: ibuild
 ucheck: build
 	sh ./upload_uwe.sh
 
+pucheck: pbuild
+	sh ./uploadp_uwe.sh
+
 cran: build
 	sh ./upload_cran.sh
+
+pcran: pbuild
+	sh ./uploadp_cran.sh
 
 # For development, temporarily remove the NAMESPACE so all is exposed.
 

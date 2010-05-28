@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-17 15:54:26 Graham Williams>
+# Time-stamp: <2010-05-28 15:39:11 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -90,8 +90,11 @@ on_help_randomForest_activate <- function(action, window)
 
 executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 {
-  if ((traditional && ! packageIsAvailable("randomForest", Rtxt("build a random forest model")))
-      || conditional && ! packageIsAvailable("party", Rtxt("build a random forest model")))
+  if ((traditional
+       && ! packageIsAvailable("randomForest", Rtxt("build a random forest model")))
+      ||
+      conditional &&
+      ! packageIsAvailable("party", Rtxt("build a random forest model")))
     return(FALSE)
 
   # Initial setup 
@@ -141,12 +144,12 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     if (nchar(sampsize) > 0)
     {
       ss <- as.numeric(unlist(strsplit(sampsize, ",")))
-      if (length(ss) != num.classes)
+      if (! (length(ss) == 1 || length(ss) == num.classes))
       {
-        errorDialog(sprintf(Rtxt("The supplied sample sizes (%s)",
-                                 "needs to correspond to the number of classes",
-                                 "found in the target variable '%s'.",
-                                 "Please supply exactly %d sample sizes."),
+        errorDialog(sprintf(Rtxt("The supplied sample sizes (%s) need to be either",
+                                 "a single number or else correspond to the number",
+                                 "of classes found in the target variable '%s'.",
+                                 "Please supply exactly 1 or %d sample sizes."),
                             sampsize, crs$target, num.classes))
         return(FALSE)
       }
@@ -244,16 +247,28 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   # Build the model.
 
-  rf.cmd <- paste("set.seed(42)\n",
-                  "crs$rf <- ", FUN, "(", frml, ", data=crs$dataset",
+  rf.cmd <- paste(spintf("set.seed(%d)\n", crv$seed),
+                  "crs$rf <- ", FUN, "(", frml,
+                  ifelse(traditional,
+                         ", data=crs$dataset",
+                         ", data=na.omit(crs$dataset"),
                   if (subsetting) "[",
                   if (sampling) "crs$sample",
                   if (subsetting) ",",
                   if (including) included,
-                  if (subsetting) "], ",
+                  ifelse(subsetting,
+                         ifelse(traditional, "], ", "]), "),
+                         ifelse(traditional, "", ")")),
                   ifelse(traditional, parms,
                          sprintf("controls=cforest_unbiased(%s)", parms)),
                   if (traditional) ", na.action=na.omit",
+                  # 100521 Turn subsampling with replacement off since
+                  # it is more likely to produce biased imprtance
+                  # measures, as explained in
+                  # http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1796903/
+                  # Note that for cforest, cforest_unbiased uses
+                  # replace=FALSE also.
+                  if (traditional) ", replace=FALSE",
                   ")", sep="")
 
   appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$RF)), rf.cmd)
@@ -308,7 +323,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
       setTextview(TV)
     }
     else 
-      errorDialog(errorMessageFun(FUN, paste(result, crv$support.msg, sep="\n")))
+      errorDialog(errorMessageFun(FUN, result))
     return(FALSE)
   }
 
@@ -326,13 +341,19 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
                               sep="\n")
     else
       varimp.cmd <- paste("rn <- round(importance(crs$rf), 2)",
-                              "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
-                              sep="\n")
+                          # 100521 Sort on the accuracy measure rather
+                          # than the Gini measure, since the Gini is
+                          # biased in favour of categoric variables
+                          # with many categories.
+                          # "rn[order(rn[,3] + rn[,4], decreasing=TRUE),]",
+                          "rn[order(rn[,3], decreasing=TRUE),]",
+                          sep="\n")
   }
   else
   {
-    varimp.cmd <- paste("as.data.frame(sort(varimp(crs$rf),",
-                        "decreasing=TRUE))")
+    varimp.cmd <- paste("vi <- as.data.frame(sort(varimp(crs$rf),",
+                        "decreasing=TRUE))\n",
+                        "names(vi) <- 'Importance'\nvi")
   }
   
   appendLog(Rtxt("List the importance of the variables."), varimp.cmd)
@@ -342,7 +363,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   
   resetTextview(TV)
   addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
-              "\n\n",
+              "\n",
               collectOutput(summary.cmd, TRUE))
 
   result <- try(collectOutput(varimp.cmd), silent=TRUE)
@@ -353,17 +374,20 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     return(FALSE)
   }
   
-  addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result)
+  addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result, "\n")
 
-  addTextview(TV, sprintf(Rtxt("\n\nDisplay the Model",
-                               "\n\nTo view model 5, for example, execute the",
-                               "command \n  %s\nin the R console. Generating",
-                               "all models will take quite some time."),
-                          ifelse(traditional,
-                                 "printRandomForests(crs$rf, 5)",
-                                 paste('party:::prettytree(crs$rf@ensemble[[5]],',
-                                       'names(crs$rf@data@get("input")))'))),
-              "\n")
+  # 100522 Don't provide this information in the textview - the user
+  # can look into the log to find this out.
+  
+  ## addTextview(TV, sprintf(Rtxt ("\n\nDisplay the Model",
+  ##                              "\n\nTo view model 5, for example, execute the",
+  ##                              "command \n  %s\nin the R console. Generating",
+  ##                              "all models will take quite some time."),
+  ##                         ifelse(traditional,
+  ##                                "printRandomForests(crs$rf, 5)",
+  ##                                paste('party:::prettytree(crs$rf@ensemble[[5]],',
+  ##                                      'names(crs$rf@data@get("input")))'))),
+  ##             "\n")
 
   # 100107 What is the purpose of this?
 
@@ -424,7 +448,7 @@ plotRandomForestImportance <- function()
   
   newPlot()
   if (class(crs$rf) %in% "RandomForest")
-    plot.cmd <- paste('set.seed(42)',
+    plot.cmd <- paste(sprintf('set.seed(%d)', crv$seed),
                       '\nv <- varimp(crs$rf)',
                       '\nvimp <- data.frame(Variable=as.character(names(v)),',
                       '\n                   Importance=v,',

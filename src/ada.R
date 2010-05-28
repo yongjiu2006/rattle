@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-03-30 11:04:09 Graham Williams>
+# Time-stamp: <2010-05-28 15:34:29 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -44,7 +44,7 @@
 ##
 ## library(ada)
 ## audit <- read.csv("audit.csv")
-## set.seed(123)
+## set.seed(42)
 ## mysample <- sample(nrow(audit), 1400)
 ## myada <- ada(Adjusted ~ ., data=audit[mysample,c(2:4,6:10,13)],
 ##              control=rpart.control(maxdepth=30, cp=0.010000,
@@ -93,7 +93,7 @@ function(formula, data,...,subset,na.action=na.rpart){
 buildModelAda <- function(formula,
                           dataset,
                           tv=NULL,
-                          seed=123,
+                          seed=crv$seed,
                           maxdepth=30,
                           minsplit=20,
                           cp=0.01,
@@ -161,13 +161,15 @@ buildModelAda <- function(formula,
 
   if (gui)
   {
-    print.cmd <- paste("print(crs$ada)", "summary(crs$ada)", sep="\n")
+    print.cmd <- paste("print(crs$ada)",
+                       "round(crs$ada$model$errs[crs$ada$iter,], 2)", sep="\n")
     appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
                   sprintf(Rtxt("Summary of the %s model:"),
                           commonName(crv$ADA)),
                   "\n\n",
-                  collectOutput(print.cmd))
+                  collectOutput(print.cmd),
+                  "\n")
   }
 
   # Finish up.

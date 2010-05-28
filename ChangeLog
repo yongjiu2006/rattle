@@ -1,3 +1,36 @@
+rattle (2.5.32) unstable; urgency=low
+
+  * Remove dependency on car - not actually being used at the moment.
+  
+  * For random forest, allow sample size text entry as a single integer or
+    a list, as per randomForest.
+  
+  * Use na.omit with cforest, as is done with randomForest.
+  
+  * For randomForest turn subsampling with replacement off since it is
+    more likely to produce biased importance measures, as explained in by
+    the cforest papers.
+  
+  * Fix bug with multiple "contact support" lines in error popups.
+  
+  * When showing the randomForest importance values, sort on the accuracy
+    measure rather than the Gini measure, since the Gini is biased in
+    favour of categoric variables with many categories.
+  
+  * ada boost seed should be 42, like all other seeds.
+  
+  * Tidy up some ada output.
+  
+  * Bug fix - save project for rf failing (looking for rf_sampsize_entry).
+  
+  * Remove text from toolbar by default.
+  
+  * Change order of Forest/Boost buttons on Model tab.
+  
+  * Add tooltips for all toolbar buttons.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Fri, 28 May 2010 15:47:15 +1000
+
 rattle (2.5.31) stable; urgency=low
 
   * Add rattle.info() to list information for debugging purposes.
@@ -36,7 +69,7 @@ rattle (2.5.29) stable; urgency=low
   * Allow crv$NOTEBOOK.MODEL.NAME to be overridden by other packages
     (RStat).
   
-  * When dispatch fails be sure to include the label on which it fails.
+  * When dispatch fails be sure to include the Tab label on which it fails.
   
   * Ensure HClust Options are re-enabled on loading a project.
 

@@ -25,6 +25,10 @@
 
   # Some global constants
 
+  # Default seed to use
+
+  crv$seed <- 42
+  
   # 091130 Use UTF-8 as the default encoding for files. This certainly
   # works okay on GNU/Linux. On Vista I see ISO8859-1 as the default
   # and Acken sees CP932 for Japanese.
