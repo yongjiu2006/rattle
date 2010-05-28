@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-24 05:29:56 Graham Williams>
+# Time-stamp: <2010-05-28 15:36:45 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -470,7 +470,7 @@ displayClusterStatsKMeans <- function()
 
   if (large)
   {
-    large.sample.cmd <- paste("set.seed(42)",
+    large.sample.cmd <- paste(sprintf("set.seed(%d)", crv$seed),
                               sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
                                       crv$cluster.report.max.obs),    
                               sep="\n")
@@ -600,7 +600,7 @@ dataPlotKMeans <- function()
     
   if (large)
   {
-    large.sample.cmd <- paste("set.seed(42)",
+    large.sample.cmd <- paste(sprintf("set.seed(%d)", crv$seed),
                               sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
                                       crv$cluster.report.max.obs),
                               sep="\n")

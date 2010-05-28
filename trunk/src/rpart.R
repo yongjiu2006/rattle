@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-31 15:03:43 Graham Williams>
+# Time-stamp: <2010-05-28 15:40:31 Graham Williams>
 #
 # RPART TAB
 #
@@ -472,7 +472,7 @@ executeModelRPart <- function(action="build")
 
   # Set the seed so that xerror and xstd are consistent each time
 
-  seed.cmd <- 'set.seed(42)'
+  seed.cmd <- sprintf('set.seed(%d)', crv$seed)
   appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
             seed.cmd)
   eval(parse(text=seed.cmd))

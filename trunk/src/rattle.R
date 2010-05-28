@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-15 08:43:06 Graham Williams>
+# Time-stamp: <2010-05-28 15:39:55 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 May 2010"
+VERSION.DATE <- "Released 19 May 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1168,7 +1168,7 @@ resetRattle <- function(new.dataset=TRUE)
     # Reset Describe -> Cluster -> KMeans
 
     theWidget("kmeans_clusters_spinbutton")$setValue(10)
-    theWidget("kmeans_seed_spinbutton")$setValue(42)
+    theWidget("kmeans_seed_spinbutton")$setValue(crv$seed)
     theWidget("kmeans_runs_spinbutton")$setValue(1)
     theWidget("kmeans_stats_button")$setSensitive(FALSE)
     theWidget("kmeans_data_plot_button")$setSensitive(FALSE)

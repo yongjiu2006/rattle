@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-31 11:19:40 Graham Williams>
+# Time-stamp: <2010-05-28 15:37:26 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -124,7 +124,7 @@ executeModelNNet <- function()
   # user to see the model changing each time they click Execute, or
   # each time they come into the application.
 
-  model.cmd <- paste("set.seed(1234)\n",
+  model.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
                      "crs$nnet <- ",
                      ifelse(numericTarget() || binomialTarget(),
                             "nnet", "multinom"),

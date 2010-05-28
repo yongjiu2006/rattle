@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-15 10:18+1000\n"
-"PO-Revision-Date: 2010-05-15 10:18+1000\n"
+"POT-Creation-Date: 2010-05-28 10:32+1000\n"
+"PO-Revision-Date: 2010-05-28 10:32+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -402,7 +402,7 @@ msgstr "Export"
 msgid "Export Comments"
 msgstr "Export Comments"
 
-#: rattle.glade.h:97 associate.R:427 model.R:1244
+#: rattle.glade.h:97 associate.R:427 model.R:1245
 msgid "Export PMML"
 msgstr "Export PMML"
 
@@ -1594,11 +1594,11 @@ msgstr "Actual"
 msgid "Ada Boost"
 msgstr "Ada Boost"
 
-#: ada.R:199
+#: ada.R:201
 msgid "Ada Boost Update"
 msgstr "Ada Boost Update"
 
-#: ada.R:336
+#: ada.R:338
 msgid "Ada errors has been plotted."
 msgstr "Ada errors has been plotted."
 
@@ -1813,7 +1813,7 @@ msgid "All %d plots have been generated."
 msgstr "All %d plots have been generated."
 
 #: associate.R:441 data.R:247 data.R:264 data.R:281 data.R:1772
-#: evaluate.R:2527 export.R:249 log.R:144 model.R:1258 projects.R:181
+#: evaluate.R:2527 export.R:249 log.R:144 model.R:1259 projects.R:181
 #: projects.R:345 rattle.R:2028
 msgid "All Files"
 msgstr "All Files"
@@ -1822,7 +1822,7 @@ msgstr "All Files"
 msgid "All models have been generated."
 msgstr "All models have been generated."
 
-#: random_forest.R:223
+#: random_forest.R:226
 msgid ""
 "All observations in the dataset have one or more missing values for the "
 "selected variables. The random forest algorithm ignores any observation with "
@@ -2384,7 +2384,7 @@ msgstr "Bin the variable(s) into %d bins using kmeans."
 msgid "Bin the variable(s) into %d bins using quantiles."
 msgstr "Bin the variable(s) into %d bins using quantiles."
 
-#: ada.R:377
+#: ada.R:379
 msgid ""
 "Boosting builds multiple, but generally simple, models. The models might be "
 "decision trees that have just one split - these are often called decision "
@@ -2438,23 +2438,23 @@ msgstr "build a neural network"
 msgid "Build a neural network model using the nnet package."
 msgstr "Build a neural network model using the nnet package."
 
-#: model.R:1088
+#: model.R:1089
 msgid "build an SVM model using ksvm"
 msgstr "build an SVM model using ksvm"
 
-#: model.R:1098
+#: model.R:1099
 msgid "build an SVM model using svm"
 msgstr "build an SVM model using svm"
 
-#: random_forest.R:93 random_forest.R:94
+#: random_forest.R:94 random_forest.R:97
 msgid "build a random forest model"
 msgstr "build a random forest model"
 
-#: model.R:831
+#: model.R:832
 msgid "Build a Regression model."
 msgstr "Build a Regression model."
 
-#: model.R:1173
+#: model.R:1174
 msgid "Build a Support Vector Machine model."
 msgstr "Build a Support Vector Machine model."
 
@@ -2504,7 +2504,7 @@ msgstr "Building %s model ... failed."
 msgid "Build the model."
 msgstr "Build the model."
 
-#: ada.R:137 random_forest.R:259 rpart.R:482
+#: ada.R:137 random_forest.R:274 rpart.R:482
 msgid "Build the %s model."
 msgstr "Build the %s model."
 
@@ -3078,7 +3078,7 @@ msgstr "Display a scatterplot matrix for the KMeans clustering."
 msgid "Display a simple summary (structure) of the dataset."
 msgstr "Display a simple summary (structure) of the dataset."
 
-#: random_forest.R:495
+#: random_forest.R:519
 msgid ""
 "Displaying all rules can take quite a while. \n"
 "\n"
@@ -3108,7 +3108,7 @@ msgstr "Display the plot."
 msgid "display the Rattle GUI"
 msgstr "display the Rattle GUI"
 
-#: ada_gui.R:118 ada_gui.R:151 random_forest.R:507
+#: ada_gui.R:118 ada_gui.R:151 random_forest.R:531
 msgid "Display tree number %d."
 msgstr "Display tree number %d."
 
@@ -3168,7 +3168,7 @@ msgstr "Dot Plot"
 msgid "Do you want to terminate %s?"
 msgstr "Do you want to terminate %s?"
 
-#: model.R:1363
+#: model.R:1364
 msgid "Do you wish to continue?"
 msgstr "Do you wish to continue?"
 
@@ -3192,7 +3192,7 @@ msgstr ""
 "E121: A model type is not recognised. We found the model types to be: %s "
 "Known models: %s"
 
-#: random_forest.R:420
+#: random_forest.R:444
 msgid ""
 "E123: This is an unexpected error. There is no RF and attempting to plot "
 "importance."
@@ -3200,7 +3200,7 @@ msgstr ""
 "E123: This is an unexpected error. There is no RF and attempting to plot "
 "importance."
 
-#: random_forest.R:461
+#: random_forest.R:485
 msgid ""
 "E129: This is an unexpected error. There is no RF and attempting to plot "
 "errors."
@@ -3208,7 +3208,7 @@ msgstr ""
 "E129: This is an unexpected error. There is no RF and attempting to plot "
 "errors."
 
-#: ada.R:301
+#: ada.R:303
 msgid ""
 "E135: Should not be here. There is no ADA model and attempting to plot "
 "importance. The button should not be active."
@@ -3216,7 +3216,7 @@ msgstr ""
 "E135: Should not be here. There is no ADA model and attempting to plot "
 "importance. The button should not be active."
 
-#: ada.R:325
+#: ada.R:327
 msgid ""
 "E136: There is no ADA model and attempting to plot error. The button should "
 "not be active."
@@ -3277,11 +3277,11 @@ msgstr "Error matrix for the %s model on %s (%%):"
 msgid "Error matrix for the %s model on %s (counts):"
 msgstr "Error matrix for the %s model on %s (counts):"
 
-#: random_forest.R:472
+#: random_forest.R:496
 msgid "Error Rates"
 msgstr "Error Rates"
 
-#: model.R:790
+#: model.R:791
 msgid "evaluate a mulitnomial model"
 msgstr "evaluate a mulitnomial model"
 
@@ -3338,7 +3338,7 @@ msgstr "Explore Data"
 msgid "explore the data using GGobi"
 msgstr "explore the data using GGobi"
 
-#: model.R:1005
+#: model.R:1006
 msgid "Export a regression model as C code for WebFocus."
 msgstr "Export a regression model as C code for WebFocus."
 
@@ -3358,7 +3358,7 @@ msgstr "Export association rules as PMML."
 msgid "Export a Survival regression model as C code for WebFocus."
 msgstr "Export a Survival regression model as C code for WebFocus."
 
-#: model.R:1276
+#: model.R:1277
 msgid "Export a SVM model as PMML."
 msgstr "Export a SVM model as PMML."
 
@@ -3386,11 +3386,11 @@ msgstr "Export hierarchical cluster as PMML."
 msgid "Export Log"
 msgstr "Export Log"
 
-#: model.R:991
+#: model.R:992
 msgid "Export regression as PMML."
 msgstr "Export regression as PMML."
 
-#: model.R:977
+#: model.R:978
 msgid "Export regression model."
 msgstr "Export regression model."
 
@@ -3410,7 +3410,7 @@ msgstr "Export survival model."
 msgid "Export survival regression as PMML."
 msgstr "Export survival regression as PMML."
 
-#: model.R:1237
+#: model.R:1238
 msgid "export SVM model"
 msgstr "export SVM model"
 
@@ -3548,7 +3548,7 @@ msgstr "Generate a Precision/Recall Plot for the %s model on %s."
 msgid "Generate a risk chart."
 msgstr "Generate a risk chart."
 
-#: random_forest.R:636
+#: random_forest.R:660
 msgid "generate a rule set"
 msgstr "generate a rule set"
 
@@ -3564,7 +3564,7 @@ msgstr "generate associations"
 msgid "Generate a summary of the missing values in the dataset."
 msgstr "Generate a summary of the missing values in the dataset."
 
-#: biclust.R:102 model.R:882 model.R:1197 rpart.R:499
+#: biclust.R:102 model.R:883 model.R:1198 rpart.R:499
 msgid "Generate a textual view of the %s model."
 msgstr "Generate a textual view of the %s model."
 
@@ -3652,7 +3652,7 @@ msgstr "Generate summary of the ctree model."
 msgid "Generate %s using method '%s'."
 msgstr "Generate %s using method '%s'."
 
-#: random_forest.R:318
+#: random_forest.R:333
 msgid "Generate textual output of '%s' model."
 msgstr "Generate textual output of '%s' model."
 
@@ -3696,7 +3696,7 @@ msgstr "Generate the frequency of the initial digits."
 msgid "Generate the required data."
 msgstr "Generate the required data."
 
-#: random_forest.R:722 random_forest.R:824 random_forest.R:849
+#: random_forest.R:746 random_forest.R:848 random_forest.R:873
 msgid "generate the rule sets"
 msgstr "generate the rule sets"
 
@@ -3872,7 +3872,7 @@ msgstr "Impute %s."
 msgid "Include a pseudo R-square on the plot"
 msgstr "Include a pseudo R-square on the plot"
 
-#: model.R:1358
+#: model.R:1359
 msgid ""
 "In exporting the model the following variables appear to be transformations "
 "that are not currently supported for export. Be aware that the results will "
@@ -4138,7 +4138,7 @@ msgstr "Linear Fit to Points"
 msgid "List rules."
 msgstr "List rules."
 
-#: random_forest.R:338
+#: random_forest.R:359
 msgid "List the importance of the variables."
 msgstr "List the importance of the variables."
 
@@ -4186,7 +4186,7 @@ msgstr "Load the names of available tables."
 msgid "Load the PMML package to export association rules."
 msgstr "Load the PMML package to export association rules."
 
-#: model.R:1238
+#: model.R:1239
 msgid "Load the PMML package to export a SVM model."
 msgstr "Load the PMML package to export a SVM model."
 
@@ -4357,24 +4357,6 @@ msgstr ""
 "\n"
 "# Alternatively, use the min/max from the new data.\n"
 "\n"
-
-#: random_forest.R:361
-msgid ""
-"\n"
-"\n"
-"Display the Model \n"
-"\n"
-"To view model 5, for example, execute the command \n"
-"  %s\n"
-"in the R console. Generating all models will take quite some time."
-msgstr ""
-"\n"
-"\n"
-"Display the Model \n"
-"\n"
-"To view model 5, for example, execute the command \n"
-"  %s\n"
-"in the R console. Generating all models will take quite some time."
 
 #: nnet.R:192
 msgid "nnet"
@@ -4572,7 +4554,7 @@ msgstr "No such device."
 msgid "No summary type has been selected. Please click at least one checkbox."
 msgstr "No summary type has been selected. Please click at least one checkbox."
 
-#: model.R:1230
+#: model.R:1231
 msgid ""
 "No SVM model is available. Be sure to build the model before trying to "
 "export it! You will need to press the Execute button (F2) in order to build "
@@ -4716,7 +4698,7 @@ msgstr ""
 "\n"
 "The data is limited to the training dataset."
 
-#: ada.R:346
+#: ada.R:348
 msgid ""
 "\n"
 "Tree %d of %d:\n"
@@ -4964,11 +4946,11 @@ msgstr "Plot the data."
 msgid "Plot the data, grouped appropriately."
 msgstr "Plot the data, grouped appropriately."
 
-#: random_forest.R:475
+#: random_forest.R:499
 msgid "Plot the error rate against the number of trees."
 msgstr "Plot the error rate against the number of trees."
 
-#: ada.R:333
+#: ada.R:335
 msgid "Plot the error rate as we increase the number of trees."
 msgstr "Plot the error rate as we increase the number of trees."
 
@@ -4980,7 +4962,7 @@ msgstr "# Plot the lift chart."
 msgid "Plot the relative frequencies."
 msgstr "Plot the relative frequencies."
 
-#: ada.R:309 random_forest.R:444
+#: ada.R:311 random_forest.R:468
 msgid "Plot the relative importance of the variables."
 msgstr "Plot the relative importance of the variables."
 
@@ -4996,11 +4978,11 @@ msgstr "Plot the scaled Schoenfeld residuals of proportional hazards."
 msgid "Plot the survival chart for the most recent survival model."
 msgstr "Plot the survival chart for the most recent survival model."
 
-#: cluster.R:111 model.R:1389
+#: cluster.R:111 model.R:1390
 msgid "PMML export for this model is not yet implemented."
 msgstr "PMML export for this model is not yet implemented."
 
-#: associate.R:436 export.R:244 model.R:1253
+#: associate.R:436 export.R:244 model.R:1254
 msgid "PMML Files"
 msgstr "PMML Files"
 
@@ -5104,11 +5086,11 @@ msgstr "Principal Components Importance"
 msgid "Print the plot."
 msgstr "Print the plot."
 
-#: ada.R:165 ada.R:250 nnet.R:187 survival.R:145
+#: ada.R:166 ada.R:252 nnet.R:187 survival.R:145
 msgid "Print the results of the modelling."
 msgstr "Print the results of the modelling."
 
-#: random_forest.R:525
+#: random_forest.R:549
 msgid "print the rule sets"
 msgstr "print the rule sets"
 
@@ -5366,7 +5348,7 @@ msgstr "Report on the cluster characteristics."
 msgid "Require the RODBC library."
 msgstr "Require the RODBC library."
 
-#: ada.R:205 ada.R:214
+#: ada.R:207 ada.R:216
 msgid "Require the %s package."
 msgstr "Require the %s package."
 
@@ -5446,11 +5428,11 @@ msgstr "Roles noted. %d observations and %d input variables."
 msgid " Rule number: %s"
 msgstr " Rule number: %s"
 
-#: random_forest.R:513
+#: random_forest.R:537
 msgid "Rules from all trees have been added to the textview."
 msgstr "Rules from all trees have been added to the textview."
 
-#: random_forest.R:514
+#: random_forest.R:538
 msgid "Rules from tree %d have been added to the textview."
 msgstr "Rules from tree %d have been added to the textview."
 
@@ -5574,7 +5556,7 @@ msgstr "%s: Generate a Predicted v Observed plot for %s model on %s."
 msgid "Show the output of the analysis."
 msgstr "Show the output of the analysis."
 
-#: model.R:930
+#: model.R:931
 msgid "Singularities exist."
 msgstr "Singularities exist."
 
@@ -5623,6 +5605,10 @@ msgstr ""
 msgid "summarise missing values"
 msgstr "summarise missing values"
 
+#: model.R:795
+msgid "Summarise multinomial model using the car package."
+msgstr "Summarise multinomial model using the car package."
+
 #: explore.R:3696
 msgid "Summarise the importance of the components found."
 msgstr "Summarise the importance of the components found."
@@ -5630,10 +5616,6 @@ msgstr "Summarise the importance of the components found."
 #: explore.R:273
 msgid "Summarise the kurtosis of the numeric data."
 msgstr "Summarise the kurtosis of the numeric data."
-
-#: model.R:794
-msgid "Summarise the multinomial model using the car package."
-msgstr "Summarise the multinomial model using the car package."
 
 #: associate.R:214
 msgid "Summarise the resulting rule set."
@@ -5659,11 +5641,11 @@ msgstr "Summary of the Measures of Interestingness"
 msgid "Summary of the Neural Net model (built using %s):"
 msgstr "Summary of the Neural Net model (built using %s):"
 
-#: ada.R:167 random_forest.R:344
+#: ada.R:168 random_forest.R:365
 msgid "Summary of the %s model:"
 msgstr "Summary of the %s model:"
 
-#: model.R:1201
+#: model.R:1202
 msgid "Summary of the %s model (built using ksvm):"
 msgstr "Summary of the %s model (built using ksvm):"
 
@@ -5679,7 +5661,7 @@ msgstr "Summary of the %s model for %s (built using '%s'):"
 msgid "Summary of the %s model for %s (built using '%s'):\n"
 msgstr "Summary of the %s model for %s (built using '%s'):\n"
 
-#: model.R:887
+#: model.R:888
 msgid "Summary of the %s %s model (built using %s):\n"
 msgstr "Summary of the %s %s model (built using %s):\n"
 
@@ -5687,7 +5669,7 @@ msgstr "Summary of the %s %s model (built using %s):\n"
 msgid "Summary of the Survival model (built using %s):"
 msgstr "Summary of the Survival model (built using %s):"
 
-#: ada.R:252
+#: ada.R:254
 msgid "Summary of the updated AdaBoost model:"
 msgstr "Summary of the updated AdaBoost model:"
 
@@ -5707,7 +5689,7 @@ msgstr "Sum(WithinSS)"
 msgid "Support for ARFF is only available in R 2.5.0 and beyond."
 msgstr "Support for ARFF is only available in R 2.5.0 and beyond."
 
-#: model.R:1082
+#: model.R:1083
 msgid "Support vector machine."
 msgstr "Support vector machine."
 
@@ -5861,7 +5843,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: random_forest.R:307
+#: random_forest.R:322
 msgid ""
 "The call to randomForest failed. You probably have version 4.5-25. This is a "
 "known problem and is fixed in 4.5-26. Please install a newer version of "
@@ -5889,7 +5871,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: random_forest.R:273
+#: random_forest.R:288
 msgid ""
 "The call to '%s' appears to have failed. This is often due, as in this case, "
 "to running out of memory. A quick solution is to sample the dataset, through "
@@ -5901,7 +5883,7 @@ msgstr ""
 "the Transform tab. On 32 bit machines you may be limited to less than 2000 "
 "observations."
 
-#: random_forest.R:291
+#: random_forest.R:306
 msgid ""
 "The call to '%s' failed. The problem may be with the data containing "
 "Infinite values. A quick solution may be to remove variables with any Inf or "
@@ -5911,7 +5893,7 @@ msgstr ""
 "Infinite values. A quick solution may be to remove variables with any Inf or "
 "-Inf values."
 
-#: model.R:1183
+#: model.R:1184
 msgid ""
 "The call to svm has failed, running out of memory. The support vector "
 "machine algorithm is rather memory hungry. A quick solution is to down "
@@ -6175,7 +6157,7 @@ msgstr "The decision tree has been plotted."
 msgid "The deletions from the dataset have been completed."
 msgstr "The deletions from the dataset have been completed."
 
-#: random_forest.R:478
+#: random_forest.R:502
 msgid "The error rates plot has been generated."
 msgstr "The error rates plot has been generated."
 
@@ -6213,7 +6195,7 @@ msgstr ""
 "The Indicator Variable transform can only be performed one variable at a "
 "time. Please select just one variable to transform."
 
-#: random_forest.R:1032
+#: random_forest.R:1056
 msgid "the input must be positive"
 msgstr "the input must be positive"
 
@@ -6305,11 +6287,11 @@ msgstr ""
 msgid "The model has been exported to '%s'."
 msgstr "The model has been exported to '%s'."
 
-#: random_forest.R:642 random_forest.R:728
+#: random_forest.R:666 random_forest.R:752
 msgid "the model is not of the 'randomForest' class"
 msgstr "the model is not of the 'randomForest' class"
 
-#: model.R:851
+#: model.R:852
 msgid ""
 "The Multinomial model build has failed, with too many weights (%d) needing "
 "to be calculated. Perhaps consider reducing the number of categoric "
@@ -6383,7 +6365,7 @@ msgstr ""
 "\n"
 "to use the full functionality of %s."
 
-#: associate.R:467 model.R:1280
+#: associate.R:467 model.R:1281
 msgid "The PMML file '%s' has been written."
 msgstr "The PMML file '%s' has been written."
 
@@ -6439,7 +6421,7 @@ msgstr ""
 "'balanced' classifier. <<>> The R package for building Random Forests is "
 "called randomForest."
 
-#: random_forest.R:637
+#: random_forest.R:661
 msgid "the 'randomForest' package is required to generate rule sets"
 msgstr "the 'randomForest' package is required to generate rule sets"
 
@@ -6521,7 +6503,7 @@ msgstr ""
 msgid "There are more classes than observations."
 msgstr "There are more classes than observations."
 
-#: model.R:875
+#: model.R:876
 msgid "The regression model appears to have failed. The error message was:"
 msgstr "The regression model appears to have failed. The error message was:"
 
@@ -6545,7 +6527,7 @@ msgstr "The RGtk2 package is not available but is required for the %s GUI."
 msgid "The R package data is now available."
 msgstr "The R package data is now available."
 
-#: random_forest.R:509
+#: random_forest.R:533
 msgid "The rules are being generated ..."
 msgstr "The rules are being generated ..."
 
@@ -6593,15 +6575,15 @@ msgstr ""
 msgid "The setting of the filename box failed."
 msgstr "The setting of the filename box failed."
 
-#: hclust.R:576 model.R:1020 nnet.R:263
+#: hclust.R:576 model.R:1021 nnet.R:263
 msgid "The %s file '%s' has been written."
 msgstr "The %s file '%s' has been written."
 
-#: model.R:927 rattle.R:1574
+#: model.R:928 rattle.R:1574
 msgid "The %s model has been built."
 msgstr "The %s model has been built."
 
-#: ada.R:259
+#: ada.R:261
 msgid "The %s model has been updated."
 msgstr "The %s model has been updated."
 
@@ -6681,13 +6663,15 @@ msgstr ""
 "The supplied priors (%s) need to correspond to the number of classes found "
 "in the target variable '%s'. Please supply exactly %d priors."
 
-#: random_forest.R:149
+#: random_forest.R:152
 msgid ""
-"The supplied sample sizes (%s) needs to correspond to the number of classes "
-"found in the target variable '%s'. Please supply exactly %d sample sizes."
+"The supplied sample sizes (%s) need to be either a single number or else "
+"correspond to the number of classes found in the target variable '%s'. "
+"Please supply exactly 1 or %d sample sizes."
 msgstr ""
-"The supplied sample sizes (%s) needs to correspond to the number of classes "
-"found in the target variable '%s'. Please supply exactly %d sample sizes."
+"The supplied sample sizes (%s) need to be either a single number or else "
+"correspond to the number of classes found in the target variable '%s'. "
+"Please supply exactly 1 or %d sample sizes."
 
 #: transform.R:977
 msgid ""
@@ -6805,7 +6789,7 @@ msgstr ""
 "e. to the median (not the mean as in the T-Test). <<>> The fBasics package "
 "provides the wilcox.test function to perform the Wilcoxon Test."
 
-#: random_forest.R:122
+#: random_forest.R:125
 msgid ""
 "This implementation of random forests does not handle categorical variables "
 "with more than 32 levels. Having a large number of levels tends to introduce "
@@ -6915,7 +6899,7 @@ msgstr ""
 msgid "Tree %d has been drawn."
 msgstr "Tree %d has been drawn."
 
-#: ada.R:362
+#: ada.R:364
 msgid "Tree %d of %d%s"
 msgstr "Tree %d of %d%s"
 
@@ -7021,11 +7005,11 @@ msgstr "Type 'rattle()' to shake, rattle, and roll your data."
 msgid "Unique: %d"
 msgstr "Unique: %d"
 
-#: ada.R:204 ada.R:213
+#: ada.R:206 ada.R:215
 msgid "update the AdaBoost model"
 msgstr "update the AdaBoost model"
 
-#: ada.R:227
+#: ada.R:229
 msgid "Update the adaboost model."
 msgstr "Update the adaboost model."
 
@@ -7073,11 +7057,11 @@ msgstr "Variable"
 msgid "Variable Correlation Clusters"
 msgstr "Variable Correlation Clusters"
 
-#: random_forest.R:356 random_forest.R:441
+#: random_forest.R:377 random_forest.R:465
 msgid "Variable Importance"
 msgstr "Variable Importance"
 
-#: ada.R:312 random_forest.R:451
+#: ada.R:314 random_forest.R:475
 msgid "Variable Importance has been plotted."
 msgstr "Variable Importance has been plotted."
 
@@ -7469,7 +7453,7 @@ msgstr ""
 "This is unusual since it is both an input variable and used to weight the "
 "outputs. It is suggested that you ignore this variable."
 
-#: kmeans.R:514 random_forest.R:516 rpart.R:130
+#: kmeans.R:514 random_forest.R:540 rpart.R:130
 msgid "You may need to scroll the textview to view them."
 msgstr "You may need to scroll the textview to view them."
 
@@ -7564,6 +7548,10 @@ msgstr ""
 #: tooltips.xml:data_rdataset_radiobutton
 msgid "Associate a pre-existing R dataset for use."
 msgstr "Associate a pre-existing R dataset for use."
+
+#: tooltips.xml:stop_button
+msgid "Attempt to interrupt the current process."
+msgstr "Attempt to interrupt the current process."
 
 #: tooltips.xml:model_linear_radiobutton
 msgid ""
@@ -7820,6 +7808,10 @@ msgstr "Explore the data to identify how it is distributed."
 msgid "Export the current tab in an appropriate form."
 msgstr "Export the current tab in an appropriate form."
 
+#: tooltips.xml:report_toolbutton
+msgid "Export the information in the current tab as a report."
+msgstr "Export the information in the current tab as a report."
+
 #: tooltips.xml:data_corpus_location_filechooserbutton
 msgid "Folder containing the corpus and optionally a target.csv file."
 msgstr "Folder containing the corpus and optionally a target.csv file."
@@ -7997,8 +7989,8 @@ msgid "Open a file chooser to select a dataset file to load."
 msgstr "Open a file chooser to select a dataset file to load."
 
 #: tooltips.xml:open_button
-msgid "Open an existing project."
-msgstr "Open an existing project."
+msgid "Open an existing project from file."
+msgstr "Open an existing project from file."
 
 #: tooltips.xml:explore_correlation_ordered_checkbutton
 msgid "Order the variables according to strength of correlation."
@@ -8260,6 +8252,14 @@ msgstr ""
 "retrieved after Execution, uncheck this option to not believe the reported "
 "row count."
 
+#: tooltips.xml:model_rf_sample_entry
+msgid ""
+"Specify a single sample size or a sample size for each class (e.g., "
+"'500,500') which may be useful in balancing class predictions."
+msgstr ""
+"Specify a single sample size or a sample size for each class (e.g., "
+"'500,500') which may be useful in balancing class predictions."
+
 #: tooltips.xml:impute_constant_entry
 msgid "Specify a value to replace missing values with."
 msgstr "Specify a value to replace missing values with."
@@ -8275,14 +8275,6 @@ msgstr ""
 "'/' will create a training and testing dataset. Three numbers separated by "
 "'/' will create a training, validation, and testing dataset, in that order. "
 "The numbers are percentages, and must add up to 100."
-
-#: tooltips.xml:model_rf_sample_entry
-msgid ""
-"Specify sample size for each class (e.g., '500,500') which may be useful in "
-"balancing classes."
-msgstr ""
-"Specify sample size for each class (e.g., '500,500') which may be useful in "
-"balancing classes."
 
 #: tooltips.xml:normalise_bygroup_radiobutton
 msgid ""

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-24 05:34:13 Graham Williams>
+# Time-stamp: <2010-05-28 15:38:19 Graham Williams>
 #
 # Project functionality.
 #
@@ -283,7 +283,7 @@ saveProject <- function()
   {
     crs$rf.opt$trees     <- theWidget("rf_ntree_spinbutton")$getValue()
     crs$rf.opt$vars      <- theWidget("rf_mtry_spinbutton")$getValue()
-    crs$rf.opt$sample    <- theWidget("rf_sampsize_entry")$getText()
+    crs$rf.opt$sample    <- theWidget("model_rf_sample_entry")$getText()
     crs$rf.opt$proximity <- theWidget("rf_proximity_checkbutton")$getActive()
   }
     
@@ -463,7 +463,7 @@ loadProject <- function()
     if (not.null(crs$sample.seed))
       theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
     else
-      theWidget("sample_seed_spinbutton")$setValue(42)
+      theWidget("sample_seed_spinbutton")$setValue(crv$seed)
     theWidget("sample_percentage_spinbutton")$setValue(per)
   }
   else
@@ -488,7 +488,7 @@ loadProject <- function()
   if (not.null(crs$kmeans.seed))
     theWidget("kmeans_seed_spinbutton")$setValue(crs$kmeans.seed)
   else
-    theWidget("kmeans_seed_spinbutton")$setValue(42)
+    theWidget("kmeans_seed_spinbutton")$setValue(crv$seed)
   setTextviewContents("kmeans_textview", crs$text$kmeans)
 
   showModelKMeansExists()
@@ -564,7 +564,7 @@ loadProject <- function()
   if (not.null(crs$rf.opt$vars))
     theWidget("rf_mtry_spinbutton")$setValue(crs$rf.opt$vars)
   if (not.null(crs$rf.opt$sample))
-    theWidget("rf_sampsize_entry")$setText(crs$rf.opt$sample)
+    theWidget("model_rf_sample_entry")$setText(crs$rf.opt$sample)
   if (not.null(crs$rf.opt$proximity))
     theWidget("rf_proximity_checkbutton")$setActive(crs$rf.opt$proximity)
 

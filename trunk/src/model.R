@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-17 16:03:21 Graham Williams>
+# Time-stamp: <2010-05-19 13:37:07 Graham Williams>
 #
 # MODEL TAB
 #
@@ -785,15 +785,16 @@ executeModelGLM <- function()
     appendLog(Rtxt("Build a multinomial model using the nnet package."), lib.cmd)
     eval(parse(text=lib.cmd))
 
-    car.available <- TRUE
-    lib.cmd <- "require(car, quietly=TRUE)"
-    if (! packageIsAvailable("car", Rtxt("evaluate a mulitnomial model")))
-      car.avaiable <- FALSE
-    else
-    {
-      appendLog(Rtxt("Summarise the multinomial model using the car package."), lib.cmd)
-      eval(parse(text=lib.cmd))
-    }
+    # 100519 This is not being used for now so remove it.
+    ## car.available <- TRUE
+    ## lib.cmd <- "require(car, quietly=TRUE)"
+    ## if (! packageIsAvailable("car", Rtxt("evaluate a mulitnomial model")))
+    ##   car.available <- FALSE
+    ## else
+    ## {
+    ##   appendLog(Rtxt("Summarise multinomial model using the car package."), lib.cmd)
+    ##   eval(parse(text=lib.cmd))
+    ## }
     
     model.cmd <- paste("crs$glm <- ",
                        "multinom",

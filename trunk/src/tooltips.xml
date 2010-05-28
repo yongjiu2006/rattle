@@ -15,11 +15,15 @@
   <tooltip widget="execute_button">Execute the current tab to have it
     take effect (shortcut is F2).</tooltip>
   <tooltip widget="new_button">Start a new project.</tooltip>
-  <tooltip widget="open_button">Open an existing project.</tooltip>
+  <tooltip widget="open_button">Open an existing project from file.</tooltip>
   <tooltip widget="save_button">Save the current project to
     file.</tooltip>
+  <tooltip widget="report_toolbutton">Export the information in the
+    current tab as an OpenOffice.org report.</tooltip>
   <tooltip widget="export_button">Export the current tab in an
     appropriate form.</tooltip>
+  <tooltip widget="stop_button">Attempt to interrupt the current
+    process.</tooltip>
   <tooltip widget="quit_button">Quit the application, closing all
     graphics displays and the R console.</tooltip>
   <tooltip widget="data_csv_radiobutton">Load data from a comma
@@ -399,9 +403,9 @@
     dataset. For classification the default is the square root of the
     number of variables. The model is generally not very sensitive to
     this value.</tooltip>
-  <tooltip widget="model_rf_sample_entry">Specify sample size for each
-    class (e.g., '500,500') which may be useful in balancing
-    classes.</tooltip>
+  <tooltip widget="model_rf_sample_entry">Specify a single sample size
+    or a sample size for each class (e.g., '500,500') which may be
+    useful in balancing class predictions.</tooltip>
   <tooltip widget="rf_importance_checkbutton">Enable this check button
     to display a measure of the importance of each variable. This is
     estimated by considering the increase in prediction error when any

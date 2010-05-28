@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-23 21:59:09 Graham Williams>
+# Time-stamp: <2010-05-28 15:35:40 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -264,7 +264,7 @@ executeModelCTree <- function()
 
   # Set the seed so that xerror and xstd are consistent each time
 
-#  seed.cmd <- 'set.seed(123455)'
+#  seed.cmd <- 'set.seed(crv$seed)'
 #  appendLog("Set the seed to ensure same cross validation results each time.", seed.cmd)
 #  eval(parse(text=seed.cmd))
 

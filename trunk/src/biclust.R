@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-23 07:13:10 Graham Williams>
+# Time-stamp: <2010-05-28 15:34:55 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -50,7 +50,7 @@ executeClusterBiclust <- function(include)
   # Obtain interface information.
 
   method <- "BCCC"
-  seed <- 42
+  seed <- crv$seed
 
   # Start the log.
   
