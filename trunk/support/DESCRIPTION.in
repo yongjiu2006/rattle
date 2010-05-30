@@ -1,6 +1,6 @@
 Package: rattle
 Type: Package
-Title: A graphical user interface for data mining in R using Gnome
+Title: Graphical user interface for data mining in R
 Version: VERSION
 Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>

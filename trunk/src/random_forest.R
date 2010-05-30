@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:39:11 Graham Williams>
+# Time-stamp: <2010-05-28 15:53:52 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -247,7 +247,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   # Build the model.
 
-  rf.cmd <- paste(spintf("set.seed(%d)\n", crv$seed),
+  rf.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
                   "crs$rf <- ", FUN, "(", frml,
                   ifelse(traditional,
                          ", data=crs$dataset",
