@@ -26,8 +26,15 @@ Help Menu
   Add a simple R command syntax example to each Rattle help text.
   ------------------------------------------------------------------------
 
-
 Data Tab
+
+  ------------------------------------------------------------------------
+  2010-05-30 09:44:52 Graham Williams
+
+  If the loaded CSV file has observations with the target as missing,
+  then treat those observatoins as a scoring dataset, not to be
+  included in the modelling at all.
+  ------------------------------------------------------------------------
 
   Variable selection
 
@@ -71,6 +78,19 @@ Test Tab
   and Sample 2 combo boxes with list of Categorics when this option is
   chosen.
   ------------------------------------------------------------------------
+
+Evaluate Tab
+
+  Score option
+
+  ------------------------------------------------------------------------
+  2010-05-30 11:05:47 Graham Williams
+
+  Bug: If the input data has many NAs for the target variable, then
+  when scoring them (which is probably what is really wanted for these
+  observations), the scores all come out as NA.
+  ------------------------------------------------------------------------
+
 
 Log Tab
 

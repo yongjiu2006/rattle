@@ -1,3 +1,15 @@
+rattle (2.5.33) unstable; urgency=low
+
+  * Bug fix rf.cmd.
+  
+  * Improve scoring functionality: The dataset can have NA's for target,
+    and these can now get scored by rf on Evaluate tab. Loading a CSV file
+    to be scored no longer needs to have the target column included
+    (previously it needed to be there and have non-NA values). Thanks to
+    Chris Snijders.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 31 May 2010 06:22:54 +1000
+
 rattle (2.5.32) unstable; urgency=low
 
   * Remove dependency on car - not actually being used at the moment.

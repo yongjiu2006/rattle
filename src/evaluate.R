@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-11 11:24:53 Graham Williams>
+# Time-stamp: <2010-05-31 05:47:59 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -519,10 +519,15 @@ executeEvaluateTab <- function()
   # arguments to getIncludedVariables, where risk=FALSE by default, I
   # forgot to set it to TRUE here. However, it seems to be working so
   # far, at least for glm! 081029 However, we need the target variable
-  # in the list for error matrix and risk chart, for example.
+  # in the list for error matrix and risk chart, for example. 100530
+  # But we don't need the target for scoring, and so we should remove
+  # it if we are scoring.
 
   #included <- getIncludedVariables(target=FALSE)
-  included <- getIncludedVariables()
+  if (theWidget("evaluate_score_radiobutton")$getActive())
+    included <- getIncludedVariables(target=FALSE)
+  else
+    included <- getIncludedVariables()
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
@@ -854,7 +859,7 @@ executeEvaluateTab <- function()
   {
     # 090301 Having added support for random forest regression seems
     # like we need to take into acocunt missing for PvO and scoring
-    # with numeric targets. Infact, we can probably add na.omit also
+    # with numeric targets. In fact, we can probably add na.omit also
     # for categoric targets, since randomForest also does na.omit
     # internally. So it won't help, and will keep in line with other
     # algorithms that actually need the na.omit to be done here.
@@ -2576,12 +2581,17 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
   row.names(scores) <- the.names
   names(scores) <- the.models
 
-  # Obtain a list of the identity variables and 080713 target to output.
+  # Obtain a list of the identity variables to output. 080713 Include
+  # the target to output. 100531 Don't put the target in if it is not
+  # in the dataset (like when we read a CSV file that does not contain
+  # the target variable).
 
-  idents <- union(getSelectedVariables("ident"), getSelectedVariables("target"))
-
-  setStatusBar(Rtxt("Scoring dataset ..."))
-
+  if (length(grep("\\.csv$", testname)) &&
+      ! getSelectedVariables("target") %in% names(crs$testset))
+    idents <- getSelectedVariables("ident")
+  else
+    idents <- union(getSelectedVariables("ident"), getSelectedVariables("target"))
+  
   for (mtype in the.models)
   {
     setStatusBar(sprintf(Rtxt("Scoring dataset using %s ..."), mtype))
