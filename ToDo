@@ -1,3 +1,4 @@
+<pre>
 Settings Menu
 
   File Encoding
@@ -77,6 +78,20 @@ Test Tab
   be selected and then do a cross tab of them. I.e., replace Sample 1
   and Sample 2 combo boxes with list of Categorics when this option is
   chosen.
+  ------------------------------------------------------------------------
+
+Model Tab
+
+  Fast and large regression and SVM
+
+  ------------------------------------------------------------------------
+  2010-05-31 06:31:29 Graham Williams  
+
+  New package available on CRAN: LiblineaR is a wrapper around the
+  liblinear C/C++ library for machine learning: L1- or L2-regularized
+  logistic regression, L1- or L2-regularized L2-loss support vector
+  classification, L2-regularized L1-loss support vector classification
+  and multi-class support vector classification. It is fast.
   ------------------------------------------------------------------------
 
 Evaluate Tab
@@ -499,3 +514,4 @@ For each textview, add initial text to explain the point (c.f. prcomp)
 ##	not including all possible levels for the input variables so it
 ##	won't help where the testset does not have all possible
 ##	levels. RandomForest will still complain on the predict.
+</pre>

@@ -219,11 +219,11 @@ diff:
 	svn diff
 
 .PHONY: install
-install: build pbuild ibuild zip rattle_src.zip # check pcheck
+install: # build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
 	cp changes.html.in /home/gjw/Projects/Togaware/www/
-	cp todo.html.in /home/gjw/Projects/Togaware/www/
+	cp ToDo /home/gjw/Projects/Togaware/www/todo.html.in
 	(cd /home/gjw/Projects/Togaware/www/;\
 	 perl -pi -e "s|Latest version [0-9\.]* |Latest version $(VERSION) |" \
 			rattle.html.in;\

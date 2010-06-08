@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-05 06:00:58 Graham Williams>
+# Time-stamp: <2010-06-09 06:54:18 Graham Williams>
 #
 # DATA TAB
 #
@@ -1236,7 +1236,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   # unexpected warnings about changes having been made but not
   # EXECTUEd. [071125]
   
-  executeSelectTab()
+  executeSelectTab(resample)
 
   # Set the risk label appropriately.
   
@@ -1668,24 +1668,26 @@ editData <- function()
    else if (packageIsAvailable("RGtk2DfEdit"))
     {
       require(RGtk2DfEdit)
-      assign.cmd <- paste('rattle.edit.obj <-',
-                          'dfedit(crs$dataset,',
-                          'size=c(800, 400))')
-      ## assign.cmd <- paste('rattle.edit.obj <<-',
-      ##                     'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
-      ##                     'size=c(800, 400))\n',
-      ##                     'gSignalConnect(rattle.edit.obj, "unrealize",',
-      ##                     'data=rattle.edit.obj,\n',
-      ##                     '  function(obj, data)\n',
-      ##                     '  {\n',
-      ##                     '    assign("rattle.edited.dataset", data$getDataFrame(),',
-      ##                     '    envir=.GlobalEnv)\n',
-      ##                     '  })')
-      ## infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
-      ##                 "a data frame called 'rattle.edited.dataset'. Once you have",
-      ##                 "finished editting and closed the",
-      ##                 "window you can load this data frame",
-      ##                 "using the R Dataset option of the Data tab."))
+      # This is what I'd like to do but it is not saving the object.
+      ## assign.cmd <- paste('rattle.edit.obj <-',
+      ##                     'dfedit(crs$dataset,',
+      ##                     'size=c(800, 400))')
+      # 100602 Revert to this version since the above is not working.
+      assign.cmd <- paste('rattle.edit.obj <<-',
+                          'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
+                          'size=c(800, 400))\n',
+                          'gSignalConnect(rattle.edit.obj, "unrealize",',
+                          'data=rattle.edit.obj,\n',
+                          '  function(obj, data)\n',
+                          '  {\n',
+                          '    assign("rattle.edited.dataset", data$getDataFrame(),',
+                          '    envir=.GlobalEnv)\n',
+                          '  })')
+      infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
+                      "a data frame called 'rattle.edited.dataset'. Once you have",
+                      "finished editting and closed the",
+                      "window you can load this data frame",
+                      "using the R Dataset option of the Data tab."))
     }
   else
     assign.cmd <- 'crs$dataset <- edit(crs$dataset)'
@@ -1992,7 +1994,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
 #----------------------------------------------------------------------
 # Execution
 
-executeSelectTab <- function()
+executeSelectTab <- function(resample=TRUE)
 {
   # 080520 TODO May want to rename this as SELECT is no longer a tab
   # but is now part of the DATA tab. Perhaps we call it
@@ -2006,7 +2008,7 @@ executeSelectTab <- function()
 
   startLog(Rtxt("Note the user selections."))
   
-  executeSelectSample()
+  if (resample) executeSelectSample()
 
   input   <- getSelectedVariables("input")
   target  <- getSelectedVariables("target")

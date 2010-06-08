@@ -1,3 +1,21 @@
+rattle (2.5.34) unstable; urgency=low
+
+  * When a package is missing, there is now the option to install it right
+    then, and it continues as normal after it gets installed.
+  
+  * Change Suggests to Depends so all used pacakges get loaded on loading
+    rattle, in an attempt to make it easier to install Rattle. Then the
+    r-cran-rattle package on Debian/Ubuntu will have all required
+    dependencies and a normal install.packages will get all dependencies
+    also, rather than having to use dependencies=c('Depends',
+    'Suggests'). Penalty is it takes 20 seconds to do 'library(rattle)' on
+    a server and 90 seconds on a netbook - so revert back to not doing
+    this.
+  
+  * Ensure the new train/validate/test scneario is saved across projects.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 09 Jun 2010 07:04:08 +1000
+
 rattle (2.5.33) unstable; urgency=low
 
   * Bug fix rf.cmd.
