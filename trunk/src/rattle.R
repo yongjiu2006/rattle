@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:39:55 Graham Williams>
+# Time-stamp: <2010-06-02 18:12:28 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 28 May 2010"
+VERSION.DATE <- "Released 31 May 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1448,14 +1448,21 @@ packageIsAvailable <- function(pkg, msg=NULL)
   {
     if (not.null(msg))
 
-      infoDialog(sprintf(Rtxt("The package '%s' is required to %s.",
-                              "It does not appear to be installed.",
-                              "Please consider installing it, perhaps",
-                              "with the following R command:",
-                              "\n\ninstall.packages('%s')",
-                              "\n\nto use the full functionality of %s."),
-                              pkg, msg, pkg, crv$appname))
-    return(FALSE)
+      if (questionDialog(sprintf(Rtxt("The package '%s' is required to %s.",
+                                      "It does not appear to be installed.",
+                                      "A package can be installed",
+                                      "with the following R command:",
+                                      "\n\ninstall.packages('%s')",
+                                      "\n\nThis will allow access to use",
+                                      "the full functionality of %s.",
+                                      "\n\nWould you like the package to be installed now?"),
+                                 pkg, msg, pkg, crv$appname)))
+      {
+        install.packages(pkg)
+        return(TRUE)
+      }
+      else
+        return(FALSE)
   }
   else
     return(TRUE)

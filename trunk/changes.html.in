@@ -6,7 +6,7 @@
     corresponds to a Rattle version. Generally, only major changes on
     each revision check-in are recorded here. The current Rattle
 
-    version is 2.5.21.
+    version is 2.5.33.
 
    The version number is determined as 2.5.n where n is the current
    revision identified below minus 480.
@@ -15,8 +15,7 @@
 <p>
 <b>The changelog below is no longer maintained.</b>
 
-See the CRAN <a
-href="http://cran.r-project.org/web/packages/rattle/NEWS">NEWS</a> and
+See the CRAN
 <a
 href="http://cran.r-project.org/web/packages/rattle/ChangeLog">ChangeLog</a>
 files.
@@ -1127,7 +1126,6 @@ files.
     
     <COPYRIGHT>
 
-<!-- hhmts start -->
-<i>Last Modified 2009-08-24 06:13:40 Graham Williams</i>
+<!-- hhmts start --><i>Last Modified 2010-06-01 21:15:06 Graham Williams</i>
 <!-- hhmts end -->
   </p>

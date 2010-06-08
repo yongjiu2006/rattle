@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:38:19 Graham Williams>
+# Time-stamp: <2010-06-09 06:57:03 Graham Williams>
 #
 # Project functionality.
 #
@@ -225,6 +225,10 @@ saveProject <- function()
 
   crs$filename <- theWidget("data_filechooserbutton")$getUri()
 
+  # 100609 Save the partition sizes for restoration.
+
+  crs$partition <- theWidget("data_sample_entry")$getText()
+  
   # Save all of the text views to be restored on a load.
   # Put the following into a function and call for each textview.
 
@@ -408,6 +412,49 @@ loadProject <- function()
   if (! file.exists(uri2file(crs$dwd)))
     crs$dwd <- ""
 
+  # 100609 Restore partition sizes before we resetVariableRoles since
+  # sampling is redone there. Do I also need to restore the seed to
+  # the GUI here?
+
+  if (is.null(crs$partition))
+    theWidget("data_sample_entry")$setText("70/30")
+  else
+    theWidget("data_sample_entry")$setText(crs$partition)
+
+  # 090402 Are these needed any more now we assign crs above? I don't
+  # think so. Comment out all the following assignments as well.
+  
+#  crs$sample      <- crs$sample
+#  crs$sample.seed <- crs$sample.seed
+
+  # 100609 Check if crs$partition is null, and if so we assume an old
+  # rattle project, so restore the sample size in the old
+  # way. Eventually should be able to reomve this.
+  
+  if (is.null(crs$partition))
+    if(crs$sample.on)
+    {
+      nrows <- nrow(crs$dataset)
+      srows <- length(crs$sample)
+      per <- 100*srows/nrows
+      theWidget("data_sample_checkbutton")$setActive(TRUE)
+      theWidget("sample_count_spinbutton")$setRange(1,nrows)
+      theWidget("sample_count_spinbutton")$setValue(srows)
+      if (not.null(crs$sample.seed))
+        theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
+      else
+        theWidget("sample_seed_spinbutton")$setValue(crv$seed)
+      theWidget("sample_percentage_spinbutton")$setValue(per)
+    }
+    else
+    {
+      theWidget("data_sample_checkbutton")$setActive(FALSE)
+    }
+  else
+  {
+    theWidget("data_sample_checkbutton")$setActive(crs$sample.on)
+  }
+  
   # Make sure we don't attempt to reload the file on executing the
   # Data tab, and thereby overwriting the current data, losing all of
   # the work already done on it. Set the modified time for the dataset
@@ -419,7 +466,7 @@ loadProject <- function()
                      crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
                      crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
-                     crs$barplot, crs$dotplot, autoroles=FALSE)
+                     crs$barplot, crs$dotplot, resample=FALSE, autoroles=FALSE)
   executeSelectTab()
   resetTestTab()
   
@@ -442,33 +489,6 @@ loadProject <- function()
     the.weight <- sprintf("Weights: %s",weights.display)
     theWidget("model_tree_rpart_weights_label")$setText(the.weight)
     crs$weights <- crs$weights
-  }
-
-  # Sample
-
-  # 090402 Are these needed any more now we assign crs above? I don't
-  # think so. Comment out all the following assignments as well.
-  
-#  crs$sample      <- crs$sample
-#  crs$sample.seed <- crs$sample.seed
-  
-  if (crs$sample.on)
-  {
-    nrows <- nrow(crs$dataset)
-    srows <- length(crs$sample)
-    per <- 100*srows/nrows
-    theWidget("data_sample_checkbutton")$setActive(TRUE)
-    theWidget("sample_count_spinbutton")$setRange(1,nrows)
-    theWidget("sample_count_spinbutton")$setValue(srows)
-    if (not.null(crs$sample.seed))
-      theWidget("sample_seed_spinbutton")$setValue(crs$sample.seed)
-    else
-      theWidget("sample_seed_spinbutton")$setValue(crv$seed)
-    theWidget("sample_percentage_spinbutton")$setValue(per)
-  }
-  else
-  {
-    theWidget("data_sample_checkbutton")$setActive(FALSE)
   }
 
   # Explore
