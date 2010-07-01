@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-31 05:47:59 Graham Williams>
+# Time-stamp: <2010-07-01 14:06:21 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -584,7 +584,8 @@ executeEvaluateTab <- function()
   }
   else if (theWidget("evaluate_csv_radiobutton")$getActive())
   {
-    # Evaluate on CSV data
+    # Evaluate on CSV or TXT data. We identify which from the
+    # seperator specified from the Data tab.
 
     # We need to allow for the case where the loaded csv data does not
     # have the risk and target variables when we are scoring the data
@@ -620,8 +621,9 @@ executeEvaluateTab <- function()
       if (isWindows()) filename <- gsub("\\\\", "/", filename)
 
       nastring <- ', na.strings=c(".", "NA", "", "?")'
-      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, encoding="%s")',
-                          filename, nastring, crv$csv.encoding)
+      sep = theWidget("data_separator_entry")$getText()
+      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, sep="%s", encoding="%s")',
+                          filename, nastring, sep, crv$csv.encoding)
 
       appendLog(Rtxt("Read a dataset from file for testing the model."), read.cmd)
       eval(parse(text=read.cmd))
@@ -690,15 +692,31 @@ executeEvaluateTab <- function()
   if (not.null(crs$testname) && crs$testname != crs$dataname)
     for (cn in colnames(crs$dataset))
       if (is.factor(crs$dataset[[cn]]))
-        ## REMOVE 090808
-        ## levels(crs$testset[[cn]]) <- c(levels(crs$testset[[cn]]),
-        ##                                setdiff(levels(crs$dataset[[cn]]),
-        ##                                        levels(crs$testset[[cn]])))
       {
+        # 100701 If the categoric variable is missing (like it might
+        # be for the target variable) then be sure to add it in. TODO
+        # 100701 Does the order of the variables matter in scoring? I
+        # think it does (since we use indicies to subset), so be sure
+        # to insert the column in the right place.
+
+        if (! cn %in% colnames(crs$testset))
+        {
+          place <- which(cn == colnames(crs$dataset))
+          cmd <- sprintf(paste("crs$testset <- cbind(crs$testset[1:%d],",
+                               "%s=rep(NA, nrow(crs$testset)),",
+                               "crs$testset[%d:ncol(crs$testset)])"),
+                         place-1, cn, place)
+          appendLog(sprintf(Rtxt("Add missing column `%s'",
+                                 "to the testing dataset"), cn),
+                          cmd)
+          eval(parse(text=cmd))
+        }
+          
         # 090808 Be sure to expose this trick to the log file since
         # the user will otherwise be unable to repeat the scoring for
         # the case where the levels are not the same as the training
         # dataset.
+        
         cmd <- sprintf(paste('levels(crs$testset[["%s"]]) <-',
                              '\n  c(levels(crs$testset[["%s"]]),',
                              '\n    setdiff(levels(crs$dataset[["%s"]]),',

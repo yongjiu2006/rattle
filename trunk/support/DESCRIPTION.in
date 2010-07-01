@@ -5,9 +5,9 @@ Version: VERSION
 Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
-Depends: R (>= 2.8.0), pmml (>= 1.2.13)
-Suggests: RGtk2, ada, amap, arules, biclust, cairoDevice, 
-  cba, colorspace, descr, doBy, e1071, ellipse, fEcofin, 
+Depends: R (>= 2.8.0), pmml (>= 1.2.13), RGtk2, cairoDevice, colorspace
+Suggests: ada, amap, arules, biclust, 
+  cba, descr, doBy, e1071, ellipse, fEcofin, 
   fBasics, foreign, fpc, gdata, gtools, gplots, 
   gWidgetsRGtk2, Hmisc, kernlab, latticist, Matrix, mice, network, 
   nnet, odfWeave, party, playwith, psych, randomForest, reshape, rggobi,

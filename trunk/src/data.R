@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-09 06:54:18 Graham Williams>
+# Time-stamp: <2010-06-14 16:10:42 Graham Williams>
 #
 # DATA TAB
 #
@@ -2124,7 +2124,7 @@ executeSelectTab <- function(resample=TRUE)
     switch(min(length(x)+1, 3), 'NULL', sprintf('"%s"', x),
            sprintf('c("%s")', paste(x, collapse='", "')))
   appendLog(Rtxt("The following variable selections have been noted."),
-            'crs$input <- ', convertOneMany(input),
+            'crs$input <- ', gsub("(([^,]*,){4})", "\\1\n    ", convertOneMany(input)),
             '\ncrs$target <- ', convertOneMany(target),
             '\ncrs$risk <- ', convertOneMany(risk),
             '\ncrs$ident <- ', convertOneMany(ident),

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:40:31 Graham Williams>
+# Time-stamp: <2010-06-14 16:38:37 Graham Williams>
 #
 # RPART TAB
 #
@@ -206,7 +206,7 @@ executeModelRPart <- function(action="build")
   # 100222 Use information as the default split method, as per a
   # machine learning view of the approach.
 
-  parms <- ', parms=list(split="information")'
+  parms <- ',\n      parms=list(split="information")'
   
   # Obtain the value of the tuning controls
 
@@ -237,9 +237,9 @@ executeModelRPart <- function(action="build")
         return(FALSE)
       }
     if (is.null(parms))
-      parms <- sprintf(", parms=list(prior=c(%s))", priors)
+      parms <- sprintf(",\n      parms=list(prior=c(%s))", priors)
     else
-      parms <- gsub(")$", sprintf(", prior=c(%s))", priors), parms)
+      parms <- gsub(")$", sprintf(",\n      prior=c(%s))", priors), parms)
   }
 
   # Retrieve the Min Split and check if it is different from the
@@ -249,9 +249,9 @@ executeModelRPart <- function(action="build")
   if (minsplit != crv$rpart.minsplit.default)
   {
     if (is.null(control))
-      control <- sprintf(", control=rpart.control(minsplit=%d)", minsplit)
+      control <- sprintf(",\n      control=rpart.control(minsplit=%d)", minsplit)
     else
-      control <- gsub(")$", sprintf(", minsplit=%d)", minsplit), control)
+      control <- gsub(")$", sprintf(",\n      minsplit=%d)", minsplit), control)
   }
 
   # Retrieve the Min Bucket and check if it is different from the
@@ -261,9 +261,9 @@ executeModelRPart <- function(action="build")
   if (minbucket != crv$rpart.minbucket.default)
   {
     if (is.null(control))
-      control <- sprintf(", control=rpart.control(minbucket=%d)", minbucket)
+      control <- sprintf(",\n      control=rpart.control(minbucket=%d)", minbucket)
     else
-      control <- gsub(")$", sprintf(", minbucket=%d)", minbucket), control)
+      control <- gsub(")$", sprintf(",\n           minbucket=%d)", minbucket), control)
   }
 
   # Retrieve the Max Depth and check if it is different from the
@@ -273,9 +273,9 @@ executeModelRPart <- function(action="build")
   if (maxdepth != crv$rpart.maxdepth.default)
   {
     if (is.null(control))
-      control <- sprintf(", control=rpart.control(maxdepth=%d)", maxdepth)
+      control <- sprintf(",\n      control=rpart.control(maxdepth=%d)", maxdepth)
     else
-      control <- gsub(")$", sprintf(", maxdepth=%d)", maxdepth), control)
+      control <- gsub(")$", sprintf(",\n           maxdepth=%d)", maxdepth), control)
   }
 
   # Retrieve the Complexity and check if it is different from the
@@ -286,9 +286,9 @@ executeModelRPart <- function(action="build")
   if (abs(cp-crv$rpart.cp.default) > 0.00001) ## Diff when same is 2.2352e-10!!!
   {
     if (is.null(control))
-      control <- sprintf(", control=rpart.control(cp=%f)", cp)
+      control <- sprintf(",\n      control=rpart.control(cp=%f)", cp)
     else
-      control <- gsub(")$", sprintf(", cp=%f)", cp), control)
+      control <- gsub(")$", sprintf(",\n           cp=%f)", cp), control)
   }
 
   # Retrieve the Include Missing checkbutton status and if not set
@@ -299,9 +299,11 @@ executeModelRPart <- function(action="build")
   if (! usesurrogate)
   {
     if (is.null(control))
-      control <- ", control=rpart.control(usesurrogate=0, maxsurrogate=0)"
+      control <- paste(",\n      control=rpart.control(usesurrogate=0,",
+                       "\n           maxsurrogate=0)")
     else
-      control <- gsub(")$", ", usesurrogate=0, maxsurrogate=0)", control)
+      control <- gsub(")$", paste(",\n           usesurrogate=0,",
+                                  "\n           maxsurrogate=0)"), control)
   }
 
   # Retrieve the Cross Validation value and if different from
@@ -341,9 +343,9 @@ executeModelRPart <- function(action="build")
     lo <- sprintf("matrix(c(%s), byrow=TRUE, nrow=%d)", loss, num.classes) 
     
     if (is.null(parms))
-      parms <- sprintf(", parms=list(loss=%s)", lo)
+      parms <- sprintf(",\n      parms=list(loss=%s)", lo)
     else
-      parms <- gsub(")$", sprintf(", loss=%s)", lo), parms)
+      parms <- gsub(")$", sprintf(",\n      loss=%s)", lo), parms)
   }
 
   # Build the formula for the model. Rpart has only a formula
@@ -385,12 +387,12 @@ executeModelRPart <- function(action="build")
                        if (including) included,
                        if (subsetting) "]", sep="")
                        
-    rpart.cmd <- paste("crs$rpart <- rpart(", frml, ", data=", ds.string,
+    rpart.cmd <- paste("crs$rpart <- rpart(", frml, ",\n      data=", ds.string,
                        ifelse(is.null(crs$weights), "",
-                              sprintf(", weights=(%s)%s",
+                              sprintf(",\n      weights=(%s)%s",
                                       crs$weights,
                                       ifelse(sampling, "[crs$train]", ""))),
-                       ', method=',
+                       ',\n      method=',
                        ifelse(categoricTarget(),
                               '"class"', '"anova"'),
                        ifelse(is.null(parms), "", parms),

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-02 18:12:28 Graham Williams>
+# Time-stamp: <2010-07-01 15:21:16 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 31 May 2010"
+VERSION.DATE <- "Released 09 Jun 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1329,6 +1329,43 @@ listVersions <- function(file="", ...)
   row.names(result) <- NULL
   write.csv(result, file=file, ...)
   invisible(result)
+}
+
+# 100630 Function from Dirk Eddelbuettel based on postings by Petr
+# Pikal and David Hinds to the r-help list in 2004 to list (and/or
+# sort) the largest objects.
+
+.ls.objects <- function (pos=1, pattern, order.by,
+                        decreasing=FALSE, head=FALSE, n=5)
+{
+  napply <- function(names, fn) sapply(names, function(x)
+                                       fn(get(x, pos = pos)))
+  names <- ls(pos = pos, pattern = pattern)
+  obj.class <- napply(names, function(x) as.character(class(x))[1])
+  obj.mode <- napply(names, mode)
+  obj.type <- ifelse(is.na(obj.class), obj.mode, obj.class)
+  obj.size <- napply(names, object.size)
+  obj.prettysize <- sapply(obj.size, function(r) prettyNum(r, big.mark = ",") )
+  obj.dim <- t(napply(names, function(x)
+                      as.numeric(dim(x))[1:2]))
+  vec <- is.na(obj.dim)[, 1] & (obj.type != "function")
+  obj.dim[vec, 1] <- napply(names, length)[vec]
+  out <- data.frame(obj.type, obj.size,obj.prettysize, obj.dim)
+  names(out) <- c("Type", "Size", "PrettySize", "Rows", "Columns")
+  if (!missing(order.by))
+    out <- out[order(out[[order.by]], decreasing=decreasing), ]
+  out <- out[c("Type", "PrettySize", "Rows", "Columns")]
+  names(out) <- c("Type", "Size", "Rows", "Columns")
+  if (head)
+    out <- head(out, n)
+  out
+}
+
+# Shorthand.
+
+lss <- function(n=10, pos=1, pattern, order.by="Size", decreasing=TRUE, head=TRUE)
+{
+  .ls.objects(order.by=order.by, decreasing=decreasing, head=head, n=n, pos=pos)
 }
 
 ## Common Dialogs
