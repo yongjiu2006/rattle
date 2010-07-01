@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:53:52 Graham Williams>
+# Time-stamp: <2010-07-01 12:32:52 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -90,6 +90,13 @@ on_help_randomForest_activate <- function(action, window)
 
 executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 {
+
+  # Decide which random forest to build: randomForest or cforest
+  
+  FUN <- ifelse(traditional, "randomForest", "cforest")
+
+  # Make sure the appropriate package is available.
+  
   if ((traditional
        && ! packageIsAvailable("randomForest", Rtxt("build a random forest model")))
       ||
@@ -97,10 +104,11 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
       ! packageIsAvailable("party", Rtxt("build a random forest model")))
     return(FALSE)
 
-  # Initial setup 
+  # Identify the appropriate textview widget to display results.
   
   TV <- "rf_textview"
-  FUN <- ifelse(traditional, "randomForest", "cforest")
+
+  # Build up the funciton call.
   
   num.classes <- length(levels(as.factor(crs$dataset[[crs$target]])))
   parms <- ""
@@ -119,24 +127,30 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
       {
         errorDialog(sprintf(Rtxt("This implementation of random forests does not handle",
                                  "categorical variables with more than 32 levels.",
-                                 "Having a large number of levels tends to introduce bias",
-                                 "into the tree algorithms. The variable %s has %d levels.",
-                                 "\n\nPlease choose to ignore it in the",
+                                 "Having a large number of levels tends to introduce",
+                                 "bias into the tree algorithms. The variable %s has.",
+                                 "%d levels\n\nPlease choose to ignore it in the",
                                  "Data tab if you wish to build a random forest model."),
                             i, length(levels(crs$dataset[,i]))))
         return(FALSE)
       }
   }
 
-  # Retrieve options and set up parms.
+  # Retrieve options and set up the function arguments.
 
   ntree <- theWidget("rf_ntree_spinbutton")$getValue()
-  # 100107 Just always use the supplied value.  if (ntree != crv$rf.ntree.default)
-  parms <- sprintf("ntree=%d", ntree)
+  # 100107 Always use the supplied value rather than chekcing if it is
+  # changed from the default, which would use:
+  #
+  # if (ntree != crv$rf.ntree.default)
+  parms <- sprintf("\n      ntree=%d", ntree)
   
   mtry <- theWidget("rf_mtry_spinbutton")$getValue()
-  # 100107 Just always use the supplied value.  if (mtry != crv$rf.mtry.default)
-  parms <- sprintf("%s, mtry=%d", parms, mtry)
+  # 100107 Always use the supplied value rather than chekcing if it is
+  # changed from the default, which would use:
+  #
+  # if (mtry != crv$rf.mtry.default)
+  parms <- sprintf("%s,\n      mtry=%d", parms, mtry)
 
   if (traditional)
   {
@@ -154,7 +168,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
         return(FALSE)
       }
       # TODO Check if sample sizes are larger than the classes!
-      parms <- sprintf("%s, sampsize=c(%s)", parms, sampsize)
+      parms <- sprintf("%s,\n      sampsize=c(%s)", parms, sampsize)
     }
     
     # By default the MeanDecreaseGini is available for plotting. With
@@ -162,7 +176,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     # to also print the relative importance with regard class. So by
     # default, generate them both.
   
-    parms <- sprintf("%s, importance=TRUE", parms)
+    parms <- sprintf("%s,\n      importance=TRUE", parms)
   }
   
 
@@ -205,6 +219,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   # 100107 Deal with missing values. I've not tested whether cforest
   # has issues with missing values.
   
+  naimpute <- theWidget("model_rf_impute_checkbutton")$getActive()
   if (traditional)
   {
     missing.cmd <- sprintf('length(attr((na.omit(%s)), "na.action"))', dataset)
@@ -213,7 +228,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     dsrow.cmd <- sprintf("nrow(%s)", dataset)
     result <- try(dsrow <- eval(parse(text=dsrow.cmd)), silent=TRUE)
     if (inherits(result, "try-error")) dsrow <- 0
-    if (missing == dsrow)
+    if (missing == dsrow && ! naimpute)
     {
       errorDialog(Rtxt("All observations in the dataset have one or more",
                        "missing values for the selected variables.",
@@ -222,7 +237,9 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
                        "to build a model.",
                        "To fix this problem, you might, for example, Ignore any",
                        "variable with many or any missing values.",
-                       "Or else employ imputation to fill in default or modelled",
+                       "Or else enable the Impute check button to impute",
+                       "the medium (numeric) of most frequent (categoric) value.",
+                       "You could also use imputation to fill in default or modelled",
                        "values for the missing values."))
       return()
     }
@@ -250,8 +267,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   rf.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
                   "crs$rf <- ", FUN, "(", frml,
                   ifelse(traditional,
-                         ", data=crs$dataset",
-                         ", data=na.omit(crs$dataset"),
+                         ",\n      data=crs$dataset",
+                         ",\n      data=na.omit(crs$dataset"),
                   if (subsetting) "[",
                   if (sampling) "crs$sample",
                   if (subsetting) ",",
@@ -261,14 +278,17 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
                          ifelse(traditional, "", ")")),
                   ifelse(traditional, parms,
                          sprintf("controls=cforest_unbiased(%s)", parms)),
-                  if (traditional) ", na.action=na.omit",
+                  ifelse(traditional,
+                         sprintf(",\n      na.action=%s",
+                                 ifelse(naimpute, "na.roughfix", "na.omit")),
+                         ""),
                   # 100521 Turn subsampling with replacement off since
                   # it is more likely to produce biased imprtance
                   # measures, as explained in
                   # http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1796903/
                   # Note that for cforest, cforest_unbiased uses
                   # replace=FALSE also.
-                  if (traditional) ", replace=FALSE",
+                  if (traditional) ",\n      replace=FALSE",
                   ")", sep="")
 
   appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$RF)), rf.cmd)
@@ -327,12 +347,26 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     return(FALSE)
   }
 
+  resetTextview(TV)
+  
   # Display the resulting model.
 
   summary.cmd <- "crs$rf"
   appendLog(sprintf(Rtxt("Generate textual output of '%s' model."), commonName(crv$RF)),
             summary.cmd)
 
+  addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
+              "\n\n",
+              "Number of observations used to build the model: ", length(crs$rf$y),
+              "\n",
+              ifelse(naimpute, "Missing value imputation is active.\n", ""),
+              collectOutput(summary.cmd, TRUE))
+
+  # Display the variable importance.
+
+  # 100107 There is a very good importance measure from cforest that
+  # needs to go here.
+  
   if (traditional)
   {
     if (numericTarget())
@@ -357,14 +391,6 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   }
   
   appendLog(Rtxt("List the importance of the variables."), varimp.cmd)
-
-  # 100107 There is a very good importance measure from cforest that
-  # needs to go here.
-  
-  resetTextview(TV)
-  addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
-              "\n",
-              collectOutput(summary.cmd, TRUE))
 
   result <- try(collectOutput(varimp.cmd), silent=TRUE)
   if (inherits(result, "try-error"))

@@ -1,7 +1,7 @@
 \name{binning}
 \alias{binning}
 \title{
-  Perform binning
+  Perform binning over numeric data
 }
 \description{
   
@@ -14,21 +14,25 @@ binning(x, bins=4, method=c("quantile", "kmeans"),
 }
 \arguments{
   
-  \item{x}{data.}
+  \item{x}{the numeric data to bin.}
 
-  \item{bins}{number of bins.}
+  \item{bins}{the number of bins to use.}
 
-  \item{method}{mechanism.}
+  \item{method}{whether to use "quantile" or "kmeans" binning.}
 
-  \item{labels}{labels.}
+  \item{labels}{the labels or names to use for each of the bins.}
 
-  \item{ordered}{oredered.}
+  \item{ordered}{whether to build an ordered factor or not.}
   
 }
 \details{
 
-  Perform binning
+  Bin the provided nmeric data into the specified number of bins using
+  one of the supported methods. The bins will have the names specified
+  by labels, if supplied. The result can optionally be an ordered
+  factor.
   
 }
+\value{A factor is returned.}
 \references{Package home page: \url{http://rattle.togaware.com}}
-\author{\email{Graham.Williams@togaware.com}}
+\author{Daniele Medri and \email{Graham.Williams@togaware.com}}

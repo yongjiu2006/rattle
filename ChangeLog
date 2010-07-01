@@ -1,3 +1,30 @@
+rattle (2.5.35) unstable; urgency=low
+
+  * Add utility lss function to list object sizes.
+  
+  * Add options text entry for SVM to easily allow other options.
+  
+  * Better formatting of the Log tab.
+  
+  * Use a set.seed for SVM to ensure same model each time.
+  
+  * Add option to random forest to impute missing values rather than
+    simply ignoring the observations.
+  
+  * On Evalaute with supplied file, use the sep specified on the Data tab,
+    thus allowing TXT files.
+  
+  * On loading a new dataset for evaluation be sure to add in any missing
+    columns, and unify the levels.
+  
+  * Improve binning documentation.
+  
+  * Make RGtk2, cairoDevice, colorspace all dependencies so we can get
+    rattle started and then rattle will prompt to install other packages
+    that are mssing when it needs them.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Thu, 01 Jul 2010 15:34:50 +1000
+
 rattle (2.5.34) unstable; urgency=low
 
   * When a package is missing, there is now the option to install it right

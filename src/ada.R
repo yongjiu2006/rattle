@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-05-28 15:34:29 Graham Williams>
+# Time-stamp: <2010-06-14 16:44:34 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -121,8 +121,9 @@ buildModelAda <- function(formula,
 
   # Construct the appropriate rpart control.
   
-  control <- sprintf(paste(", control=rpart.control(maxdepth=%d,",
-                           "cp=%f, minsplit=%d, xval=%d)"),
+  control <- sprintf(paste(",\n      control=rpart.control(maxdepth=%d,",
+                           "cp=%f,", "minsplit=%d,", "xval=%d)",
+                           sep="\n           "),
                      maxdepth, cp, minsplit, xval)
   
   # Build a model. Note that there is randomness in this
@@ -130,8 +131,8 @@ buildModelAda <- function(formula,
   # each time.
 
   model.cmd <- paste(sprintf("set.seed(%d)\n", seed),
-                     "ada(", formula, ", data=", dataset,
-                     control, ", iter=", ntree, ")",
+                     "ada(", formula, ",\n      data=", dataset,
+                     control, ",\n      iter=", ntree, ")",
                      sep="")
 
   if (gui) appendLog(sprintf(Rtxt("Build the %s model."), commonName(crv$ADA)),

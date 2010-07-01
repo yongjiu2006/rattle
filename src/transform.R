@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-30 06:43:51 Graham Williams>
+# Time-stamp: <2010-06-17 20:08:01 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1090,7 +1090,7 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
   method <- match.arg(method)
   if(is.factor(x)) stop(Rtxt("This variable is already a factor."))
   if (is.data.frame(x)) stop(Rtxt("An object of class data.frame is required."))
-  if (length(x) < bins) stop(Rtxt("There are more classes than observations."))
+  if (length(x) < bins) stop(Rtxt("There are more bins than observations."))
   
   # Binning
 

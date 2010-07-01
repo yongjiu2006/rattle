@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-19 13:37:07 Graham Williams>
+# Time-stamp: <2010-06-14 16:30:19 Graham Williams>
 #
 # MODEL TAB
 #
@@ -243,6 +243,7 @@ commonName <- function(mtype)
                          kmeans=Rtxt("KMeans"),
                          rf=Rtxt("Random Forest"),
                          rpart=Rtxt("Decision Tree"),
+                         svm=Rtxt("SVM"),
                          ksvm=Rtxt("SVM"),
                          glm=Rtxt("Linear"),
                          linear=Rtxt("Linear"),
@@ -1122,6 +1123,8 @@ executeModelSVM <- function()
   krnl <- theWidget("svm_kernel_combobox")$getActiveText()
   krnl <- gsub(").*$", "", gsub("^.*\\(", "",  krnl))
 
+  opts <- theWidget("model_svm_options_entry")$getText()
+  
   if (krnl == "polydot")
     degree <- theWidget("svm_poly_degree_spinbutton")$getValue()
   
@@ -1141,18 +1144,20 @@ executeModelSVM <- function()
 
   parms <- ""
   if (krnl != "")
-    parms <- sprintf('%s, kernel="%s"', parms, krnl)
+    parms <- sprintf('%s,\n      kernel="%s"', parms, krnl)
   if (cweights != "")
-    parms <- sprintf('%s, class.weights=%s', parms, cweights)
+    parms <- sprintf('%s,\n      class.weights=%s', parms, cweights)
   if (krnl == "polydot")
-    parms <- sprintf('%s, kpar=list("degree"=%s)', parms, degree)
+    parms <- sprintf('%s,\n      kpar=list("degree"=%s)', parms, degree)
+  if (nchar(opts) > 0)
+    parms <- sprintf('%s,\n      %s', parms, opts)
   
   # Build the model.
 
   if (useKernlab)
-    svmCmd <- paste("crs$ksvm <- ksvm(", frml, ", data=crs$dataset", sep="")
+    svmCmd <- paste("crs$ksvm <- ksvm(", frml, ",\n      data=crs$dataset", sep="")
   else
-    svmCmd <- paste("crs$svm <- svm(", frml, ", data=crs$dataset", sep="")
+    svmCmd <- paste("crs$svm <- svm(", frml, ",\n      data=crs$dataset", sep="")
   svmCmd <- paste(svmCmd,
                    if (subsetting) "[",
                    if (sampling) "crs$train",
@@ -1165,11 +1170,16 @@ executeModelSVM <- function()
   # recorded.
 
   if (useKernlab)
-    svmCmd <- paste(svmCmd, ", prob.model=TRUE", sep="")  # Probabilities
+    svmCmd <- paste(svmCmd, ",\n      prob.model=TRUE", sep="")  # Probabilities
   else
-    svmCmd <- paste(svmCmd, ", probability=TRUE", sep="")  # Probabilities
+    svmCmd <- paste(svmCmd, ",\n      probability=TRUE", sep="")  # Probabilities
   svmCmd <- paste(svmCmd, ")", sep="")
 
+  # 100614 Ensure each run generates the same model.
+
+  seed.cmd <- sprintf('set.seed(%d)', crv$seed)
+  svmCmd <- paste(seed.cmd, svmCmd, sep="\n")
+  
   start.time <- Sys.time()
   appendLog(Rtxt("Build a Support Vector Machine model."), svmCmd)
   result <- try(eval(parse(text=svmCmd)), silent=TRUE)
@@ -1196,7 +1206,7 @@ executeModelSVM <- function()
   else
     summaryCmd <- "crs$svm"
   appendLog(sprintf(Rtxt("Generate a textual view of the %s model."),
-                    commonName(crv$SVM)), summaryCmd)
+                    commonName(crv$KSVM)), summaryCmd)
   resetTextview(TV)
   setTextview(TV, sprintf(Rtxt("Summary of the %s model",
                                "(built using ksvm):"),

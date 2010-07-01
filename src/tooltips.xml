@@ -434,6 +434,8 @@
     (recommended).</tooltip>
   <tooltip widget="svm_classweights_entry">Entry class weights in the
     form: c('0'=4, '1'=1)</tooltip>
+  <tooltip widget="model_svm_options_entry">Enter other options passed
+    to the ksvm function.</tooltip>
   <tooltip widget="glm_target_label">removed - Makes whole window too
     wide</tooltip>
   <tooltip widget="model_tab_label">Build predictive models.</tooltip>
