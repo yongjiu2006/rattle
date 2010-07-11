@@ -1,3 +1,16 @@
+rattle (2.5.36) unstable; urgency=low
+
+  * Add Bill Venebles searchCRAN example code.
+  
+  * Improve error message when we find duplicate variable names in a
+    loaded file, which might result when there is no header line.
+  
+  * Add help item for Projects.
+  
+  * On Evaluate with supplied file, use the hdr specified on the Data tab.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 12 Jul 2010 06:43:06 +1000
+
 rattle (2.5.35) unstable; urgency=low
 
   * Add utility lss function to list object sizes.

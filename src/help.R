@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-17 13:46:16 Graham Williams>
+# Time-stamp: <2010-07-03 21:34:59 Graham Williams>
 #
 # Help Menu
 #
@@ -90,6 +90,16 @@ on_help_general_activate <- function(action, window)
                 "support@togaware.com.",
                 "<<>>",
                 "Enjoy."))
+}
+
+on_help_project_menuitem_activate <- function(action, window)
+{
+  showHelp(Rtxt("A Project is where all the related information from Rattle is",
+                "stored in a file, so that at a later time we can resume our work",
+                "in Rattle.",
+                "<<>>",
+                "Projects can be saved and loaded. A Rattle project has the",
+                "filename extension of .rattle"))
 }
 
 ########################################################################
