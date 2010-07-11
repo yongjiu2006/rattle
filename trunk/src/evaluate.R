@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-01 14:06:21 Graham Williams>
+# Time-stamp: <2010-07-12 06:32:38 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -622,8 +622,12 @@ executeEvaluateTab <- function()
 
       nastring <- ', na.strings=c(".", "NA", "", "?")'
       sep = theWidget("data_separator_entry")$getText()
-      read.cmd <- sprintf('crs$testset <- read.csv("%s"%s, sep="%s", encoding="%s")',
-                          filename, nastring, sep, crv$csv.encoding)
+      hdr = theWidget("data_header_checkbutton")$getActive()
+      read.cmd <- sprintf(paste('crs$testset <- read.csv("%s"%s, header=%s,',
+                                'sep="%s", encoding="%s")'),
+                          filename, nastring,
+                          ifelse(hdr, "TRUE", "FALSE"),
+                          sep, crv$csv.encoding)
 
       appendLog(Rtxt("Read a dataset from file for testing the model."), read.cmd)
       eval(parse(text=read.cmd))

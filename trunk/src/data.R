@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-14 16:10:42 Graham Williams>
+# Time-stamp: <2010-07-09 06:45:40 Graham Williams>
 #
 # DATA TAB
 #
@@ -952,6 +952,7 @@ executeDataCSV <- function(filename=NULL)
                                "\n\nhas duplicate columns.",
                                "This is sometimes due to using an incorrect",
                                "separator (%s) or decimal point (%s) in the file.",
+                               "Or it might be because the file has no header line.",
                                "\n\nThe actual error message was: %s",
                                "\nPlease check the file format and the defaults",
                              "set in the Data tab and try again."),
@@ -969,7 +970,7 @@ executeDataCSV <- function(filename=NULL)
                              "\n\n\t%s",
                              "\n\ncontains only a single column.",
                              "This is not usually what is expected and",
-                             "is often due to using something other than the default",
+                             "is often due to using something other than the specified",
                              "separator (%s) and decimal point (%s) in the file.",
                              "\n\nPlease check the file format and the defaults",
                              "set in the Data tab and try again."),

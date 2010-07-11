@@ -6,6 +6,7 @@ export(
        calculateAUC,
        centers.hclust,
        copyPlotToClipboard,
+       cranSearch,
        drawTreesAda,
        drawTreeNodes,
        evaluateRisk,

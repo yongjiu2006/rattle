@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-01 15:21:16 Graham Williams>
+# Time-stamp: <2010-07-10 16:24:26 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 09 Jun 2010"
+VERSION.DATE <- "Released 01 Jul 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -732,6 +732,9 @@ rattle <- function(csvname=NULL)
   # If the cairoDevice package is not available then turn off the
   # option in the settings menu and make it insensitive.
 
+  # 100706 The asCairo is failing:
+  # Error in asCairoDevice(da) : Graphics API version mismatch
+  
   if (! packageIsAvailable("cairoDevice", Rtxt("enable the cairo device option")))
   {
     theWidget("use_cairo_graphics_device")$setActive(FALSE)
@@ -1331,6 +1334,10 @@ listVersions <- function(file="", ...)
   invisible(result)
 }
 
+########################################################################
+# UTILITIES From Others - Probably need to get their permissions.
+
+#-----------------------------------------------------------------------
 # 100630 Function from Dirk Eddelbuettel based on postings by Petr
 # Pikal and David Hinds to the r-help list in 2004 to list (and/or
 # sort) the largest objects.
@@ -1368,6 +1375,56 @@ lss <- function(n=10, pos=1, pattern, order.by="Size", decreasing=TRUE, head=TRU
   .ls.objects(order.by=order.by, decreasing=decreasing, head=head, n=n, pos=pos)
 }
 
+#------------------------------------------------------------------------
+# CRAN SEARCH FOR A PACKAGE
+#
+# From Bill Venables posting to r-downunder@stat.auckland.ac.nz on 2
+# July 2010 12:24 based on a blog
+# http://www.r-bloggers.com/cran-search/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+RBloggers+(R+bloggers)
+
+cranSearch <- local(
+{
+  zfill <- function(x)
+  {
+    m <- max(n <- nchar(x))
+    z <- paste(rep(0, m), collapse="")
+    paste(substring(z, 0, m - n), x, sep="")
+  }
+  
+  function(lookFor = "",
+           ignoreCase = TRUE,
+           abbreviate = 50,
+           CRANPackageTable = "http://cran.ms.unimelb.edu.au/web/packages")
+  {
+
+    ##############################################
+    ### find packages with 'lookFor' either in ###
+    ### the title or in the description        ###
+    ##############################################
+
+    if(!exists("readHTMLTable"))
+    {
+      if(!require(XML, quietly = TRUE))
+        stop("You need to install the XML package first!")
+      on.exit(detach("package:XML"))
+    }
+    d <- readHTMLTable(CRANPackageTable)[[1]]
+    libs <- na.omit(do.call(cbind, lapply(d, as.vector)))
+    dimnames(libs)[[2]] <- c("Package", "Description")
+    libs <- libs[sort(unique(c(grep(lookFor, libs[, 1], ignoreCase),
+                               grep(lookFor, libs[, 2], ignoreCase)))), ,
+                 drop = FALSE]
+    if(length(libs) > 0)
+    {
+      if(missing(abbreviate) || abbreviate)
+        libs[, 2] <- substring(libs[, 2], 0, abbreviate)
+      dimnames(libs)[[1]] <- zfill(1:nrow(libs))
+    }
+    noquote(libs)
+  }
+})
+
+########################################################################
 ## Common Dialogs
 
 debugDialog <- function(...)
