@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-10 16:24:26 Graham Williams>
+# Time-stamp: <2010-07-16 19:59:05 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 01 Jul 2010"
+VERSION.DATE <- "Released 12 Jul 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -586,9 +586,11 @@ rattle <- function(csvname=NULL)
   crv$NOTEBOOK.ASSOCIATE.WIDGET <- theWidget("associate_tab_widget")
   crv$NOTEBOOK.ASSOCIATE.LABEL  <- theWidget("associate_tab_label")
 
-  #crv$NOTEBOOK.MODEL.NAME     <- theWidget("model_tab_label")$getLabel()
-  if (is.null(crv$NOTEBOOK.MODEL.NAME)) # 100423 Fix for RStat using Model
-    crv$NOTEBOOK.MODEL.NAME <- Rtxt("Predictive")
+  # 100716 Revert to using Model rather than Predictive.... Model fits
+  # the other tabs better.
+  crv$NOTEBOOK.MODEL.NAME <- theWidget("model_tab_label")$getLabel()
+#  if (is.null(crv$NOTEBOOK.MODEL.NAME)) # 100423 Fix for RStat using Model
+#    crv$NOTEBOOK.MODEL.NAME <- Rtxt("Predictive")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
   crv$NOTEBOOK.MODEL.LABEL   <- theWidget("model_tab_label")
 
@@ -1394,7 +1396,7 @@ cranSearch <- local(
   function(lookFor = "",
            ignoreCase = TRUE,
            abbreviate = 50,
-           CRANPackageTable = "http://cran.ms.unimelb.edu.au/web/packages")
+           CRANPackageTable = "http://http://cran.r-project.org/web/packages")
   {
 
     ##############################################

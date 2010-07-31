@@ -235,7 +235,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="model2">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Predictive</property>
+                        <property name="label" translatable="yes">_Model</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_tools_model_activate"/>
                       </widget>
@@ -834,7 +834,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="help_model_menuitem">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Predictive</property>
+                        <property name="label" translatable="yes">_Model</property>
                         <property name="use_underline">True</property>
                         <child>
                           <widget class="GtkMenu" id="help_model_menu">
@@ -7530,7 +7530,7 @@ Spline (splinedot)</property>
             <child>
               <widget class="GtkLabel" id="model_tab_label">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Predictive</property>
+                <property name="label" translatable="yes">Model</property>
               </widget>
               <packing>
                 <property name="position">6</property>

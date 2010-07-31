@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-09 06:45:40 Graham Williams>
+# Time-stamp: <2010-07-31 14:17:25 Graham Williams>
 #
 # DATA TAB
 #
@@ -1625,11 +1625,11 @@ executeDataLibrary <- function()
 
 viewData <- function()
 {
-  if (packageIsAvailable("RGtk2DfEdit")) # Rtxt("RGtk2 data frame editor")
+  if (packageIsAvailable("RGtk2Extras")) # Rtxt("RGtk2 data frame editor")
   {
-    require(RGtk2DfEdit)
-    dfedit(crs$dataset, dataset.name=Rtxt("Changes will not be saved"),
-           size=c(800, 400))
+    require(RGtk2Extras)
+    dfedit(crs$dataset, dataset.name=Rtxt("Warning: Changes will not be saved."),
+           size=c(800, 400), pretty_print=TRUE)
   }
   else
   {
@@ -1662,21 +1662,24 @@ editData <- function()
 
   if (is.null(crs$dataset))
     assign.cmd <- 'crs$dataset <- edit(data.frame())'
-  # 100215 Would like to do the following but results are not saved
-  # into crs$dataset. Perhaps it is an environment issue. So I can
-  # save the results into a global variable instead, and use the R
-  # Dataset tab to access this modified dataset.
-   else if (packageIsAvailable("RGtk2DfEdit"))
+   else if (packageIsAvailable("RGtk2Extras"))
     {
-      require(RGtk2DfEdit)
+      require(RGtk2Extras)
+      # 100215 Would like to do the following but results are not saved
+      # into crs$dataset. Perhaps it is an environment issue. So I can
+      # save the results into a global variable instead, and use the R
+      # Dataset tab to access this modified dataset.
       # This is what I'd like to do but it is not saving the object.
       ## assign.cmd <- paste('rattle.edit.obj <-',
       ##                     'dfedit(crs$dataset,',
       ##                     'size=c(800, 400))')
       # 100602 Revert to this version since the above is not working.
       assign.cmd <- paste('rattle.edit.obj <<-',
-                          'dfedit(crs$dataset, dataset.name="rattle.edited.dataset",',
-                          'size=c(800, 400))\n',
+                          'dfedit(crs$dataset,',
+                          'dataset.name="Note: When finished and closed,',
+                          'load the R Dataset \'rattle.edited.dataset\'',
+                          'to access changes.",',
+                          'size=c(800, 400), pretty_print=TRUE)\n',
                           'gSignalConnect(rattle.edit.obj, "unrealize",',
                           'data=rattle.edit.obj,\n',
                           '  function(obj, data)\n',
@@ -1684,7 +1687,7 @@ editData <- function()
                           '    assign("rattle.edited.dataset", data$getDataFrame(),',
                           '    envir=.GlobalEnv)\n',
                           '  })')
-      infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
+      infoDialog(Rtxt ("RGtk2Extras will be used to edit",
                       "a data frame called 'rattle.edited.dataset'. Once you have",
                       "finished editting and closed the",
                       "window you can load this data frame",

@@ -1,6 +1,22 @@
+rattle (2.5.37) unstable; urgency=low
+
+  * The Predictive tab has gone back to being Model. Not sure which is
+    best.
+  
+  * cranSearch defaults to r-project rather than unimelb.
+  
+  * Migrate from RGtk2DfEdit to its replacement, RGtk2Extras.
+  
+  * Revert cairoDevice to being a Suggests rater than Depends.
+  
+  * Remove redundant CITATION from root of package, as the real one is in
+    inst.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 31 Jul 2010 14:34:50 +1000
+
 rattle (2.5.36) unstable; urgency=low
 
-  * Add Bill Venebles searchCRAN example code.
+  * Add Bill Venables' searchCRAN example code.
   
   * Improve error message when we find duplicate variable names in a
     loaded file, which might result when there is no header line.

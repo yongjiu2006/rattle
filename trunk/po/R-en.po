@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-12 06:33+1000\n"
-"PO-Revision-Date: 2010-07-12 06:33+1000\n"
+"POT-Creation-Date: 2010-07-31 14:02+1000\n"
+"PO-Revision-Date: 2010-07-31 14:02+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -166,7 +166,7 @@ msgstr "Choose a File to Save the Project"
 msgid "Clara"
 msgstr "Clara"
 
-#: rattle.glade.h:39 evaluate.R:339 rattle.R:1119
+#: rattle.glade.h:39 evaluate.R:339 rattle.R:1121
 msgid "Class"
 msgstr "Class"
 
@@ -246,7 +246,7 @@ msgstr "Cross Tab"
 msgid "DSN:"
 msgstr "DSN:"
 
-#: rattle.glade.h:59 rattle.R:573 rattle.R:625
+#: rattle.glade.h:59 rattle.R:573 rattle.R:627
 msgid "Data"
 msgstr "Data"
 
@@ -378,7 +378,7 @@ msgstr "Error Matrix"
 msgid "Errors"
 msgstr "Errors"
 
-#: rattle.glade.h:91 rattle.R:595
+#: rattle.glade.h:91 rattle.R:597
 msgid "Evaluate"
 msgstr "Evaluate"
 
@@ -566,7 +566,7 @@ msgstr "List"
 msgid "Location:"
 msgstr "Location:"
 
-#: rattle.glade.h:138 rattle.R:599 transform.R:1269
+#: rattle.glade.h:138 rattle.R:601 transform.R:1269
 msgid "Log"
 msgstr "Log"
 
@@ -638,129 +638,133 @@ msgstr "Min Split:"
 msgid "Mode"
 msgstr "Mode"
 
-#: rattle.glade.h:156
+#: rattle.glade.h:156 evaluate.R:3106 rstat.R:205
+msgid "Model"
+msgstr "Model"
+
+#: rattle.glade.h:157
 msgid "Model Builder:"
 msgstr "Model Builder:"
 
-#: rattle.glade.h:157
+#: rattle.glade.h:158
 msgid "Model:"
 msgstr "Model:"
 
-#: rattle.glade.h:158
+#: rattle.glade.h:159
 msgid "Multinomial"
 msgstr "Multinomial"
 
-#: rattle.glade.h:159
+#: rattle.glade.h:160
 msgid "Natural Log"
 msgstr "Natural Log"
 
-#: rattle.glade.h:160 model.R:250 model.R:251
+#: rattle.glade.h:161 model.R:250 model.R:251
 msgid "Neural Net"
 msgstr "Neural Net"
 
-#: rattle.glade.h:161 ada_gui.R:158 data.R:2149 data.R:2978 rattle.R:1167
-#: rattle.R:1223 rattle.R:1231 rattle.R:1232 rattle.R:1234 rattle.R:1235
-#: rattle.R:1236
+#: rattle.glade.h:162 ada_gui.R:158 data.R:2149 data.R:2978 rattle.R:1169
+#: rattle.R:1225 rattle.R:1233 rattle.R:1234 rattle.R:1236 rattle.R:1237
+#: rattle.R:1238
 msgid "No Target"
 msgstr "No Target"
 
-#: rattle.glade.h:162
+#: rattle.glade.h:163
 msgid "No data frames found."
 msgstr "No data frames found."
 
-#: rattle.glade.h:163
+#: rattle.glade.h:164
 msgid "No data frames yet loaded."
 msgstr "No data frames yet loaded."
 
-#: rattle.glade.h:164
+#: rattle.glade.h:165
 msgid "No risk variable currently selected"
 msgstr "No risk variable currently selected"
 
-#: rattle.glade.h:165
+#: rattle.glade.h:166
 msgid "No status variable has been selected"
 msgstr "No status variable has been selected"
 
-#: rattle.glade.h:166
+#: rattle.glade.h:167
 msgid "No tables found."
 msgstr "No tables found."
 
-#: rattle.glade.h:167
+#: rattle.glade.h:168
 msgid "No time variable has been selected"
 msgstr "No time variable has been selected"
 
-#: rattle.glade.h:168
+#: rattle.glade.h:169
 msgid "No variables selected."
 msgstr "No variables selected."
 
-#: rattle.glade.h:169
+#: rattle.glade.h:170
 msgid "Nolan Groups"
 msgstr "Nolan Groups"
 
-#: rattle.glade.h:170
+#: rattle.glade.h:171
 msgid "Normalize:"
 msgstr "Normalize:"
 
-#: rattle.glade.h:171
+#: rattle.glade.h:172
 msgid "Number of Processors:"
 msgstr "Number of Processors:"
 
-#: rattle.glade.h:172
+#: rattle.glade.h:173
 msgid "Number of Trees:"
 msgstr "Number of Trees:"
 
-#: rattle.glade.h:173
+#: rattle.glade.h:174
 msgid "Number of Variables:"
 msgstr "Number of Variables:"
 
-#: rattle.glade.h:174
+#: rattle.glade.h:175
 msgid "Number of clusters:"
 msgstr "Number of clusters:"
 
-#: rattle.glade.h:175
+#: rattle.glade.h:176
 msgid "Number:"
 msgstr "Number:"
 
-#: rattle.glade.h:176 data.R:3133 data.R:3134
+#: rattle.glade.h:177 data.R:3133 data.R:3134
 msgid "Numeric"
 msgstr "Numeric"
 
-#: rattle.glade.h:177
+#: rattle.glade.h:178
 msgid "ODBC"
 msgstr "ODBC"
 
-#: rattle.glade.h:178
+#: rattle.glade.h:179
 msgid "Options:"
 msgstr "Options:"
 
-#: rattle.glade.h:179
+#: rattle.glade.h:180
 msgid "Order:"
 msgstr "Order:"
 
-#: rattle.glade.h:180
+#: rattle.glade.h:181
 msgid "Ordered"
 msgstr "Ordered"
 
-#: rattle.glade.h:181
+#: rattle.glade.h:182
 msgid "Outliers"
 msgstr "Outliers"
 
-#: rattle.glade.h:182
+#: rattle.glade.h:183
 msgid "PMML"
 msgstr "PMML"
 
-#: rattle.glade.h:183
+#: rattle.glade.h:184
 msgid "Paired Two-Sample Tests:"
 msgstr "Paired Two-Sample Tests:"
 
-#: rattle.glade.h:184
+#: rattle.glade.h:185
 msgid "Parametric"
 msgstr "Parametric"
 
-#: rattle.glade.h:185
+#: rattle.glade.h:186
 msgid "Partition"
 msgstr "Partition"
 
-#: rattle.glade.h:186
+#: rattle.glade.h:187
 msgid ""
 "Pearson\n"
 "Kendall\n"
@@ -770,41 +774,37 @@ msgstr ""
 "Kendall\n"
 "Spearman"
 
-#: rattle.glade.h:189
+#: rattle.glade.h:190
 msgid "Percentage:"
 msgstr "Percentage:"
 
-#: rattle.glade.h:190 rattle.R:2005
+#: rattle.glade.h:191 rattle.R:2007
 msgid "Plot"
 msgstr "Plot"
 
-#: rattle.glade.h:191
+#: rattle.glade.h:192
 msgid "Plots per Page:"
 msgstr "Plots per Page:"
 
-#: rattle.glade.h:192
+#: rattle.glade.h:193
 msgid "Plots:"
 msgstr "Plots:"
 
-#: rattle.glade.h:193
+#: rattle.glade.h:194
 msgid "Poisson"
 msgstr "Poisson"
 
-#: rattle.glade.h:194
+#: rattle.glade.h:195
 msgid "Pr _v Ob"
 msgstr "Pr _v Ob"
 
-#: rattle.glade.h:195
+#: rattle.glade.h:196
 msgid "Pr v Ob"
 msgstr "Pr v Ob"
 
-#: rattle.glade.h:196
+#: rattle.glade.h:197
 msgid "Precision"
 msgstr "Precision"
-
-#: rattle.glade.h:197 rattle.R:591
-msgid "Predictive"
-msgstr "Predictive"
 
 #: rattle.glade.h:198 explore.R:3671
 msgid "Principal Components"
@@ -819,7 +819,7 @@ msgid "Probabilities"
 msgstr "Probabilities"
 
 #: rattle.glade.h:201 evaluate.R:340 explore.R:452 explore.R:1139
-#: explore.R:1149 explore.R:1197 explore.R:2559 explore.R:2569 rattle.R:1120
+#: explore.R:1149 explore.R:1197 explore.R:2559 explore.R:2569 rattle.R:1122
 msgid "Probability"
 msgstr "Probability"
 
@@ -1363,28 +1363,28 @@ msgid "_Mean"
 msgstr "_Mean"
 
 #: rattle.glade.h:345
+msgid "_Model"
+msgstr "_Model"
+
+#: rattle.glade.h:346
 msgid "_Neural Net"
 msgstr "_Neural Net"
 
-#: rattle.glade.h:346
+#: rattle.glade.h:347
 msgid "_Nolan Groups"
 msgstr "_Nolan Groups"
 
-#: rattle.glade.h:347
+#: rattle.glade.h:348
 msgid "_Nomenclature"
 msgstr "_Nomenclature"
 
-#: rattle.glade.h:348
+#: rattle.glade.h:349
 msgid "_ODBC"
 msgstr "_ODBC"
 
-#: rattle.glade.h:349
+#: rattle.glade.h:350
 msgid "_Precision"
 msgstr "_Precision"
-
-#: rattle.glade.h:350
-msgid "_Predictive"
-msgstr "_Predictive"
 
 #: rattle.glade.h:351
 msgid "_Principal Components"
@@ -1820,7 +1820,7 @@ msgstr "All %d plots have been generated."
 
 #: associate.R:441 data.R:247 data.R:264 data.R:281 data.R:1775
 #: evaluate.R:2554 export.R:249 log.R:144 model.R:1269 projects.R:181
-#: projects.R:349 rattle.R:2129
+#: projects.R:349 rattle.R:2131
 msgid "All Files"
 msgstr "All Files"
 
@@ -1846,7 +1846,7 @@ msgstr ""
 "(numeric) of most frequent (categoric) value. You could also use imputation "
 "to fill in default or modelled values for the missing values."
 
-#: rattle.R:2559 rstat.R:276
+#: rattle.R:2561 rstat.R:276
 msgid "All rights reserved."
 msgstr "All rights reserved."
 
@@ -1858,7 +1858,7 @@ msgstr ""
 "A mosaic plot can not be displayed without identifying a target variable. "
 "The requested mosaic plots will be ignored."
 
-#: rattle.R:1603
+#: rattle.R:1605
 msgid ""
 "An error occured in the call to '%s'. The error message was:\n"
 "\n"
@@ -1872,7 +1872,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: rattle.R:1612
+#: rattle.R:1614
 msgid ""
 "An error occured in the following command:\n"
 "\n"
@@ -2776,11 +2776,11 @@ msgstr "Copyright"
 msgid "Copyright (c) 2006-2010 %s."
 msgstr "Copyright (c) 2006-2010 %s."
 
-#: rattle.R:1915
+#: rattle.R:1917
 msgid "Copy the plot on device %d to the clipboard."
 msgstr "Copy the plot on device %d to the clipboard."
 
-#: rattle.R:1914
+#: rattle.R:1916
 msgid "Copy the plot to the clipboard."
 msgstr "Copy the plot to the clipboard."
 
@@ -3108,7 +3108,7 @@ msgstr ""
 "\n"
 "Do you wish to continue?"
 
-#: rattle.R:1980
+#: rattle.R:1982
 msgid "display plots"
 msgstr "display plots"
 
@@ -3184,7 +3184,7 @@ msgstr " %d missing values"
 msgid "Dot Plot"
 msgstr "Dot Plot"
 
-#: rattle.R:2439 rattle.R:2474
+#: rattle.R:2441 rattle.R:2476
 msgid "Do you want to terminate %s?"
 msgstr "Do you want to terminate %s?"
 
@@ -3192,7 +3192,7 @@ msgstr "Do you want to terminate %s?"
 msgid "Do you wish to continue?"
 msgstr "Do you wish to continue?"
 
-#: rattle.R:2362
+#: rattle.R:2364
 msgid "draw the network plot"
 msgstr "draw the network plot"
 
@@ -3244,7 +3244,7 @@ msgstr ""
 "E136: There is no ADA model and attempting to plot error. The button should "
 "not be active."
 
-#: rattle.R:1719
+#: rattle.R:1721
 msgid ""
 "E141: The dataset is too large for this operation. It is terminating now "
 "without any output. The R Console may contain further information."
@@ -3252,7 +3252,7 @@ msgstr ""
 "E141: The dataset is too large for this operation. It is terminating now "
 "without any output. The R Console may contain further information."
 
-#: rattle.R:1723
+#: rattle.R:1725
 msgid ""
 "E142: A command has failed\n"
 "\n"
@@ -3272,7 +3272,7 @@ msgstr ""
 msgid "Edit A Data Set Manually"
 msgstr "Edit A Data Set Manually"
 
-#: rattle.R:738
+#: rattle.R:740
 msgid "enable the cairo device option"
 msgstr "enable the cairo device option"
 
@@ -3386,7 +3386,7 @@ msgstr "Export a SVM model as PMML."
 msgid "Export C or PMML"
 msgstr "Export C or PMML"
 
-#: rattle.R:2103
+#: rattle.R:2105
 msgid "Export Graphics"
 msgstr "Export Graphics"
 
@@ -3754,7 +3754,7 @@ msgstr "GGobi executed."
 msgid "Graphically display the correlations."
 msgstr "Graphically display the correlations."
 
-#: rattle.R:2118 rattle.R:2120
+#: rattle.R:2120 rattle.R:2122
 msgid "Graphics Files"
 msgstr "Graphics Files"
 
@@ -3910,7 +3910,7 @@ msgstr "Initial Digit"
 msgid "Invalid survival times for this distribution"
 msgstr "Invalid survival times for this distribution"
 
-#: rattle.R:1531
+#: rattle.R:1533
 msgid ""
 "It appears that there have been changes made to the variables in the Data "
 "tab without the tab being Executed. \n"
@@ -4242,7 +4242,7 @@ msgstr "Minimum loss by cost"
 msgid "Min; Median/Mean; Max"
 msgstr "Min; Median/Mean; Max"
 
-#: rattle.R:1667
+#: rattle.R:1669
 msgid "mins"
 msgstr "mins"
 
@@ -4261,10 +4261,6 @@ msgstr "Missing values correlation summary using the '%s' covariance."
 #: explore.R:329
 msgid "Missing Value Summary"
 msgstr "Missing Value Summary"
-
-#: evaluate.R:3106 rstat.R:205
-msgid "Model"
-msgstr "Model"
 
 #: evaluate.R:2050 evaluate.R:2180 evaluate.R:2295 evaluate.R:2411
 msgid "Models"
@@ -4440,7 +4436,7 @@ msgstr ""
 "Please identify the name of the dataset you wish to load using the Data Name "
 "chooser."
 
-#: rattle.R:1510
+#: rattle.R:1512
 msgid ""
 "No dataset has been loaded at this time. \n"
 "\n"
@@ -4512,7 +4508,7 @@ msgstr ""
 "\n"
 " Please build a suitable model before evaluation."
 
-#: rattle.R:1725
+#: rattle.R:1727
 msgid "No output generated."
 msgstr "No output generated."
 
@@ -4546,7 +4542,7 @@ msgstr ""
 msgid "No Risk"
 msgstr "No Risk"
 
-#: rattle.R:1238
+#: rattle.R:1240
 msgid "No risk variable selected"
 msgstr "No risk variable selected"
 
@@ -4566,7 +4562,7 @@ msgstr "Normalized variables added to the dataset with '%s' prefix."
 msgid "No status variable selected"
 msgstr "No status variable selected"
 
-#: rattle.R:2223
+#: rattle.R:2225
 msgid "No such device."
 msgstr "No such device."
 
@@ -4932,15 +4928,15 @@ msgstr "plot Benford's law"
 msgid "plot cumulative charts"
 msgstr "plot cumulative charts"
 
-#: rattle.R:1919
+#: rattle.R:1921
 msgid "Plot %d has been copied to the clipboard using the PNG format."
 msgstr "Plot %d has been copied to the clipboard using the PNG format."
 
-#: rattle.R:2152
+#: rattle.R:2154
 msgid "Plot %d has been exported to the file %s."
 msgstr "Plot %d has been exported to the file %s."
 
-#: rattle.R:1936
+#: rattle.R:1938
 msgid "Plot %d has been sent to the printer using the command: %s."
 msgstr "Plot %d has been sent to the printer using the command: %s."
 
@@ -5030,6 +5026,10 @@ msgstr "Predicted vs. Observed"
 msgid "predictions"
 msgstr "predictions"
 
+#: rattle.R:593
+msgid "Predictive"
+msgstr "Predictive"
+
 #: help.R:471
 msgid ""
 "Principal components analysis identifies a collection of derived variables "
@@ -5102,7 +5102,7 @@ msgstr ""
 msgid "Principal Components Importance"
 msgstr "Principal Components Importance"
 
-#: rattle.R:1931
+#: rattle.R:1933
 msgid "Print the plot."
 msgstr "Print the plot."
 
@@ -5170,7 +5170,7 @@ msgstr ""
 msgid "Rattle: Graphical interface for data mining using R."
 msgstr "Rattle: Graphical interface for data mining using R."
 
-#: rattle.R:968
+#: rattle.R:970
 msgid ""
 "Rattle is a free graphical user interface for Data Mining, developed using "
 "R. R is a free software environment for statistical computing and graphics. "
@@ -5238,11 +5238,11 @@ msgstr ""
 "or something else you would like Rattle to do, please do email "
 "support@togaware.com. <<>> Enjoy."
 
-#: rattle.R:986
+#: rattle.R:988
 msgid "Rattle is a registered trademark of Togaware Pty Ltd"
 msgstr "Rattle is a registered trademark of Togaware Pty Ltd"
 
-#: rattle.R:980
+#: rattle.R:982
 msgid ""
 "Rattle is licensed under the GNU General Public License, Version 2. Rattle "
 "comes with ABSOLUTELY NO WARRANTY. See Help -> About for details."
@@ -5254,13 +5254,13 @@ msgstr ""
 msgid "Rattle Report is using local template ../odf"
 msgstr "Rattle Report is using local template ../odf"
 
-#: rattle.R:1662
+#: rattle.R:1664
 msgid ""
 "rattle: reportTimeTaken: one and only one of model/msg must be supplied."
 msgstr ""
 "rattle: reportTimeTaken: one and only one of model/msg must be supplied."
 
-#: rattle.R:983
+#: rattle.R:985
 msgid "Rattle Version %s. Copyright 2006-2010 Togaware Pty Ltd"
 msgstr "Rattle Version %s. Copyright 2006-2010 Togaware Pty Ltd"
 
@@ -5272,7 +5272,7 @@ msgstr "Rdata Files"
 msgid "RData Files"
 msgstr "RData Files"
 
-#: rattle.R:1632
+#: rattle.R:1634
 msgid "R Data Miner - [Rattle]"
 msgstr "R Data Miner - [Rattle]"
 
@@ -5464,7 +5464,7 @@ msgstr "run kmeans multiple times"
 msgid "Sample"
 msgstr "Sample"
 
-#: rattle.R:1578
+#: rattle.R:1580
 msgid ""
 "Sampling is active but has not been Executed. Either ensure you Execute the "
 "sampling by clicking the Execute button on the Transform tab, or else de-"
@@ -5474,7 +5474,7 @@ msgstr ""
 "sampling by clicking the Execute button on the Transform tab, or else de-"
 "activate Sampling on the Data tab."
 
-#: rattle.R:2179
+#: rattle.R:2181
 msgid "save a plot to SVG format"
 msgstr "save a plot to SVG format"
 
@@ -5482,11 +5482,11 @@ msgstr "save a plot to SVG format"
 msgid "Save Project"
 msgstr "Save Project"
 
-#: rattle.R:2148
+#: rattle.R:2150
 msgid "Save the plot on device %d to a file."
 msgstr "Save the plot on device %d to a file."
 
-#: rattle.R:2147
+#: rattle.R:2149
 msgid "Save the plot to a file."
 msgstr "Save the plot to a file."
 
@@ -5534,11 +5534,11 @@ msgstr "Scores have been saved to the file %s"
 msgid "Scoring dataset using %s ..."
 msgstr "Scoring dataset using %s ..."
 
-#: rattle.R:1667
+#: rattle.R:1669
 msgid "secs"
 msgstr "secs"
 
-#: rattle.R:975
+#: rattle.R:977
 msgid ""
 "See the Help menu for extensive support in using Rattle. The Togaware "
 "Desktop Data Mining Survival Guide includes Rattle documentation and is "
@@ -5552,7 +5552,7 @@ msgstr ""
 msgid "Select a sample from the dataset to calculate the statistics."
 msgstr "Select a sample from the dataset to calculate the statistics."
 
-#: rattle.R:1932
+#: rattle.R:1934
 msgid "Send the plot on device %d to the printer."
 msgstr "Send the plot on device %d to the printer."
 
@@ -6199,7 +6199,7 @@ msgstr ""
 "normally distributed samples is the same. <<>> The fBasics package provides "
 "the varianceTest function with the 'varf' method to perform the F-test."
 
-#: rattle.R:1491
+#: rattle.R:1493
 msgid "The function you activated (via %s) %s is not yet implemented."
 msgstr "The function you activated (via %s) %s is not yet implemented."
 
@@ -6365,7 +6365,7 @@ msgstr ""
 "The option to impute the %s for the categoric variable (%s) is not (yet) "
 "available."
 
-#: rattle.R:1552
+#: rattle.R:1554
 msgid ""
 "The package '%s' is required to %s. It does not appear to be installed. A "
 "package can be installed with the following R command: \n"
@@ -6473,7 +6473,7 @@ msgstr ""
 msgid "The R dataset is now available."
 msgstr "The R dataset is now available."
 
-#: rattle.R:2096
+#: rattle.R:2098
 msgid ""
 "There are currently no active graphics devices. So there is nothing to "
 "export! Please click the Execute button (or press F2) to obtain a plot to "
@@ -6591,7 +6591,7 @@ msgstr ""
 "curve has the false positive rate instead of Specificity, which is simply "
 "the count of false positives divided by the number of negatives (1-fnr)."
 
-#: rattle.R:792
+#: rattle.R:794
 msgid "The setting of the filename box failed."
 msgstr "The setting of the filename box failed."
 
@@ -6599,7 +6599,7 @@ msgstr "The setting of the filename box failed."
 msgid "The %s file '%s' has been written."
 msgstr "The %s file '%s' has been written."
 
-#: model.R:929 rattle.R:1675
+#: model.R:929 rattle.R:1677
 msgid "The %s model has been built."
 msgstr "The %s model has been built."
 
@@ -6611,7 +6611,7 @@ msgstr "The %s model has been updated."
 msgid "The '%s' package provides the '%s' function."
 msgstr "The '%s' package provides the '%s' function."
 
-#: rattle.R:1266
+#: rattle.R:1268
 msgid ""
 "The specified SCORE file '%s' (sourced from the .Rattle file through the ."
 "RATTLE.SCORE.IN variable) does not exist. We will continue as if it had not "
@@ -6649,7 +6649,7 @@ msgstr "The supplied CSV filename '%s' does not exist."
 msgid "The supplied data is now available."
 msgstr "The supplied data is now available."
 
-#: rattle.R:2191
+#: rattle.R:2193
 msgid "The supplied filename extension '%s' is not supported."
 msgstr "The supplied filename extension '%s' is not supported."
 
@@ -6843,7 +6843,7 @@ msgstr ""
 "building \n"
 "# a model, and simply using the transformations, as when scoring a dataset."
 
-#: rattle.R:2520
+#: rattle.R:2522
 msgid "This operation is not yet functional."
 msgstr "This operation is not yet functional."
 
@@ -6863,11 +6863,11 @@ msgstr "Time"
 msgid "timestamp:"
 msgstr "timestamp:"
 
-#: model.R:618 rattle.R:1664
+#: model.R:618 rattle.R:1666
 msgid "Time taken: %0.2f %s"
 msgstr "Time taken: %0.2f %s"
 
-#: rattle.R:1313
+#: rattle.R:1315
 msgid ""
 "To Begin: Choose the data source, specify the details, then click the "
 "Execute button."
@@ -7049,7 +7049,7 @@ msgstr ""
 "We will continue but you will need to choose a data file to load using the "
 "Filename button."
 
-#: rattle.R:2000
+#: rattle.R:2002
 msgid "Use a Japanese font for the plots."
 msgstr "Use a Japanese font for the plots."
 
@@ -7085,7 +7085,7 @@ msgstr "Variable Importance"
 msgid "Variable Importance has been plotted."
 msgstr "Variable Importance has been plotted."
 
-#: rattle.R:819 zzz.R:153
+#: rattle.R:821 zzz.R:153
 msgid "Version"
 msgstr "Version"
 
@@ -7191,7 +7191,7 @@ msgstr "Weights in use."
 msgid "Weights: %s"
 msgstr "Weights: %s"
 
-#: rattle.R:960
+#: rattle.R:962
 msgid "Welcome to Rattle (rattle.togaware.com)."
 msgstr "Welcome to Rattle (rattle.togaware.com)."
 
