@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-12 06:32:38 Graham Williams>
+# Time-stamp: <2010-07-31 14:21:29 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -2451,23 +2451,25 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
   
   if (entered & ! dfedit.done)
   {
-    if (packageIsAvailable("RGtk2DfEdit"))
+    if (packageIsAvailable("RGtk2Extras"))
     {
       # 100307 Not quite ready yet - needs to know when to continue
       # after the data has been editted. Tom is fixing this up for
-      # RGtk2DfEdit so I will be able to start using it then.
-      require(RGtk2DfEdit)
-#      infoDialog(Rtxt ("RGtk2DfEdit will be used to edit",
+      # RGtk2Extras so I will be able to start using it then.
+      require(RGtk2Extras)
+#      infoDialog(Rtxt ("RGtk2Extras will be used to edit",
 #                      "a data frame called 'rattle.entered.dataset'. Once you have",
 #                      "edited the dataset and the window is closed the dataset",
 #                      "will be scored."))
-      dsname <- ".rattle.entered.dataset"
+      dsname <- "rattle.entered.dataset"
       if (exists(dsname))
-        rattle.edit.obj <- dfedit(rattle.entered.dataset, size=c(800, 400))
+        rattle.edit.obj <- dfedit(rattle.entered.dataset, size=c(800, 400),
+                                  pretty_print=TRUE)
       else
         rattle.edit.obj <- dfedit(crs$dataset[nrow(crs$dataset),
                                               c(crs$ident, crs$input, crs$target)],
-                                  size=c(800, 400), dataset.name=dsname)
+                                  size=c(800, 400), dataset.name=dsname,
+                                  pretty_print=TRUE)
       
       probcmd <- lapply(probcmd, function(x) sub("crs\\$dataset", dsname, x))
       respcmd <- lapply(respcmd, function(x) sub("crs\\$dataset", dsname, x))

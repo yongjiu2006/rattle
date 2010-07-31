@@ -1,4 +1,5 @@
 \name{rattle_gui}
+\alias{on_help_project_menuitem_activate}
 \alias{on_help_associate_menuitem_activate}
 \alias{on_svm_kernel_combobox_changed}
 \alias{on_model_survival_plot_residual_button_clicked}
