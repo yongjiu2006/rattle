@@ -1,3 +1,12 @@
+rattle (2.5.38) unstable; urgency=low
+
+  * Ensure pmml.ksvm will at least run - though resulting PMML not
+    validated.
+
+  * Bump pmml version to 1.2.23
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Fri, 06 Aug 2010 05:56:11 +1000
+
 rattle (2.5.37) unstable; urgency=low
 
   * The Predictive tab has gone back to being Model. Not sure which is

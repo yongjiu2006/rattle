@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-14 16:30:19 Graham Williams>
+# Time-stamp: <2010-08-06 05:38:59 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1283,7 +1283,7 @@ exportSVMModel <- function()
 
 #  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
     
-  pmml.cmd <- 'pmml(crs$ksvm, data.name=crs$dataset)'
+  pmml.cmd <- 'pmml(crs$ksvm, dataset=crs$dataset)'
   appendLog(Rtxt("Export a SVM model as PMML."),
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)
