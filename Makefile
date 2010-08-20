@@ -87,7 +87,7 @@ ISOURCE = \
 	src/pmmltocibi.R \
 	src/pmml.transforms.R
 
-GLADE_SOURCE = src/rattle.glade src/tooltips.xml src/textviews.xml
+GLADE_SOURCE = src/rattle.glade src/rattle.ui src/tooltips.xml src/textviews.xml
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 
@@ -186,6 +186,7 @@ tom:
 	src/utils.R \
 	src/zzz.R \
 	src/rattle.glade \
+	src/rattle.ui \
 	src/tooltips.xml \
 	src/textviews.xml
 
@@ -288,6 +289,7 @@ devbuild:
 	mv package/rattle/NAMESPACE .
 	cp rattle.R package/rattle/R/
 	cp rattle.glade package/rattle/inst/etc/
+	cp rattle.ui package/rattle/inst/etc/
 	R CMD build package/rattle
 	mv NAMESPACE package/rattle/
 
@@ -385,6 +387,7 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	cp weather.csv package/rattle/inst/csv/
 	cp weather.arff package/rattle/inst/arff/
 	cp weather.csv /home/gjw/Projects/Togaware/www/site/rattle/
+	cp weatherAUS.csv /home/gjw/Projects/Togaware/www/site/rattle/
 	mv locationsAUS.RData weather*.RData archive
 	mv weather.csv weather.arff weather_missing.csv archive
 
@@ -445,6 +448,7 @@ ptest:
 clean:
 	rm -f rattle_*.tar.gz rattle_*.zip
 	rm -f package/rattle/R/rattle.R package/rattle/inst/etc/rattle.glade
+	rm -f package/rattle/inst/etc/rattle.ui
 	rm -f package/rattle/DESCRIPTION
 	rm -f pmml_*.tar.gz pmml_*.zip
 	rm -f rstat_*.tar.gz rstat_*.zip

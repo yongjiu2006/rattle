@@ -14,6 +14,9 @@
   # include here the options that can be overridden by a plugin.
   
   crv <<- new.env()
+
+  # 100820 GtkBuilder update
+  crv$useGtkBuilder <- TRUE
   
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"

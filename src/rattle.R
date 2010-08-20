@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-16 19:59:05 Graham Williams>
+# Time-stamp: <2010-08-21 07:26:36 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 31 Jul 2010"
+VERSION.DATE <- "Released 06 Aug 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -227,62 +227,18 @@ rattle <- function(csvname=NULL)
 
   # Check to make sure libglade is available.
 
-  if (! exists("gladeXMLNew"))
-    stop(Rtxt("The RGtk2 package did not find libglade installed.",
-              "Please install it."))
+  if (! crv$useGtkBuilder)
+    if (! exists("gladeXMLNew"))
+      stop(Rtxt("The RGtk2 package did not find libglade installed.",
+                "Please install it."))
 
-  # On the Macintosh we seem to need to initialise all of the types
-  # for the GTK widgets. So do that here.
+  # On the Macintosh (and when using GtkBuilder 100821) we seem to
+  # need to initialise all of the types for the GTK widgets. So do
+  # that here.
 
-  if (Sys.info()["sysname"] == "Darwin")
-  {
-    # Use the following to extract all widgets from the glade file:
-    #
-    # $ grep '<widget' rattle.glade | sed 's|^.*widget class="||' |\
-    #   sed 's|".*$||' | sort -u | sed 's|^Gtk|gtk|' |\
-    #   awk '{printf("%sGetType()\n", $1)}'
-
-    gtkAboutDialogGetType()
-    gtkAlignmentGetType()
-    gtkButtonGetType()
-    gtkCheckButtonGetType()
-    gtkCheckMenuItemGetType()
-    gtkComboBoxEntryGetType()
-    gtkComboBoxGetType()
-    gtkDrawingAreaGetType()
-    gtkEntryGetType()
-    gtkFileChooserButtonGetType()
-    gtkFileChooserDialogGetType()
-    gtkHBoxGetType()
-    gtkHButtonBoxGetType()
-    gtkHSeparatorGetType()
-    gtkHandleBoxGetType()
-    gtkImageGetType()
-    gtkImageMenuItemGetType()
-    gtkLabelGetType()
-    gtkMenuBarGetType()
-    gtkMenuGetType()
-    gtkMenuItemGetType()
-    gtkMiscGetType()
-    gtkNotebookGetType()
-    gtkRadioButtonGetType()
-    gtkScrolledWindowGetType()
-    gtkSeparatorMenuItemGetType()
-    gtkSeparatorToolItemGetType()
-    gtkSpinButtonGetType()
-    gtkStatusbarGetType()
-    gtkTableGetType()
-    gtkTextViewGetType()
-    gtkToolButtonGetType()
-    gtkToolItemGetType()
-    gtkToolbarGetType()
-    gtkTreeViewGetType()
-    gtkVBoxGetType()
-    gtkVSeparatorGetType()
-    gtkWidgetGetType()
-    gtkWindowGetType()
-  }
-
+  if (crv$useGtkBuilder || Sys.info()["sysname"] == "Darwin")
+    fixMacAndGtkBuilderTypes()
+ 
   # Ensure the About dialog will respond to the Quit button.
 
   on_aboutdialog_response <<- gtkWidgetDestroy
@@ -300,15 +256,24 @@ rattle <- function(csvname=NULL)
   # Try firstly to load the glade file from the installed rattle
   # package, if it exists. Otherwise, look locally.
 
+  if (crv$useGtkBuilder) rattleGUI <<- gtkBuilderNew()
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))
-    rattleGUI <<- gladeXMLNew("rattle.glade",
-                              root="rattle_window", domain="R-rattle")
+    if (crv$useGtkBuilder)
+      rattleGUI$addFromFile("rattle.ui")
+    else
+      rattleGUI <<- gladeXMLNew("rattle.glade",
+                                root="rattle_window", domain="R-rattle")
   else
-    rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
-                              root="rattle_window", domain="R-rattle")
+    if (crv$useGtkBuilder)
+      rattleGUI$addFromFile(file.path(etc, "rattle.ui"))
+    else
+      rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
+                                root="rattle_window", domain="R-rattle")
 
+  if (crv$useGtkBuilder) rattleGUI$getObject("rattle_window")$show()
+  
   # Really need an second untouched rattleGUI
 
   Global_rattleGUI <<-rattleGUI
@@ -316,6 +281,11 @@ rattle <- function(csvname=NULL)
   set.cursor("watch")
   on.exit(set.cursor())
 
+  # 100821 As a temporary fix whilst Michael Lawrence gets theses
+  # fixed.
+
+  if (crv$useGtkBuilder) fixGtkBuilderAdjustments()
+  
   # 090206 Tune the interface to suit needs, and in particular allow
   # packages to overwrite these functions so that the interface can be
   # tuned to suit plugins.
@@ -696,7 +666,10 @@ rattle <- function(csvname=NULL)
   ########################################################################
   # Connect the callbacks.
 
-  gladeXMLSignalAutoconnect(rattleGUI)
+  if (crv$useGtkBuilder)
+    rattleGUI$connectSignals()
+  else
+    gladeXMLSignalAutoconnect(rattleGUI)
 
   # Enable the tooltips Settings option on GNU/Linux. Under MS/Windows
   # tooltips have always worked so this option is not relevant.
@@ -853,6 +826,218 @@ setDefaultsGUI <- function()
     theWidget("data_separator_entry")$setText(";")
     theWidget("data_decimal_entry")$setText(",")
   }
+}  
+
+fixMacAndGtkBuilderTypes <- function()
+{
+  # 100821 This is required for the max, and also for the GtkBuilder
+  # part of Rgtk2 until Michael Lawrence gets a chance to fix it. The
+  # GtkBulder stuff added 100821 on the move from libglade2. Note that
+  # it may not be needed for Mac (Sys.info()["sysname"] == "Darwin")
+  # any more.
+  
+  # Use the following to extract all widgets from the glade file:
+  #
+  # $ grep '<widget' rattle.glade | sed 's|^.*widget class="||' |\
+  #   sed 's|".*$||' | sort -u | sed 's|^Gtk|gtk|' |\
+  #   awk '{printf("%sGetType()\n", $1)}'
+  
+  gtkAboutDialogGetType()
+  gtkAlignmentGetType()
+  gtkButtonGetType()
+  gtkCheckButtonGetType()
+  gtkCheckMenuItemGetType()
+  gtkComboBoxEntryGetType()
+  gtkComboBoxGetType()
+  gtkDrawingAreaGetType()
+  gtkEntryGetType()
+  gtkFileChooserButtonGetType()
+  gtkFileChooserDialogGetType()
+  gtkHBoxGetType()
+  gtkHButtonBoxGetType()
+  gtkHSeparatorGetType()
+  gtkHandleBoxGetType()
+  gtkImageGetType()
+  gtkImageMenuItemGetType()
+  gtkLabelGetType()
+  gtkListStoreGetType()
+  gtkMenuBarGetType()
+  gtkMenuGetType()
+  gtkMenuItemGetType()
+  gtkMiscGetType()
+  gtkNotebookGetType()
+  gtkRadioButtonGetType()
+  gtkScrolledWindowGetType()
+  gtkSeparatorMenuItemGetType()
+  gtkSeparatorToolItemGetType()
+  gtkSpinButtonGetType()
+  gtkStatusbarGetType()
+  gtkTableGetType()
+  gtkTextViewGetType()
+  gtkToolButtonGetType()
+  gtkToolItemGetType()
+  gtkToolbarGetType()
+  gtkTreeViewGetType()
+  gtkVBoxGetType()
+  gtkVSeparatorGetType()
+  gtkWidgetGetType()
+  gtkWindowGetType()
+}
+
+fixGtkBuilderAdjustments <- function()
+{
+  # 100821 As a temporary fix whilst Michael Lawrence gets theses
+  # fixed.
+
+  wid <- theWidget("sample_seed_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, NULL, 100000000, 1, 100, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(42)
+  
+  wid <- theWidget("data_odbc_limit_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100000000, 1, 100, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0)
+  
+  wid <- theWidget("sample_percentage_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(70)
+  
+  wid <- theWidget("sample_count_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0)
+  
+  wid <- theWidget("plots_per_page_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 9, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(4)
+  
+  wid <- theWidget("benford_digits_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 9, 1, 2, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("remap_bins_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(4)
+  
+  wid <- theWidget("kmeans_clusters_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 2, 100000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(10)
+  
+  wid <- theWidget("kmeans_seed_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(42)
+  
+  wid <- theWidget("kmeans_runs_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 1000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("hclust_nbproc_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 100, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("hclust_clusters_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 2, 100000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(10)
+  
+  wid <- theWidget("associate_support_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 1, 0.01, 0.1, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0.1)
+  
+  wid <- theWidget("associate_confidence_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 1, 0.01, 0.1, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0.1)
+  
+  wid <- theWidget("associate_lift_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100, 0.1, 0.5, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1.5)
+  
+  wid <- theWidget("rpart_minsplit_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(20)
+  
+  wid <- theWidget("rpart_minbucket_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 1000000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(7)
+  
+  wid <- theWidget("rpart_maxdepth_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 30, 1, 5, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(20)
+  
+  wid <- theWidget("model_tree_cp_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0.00001, 1, 0.0001, 0.001, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0.01)
+  
+  wid <- theWidget("ada_ntree_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 10000, 10, 50, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(50)
+  
+  wid <- theWidget("ada_maxdepth_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 30, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(30)
+  
+  wid <- theWidget("ada_minsplit_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 10000000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(20)
+  
+  wid <- theWidget("ada_cp_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, -1, 1, 0.00001, 0.001, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(0.01)
+  
+  wid <- theWidget("ada_xval_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(10)
+  
+  wid <- theWidget("ada_draw_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 1000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("rf_ntree_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 10000, 10, 50, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(500)
+  
+  wid <- theWidget("rf_mtry_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 1000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(10)
+  
+  wid <- theWidget("rf_print_tree_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 1000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("svm_poly_degree_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 1, 10, 1, 2, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(1)
+  
+  wid <- theWidget("nnet_hidden_nodes_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 10000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(10)
 }  
 
 fixTranslations <- function(w=theWidget("rattle_window"))
@@ -1739,7 +1924,10 @@ theWidget <- function(widget)
 {
   rattleGUI <- Global_rattleGUI # Global - to avoid a "NOTE" from "R CMD check"
 
-  return(rattleGUI$getWidget(widget))
+  if (crv$useGtkBuilder)
+    return(rattleGUI$getObject(widget))
+  else
+    return(rattleGUI$getWidget(widget))
 }
 
 getNotebookPageLabel <- function(nb, page)
@@ -1984,13 +2172,32 @@ newPlot <- function(pcnt=1)
     require("cairoDevice", quietly=TRUE)
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                   silent=TRUE)
+
+    if (crv$useGtkBuilder) plotGUI <- gtkBuilderNew()
+    
     if (inherits(result, "try-error"))
-      plotGUI <- gladeXMLNew("rattle.glade", root="plot_window", domain="R-rattle")
+      if (crv$useGtkBuilder)
+        plotGUI$addFromFile("rattle.ui")
+      else
+        plotGUI <- gladeXMLNew("rattle.glade", root="plot_window", domain="R-rattle")
     else
-      plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
-                             root="plot_window", domain="R-rattle")
-    gladeXMLSignalAutoconnect(plotGUI)
-    da <- plotGUI$getWidget("drawingarea")
+      if (crv$useGtkBuilder)
+        plotGUI$addFromFile(file.path(etc, "rattle.ui"))
+      else
+        plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
+                               root="plot_window", domain="R-rattle")
+    if (crv$useGtkBuilder)
+    {
+      plotGUI$getObject("plot_window")$show()
+      plotGUI$connectSignals()
+      da <- plotGUI$getObject("drawingarea")
+    }
+    else
+    {
+      gladeXMLSignalAutoconnect(plotGUI)
+      da <- plotGUI$getWidget("drawingarea")
+    }
+    
     asCairoDevice(da)
     if (isJapanese())
     {
@@ -2003,9 +2210,14 @@ newPlot <- function(pcnt=1)
       eval(parse(text=fnt.cmd))
     }
 
-    plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": ",
-                                                    Rtxt("Plot"), " ",
-                                                    dev.cur(), sep=""))
+    if (crv$useGtkBuilder)
+      plotGUI$getObject("plot_window")$setTitle(paste(crv$appname, ": ",
+                                                      Rtxt("Plot"), " ",
+                                                      dev.cur(), sep=""))
+    else
+      plotGUI$getWidget("plot_window")$setTitle(paste(crv$appname, ": ",
+                                                      Rtxt("Plot"), " ",
+                                                      dev.cur(), sep=""))
   }
   else if (.Platform$GUI %in% c("X11", "unknown"))
   {
@@ -2541,17 +2753,35 @@ on_about_menu_activate <-  function(action, window)
 {
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
+  if (crv$useGtkBuilder) about <<- gtkBuilderNew()
   if (inherits(result, "try-error"))
+    if (crv$useGtkBuilder)
+      about$addFromFile("rattle.ui")
+    else
     about <- gladeXMLNew("rattle.glade", root="aboutdialog", domain="R-rattle")
   else
-    about <- gladeXMLNew(file.path(etc, "rattle.glade"), root="aboutdialog", domain="R-rattle")
+    if (crv$useGtkBuilder)
+      about$addFromFile(file.path(etc, "rattle.ui"))
+    else
+      about <- gladeXMLNew(file.path(etc, "rattle.glade"),
+                           root="aboutdialog", domain="R-rattle")
 
-  ab <- about$getWidget("aboutdialog")
+  if (crv$useGtkBuilder)
+  {
+    ab <- about$getObject("aboutdialog")
+    ab$show()
+  }
+  else
+    ab <- about$getWidget("aboutdialog")
+
   ab$setVersion(crv$version)
 
   configureAbout(ab)
 
-  gladeXMLSignalAutoconnect(about)
+  if (crv$useGtkBuilder)
+    about$connectSignals()
+  else
+    gladeXMLSignalAutoconnect(about)
 }
 
 configureAbout <- function(ab)
