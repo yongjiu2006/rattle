@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:35:40 Graham Williams>
+# Time-stamp: <2010-08-15 21:26:01 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -25,6 +25,14 @@
 #
 # Model -> Tree -> Conditional
 #
+
+# 100815 TODO The "partykit" package from R-Forge (only for now)
+# includes .list.rules.party() to convert tree into rules:
+#
+# install.packages("partykit", repos = "http://R-Forge.R-project.org")
+# library("partykit")
+# Rebuild the ctree as partykit provides new ctree.
+# partykit:::.list.rules.party(crs$rpart)
 
 executeModelCTree <- function()
 {

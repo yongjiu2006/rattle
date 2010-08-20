@@ -1,3 +1,15 @@
+rattle (2.5.39) unstable; urgency=low
+
+  * Conditionally use either libglade2 or GtkBuilder for the
+    GUI. libglade2 (a separate library to the Gtk+ library) is deprecated
+    and as of R 2.12.0 won't be supported on MS/Windows binary builds. The
+    default is now GtkBuilder (built into the Gtk+ library), and support
+    for libglade2 within Rattle is deprecated. RGtk2 (2.12.18) still has
+    issues in its support of GtkBuilder and is being actively worked on,
+    but Rattle is currently working around these.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 21 Aug 2010 07:47:43 +1000
+
 rattle (2.5.38) unstable; urgency=low
 
   * Ensure pmml.ksvm will at least run - though resulting PMML not
