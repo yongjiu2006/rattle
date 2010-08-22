@@ -262,25 +262,25 @@ install: # build pbuild ibuild zip rattle_src.zip # check pcheck
 
 # 100123 Updated the build process
 
-check: build
+check: #build
 	R CMD check $(PACKAGE)
 
-pcheck: pbuild
+pcheck: #pbuild
 	R CMD check $(PPACKAGE)
 
-icheck: ibuild
+icheck: #ibuild
 	R CMD check $(IPACKAGE)
 
-ucheck: build
+ucheck: #build
 	sh ./upload_uwe.sh
 
-pucheck: pbuild
+pucheck: #pbuild
 	sh ./uploadp_uwe.sh
 
-cran: build
+cran: #build
 	sh ./upload_cran.sh
 
-pcran: pbuild
+pcran: #pbuild
 	sh ./uploadp_cran.sh
 
 # For development, temporarily remove the NAMESPACE so all is exposed.

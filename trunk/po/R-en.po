@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-21 07:34+1000\n"
-"PO-Revision-Date: 2010-08-21 07:34+1000\n"
+"POT-Creation-Date: 2010-08-22 09:52+1000\n"
+"PO-Revision-Date: 2010-08-22 09:52+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -2720,7 +2720,7 @@ msgstr "connect to an ODBC database"
 msgid "Constant"
 msgstr "Constant"
 
-#: rstat.R:105 zzz.R:25
+#: rstat.R:105 zzz.R:32
 msgid "Contact %s."
 msgstr "Contact %s."
 
@@ -2768,7 +2768,7 @@ msgstr "Convert values to ranks."
 msgid "Copyright"
 msgstr "Copyright"
 
-#: rstat.R:23 zzz.R:150
+#: rstat.R:23 zzz.R:157
 msgid "Copyright (c) 2006-2010 %s."
 msgstr "Copyright (c) 2006-2010 %s."
 
@@ -5162,7 +5162,7 @@ msgstr ""
 "Rattle can establish a connection to a database through the RODBC package. "
 "Tables avilable in the database will then be listed for selection."
 
-#: zzz.R:155
+#: zzz.R:162
 msgid "Rattle: Graphical interface for data mining using R."
 msgstr "Rattle: Graphical interface for data mining using R."
 
@@ -5572,7 +5572,7 @@ msgstr "Show the output of the analysis."
 msgid "Singularities exist."
 msgstr "Singularities exist."
 
-#: zzz.R:23
+#: zzz.R:30
 msgid "%s is Copyright (c) 2006-2010 %s."
 msgstr "%s is Copyright (c) 2006-2010 %s."
 
@@ -7013,7 +7013,7 @@ msgstr ""
 msgid "TXT Files"
 msgstr "TXT Files"
 
-#: zzz.R:161
+#: zzz.R:168
 msgid "Type 'rattle()' to shake, rattle, and roll your data."
 msgstr "Type 'rattle()' to shake, rattle, and roll your data."
 
@@ -7081,7 +7081,7 @@ msgstr "Variable Importance"
 msgid "Variable Importance has been plotted."
 msgstr "Variable Importance has been plotted."
 
-#: rattle.R:794 zzz.R:156
+#: rattle.R:794 zzz.R:163
 msgid "Version"
 msgstr "Version"
 
