@@ -15,8 +15,15 @@
   
   crv <<- new.env()
 
-  # 100820 GtkBuilder update
-  crv$useGtkBuilder <- TRUE
+  # 100820 GtkBuilder update. Use GtkBuilder as default, except if R
+  # version < 2.12.0 on MS/Windows.
+
+  if (.Platform$OS.type=="windows" && version$major=="2" && version$minor<"12")
+    crv$useGtkBuilder <- FALSE
+  else if (.Platform$OS.type=="unix" && version$major=="2" && version$minor=="12.0")
+    crv$useGtkBuilder <- FALSE
+  else
+    crv$useGtkBuilder <- TRUE
   
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"

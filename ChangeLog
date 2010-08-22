@@ -1,3 +1,12 @@
+rattle (2.5.40) unstable; urgency=low
+
+  * Conditionalise useGtkBuilder:
+    if windows and R before 2.12.0 then libglade 
+    if unix and R 2.12.0 then libglade for now (RGtk2 update needed?)
+    all else use GtkBuilder
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 22 Aug 2010 12:02:00 +1000
+
 rattle (2.5.39) unstable; urgency=low
 
   * Conditionally use either libglade2 or GtkBuilder for the
