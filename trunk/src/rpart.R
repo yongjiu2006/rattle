@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-14 16:38:37 Graham Williams>
+# Time-stamp: <2010-08-31 06:55:25 Graham Williams>
 #
 # RPART TAB
 #
@@ -206,7 +206,7 @@ executeModelRPart <- function(action="build")
   # 100222 Use information as the default split method, as per a
   # machine learning view of the approach.
 
-  parms <- ',\n      parms=list(split="information")'
+  parms <- ',\n    parms=list(split="information")'
   
   # Obtain the value of the tuning controls
 
@@ -299,11 +299,11 @@ executeModelRPart <- function(action="build")
   if (! usesurrogate)
   {
     if (is.null(control))
-      control <- paste(",\n      control=rpart.control(usesurrogate=0,",
-                       "\n           maxsurrogate=0)")
+      control <- paste(",\n    control=rpart.control(usesurrogate=0,",
+                       "\n        maxsurrogate=0)")
     else
-      control <- gsub(")$", paste(",\n           usesurrogate=0,",
-                                  "\n           maxsurrogate=0)"), control)
+      control <- gsub(")$", paste(",\n        usesurrogate=0,",
+                                  "\n        maxsurrogate=0)"), control)
   }
 
   # Retrieve the Cross Validation value and if different from
@@ -343,9 +343,9 @@ executeModelRPart <- function(action="build")
     lo <- sprintf("matrix(c(%s), byrow=TRUE, nrow=%d)", loss, num.classes) 
     
     if (is.null(parms))
-      parms <- sprintf(",\n      parms=list(loss=%s)", lo)
+      parms <- sprintf(",\n    parms=list(loss=%s)", lo)
     else
-      parms <- gsub(")$", sprintf(",\n      loss=%s)", lo), parms)
+      parms <- gsub(")$", sprintf(",\n    loss=%s)", lo), parms)
   }
 
   # Build the formula for the model. Rpart has only a formula
@@ -387,12 +387,12 @@ executeModelRPart <- function(action="build")
                        if (including) included,
                        if (subsetting) "]", sep="")
                        
-    rpart.cmd <- paste("crs$rpart <- rpart(", frml, ",\n      data=", ds.string,
+    rpart.cmd <- paste("crs$rpart <- rpart(", frml, ",\n    data=", ds.string,
                        ifelse(is.null(crs$weights), "",
-                              sprintf(",\n      weights=(%s)%s",
+                              sprintf(",\n    weights=(%s)%s",
                                       crs$weights,
                                       ifelse(sampling, "[crs$train]", ""))),
-                       ',\n      method=',
+                       ',\n    method=',
                        ifelse(categoricTarget(),
                               '"class"', '"anova"'),
                        ifelse(is.null(parms), "", parms),

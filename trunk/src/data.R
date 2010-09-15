@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-31 14:17:25 Graham Williams>
+# Time-stamp: <2010-08-29 15:25:27 Graham Williams>
 #
 # DATA TAB
 #
@@ -1199,7 +1199,7 @@ openODBCSetTables <- function()
 # Execution
 #
 resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
-                               risk=NULL, ident=NULL, ignore=NULL,
+                               risk=NULL, ident=NULL, ignore=NULL, weight=NULL,
                                zero=NULL, mean=NULL,
                                boxplot=NULL,
                                hisplot=NULL, cumplot=NULL, benplot=NULL,
@@ -1208,9 +1208,10 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
 {
   # Update the SELECT treeview with the dataset variables.
 
-  createVariablesModel(variables, input, target, risk, ident, ignore, zero,
-                       mean, boxplot, hisplot, cumplot, benplot, barplot,
-                       dotplot, mosplot, autoroles=autoroles)
+  createVariablesModel(variables, input, target, risk, ident, ignore,
+                       weight, zero, mean, boxplot, hisplot, cumplot,
+                       benplot, barplot, dotplot, mosplot,
+                       autoroles=autoroles)
 
   if (resample)
   {
@@ -1244,7 +1245,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   theWidget("evaluate_risk_label")$setText(crs$risk)
 }
 
-resetDatasetViews <- function(input, target, risk, ident, ignore)
+resetDatasetViews <- function(input, target, risk, ident, ignore, weight)
 {
   
   # Reset the treeviews.
@@ -1258,7 +1259,7 @@ resetDatasetViews <- function(input, target, risk, ident, ignore)
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
                      input=input, target=target, risk=risk,
-                     ident=ident, ignore=ignore,
+                     ident=ident, ignore=ignore, weight=weight,
                      resample=FALSE, autoroles=FALSE)
 
 }
@@ -1883,21 +1884,21 @@ on_sample_seed_button_clicked <- function(button)
 item.toggled <- function(cell, path.str, model)
 {
 
-  ## The data passed in is the model used in the treeview.
+  # The data passed in is the model used in the treeview.
 
   checkPtrType(model, "GtkTreeModel")
 
-  ## Extract the column number of the model that has changed.
+  # Extract the column number of the model that has changed.
 
   column <- cell$getData("column")
 
-  ## Get the current value of the corresponding flag
+  # Get the current value of the corresponding flag
   
   path <- gtkTreePathNewFromString(path.str) # Current row
   iter <- model$getIter(path)$iter           # Iter for the row
   current <- model$get(iter, column)[[1]]    # Get data from specific column
 
-  ## Only invert the current value if it is False - work like a radio button
+  # Only invert the current value if it is False - work like a radio button
 
   if (! current)
   {
@@ -1905,7 +1906,7 @@ item.toggled <- function(cell, path.str, model)
 
     # Uncheck all other Roles for this row, acting like radio buttons.
     
-    columns <- crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]]
+    columns <- crv$COLUMNstart:crv$COLUMNend
     lapply(setdiff(columns, column), function(x) model$set(iter, x, FALSE))
 
     # TODO Now fix up other buttons. Any in the same column, if it is
@@ -1914,6 +1915,22 @@ item.toggled <- function(cell, path.str, model)
     # we use groups?
 
   }
+
+  # 100829 Check if we need to toggle the Weight Calculator - note
+  # that this is done each time an item is toggled because we don't
+  # get called when weight is untoggled?
+
+#  if (names(column) == "weight")
+    if (length(getSelectedVariables("weight")) > 0)
+    {
+      theWidget("weight_label")$setSensitive(FALSE)
+      theWidget("weight_entry")$setSensitive(FALSE)
+    }
+    else
+    {
+      theWidget("weight_label")$setSensitive(TRUE)
+      theWidget("weight_entry")$setSensitive(TRUE)
+    }
 }
 
 on_variables_toggle_ignore_button_clicked <- function(action, window)
@@ -1939,7 +1956,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   {
     model$set(iter, crv$COLUMN[["ignore"]], TRUE)
 
-    columns <- setdiff(crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]],
+    columns <- setdiff(crv$COLUMNstart:crv$COLUMNend,
                        crv$COLUMN[["ignore"]])
 
     # Timing indicates the for loop is slower on GNU/Linux but faster
@@ -1978,7 +1995,7 @@ on_variables_toggle_input_button_clicked <- function(action, window)
   tree.selection$selectedForeach(function(model, path, iter, data)
   {
     model$set(iter, crv$COLUMN[["input"]], TRUE)
-    columns <- setdiff(crv$COLUMN[["input"]]:crv$COLUMN[["ignore"]],
+    columns <- setdiff(crv$COLUMNstart:crv$COLUMNend,
                        crv$COLUMN[["input"]])
 
     #if (isWindows())
@@ -2019,6 +2036,7 @@ executeSelectTab <- function(resample=TRUE)
   risk    <- getSelectedVariables("risk")
   ident   <- getSelectedVariables("ident")
   ignore  <- getSelectedVariables("ignore")
+  weight  <- getSelectedVariables("weight")
   weights <- theWidget("weight_entry")$getText()
   if (weights == "") weights <- NULL
   
@@ -2026,9 +2044,10 @@ executeSelectTab <- function(resample=TRUE)
 
   if (length(target) > 1)
   {
-    errorDialog(sprintf(Rtxt("More than a single target has been identified (%s:%s).",
-                             "Only a single target is allowed."),
-                        getSelectedVariables("target", FALSE), target))
+    errorDialog(sprintf(Rtxt("Multiple Targets have been identified (%s).",
+                             "Only a single Target is allowed."),
+                        paste(getSelectedVariables("target", FALSE), target,
+                              sep=":", collapse=", ")))
     return()
   }
   
@@ -2044,11 +2063,12 @@ executeSelectTab <- function(resample=TRUE)
   if (length(risk) > 1)
   {
     errorDialog(sprintf(Rtxt("More than a single %s",
-                             "variable has been identified (%s:%s).",
+                             "variable has been identified (%s).",
                              "Only a single variable is allowed.\n",
                              "\nPlease change the role of one of the variables."),
                         ifelse(survivalTarget(), "Status", "Risk"),
-                        getSelectedVariables("risk", FALSE), risk))
+                        paste(getSelectedVariables("risk", FALSE), risk,
+                              sep=":", collapse=", ")))
     return()
   }
 
@@ -2063,9 +2083,26 @@ executeSelectTab <- function(resample=TRUE)
     return()
   }
 
-  # Obtain a list of variables and R functions in the Weight Calculator
+  # Deal with weights.
+    
+  # 100829 Fail if there is more than one weight selected. Note that
+  # once a weight is selected the Weight Calculator is not sensitive
+  # and so any Weight formula there will be ignored.
 
-  if (not.null(weights) && nchar(weights) > 0)
+  if (length(weight) > 1)
+  {
+    errorDialog(sprintf(Rtxt("Multiple Weights have been identified (%s).",
+                             "Only a single Weight is allowed.\n",
+                             "\nPlease reconfigure the roles."),
+                        paste(getSelectedVariables("weight", FALSE), weight,
+                              sep=":", collapse=", ")))
+    return()
+  }
+  else if (length(weight) == 1)
+  {
+    weights <- sprintf("crs$dataset$%s", weight)
+  }
+  else if (theWidget("weight_entry")$isSensitive() && not.null(weights) && nchar(weights) > 0)
   {
     identifiers <- unlist(strsplit(weights, "[^a-zA-Z._]"))
     identifiers <- identifiers[nchar(identifiers) > 0]
@@ -2526,7 +2563,7 @@ getSelectedVariables <- function(role, named=TRUE)
   variables <- NULL
   type <- "logical"
 
-  if (role %in% c("input", "target", "risk", "ident", "ignore"))
+  if (role %in% c("input", "target", "risk", "ident", "ignore", "weight"))
   {
     model <- theWidget("select_treeview")$getModel()
     rcol  <- crv$COLUMN[[role]]
@@ -2587,7 +2624,7 @@ initialiseVariableViews <- function()
 
   model <- gtkListStoreNew("gchararray", "gchararray", "gchararray",
                            "gboolean", "gboolean", "gboolean", "gboolean",
-                           "gboolean", "gchararray")
+                           "gboolean", "gboolean", "gchararray")
 
   impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray")
   
@@ -2763,6 +2800,20 @@ initialiseVariableViews <- function()
                                         renderer,
                                         active = crv$COLUMN[["ignore"]]) 
 
+  ## Add the WEIGHT column (the Weight check button) to the view.
+
+  renderer <- gtkCellRendererToggleNew()
+  renderer$set(xalign = 0.0)
+  renderer$set(radio = TRUE)
+  renderer$set(width = 60)
+  renderer$setData("column", crv$COLUMN["weight"])
+  connectSignal(renderer, "toggled", item.toggled, model)
+  col.offset <-
+    treeview$insertColumnWithAttributes(-1,
+                                        Rtxt("Weight"),
+                                        renderer,
+                                        active = crv$COLUMN[["weight"]]) 
+
   ## Add the barplot and dotplot and mosplot.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2889,15 +2940,15 @@ initialiseVariableViews <- function()
 }
 
 createVariablesModel <- function(variables, input=NULL, target=NULL,
-                                 risk=NULL, ident=NULL, ignore=NULL,
+                                 risk=NULL, ident=NULL, ignore=NULL, weight=NULL,
                                  zero=NULL, mean=NULL,
                                  boxplot=NULL,
                                  hisplot=NULL, cumplot=NULL, benplot=NULL,
                                  barplot=NULL, dotplot=NULL, mosplot=NULL,
                                  autoroles=TRUE)
 {
-  # Set up initial information about variables throughout Rattle,
-  # including the Data tab's variable model, the Explore tab's
+  # Set up the initial information about variables for use throughout
+  # Rattle, including the Data tab's variable model, the Explore tab's
   # categorical and continuous models, and the Modelling tab defaults
   # where they depend on the dataset sizes.
   #
@@ -3149,6 +3200,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
               crv$COLUMN["risk"], variables[i] %in% risk,
               crv$COLUMN["ident"], variables[i] %in% ident,
               crv$COLUMN["ignore"], variables[i] %in% ignore,
+              crv$COLUMN["weight"], variables[i] %in% weight,
               crv$COLUMN["comment"], paste(# 090617 Don't show in data tab
                                            #ifelse(pmmlCanExport(variables[i]),
                                            #       "", "NO code export. "),

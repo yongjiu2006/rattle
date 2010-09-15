@@ -1,6 +1,6 @@
 # Rattle Survival
 #
-# Time-stamp: <2010-04-21 06:50:07 Graham Williams>
+# Time-stamp: <2010-09-13 21:04:49 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -77,6 +77,8 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   gui <- not.null(tv)
   if (gui) startLog(Rtxt("Survival Model"))
 
+  sampling <- not.null(crs$sample)
+
   # Load the required package into the library.
 
   lib.cmd <-  "require(survival, quietly=TRUE)"
@@ -87,7 +89,13 @@ buildModelSurvival <- function(formula, dataset, tv=NULL, method=c("para", "coxp
   # Build a model. 
 
   method <- ifelse(method=="para", "survreg", "coxph")
-  model.cmd <- sprintf("%s(%s, data=%s)", method, formula, dataset)
+  model.cmd <- paste(method, "(", formula,
+                     ",\n      data=", dataset,
+                     if (! is.null(crs$weights))
+                        sprintf(",\n    weights=(%s)%s",
+                                crs$weights,
+                                ifelse(sampling, "[crs$train]", "")),
+                     ")", sep="")
 
   if (gui) appendLog(Rtxt("Build the Survival model."),
                      sprintf('crs$survival <- %s', model.cmd))

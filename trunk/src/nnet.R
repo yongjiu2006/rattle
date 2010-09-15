@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:37:26 Graham Williams>
+# Time-stamp: <2010-09-13 20:54:20 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -128,17 +128,21 @@ executeModelNNet <- function()
                      "crs$nnet <- ",
                      ifelse(numericTarget() || binomialTarget(),
                             "nnet", "multinom"),
-                     "(", frml, ",\n        data=crs$dataset",
+                     "(", frml, ",\n    data=crs$dataset",
                      if (subsetting) "[",
                      if (sampling) "crs$sample",
                      if (subsetting) ",",
                      if (including) included,
                      if (subsetting) "]",
+                     if (! is.null(crs$weights))
+                        sprintf(",\n    weights=(%s)%s",
+                                crs$weights,
+                                ifelse(sampling, "[crs$train]", "")),
                      # TODO 080427 How to choose a good value for size?
                      # TODO 090808 Why linout for a binomial target?
 #                     if (numericTarget() || binomialTarget())
 #                     sprintf(", size=%d, linout=TRUE, skip=TRUE", size),
-                     sprintf(",\n        size=%d", size),
+                     sprintf(",\n    size=%d", size),
                      if (numericTarget()) ", linout=TRUE",
                      ", skip=TRUE",
                      ", MaxNWts=10000",
@@ -170,17 +174,17 @@ errorReport(model.cmd, result)
   # Print the results of the modelling.
 
   if (numericTarget() || binomialTarget())
-    print.cmd <- paste('cat(sprintf("A %s network with %d weights.\n",',
+    print.cmd <- paste('cat(sprintf("A %s network with %d weights.\\n",',
                        '    paste(crs$nnet$n, collapse="-"),',
                        '    length(crs$nnet$wts)))',
-                       'cat(sprintf("Inputs: %s.\n",',
+                       'cat(sprintf("Inputs: %s.\\n",',
                        '    paste(crs$nnet$coefnames, collapse=", ")))',
-                       'cat(sprintf("Output: %s.\n",',
+                       'cat(sprintf("Output: %s.\\n",',
                        '    names(attr(crs$nnet$terms, "dataClasses"))[1]))',
-                       'cat(sprintf("Sum of Squares Residuals: %.4f.\n",',
+                       'cat(sprintf("Sum of Squares Residuals: %.4f.\\n",',
                        '    sum(residuals(crs$nnet) ^ 2)))',
-                       'cat("\n")',
-                       "print.summary.nnet.rattle(summary(crs$nnet))", "cat('\n')", sep="\n")
+                       'cat("\\n")',
+                       "print.summary.nnet.rattle(summary(crs$nnet))", "cat('\\n')", sep="\n")
   else
     print.cmd <- "print(crs$nnet)"
 

@@ -16,12 +16,30 @@
   crv <<- new.env()
 
   # 100820 GtkBuilder update. Use GtkBuilder as default, except if R
-  # version < 2.12.0 on MS/Windows.
+  # version < 2.12.0 on MS/Windows. Here is a collection of tests performed:
+  #
+  # OS      R	   release RGtk2     rattle GUI	       Gtk+	Date	Test Notes
+  #
+  # Ubuntu  2.11.1	   2.12.18   2.5.40 GtkBuilder 2.20.1	100822	OK
+  # Ubuntu  2.11.1	   2.12.18   2.5.40 GladeXML   2.20.1	100822	OK
+  #
+  # Ubuntu  2.12.0 r52791  2.12.18   2.5.40 GtkBuilder 2.20.1	100822	OK
+  # Ubuntu  2.12.0 r52791  2.12.18   2.5.40 GladeXML   2.20.1	100822	OK
+  #
+  # Windows 2.11.1	   2.12.18   2.5.40 GladeXML   2.12.9-2	100822	OK
+  #
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.12.9-2	100822	FAIL unhandled 'requires' tag EXPECTED
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.12.9-2	100822	FAIL libglade not loaded      EXPECTED
+  #
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.16.6	100822	OK   gtk is 2010-02-24
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.16.6	100822	FAIL libglade not loaded      EXPECTED
+  
 
   if (.Platform$OS.type=="windows" && version$major=="2" && version$minor<"12")
     crv$useGtkBuilder <- FALSE
-  else if (.Platform$OS.type=="unix" && version$major=="2" && version$minor=="12.0")
-    crv$useGtkBuilder <- FALSE
+  # 100822 Seems okay now with 2.12.0 (r52791) ....
+  # else if (.Platform$OS.type=="unix" && version$major=="2" && version$minor=="12.0")
+  #  crv$useGtkBuilder <- FALSE
   else
     crv$useGtkBuilder <- TRUE
   

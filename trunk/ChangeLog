@@ -1,3 +1,34 @@
+rattle (2.5.41) unstable; urgency=low
+
+  * Use GtkBuilder for Export dialog.
+  
+  * Test use of glade vs GtkBuilder on multiple platforms.
+  
+  * Rename rattle.info to rattle.version.
+  
+  * Add weight column to data tab.
+  
+  * Support weights for nnet, multinom, survival.
+  
+  * Add weights information to PMML as a PMML Extension.
+  
+  * Ensure GtkFrame is available as a data type whilst waiting for updated
+    RGtk2.
+  
+  * Bug fix to packageIsAvailable not reruning any result.
+  
+  * Replace destroy with withdraw for plot window as the former has
+    started crashing R.
+  
+  * Improve Log formatting for various model build commands.
+  
+  * Be sure to include the car package for Anova for multinom models.
+  
+  * Release pmml 1.2.24: Bug fix glm binomial regression - note as
+    classification model.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 15 Sep 2010 14:56:09 +1000
+
 rattle (2.5.40) unstable; urgency=low
 
   * Conditionalise useGtkBuilder:
