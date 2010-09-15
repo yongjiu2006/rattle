@@ -4,9 +4,9 @@
 #DEST=129.217.207.166
 DEST=win-builder.r-project.org
 
-#TARGET=/R-devel
-TARGET=/R-release
-#TARGET=/R64-release
+TARGETREL=/R-release
+TARGETDEV=/R-devel
+TARGETD64=/R64-release
 
 MAJOR=$(egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR=$(egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
@@ -20,8 +20,12 @@ ftp -n -i << _EOF_
 open ${DEST}
 user anonymous Graham.Williams@togaware.com
 bin
-cd ${TARGET}
 lcd repository
+cd ${TARGETREL}
+put ${LATEST}
+cd ../${TARGETDEV}
+put ${LATEST}
+cd ../${TARGETD64}
 put ${LATEST}
 quit
 _EOF_

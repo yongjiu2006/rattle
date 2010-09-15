@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-09 06:57:03 Graham Williams>
+# Time-stamp: <2010-08-29 07:32:55 Graham Williams>
 #
 # Project functionality.
 #
@@ -463,7 +463,7 @@ loadProject <- function()
   crs$mtime <- Sys.time()
 
   resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset),
-                     crs$input, crs$target, crs$risk, crs$ident, crs$ignore,
+                     crs$input, crs$target, crs$risk, crs$ident, crs$ignore, crs$weight,
                      crs$zero,
                      crs$boxplot, crs$hisplot, crs$cumplot, crs$benplot,
                      crs$barplot, crs$dotplot, resample=FALSE, autoroles=FALSE)

@@ -27,7 +27,7 @@ export(
        print.summary.nnet.rattle,
        randomForest2Rules,
        rattle,
-       rattle.info,
+       rattle.version,
        rattle.print.rpart,
        rattle.print.summary.multinom,
        overwritePackageFunction,

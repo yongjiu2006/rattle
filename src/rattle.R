@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-21 07:26:36 Graham Williams>
+# Time-stamp: <2010-09-15 07:29:29 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 21 Aug 2010"
+VERSION.DATE <- "Released 22 Aug 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -149,14 +149,17 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 toga <- function() browseURL("http://rattle.togaware.com")
 
-rattle.info <- function()
+rattle.version <- function()
 {
-  cat(sprintf("Rattle Version: %s\n", crv$version))
+  cat(sprintf("Rattle: version %s\n", crv$version))
+  cat(sprintf("%s (Revision %s)\n",
+              sub(" version", ": version", version$version.string),
+              version$"svn rev"))
+  cat("\n")
   si <- Sys.info()
   for (i in seq_along(si))
     cat(sprintf("%s%s: %s\n", toupper(substr(names(si)[i], 1, 1)),
                 substring(names(si)[i], 2), si[i]))
-  
 }
 
 
@@ -448,8 +451,11 @@ rattle <- function(csvname=NULL)
   # Various Treeview Columns
 
   crv$COLUMN <- c(number = 0, variable = 1, type = 2, input = 3,
-                   target = 4, risk = 5, ident = 6, ignore = 7, comment = 8)
-
+                  target = 4, risk = 5, ident = 6, ignore = 7,
+                  weight = 8, comment = 9)
+  crv$COLUMNstart <- crv$COLUMN[["input"]]
+  crv$COLUMNend <- crv$COLUMN[["weight"]]
+  
   crv$IMPUTE <- c(number=0, variable=1, comment=2)
 
   crv$CATEGORICAL <- c(number = 0, variable = 1, barplot = 2,
@@ -558,7 +564,8 @@ rattle <- function(csvname=NULL)
 
   # 100716 Revert to using Model rather than Predictive.... Model fits
   # the other tabs better.
-  crv$NOTEBOOK.MODEL.NAME <- theWidget("model_tab_label")$getLabel()
+  crv$NOTEBOOK.MODEL.NAME    <- Rtxt("Model")
+  # crv$NOTEBOOK.MODEL.NAME <- theWidget("model_tab_label")$getLabel()
 #  if (is.null(crv$NOTEBOOK.MODEL.NAME)) # 100423 Fix for RStat using Model
 #    crv$NOTEBOOK.MODEL.NAME <- Rtxt("Predictive")
   crv$NOTEBOOK.MODEL.WIDGET  <- theWidget("model_tab_widget")
@@ -841,7 +848,7 @@ fixMacAndGtkBuilderTypes <- function()
   # $ grep '<widget' rattle.glade | sed 's|^.*widget class="||' |\
   #   sed 's|".*$||' | sort -u | sed 's|^Gtk|gtk|' |\
   #   awk '{printf("%sGetType()\n", $1)}'
-  
+
   gtkAboutDialogGetType()
   gtkAlignmentGetType()
   gtkButtonGetType()
@@ -853,6 +860,7 @@ fixMacAndGtkBuilderTypes <- function()
   gtkEntryGetType()
   gtkFileChooserButtonGetType()
   gtkFileChooserDialogGetType()
+  gtkFrameGetType()
   gtkHBoxGetType()
   gtkHButtonBoxGetType()
   gtkHSeparatorGetType()
@@ -1179,6 +1187,8 @@ writeCSV <- function(x, file="", ...)
 {
   write.csv(x, file=file, row.names=FALSE, ...)
 }
+
+rattleTodo <- function(...) cat("Rattle TODO:", ..., "\n")
 
 #-----------------------------------------------------------------------
 # MAINLOOP ITERATION
@@ -1728,7 +1738,6 @@ packageIsAvailable <- function(pkg, msg=NULL)
   if (pkg %notin% rownames(installed.packages()))
   {
     if (not.null(msg))
-
       if (questionDialog(sprintf(Rtxt("The package '%s' is required to %s.",
                                       "It does not appear to be installed.",
                                       "A package can be installed",
@@ -1742,8 +1751,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
         install.packages(pkg)
         return(TRUE)
       }
-      else
-        return(FALSE)
+    return(FALSE)
   }
   else
     return(TRUE)
@@ -2140,8 +2148,16 @@ on_plot_close_button_clicked <- function(action)
   ttl <- action$getParent()$getParent()$getParent()$getParent()$getTitle()
   dn <- dev.num(ttl)
   dev.off(dn)
+
   pw <- action$getParentWindow()
-  pw$destroy()
+  
+  # 100830 "destroy" causes R to crash. So try hide - but does that
+  # not release the object and hence accumulates memory usage. Does
+  # withdraw do any better?
+  
+  # pw$destroy()
+  # pw$hide()
+  pw$withdraw()
 }
 
 dev.num <- function(title)
@@ -2170,11 +2186,9 @@ newPlot <- function(pcnt=1)
       packageIsAvailable("cairoDevice", Rtxt("display plots")))
   {
     require("cairoDevice", quietly=TRUE)
+    if (crv$useGtkBuilder) plotGUI <- gtkBuilderNew()
     result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                   silent=TRUE)
-
-    if (crv$useGtkBuilder) plotGUI <- gtkBuilderNew()
-    
     if (inherits(result, "try-error"))
       if (crv$useGtkBuilder)
         plotGUI$addFromFile("rattle.ui")
@@ -2510,7 +2524,7 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
 simplifyNumberList <- function(nums)
 {
   ## Convert 3 4 6 7 8 9 10 12 14 16 17 18 19 21 to
-  ## "3:4,6:10,12,14,16:19,21"
+  ## "3:4, 6:10, 12, 14, 16:19, 21"
 
   if (length(nums) == 1)
     return(sprintf("%s", nums))
@@ -2526,9 +2540,9 @@ simplifyNumberList <- function(nums)
     if (nums[i] != start + len)
     {
       if (len == 1)
-        result <- sprintf("%s,%d", result, start)
+        result <- sprintf("%s, %d", result, start)
       else
-        result <- sprintf("%s,%d:%d", result, start, nums[i-1])
+        result <- sprintf("%s, %d:%d", result, start, nums[i-1])
       start <- nums[i]
       len <- 1
     }
@@ -2537,11 +2551,11 @@ simplifyNumberList <- function(nums)
   }
 
   if (len == 1)
-    result <- sprintf("%s,%d", result, start)
+    result <- sprintf("%s, %d", result, start)
   else
-    result <- sprintf("%s,%d:%d", result, start, nums[i])
+    result <- sprintf("%s, %d:%d", result, start, nums[i])
 
-  result <- sub('c\\(,', 'c(', sprintf("c(%s)", result))
+  result <- sub('c\\(, ', 'c(', sprintf("c(%s)", result))
   return(result)
 }
 

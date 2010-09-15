@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-06 05:38:59 Graham Williams>
+# Time-stamp: <2010-09-15 07:41:31 Graham Williams>
 #
 # MODEL TAB
 #
@@ -388,7 +388,8 @@ executeModelTab <- function()
 
   weights.display <- gsub('crs\\$dataset\\$', '', crs$weights)
 
-  if (not.null(crs$weights)
+  if (theWidget("weight_entry")$isSensitive()
+      && not.null(crs$weights)
       && weights.display != theWidget("weight_entry")$getText())
   {
     errorDialog(sprintf(Rtxt("You appear to have changed the formula for calculating",
@@ -681,15 +682,19 @@ executeModelGLM <- function()
     # If we have a binary response it may be that we might consider
     # using a loglog link rather than a logit link.
 
-    model.cmd <- paste("crs$glm <- glm(", frml, ", data=crs$dataset",
+    model.cmd <- paste("crs$glm <- glm(", frml, ",\n    data=crs$dataset",
                        if (subsetting) "[",
                        if (sampling) "crs$train",
-                       if (subsetting) ",",
+                       if (subsetting) ", ",
                        if (including) included,
                        if (subsetting) "]",
-                       sprintf(', family=binomial(link="%s")',
+                       sprintf(',\n    family=binomial(link="%s")',
                                ifelse(family=="Probit", "probit", "logit")),
                        #", na.action=na.pass",
+                       if (! is.null(crs$weights))
+                              sprintf(",\n    weights=(%s)%s",
+                                      crs$weights,
+                                      ifelse(sampling, "[crs$train]", "")),
                        ")", sep="")
 
     # In addition to the default summary, add the chi-square test of
@@ -699,20 +704,21 @@ executeModelGLM <- function()
     
     
     summary.cmd <- paste("print(summary(crs$glm))",
-                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\n",',
-                               'logLik(crs$glm)[1], attr(logLik(crs$glm), "df")))'),
+                         paste('cat(sprintf("Log likelihood: %.3f (%d df)\\n",',
+                               '            logLik(crs$glm)[1],',
+                               '            attr(logLik(crs$glm), "df")))', sep="\n"),
                          paste('cat(sprintf("Null/Residual deviance difference:',
-                               '%.3f (%d df)\n",'),
+                               '%.3f (%d df)\\n",'),
                          '            crs$glm$null.deviance-crs$glm$deviance,',
                          '            crs$glm$df.null-crs$glm$df.residual))',
-                         'cat(sprintf("Chi-square p-value: %.8f\n",',
+                         'cat(sprintf("Chi-square p-value: %.8f\\n",',
                          '            dchisq(crs$glm$null.deviance-crs$glm$deviance,',
                          '                   crs$glm$df.null-crs$glm$df.residual)))',
-                         'cat(sprintf("Pseudo R-Square (optimistic): %.8f\n",',
+                         'cat(sprintf("Pseudo R-Square (optimistic): %.8f\\n",',
                          '             cor(crs$glm$y, crs$glm$fitted.values)))',
-                         "cat('\n==== ANOVA ====\n\n')",
+                         "cat('\\n==== ANOVA ====\\n\\n')",
                          'print(anova(crs$glm, test="Chisq"))',
-                         'print("\n")',
+                         'cat("\\n")',
                          sep="\n")
   }
   else if (family == "Linear")
@@ -786,16 +792,15 @@ executeModelGLM <- function()
     appendLog(Rtxt("Build a multinomial model using the nnet package."), lib.cmd)
     eval(parse(text=lib.cmd))
 
-    # 100519 This is not being used for now so remove it.
-    ## car.available <- TRUE
-    ## lib.cmd <- "require(car, quietly=TRUE)"
-    ## if (! packageIsAvailable("car", Rtxt("evaluate a mulitnomial model")))
-    ##   car.available <- FALSE
-    ## else
-    ## {
-    ##   appendLog(Rtxt("Summarise multinomial model using the car package."), lib.cmd)
-    ##   eval(parse(text=lib.cmd))
-    ## }
+    car.available <- TRUE
+    lib.cmd <- "require(car, quietly=TRUE)"
+    if (! packageIsAvailable("car", Rtxt("use Anova to evaluate a mulitnomial model")))
+      car.available <- FALSE
+    else
+    {
+      appendLog(Rtxt("Summarise multinomial model using Anova from the car package."), lib.cmd)
+      eval(parse(text=lib.cmd))
+    }
     
     model.cmd <- paste("crs$glm <- ",
                        "multinom",
