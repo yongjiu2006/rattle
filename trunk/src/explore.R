@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-24 06:03:50 Graham Williams>
+# Time-stamp: <2010-09-17 15:47:48 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -697,7 +697,8 @@ executeExplorePlot <- function(dataset,
                           "y=bp$stats[,i] - 0.02*(max(ds$dat, na.rm=TRUE)",
                           "- min(ds$dat, na.rm=TRUE)),",
                           "labels=bp$stats[,i])}",
-                          "\ntext(x=bp$group+0.1, y=bp$out, labels=bp$out, cex=0.5)")
+                          "\nif (length(bp$out))",
+                          "text(x=bp$group+0.1, y=bp$out, labels=bp$out, cex=0.5)")
     
     lib.cmd <- "require(doBy, quietly=TRUE)"
     

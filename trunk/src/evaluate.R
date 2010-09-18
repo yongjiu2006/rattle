@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-31 14:21:29 Graham Williams>
+# Time-stamp: <2010-09-16 09:02:04 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -36,7 +36,11 @@ on_evaluate_csv_radiobutton_toggled <- function(button)
 on_evaluate_rdataset_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
+  {
     theWidget("evaluate_rdataset_combobox")$setSensitive(TRUE)
+    updateRDatasets(current=theWidget("evaluate_rdataset_combobox")$getActiveText(),
+                    cbox.name="evaluate_rdataset_combobox")
+  }
   else
     theWidget("evaluate_rdataset_combobox")$setSensitive(FALSE)
   setStatusBar()

@@ -8084,7 +8084,6 @@ Spline (splinedot)</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="items" translatable="yes">No data frames found.</property>
-                        <signal name="set_focus_child" handler="update_comboboxentry_with_dataframes"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

@@ -1,3 +1,21 @@
+rattle (2.5.42) unstable; urgency=low
+
+  * Update rattle.info() to recursively identify all dependencies, report
+    their version number and any updates available from CRAN and generate
+    command to update packages that have updates available. See
+    ?rattle.info for the options.
+  
+  * Fix bug causing R Dataset option of the Evaluate window to always
+    revert to the first named dataset.
+  
+  * Fix bug in transforms where weights were not being handled in
+    refreshing of the Data tab.
+  
+  * Fix a bug in box plots when trying to label outliers when there aren't
+    any.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 19 Sep 2010 05:01:51 +1000
+
 rattle (2.5.41) unstable; urgency=low
 
   * Use GtkBuilder for Export dialog.

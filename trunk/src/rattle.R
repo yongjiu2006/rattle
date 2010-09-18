@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-15 07:29:29 Graham Williams>
+# Time-stamp: <2010-09-18 16:55:12 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Aug 2010"
+VERSION.DATE <- "Released 15 Sep 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -149,17 +149,130 @@ overwritePackageFunction <- function(fname, fun, pkg)
 
 toga <- function() browseURL("http://rattle.togaware.com")
 
-rattle.version <- function()
+rattle.info <- function(all.dependencies=FALSE,
+                        include.not.installed=FALSE,
+                        include.not.available=FALSE)
 {
   cat(sprintf("Rattle: version %s\n", crv$version))
   cat(sprintf("%s (Revision %s)\n",
               sub(" version", ": version", version$version.string),
               version$"svn rev"))
+
   cat("\n")
   si <- Sys.info()
   for (i in seq_along(si))
     cat(sprintf("%s%s: %s\n", toupper(substr(names(si)[i], 1, 1)),
                 substring(names(si)[i], 2), si[i]))
+
+  cat("\nInstalled Dependencies\n")
+
+  iv <- installed.packages()
+  av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
+  
+  if (all.dependencies)
+  {
+    # This version removes the suggests.only and uses all of Depends,
+    # Import, and Suggests.
+    makeDepGraph <- function (repList, type = getOption("pkgType"), 
+                              keep.builtin = FALSE, dosize = TRUE) 
+    {
+      pkgMatList <- lapply(repList, function(x) {
+        available.packages(contrib.url(x, type = type))
+      })
+      if (!keep.builtin) 
+        baseOrRecPkgs <- rownames(installed.packages(priority = "high"))
+      allPkgs <- unlist(sapply(pkgMatList, function(x) rownames(x)))
+      if (!length(allPkgs)) 
+        stop("no packages in specified repositories")
+      allPkgs <- unique(allPkgs)
+      depG <- new("graphNEL", nodes = allPkgs, edgemode = "directed")
+      nodeDataDefaults(depG, attr = "size") <- as.numeric(NA)
+      for (pMat in pkgMatList) {
+        for (p in rownames(pMat)) {
+          deps <- pkgDepTools:::cleanPkgField(pMat[p, "Depends"])
+          deps <- c(deps, pkgDepTools:::cleanPkgField(pMat[p, "Imports"]))
+          deps <- c(deps, pkgDepTools:::cleanPkgField(pMat[p, "Suggests"]))
+          deps <- unique(deps)
+          if (length(deps) && !keep.builtin) 
+            deps <- deps[!(deps %in% baseOrRecPkgs)]
+          if (length(deps)) {
+            notFound <- !(deps %in% nodes(depG))
+            if (any(notFound)) 
+              depG <- addNode(deps[notFound], depG)
+            deps <- deps[!is.na(deps)]
+            depG <- addEdge(from = p, to = deps, depG)
+          }
+        }
+        if (dosize) {
+          sizes <- pkgDepTools:::getDownloadSizesBatched(pkgDepTools:::makePkgUrl(pMat))
+          nodeData(depG, n = rownames(pMat), attr = "size") <- sizes
+        }
+      }
+      depG
+    }
+
+    require(pmml, quiet=TRUE)
+    require(methods, quiet=TRUE)
+    require(colorspace, quiet=TRUE)
+    require(cairoDevice, quiet=TRUE)
+    require(RGtk2, quiet=TRUE)
+    require(utils, quiet=TRUE)
+    require(XML, quiet=TRUE)
+    require(graph, quiet=TRUE, warn.conflicts=FALSE)
+
+    require(RBGL, quiet=TRUE)
+    require(bitops, quiet=TRUE)
+    require(grid, quiet=TRUE)
+    if (! require(pkgDepTools, quiet=TRUE))
+    {
+      source("http://bioconductor.org/biocLite.R")
+      biocLite("pkgDepTools")
+      require(pkgDepTools, quiet=TRUE)
+    }
+    if (! require(Rgraphviz, quiet=TRUE))
+    {
+      source("http://bioconductor.org/biocLite.R")
+      biocLite("Rgraphviz")
+      require(Rgraphviz, quiet=TRUE)
+    }
+    cran.repos <- "http://cran.r-project.org"
+    if (isWindows())
+      cran.deps <- makeDepGraph(cran.repos, type="win.binary", dosize=TRUE)
+    else
+      cran.deps <- makeDepGraph(cran.repos, type="source", dosize=TRUE)
+
+    deps <- c("rattle", names(acc(cran.deps, "rattle")[[1]]))
+  }    
+  else
+    deps <- strsplit(gsub("\\n", " ",
+                          paste(gsub(' \\([^\\)]+\\)', '', iv["rattle", "Depends"]),
+                                ", ",
+                                gsub(' \\([^\\)]+\\)', '', iv["rattle", "Suggests"]),
+                                sep="")), ", ")[[1]]
+
+  up <- NULL
+  for (p in deps)
+  {
+    if (! p %in% rownames(av))
+    {
+      if (include.not.available) cat(sprintf("%s: not available\n", p))
+    }
+    else if (! p %in% rownames(iv))
+    {
+      if (include.not.installed) cat(sprintf("%s: not installed\n", p))
+    }
+    else
+      cat(sprintf("%s: version %s%s%s", p, iv[p,"Version"],
+                  ifelse(iv[p,"Version"] != av[p,"Version"],
+                         {up <- c(up, p); sprintf(" upgrade available %s", av[p,"Version"])},
+                         ""),
+                  "\n"))
+  }
+
+  if (! is.null(up))
+    cat(sprintf('\nUpgrade the packages with:\n\n  > install.packages(c("%s"))\n\n',
+                paste(up, collapse='", "')))
+
 }
 
 
@@ -2633,32 +2746,33 @@ plotNetwork <- function(flow)
 # Shared callbacks
 #
 
-update_comboboxentry_with_dataframes <- function(action, window)
-{
-  # Update a combo box (Evaluate -> Score) with just the available
-  # data frames and matrices.
+## 100916 Update the list only when Evaluate's R Dataset is toggled on.
+## update_comboboxentry_with_dataframes <- function(action, window)
+## {
+##   # Update a combo box (Evaluate -> Score) with just the available
+##   # data frames and matrices.
 
-  current <- theWidget("data_name_combobox")$getActiveText()
+##   current <- theWidget("data_name_combobox")$getActiveText()
 
-  dl <- unlist(sapply(ls(sys.frame(0)),
-                      function(x)
-                      {
-                        cmd <- sprintf("is.data.frame(%s)", x)
-                        var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
-                                          x, NULL), silent=TRUE)
-                        if (inherits(var, "try-error"))
-                          var <- NULL
-                        return(var)
-                      }))
-  if (not.null(dl))
-  {
-    action$getModel()$clear()
-    lapply(dl, action$appendText)
-    ## Set the selection to that which was already selected, if possible.
-    if (not.null(current) && current %in% dl)
-      action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
-  }
-}
+##   dl <- unlist(sapply(ls(sys.frame(0)),
+##                       function(x)
+##                       {
+##                         cmd <- sprintf("is.data.frame(%s)", x)
+##                         var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
+##                                           x, NULL), silent=TRUE)
+##                         if (inherits(var, "try-error"))
+##                           var <- NULL
+##                         return(var)
+##                       }))
+##   if (not.null(dl))
+##   {
+##     action$getModel()$clear()
+##     lapply(dl, action$appendText)
+##     ## Set the selection to that which was already selected, if possible.
+##     if (not.null(current) && current %in% dl)
+##       action$setActive(which(sapply(dl, function(x) x==current))[1]-1)
+##   }
+## }
 
 on_rattle_window_delete_event <- function(action, window)
 {
