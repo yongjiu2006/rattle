@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-29 15:25:27 Graham Williams>
+# Time-stamp: <2010-09-19 04:54:41 Graham Williams>
 #
 # DATA TAB
 #
@@ -412,7 +412,7 @@ on_data_rdataset_radiobutton_toggled <- function(button)
   if (button$getActive())
   {
     dataTabShow("data_name_label", "data_name_combobox")
-    updateRDatasets(crs$data.tab.rdataset.name)
+    updateRDatasets(current=crs$data.tab.rdataset.name)
   }
   else
   {
@@ -495,7 +495,7 @@ on_data_odbc_radiobutton_toggled <- function(button)
                 "data_odbc_believeNRows_checkbutton")
 }
 
-updateRDatasets <- function(current=NULL)
+updateRDatasets <- function(current=NULL, cbox.name="data_name_combobox")
 {
   # Update a combo box with just the available data frames and matrices.
 
@@ -514,7 +514,7 @@ updateRDatasets <- function(current=NULL)
                         return(var)
                       }))
 
-  cbox <- theWidget("data_name_combobox")
+  cbox <- theWidget(cbox.name)
   
   cbox$getModel()$clear()
   if (not.null(dl))
@@ -1245,7 +1245,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   theWidget("evaluate_risk_label")$setText(crs$risk)
 }
 
-resetDatasetViews <- function(input, target, risk, ident, ignore, weight)
+resetDatasetViews <- function(input, target, risk, ident, ignore, weight=NULL)
 {
   
   # Reset the treeviews.
@@ -1503,7 +1503,7 @@ executeDataRdataset <- function()
   # best! But at least having it in here means we can update it when
   # it is executed.
   
-  updateRDatasets(dataset)
+  updateRDatasets(current=dataset)
   
   if (is.null(dataset))
   {

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-06-17 20:08:01 Graham Williams>
+# Time-stamp: <2010-09-17 12:30:18 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -356,6 +356,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
   risk <- getSelectedVariables("risk")
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
+  weight <- getSelectedVariables("weight")
 
   # For MATRIX obtain the matrix total first and then divide each
   # variable by this.
@@ -655,7 +656,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     # those that have been normalised, which have just been added as
     # inputs, with the originals now ignored.
 
-    resetDatasetViews(input, target, risk, ident, ignore)
+    resetDatasetViews(input, target, risk, ident, ignore, weight)
     resetTestTab()
     
     # Update the status bar
@@ -759,6 +760,7 @@ executeTransformImputePerform <- function()
   risk <- getSelectedVariables("risk")
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
+  weight <- getSelectedVariables("weight")
 
   if (length(imputed) > 0) startLog(Rtxt("Perform missing value imputation."))
 
@@ -1037,7 +1039,7 @@ executeTransformImputePerform <- function()
     # those that have been imputed, wich have just been added as
     # inputs, with the originals now ignored.
 
-    resetDatasetViews(input, target, risk, ident, ignore)
+    resetDatasetViews(input, target, risk, ident, ignore, weight)
     resetTestTab()
 
     # Update the status bar
@@ -1180,6 +1182,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   risk <- getSelectedVariables("risk")
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
+  weight <- getSelectedVariables("weight")
 
   # Determine the action requested.
 
@@ -1598,7 +1601,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   # Reset the dataset views keeping the roles unchanged except for
   # those that have been created, wich have just been added as inputs.
 
-  resetDatasetViews(input, target, risk, ident, ignore)
+  resetDatasetViews(input, target, risk, ident, ignore, weight)
   resetTestTab()
   
   # Update the status bar
@@ -1619,6 +1622,7 @@ executeTransformCleanupPerform <- function()
   risk <- getSelectedVariables("risk")
   ident <- getSelectedVariables("ident")
   ignore <- getSelectedVariables("ignore")
+  weight <- getSelectedVariables("weight")
 
   startLog("CLEANUP the Dataset")
 
@@ -1744,7 +1748,7 @@ executeTransformCleanupPerform <- function()
   # Reset the dataset views keeping the roles unchanged except for
   # those that have been delete.
 
-  resetDatasetViews(input, target, risk, ident, ignore)
+  resetDatasetViews(input, target, risk, ident, ignore, weight)
   resetTestTab()
 
   # Update the status bar
