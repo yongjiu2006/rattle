@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-30 05:47:17 Graham Williams>
+# Time-stamp: <2010-09-22 05:26:21 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -218,7 +218,12 @@ getExportSaveName <- function(mtype)
   # modified to offer a choice of Class/Score and PMML/Info to the C
   # file.
 
-  if (crv$useGtkBuilder) dialogGUI <- gtkBuilderNew()
+  if (crv$useGtkBuilder)
+  {
+    dialogGUI <- gtkBuilderNew()
+    dialogGUI$setTranslationDomain("R-rattle")
+  }
+  
   result <- try(etc <- file.path(.path.package(package="rattle")[1], "etc"),
                 silent=TRUE)
   if (inherits(result, "try-error"))

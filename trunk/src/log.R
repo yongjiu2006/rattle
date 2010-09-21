@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-10 15:24:00 Graham Williams>
+# Time-stamp: <2010-09-20 19:57:26 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -91,8 +91,10 @@ startLog <- function(msg=NULL)
 
   appendLog(paste("\n\n#",
                   paste(rep("=", 60), collapse=""),
-                  "\n# ", crv$appname, " ", Rtxt("timestamp:"), " ", Sys.time(),
-                  " ", version$platform, sep=""),
+                  if (not.null(crv$show.timestamp) && crv$show.timestamp)
+                  paste("\n# ", crv$appname, " ", Rtxt("timestamp:"), " ",
+                        Sys.time(), " ", version$platform, sep=""),
+                  sep=""),
           no.start=TRUE)
   if (not.null(msg))
     appendLog(paste(sep="", crv$start.log.comment, msg), no.start=TRUE)
