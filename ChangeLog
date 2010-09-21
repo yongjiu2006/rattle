@@ -1,3 +1,15 @@
+rattle (2.5.43) unstable; urgency=low
+
+  * Ensure gtkBuilder is setting the correct translation domain for the
+    interface.
+  
+  * Add global option for not showing timestamps: crv$show.timestamp.
+  
+  * Add optional arg to newProject to not ask about overwriting a
+    project. Default is as previously - to ask.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 22 Sep 2010 05:37:53 +1000
+
 rattle (2.5.42) unstable; urgency=low
 
   * Update rattle.info() to recursively identify all dependencies, report

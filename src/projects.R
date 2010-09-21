@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-29 07:32:55 Graham Williams>
+# Time-stamp: <2010-09-20 20:59:57 Graham Williams>
 #
 # Project functionality.
 #
@@ -74,9 +74,9 @@ on_save_button_clicked <- function(action, window)
 ########################################################################
 # NEW PROJECT
 
-newProject <- function()
+newProject <- function(ask.overwrite=TRUE)
 {
-  if ( not.null(listBuiltModels()) )
+  if (not.null(listBuiltModels()) && ask.overwrite)
   {
     if (! questionDialog(Rtxt("You have requested to start a new project.\n\n",
                               "This will clear the current project (dataset",

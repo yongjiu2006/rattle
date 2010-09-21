@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-10 19:54:44 Graham Williams>
+# Time-stamp: <2010-09-20 19:53:12 Graham Williams>
 #
 # Textview widget support
 #
@@ -129,9 +129,9 @@ appendTextview <- function(tv, ..., sep="", tvsep=TRUE)
 textviewSeparator <- function()
 {
   return(paste("\n\n",
-               sprintf("%s %s %s %s", crv$appname, Rtxt("timestamp:"), Sys.time(),
-                       Sys.info()["user"]),
-               "\n",
+               if (not.null(crv$show.timestamp) && crv$show.timestamp)
+                 sprintf("%s %s %s %s\n", crv$appname, Rtxt("timestamp:"), Sys.time(),
+                         Sys.info()["user"]),
                paste(rep("=", 70), collapse=""), "\n", sep=""))
 }
 

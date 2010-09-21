@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-30 11:09:13 Graham Williams>
+# Time-stamp: <2010-09-19 10:19:14 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -155,7 +155,6 @@ executeAssociateTab <- function()
   # Initialise the textview.
   
   TV <- "associate_textview"
-  resetTextview(TV)
   
   # Required information
   
@@ -196,7 +195,6 @@ executeAssociateTab <- function()
       errorDialog(errorMessageFun("as", result))
     return(FALSE)
   }
-  reportTimeTaken(TV, time.taken, commonName(crv$RPART))
 
   # Now generate the association rules.
 
@@ -212,18 +210,21 @@ executeAssociateTab <- function()
 
   mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
   appendLog(Rtxt("Summarise the resulting rule set."), mysummary.cmd)
-
   summary.cmd <- "summary(crs$apriori@quality)"
-  appendTextview(TV, Rtxt("Summary of the Apriori Association Rules"), "\n\n",
-                 collectOutput(mysummary.cmd, use.cat=TRUE),
-                 "\n", Rtxt("Summary of the Measures of Interestingness"), "\n\n",
-                 collectOutput(summary.cmd, use.print=TRUE))
+
+  resetTextview(TV)
+  setTextview(TV, Rtxt("Summary of the Apriori Association Rules:"), "\n\n",
+              collectOutput(mysummary.cmd, use.cat=TRUE),
+              "\n",
+              Rtxt("Summary of the Measures of Interestingness:"), "\n\n",
+              collectOutput(summary.cmd, use.print=TRUE),
+              "\n\n",
+              Rtxt("Summary of the Execution of the Apriori Command:"),
+              "\n",
+              cmd.output,
+              "\n")
   
-  appendTextview(TV, Rtxt("Summary of the execution of the apriori command."),
-                 "\n",
-                 cmd.output)
-  
-  setStatusBar(Rtxt("Generated the association rules."))
+  reportTimeTaken(TV, time.taken, model=commonName(crv$RPART))
 }
 
 plotAssociateFrequencies <- function()

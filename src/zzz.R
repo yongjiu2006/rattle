@@ -72,7 +72,7 @@
   # crv$textview.font <- "ＭＳ ゴシック" # Not mono
   # crv$textview.font <- "Sans Italic 12" # For fun.
   
-  crv$show.timestamp <- FALSE
+  crv$show.timestamp <- TRUE
   ## crv$tooltiphack <- FALSE
   crv$close <- "ask"
   # crv$sample.dataset <- "audit"
