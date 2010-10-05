@@ -299,6 +299,7 @@ devbuild:
 build: weather translations \
 	$(REPOSITORY)/rattle_$(VERSION).tar.gz \
 	$(REPOSITORY)/rattle_$(VERSION).zip
+	chmod go+r $(REPOSITORY)/*
 
 .PHONY: translations
 translations:

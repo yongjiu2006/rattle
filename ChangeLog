@@ -1,3 +1,21 @@
+rattle (2.5.44) unstable; urgency=low
+
+  * Add an include.libpath to rattle.info() to provide information about
+    where the packages are installed.
+  
+  * Check for failed startup of rattle GUI using GtkBuider (because the
+    Gtk library installed does not recognise 'requires' and suggest a
+    workaround.
+  
+  * Condiionally turn toolbar Text (in addition to just Icons) on.
+  
+  * For loading spreadsheets, make sure RODBC is available and loaded.
+  
+  * Ensure 'ordered categoric' are treated as categoric for Explore,
+    Distribution.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Tue, 05 Oct 2010 18:08:20 +1100
+
 rattle (2.5.43) unstable; urgency=low
 
   * Ensure gtkBuilder is setting the correct translation domain for the

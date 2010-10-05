@@ -33,9 +33,13 @@
   #
   # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.16.6	100822	OK   gtk is 2010-02-24
   # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.16.6	100822	FAIL libglade not loaded      EXPECTED
+  #
+  # The test version of R 2.12.0 was downloaded from
+  #
+  # http://cran.r-project.org/bin/windows/base/rtest.html
   
 
-  if (.Platform$OS.type=="windows" && version$major=="2" && version$minor<"12")
+  if (.Platform$OS.type=="windows" && version$major<="2" && version$minor<"12")
     crv$useGtkBuilder <- FALSE
   # 100822 Seems okay now with 2.12.0 (r52791) ....
   # else if (.Platform$OS.type=="unix" && version$major=="2" && version$minor=="12.0")
@@ -85,6 +89,8 @@
   # two targets selected.
 
   crv$executing <- FALSE
+
+  crv$toolbar.text <- FALSE
   
   # 090525 Always load tooltips - now use Settings option to enable on
   # GNU/Linux. 090622 But on older installations we still get the

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-19 04:54:41 Graham Williams>
+# Time-stamp: <2010-10-04 08:54:57 Graham Williams>
 #
 # DATA TAB
 #
@@ -890,6 +890,9 @@ executeDataCSV <- function(filename=NULL)
                         crv$sample.dataset, crv$csv.encoding)
                               
   else if (isWindows() && tolower(get.extension(filename)) %in% c("xls", "xlsx"))
+  {
+    if (! packageIsAvailable("RODBC", Rtxt("read .xls or .xlsx files"))) return(FALSE)
+    
     # 100114 A quick hack to allow reading MS/Excel files.
     read.cmd <- sprintf(paste("require(RODBC, quietly=TRUE)",
                               'con <- odbcConnectExcel%s("%s")',
@@ -899,6 +902,7 @@ executeDataCSV <- function(filename=NULL)
                         ifelse(tolower(get.extension(filename)) == "xlsx",
                                "2007", ""),
                         sub("file:///", "", filename))
+  }
   else
 
     # 100428 With read.csv("...", encoding="UTF-8") column names that
@@ -3062,15 +3066,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     cl <- class(crs$dataset[[variables[i]]])
 
-    # 090320 The following used to be included, but firstly, why the
-    # two assignments? Secondly, do we need this. Try for now without
-    # it. Below, change "ordered" to Categoric.
+    # 090320 Change "ordered" to Categoric below, so maybe don;t need
+    # this change. 101004 Reinstate this change to cl since ordered
+    # factors in weather AUS were being dropped from the Descriptions
+    # option of Explore.
     
-    ## if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
-    ## {
-    ##   cl <- "factor"
-    ##   cl <- "Categorical"
-    ## }
+    if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
+      cl <- "factor"
     
     # First check for special variable names. 
 
