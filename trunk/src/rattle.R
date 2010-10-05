@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-22 05:27:55 Graham Williams>
+# Time-stamp: <2010-10-05 17:59:27 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Sep 2010"
+VERSION.DATE <- "Released 22 Sep 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -151,7 +151,8 @@ toga <- function() browseURL("http://rattle.togaware.com")
 
 rattle.info <- function(all.dependencies=FALSE,
                         include.not.installed=FALSE,
-                        include.not.available=FALSE)
+                        include.not.available=FALSE,
+                        include.libpath=FALSE)
 {
   cat(sprintf("Rattle: version %s\n", crv$version))
   cat(sprintf("%s (Revision %s)\n",
@@ -262,10 +263,14 @@ rattle.info <- function(all.dependencies=FALSE,
       if (include.not.installed) cat(sprintf("%s: not installed\n", p))
     }
     else
-      cat(sprintf("%s: version %s%s%s", p, iv[p,"Version"],
+      cat(sprintf("%s: version %s%s%s%s", p, iv[p,"Version"],
                   ifelse(iv[p,"Version"] != av[p,"Version"],
-                         {up <- c(up, p); sprintf(" upgrade available %s", av[p,"Version"])},
+                         {
+                           up <- c(up, p);
+                           sprintf(" upgrade available %s", av[p,"Version"])
+                         },
                          ""),
+                  ifelse(include.libpath, paste("\t", iv[p,"LibPath"]), ""),
                   "\n"))
   }
 
@@ -382,13 +387,29 @@ rattle <- function(csvname=NULL)
                 silent=TRUE)
   if (inherits(result, "try-error"))
     if (crv$useGtkBuilder)
-      rattleGUI$addFromFile("rattle.ui")
+    {
+      result <- try(rattleGUI$addFromFile("rattle.ui"), silent=TRUE)
+      if inherits(result, "try-error"))
+      {
+        cat("Rattle failed to start. Try\n  crv$useGtkBuilder <- FALSE",
+            "\nthen restart rattle()\n")
+        return()
+      }
+    }
     else
       rattleGUI <<- gladeXMLNew("rattle.glade",
                                 root="rattle_window", domain="R-rattle")
   else
     if (crv$useGtkBuilder)
-      rattleGUI$addFromFile(file.path(etc, "rattle.ui"))
+    {
+      result <- try(rattleGUI$addFromFile(file.path(etc, "rattle.ui")), silent=TRUE)
+      if inherits(result, "try-error"))
+      {
+        cat("Rattle failed to start. Try\n  crv$useGtkBuilder <- FALSE",
+            "\nthen restart rattle()\n")
+        return()
+      }
+    }
     else
       rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                                 root="rattle_window", domain="R-rattle")
@@ -414,6 +435,7 @@ rattle <- function(csvname=NULL)
   setMainTitle()
   configureGUI()
   setDefaultsGUI()
+  if (crv$toolbar.text) theWidget("toolbar")$setStyle("GTK_TOOLBAR_BOTH")
   
   # 100120 A temporary fix for MS/Windows where translations of stock
   # items by RGtk2 don't seem to be happening. It works just fine for
@@ -938,6 +960,7 @@ configureGUI <- function()
     crv$icon <- NULL
   else
     crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
+
 }
 
 setDefaultsGUI <- function()

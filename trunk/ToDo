@@ -80,6 +80,16 @@ Test Tab
   chosen.
   ------------------------------------------------------------------------
 
+Transform Tab
+
+  ------------------------------------------------------------------------
+  2010-10-03 18:39:16 Graham Williams, Tony Nolan
+
+  Add a Subset option to allow crs$datset to be subsetted in various
+  ways and then to use the subset for all model building etc.
+  
+  ------------------------------------------------------------------------
+
 Model Tab
 
   Fast and large regression and SVM
