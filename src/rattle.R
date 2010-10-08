@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-10-05 17:59:27 Graham Williams>
+# Time-stamp: <2010-10-09 06:53:24 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 22 Sep 2010"
+VERSION.DATE <- "Released 05 Oct 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -387,34 +387,26 @@ rattle <- function(csvname=NULL)
                 silent=TRUE)
   if (inherits(result, "try-error"))
     if (crv$useGtkBuilder)
-    {
-      result <- try(rattleGUI$addFromFile("rattle.ui"), silent=TRUE)
-      if inherits(result, "try-error"))
-      {
-        cat("Rattle failed to start. Try\n  crv$useGtkBuilder <- FALSE",
-            "\nthen restart rattle()\n")
-        return()
-      }
-    }
+      rattleGUI$addFromFile("rattle.ui")
     else
       rattleGUI <<- gladeXMLNew("rattle.glade",
                                 root="rattle_window", domain="R-rattle")
   else
     if (crv$useGtkBuilder)
-    {
-      result <- try(rattleGUI$addFromFile(file.path(etc, "rattle.ui")), silent=TRUE)
-      if inherits(result, "try-error"))
-      {
-        cat("Rattle failed to start. Try\n  crv$useGtkBuilder <- FALSE",
-            "\nthen restart rattle()\n")
-        return()
-      }
-    }
+      rattleGUI$addFromFile(file.path(etc, "rattle.ui"))
     else
       rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                                 root="rattle_window", domain="R-rattle")
 
-  if (crv$useGtkBuilder) rattleGUI$getObject("rattle_window")$show()
+  if (crv$useGtkBuilder)
+
+    # 101009 This sometimes gives an error on older GNU/Linux,
+    # complaining that the element "require" is an unhandled tag. I
+    # should be able to test this programatically in .onAttach and
+    # then set crv$useGtkBuilder to FALSE in that case so we don't get
+    # here.
+    
+    rattleGUI$getObject("rattle_window")$show()
   
   # Really need an second untouched rattleGUI
 
@@ -435,6 +427,7 @@ rattle <- function(csvname=NULL)
   setMainTitle()
   configureGUI()
   setDefaultsGUI()
+  # 101008 Show toolbar text under the icons, if option is set.
   if (crv$toolbar.text) theWidget("toolbar")$setStyle("GTK_TOOLBAR_BOTH")
   
   # 100120 A temporary fix for MS/Windows where translations of stock
