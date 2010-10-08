@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-17 12:30:18 Graham Williams>
+# Time-stamp: <2010-10-07 22:15:01 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -544,7 +544,12 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                   '[["%s"]]',
                                   '==vl, isTRUE), "%s"], "range") * 99)\n',
                                   '  crs$dataset[is.nan(crs$dataset[["%s"]]), ',
-                                  '"%s"] <- 99',
+                                  '"%s"] <- 50',
+                                  # 101007 Change 99 to 50. This case
+                                  # is when there is only a single
+                                  # observation in a group, and 50
+                                  # makes more sense than either 0 or
+                                  # 99.
                                   sep=""),
                             byvname, vname, byvname, vname, byvname, v,
                             vname, vname)

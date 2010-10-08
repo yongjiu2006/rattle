@@ -11,7 +11,8 @@
 \usage{
 rattle.info(all.dependencies=FALSE,
             include.not.installed=FALSE,
-            include.not.available=FALSE)
+            include.not.available=FALSE,
+            include.libpath=FALSE)
 }
 \arguments{
   
@@ -25,6 +26,9 @@ rattle.info(all.dependencies=FALSE,
 
   \item{include.not.available}{If TRUE then make mention of any packages
     that are not available from CRAN.}
+
+  \item{include.libpath}{If TRUE then list the library location where
+    each package is installed.}
 
 }
 \details{

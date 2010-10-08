@@ -69,6 +69,22 @@ Explore Tab
     lattice.
     ----------------------------------------------------------------------
 
+  Interactive Tab
+
+    GGobi Option
+
+      ----------------------------------------------------------------------
+      2010-10-07 07:08:36 Graham Williams
+
+      Add radio buttons to select whether to display clusters, model
+      results, etc:
+
+      e.g;, 
+      g <- ggobi(crs$dataset)
+      clustering <- hclust(dist(iris[,1:4]), method="average")
+      glyph_colour(g[1]) <- cuttree(clustering, 3)
+      ----------------------------------------------------------------------
+
 Test Tab
 
   ------------------------------------------------------------------------

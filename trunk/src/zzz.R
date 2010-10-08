@@ -1,15 +1,49 @@
 .onLoad <- function(libname, pkgname)
 {
-  # 090315 Create the crs environment here. It is defined here (and
+  # print("LOAD")
+
+  # 101009 This is called first when the package is loaded into the
+  # library as through the library or require commands. Note that a
+  # user may have saved a workspace into .RData, and that seems to
+  # note the dependency upon the rattle package, and so when R starts
+  # up and looks to load the .RData file, it first loads this
+  # package. Thus anything here is evaluated first, and then
+  # overridden by things from .RData. Thus, the creation of
+  # environments, which used to be in here, should be in .onAttach,
+  # which is called when the user explicitly loads the package.
+  #
+  # Thus, when no .RData exists, LOAD and ATTACH happen when there is
+  # a library(rattle). When there is an .RData, LOAD happens when R
+  # starts up, followed by loading .RData, and ATTACH happens when
+  # there is a library(rattle).
+  #
+  # 080417 The R manual for .onLoad also says to use .onAttach for
+  # startup messages, which makes sense as we want to see them when
+  # the user loads the package, not when R (possibly on startup)
+  # decides to load the package.
+}
+
+
+.onAttach <- function(libname, pkgname)
+{
+  # print("ATTACH")
+
+  # 101009 This is executed when the package becomes visible to the
+  # user, which is usually following a library(rattle). Note that on
+  # restoring an .RData file the package might get loaded on starting
+  # up R and thus the .onLoad is executed then, but the ATTACH code
+  # won't get loaded until we do library(rattle).
+  
+  # 090315 Create the crs environment here. It is defined here and
   # then also reset in rattle() so that R CMD check would not complain
-  # about knowing nothing of crs (after removing the crs<<- assigments
-  # throughout rattle)!
+  # about knowing nothing of crs (after removing the crs <<-
+  # assigments throughout rattle)!
 
   crs <<- new.env()
 
   # 090207 Create the global crv environment for Rattle. Once again,
   # this is a deviation from Chamber's Prime Directive, but is akin to
-  # the use of option.  It is defined here so that it is glabally
+  # the use of option.  It is defined here so that it is globally
   # known and so that plugins can override options. We generally
   # include here the options that can be overridden by a plugin.
   
@@ -28,22 +62,46 @@
   #
   # Windows 2.11.1	   2.12.18   2.5.40 GladeXML   2.12.9-2	100822	OK
   #
-  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.12.9-2	100822	FAIL unhandled 'requires' tag EXPECTED
-  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.12.9-2	100822	FAIL libglade not loaded      EXPECTED
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.12.9-2	100822	FAIL (1)
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.12.9-2	100822	FAIL (2)
   #
-  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.16.6	100822	OK   gtk is 2010-02-24
-  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.16.6	100822	FAIL libglade not loaded      EXPECTED
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GtkBuilder 2.16.6	100822	OK   (3)
+  # Windows 2.12.0 r52771  2.12.18-5 2.5.40 GladeXML   2.16.6	100822	FAIL (4)
   #
+  # Notes
+  #
+  # (1) This FAIL is expected: we get an unhandled 'requires' tag
+  #     which is not supported in Gtk 2.12.9.
+  #
+  # (2) This FAIL is expected: libglade is not loaded.
+  #
+  # (3) gtk 2.16.6 eis dated 2010-02-24.
+  #
+  # (4) This FAIL is expected: libglade is not loaded.
+  # 
   # The test version of R 2.12.0 was downloaded from
   #
   # http://cran.r-project.org/bin/windows/base/rtest.html
-  
 
-  if (.Platform$OS.type=="windows" && version$major<="2" && version$minor<"12")
+  # 101009 We need to handle the case of an old install of Gtk (e.g.,
+  # 2.12.9 on MS/Windows or GNU/Linux) where GtkBuilder does not
+  # recognise the 'requires' element. We construct a string for the
+  # xml and try to test this situation, and if the result from
+  # gtkBuilderAddFromString has $error$message of "Unhandled tag:
+  # 'requires'" then set crv$useGtkBuilder to FALSE.
+
+  op <- options(warn=-1)
+  g <- gtkBuilderNew()
+  res <- g$addFromString('<requires/>', 20)
+  options(op)
+
+  if (! res$retval && res$error$message[1] == "Unhandled tag: 'requires'")
     crv$useGtkBuilder <- FALSE
-  # 100822 Seems okay now with 2.12.0 (r52791) ....
-  # else if (.Platform$OS.type=="unix" && version$major=="2" && version$minor=="12.0")
-  #  crv$useGtkBuilder <- FALSE
+  else if (.Platform$OS.type=="windows" && version$major<="2" && version$minor<"12")
+    # 101009 Always use glade for old installs of R on MS/Windows
+    # rather than trying to figure out when it might work with
+    # GtkBuilder.
+    crv$useGtkBuilder <- FALSE
   else
     crv$useGtkBuilder <- TRUE
   
@@ -53,7 +111,12 @@
                                       "Rattle", "Togaware Pty Ltd"))
   crv$support.msg <- sprintf(Rtxt("Contact %s."), "support@togaware.com")
   crv$library.command <- "library(rattle)"
+
+  # 101009 Record version for each so we can see when we might have
+  # these restored from a .RData file automatically on startup.
+
   crv$version <- VERSION
+  crs$version <- VERSION
 
   # Some global constants
 
@@ -155,15 +218,6 @@
   Global_rattleGUI <<- NULL
   viewdataGUI <<- NULL
   on_aboutdialog_response <<- NULL
-  
-}
-
-# 080417 The R manual for .onLoad says to use .onAttach for startup
-# messages.
-
-.onAttach <- function(libname, pkgname)
-{
-  # This is executed when the package becomes visible to the user.
   
   # 090206 How to not display the welcome message if quietly=TRUE?
   # Otherwise it is annoying, just like fBasics. randomForest seems to
