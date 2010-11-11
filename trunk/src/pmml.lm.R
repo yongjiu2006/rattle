@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2010-10-09 06:12:11 Graham Williams>
+# Time-stamp: <2010-10-12 21:57:42 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -40,6 +40,7 @@ pmml.lm <- function(model,
                     description="Linear Regression Model",
                     copyright=NULL,
                     transforms=NULL,
+                    weights=NULL,
                     ...)
 {
   if (! inherits(model, "lm")) stop("Not a legitimate lm object")
@@ -128,7 +129,7 @@ pmml.lm <- function(model,
 
   # PMML -> DataDictionary
 
-  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field))
+  pmml <- append.XMLNode(pmml, pmmlDataDictionary(field, weights=weights))
 
   # PMML -> RegressionModel
 

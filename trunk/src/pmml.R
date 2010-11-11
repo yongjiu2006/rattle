@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2010-10-09 07:31:03 Graham Williams>
+# Time-stamp: <2010-10-12 22:09:55 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -169,7 +169,7 @@ pmmlHeader <- function(description, copyright, app.name)
                                            attrs=c(name="user",
                                              value=sprintf("%s",
                                                Sys.info()["user"]),
-                                             extender="Rattle")))
+                                             extender=app.name)))
 
   # Header -> Application
 
@@ -251,7 +251,8 @@ pmmlDataDictionary <- function(field, dataset=NULL, weights=NULL)
                                          attrs=c(value=
                                            markupSpecials(field$levels[[field$name[i]]][j])))
   }
-  if (! is.null(weights))
+
+  if (! is.null(weights) && length(weights))
     data.dictionary <-append.XMLNode(data.dictionary, xmlNode("Extension",
                                                               attrs=c(name="Weights",
                                                                 value=weights,
