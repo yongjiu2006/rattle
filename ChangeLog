@@ -1,3 +1,13 @@
+rattle (2.5.46) unstable; urgency=low
+
+  * Bug fix for fixTranslations.
+  
+  * Save weights information in PMML.
+  
+  * Cleanup SVM command generator.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Thu, 11 Nov 2010 19:08:36 +1100
+
 rattle (2.5.45) unstable; urgency=low
 
   * Check for GtkBuilder handling of the 'requires' tag, and if not
@@ -22,7 +32,7 @@ rattle (2.5.44) unstable; urgency=low
   
   * Check for failed startup of rattle GUI using GtkBuider (because the
     Gtk library installed does not recognise 'requires' and suggest a
-    workaround.
+    workaround).
   
   * Condiionally turn toolbar Text (in addition to just Icons) on.
   

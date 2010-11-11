@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-15 21:26:01 Graham Williams>
+# Time-stamp: <2010-11-07 06:42:37 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -303,7 +303,7 @@ executeModelCTree <- function()
   if (sampling) crs$smodel <- union(crs$smodel, crv$RPART)
 
   # Now that we have a model, make sure the rules and plot buttons are
-  # visible.
+  # not visible.
   
   showModelRPartExists()
 

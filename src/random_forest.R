@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-01 12:32:52 Graham Williams>
+# Time-stamp: <2010-10-11 22:18:56 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -215,6 +215,20 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
                    if (including) included,
                    if (subsetting) "]",
                    sep="")
+  if (! traditional)
+    dataset <- sprintf("na.omit(%s)", dataset)
+
+  # Replicate rows according to the integer weights variable.
+  
+  if(! is.null(crs$weights))
+    dataset <- paste(dataset,
+                     "[rep(row.names(",
+                     dataset,
+                     "),\n                                        ",
+                     # Use eval since crs$weights could be a formula
+                     'as.integer(eval(parse(text = "', crs$weights,
+                     '"))[crs$sample])),]',
+                     sep="")
 
   # 100107 Deal with missing values. I've not tested whether cforest
   # has issues with missing values.
@@ -266,16 +280,18 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   rf.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
                   "crs$rf <- ", FUN, "(", frml,
-                  ifelse(traditional,
-                         ",\n      data=crs$dataset",
-                         ",\n      data=na.omit(crs$dataset"),
-                  if (subsetting) "[",
-                  if (sampling) "crs$sample",
-                  if (subsetting) ",",
-                  if (including) included,
-                  ifelse(subsetting,
-                         ifelse(traditional, "], ", "]), "),
-                         ifelse(traditional, "", ")")),
+                  ",\n      data=",
+                  dataset, ", ",
+#                  ifelse(traditional,
+#                         ",\n      data=crs$dataset",
+#                         ",\n      data=na.omit(crs$dataset"),
+#                  if (subsetting) "[",
+#                  if (sampling) "crs$sample",
+#                  if (subsetting) ",",
+#                  if (including) included,
+#                  ifelse(subsetting,
+#                         ifelse(traditional, "], ", "]), "),
+#                         ifelse(traditional, "", ")")),
                   ifelse(traditional, parms,
                          sprintf("controls=cforest_unbiased(%s)", parms)),
                   ifelse(traditional,

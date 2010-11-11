@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-17 15:47:48 Graham Williams>
+# Time-stamp: <2010-11-08 05:18:28 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -3580,7 +3580,7 @@ executeExploreHiercor <- function(dataset)
   # Construct the commands.
   
   cor.cmd    <- sprintf('cc <- cor(%s, use="pairwise", method="%s")', dataset, method)
-  hclust.cmd <- 'hc <- hclust(dist(cc), "ave")'
+  hclust.cmd <- 'hc <- hclust(dist(cc), method="average")'
   dend.cmd   <- "dn <- as.dendrogram(hc)"
 
   # Modification by Ed Cox 080130 to increase margin for long variable names
@@ -3597,9 +3597,11 @@ executeExploreHiercor <- function(dataset)
                       'cex = c(2.0, 0.75), pch = 21:22, ',
                       'bg=  c("light blue", "pink"), ',
                       'lab.cex = ', fontsize, ', lab.col = "tomato"), ',
-                      'edgePar = list(col = "gray", lwd = 2)',
+                      'edgePar = list(col = "gray", lwd = 2), ',
+                      'xlab="Height"',
                       ')\n',
-                      genPlotTitleCmd(paste(Rtxt("Variable Correlation Clusters"), "\n", sep=""),
+                      genPlotTitleCmd(paste(Rtxt("Variable Correlation Clusters"),
+                                            "\n", sep=""),
                                      crs$dataname, Rtxt("using"), method.orig), '\n',
                       'par(op)\n',
                       sep="")
@@ -3715,9 +3717,8 @@ executeExplorePrcomp <- function(dataset)
 
 executeExplorePlaywith <- function(dataset)
 {
-  # Testing for now. This has great potential.
-
-  if (! packageIsAvailable("latticist", Rtxt("explore data"))) return()
+  if (! packageIsAvailable("latticist", Rtxt("interactively explore data"))) return()
+  if (! packageIsAvailable("playwith", Rtxt("interactively explore data"))) return()
 
   startLog(Rtxt("Explore Data"))
 

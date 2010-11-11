@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-10-09 06:53:24 Graham Williams>
+# Time-stamp: <2010-11-11 05:49:25 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 05 Oct 2010"
+VERSION.DATE <- "Released 09 Oct 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -1188,6 +1188,11 @@ fixTranslations <- function(w=theWidget("rattle_window"))
   # a corrupted string passing through to Rtxt again. generally they
   # are Stock Items.
 
+  # 101111 If the widget does not have a name, ignore it. This was
+  # needed for MS/Windows R 2.12.0 for some reason.
+  
+  if (! length(w$getName())) return()
+  
   if (w$getName() %in% c("execute_button", "new_button", "open_button",
                          "save_button", "stop_button", "quit_button",
                          "data_filechooserbutton",

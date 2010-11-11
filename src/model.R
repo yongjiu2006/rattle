@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-15 07:41:31 Graham Williams>
+# Time-stamp: <2010-10-12 22:06:42 Graham Williams>
 #
 # MODEL TAB
 #
@@ -989,9 +989,16 @@ exportRegressionModel <- function()
 
   # Generate appropriate code.
   
-  pmml.cmd <- sprintf("pmml(crs$glm%s)",
+  if (! is.null(crs$weights))
+    wt <- gsub("^\\(|\\)$", "",
+               gsub("crs\\$dataset\\$|\\[.*\\]", "",
+                    capture.output(print(crs$weights))))
+  
+  pmml.cmd <- sprintf("pmml(crs$glm%s%s)",
                       ifelse(length(crs$transforms) > 0,
-                             ", transforms=crs$transforms", ""))
+                             ", transforms=crs$transforms", ""),
+                      ifelse(is.null(crs$weights), "",
+                             paste(", weights=", wt, sep="")))
 
   if (ext == "xml")
   {
@@ -1156,20 +1163,37 @@ executeModelSVM <- function()
     parms <- sprintf('%s,\n      kpar=list("degree"=%s)', parms, degree)
   if (nchar(opts) > 0)
     parms <- sprintf('%s,\n      %s', parms, opts)
-  
-  # Build the model.
 
-  if (useKernlab)
-    svmCmd <- paste("crs$ksvm <- ksvm(", frml, ",\n      data=crs$dataset", sep="")
-  else
-    svmCmd <- paste("crs$svm <- svm(", frml, ",\n      data=crs$dataset", sep="")
-  svmCmd <- paste(svmCmd,
+  # Dataset
+
+  dataset <- paste("crs$dataset",
                    if (subsetting) "[",
                    if (sampling) "crs$train",
                    if (subsetting) ",",
                    if (including) included,
                    if (subsetting) "]",
-                   parms, sep="")
+                   sep="")
+
+  # Replicate rows according to the integer weights variable.
+  
+  if(! is.null(crs$weights))
+    dataset <- paste(dataset,
+                     "[rep(row.names(",
+                     dataset,
+                     "),\n                                        ",
+                     # Use eval since crs$weights could be a formula
+                     'as.integer(eval(parse(text = "', crs$weights,
+                     '"))[crs$sample])),]',
+                     sep="")
+  
+  
+  # Build the model.
+
+  if (useKernlab)
+    svmCmd <- paste("crs$ksvm <- ksvm(", frml, ",\n      data=", dataset, sep="")
+  else
+    svmCmd <- paste("crs$svm <- svm(", frml, ",\n      data=", dataset, sep="")
+  svmCmd <- paste(svmCmd, parms, sep="")
 
   # We need to add an option to ensure the probabilities are also
   # recorded.
@@ -1287,8 +1311,16 @@ exportSVMModel <- function()
   }
 
 #  if (get.extension(save.name) == "") save.name <- sprintf("%s.xml", save.name)
-    
-  pmml.cmd <- 'pmml(crs$ksvm, dataset=crs$dataset)'
+
+  if (! is.null(crs$weights))
+    wt <- gsub("^\\(|\\)$", "",
+               gsub("crs\\$dataset\\$|\\[.*\\]", "",
+                    capture.output(print(crs$weights))))
+  
+  pmml.cmd <- paste('pmml(crs$ksvm, dataset=crs$dataset',
+                    if (! is.null(crs$weights))
+                    paste(', weights=', wt, sep=""),
+                    ')', sep="")
   appendLog(Rtxt("Export a SVM model as PMML."),
             sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
   saveXML(eval(parse(text=pmml.cmd)), save.name)

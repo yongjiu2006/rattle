@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2010-08-06 05:48:09 Graham Williams>
+# Time-stamp: <2010-10-12 21:36:38 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -70,7 +70,7 @@ pmml.ksvm.Header <- function(description, copyright, app.name)
 ###################################################################
 # Function pmml.ksvm.DataDictionary
 
-pmml.ksvm.DataDictionary <- function(field, dataset)
+pmml.ksvm.DataDictionary <- function(field, dataset, weights=NULL)
 {
   # field$name is a vector of strings, and includes target
   # field$class is indexed by fields$names
@@ -82,6 +82,11 @@ pmml.ksvm.DataDictionary <- function(field, dataset)
   # DataDictionary
   data.dictionary <- xmlNode("DataDictionary",
                              attrs=c(numberOfFields=number.of.fields))
+  if (! is.null(weights))
+    data.dictionary <-append.XMLNode(data.dictionary, xmlNode("Extension",
+                                                              attrs=c(name="Weights",
+                                                                value=weights,
+                                                                extender=crv$appname)))
   data.fields <- list()
   for (i in 1:number.of.fields)
   {
@@ -127,6 +132,7 @@ pmml.ksvm.DataDictionary <- function(field, dataset)
       data.dictionary <- getInputDataField(data.dictionary,field,dataset,i,optype,datype)
     }
   }
+
   return(data.dictionary)
 }
 
@@ -164,6 +170,7 @@ pmml.ksvm <- function(model,
                       copyright=NULL,
                       transforms=NULL,
                       dataset=NULL,
+                      weights=NULL,
                       ...)
 {
   if (! inherits(model, "ksvm"))
@@ -185,7 +192,7 @@ pmml.ksvm <- function(model,
   number.of.labels <- length(terms$term.labels)
   number.of.fields <- length(field$name)
   number.of.SV <- model@nSV
-  
+
   #####################################################################
   # Regression Vs. Classification
   #
@@ -248,7 +255,7 @@ pmml.ksvm <- function(model,
 
   # PMML -> DataDictionary
   
-  pmml <- append.XMLNode(pmml, pmml.ksvm.DataDictionary(field, dataset))
+  pmml <- append.XMLNode(pmml, pmml.ksvm.DataDictionary(field, dataset, weights=weights))
   
   # PMML -> SupportVectorMachineModel
   

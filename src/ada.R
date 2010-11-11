@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-06-14 16:44:34 Graham Williams>
+# Time-stamp: <2010-10-11 22:17:29 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -119,6 +119,18 @@ buildModelAda <- function(formula,
   if (gui) appendLog(Rtxt("The `ada' package implements the boost algorithm."), lib.cmd)
   eval(parse(text=lib.cmd))
 
+  # Replicate rows according to the integer weights variable.
+  
+  if(! is.null(crs$weights))
+    dataset <- paste(dataset,
+                     "[rep(row.names(",
+                     dataset,
+                     "),\n                                    ",
+                     # Use eval since crs$weights could be a formula
+                     'as.integer(eval(parse(text = "', crs$weights,
+                     '"))[crs$sample])),]',
+                     sep="")
+  
   # Construct the appropriate rpart control.
   
   control <- sprintf(paste(",\n      control=rpart.control(maxdepth=%d,",

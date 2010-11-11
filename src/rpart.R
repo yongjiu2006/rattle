@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-08-31 06:55:25 Graham Williams>
+# Time-stamp: <2010-11-10 21:28:40 Graham Williams>
 #
 # RPART TAB
 #
@@ -533,8 +533,13 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
   {
     theWidget("rpart_plot_button")$show()
     theWidget("rpart_plot_button")$setSensitive(TRUE)
-    theWidget("rpart_rules_button")$show()
-    theWidget("rpart_rules_button")$setSensitive(TRUE)
+    if ("BinaryTree" %in% class(crs$rpart))
+      theWidget("rpart_rules_button")$hide()
+    else
+    {
+      theWidget("rpart_rules_button")$show()
+      theWidget("rpart_rules_button")$setSensitive(TRUE)
+    }
   }
   else
   {
@@ -1021,7 +1026,7 @@ exportRpartModel <- function()
               sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name,
                       attr(save.name, "includePMML"),
-                      attr(save.name, "includeMetaData"),
+                      "NULL", # Not really NULL, but convenient just for the log.
                       attr(save.name, "exportClass"),
                       save.name))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
