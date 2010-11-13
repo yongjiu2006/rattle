@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-10-04 08:54:57 Graham Williams>
+# Time-stamp: <2010-11-13 11:15:12 Graham Williams>
 #
 # DATA TAB
 #
@@ -3231,7 +3231,13 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
       # Check if it can be exported to PMML.
 
-      etype <- ifelse(pmmlCanExport(variables[i]), "", Rtxt(". No code export"))
+      if (packageIsAvailable("pmml", Rtxt("test if export to pmml is supported")))
+      {
+        require("pmml", quietly=TRUE)
+        etype <- ifelse(pmmlCanExport(variables[i]), "", Rtxt(". No code export"))
+      }
+      else
+        etype <- ""
 
       # Generate correct Rattle terminology for the variable
       # class. 090731 We denote an integer as Numeric, to be

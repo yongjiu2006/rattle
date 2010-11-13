@@ -10,10 +10,14 @@
 
 }
 \usage{
-rattle(csvname=NULL)
+rattle(csvname=NULL, useGtkBuilder=NULL)
 }
 \arguments{
   \item{csvname}{the name of a CSV file to load into Rattle on startup.}
+
+  \item{useGtkBuilder}{if NULL then automatically determine whether to
+    use the new GtkBuilder rather than the deprecated libglade. A user
+    can override the choice wiht TRUE or FALSE.}
 }
 \details{
 

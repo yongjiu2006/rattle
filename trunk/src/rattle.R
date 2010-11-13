@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-11 05:49:25 Graham Williams>
+# Time-stamp: <2010-11-13 11:11:00 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -32,7 +32,7 @@ MINOR <- "5"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 REVISION <- as.integer(GENERATION)-480
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 09 Oct 2010"
+VERSION.DATE <- "Released 11 Nov 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
 
@@ -281,8 +281,12 @@ rattle.info <- function(all.dependencies=FALSE,
 }
 
 
-rattle <- function(csvname=NULL)
+rattle <- function(csvname=NULL, useGtkBuilder=NULL)
 {
+  # 101113 Add the useGtkBuilder argument so that a user can override
+  # the automatic determination of which one to use: libglade versus
+  # GtkBuilder. If NULL then automatically determine.
+  
   # 090517 Require pmml. Now that there is an indication on the Data
   # tab as to whether the varaiable (i.e., a transformed variable) can
   # be exported to PMML we need pmml to be loaded. Thus pmml is now a
@@ -325,7 +329,7 @@ rattle <- function(csvname=NULL)
 
   # crv$tooltiphack <<- tooltiphack # Record the value globally
 
-  # 090525 Move to having the Setting option work on Linux. This
+  # 090525 Move to having the Setting option work on Linux. Thus
   # remove all this tooltip stuff.
 
   # if (crv$tooltiphack) crv$load.tooltips <- TRUE
@@ -334,10 +338,42 @@ rattle <- function(csvname=NULL)
 
   # Load gloablly required packages if they are available.
 
-  if (! packageIsAvailable("RGtk2", Rtxt("display the Rattle GUI")))
+  if (packageIsAvailable("RGtk2", Rtxt("display the Rattle GUI")))
+    require("RGtk2", quietly=TRUE)
+  else
     stop(sprintf(Rtxt("The RGtk2 package is not available but is required",
                       "for the %s GUI."), crv$appname))
 
+  # 101113 Use GtkBUilder or LibGlade?
+  
+  # 101009 We need to handle the case of an old install of Gtk (e.g.,
+  # 2.12.9 on MS/Windows or GNU/Linux) where GtkBuilder does not
+  # recognise the 'requires' element. We construct a string for the
+  # xml and try to test this situation, and if the result from
+  # gtkBuilderAddFromString has $error$message of "Unhandled tag:
+  # 'requires'" then set crv$useGtkBuilder to FALSE.
+
+  if (is.null(useGtkBuilder))
+  {
+    op <- options(warn=-1)
+    g <- gtkBuilderNew()
+    res <- g$addFromString('<requires/>', 20)
+    options(op)
+
+    if (! res$retval && res$error$message[1] == "Unhandled tag: 'requires'")
+      crv$useGtkBuilder <- FALSE
+    else if (.Platform$OS.type=="windows" && version$major<="2" && version$minor<"12")
+      # 101009 Always use glade for old installs of R on MS/Windows
+      # rather than trying to figure out when it might work with
+      # GtkBuilder.
+      crv$useGtkBuilder <- FALSE
+    else
+      crv$useGtkBuilder <- TRUE
+  }
+  else
+    crv$useGtkBuilder <- useGtkBuilder
+  
+  
   if (packageIsAvailable("colorspace", Rtxt("choose appropriate colors for plots")))
   {
     # 080921 Load here to keep the loading quiet!

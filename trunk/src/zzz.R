@@ -83,28 +83,6 @@
   #
   # http://cran.r-project.org/bin/windows/base/rtest.html
 
-  # 101009 We need to handle the case of an old install of Gtk (e.g.,
-  # 2.12.9 on MS/Windows or GNU/Linux) where GtkBuilder does not
-  # recognise the 'requires' element. We construct a string for the
-  # xml and try to test this situation, and if the result from
-  # gtkBuilderAddFromString has $error$message of "Unhandled tag:
-  # 'requires'" then set crv$useGtkBuilder to FALSE.
-
-  op <- options(warn=-1)
-  g <- gtkBuilderNew()
-  res <- g$addFromString('<requires/>', 20)
-  options(op)
-
-  if (! res$retval && res$error$message[1] == "Unhandled tag: 'requires'")
-    crv$useGtkBuilder <- FALSE
-  else if (.Platform$OS.type=="windows" && version$major<="2" && version$minor<"12")
-    # 101009 Always use glade for old installs of R on MS/Windows
-    # rather than trying to figure out when it might work with
-    # GtkBuilder.
-    crv$useGtkBuilder <- FALSE
-  else
-    crv$useGtkBuilder <- TRUE
-  
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"
   crv$log.intro <- paste("#", sprintf(Rtxt("%s is Copyright (c) 2006-2010 %s."),
