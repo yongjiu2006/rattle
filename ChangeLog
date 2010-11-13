@@ -1,3 +1,15 @@
+rattle (2.5.47) unstable; urgency=low
+
+  * Add a useGtkBuilder argument to rattle(). If NULL, then heuristically
+    determine, otherwise go with the specified choice, if possible.
+  
+  * Remove RGtk2, colorspace, and pmml as dependencies. Now dynamically
+    check and offer to install. This also helps reduce chance of the
+    XML/RGtk2 zlib1.dll bug, and also ensure RGtk2 loads before XML to
+    avoid that bug.
+
+ --
+
 rattle (2.5.46) unstable; urgency=low
 
   * Bug fix for fixTranslations.
