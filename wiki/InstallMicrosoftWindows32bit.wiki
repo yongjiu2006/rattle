@@ -1,4 +1,4 @@
-#summary Install rattle on Microsoft Windows 32bit.
+#summary Install Rattle on Microsoft Windows 32bit.
 
 This is known to work on Microsoft Windows 32bit versions XP, Vista and 7.
 
