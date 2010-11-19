@@ -1,4 +1,6 @@
-#summary Install rattle on Microsoft Windows.
+#summary Install rattle on Microsoft Windows 32bit.
+
+This is known to work on Microsoft Windows 32bit versions XP, Vista and 7.
 
 = Steps =
 
@@ -27,3 +29,13 @@ http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
 
 Alternative Option: You may like to install Tinn-R - a more traditional GUI based IDE for R (3.94MB) from: 
 http://sourceforge.net/projects/tinn-r
+
+= Issues =
+
+== zlib1.dll ==
+
+The new version of the RGtk2 package uses a call to a new procedure in the zlib1.dll library. The version of this library that is supplied by the XML package from R.
+
+== Entry point not found ==
+
+TBA
