@@ -1,0 +1,11 @@
+#summary Install rattle on Microsoft Windows.
+
+= Steps =
+
+  # Download and install GTK+ (2.22.0 is 7.8MB) from 
+  [http://downloads.sourceforge.net/gtk-win/gtk2-runtime-2.22.0-2010-10-21-ash.exe Sourceforge]. The Graphical User Interface (GUI) is implemented using Gtk. Gtk is a separate package to R.
+  # Download and install R (2.12.0 is 37MB) from: 
+
+  [http://cran.r-project.org/bin/windows/base/R-2.12.0-win.exe]
+
+  Choosing all the defaults on the install works just fine.
