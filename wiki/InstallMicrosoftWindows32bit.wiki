@@ -21,14 +21,11 @@ The following can also be installed as you see fit.
 > install.packages("rattle", dep=c("Suggests"))
 </pre>
 
-  * Download and install GGobi (2.1.8 is 807KB) from: 
-http://www.ggobi.org/downloads/ggobi-2.1.8.exe
+  * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ggobi-2.1.8.exe
 
-Optional: You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (39.9MB) from: 
-http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
+  * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (39.9MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
 
-Alternative Option: You may like to install Tinn-R - a more traditional GUI based IDE for R (3.94MB) from: 
-http://sourceforge.net/projects/tinn-r
+  * Alternatively, you may like to install Tinn-R - a more traditional GUI based IDE for R (3.94MB) from http://sourceforge.net/projects/tinn-r
 
 = Issues =
 
