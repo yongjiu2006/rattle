@@ -15,6 +15,7 @@ As with any dataset, our knowledge grew in the metadata of the topic. We started
 
 At this stage in the chapter, I would like invite you to take a few minutes to think on these questions.
 
+# numbered list
 1.	How does the weather effect you?
 2.	What type of activities are effected by the weather?
 3.	What is the commercial impact of the weather?
