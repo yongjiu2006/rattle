@@ -1,4 +1,4 @@
-#Summary - About using weather data for a dataset .
+#summary - About using weather data for a dataset .
 
 = Introduction =
 
@@ -15,10 +15,10 @@ As with any dataset, our knowledge grew in the metadata of the topic. We started
 
 At this stage in the chapter, I would like invite you to take a few minutes to think on these questions.
 
-# numbered list 1.	How does the weather effect you?
-# numbered list 2.	What type of activities are effected by the weather?
-# numbered list 3.	What is the commercial impact of the weather?
-# numbered list 4.	How dependant are we on the weather?
-# numbered list 5.	How at risk are we from the weather?
+  * 1.	How does the weather effect you?
+  * 2.	What type of activities are effected by the weather?
+  * 3.	What is the commercial impact of the weather?
+  * 4.	How dependant are we on the weather?
+  * 5.	How at risk are we from the weather?
 
 I am now assuming that after some focus time, you have discovered that the weather has a greater impact than you first may have realized. What we have discovered, is that the weather seems to have an impact on almost every type of human activity, and some mechanical activity too. A sudden or unexpected change in weather conditions can have a big effect. The following two tables list some of the areas that are affected by weather.
