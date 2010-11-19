@@ -36,3 +36,14 @@ The new version of the RGtk2 package uses a call to a new procedure in the zlib1
 == Entry point not found ==
 
 TBA
+
+== Entry point not located: cairo_clip_extents ==
+
+Fionn Hope reported 20 November 2010 the following error:
+
+<pre>
+The procedure entry point cairo_clip_extents could not be located in 
+the dynamic link library libcairo-2.dll
+</pre>
+
+Once the GGobi package was removed the error went away. Seems like GGobi had installed an older version of the libcairo-2.dll library and this appeared earlier in the PATH than the newer one required by the new RGtk2.
