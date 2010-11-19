@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#The weather data set.
 
 = About the weather data set =
 
