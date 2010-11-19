@@ -9,4 +9,4 @@ Visit the current [[http://datamining.togaware.com/survivor/Installing_Rattle.ht
 
 = Specific Installation Guides =
 
-* Install on Microsoft Windows 32bit
+* InstallMicrosoftWindows32bit
