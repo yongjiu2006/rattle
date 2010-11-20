@@ -14,7 +14,8 @@ So lest start off by examining the weather dataset.
   * *ncol(weatherAUS)* _displays the number of columns (variables)_
   * *head(weatherAUS)* _First six records of the dataset._
   * *tail(weatherAUS)* _the last six rows of the dataset._
-  * *sample(weatherAUS)* -A snapshot of some of the data. The results are two big to print here._
+  * *sample(weatherAUS)* _A snapshot of some of the data._
+
 
 = The Exercise =
 
