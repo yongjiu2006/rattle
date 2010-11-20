@@ -4,7 +4,7 @@
 
 There are two weather datasets that come with Rattle. Both use the same format, variables and data characteristics. The main difference is that the dataset called *weather* uses only one location "Canberra". The other dataset called weatherAUS, are weather statistics near 50 different location in Australia.
 
-All the weather data is sourced with permission from the Australian Bureau of Statistics. 
+All the weather data is sourced with permission from the Australian Bureau of Meterology. 
 
 = Details =
 
