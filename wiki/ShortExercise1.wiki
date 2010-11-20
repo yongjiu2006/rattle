@@ -14,7 +14,7 @@ So lest start off by examining the weather dataset.
   * *ncol(weatherAUS)* _displays the number of columns (variables)_
   * *head(weatherAUS)* _First six records of the dataset._
   * *tail(weatherAUS)* _the last six rows of the dataset._
-  * */sample(weatherAUS)* -A snapshot of some of the data. The results are two big to print here._
+  * *sample(weatherAUS)* -A snapshot of some of the data. The results are two big to print here._
 
 = The Exercise =
 
@@ -134,4 +134,4 @@ WindGustSpeed WindDir9amWindDir3pmWindSpeed9am WindSpeed3pmHumidity9am
 724       4.8      0.0    BadgerysCreek 2009-04-27          SW
 725       4.8      0.0    BadgerysCreek 2009-04-28           W
 726       4.6      0.0    BadgerysCreek 2009-04-29         ESE
-}}}
+}}
