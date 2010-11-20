@@ -134,4 +134,4 @@ WindGustSpeed WindDir9amWindDir3pmWindSpeed9am WindSpeed3pmHumidity9am
 724       4.8      0.0    BadgerysCreek 2009-04-27          SW
 725       4.8      0.0    BadgerysCreek 2009-04-28           W
 726       4.6      0.0    BadgerysCreek 2009-04-29         ESE
-}}
+}}}
