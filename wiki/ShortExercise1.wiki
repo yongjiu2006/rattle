@@ -22,12 +22,14 @@ This first thing we want to do is to get a feel for our data. So we want to look
 
 *names(weatherAUS)* _Shows the variables Names_
 
-||  [1] "Date"          "Location"     "MinTemp"       "MaxTemp"  ||      
-||  [5] "Rainfall"      "Evaporation"  "Sunshine"      "WindGustDir"  || 
-||  [9] "WindGustSpeed" "WindDir9am"    "WindDir3pm"   "WindSpeed9am" || 
-||  [13] "WindSpeed3pm" "Humidity9am"  "Humidity3pm"   "Pressure9am"  || 
-||  [17] "Pressure3pm"  "Cloud9am"     "Cloud3pm"      "Temp9am"      || 
-||  [21] "Temp3pm"      "RainToday"    "RISK_MM"       "RainTomorrow"|| 
+{{{
+[1] "Date"          "Location"     "MinTemp"       "MaxTemp"       
+ [5] "Rainfall"      "Evaporation"  "Sunshine"      "WindGustDir"  
+ [9] "WindGustSpeed" "WindDir9am"    "WindDir3pm"   "WindSpeed9am" 
+ [13] "WindSpeed3pm" "Humidity9am"  "Humidity3pm"   "Pressure9am"  
+ [17] "Pressure3pm"  "Cloud9am"     "Cloud3pm"      "Temp9am"      
+ [21] "Temp3pm"      "RainToday"    "RISK_MM"       "RainTomorrow"
+}}}
 
 We also want to look at the number of variables and the number of observations.
 
@@ -43,40 +45,43 @@ Now we want to look at a dataset to gain some knowledge about the data. So we ne
 
 *head(weatherAUS)* _First six records of the dataset._
 
-||  ||      Date ||Location|| MinTemp|| MaxTemp|| Rainfall|| Evaporation|| Sunshine || WindGustDir||
-||1|| 2008-12-01 ||  Albury  ||  13.4  ||  22.9  ||    0.6    ||      NA   ||    NA  ||         W||
-||2 ||2008-12-02 ||  Albury  ||   7.4  ||  25.1   ||   0.0    ||      NA   ||    NA  ||       WNW||
-||3|| 2008-12-03 ||  Albury  ||  12.9  ||  25.7   ||   0.0   ||       NA    ||   NA  ||       WSW||
-||4 ||2008-12-04 ||  Albury  ||   9.2 ||   28.0   ||   0.0    ||      NA   ||    NA  ||        NE||
-||5 ||2008-12-05 ||  Albury  ||  17.5  ||  32.3  ||    1.0   ||       NA   ||    NA  ||         W||
-||6|| 2008-12-06 ||  Albury  ||  14.6 ||   29.7  ||    0.2   ||       NA    ||   NA   ||      WNW||
+{{{
+       Date LocationMinTempMaxTempRainfallEvaporationSunshine WindGustDir
+1 2008-12-01  Albury   13.4   22.9     0.6         NA      NA          W
+2 2008-12-02  Albury    7.4   25.1     0.0         NA      NA        WNW
+3 2008-12-03  Albury   12.9   25.7     0.0         NA      NA        WSW
+4 2008-12-04  Albury    9.2   28.0     0.0         NA      NA         NE
+5 2008-12-05  Albury   17.5   32.3     1.0         NA      NA          W
+6 2008-12-06  Albury   14.6   29.7     0.2         NA      NA        WNW
 
-|| ||WindGustSpeed ||WindDir9am|| WindDir3pm|| WindSpeed9am ||WindSpeed3pm|| Humidity9am||
-||1||            44   ||       W    ||    WNW    ||       20   ||        24   ||       71||
-||2 ||           44  ||      NNW   ||     WSW    ||        4  ||         22   ||       44||
-||3 ||           46 ||         W    ||    WSW    ||       19  ||         26   ||       38||
-||4 ||           24  ||       SE   ||       E   ||        11  ||          9   ||       45||
-||5 ||           41  ||      ENE   ||      NW   ||         7  ||        20    ||      82||
-||6 ||           56  ||        W   ||       W   ||        19  ||         24  ||        55||
+WindGustSpeed WindDir9amWindDir3pmWindSpeed9am WindSpeed3pmHumidity9am
+1           44         W       WNW          20          24         71
+2           44       NNW       WSW           4          22         44
+3           46         W       WSW          19          26         38
+4           24        SE         E          11           9         45
+5           41       ENE        NW           7         20         82
+6           56         W         W          19          24         55
 
-|| ||  Humidity3pm Pressure9am Pressure3pm Cloud9am Cloud3pm Temp9am Temp3pm||
-||1   ||       22      1007.7      1007.1        8       NA    16.9    21.8||
-||2   ||       25      1010.6      1007.8       NA       NA    17.2    24.3||
-||3   ||       30      1007.6      1008.7       NA        2    21.0    23.2||
-||4  ||        16      1017.6      1012.8       NA       NA    18.1    26.5||
-||5  ||        33      1010.8      1006.0        7        8    17.8    29.7||
-||6  ||        23      1009.2      1005.4       NA       NA    20.6    28.9||
+ Humidity3pm Pressure9am Pressure3pm Cloud9am Cloud3pm Temp9am Temp3pm
+1         22      1007.7      1007.1        8       NA    16.9    21.8
+2         25      1010.6      1007.8       NA       NA    17.2    24.3
+3         30      1007.6      1008.7       NA        2    21.0    23.2
+4         16      1017.6      1012.8       NA       NA    18.1    26.5
+5         33      1010.8      1006.0        7        8    17.8    29.7
+6         23      1009.2      1005.4       NA       NA    20.6    28.9
 
-||  ||  RainToday RISK_MM RainTomorrow||
-||1   ||     No     0.0           No||
-||2 ||       No     0.0           No||
-||3 ||       No     0.0           No||
-||4 ||       No     1.0           No||
-||5  ||      No     0.2           No||
-||6 ||       No     0.0           No||
+  RainToday RISK_MM RainTomorrow
+1       No     0.0           No
+2       No     0.0           No
+3       No     0.0           No
+4       No     1.0           No
+5       No     0.2           No
+6       No     0.0           No
+}}}
 
 *tail(weatherAUS)* _the last six rows of the dataset._
 
+{{{
             Date Location MinTemp MaxTemp Rainfall Evaporation Sunshine
 28813 2010-07-25   Darwin    25.8    34.2        0         9.4      9.7
 28814 2010-07-26   Darwin    26.6    34.7        0        10.4      8.7
@@ -105,9 +110,11 @@ Now we want to look at a dataset to gain some knowledge about the data. So we ne
 28816    33.5        No       0           No
 28817    32.1        No       0           No
 28818    31.5        No       0           No
+}}}
 
 *sample(weatherAUS)* -A snapshot of some of the data. The results are two big to print here._
 
+{{{
 718      13.2      2.4    BadgerysCreek 2009-04-21           S
 719      13.7      8.4    BadgerysCreek 2009-04-22          SE
 720      13.6      1.6    BadgerysCreek 2009-04-23          NE
@@ -117,3 +124,4 @@ Now we want to look at a dataset to gain some knowledge about the data. So we ne
 724       4.8      0.0    BadgerysCreek 2009-04-27          SW
 725       4.8      0.0    BadgerysCreek 2009-04-28           W
 726       4.6      0.0    BadgerysCreek 2009-04-29         ESE
+}}}
