@@ -1,4 +1,4 @@
-#summary The 1st short exercise for Rattle.
+#summary The 1st short exercise for Rattle, getting to know the data.
 
 = The Problem =
 
