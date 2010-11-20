@@ -1,0 +1,22 @@
+#summary The 2nd short exercise for Rattle, loading data and making a graph in Rattle.
+
+= The Problem =
+
+We want to look at some of the data and get to know it, using rattle.
+
+So lest start off by examining the weather dataset. 
+
+= The Code =
+  * *library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
+  * *weatherAUS* _Loads in the weatherAUS dataset_
+ 
+
+= The Exercise =
+
+_Lets Start R_
+
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
