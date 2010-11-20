@@ -24,11 +24,11 @@ This first thing we want to do is to get a feel for our data. So we want to look
 
 {{{
 [1] "Date"          "Location"     "MinTemp"       "MaxTemp"       
- [5] "Rainfall"      "Evaporation"  "Sunshine"      "WindGustDir"  
- [9] "WindGustSpeed" "WindDir9am"    "WindDir3pm"   "WindSpeed9am" 
- [13] "WindSpeed3pm" "Humidity9am"  "Humidity3pm"   "Pressure9am"  
- [17] "Pressure3pm"  "Cloud9am"     "Cloud3pm"      "Temp9am"      
- [21] "Temp3pm"      "RainToday"    "RISK_MM"       "RainTomorrow"
+[5] "Rainfall"      "Evaporation"  "Sunshine"      "WindGustDir"  
+[9] "WindGustSpeed" "WindDir9am"    "WindDir3pm"   "WindSpeed9am" 
+[13] "WindSpeed3pm" "Humidity9am"  "Humidity3pm"   "Pressure9am"  
+[17] "Pressure3pm"  "Cloud9am"     "Cloud3pm"      "Temp9am"      
+[21] "Temp3pm"      "RainToday"    "RISK_MM"       "RainTomorrow"
 }}}
 
 We also want to look at the number of variables and the number of observations.
@@ -47,19 +47,19 @@ Now we want to look at a dataset to gain some knowledge about the data. So we ne
 
 {{{
        Date LocationMinTempMaxTempRainfallEvaporationSunshine WindGustDir
-1 2008-12-01  Albury   13.4   22.9     0.6         NA      NA          W
-2 2008-12-02  Albury    7.4   25.1     0.0         NA      NA        WNW
-3 2008-12-03  Albury   12.9   25.7     0.0         NA      NA        WSW
-4 2008-12-04  Albury    9.2   28.0     0.0         NA      NA         NE
-5 2008-12-05  Albury   17.5   32.3     1.0         NA      NA          W
-6 2008-12-06  Albury   14.6   29.7     0.2         NA      NA        WNW
+1  2008-12-01  Albury   13.4   22.9     0.6         NA      NA          W
+2  2008-12-02  Albury    7.4   25.1     0.0         NA      NA        WNW
+3  2008-12-03  Albury   12.9   25.7     0.0         NA      NA        WSW
+4  2008-12-04  Albury    9.2   28.0     0.0         NA      NA         NE
+5  2008-12-05  Albury   17.5   32.3     1.0         NA      NA          W
+6  2008-12-06  Albury   14.6   29.7     0.2         NA      NA        WNW
 
 WindGustSpeed WindDir9amWindDir3pmWindSpeed9am WindSpeed3pmHumidity9am
 1           44         W       WNW          20          24         71
 2           44       NNW       WSW           4          22         44
 3           46         W       WSW          19          26         38
 4           24        SE         E          11           9         45
-5           41       ENE        NW           7         20         82
+5           41       ENE        NW           7          20         82
 6           56         W         W          19          24         55
 
  Humidity3pm Pressure9am Pressure3pm Cloud9am Cloud3pm Temp9am Temp3pm
