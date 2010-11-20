@@ -1,0 +1,46 @@
+#summary The 1st short exercise for Rattle.
+
+= The Problem =
+
+Later on in the exercises we shall be exploring how Weather patterns can be examined from the past to help us look at what might happen in the future, for a specific time and location.
+
+So lest start off by examining the weather dataset. 
+
+= The Code =
+
+_Lets Start R_
+
+*Library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
+
+The dataset we need to solve this problem is one associated dataset with Rattle, called weatherAUS.
+
+_Lets load in the dataset_
+
+*weatherAUS*
+
+This first thing we want to do is to get a feel for our data. So we want to look at the names of the variables, 
+
+*names(weatherAUS)* _Shows the variables Names_
+
+[1] "Date"          "Location"      "MinTemp"       "MaxTemp"      
+[5] "Rainfall"      "Evaporation"   "Sunshine"      "WindGustDir"  
+[9] "WindGustSpeed" "WindDir9am"    "WindDir3pm"    "WindSpeed9am" 
+[13] "WindSpeed3pm"  "Humidity9am"   "Humidity3pm"   "Pressure9am"  
+[17] "Pressure3pm"   "Cloud9am"      "Cloud3pm"      "Temp9am"      
+[21] "Temp3pm"       "RainToday"     "RISK_MM"       "RainTomorrow"
+
+We also want to look at the number of variables and the number of observations.
+
+
+
+
+
+
+
+
+
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
