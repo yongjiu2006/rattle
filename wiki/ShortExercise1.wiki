@@ -7,6 +7,16 @@ Later on in the exercises we shall be exploring how Weather patterns can be exam
 So lest start off by examining the weather dataset. 
 
 = The Code =
+*Library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
+*weatherAUS* _Loads in the weatherAUS dataset_
+*names(weatherAUS)* _Shows the variables Names_
+*nrow(weatherAUS)* _displays the number of rows (observations on the longest variable)_
+*ncol(weatherAUS)* _displays the number of columns (variables)_
+*head(weatherAUS)* _First six records of the dataset._
+*tail(weatherAUS)* _the last six rows of the dataset._
+*sample(weatherAUS)* -A snapshot of some of the data. The results are two big to print here._
+
+= The Exercise =
 
 _Lets Start R_
 
@@ -16,7 +26,7 @@ The dataset we need to solve this problem is one associated dataset with Rattle,
 
 _Lets load in the dataset_
 
-*weatherAUS*
+*weatherAUS* _Loads in the weatherAUS dataset_
 
 This first thing we want to do is to get a feel for our data. So we want to look at the names of the variables, 
 
