@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Welcome to the Rattle Wiki. Rattle was created by Dr Graham Williams, to be used as a teaching tool for data mining, as well as a Gui for the programming language R. Rattle is designed to be used with both R code as well as point and click. Rattle also has a feature to log what has happened in Rattle, so you can easily learn the code through example.
+Welcome to the Rattle Wiki. Rattle was created by Dr Graham Williams, to be used as a teaching tool for data mining, as well as a GUI for data mining and interacting with the programming language R. Rattle is designed to be used with both R code as well as point and click. Rattle also has a feature to log what has happened in Rattle, so you can easily learn the code through example.
 
 = Details =
 
