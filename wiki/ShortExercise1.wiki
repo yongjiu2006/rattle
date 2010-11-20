@@ -7,7 +7,7 @@ Later on in the exercises we shall be exploring how Weather patterns can be exam
 So lest start off by examining the weather dataset. 
 
 = The Code =
-  * *Library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
+  * *library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
   * *weatherAUS* _Loads in the weatherAUS dataset_
   * *names(weatherAUS)* _Shows the variables Names_
   * *nrow(weatherAUS)* _displays the number of rows (observations on the longest variable)_
@@ -20,7 +20,7 @@ So lest start off by examining the weather dataset.
 
 _Lets Start R_
 
-*Library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
+*library(rattle)*  _Loads the Rattle package and the associated datasets into the memory._ 
 
 The dataset we need to solve this problem is one associated dataset with Rattle, called weatherAUS.
 
