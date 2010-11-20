@@ -34,13 +34,13 @@ This first thing we want to do is to get a feel for our data. So we want to look
 We also want to look at the number of variables and the number of observations.
 
 *nrow(weatherAUS)* _displays the number of rows (observations on the longest variable)_
-
+{{{
 [1] 28818
-
+}}}
 *ncol(weatherAUS)* _displays the number of columns (variables)_
-
+{{{
 [1] 24
-
+}}}
 Now we want to look at a dataset to gain some knowledge about the data. So we need to look at the Head , Tail, and Sample..
 
 *head(weatherAUS)* _First six records of the dataset._
