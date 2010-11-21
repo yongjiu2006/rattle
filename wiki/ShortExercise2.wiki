@@ -15,9 +15,10 @@ So lest start off by examining the weather dataset.
 
 _Lets Start R_
 
-http://www.g3n1u5.com/assets/images/db_images/db_RattleStartUp1.jpg
+*library(rattle)*
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+*rattle()*
+
+now you should see this screen.
+
+http://www.g3n1u5.com/assets/images/db_images/db_RattleStartUp1.jpg
