@@ -17,7 +17,6 @@ _Lets Start R_
 
 http://www.g3n1u5.com/assets/images/db_images/db_RattleStartUp1.jpg
 
-
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
