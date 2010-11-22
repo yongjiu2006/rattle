@@ -33,5 +33,3 @@ All the weather data is sourced with permission from the Australian Bureau of Me
 ||RainToday||	Did it rain the day of the observation	||Yes/No||
 ||RISK_MM||	Precipitation (rainfall) in the 24 hours to 9am.||	millimeters||
 ||RainTomorrow	||Did it rain the next day of the observation	||Yes/No||
-
-http://rattle.googlecode.com/files/RattleWeatherExploreChart1.png
