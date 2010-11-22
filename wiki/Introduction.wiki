@@ -9,3 +9,7 @@ Welcome to the Rattle Wiki. Rattle was created by Dr Graham Williams, to be used
 The original Rattle Walk Throughs were developed by Tony Nolan, with the support and guidance from Graham.   
   
 The Walk Throughs tell a simple story, which describes a problem, uses a provided dataset, and shows a worked example of an exercise to solve the problem. There are a series of short and longish examples. These cover the many different facilities of Rattle, and of data mining and analytics in general.
+
+= Rattle Startup =
+
+[http://rattle.googlecode.com/svn/trunk/files/RattleStartup.png]
