@@ -12,4 +12,9 @@ The Walk Throughs tell a simple story, which describes a problem, uses a provide
 
 = Rattle Startup =
 
+{{{
+> library(rattle)
+> rattle()
+}}}
+
 [http://rattle.googlecode.com/files/RattleStartup.png]
