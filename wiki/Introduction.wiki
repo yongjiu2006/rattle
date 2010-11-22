@@ -17,4 +17,4 @@ The Walk Throughs tell a simple story, which describes a problem, uses a provide
 > rattle()
 }}}
 
-<img src="http://rattle.googlecode.com/files/RattleStartup.png" width=70/>
+<img src="http://rattle.googlecode.com/files/RattleStartup.png" width=500/>
