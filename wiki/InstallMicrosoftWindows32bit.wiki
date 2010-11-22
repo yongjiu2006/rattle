@@ -8,18 +8,25 @@ This is known to work on Microsoft Windows 32bit versions XP, Vista and 7.
 
   * Download and install R (2.12.0 is 37MB) from [http://cran.r-project.org/bin/windows/base/R-2.12.0-win.exe CRAN], the Comprehensive R Archive Network. Choosing all the defaults on the install works just fine.
 
-  * Install Rattle by opening the R Desktop icon and enter the `install.packages("rattle")` command at the R prompt. R asks us to nominate a CRAN mirror. Choose a nearby location.
+  * Install Rattle by opening the R Desktop icon and enter the following command at the R prompt. R asks us to nominate a CRAN mirror. Choose a nearby location.
+{{{
+> install.packages("rattle")
+}}}
 
-  * Start Rattle by opening the R Desktop icon and then enter the following two commands at the R prompt. First load the Rattle package with `library(rattle)` and then start up Rattle with `rattle()`.
+  * Start Rattle by opening the R Desktop icon and then enter the following two commands at the R prompt. First load the Rattle package into the library and the start up Rattle:
+{{{
+> library(rattle)
+> rattle()
+}}}
 
 = Options =
 
 The following can also be installed as you see fit.
 
   * We can install other packages Rattle uses. Rattle will notice these packages missing when we try to use some functionality dependent on the package. If so, then Rattle will offer to install them. However, we can install them all now if we might not always be connected to the Internet. We might need to restart R to be able to reinstall Rattle. 
-<pre>
+{{{
 > install.packages("rattle", dep=c("Suggests"))
-</pre>
+}}}
 
   * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ggobi-2.1.8.exe
 
@@ -41,9 +48,9 @@ TBA
 
 Fionn Hope reported 20 November 2010 the following error:
 
-<pre>
+{{{
 The procedure entry point cairo_clip_extents could not be located in 
 the dynamic link library libcairo-2.dll
-</pre>
+}}}
 
 Once the GGobi package was removed the error went away. Seems like GGobi had installed an older version of the libcairo-2.dll library and this appeared earlier in the PATH than the newer one required by the new RGtk2.
