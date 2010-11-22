@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-10-07 22:15:01 Graham Williams>
+# Time-stamp: <2010-11-20 16:49:08 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -1497,7 +1497,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   else if (action == "indicator")
   {
-    # 090606 record each of the newly added variables in the lsit of
+    # 090606 Record each of the newly added variables in the list of
     # transforms.
 
     sapply(levels(crs$dataset[,vars]), function(x) 
@@ -1575,11 +1575,14 @@ executeTransformRemapPerform <- function(vars=NULL,
   {
     # 090603 This needs work to support multiple variables at the one
     # time. 090724 Add the make.names to catch levels that have spaces
-    # in their names.
+    # in their names. 101120 By default all but the first are Input,
+    # and the first is Ignore.
 
-    input <- union(input, paste(remap.prefix, vars,
-                                make.names(levels(crs$dataset[[vars]])), sep="_"))
-    ignore <- union(ignore, vars)
+    new.vars <- paste(remap.prefix, vars,
+                      make.names(levels(crs$dataset[[vars]])), sep="_")
+    
+    input <- union(input, new.vars[-1])
+    ignore <- union(ignore, union(vars, new.vars[1]))
   }
   else if (action %in% c('quantiles', 'kmeans', "eqwidth", "asfactor", "asnumeric"))
   {

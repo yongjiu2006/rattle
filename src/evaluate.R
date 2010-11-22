@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-16 09:02:04 Graham Williams>
+# Time-stamp: <2010-11-16 06:37:48 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -195,6 +195,8 @@ configureEvaluateTab <- function()
       active.models <- c(active.models, m)
   }
 
+  active.models.exist <- length(active.models) > 0 
+
   # Automatically work out what needs to be sensistive, based on data
   # type of the target plus whether kmeans or hclust is active and
   # selected.
@@ -202,7 +204,7 @@ configureEvaluateTab <- function()
   TYPE <- c("confusion", "hand", "risk", "costcurve", "lift", "roc",
             "precision", "sensitivity", "pvo", "score")
 
-  if (length(active.models) == 0)
+  if (! active.models.exist)
     buttons <- NULL
   else if (is.null(crs$target))
     buttons <- c("score")
@@ -249,36 +251,43 @@ configureEvaluateTab <- function()
   if (length(buttons) > 0 && length(sensitive.active) == 0)
     theWidget(paste("evaluate", buttons[1], "radiobutton", sep="_"))$setActive(TRUE)
 
-  # Set the Data options of the Evaluate tab appropraitely.
+  # Set the Data options of the Evaluate tab appropraitely. 101116 But
+  # only do this if there are active models.
 
-  for (b in c("training", "csv", "rdataset"))
-    theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
-
-  # When we have partitioning enabled, select the appropriate default.
-
-  if (theWidget("data_sample_checkbutton")$getActive())
+  if (active.models.exist) 
   {
-    theWidget("evaluate_validation_radiobutton")$setSensitive(length(crs$validate))
-    # 100328 Until RStat catches up with Rattle's train/validate/test,
-    # we need to make the Testing option available for RStat when
-    # sampling is active.
-    theWidget("evaluate_testing_radiobutton")$setSensitive(length(crs$test) ||
-                                                           crv$appname == "RStat")
-    theWidget("evaluate_fulldata_radiobutton")$setSensitive(TRUE)
-    if (length(crs$validate))
-      theWidget("evaluate_validation_radiobutton")$setActive(TRUE)
+    for (b in c("training", "csv", "rdataset"))
+      theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
+
+    # When we have partitioning enabled, select the appropriate default.
+
+    if (theWidget("data_sample_checkbutton")$getActive())
+    {
+      theWidget("evaluate_validation_radiobutton")$setSensitive(length(crs$validate))
+      # 100328 Until RStat catches up with Rattle's train/validate/test,
+      # we need to make the Testing option available for RStat when
+      # sampling is active.
+      theWidget("evaluate_testing_radiobutton")$setSensitive(length(crs$test) ||
+                                                             crv$appname == "RStat")
+      theWidget("evaluate_fulldata_radiobutton")$setSensitive(TRUE)
+      if (length(crs$validate))
+        theWidget("evaluate_validation_radiobutton")$setActive(TRUE)
+      else
+        theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
+    }
     else
-      theWidget("evaluate_testing_radiobutton")$setActive(TRUE)
+    {
+      theWidget("evaluate_validation_radiobutton")$setSensitive(FALSE)
+      theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
+      theWidget("evaluate_fulldata_radiobutton")$setSensitive(FALSE)
+      theWidget("evaluate_training_radiobutton")$setActive(TRUE)
+    }
+
+    # 101116 This is set to FALSE here since it is only available when
+    # the Score option is chosen.
+    
+    theWidget("evaluate_enterdata_radiobutton")$setSensitive(FALSE)
   }
-  else
-  {
-    theWidget("evaluate_validation_radiobutton")$setSensitive(FALSE)
-    theWidget("evaluate_testing_radiobutton")$setSensitive(FALSE)
-    theWidget("evaluate_fulldata_radiobutton")$setSensitive(FALSE)
-    theWidget("evaluate_training_radiobutton")$setActive(TRUE)
-  }
-  
-  theWidget("evaluate_enterdata_radiobutton")$setSensitive(FALSE)
 
   #----------------------------------------------------------------------
 
@@ -357,7 +366,8 @@ resetEvaluateTab <- function()
     theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(FALSE)
   theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
 
-  DATA <- c("training", "validation", "testing", "csv", "rdataset")
+  DATA <- c("training", "validation", "testing", "csv", "rdataset", "fulldata",
+            "enterdata")
 
   for (b in DATA)
   {

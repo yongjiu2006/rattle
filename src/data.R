@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-13 11:15:12 Graham Williams>
+# Time-stamp: <2010-11-14 08:49:10 Graham Williams>
 #
 # DATA TAB
 #
@@ -878,6 +878,8 @@ executeDataCSV <- function(filename=NULL)
     hdr <- ", header=FALSE"
   
   nastring <- ', na.strings=c(".", "NA", "", "?")'
+
+  stripwhite <- ', strip.white=TRUE'
   
   # Generate commands to read the data. 091130 Add encoding to use the
   # configured encoding.
@@ -917,11 +919,13 @@ executeDataCSV <- function(filename=NULL)
     # Linux?
     
     if (isJapanese())
-      read.cmd <- sprintf('crs$dataset <- read.csv(file("%s", encoding="%s")%s%s%s%s)',
-                          filename, crv$csv.encoding, hdr, sep, dec, nastring)
+      read.cmd <- sprintf('crs$dataset <- read.csv(file("%s", encoding="%s")%s%s%s%s%s)',
+                          filename, crv$csv.encoding, hdr, sep, dec, nastring,
+                          stripwhite)
     else
-      read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s, encoding="%s")',
-                          filename, hdr, sep, dec, nastring, crv$csv.encoding)
+      read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s%s, encoding="%s")',
+                          filename, hdr, sep, dec, nastring, stripwhite,
+                          crv$csv.encoding)
   
   # Start logging and executing the R code.
 
@@ -1630,11 +1634,14 @@ executeDataLibrary <- function()
 
 viewData <- function()
 {
-  if (packageIsAvailable("RGtk2Extras")) # Rtxt("RGtk2 data frame editor")
+  startLog("View the data - note that edits are ignored.")
+  
+  if (packageIsAvailable("RGtk2Extras", Rtxt("view data in a spreadsheet")))
   {
     require(RGtk2Extras)
-    dfedit(crs$dataset, dataset.name=Rtxt("Warning: Changes will not be saved."),
+    dfedit(crs$dataset, dataset.name=Rtxt("Rattle Dataset"),
            size=c(800, 400), pretty_print=TRUE)
+    appendLog("Use dfedit from RGtk2Extras.", "dfedit(crs$dataset)")
   }
   else
   {

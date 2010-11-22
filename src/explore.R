@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-08 05:18:28 Graham Williams>
+# Time-stamp: <2010-11-14 16:00:59 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -3465,10 +3465,10 @@ executeExploreCorrelation <- function(dataset)
   if (nas)
   {
     print.cmd <- paste(print.cmd,
-                       "\ncat('\n", Rtxt("Count of missing values:"), "\n')\n",
+                       "\ncat('\\n", Rtxt("Count of missing values:"), "\n')\n",
                        sprintf("print(apply(is.na(%s[naids]),2,sum))",
                                dataset),
-                       "\ncat('\n", Rtxt("Percent missing values:"), "\n')\n",
+                       "\ncat('\\n", Rtxt("Percent missing values:"), "\n')\n",
                        sprintf(paste("print(100*apply(is.na(%s[naids]),",
                                      "2,sum)/nrow(%s))"),
                                dataset, dataset),

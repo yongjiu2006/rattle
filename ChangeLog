@@ -1,3 +1,27 @@
+rattle (2.6.0) unstable; urgency=low
+
+  * Keep track of project names and use as default name to save a project
+    to. Suggested by David Cochrane.
+  
+  * Add stip.white to the default for reading CSV files. Suggested by
+    Robert Muenchen.
+
+  * Bug fix on resetEvaluateTab - Data row was being rest to sensitive
+    because model was being toggled.
+  
+  * Disconnect Rattle versions from google code revision numbers since the
+    revision numbers change each change to the Wiki.
+  
+  * Indicator Variables will Ignore the first of the new indicator
+    variables.
+  
+  * Include the Target name in listing of a decision tree as a rule set.
+  
+  *
+  
+  
+ --
+
 rattle (2.5.47) unstable; urgency=low
 
   * Add a useGtkBuilder argument to rattle(). If NULL, then heuristically
@@ -8,7 +32,7 @@ rattle (2.5.47) unstable; urgency=low
     XML/RGtk2 zlib1.dll bug, and also ensure RGtk2 loads before XML to
     avoid that bug.
 
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 15 Nov 2010 21:50:15 +1100
 
 rattle (2.5.46) unstable; urgency=low
 

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-20 20:59:57 Graham Williams>
+# Time-stamp: <2010-11-15 21:45:26 Graham Williams>
 #
 # Project functionality.
 #
@@ -159,8 +159,13 @@ saveProject <- function()
 
   # 090707 Add the crs$projext extension by default to be consistent
   # throughout Rattle. It is also needed for OverwriteConfirmation.
-  
-  dialog$setCurrentName(paste(get.stem(crs$dataname), crv$projext, sep=""))
+
+  if (is.null(crs$projname))
+    default.name <- crs$dataname
+  else
+    default.name <- crs$projname
+    
+  dialog$setCurrentName(paste(get.stem(default.name), crv$projext, sep=""))
 
   if (! is.null(crs$pwd)) dialog$setCurrentFolder(crs$pwd)
 
@@ -187,6 +192,7 @@ saveProject <- function()
     save.name <- dialog$getFilename()
     save.ext <- get.extension(save.name)
     filter.name <- dialog$getFilter()$getName()
+    crs$projname <- save.name
     dialog$destroy()
   }
   else
@@ -388,6 +394,10 @@ loadProject <- function()
   # Record the cwd for projects.
   
   crs$pwd <- dirname(load.name)
+
+  # 101115 Record a project name if there is none.
+
+  if (is.null(crs$projname)) crs$projname <- load.name
   
   # Now update all appropriate textviews and associated data.
 
