@@ -14,7 +14,8 @@ SVNREVIS=$(svn info | egrep 'Revision:' |  cut -d" " -f 2)
 REVISION=$(svn info | egrep 'Revision:' |  cut -d" " -f 2 | awk '{print $1-480}')
 LATEST=rattle_${MAJOR}.${MINOR}.${REVISION}.tar.gz
 
-echo "Upload 'repository/${LATEST}' to MS/Windows Checker."
+echo "Upload 'repository/${LATEST}' to MS/Windows Checker"
+echo "at ${DEST}."
 
 ftp -n -i << _EOF_
 open ${DEST}

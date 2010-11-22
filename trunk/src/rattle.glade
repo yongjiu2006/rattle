@@ -611,7 +611,7 @@
                                     <child>
                                       <widget class="GtkMenuItem" id="help_trasnform_nolan">
                                         <property name="visible">True</property>
-                                        <property name="label" translatable="yes">_Nolan Groups</property>
+                                        <property name="label" translatable="yes">_By Group</property>
                                         <property name="use_underline">True</property>
                                         <signal name="activate" handler="on_help_transform_nolan_activate"/>
                                       </widget>
@@ -3647,7 +3647,7 @@ Spearman</property>
                             </child>
                             <child>
                               <widget class="GtkRadioButton" id="normalise_bygroup_radiobutton">
-                                <property name="label" translatable="yes">Nolan Groups</property>
+                                <property name="label" translatable="yes">By Group</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -4013,7 +4013,7 @@ Spearman</property>
                             <property name="spacing">5</property>
                             <child>
                               <widget class="GtkRadioButton" id="remap_indicator_radiobutton">
-                                <property name="label" translatable="yes">Indicator Variable</property>
+                                <property name="label" translatable="yes">Indicator Variables</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>

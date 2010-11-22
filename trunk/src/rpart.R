@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-10 21:28:40 Graham Williams>
+# Time-stamp: <2010-11-14 16:50:12 Graham Williams>
 #
 # RPART TAB
 #
@@ -123,7 +123,7 @@ on_rpart_rules_button_clicked <- function(button)
   rules.cmd <- "asRules(crs$rpart)"
   appendLog(Rtxt("List the rules from the tree using a Rattle support function."),
           rules.cmd)
-  addTextview(TV, paste(Rtxt("Tree as rules:"), "\n\n"), collectOutput(rules.cmd, TRUE),
+  addTextview(TV, paste(Rtxt("Tree as rules:"), "\n"), collectOutput(rules.cmd, TRUE),
               textviewSeparator())
          
   setStatusBar(paste(Rtxt("The corresponding rules have been listed."),
@@ -400,7 +400,7 @@ executeModelRPart <- function(action="build")
                        ")", sep="")
 
     print.cmd <- paste("rattle.print.rpart(crs$rpart)", "printcp(crs$rpart)",
-                       'cat("\n")', sep="\n")
+                       'cat("\\n")', sep="\n")
 
     # 090126 Add error matrix. 100321 Don't add the error matricies -
     # they are more a standard evaluation and belong in the Evaluate
@@ -422,7 +422,7 @@ executeModelRPart <- function(action="build")
   ##                        pds.string, ', type="class"),', 
   ##                        pds.string, '$', crs$target,
   ##                        ', dnn=c("Predicted", "Actual")))\n',
-  ##                        'cat("\n")\n',
+  ##                        'cat("\\n")\n',
   ##                        sep="")
   ##     print.cmd <- paste(print.cmd, "\n",
   ##                        'cat("\\n',
@@ -433,7 +433,7 @@ executeModelRPart <- function(action="build")
   ##                        pds.string, '$', crs$target,
   ##                        ', dnn=c("Predicted", "Actual"))/nrow(',
   ##                        pds.string, ")))\n",
-  ##                        'cat("\n")\n',
+  ##                        'cat("\\n")\n',
   ##                        sep="")
   ##   }
   }
@@ -611,6 +611,7 @@ asRules.rpart <- function(model, compact=FALSE, ...)
   # Get some information.
   #
   rtree <- length(attr(model, "ylevels")) == 0
+  target <- as.character(attr(model$terms, "variables")[2])
   frm <- model$frame
   names <- row.names(frm)
   ylevels <- attr(model, "ylevels")
@@ -653,11 +654,11 @@ asRules.rpart <- function(model, compact=FALSE, ...)
       {
         cat(sprintf(Rtxt(" Rule number: %s "), names[i]))
         if (rtree)
-          cat(sprintf("[yval=%s cover=%d (%.0f%%)]\n",
-                      yval, cover, pcover))
+          cat(sprintf("[%s=%s cover=%d (%.0f%%)]\n",
+                      target, yval, cover, pcover))
         else
-          cat(sprintf("[yval=%s cover=%d (%.0f%%) prob=%0.2f]\n",
-                      yval, cover, pcover, prob))
+          cat(sprintf("[%s=%s cover=%d (%.0f%%) prob=%0.2f]\n",
+                      target, yval, cover, pcover, prob))
         cat(sprintf("   %s\n", pth), sep="")
       }
     }

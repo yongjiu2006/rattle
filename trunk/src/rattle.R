@@ -1,8 +1,8 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-13 11:11:00 Graham Williams>
+# Time-stamp: <2010-11-20 09:38:11 Graham Williams>
 #
-# Copyright (c) 2009 Togaware Pty Ltd
+# Copyright (c) 2009-2011 Togaware Pty Ltd
 #
 # The Rattle package is made of the following R source files:
 #
@@ -28,13 +28,14 @@ Rtxt <- function(...)
 RtxtNT <- Rtxt
 
 MAJOR <- "2"
-MINOR <- "5"
+MINOR <- "6"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
-REVISION <- as.integer(GENERATION)-480
+REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
+REVISION <- 0
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 11 Nov 2010"
+VERSION.DATE <- "Released 13 Nov 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
-COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2009 Togaware Pty Ltd.")
+COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested early versions of Rattle. Many colleagues at the
@@ -281,7 +282,7 @@ rattle.info <- function(all.dependencies=FALSE,
 }
 
 
-rattle <- function(csvname=NULL, useGtkBuilder=NULL)
+rattle <- function(csvname=NULL, useGtkBuilder)
 {
   # 101113 Add the useGtkBuilder argument so that a user can override
   # the automatic determination of which one to use: libglade versus
@@ -353,7 +354,7 @@ rattle <- function(csvname=NULL, useGtkBuilder=NULL)
   # gtkBuilderAddFromString has $error$message of "Unhandled tag:
   # 'requires'" then set crv$useGtkBuilder to FALSE.
 
-  if (is.null(useGtkBuilder))
+  if (missing(useGtkBuilder))
   {
     op <- options(warn=-1)
     g <- gtkBuilderNew()
@@ -522,7 +523,7 @@ rattle <- function(csvname=NULL, useGtkBuilder=NULL)
 
   if (file.exists(".Rattle")) source(".Rattle")
 
-  if (is.null(csvname))
+  if (missing(csvname))
   {
     # Use the .Rattle settings first, but these might be overriden if
     # the environment variable is defined.
@@ -1436,6 +1437,8 @@ resetRattle <- function(new.dataset=TRUE)
     crs$testset  <- NULL
     crs$testname <- NULL
     crs$transforms <- NULL
+    crs$projname <- NULL # 101115
+    crs$filename <- NULL # 101115
   }
 
   # Clear out all current models.
