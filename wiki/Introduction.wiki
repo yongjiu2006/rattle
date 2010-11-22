@@ -12,4 +12,4 @@ The Walk Throughs tell a simple story, which describes a problem, uses a provide
 
 = Rattle Startup =
 
-[http://rattle.googlecode.com/svn/trunk/files/RattleStartup.png]
+[http://rattle.googlecode.com/files/RattleStartup.png]
