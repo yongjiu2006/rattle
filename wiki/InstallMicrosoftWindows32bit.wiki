@@ -29,10 +29,11 @@ The advice from some members of the R core team (November 2010) is to install Gt
 
   * Edit your system's PATH environment variable to add c:\gtkwin32\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
 
-  * To use the MS-Windows theme engine, create a file c:\gtkwin32\etc\gtk-2.0\gtkrc to contain the line:
+  * To use the MS-Windows theme engine, create a file c:\gtkwin32\etc\gtk-2.0\gtkrc to contain the following line. Make sure the file name does not have any filename extension (i.e., no .txt or anything else with a dot)
 {{{
     gtk-theme-name = "MS-Windows"
 }}}
+
 
 = Options =
 
