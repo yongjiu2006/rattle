@@ -1,0 +1,74 @@
+#summary Install Rattle on Microsoft Windows 64bit.
+
+This is known to work on Microsoft Windows 64bit versions XP, Vista and 7.
+
+= Steps =
+
+  * Download GTK+ (used for the Rattle GUI but not part of R) from http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win64.zip
+
+  * Extract the zip archive into, for example, c:\gtkwin64.
+
+  * Edit your system's PATH environment variable to add c:\gtkwin64\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
+
+  * Download and install R (2.12.0 is 37MB) from [http://cran.r-project.org/bin/windows/base/R-2.12.0-win.exe CRAN], the Comprehensive R Archive Network. Choosing all the defaults on the install works just fine.
+
+  * Install Rattle by opening the R Desktop icon and enter the following command at the R prompt. R asks us to nominate a CRAN mirror. Choose a nearby location.
+{{{
+> install.packages("rattle")
+}}}
+
+  * Start Rattle by opening the R Desktop icon and then enter the following two commands at the R prompt. First load the Rattle package into the library and the start up Rattle:
+{{{
+> library(rattle)
+> rattle()
+}}}
+
+= Alternative Install =
+
+The advice from some members of the R core team (November 2010) is to install Gtk+ direct from the gtk.org repositories. This approach will work for both the 32bit and 64bit versions of Gtk. We will use the 32bit version here. This install is instead of the first step in the above instructions (i.e., instead of installing Gtk+ from SourceForge).
+
+  * Download the Gtk+ bundle from http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip.
+
+  * 
+
+= Options =
+
+The following can also be installed as you see fit.
+
+  * To use the MS-Windows theme engine, create a file c:\gtkwin64\etc\gtk-2.0\gtkrc to contain the following line. Make sure the file name does not have any filename extension (i.e., no .txt or anything else with a dot)
+{{{
+    gtk-theme-name = "MS-Windows"
+}}}
+
+
+  * We can install other packages Rattle uses. Rattle will notice these packages missing when we try to use some functionality dependent on the package. If so, then Rattle will offer to install them. However, we can install them all now if we might not always be connected to the Internet. We might need to restart R to be able to reinstall Rattle. 
+{{{
+> install.packages("rattle", dep=c("Suggests"))
+}}}
+
+  * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ggobi-2.1.8.exe
+
+  * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (39.9MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
+
+  * Alternatively, you may like to install Tinn-R - a more traditional GUI based IDE for R (3.94MB) from http://sourceforge.net/projects/tinn-r
+
+= Issues =
+
+== zlib1.dll ==
+
+The new version of the RGtk2 package uses a call to a new procedure in the zlib1.dll library. The version of this library that is supplied by the XML package from R.
+
+== Entry point not found ==
+
+TBA
+
+== Entry point not located: cairo_clip_extents ==
+
+Fionn Hope reported 20 November 2010 the following error:
+
+{{{
+The procedure entry point cairo_clip_extents could not be located in 
+the dynamic link library libcairo-2.dll
+}}}
+
+Once the GGobi package was removed the error went away. Seems like GGobi had installed an older version of the libcairo-2.dll library and this appeared earlier in the PATH than the newer one required by the new RGtk2.
