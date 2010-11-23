@@ -21,7 +21,7 @@ This is known to work on Microsoft Windows 32bit versions XP, Vista and 7.
 
 = Alternative Install =
 
-The advice from some members of the R core team (November 2010) is to install Gtk+ direct from the gtk.org repositories. This approach will work for both the 32bit and 64bit versions of Gtk. We will use the 32bit version here.
+The advice from some members of the R core team (November 2010) is to install Gtk+ direct from the gtk.org repositories. This approach will work for both the 32bit and 64bit versions of Gtk. We will use the 32bit version here. This install is instead of the first step in the above instructions (i.e., instead of installing Gtk+ from SourceForge).
 
   * Download the Gtk+ bundle from http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip.
 
