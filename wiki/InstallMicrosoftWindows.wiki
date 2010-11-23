@@ -1,14 +1,20 @@
-#summary Install Rattle on Microsoft Windows 64bit.
+#summary Install Rattle on Microsoft Windows 32 bit or 64bit.
 
-This is known to work on Microsoft Windows 64bit versions XP, Vista and 7.
+This is known to work on Microsoft Windows 32bit and 64bit versions XP, Vista and 7.
 
 = Steps =
 
-  * Download GTK+ (used for the Rattle GUI but not part of R) from http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win64.zip
+  * Install GTK+ which is used for the Rattle graphical user interface (GUI) but is a separate package to R itself. Two alternatives are available. The first is simpler but works only for 32bit. The second is recommended, but a little more complex.
 
-  * Extract the zip archive into, for example, c:\gtkwin64.
+    * Download and run the self installing package for GTK+ (2.22.0 is 7.8MB) from [http://downloads.sourceforge.net/gtk-win/gtk2-runtime-2.22.0-2010-10-21-ash.exe Sourceforge]. 
+  
+    * Download either or both versions of GTK+ 
+      * http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip
+      * http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win64.zip
 
-  * Edit your system's PATH environment variable to add c:\gtkwin64\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
+  * Extract the zip archive into, for example, c:\gtkwin32.
+
+  * Edit your system's PATH environment variable to add c:\gtkwin32\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
 
   * Download and install R (2.12.0 is 37MB) from [http://cran.r-project.org/bin/windows/base/R-2.12.0-win.exe CRAN], the Comprehensive R Archive Network. Choosing all the defaults on the install works just fine.
 
@@ -23,17 +29,7 @@ This is known to work on Microsoft Windows 64bit versions XP, Vista and 7.
 > rattle()
 }}}
 
-= Alternative Install =
-
-The advice from some members of the R core team (November 2010) is to install Gtk+ direct from the gtk.org repositories. This approach will work for both the 32bit and 64bit versions of Gtk. We will use the 32bit version here. This install is instead of the first step in the above instructions (i.e., instead of installing Gtk+ from SourceForge).
-
-  * Download the Gtk+ bundle from http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip.
-
-  * 
-
 = Options =
-
-The following can also be installed as you see fit.
 
   * To use the MS-Windows theme engine, create a file c:\gtkwin64\etc\gtk-2.0\gtkrc to contain the following line. Make sure the file name does not have any filename extension (i.e., no .txt or anything else with a dot)
 {{{
