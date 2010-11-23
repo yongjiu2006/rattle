@@ -19,6 +19,21 @@ This is known to work on Microsoft Windows 32bit versions XP, Vista and 7.
 > rattle()
 }}}
 
+= Alternative Install =
+
+The advice from some members of the R core team (November 2010) is to install Gtk+ direct from the gtk.org repositories. This approach will work for both the 32bit and 64bit versions of Gtk. We will use the 32bit version here.
+
+  * Download the Gtk+ bundle from http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip.
+
+  * Extract the zip archive into, for example, c:\gtkwin32.
+
+  * Edit your system's PATH environment variable to add c:\gtkwin32\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
+
+  * To use the MS-Windows theme engine, create a file c:\gtkwin32\etc\gtk-2.0\gtkrc to contain the line:
+{{{
+    gtk-theme-name = "MS-Windows"
+}}}
+
 = Options =
 
 The following can also be installed as you see fit.
