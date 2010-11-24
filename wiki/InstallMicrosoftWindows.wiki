@@ -50,7 +50,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
   * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ as http://www.ggobi.org/downloads/ggobi-2.1.8.exe. On Windows 7 32bit I also had to manually install the libxml2 and iconv binary libraries from http://xmlsoft.org/sources/win32/. There is currently (November 2010) no 64bit version for Windows.
 
-  * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (47.5MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
+  * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (47.5MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows as http://vgoulet.act.ulaval.ca/pub/emacs/emacs-23.2-modified-8.exe.
 
   * Alternatively, you may like to install Tinn-R - a more traditional GUI based IDE for R (4.3MB) from http://sourceforge.net/projects/tinn-r
 
