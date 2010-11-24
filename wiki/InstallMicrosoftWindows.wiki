@@ -37,7 +37,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
 = Options =
 
-  * To use the MS-Windows theme engine, and thus have rattle look like all other Windows applications (in terms of colour and style), create a file c:\gtkwin64\etc\gtk-2.0\gtkrc to contain the following line. Make sure the file name does not have any filename extension (i.e., no .txt or anything else with a dot)
+  * To use the MS-Windows theme engine, and thus have rattle look like all other Windows applications (in terms of colour and style), create a file c:\gtkwin32\etc\gtk-2.0\gtkrc to contain the following line. Make sure the file name does not have any filename extension (i.e., no .txt or anything else with a dot)
 {{{
     gtk-theme-name = "MS-Windows"
 }}}
