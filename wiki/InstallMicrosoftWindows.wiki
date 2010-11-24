@@ -4,17 +4,23 @@ This is known to work on Microsoft Windows 32bit and 64bit versions XP, Vista an
 
 = Steps =
 
-  * Install GTK+ which is used for the Rattle graphical user interface (GUI) but is a separate package to R itself. Two alternatives are available. The first is simpler but works only for 32bit. The second is recommended, but a little more complex.
+== Install GTK+ ===
 
-    * Download and run the self installing package for GTK+ (2.22.0 is 7.8MB) from [http://downloads.sourceforge.net/gtk-win/gtk2-runtime-2.22.0-2010-10-21-ash.exe Sourceforge]. 
-  
-    * Download either or both versions of GTK+ 
+GTK+ is used for the Rattle graphical user interface (GUI) It is a separate package to R itself. Two alternatives are available. The first is simpler but works only for 32bit. The second is recommended, but a little more complex.
+
+  * Download and run the self installing package for GTK+ (2.22.0 is 7.8MB) from [http://downloads.sourceforge.net/gtk-win/gtk2-runtime-2.22.0-2010-10-21-ash.exe Sourceforge].
+
+*or*
+
+  * Download either or both versions of GTK+ 
       * http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip
       * http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win64.zip
 
   * Extract the zip archive into, for example, c:\gtkwin32.
 
   * Edit your system's PATH environment variable to add c:\gtkwin32\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
+
+== Install R and Rattle ==
 
   * Download and install R (2.12.0 is 37MB) from [http://cran.r-project.org/bin/windows/base/R-2.12.0-win.exe CRAN], the Comprehensive R Archive Network. Choosing all the defaults on the install works just fine.
 
