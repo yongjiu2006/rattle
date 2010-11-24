@@ -48,7 +48,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 > install.packages("rattle", dep=c("Suggests"))
 }}}
 
-  * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ggobi-2.1.8.exe
+  * Download and install GGobi (2.1.8 is 807KB) from http://www.ggobi.org/downloads/ggobi-2.1.8.exe. On Windows 7 32bit I also had to manually install the libxml2 and iconv binary libraries from http://xmlsoft.org/sources/win32/.
 
   * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (39.9MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows.
 
@@ -73,4 +73,4 @@ The procedure entry point cairo_clip_extents could not be located in
 the dynamic link library libcairo-2.dll
 }}}
 
-Once the GGobi package was removed the error went away. Seems like GGobi had installed an older version of the libcairo-2.dll library and this appeared earlier in the PATH than the newer one required by the new RGtk2. Currently GGobi does not work with the new GTK2 and is awaiting an upgrade.
+Once the GGobi package was removed the error went away.
