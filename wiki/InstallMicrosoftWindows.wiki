@@ -64,6 +64,10 @@ The new version of the RGtk2 package uses a call to a new procedure in the zlib1
 
 This indicates that GTK+ has not been installed or perhaps multiple versions have been installed. The best solution seems to be to remove all installations of GTK that you can find, and reinstall as above.
 
+== Entry point cairo_glyph_allocate not located in libcairo-2.dll ==
+
+You probably have an older version of GTK+ installed (perhaps in addition to the newer version). Remove all GTK+ installs and just install as above.
+
 == Entry point not located: cairo_clip_extents ==
 
 Fionn Hope reported 20 November 2010 the following error:
