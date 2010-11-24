@@ -52,7 +52,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
   * You may like to install Emacs Speaks S, a comprehensive environment for writing R code on MS/Windows. Download and install the latest version available (47.5MB) from http://vgoulet.act.ulaval.ca/en/ressources/emacs/windows as [http://vgoulet.act.ulaval.ca/pub/emacs/emacs-23.2-modified-8.exe emacs-23.2-modified-8.exe].
 
-  * Alternatively, you may like to install Tinn-R - a more traditional GUI based IDE for R (4.3MB) from http://sourceforge.net/projects/tinn-r as [http://sourceforge.net/projects/tinn-r/files/Tinn-R%20setup/2.3.7.1/Tinn-R_2.3.7.1_setup.exe Tinn-R_2.3.7.1_setup.exe]
+  * Alternatively, you may like to install Tinn-R - a more traditional GUI based IDE for R (4.3MB) from http://sourceforge.net/projects/tinn-r as [http://downloads.sourceforge.net/project/tinn-r/Tinn-R%20setup/2.3.7.1/Tinn-R_2.3.7.1_setup.exe Tinn-R_2.3.7.1_setup.exe]
 
 = Issues =
 
