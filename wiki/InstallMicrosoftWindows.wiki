@@ -6,7 +6,7 @@ This is known to work on Microsoft Windows 32bit and 64bit versions XP, Vista an
 
 == Install GTK+ ===
 
-GTK+ is used for the Rattle graphical user interface (GUI) It is a separate package to R itself. Two alternatives are available. The first is simpler but works only for 32bit. The second is recommended, but a little more complex.
+GTK+ is used for the Rattle graphical user interface (GUI). It is a separate package to R itself. Two alternatives are available. The first is simpler but works only for 32bit. The second is recommended, but a little more complex.
 
   * Download and run the self installing package for GTK+ (2.22.0 is 7.8MB) from [http://downloads.sourceforge.net/gtk-win/gtk2-runtime-2.22.0-2010-10-21-ash.exe Sourceforge].
 
