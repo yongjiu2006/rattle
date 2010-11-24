@@ -16,7 +16,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
       * http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win32.zip
       * http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.0-20101016_win64.zip
 
-  * Extract the zip archive into, for example, c:\gtkwin32.
+  * Extract the zip archive into, for example, c:\gtkwin32 (or c:\gtkwin64 as appropriate).
 
   * Edit your system's PATH environment variable to add c:\gtkwin32\bin. The PATH can be editted on Windows 7 by choosing Properites from the right mouse button menu on Computer under the Windows menu. Then choose "Advanced system settings" and then "Environment Variables". Edit "PATH" under "System variables."
 
