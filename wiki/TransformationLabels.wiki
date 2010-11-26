@@ -33,6 +33,8 @@ For Example *RRC_MinTemp* is the  *MinTemp*  from the  *weather*  dataset, which
 
 ==*Type Recode*==
 
+_Please Note_ The number 4 represents the number of Bins assigned to this transformation, and can be changed in the Rattle Transformation Recode Binning section to the desired number of Bins.
+
 || *Binning*  ||
 ||Label || Prefix||
 ||Quantiles || BQ4||
