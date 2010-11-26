@@ -13,7 +13,7 @@ For Example *{{{RRC_MinTemp}}}* is the  *{{{MinTemp}}}*  from the  *weather*  da
 || *Normalize* ||
 ||Label || Prefix||
 ||Rescale || RRC||
-||Scale `[`0-1`]`||`R01`||
+||Scale 0-1|| R01||
 ||-Median/MAD || RMD||
 ||Natural Log|| RLG||
 ||Matrix || RMA||
