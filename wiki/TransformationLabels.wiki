@@ -4,7 +4,7 @@
 
 These are the different types of transform in Rattle, and the prefixes of the variables after they have been transformed. When you undertake a transformation in Rattle, a new variable is generated and added to the bottom of the dataset. The prefix is added to the front of each one, so there is an audit trail of the transformations. 
 
-For Example *{{{RRC_MinTemp}}}* is the  *{{{MinTemp}}}*  from the  *weather*  dataset, which has been transformed by using the _Rescale_ transformation. It is also possible to transform a transformed variable. For example  *{{{RBG_WindDir9am_RMA_MinTemp}}}*  is the same variable *MinTemp* from the *weather* dataset, that was first transformed with other variables using _Normalize - Matrix_ and then transformed by using _order - By Group_ using the categorical *WindDir9am* as the grouping variable.
+For Example *{{{RRC_MinTemp}}}* is the  *{{{MinTemp}}}*  from the  *weather*  dataset, which has been transformed by using the _Rescale_ transformation. It is also possible to transform a transformed variable. For example  *{{{RBG_WindDir9am_RMA_MinTemp}}}*  is the same variable *{{{MinTemp}}}* from the *weather* dataset, that was first transformed with other variables using _Normalize - Matrix_ and then transformed by using _order - By Group_ using the categorical *WindDir9am* as the grouping variable.
 
 
 = Transform Tab =
