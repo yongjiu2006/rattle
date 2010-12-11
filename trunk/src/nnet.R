@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-13 20:54:20 Graham Williams>
+# Time-stamp: <2010-12-04 16:46:28 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -122,9 +122,13 @@ executeModelNNet <- function()
   # Build a model. 091114 Note that we use a seed so that we get the
   # same model each time. Otherwise it can be disconcerting to the
   # user to see the model changing each time they click Execute, or
-  # each time they come into the application.
+  # each time they come into the application. 101204 We should provide
+  # the seed in the GUI and also maxiter in the GUI, but for now use
+  # 199 since that seems to get at least a model that predicts some
+  # "yes" for the weather dataset! Not a good foundation for setting
+  # the seed, but fix it later.
 
-  model.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
+  model.cmd <- paste(sprintf("set.seed(%d)\n", 199), # crv$seed),
                      "crs$nnet <- ",
                      ifelse(numericTarget() || binomialTarget(),
                             "nnet", "multinom"),
@@ -146,7 +150,11 @@ executeModelNNet <- function()
                      if (numericTarget()) ", linout=TRUE",
                      ", skip=TRUE",
                      ", MaxNWts=10000",
-                     ", trace=FALSE, maxit=1000",
+                     # 101204 When maxit=1000 the weather model only
+                     # predicts 0. Set back to 100 then it "works."
+                     # 100 is the default. Maybe need to allow as an
+                     # option.
+                     ", trace=FALSE, maxit=100",
                      ")", sep="")
 
   appendLog("Build the NNet model.", model.cmd)
@@ -209,7 +217,7 @@ errorReport(model.cmd, result)
 exportNNetModel <- function()
 {
   # Make sure we have a model first! 090812 DRY move all
-  # export<model>Tab fucntions to use this test instead of their
+  # export<model>Tab functions to use this test instead of their
   # individual tests. 090812 DRY Unify much more the export<model>Tab
   # functions - they are all mostly the same, so don't repeat
   # yourself.

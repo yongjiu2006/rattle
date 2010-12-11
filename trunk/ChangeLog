@@ -3,24 +3,35 @@ rattle (2.6.0) unstable; urgency=low
   * Keep track of project names and use as default name to save a project
     to. Suggested by David Cochrane.
   
-  * Add stip.white to the default for reading CSV files. Suggested by
+  * Add strip.white to the default for reading CSV files. Suggested by
     Robert Muenchen.
 
-  * Bug fix on resetEvaluateTab - Data row was being rest to sensitive
+  * Bug fix on resetEvaluateTab - Data row was being reset to sensitive
     because model was being toggled.
   
   * Disconnect Rattle versions from google code revision numbers since the
     revision numbers change each change to the Wiki.
   
   * Indicator Variables will Ignore the first of the new indicator
-    variables.
+    variables. Suggested by Robert Muenchen.
   
   * Include the Target name in listing of a decision tree as a rule set.
   
-  *
+  * On adding to the log when saving a plot make sure carioDevice is
+    loaded and the file name path separators are appropriate. Reported by
+    Shane Butler 11 Dec 2010.
   
+  * Ensure filename string is UTF-8 when exporting a file, to handle
+    Japanese filenames.
   
- --
+  * For nnet, choose a seed so weather generates a non-trivial model.
+  
+  * Refer to remapping as recoding in line with commonly used terminology.
+  
+  * Default back to showing text on icon for buttons. Seems okay in the
+    new version of Gtk.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 11 Dec 2010 13:39:55 +1100
 
 rattle (2.5.47) unstable; urgency=low
 

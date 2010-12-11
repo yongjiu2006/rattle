@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-07-03 21:34:59 Graham Williams>
+# Time-stamp: <2010-11-27 08:17:35 Graham Williams>
 #
 # Help Menu
 #
@@ -568,7 +568,7 @@ on_help_test_wilcoxon_signed_rank_activate <- function(action, window)
 
 on_help_normalise_activate <- function(action, window)
 {
-  if (showHelpPlus(Rtxt("Rescaling options transforms a variable by remapping its",
+  if (showHelpPlus(Rtxt("Rescaling options transforms a variable by recoding its",
                    "values to another set of values, such as a set that has a mean of 0 and",
                    "standard deviation of 1. Often we do this so that all of our variables",
                    "have a very similar spread, and perhaps distribution. This can then avoid",
@@ -578,7 +578,7 @@ on_help_normalise_activate <- function(action, window)
                    "Various rescalings are supported, with the rescaler function from the reshape",
                    "package used in a number of cases.",
                    "<<>>",
-                   "The Nolan Transform segments and remaps a numeric variable to the 0-100 range.")))
+                   "The By Group Transform segments and recodes a numeric variable to the 0-100 range.")))
   {
     if (packageIsAvailable("reshape", viewDocMsg("rescaler")))
       popupTextviewHelpWindow("rescaler")

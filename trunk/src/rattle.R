@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-20 09:38:11 Graham Williams>
+# Time-stamp: <2010-12-11 13:27:32 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -30,8 +30,8 @@ RtxtNT <- Rtxt
 MAJOR <- "2"
 MINOR <- "6"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
-REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
-REVISION <- 0
+#REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
+REVISION <- "0"
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 VERSION.DATE <- "Released 13 Nov 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
@@ -394,7 +394,8 @@ rattle <- function(csvname=NULL, useGtkBuilder)
   # need to initialise all of the types for the GTK widgets. So do
   # that here.
 
-  if (crv$useGtkBuilder || Sys.info()["sysname"] == "Darwin")
+  # 101127 No longer needed if (crv$useGtkBuilder || Sys.info()["sysname"] == "Darwin")
+  if (Sys.info()["sysname"] == "Darwin")
     fixMacAndGtkBuilderTypes()
  
   # Ensure the About dialog will respond to the Quit button.
@@ -471,7 +472,7 @@ rattle <- function(csvname=NULL, useGtkBuilder)
   # items by RGtk2 don't seem to be happening. It works just fine for
   # GNU/Linux. We probably only want to do this if we have a foreign
   # locale.
-
+  
   if (isWindows())
   {
     fixTranslations()
@@ -991,6 +992,11 @@ configureGUI <- function()
   else
     crv$icon <- gdkPixbufNewFromFile(crv$icon)$retval
 
+  # 101202 Remove the By Group button and instead if a rescale has a
+  # categoric selected then do by group. TODO.
+  
+  theWidget("normalise_bygroup_radiobutton")$hide()
+  
 }
 
 setDefaultsGUI <- function()
@@ -1221,16 +1227,19 @@ fixGtkBuilderAdjustments <- function()
 
 fixTranslations <- function(w=theWidget("rattle_window"))
 {
+  # 101111 If the widget does not have a name, ignore it. This was
+  # needed for MS/Windows R 2.12.0 for some reason. 101127 But now the
+  # children widgets are not getting translated! I guess previously
+  # getName() rutnerned an empty string, but is now returning NULL.
+  
+  ## if (! length(w$getName())) return()
+  
   # Ignore these since they are already translated and we end up with
   # a corrupted string passing through to Rtxt again. generally they
   # are Stock Items.
 
-  # 101111 If the widget does not have a name, ignore it. This was
-  # needed for MS/Windows R 2.12.0 for some reason.
-  
-  if (! length(w$getName())) return()
-  
-  if (w$getName() %in% c("execute_button", "new_button", "open_button",
+  if (length(w$getName()) &&
+      w$getName() %in% c("execute_button", "new_button", "open_button",
                          "save_button", "stop_button", "quit_button",
                          "data_filechooserbutton",
                          "continuous_clear_button", "categorical_clear_button",
@@ -1243,7 +1252,7 @@ fixTranslations <- function(w=theWidget("rattle_window"))
   # where they are named Regression rather than Linear, or are not
   # used, or otherwise differently handled.
   
-  if (crv$appname == "RStat" && w$getName() %in%
+  if (crv$appname == "RStat" && length(w$getName()) && w$getName() %in%
       c("data_sample_checkbutton",
         "data_script_radiobutton",
         "model_linear_radiobutton",
@@ -2218,6 +2227,12 @@ isWindows <- function()
   return(.Platform$OS.type == "windows")
 }
 
+fixWindowsSlash <- function(s)
+{
+  if (isWindows()) s <- gsub('\\\\', '/', s)
+  return(s)
+}
+
 isLinux <- function()
 {
   return(.Platform$OS.type == "unix")
@@ -2557,7 +2572,11 @@ savePlotToFileGui <- function(dev.num=dev.cur(), name="plot")
 
   startLog(Rtxt("Save the plot to a file."))
   appendLog(sprintf(Rtxt("Save the plot on device %d to a file."), dev.num),
-            sprintf('savePlotToFile("%s", %s)', save.name, dev.num))
+            ifelse(packageIsAvailable("cairoDevice") &&
+                   theWidget("use_cairo_graphics_device")$getActive(),
+                   sprintf('library(cairoDevice)\n'), ''),
+            sprintf('savePlotToFile("%s", %s)',
+                    fixWindowsSlash(save.name), dev.num))
 
   if (savePlotToFile(save.name, dev.num))
     setStatusBar(sprintf(Rtxt("Plot %d has been exported to the file %s."),
