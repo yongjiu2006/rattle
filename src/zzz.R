@@ -131,7 +131,11 @@
 
   crv$executing <- FALSE
 
-  crv$toolbar.text <- FALSE
+  # 101127 I originally turned toolbar text off since on GNU/Linux it
+  # was chopping the text. But now on moving to GTK 2.20 it all looks
+  # okay again, so include the text.
+  
+  crv$toolbar.text <- TRUE
   
   # 090525 Always load tooltips - now use Settings option to enable on
   # GNU/Linux. 090622 But on older installations we still get the

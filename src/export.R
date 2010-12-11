@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-22 05:26:21 Graham Williams>
+# Time-stamp: <2010-12-11 09:08:46 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -390,7 +390,8 @@ getExportSaveName <- function(mtype)
     attr(save.name, "includeMetaData") <- includeMetaData
     attr(save.name, "exportClass") <- exportClass
   }
-  
+
+  Encoding(save.name) <- "UTF-8"
   return(save.name)
 }
 

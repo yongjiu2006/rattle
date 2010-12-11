@@ -1,12 +1,43 @@
 # See INSTRUCTIONS
 
+#-----------------------------------------------------------------------
+# General Locations
+
+RSITELIB=/usr/local/lib/R/site-library
+
+#-----------------------------------------------------------------------
+# Rattle Package
+
 PACKAGE=package/rattle
 DESCRIPTION=$(PACKAGE)/DESCRIPTION
 DESCRIPTIN=support/DESCRIPTION.in
 NAMESPACE=$(PACKAGE)/NAMESPACE
 
+#-----------------------------------------------------------------------
+# PMML Package
+
 PPACKAGE=package/pmml
+PRDEST=$(PPACKAGE)/R
 PDESCRIPTION=$(PPACKAGE)/DESCRIPTION
+PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
+
+PSOURCE = \
+	src/pmml.R \
+	src/pmml.arules.R \
+	src/pmml.kmeans.R \
+	src/pmml.hclust.R \
+	src/pmml.ksvm.R \
+	src/pmml.lm.R \
+	src/pmml.multinom.R \
+	src/pmml.nnet.R \
+	src/pmmltoc.R \
+	src/pmml.randomForest.R \
+	src/pmml.rpart.R \
+	src/pmml.rsf.R \
+	src/pmml.coxph.R \
+	src/pmml.survreg.R
+
+#-----------------------------------------------------------------------
 
 IPACKAGE=package/rstat
 IDESCRIPTION=$(IPACKAGE)/DESCRIPTION
@@ -18,14 +49,13 @@ REPOSITORY=repository
 MAJOR=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
 MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 SVNREVIS=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
-REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
-            | awk '{print $$1-480}')
+#REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
+#            | awk '{print $$1-480}')
+REVISION=$(shell egrep '^REVISION' src/rattle.R | cut -d\" -f 2)
 VERSION=$(MAJOR).$(MINOR).$(REVISION)
 VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
 	   | sed 's|^.*, ||')
 IDATE=$(shell date +%m%d%y)
-
-PVERSION=$(shell egrep ' VERSION <-' src/pmml.R | cut -d \" -f 2)
 
 IVERSION=$(shell egrep 'VERSION <- "' src/rstat.R | cut -d \" -f 2)
 
@@ -66,22 +96,6 @@ R_SOURCE = \
 	src/transform.R \
 	src/zzz.R
 
-PSOURCE = \
-	src/pmml.R \
-	src/pmml.arules.R \
-	src/pmml.kmeans.R \
-	src/pmml.hclust.R \
-	src/pmml.ksvm.R \
-	src/pmml.lm.R \
-	src/pmml.multinom.R \
-	src/pmml.nnet.R \
-	src/pmmltoc.R \
-	src/pmml.randomForest.R \
-	src/pmml.rpart.R \
-	src/pmml.rsf.R \
-	src/pmml.coxph.R \
-	src/pmml.survreg.R
-
 ISOURCE = \
 	src/rstat.R \
 	src/pmmltocibi.R \
@@ -115,7 +129,6 @@ ibidiff: zip
 
 .PHONY: ibirstat
 ibirstat: zip
-	most ibi/updates
 	mv $@??????????.zip archive
 	-echo "Diff in rstat.R" >| ibi/updates
 	-diff ibi/rstat.R src >> ibi/updates
@@ -123,8 +136,8 @@ ibirstat: zip
 	-diff ibi/pmml.transforms.R src >> ibi/updates
 	-echo "Diff in pmmltocibi.R" >> ibi/updates
 	-diff ibi/pmmltocibi.R src >> ibi/updates
-	-echo "Diff in R-en.po" >> ibi/updates
-	-diff ibi/R-en.po po >> ibi/updates
+#	-echo "Diff in R-en.po" >> ibi/updates
+#	-diff ibi/R-en.po po >> ibi/updates
 	-cp ibi/updates archive/updates`date +%y%m%d%H%M`
 	most ibi/updates
 	zip $@`date +%y%m%d%H%M`.zip \
@@ -293,12 +306,15 @@ devbuild:
 	R CMD build package/rattle
 	mv NAMESPACE package/rattle/
 
+########################################################################
+# BUILD Targets
+#
 # 100123 Updated the build process
 
 .PHONY: build
 build: weather translations \
-	$(REPOSITORY)/rattle_$(VERSION).tar.gz \
-	$(REPOSITORY)/rattle_$(VERSION).zip
+	rattle_$(VERSION).tar.gz \
+	rattle_$(VERSION).zip
 	chmod go+r $(REPOSITORY)/*
 
 .PHONY: translations
@@ -306,9 +322,15 @@ translations:
 	(cd src; make R-rattle.pot)
 	(cd po; make updates; make all)
 
-pbuild: data pmml_$(PVERSION).tar.gz
+.PHONY: pbuild
+pbuild: pmml_$(PVERSION).tar.gz  pmml_$(PVERSION).zip
+	chmod go+r $(REPOSITORY)/*
 
-ibuild: data rstat_$(IVERSION).tar.gz
+ibuild: rstat_$(IVERSION).tar.gz rstat_$(IVERSION).zip 
+	chmod go+r $(REPOSITORY)/*
+
+########################################################################
+# OLD
 
 rattle_src.zip:
 	cp $(R_SOURCE) zipsrc
@@ -319,9 +341,15 @@ rattle_src.zip:
 	mv rattle_src.zip /var/www/access/
 	chmod go+r /var/www/access/rattle_src.zip
 
+########################################################################
+# Create .tar.z and .zip packages for R and copy to REPOSITORY
+#
 # 100123 Updated the build process.
 
-$(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) translations
+#-----------------------------------------------------------------------
+# Rattle
+
+rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	rm -f package/rattle/R/*
 	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
 		src/rattle.R
@@ -338,17 +366,29 @@ $(REPOSITORY)/rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	chmod -R go+rX $(PACKAGE)
 	R CMD build $(PACKAGE)
-	R CMD INSTALL --library=/usr/local/lib/R/site-library rattle_$(VERSION).tar.gz
-	mv rattle_$(VERSION).tar.gz $(REPOSITORY)
+	R CMD INSTALL --library=$(RSITELIB) rattle_$(VERSION).tar.gz
+	mv $@ $(REPOSITORY)
+
+#-----------------------------------------------------------------------
+# PMML
+#
+# 101203 Cleanup and test.
 
 pmml_$(PVERSION).tar.gz: $(PSOURCE)
-	cp $(PSOURCE) package/pmml/R/
+	cp $(PSOURCE) $(PRDEST)
 	perl -pi -e "s|^Version: .*$$|Version: $(PVERSION)|" $(PDESCRIPTION)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
-	R CMD build $(PPACKAGE)
 	chmod -R go+rX $(PPACKAGE)
-	mv pmml_$(PVERSION).tar.gz $(REPOSITORY)
-	#mv pmml_$(PVERSION).zip $(REPOSITORY)
+	R CMD build $(PPACKAGE)
+	R CMD INSTALL --library=$(RSITELIBRARY) $@
+	mv $@ $(REPOSITORY)
+
+pmml_$(PVERSION).zip: pmml_$(PVERSION).tar.gz
+	(cd $(RSITELIB); zip -r9 - rstat) > $@
+	mv $@ $(REPOSITORY)
+
+#-----------------------------------------------------------------------
+# RStat
 
 rstat_$(IVERSION).tar.gz: $(ISOURCE)
 	cp $(ISOURCE) package/rstat/R/
@@ -356,6 +396,13 @@ rstat_$(IVERSION).tar.gz: $(ISOURCE)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(IDESCRIPTION)
 	R CMD build $(IPACKAGE)
 	chmod -R go+rX $(IPACKAGE)
+	R CMD build $(IPACKAGE)
+	R CMD INSTALL --library=/usr/local/lib/R/site-library rstat_$(IVERSION).tar.gz
+	# mv rstat_$(IVERSION).tar.gz $(REPOSITORY)
+
+rstat_$(IVERSION).zip: rstat_$(IVERSION).tar.gz
+	(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
+	>| rstat_$(VERSION).zip
 
 R4X:
 	R CMD build support/r4x/pkg/R4X
@@ -392,7 +439,7 @@ package/rattle/data/weather.RData: support/weather.R src/weather.R Makefile
 	mv locationsAUS.RData weather*.RData archive
 	mv weather.csv weather.arff weather_missing.csv archive
 
-$(REPOSITORY)/rattle_$(VERSION).zip: $(REPOSITORY)/rattle_$(VERSION).tar.gz
+rattle_$(VERSION).zip: $(REPOSITORY)/rattle_$(VERSION).tar.gz
 	(cd /usr/local/lib/R/site-library; zip -r9 - rattle) \
 	>| rattle_$(VERSION).zip
 	mv rattle_$(VERSION).zip $(REPOSITORY)
