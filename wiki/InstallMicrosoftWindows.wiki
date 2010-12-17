@@ -70,7 +70,6 @@ You probably have an older version of GTK+ installed (perhaps in addition to the
 
 == Entry point not located: cairo_clip_extents ==
 
-Fionn Hope reported 20 November 2010 the following error: `The procedure entry point cairo_clip_extents could not be located in 
-the dynamic link library libcairo-2.dll`
+Fionn Hope reported 20 November 2010 the following error: `The procedure entry point cairo_clip_extents could not be located in the dynamic link library libcairo-2.dll`
 
 Once the GGobi package was removed the error went away.
