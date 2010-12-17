@@ -58,7 +58,7 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
 == zlib1.dll ==
 
-The new version of the RGtk2 package uses a call to a new procedure in the zlib1.dll library. The version of this library that is supplied by the XML package from R.
+The new version of the RGtk2 package uses a call to a new procedure in the zlib1.dll library. The version of this library that is supplied by the XML package from R is older. Thus you may see a message of the form: `The procedure entry point deflateSetHeader could not be located in the dynamic link library zlib1.dll.` With a fresh install on Windows I believe this does not happen. If it does, one solution is to search for and remove zlib1.dll from the installed XML package.
 
 == Missing libatk-1.0-0.dll ==
 
