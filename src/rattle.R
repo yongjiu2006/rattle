@@ -33,7 +33,7 @@ GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 #REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
 REVISION <- "0"
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 13 Nov 2010"
+VERSION.DATE <- "Released 11 Dec 2010"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 

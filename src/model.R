@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-10-12 22:06:42 Graham Williams>
+# Time-stamp: <2010-12-12 21:13:14 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1022,7 +1022,7 @@ exportRegressionModel <- function()
                       attr(save.name, "includePMML"),
                       attr(save.name, "includeMetaData"),
                       attr(save.name, "exportClass"),
-                      save.name))
+                      fixWindowsSlash(save.name)))
     cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
                 attr(save.name, "includePMML"),
                 ifelse(attr(save.name, "includeMetaData"),
