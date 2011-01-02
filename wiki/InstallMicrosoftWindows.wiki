@@ -56,6 +56,10 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
 = Issues =
 
+== GTK Appears to be Missing ==
+
+This is characterised by a popup on starting `rattle()` indicating the the GTK libraries are missing and asking whether you would like to install them (actually the popup comes from loading the `RGtk2` package). If you have already installed GTK as above, we should not be seeing this message. Choose not to install and then exit from R. Now, you probably have the wrong or multiple versions of the GTK libraries installed. You need to find them all and remove each one. Then just install the latest GTK as identified above.
+
 == zlib1.dll ==
 
 The new version of the RGtk2 package uses a call to a new procedure in the zlib1.dll library. The version of this library that is supplied by the XML package from R is older. Thus you may see a message of the form: `The procedure entry point deflateSetHeader could not be located in the dynamic link library zlib1.dll.` With a fresh install on Windows I believe this does not happen. If it does, one solution is to search for and remove zlib1.dll from the installed XML package.
