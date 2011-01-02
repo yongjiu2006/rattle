@@ -58,7 +58,9 @@ GTK+ is used for the Rattle graphical user interface (GUI). It is a separate pac
 
 == GTK Appears to be Missing ==
 
-This is characterised by a popup on starting `rattle()` indicating the the GTK libraries are missing and asking whether you would like to install them (actually the popup comes from loading the `RGtk2` package). If you have already installed GTK as above, we should not be seeing this message. Choose not to install and then exit from R. Now, you probably have the wrong or multiple versions of the GTK libraries installed. You need to find them all and remove each one. Then just install the latest GTK as identified above.
+This is characterised by a popup on starting `rattle()` indicating that the GTK libraries are missing. It will ask whether you would like to install them. (The actual popup comes from loading the `RGtk2` package into R, which Rattle does early on.) If you have already installed GTK as above, you should not be seeing this message. Choose not to install and then exit from R. 
+
+You probably have the wrong or multiple versions of the GTK libraries installed. You need to find them all and remove each one. Then just install the latest GTK as above.
 
 == zlib1.dll ==
 
