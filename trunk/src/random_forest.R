@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-13 12:48:41 Graham Williams>
+# Time-stamp: <2011-01-02 17:51:59 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -197,7 +197,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   # List, as a string of indicies, the variables to be included. 
 
-  included <- getIncludedVariables()
+  # included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102
   
   # Some convenience booleans
 
@@ -278,7 +279,7 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   # Build the model.
 
-  rf.cmd <- paste(sprintf("set.seed(%d)\n", crv$seed),
+  rf.cmd <- paste("set.seed(crv$seed)\n",
                   "crs$rf <- ", FUN, "(", frml,
                   ",\n      data=",
                   dataset, ", ",
@@ -373,7 +374,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
               "\n\n",
-              "Number of observations used to build the model: ", length(crs$rf$y),
+              "Number of observations used to build the model: ",
+              ifelse(traditional, length(crs$rf$y), crs$rf@responses@nobs),
               "\n",
               ifelse(naimpute, "Missing value imputation is active.\n", ""),
               collectOutput(summary.cmd, TRUE))
@@ -490,7 +492,7 @@ plotRandomForestImportance <- function()
   
   newPlot()
   if (class(crs$rf) %in% "RandomForest")
-    plot.cmd <- paste(sprintf('set.seed(%d)', crv$seed),
+    plot.cmd <- paste('set.seed(crv$seed)',
                       '\nv <- varimp(crs$rf)',
                       '\nvimp <- data.frame(Variable=as.character(names(v)),',
                       '\n                   Importance=v,',

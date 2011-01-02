@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-07 06:42:37 Graham Williams>
+# Time-stamp: <2011-01-02 03:49:17 Graham Williams>
 #
 # CTREE OPTION OF THE TREE TAB
 #
@@ -191,7 +191,8 @@ executeModelCTree <- function()
 
   # Variables to be included --- a string of indicies.
   
-  included <- getIncludedVariables()
+  # included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102
   
   # Some convenience booleans
 

@@ -4,7 +4,7 @@
 #
 # Handle lm and glm models.
 #
-# Time-stamp: <2010-10-12 21:57:42 Graham Williams>
+# Time-stamp: <2011-01-01 11:42:53 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -40,6 +40,7 @@ pmml.lm <- function(model,
                     description="Linear Regression Model",
                     copyright=NULL,
                     transforms=NULL,
+                    dataset=NULL,
                     weights=NULL,
                     ...)
 {

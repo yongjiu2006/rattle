@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-14 16:00:59 Graham Williams>
+# Time-stamp: <2011-01-02 17:44:40 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -67,8 +67,8 @@ executeExploreTab <- function()
   # which the exploration is to be performed. This is then passed to
   # the individually dispatched functions.
 
-  vars <- getIncludedVariables(risk=TRUE)
-  dataset <- sprintf("%s[%s,%s]", "crs$dataset",
+  vars <- "c(crs$input, crs$risk, crs$target)" # 20110102 getIncludedVariables(risk=TRUE)
+  dataset <- sprintf("%s[%s, %s]", "crs$dataset",
                      ifelse(sampling, "crs$sample", ""),
                      ifelse(is.null(vars),"", vars))
 
@@ -82,7 +82,8 @@ executeExploreTab <- function()
   avdataset <- sprintf("%s[%s,]", "crs$dataset",
                      ifelse(sampling, "crs$sample", ""))
   
-  vars <- getIncludedVariables(numonly=TRUE)
+  vars <- "crs$numeric" # 20110102 getIncludedVariables(numonly=TRUE)
+  
   
   # TODO 060606 The question here is whether NULL means all variables
   # or means none found?
@@ -90,14 +91,14 @@ executeExploreTab <- function()
   #if (is.null(vars))
   #  ndataset <- NULL
   #else
-    ndataset <- sprintf("%s[%s,%s]", "crs$dataset",
+    ndataset <- sprintf("%s[%s, %s]", "crs$dataset",
                         ifelse(sampling, "crs$sample", ""),
                         ifelse(is.null(vars),"",vars))
 
   # Numeric input variables
 
-  vars <- inputVariables(numonly=TRUE)
-  nidataset <- sprintf("%s[%s,%s]", "crs$dataset",
+  vars <- "crs$numeric" # 20110102 inputVariables(numonly=TRUE)
+  nidataset <- sprintf("%s[%s, %s]", "crs$dataset",
                        ifelse(sampling, "crs$sample", ""),
                        ifelse(is.null(vars),"",vars))
   
@@ -312,7 +313,7 @@ executeExploreSummary <- function(dataset)
       
       ## Variables to be included, as a string of indicies.
   
-      included <- getIncludedVariables()
+      included <- "c(crs$input, crs$target)" # 20110102 getIncludedVariables()
       including <- not.null(included)
 
       ## Add radio buttons to choose: Full, Train, Test dataset to summarise.
@@ -3458,17 +3459,17 @@ executeExploreCorrelation <- function(dataset)
                          method)
   if (ordered)
     crsord.cmd  <- paste("crs$ord <- order(crs$cor[1,])",
-                         "crs$cor  <- crs$cor[crs$ord, crs$ord]",
+                         "crs$cor <- crs$cor[crs$ord, crs$ord]",
                          sep="\n")
     
   print.cmd   <- "print(crs$cor)"
   if (nas)
   {
     print.cmd <- paste(print.cmd,
-                       "\ncat('\\n", Rtxt("Count of missing values:"), "\n')\n",
+                       "\ncat('\\n", Rtxt("Count of missing values:"), "\\n')\n",
                        sprintf("print(apply(is.na(%s[naids]),2,sum))",
                                dataset),
-                       "\ncat('\\n", Rtxt("Percent missing values:"), "\n')\n",
+                       "\ncat('\\n", Rtxt("Percent missing values:"), "\\n')\n",
                        sprintf(paste("print(100*apply(is.na(%s[naids]),",
                                      "2,sum)/nrow(%s))"),
                                dataset, dataset),
@@ -3485,7 +3486,7 @@ executeExploreCorrelation <- function(dataset)
   Encoding(method.orig) <- "unknown"
   
   if (nas)
-    title.txt <- sprintf(Rtxt("Correlation of Missing Values\n%s using %s"),
+    title.txt <- sprintf(Rtxt("Correlation of Missing Values\\n%s using %s"),
                          crs$dataname, method.orig)
   else
     title.txt <- sprintf(Rtxt("Correlation %s using %s"), crs$dataname, method.orig)

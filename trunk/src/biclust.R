@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:34:55 Graham Williams>
+# Time-stamp: <2011-01-02 10:33:17 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -50,7 +50,7 @@ executeClusterBiclust <- function(include)
   # Obtain interface information.
 
   method <- "BCCC"
-  seed <- crv$seed
+  seed <- "crv$seed"
 
   # Start the log.
   
@@ -65,7 +65,7 @@ executeClusterBiclust <- function(include)
 
   # Set the seed so we can repeat.
 
-  seed.cmd <- sprintf('set.seed(%d)', seed)
+  seed.cmd <- sprintf('set.seed(%s)', seed)
   appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
             seed.cmd)
   eval(parse(text=seed.cmd))
@@ -73,7 +73,7 @@ executeClusterBiclust <- function(include)
   # Build the model.
   
   biclust.cmd <- sprintf(paste('crs$biclust <- biclust(',
-                               'as.matrix(na.omit(crs$dataset[%s,%s])),',
+                               'as.matrix(na.omit(crs$dataset[%s, %s])),',
                                'method=%s)', sep=""),
                          ifelse(sampling, "crs$sample", ""),
                          include, method)

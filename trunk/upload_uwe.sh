@@ -16,7 +16,6 @@ REVISION=$(egrep '^REVISION' src/rattle.R | cut -d\" -f 2)
 LATEST=rattle_${MAJOR}.${MINOR}.${REVISION}.tar.gz
 
 echo "Upload 'repository/${LATEST}' to MS/Windows Checker"
-echo "at ${DEST}."
 
 ftp -n -i << _EOF_
 open ${DEST}

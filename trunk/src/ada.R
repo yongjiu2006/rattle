@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2010-10-11 22:17:29 Graham Williams>
+# Time-stamp: <2011-01-02 04:22:03 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -93,7 +93,7 @@ function(formula, data,...,subset,na.action=na.rpart){
 buildModelAda <- function(formula,
                           dataset,
                           tv=NULL,
-                          seed=crv$seed,
+                          seed="crv$seed",
                           maxdepth=30,
                           minsplit=20,
                           cp=0.01,
@@ -142,7 +142,7 @@ buildModelAda <- function(formula,
   # implementation of AdaBoost, so set the seed to get the same result
   # each time.
 
-  model.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+  model.cmd <- paste(sprintf("set.seed(%s)\n", seed),
                      "ada(", formula, ",\n      data=", dataset,
                      control, ",\n      iter=", ntree, ")",
                      sep="")
