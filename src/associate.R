@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-19 10:19:14 Graham Williams>
+# Time-stamp: <2011-01-02 12:28:53 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -164,19 +164,19 @@ executeAssociateTab <- function()
 
   # Transform data into a transactions dataset for arules.
 
-  include <- getCategoricVariables()
+  include <- "crs$categoric" # 20110102 getCategoricVariables()
   
   if (baskets)
     transaction.cmd <- paste("crs$transactions <- as(split(",
-                             sprintf('crs$dataset%s$%s, crs$dataset%s$%s',
-                                     ifelse(sampling, "[crs$sample,]", ""),
-                                     crs$target,
-                                     ifelse(sampling, "[crs$sample,]", ""),
-                                     crs$ident),
+                             sprintf('crs$dataset[%s, %s], crs$dataset[%s, %s]',
+                                     ifelse(sampling, "crs$sample", ""),
+                                     "crs$target",
+                                     ifelse(sampling, "crs$sample", ""),
+                                     "crs$ident"),
                              '), "transactions")', sep="") 
   else
     transaction.cmd <- paste("crs$transactions <- as(",
-                             sprintf('crs$dataset[%s,%s], "transactions")',
+                             sprintf('crs$dataset[%s, %s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
   appendLog(Rtxt("Generate a transactions dataset."), transaction.cmd)

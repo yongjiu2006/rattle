@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:36:45 Graham Williams>
+# Time-stamp: <2011-01-02 10:31:29 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -109,6 +109,7 @@ executeClusterKMeans <- function(include)
   
   nclust <- theWidget("kmeans_clusters_spinbutton")$getValue()
   seed <- theWidget("kmeans_seed_spinbutton")$getValue()
+  if (seed == crv$seed) seed <- "crv$seed"
   nruns <- theWidget("kmeans_runs_spinbutton")$getValue()
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
@@ -117,14 +118,15 @@ executeClusterKMeans <- function(include)
 
   # Set the seed so we can repeat.
 
-  seed.cmd <- sprintf('set.seed(%d)', seed)
+  seed.cmd <- sprintf('set.seed(%s)', seed)
   appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
             seed.cmd)
   eval(parse(text=seed.cmd))
 
   # Determine the dataset to use.
 
-  ds <- sprintf("na.omit(crs$dataset[%s,%s])", ifelse(sampling, "crs$sample", ""), include)
+  ds <- sprintf("na.omit(crs$dataset[%s, %s])",
+                ifelse(sampling, "crs$sample", ""), include)
   
   # Calculate the centers
 
@@ -209,7 +211,7 @@ executeClusterKMeans <- function(include)
     for (i in 2:nclust)
     {
       kmeans.cmd <- sprintf(paste('crs$kmeans <-',
-                                  'kmeans(na.omit(crs$dataset[%s,%s]), %s)'),
+                                  'kmeans(na.omit(crs$dataset[%s, %s]), %s)'),
                             ifelse(sampling, "crs$sample", ""), include, i)
       eval(parse(text=seed.cmd))
       eval(parse(text=kmeans.cmd))
@@ -422,7 +424,7 @@ displayClusterStatsKMeans <- function()
   # 091219 Why would we check this here - the cluster is already
   # built?
   
-  include <- getNumericVariables()
+  include <- "crs$numeric" # 20110102 getNumericVariables()
   if (length(include) == 0)
   {
     errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
@@ -470,7 +472,7 @@ displayClusterStatsKMeans <- function()
 
   if (large)
   {
-    large.sample.cmd <- paste(sprintf("set.seed(%d)", crv$seed),
+    large.sample.cmd <- paste(sprintf("set.seed(%s)", crv$seed),
                               sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
                                       crv$cluster.report.max.obs),    
                               sep="\n")
@@ -483,7 +485,7 @@ displayClusterStatsKMeans <- function()
   on.exit(set.cursor("left-ptr"))
   while (gtkEventsPending()) gtkMainIteration()
 
-  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s]%s)),",
+  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s, %s]%s)),",
                              "crs$kmeans$cluster%s)\n"),
                        ifelse(sampling, "crs$sample", ""),
                        include,
@@ -531,16 +533,13 @@ dataPlotKMeans <- function()
   # cluster, and so we don't need to check so many conditions.
 
   sampling  <- not.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
+
+  include <- "intersect(crs$input, crs$numeric)"
+  incvars <- eval(parse(text=include))
 
   # We can only plot if there is more than a single variable.
   
-  if (length(intersect(nums, indicies)) == 1)
+  if (length(incvars) == 1)
   {
     infoDialog(Rtxt("A data plot of the clusters can not be constructed",
                     "because there is only one numeric variable available",
@@ -551,7 +550,7 @@ dataPlotKMeans <- function()
   # 091219 Check for very large data, and if so use auto sampling.
   
   large <- length(crs$kmeans$cluster) > crv$cluster.report.max.obs
-  manyvars <- length(intersect(nums, indicies)) > crv$scatter.max.vars
+  manyvars <- length(incvars) > crv$scatter.max.vars
 
   if (large && manyvars)
   {
@@ -600,7 +599,7 @@ dataPlotKMeans <- function()
     
   if (large)
   {
-    large.sample.cmd <- paste(sprintf("set.seed(%d)", crv$seed),
+    large.sample.cmd <- paste(sprintf("set.seed(%s)", crv$seed),
                               sprintf("smpl <<- sample(length(crs$kmeans$cluster), %d)",
                                       crv$cluster.report.max.obs),
                               sep="\n")
@@ -635,7 +634,7 @@ dataPlotKMeans <- function()
 
   ##  plot.cmd <- sprintf(paste("plot(crs$dataset[%s,%s], ",
 
-  plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s,%s]%s), ",
+  plot.cmd <- sprintf(paste("plot(na.omit(crs$dataset[%s, %s]%s), ",
                             "col=crs$kmeans$cluster)\n%s", sep=""),
                       ifelse(sampling, "crs$sample", ""), include,
                       ifelse(large,
@@ -674,14 +673,11 @@ discriminantPlotKMeans <- function()
   # cluster, and so we don't need to check so many conditions.
 
   sampling <- not.null(crs$sample)
-  nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
-  if (length(nums) > 0)
-  {
-    indicies <- getVariableIndicies(crs$input)
-    include <- simplifyNumberList(intersect(nums, indicies))
-  }
 
-  if (length(nums) == 0 || length(indicies) == 0)
+  include <- "intersect(crs$input, crs$numeric)"
+  incvars <- eval(parse(text=include))
+
+  if (length(crs$numeric) == 0 || length(crs$input) == 0)
   {
     errorDialog(Rtxt("Clusters are currently calculated only for numeric data.",
                      "No numeric variables were found in the dataset",
@@ -691,7 +687,7 @@ discriminantPlotKMeans <- function()
 
   # We can only plot if there is more than a single variable.
   
-  if (length(intersect(nums, indicies)) == 1)
+  if (length(incvars) == 1)
   {
     infoDialog(Rtxt("A discriminant coordinates plot can not be constructed",
                     "because there is only one numeric variable available."))
@@ -701,7 +697,7 @@ discriminantPlotKMeans <- function()
   # PLOT: Log the R command and execute. 080521 Add the na.omit since
   # kmeans is usually built with this.
 
-  plot.cmd <- paste(sprintf("plotcluster(na.omit(crs$dataset[%s,%s]), ",
+  plot.cmd <- paste(sprintf("plotcluster(na.omit(crs$dataset[%s, %s]), ",
                             ifelse(sampling, "crs$sample", ""), include),
                     "crs$kmeans$cluster)\n",
                     genPlotTitleCmd("Discriminant Coordinates",

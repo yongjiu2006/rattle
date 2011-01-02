@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-12-12 21:13:14 Graham Williams>
+# Time-stamp: <2011-01-02 04:24:30 Graham Williams>
 #
 # MODEL TAB
 #
@@ -456,7 +456,7 @@ executeModelTab <- function()
   # The following work for ada, do they work for the rest?
   
   formula <- paste(crs$target, "~ .")
-  included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102 getIncludedVariables()
   sampling <- not.null(crs$train)
   including <- not.null(included)
   subsetting <- sampling || including
@@ -584,7 +584,8 @@ executeModelTab <- function()
   # to know why, but as a temporary fix, convert to lower here.
   if (tolower(currentModelTab()) == crv$SURVIVAL)
   {
-    included <- getIncludedVariables(risk=TRUE)
+    # 20110102 included <- getIncludedVariables(risk=TRUE)
+    included <- "c(crs$input, crs$risk, crs$target)"
     including <- not.null(included)
     dataset <- paste("crs$dataset",
                      if (subsetting) "[",
@@ -661,7 +662,7 @@ executeModelGLM <- function()
 
   # List, as a string, the variables to be included. 
   
-  included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102 getIncludedVariables()
   
   # Some convenience booleans.
 
@@ -1144,7 +1145,7 @@ executeModelSVM <- function()
   
   ## Included variables.
 
-  included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102 getIncludedVariables()
   
   ## Convenience booleans.
 
@@ -1206,7 +1207,7 @@ executeModelSVM <- function()
 
   # 100614 Ensure each run generates the same model.
 
-  seed.cmd <- sprintf('set.seed(%d)', crv$seed)
+  seed.cmd <- "set.seed(crv$seed)"
   svmCmd <- paste(seed.cmd, svmCmd, sep="\n")
   
   start.time <- Sys.time()

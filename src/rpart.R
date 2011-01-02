@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-27 11:29:49 Graham Williams>
+# Time-stamp: <2011-01-02 04:26:00 Graham Williams>
 #
 # RPART TAB
 #
@@ -355,7 +355,8 @@ executeModelRPart <- function(action="build")
 
   # Variables to be included --- a string of indicies.
   
-  included <- getIncludedVariables()
+  # included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)" # 20110102
   
   # Some convenience booleans
 
@@ -474,7 +475,7 @@ executeModelRPart <- function(action="build")
 
   # Set the seed so that xerror and xstd are consistent each time
 
-  seed.cmd <- sprintf('set.seed(%d)', crv$seed)
+  seed.cmd <- 'set.seed(crv$seed)'
   appendLog(Rtxt("Reset the random number seed to obtain the same results each time."),
             seed.cmd)
   eval(parse(text=seed.cmd))

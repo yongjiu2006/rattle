@@ -4,6 +4,13 @@ rattle (2.6.1) unstable; urgency=low
     tab record of the command.
   
   * Add rattle.ui to the google code repository.
+  
+  * Remove as many literals as possible from the Log tab - so that
+    crs$dataset[crs$sample, c(2:10,14,16:20)] becomes
+    crs$dataset[crs$sample, c(crs$input, crs$target)], for
+    example. Similarly for the set.seed and other data storing variables.
+  
+  * Other Log tab cleanup.
 
  --
 

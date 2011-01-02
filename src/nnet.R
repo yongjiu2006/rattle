@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-12-04 16:46:28 Graham Williams>
+# Time-stamp: <2011-01-02 03:51:00 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -107,7 +107,8 @@ executeModelNNet <- function()
   
   # Variables to be included --- a string of indicies.
   
-  included <- getIncludedVariables()
+  # 20110102 included <- getIncludedVariables()
+  included <- "c(crs$input, crs$target)"
 
   # Some convenience booleans
 

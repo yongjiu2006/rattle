@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-14 08:49:10 Graham Williams>
+# Time-stamp: <2011-01-02 12:15:53 Graham Williams>
 #
 # DATA TAB
 #
@@ -842,7 +842,7 @@ executeDataCSV <- function(filename=NULL)
   else
   {
     filename <- URLdecode(filename)
-    Encoding(filename) <- "UTF-8" # 100408 For Japanese, otherwise dirname fails. Try for all.
+    Encoding(filename) <- "UTF-8" # 100408 Japanese otherwise dirname fails. Try for all.
   }
   
   crs$dwd <- dirname(filename)
@@ -2160,6 +2160,8 @@ executeSelectTab <- function(resample=TRUE)
     
     }
   }
+
+  #------------------------------------------------------------------------
   
   # Record appropriate information.
   
@@ -2169,18 +2171,26 @@ executeSelectTab <- function(resample=TRUE)
   crs$ident   <- ident
   crs$ignore  <- ignore
   crs$weights <- weights
-
+  crs$numeric <- colnames(crs$dataset)[getNumericVariables(type="indicies")]
+  crs$categoric <- getCategoricVariables(type="names")
+  
   # 091206 Add the information to the Log tab
 
   convertOneMany <- function(x)
     switch(min(length(x)+1, 3), 'NULL', sprintf('"%s"', x),
            sprintf('c("%s")', paste(x, collapse='", "')))
   appendLog(Rtxt("The following variable selections have been noted."),
-            'crs$input <- ', gsub("(([^,]*,){4})", "\\1\n    ", convertOneMany(input)),
-            '\ncrs$target <- ', convertOneMany(target),
-            '\ncrs$risk <- ', convertOneMany(risk),
-            '\ncrs$ident <- ', convertOneMany(ident),
-            '\ncrs$ignore <- ', convertOneMany(ignore))
+            'crs$input <- ', gsub("(([^,]*,){4})", "\\1\n    ",
+                                     convertOneMany(input)),
+            '\n\ncrs$numeric <- ', gsub("(([^,]*,){4})", "\\1\n    ",
+                                       convertOneMany(crs$numeric)),
+            '\n\ncrs$categoric <- ', gsub("(([^,]*,){4})", "\\1\n    ",
+                                       convertOneMany(crs$categoric)),
+            '\n\ncrs$target  <- ', convertOneMany(target),
+            '\ncrs$risk    <- ', convertOneMany(risk),
+            '\ncrs$ident   <- ', convertOneMany(ident),
+            '\ncrs$ignore  <- ', convertOneMany(ignore),
+            '\ncrs$weights <- ', convertOneMany(weights))
 
   # 090801 Update the transforms list, so that any transforms that are
   # not ignore/ident will be noted as active. The status is used when
@@ -2484,22 +2494,31 @@ executeSelectSample <- function()
       ssize <- theWidget("sample_count_spinbutton")$getValue()
 
     seed <- theWidget("sample_seed_spinbutton")$getValue()
+    if (seed == crv$seed) seed <- "crv$seed"
 
     if (newSampling())
     {
-      sample.cmd <- sprintf(paste("set.seed(%d)",
+      sample.cmd <- sprintf(paste("set.seed(%s)",
+                                  "\ncrs$nobs <- nrow(crs$dataset) # %d observations",
                                   "\ncrs$sample <- crs$train <-",
-                                  "sample(nrow(crs$dataset), %d)"), seed, ssize)
+                                  "sample(nrow(crs$dataset),",
+                                  "%s*crs$nobs) # %d observations"),
+                            seed, nrow(crs$dataset),
+                            round(ssize/nrow(crs$dataset), 2), ssize)
       if (vsize > 0)
         sample.cmd <- sprintf(paste("%s\ncrs$validate <-",
                                     "sample(setdiff(seq_len(nrow(crs$dataset)),",
-                                    "crs$train), %d)"), sample.cmd, vsize)
+                                    "crs$train),",
+                                    "%s*crs$nobs) # %d observations"),
+                              sample.cmd, round(vsize/nrow(crs$dataset), 2), vsize)
       else
         sample.cmd <- sprintf("%s\ncrs$validate <- NULL", sample.cmd)
       if (tsize > 0)
         sample.cmd <- sprintf(paste("%s\ncrs$test <-",
                                     "setdiff(setdiff(seq_len(nrow(crs$dataset)),",
-                                    "crs$train), crs$validate)"), sample.cmd)
+                                    "crs$train), crs$validate)",
+                                    "# %d observations"), sample.cmd,
+                              nrow(crs$dataset)-ssize-vsize)
       else
         sample.cmd <- sprintf("%s\ncrs$test <- NULL", sample.cmd)
     }
@@ -2508,7 +2527,7 @@ executeSelectSample <- function()
       # 100417 Even for RStat make sure we maintain crs$train as it is
       # now starting to be used.
       
-      sample.cmd <- paste(sprintf("set.seed(%d)\n", seed),
+      sample.cmd <- paste(sprintf("set.seed(%s)\n", seed),
                           "crs$sample <- crs$train <- sample(nrow(crs$dataset), ", ssize,
                           ")", sep="")
     }
@@ -3387,6 +3406,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
 getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE, target=TRUE)
 {
+  # 20110102 TODO Stop using this function, or else have this function
+  # always return the string "c(crs$input, crs$target)" etc, as
+  # appropriate, so we use symbolic names rather than lists of
+  # variable numbers.
+  
   # DESCRIPTION
   # Generate a numeric list of variables not ignored.
   #

@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2011-01-01 11:24:43 Graham Williams>
+# Time-stamp: <2011-01-01 11:35:23 Graham Williams>
 #
-# Copyright (c) 2009 Togaware Pty Ltd
+# Copyright (c) 2009-2010 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #

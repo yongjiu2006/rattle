@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-16 06:37:48 Graham Williams>
+# Time-stamp: <2011-01-02 15:26:46 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -539,9 +539,9 @@ executeEvaluateTab <- function()
 
   #included <- getIncludedVariables(target=FALSE)
   if (theWidget("evaluate_score_radiobutton")$getActive())
-    included <- getIncludedVariables(target=FALSE)
+    included <- "c(crs$input)" # 20110102 getIncludedVariables(target=FALSE)
   else
-    included <- getIncludedVariables()
+    included <- "c(crs$input, crs$target)" # 20110102 getIncludedVariables()
 
   if (theWidget("evaluate_training_radiobutton")$getActive())
   {
@@ -1354,21 +1354,26 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
 
     if (length(crs$risk))
     {
-      testcols <- gsub("])$", "", gsub(".*, ", "", testset[[mtype]]))
+      # Extract the columns selected from the test dataset as we will
+      # augment this with the risk variable name as we may need to get
+      # the same rows removed through NAs, before then extracting the
+      # relevant risk variable.
+      
+      testcols <- sub("]$", "", sub("[^,]*, ", "", testset[[mtype]]))
       if (testcols != "")
       {
-        newcols <- gsub(")", sprintf(",%d)",
-                                     getVariableIndicies(crs$risk)), testcols)
+        newcols <- gsub(")", sprintf(", %s)", "crs$risk"), testcols)
         testsetr <- gsub(testcols, newcols, testset[[mtype]], fixed=TRUE)
       }
 
       evaluate.cmd <- paste("crs$eval <- evaluateRisk(crs$pr,",
-                            sprintf("%s$%s,", testset[[mtype]], crs$target),
-                            sprintf("%s$%s)", testsetr, risk))
+                            sprintf("\n    %s$%s,", testset[[mtype]], crs$target),
+                            sprintf("\n    %s$%s)", testsetr, risk))
 
       plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
                         "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
-                        'risk.name="', risk, '", recall.name="', crs$target, '"',
+                        '\n    risk.name="', risk,
+                        '", recall.name="', crs$target, '"',
                         ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
                         ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
                         ")\n",

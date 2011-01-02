@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-09-20 19:57:26 Graham Williams>
+# Time-stamp: <2011-01-02 04:16:39 Graham Williams>
 #
 # Implement LOG functionality.
 #
@@ -77,6 +77,10 @@ initiateLog <- function()
                                    "if available."),
                               "\n\n",
                               "library(colorspace)", sep=""), ""),
+                 "\n\n",
+                 Rtxt("# A pre-defined value is used to reset the random seed",
+                      "so that results are repeatable."),
+                 "\n\ncrv$seed <- ", crv$seed,
                  sep=""))
 
 }

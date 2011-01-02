@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-04-24 05:32:48 Graham Williams>
+# Time-stamp: <2011-01-02 10:24:05 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -91,7 +91,7 @@ on_hclust_data_plot_button_clicked <- function(button)
   # PLOT: Log the R command and execute.
 
   set.cursor("watch", Rtxt("Determining the cluster statistics...."))
-  plot.cmd <- paste(sprintf(paste("plot(crs$dataset[%s,%s], ",
+  plot.cmd <- paste(sprintf(paste("plot(crs$dataset[%s, %s], ",
                                   "col=cutree(crs$hclust, %d))\n",
                                   sep=""),
                             ifelse (sampling, "crs$sample", ""), include,
@@ -156,7 +156,7 @@ on_hclust_discriminant_plot_button_clicked <- function(button)
 
   # PLOT: Log the R command and execute.
 
-  plot.cmd <- paste(sprintf(paste("plotcluster(na.omit(crs$dataset[%s,%s]), ",
+  plot.cmd <- paste(sprintf(paste("plotcluster(na.omit(crs$dataset[%s, %s]), ",
                                   "cutree(crs$hclust, %d))\n"),
                             ifelse(sampling, "crs$sample", ""), include,
                             num.clusters),
@@ -245,8 +245,8 @@ executeClusterHClust <- function(include)
     # Use the more efficient hcluster for clustering.
   
     hclust.cmd <- paste("crs$hclust <- ",
-                        sprintf(paste('hclusterpar(na.omit(crs$dataset[%s,%s]),',
-                                      'method="%s", link="%s",',
+                        sprintf(paste('hclusterpar(na.omit(crs$dataset[%s, %s]),',
+                                      '\n    method="%s", link="%s",',
                                       'nbproc=%d)'),
                                 ifelse(sampling, "crs$sample", ""),
                                 include, dist, link, nbproc),
@@ -256,7 +256,7 @@ executeClusterHClust <- function(include)
     # Use the standard hclust for clustering.
     
     hclust.cmd <- paste("crs$hclust <- ",
-                        sprintf(paste('hclust(dist(crs$dataset[%s,%s],',
+                        sprintf(paste('hclust(dist(crs$dataset[%s, %s],',
                                       'method="%s"),',
                                       'method="%s")'),
                                 ifelse(sampling, "crs$sample", ""),
@@ -419,11 +419,11 @@ displayHClustStats <- function()
 #    return()
 #  }
 
-  include <- getNumericVariables()
+  include <- "crs$numeric" # 20110102 getNumericVariables()
   
   # Cluster centers.
 
-  centers.cmd <- sprintf("centers.hclust(na.omit(crs$dataset[%s,%s]), crs$hclust, %d)",
+  centers.cmd <- sprintf("centers.hclust(na.omit(crs$dataset[%s, %s]), crs$hclust, %d)",
                        ifelse(sampling, "crs$sample", ""), include, nclust)
   appendLog(Rtxt("List the suggested cluster centers for each cluster"), centers.cmd)
   appendTextview(TV, Rtxt("Cluster means:"), "\n\n",
@@ -431,7 +431,7 @@ displayHClustStats <- function()
   
   # STATS: Log the R command and execute.
 
-  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s,%s])),",
+  stats.cmd <- sprintf(paste("cluster.stats(dist(na.omit(crs$dataset[%s, %s])),",
                              "cutree(crs$hclust, %d))\n"),
                        ifelse(sampling, "crs$sample", ""), include,
                        nclust)
@@ -474,7 +474,7 @@ displayHClustStats <- function()
 ##   }
 
 ##   plot.cmd <- paste("d <- dist(as.matrix(crs$dataset",
-##                     sprintf("[%s,%s]",
+##                     sprintf("[%s, %s]",
 ##                             ifelse(sampling, "crs$sample", ""),
 ##                             include),
 ##                     "))\n",
@@ -527,7 +527,7 @@ exportHClustTab <- function(file)
 
   sampling  <- not.null(crs$sample)
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
-  include <- getNumericVariables()
+  include <- "crs$numeric" # 20110102 getNumericVariables()
   
   startLog(Rtxt("Export Hclust"))
   
@@ -538,7 +538,7 @@ exportHClustTab <- function(file)
   # Generate appropriate code.
 
   pmml.cmd <- sprintf(paste("pmml(crs$hclust, centers=centers.hclust(",
-                           "na.omit(crs$dataset[%s,%s]), crs$hclust, %d)%s)",
+                           "na.omit(crs$dataset[%s, %s]), crs$hclust, %d)%s)",
                             sep=""),
                       ifelse(sampling, "crs$sample", ""), include, nclust,
                       ifelse(length(crs$transforms) > 0,
@@ -602,9 +602,9 @@ genPredictHclust <- function(dataset)
 
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   sampling  <- not.null(crs$sample)
-  include <- getNumericVariables()
+  include <- "crs$numeric" # 20110102 getNumericVariables()
 
-  return(sprintf("crs$pr <- predict(crs$hclust, %s, na.omit(crs$dataset[%s,%s]), %s)",
+  return(sprintf("crs$pr <- predict(crs$hclust, %s, na.omit(crs$dataset[%s, %s]), %s)",
                  dataset, ifelse(sampling, "crs$sample", ""), include, nclust))
 }
 
