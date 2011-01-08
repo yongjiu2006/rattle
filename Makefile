@@ -326,6 +326,7 @@ translations:
 pbuild: pmml_$(PVERSION).tar.gz  pmml_$(PVERSION).zip
 	chmod go+r $(REPOSITORY)/*
 
+.PHONY: ibuild
 ibuild: rstat_$(IVERSION).tar.gz rstat_$(IVERSION).zip 
 	chmod go+r $(REPOSITORY)/*
 
@@ -378,13 +379,14 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	cp $(PSOURCE) $(PRDEST)
 	perl -pi -e "s|^Version: .*$$|Version: $(PVERSION)|" $(PDESCRIPTION)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
+	cp ChangeLog.pmml package/pmml/inst/ChangeLog
 	chmod -R go+rX $(PPACKAGE)
 	R CMD build $(PPACKAGE)
 	R CMD INSTALL --library=$(RSITELIBRARY) $@
 	mv $@ $(REPOSITORY)
 
 pmml_$(PVERSION).zip: pmml_$(PVERSION).tar.gz
-	(cd $(RSITELIB); zip -r9 - rstat) > $@
+	(cd $(RSITELIB); zip -r9 - pmml) > $@
 	mv $@ $(REPOSITORY)
 
 #-----------------------------------------------------------------------

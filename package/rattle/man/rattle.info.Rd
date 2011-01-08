@@ -1,6 +1,12 @@
 \name{rattle.info}
 \alias{rattle.info}
-\title{Print version information for Rattle, R, associated packages and system.}
+\title{
+
+  Print version information for Rattle, R, associated packages and
+  system, and invisibly return list of packages that have updates
+  available.
+
+}
 \description{
 
   Display system information, including versions of Rattle and R,
@@ -40,10 +46,14 @@ rattle.info(all.dependencies=FALSE,
 
   It also lists the currently installed version of a number of packages
   that Rattle makes use of as well as checking for any updates available
-  for those packages. If updates are found then a command is generated
-  and printed so that a user can simply copy and paste the command to
-  update the relevant packages.
+  for those packages.
 
+  If updates are found then a command is generated and printed so that a
+  user can simply copy and paste the command to update the relevant
+  packages. The function also invisibly returns the list of packages
+  that can be updated, so that we can do something like:
+  install.packages(rattle.info()).
+  
 }
 
 \references{Package home page: \url{http://rattle.togaware.com}}

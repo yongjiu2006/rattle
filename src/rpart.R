@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 04:26:00 Graham Williams>
+# Time-stamp: <2011-01-07 19:07:40 Graham Williams>
 #
 # RPART TAB
 #
@@ -67,7 +67,7 @@ on_rpart_plot_button_clicked <- function(button)
     errorDialog("E122: This is an unexpected error.", crv$support.msg)
     return()
   }
-  
+
   # If there is only a root node then there is nothing to plot.
 
   if (theWidget("model_tree_rpart_radiobutton")$getActive() &&
@@ -87,7 +87,7 @@ on_rpart_plot_button_clicked <- function(button)
                       sep="")
   else # ctree
     plot.cmd <- "plot(crs$rpart)"
-  
+
   ##   plotcp.cmd <- paste("\n\n## Plot the cross validation results.\n\n",
   ##                           "plotcp(crs$rpart)\n",
   ##                           genPlotTitleCmd("Cross Validated Error",
@@ -98,7 +98,7 @@ on_rpart_plot_button_clicked <- function(button)
             plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
-  
+
   ## newPlot()
   ## appendLog(plotcp.command)
   ## eval(parse(text=plotcp.command))
@@ -108,7 +108,7 @@ on_rpart_plot_button_clicked <- function(button)
 
 on_rpart_rules_button_clicked <- function(button)
 {
-  ## Initial setup 
+  ## Initial setup
 
   TV <- "rpart_textview"
 
@@ -125,7 +125,7 @@ on_rpart_rules_button_clicked <- function(button)
           rules.cmd)
   addTextview(TV, paste(Rtxt("Tree as rules:"), "\n"), collectOutput(rules.cmd, TRUE),
               textviewSeparator())
-         
+
   setStatusBar(paste(Rtxt("The corresponding rules have been listed."),
                      Rtxt("You may need to scroll the textview to view them.")))
 }
@@ -195,7 +195,7 @@ on_rpart_best_radiobutton_toggled <- function(button)
 
 executeModelRPart <- function(action="build")
 {
-  # Initial setup 
+  # Initial setup
 
   TV <- "rpart_textview"
 
@@ -207,14 +207,14 @@ executeModelRPart <- function(action="build")
   # machine learning view of the approach.
 
   parms <- ',\n    parms=list(split="information")'
-  
+
   # Obtain the value of the tuning controls
 
   tune.controls <- theWidget("rpart_tune_entry")$getText()
-  
+
   # Retrieve the Priors, and check there is the right number and that
   # they add up to 1.
-  
+
   priors <- theWidget("model_tree_priors_entry")$getText()
   if (nchar(priors) > 0)
   {
@@ -309,7 +309,7 @@ executeModelRPart <- function(action="build")
   # Retrieve the Cross Validation value and if different from
   # default, use it. No longer. Common wisdom is that 10 is right, so
   # in Rattle just go with that.
-  
+
   # xval <- theWidget("rpart_xval_spinbutton")$getValue()
   # if (xval != crv$rpart.xval.default)
   # {
@@ -334,14 +334,14 @@ executeModelRPart <- function(action="build")
                           loss, num.classes*num.classes))
       return(FALSE)
     }
-      
+
     # TODO: Perform other checks on the matrix here.  The loss matrix
     # must have zeros on the diagonal and positive numbers
     # elsewhere. It must be the same dimensions as the number of
     # classes.
 
-    lo <- sprintf("matrix(c(%s), byrow=TRUE, nrow=%d)", loss, num.classes) 
-    
+    lo <- sprintf("matrix(c(%s), byrow=TRUE, nrow=%d)", loss, num.classes)
+
     if (is.null(parms))
       parms <- sprintf(",\n    parms=list(loss=%s)", lo)
     else
@@ -354,18 +354,18 @@ executeModelRPart <- function(action="build")
   frml <- paste(crs$target, "~ .")
 
   # Variables to be included --- a string of indicies.
-  
+
   # included <- getIncludedVariables()
   included <- "c(crs$input, crs$target)" # 20110102
-  
+
   # Some convenience booleans
 
   sampling  <- not.null(crs$train)
   including <- not.null(included)
   subsetting <- sampling || including
-  
+
   # Commands.
-  
+
   lib.cmd <- "require(rpart, quietly=TRUE)"
   if (! packageIsAvailable("rpart", Rtxt("build decision trees"))) return(FALSE)
 
@@ -387,7 +387,7 @@ executeModelRPart <- function(action="build")
                        if (subsetting) ", ",
                        if (including) included,
                        if (subsetting) "]", sep="")
-                       
+
     rpart.cmd <- paste("crs$rpart <- rpart(", frml, ",\n    data=", ds.string,
                        ifelse(is.null(crs$weights), "",
                               sprintf(",\n    weights=(%s)%s",
@@ -406,7 +406,7 @@ executeModelRPart <- function(action="build")
     # 090126 Add error matrix. 100321 Don't add the error matricies -
     # they are more a standard evaluation and belong in the Evaluate
     # tab.
-    
+
   ##   if (categoricTarget())
   ##   {
   ##     pds.string <- paste("crs$dataset",
@@ -420,7 +420,7 @@ executeModelRPart <- function(action="build")
   ##                        ifelse(sampling, "Validation ", "Training "),
   ##                        'dataset error matrix - counts\\n\\n")\n',
   ##                        "print(table(predict(crs$rpart, ",
-  ##                        pds.string, ', type="class"),', 
+  ##                        pds.string, ', type="class"),',
   ##                        pds.string, '$', crs$target,
   ##                        ', dnn=c("Predicted", "Actual")))\n',
   ##                        'cat("\\n")\n',
@@ -430,7 +430,7 @@ executeModelRPart <- function(action="build")
   ##                        ifelse(sampling, "Validation ", "Training "),
   ##                        'dataset error matrix - percentages\\n\\n")\n',
   ##                        "print(round(100*table(predict(crs$rpart, ",
-  ##                        pds.string, ', type="class"),', 
+  ##                        pds.string, ', type="class"),',
   ##                        pds.string, '$', crs$target,
   ##                        ', dnn=c("Predicted", "Actual"))/nrow(',
   ##                        pds.string, ")))\n",
@@ -465,7 +465,7 @@ executeModelRPart <- function(action="build")
 
     print.cmd <- paste("print(crs$rpart)", "printcp(crs$rpart)", sep="\n")
   }
-                               
+
   # Load the required library.
 
   startLog(commonName(crv$RPART))
@@ -515,7 +515,7 @@ executeModelRPart <- function(action="build")
 
   # Now that we have a model, make sure the rules and plot buttons are
   # visible.
-  
+
   showModelRPartExists()
 
   # Finish up.
@@ -529,7 +529,7 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
 {
   # If an rpart model exists then show the Rules and Draw buttons on
   # the Model tab.
-  
+
   if (state)
   {
     theWidget("rpart_plot_button")$show()
@@ -546,7 +546,7 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
   {
     theWidget("rpart_plot_button")$hide()
     theWidget("rpart_rules_button")$hide()
-  }    
+  }
 }
 
 #------------------------------------------------------------------------
@@ -554,13 +554,13 @@ showModelRPartExists <- function(state=!is.null(crs$rpart))
 #
 
 rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
-                                digits = getOption("digits"), ...) 
+                                digits = getOption("digits"), ...)
 {
-    if (!inherits(x, "rpart")) 
+    if (!inherits(x, "rpart"))
         stop(Rtxt("Not a legitimate rpart object."))
-    if (!is.null(x$frame$splits)) 
+    if (!is.null(x$frame$splits))
         x <- rpconvert(x)
-    if (!missing(cp)) 
+    if (!missing(cp))
         x <- prune.rpart(x, cp = cp)
     frame <- x$frame
     ylevel <- attr(x, "ylevels")
@@ -569,13 +569,13 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
     indent <- paste(rep(" ", spaces * 32), collapse = "")
     if (length(node) > 1) {
         indent <- substring(indent, 1, spaces * seq(depth))
-        indent <- paste(c("", indent[depth]), format(node), ")", 
+        indent <- paste(c("", indent[depth]), format(node), ")",
             sep = "")
     }
     else indent <- paste(format(node), ")", sep = "")
     tfun <- (x$functions)$print
     if (!is.null(tfun)) {
-        if (is.null(frame$yval2)) 
+        if (is.null(frame$yval2))
             yval <- tfun(frame$yval, ylevel, digits)
         else yval <- tfun(frame$yval2, ylevel, digits)
     }
@@ -588,10 +588,10 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
     z <- paste(indent, z, n, format(signif(frame$dev, digits = digits)),
         yval, term)
     omit <- x$na.action
-    if (length(omit)) 
+    if (length(omit))
         cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
     else cat("n=", n[1], "\n\n")
-    if (x$method == "class") 
+    if (x$method == "class")
         cat("node), split, n, loss, yval, (yprob)\n")
     else cat("node), split, n, deviance, yval\n")
     cat(Rtxt("      * denotes terminal node\n\n"))
@@ -695,10 +695,10 @@ list.rule.nodes.rpart <- function(model)
 #
 drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
                            size = 4 * cex, col = NULL, nodeinfo = FALSE,
-                           units = "", cases = "obs", 
+                           units = "", cases = "obs",
                            digits = getOption("digits"),
                            decimals = 2,
-                           print.levels = TRUE, new = TRUE) 
+                           print.levels = TRUE, new = TRUE)
 {
   if (new) plot.new()
 
@@ -742,10 +742,10 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
       for (i in 1:nnodes)
       {
         yval <- tframe$yval[i]
-        string <- paste("tframe$yprob[,\"", as.character(yval), 
+        string <- paste("tframe$yprob[,\"", as.character(yval),
                         "\"]", sep = "")
         crate[i] <- eval(parse(text = string))[i]
-        if (leaves[i]) 
+        if (leaves[i])
           trate <- trate + tframe$n[i] * crate[i]
       }
     }
@@ -779,9 +779,9 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
     crate <- round(crate, 3) * 100
     trate <- round(trate/tframe$n[1], 3) * 100
   }
-  if (is.null(col)) 
+  if (is.null(col))
     kol <- rainbow(nleaves)
-  else if (col == "gray" | col == "grey") 
+  else if (col == "gray" | col == "grey")
     kol <- gray(seq(0.8, 0.2, length = nleaves))
   else kol <- col
   xmax <- max(x)
@@ -792,14 +792,14 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
   piny <- par("pin")[2]
   xscale <- (xmax - xmin)/pinx
   box <- size * par("cin")[1]
-  if (box == 0) 
+  if (box == 0)
     xbh <- xscale * 0.2
   else xbh <- xscale * box/2
   chr <- cex * par("cin")[2]
   tail <- box + chr
   yscale <- (ymax - ymin)/(piny - tail)
   ytail <- yscale * tail
-  if (box == 0) 
+  if (box == 0)
     ybx <- yscale * 0.2
   else ybx <- yscale * box
   ychr <- yscale * chr
@@ -821,19 +821,19 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
             string <- paste(string, v, sep = "")
             xl <- eval(parse(text = string))
             lf <- rf <- ""
-            for (k in 1:sp["ncat"]) if (tree$csplit[r, k] == 1) 
+            for (k in 1:sp["ncat"]) if (tree$csplit[r, k] == 1)
                 lf <- paste(lf, xl[k], sep = ",")
             else rf <- paste(rf, xl[k], sep = ",")
-            if (!print.levels) 
+            if (!print.levels)
                 string <- v
             else if (nchar(lf) + nchar(rf) > 30) # Avoid too long
               string <- v
             else
               string <- paste(lf, "=", v, "=", rf)
-            
+
         }
         else {
-            if (sp["ncat"] < 0) 
+            if (sp["ncat"] < 0)
                 op <- "< =>"
             else op <- ">= <"
             string <- paste(v, op, round(val, decimals))
@@ -851,13 +851,13 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
       {
         z <- round(tframe$yval[1], digits)
         r <- pcor[1]
-        string <- paste(z, " ", units, "; ", n, " ", cases, 
+        string <- paste(z, " ", units, "; ", n, " ", cases,
                         "; ", r, "%", sep = "")
       }
       else {
             z <- attr(tree, "ylevels")[tframe$yval[1]]
             r <- crate[1]
-            string <- paste(z, "; ", n, " ", cases, "; ", r, 
+            string <- paste(z, "; ", n, " ", cases, "; ", r,
                 "%", sep = "")
         }
         text.default(x[1], y[1] - ychr, string, cex = cex)
@@ -897,10 +897,10 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
           xl <- eval(parse(text = string))
           lf <- rf <- ""
           for (k in 1:sp["ncat"])
-            if (tree$csplit[r, k] == 1) 
+            if (tree$csplit[r, k] == 1)
               lf <- paste(lf, xl[k], sep = ",")
             else rf <- paste(rf, xl[k], sep = ",")
-          if (!print.levels) 
+          if (!print.levels)
             string <- v
           else if (nchar(lf) + nchar(rf) > 10) # Avoid too long
             string <- v
@@ -908,14 +908,14 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
             string <- paste(lf, "=", v, "=", rf)
         }
         else {
-          if (sp["ncat"] < 0) 
+          if (sp["ncat"] < 0)
             op <- "< =>"
           else op <- expression(">= <")
           string <- paste(v, op, round(val, decimals))
         }
       }
       else {
-        val <- substring(as.character(tframe$splits[i, 
+        val <- substring(as.character(tframe$splits[i,
                                                     1]), 2)
         string <- paste(as.character(v), "< =>", round(val, decimals))
       }
@@ -925,13 +925,13 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
         if (rtree) {
           z <- round(tframe$yval[i], digits)
           r <- pcor[i]
-          string <- paste(z, " ", units, "; ", n, " ", 
+          string <- paste(z, " ", units, "; ", n, " ",
                           cases, "; ", r, "%", sep = "")
         }
         else {
           z <- attr(tree, "ylevels")[tframe$yval[i]]
           r <- crate[i]
-          string <- paste(z, "; ", n, " ", cases, "; ", 
+          string <- paste(z, "; ", n, " ", cases, "; ",
                           r, "%", sep = "")
         }
         text.default(x[i], y[i] - ychr, string, cex = cex)
@@ -951,7 +951,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
       if (rtree)
       {
         z <- round(tframe$yval[i], digits)
-        text.default(x[i], y[i] - ybx, paste(z, units, 
+        text.default(x[i], y[i] - ybx, paste(z, units,
                                              sep = " "), cex = cex)
       }
       else
@@ -968,22 +968,22 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
       #paste(crate[i], "%/", proportions[i], sep = ""), cex = cex)
       if (box != 0)
       {
-        # ORIG text.default(x[i], y[i], as.character(x[i]), 
+        # ORIG text.default(x[i], y[i], as.character(x[i]),
         text.default(x[i], y[i], as.character(leafnode[x[i]]),
                      cex = cex, col=kol[x[i]], font=2)
-      }    
+      }
     }
   }
   if (nodeinfo) {
-    if (rtree) 
-      string <- paste("Total deviance explained =", sum(pcor), 
+    if (rtree)
+      string <- paste("Total deviance explained =", sum(pcor),
                       "%")
-    else string <- paste("Total classified correct =", trate, 
+    else string <- paste("Total classified correct =", trate,
                          "%")
-    if (box == 0) 
-      text.default(mean(x), ymin - 3.5 * ychr, string, cex = 1.2 * 
+    if (box == 0)
+      text.default(mean(x), ymin - 3.5 * ychr, string, cex = 1.2 *
                    cex)
-    else text.default(mean(x), ymin - 2.2 * ybx, string, 
+    else text.default(mean(x), ymin - 2.2 * ybx, string,
                       cex = 1.2 * cex)
   }
 }
@@ -991,7 +991,7 @@ drawTreeNodes <- function (tree, cex = par("cex"), pch = par("pch"),
 exportRpartModel <- function()
 {
   # Make sure we have a model first!
-  
+
   if (noModelAvailable(crs$rpart, crv$RPART)) return(FALSE)
 
   startLog(paste(Rtxt("Export"), commonName(crv$RPART)))
@@ -1003,7 +1003,7 @@ exportRpartModel <- function()
   # We can't pass "\" in a filename to the parse command in MS/Windows
   # so we have to run the save/write command separately, i.e., not
   # inside the string that is being parsed.
-  
+
   pmml.cmd <- sprintf("pmml(crs$rpart%s, dataset=crs$dataset)",
                       ifelse(length(crs$transforms),
                              ", transforms=crs$transforms", ""))
@@ -1020,24 +1020,48 @@ exportRpartModel <- function()
 
     # 090223 Why is this tolower being used? Under GNU/Linux it is
     # blatantly wrong. Maybe only needed for MS/Widnows
-    
+
     if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(sprintf(Rtxt("Export %s as a WebFocus C routine."), commonName(crv$RPART)),
-              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
-                      pmml.cmd, model.name,
-                      attr(save.name, "includePMML"),
-                      "NULL", # Not really NULL, but convenient just for the log.
-                      attr(save.name, "exportClass"),
+
+    if (isWindows() && isJapanese())
+    {
+      appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
+                sprintf('cat(pmmltoc(paste(\'<?xml version="1.0" encoding="shift_jis"?>\\n\', toString(%s), name="%s", %s, %s, %s)), file="%s")',
+                        #              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
+                        pmml.cmd, model.name,
+                        attr(save.name, "includePMML"),
+                        "NULL", # Not really NULL, but convenient just for the log.
+                        attr(save.name, "exportClass"),
                       save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
-                attr(save.name, "includePMML"),
-                ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("rpart_textview"),
+      cat(pmmltoc(paste('<?xml version="1.0" encoding="shift_jis"?>\n',
+                        toString(eval(parse(text=pmml.cmd)))),
+                  model.name,
+                  attr(save.name, "includePMML"),
+                  ifelse(attr(save.name, "includeMetaData"),
+                         getTextviewContent("rpart_textview"),
                        "\"Not Included\""),
-                attr(save.name, "exportClass")), file=save.name)
+                  attr(save.name, "exportClass")), file=save.name)
+    }
+    else
+    {
+      appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
+                sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
+                        pmml.cmd, model.name,
+                        attr(save.name, "includePMML"),
+                        "NULL", # Not really NULL, but convenient just for the log.
+                        attr(save.name, "exportClass"),
+                      save.name))
+      cat(pmmltoc(toString(eval(parse(text=pmml.cmd))),
+                  model.name,
+                  attr(save.name, "includePMML"),
+                  ifelse(attr(save.name, "includeMetaData"),
+                         getTextviewContent("rpart_textview"),
+                       "\"Not Included\""),
+                  attr(save.name, "exportClass")), file=save.name)
+    }        
   }
-          
+
   setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 }
