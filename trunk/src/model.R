@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 04:24:30 Graham Williams>
+# Time-stamp: <2011-01-07 17:25:03 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1017,7 +1017,7 @@ exportRegressionModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
     
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(Rtxt("Export a regression model as C code for WebFocus."),
+    appendLog(Rtxt("Export a regression model as C code."),
               sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
                       pmml.cmd, model.name, 
                       attr(save.name, "includePMML"),

@@ -1,7 +1,7 @@
 rattle (2.6.1) unstable; urgency=low
 
-  * When exporting a regression model, be sure to use proper slash for log
-    tab record of the command.
+  * When exporting a regression model, be sure to use proper slash (i.e.,
+    not the Windows slosh) for log tab record of the command.
   
   * Add rattle.ui to the google code repository.
   
@@ -12,6 +12,15 @@ rattle (2.6.1) unstable; urgency=low
   
   * Other Log tab cleanup.
 
+  * Fix bug that caused failure on reading an .xls data file.
+  
+  * rattle.info() now returns the list of packages that need updating.
+
+  * In exporting a model as C code, if we are Japanese on Windows then
+    note that the encoding is shift-jis rather than utf-8 for some reason.
+  
+  
+  
  --
 
 rattle (2.6.0) unstable; urgency=low

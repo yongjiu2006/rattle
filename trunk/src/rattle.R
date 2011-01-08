@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 15:26:56 Graham Williams>
+# Time-stamp: <2011-01-05 20:55:28 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -278,6 +278,8 @@ rattle.info <- function(all.dependencies=FALSE,
   if (! is.null(up))
     cat(sprintf('\nUpgrade the packages with:\n\n  > install.packages(c("%s"))\n\n',
                 paste(up, collapse='", "')))
+
+  invisible(up)
 
 }
 

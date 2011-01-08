@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2010-03-25 06:54:14 Graham Williams>
+# Time-stamp: <2011-01-06 06:38:43 Graham Williams>
 #
-# Copyright (c) 2009 Togaware Pty Ltd
+# Copyright (c) 2011 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -25,11 +25,12 @@
 #
 # Implements a PMML exporter for arules objects (Association Rules)
 #
-# Author: 
+# Author: Graham Williams / Michael Hahsler
 # E-mail: 
 # Date: 
 #
 # Conform to PMML 3.2 Graham Williams 080622
+# This also would conform to PMML 4.0 Michael Hahsler 110106 
 
 pmml.rules <- function(model,
                        model.name="arules_Model",
@@ -44,7 +45,7 @@ pmml.rules <- function(model,
   
   # PMML
 
-  pmml <- pmmlRootNode("3.2")
+  pmml <- pmmlRootNode("4.0")
 
   # PMML -> Header
 
@@ -73,8 +74,7 @@ pmml.rules <- function(model,
 
   association.model <- xmlNode("AssociationModel", 
       attrs=c(functionName="associationRules",
-          ## fixme: this is currently a hack
-          numberOfTransactions=attr(quality(model), "size.data"), 
+          numberOfTransactions=info(model)$ntransactions, 
           numberOfItems=length(itemLabels(model)),
           minimumSupport=min(quality$support),     
           minimumConfidence=min(quality$confidence),
@@ -144,14 +144,14 @@ pmml.itemsets <- function(model,
                        copyright=NULL, ...)
 {
   
-  if (! inherits(model, "itemsets")) stop("Not a legitimate arules rules object")
+    #if (! inherits(model, "itemsets")) stop("Not a legitimate arules itemsets rules object")
 
   #require(XML, quietly=TRUE)
-  require(arules, quietly=TRUE)
+  #require(arules, quietly=TRUE)
 
   
   ## PMML
-  pmml <- pmmlRootNode()
+  pmml <- pmmlRootNode("4.0")
 
   ## PMML -> Header
 
@@ -176,7 +176,7 @@ pmml.itemsets <- function(model,
   association.model <- xmlNode("AssociationModel", 
       attrs=c(functionName="associationRules",
           ## fixme: this is currently a hack
-          numberOfTransactions=attr(quality(model), "size.data"), 
+          numberOfTransactions=info(model)$ntransactions, 
           numberOfItems=length(itemLabels(model)),
           minimumSupport=min(quality$support),     
           minimumConfidence=0L,
@@ -194,7 +194,7 @@ pmml.itemsets <- function(model,
 
   ## items
   items <- list()
-  il <- markup(itemLabels(model))
+  il <- markupSpecials(itemLabels(model))
   for (i in 1:length(il)) 
   items[[i]] <- xmlNode("Item", attrs = list(id = i, value = il[i]))
 

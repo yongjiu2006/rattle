@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 12:15:53 Graham Williams>
+# Time-stamp: <2011-01-05 19:29:07 Graham Williams>
 #
 # DATA TAB
 #
@@ -900,6 +900,9 @@ executeDataCSV <- function(filename=NULL)
                               'con <- odbcConnectExcel%s("%s")',
                               'crs$dataset <- sqlFetch(con, "Sheet1")',
                               "odbcClose(con)",
+                              # Make sure we return the actual dataset
+                              # as the result as that is assumed.
+                              "crs$dataset", 
                               sep="\n"),
                         ifelse(tolower(get.extension(filename)) == "xlsx",
                                "2007", ""),
