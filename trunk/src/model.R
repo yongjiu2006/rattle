@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-07 17:25:03 Graham Williams>
+# Time-stamp: <2011-01-12 22:18:27 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1017,19 +1017,14 @@ exportRegressionModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
     
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(Rtxt("Export a regression model as C code."),
-              sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
-                      pmml.cmd, model.name, 
-                      attr(save.name, "includePMML"),
-                      attr(save.name, "includeMetaData"),
-                      attr(save.name, "exportClass"),
-                      fixWindowsSlash(save.name)))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
-                attr(save.name, "includePMML"),
-                ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("glm_textview"),
-                       "\"Not Included\""),
-                attr(save.name, "exportClass")), file=save.name)
+    
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "glm_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$GLM)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
   }
   
   setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."),

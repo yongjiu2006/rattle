@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 03:51:00 Graham Williams>
+# Time-stamp: <2011-01-13 06:54:40 Graham Williams>
 #
 # NNET OPTION 061230
 #
@@ -225,7 +225,7 @@ exportNNetModel <- function()
 
   if (noModelAvailable(crs$nnet, crv$NNET)) return(FALSE)
 
-  startLog(Rtxt("Export the Neural Net Model")) 
+  startLog(paste(Rtxt("Export"), commonName(crv$RPART)))
 
   save.name <- getExportSaveName(crv$NNET)
   if (is.null(save.name)) return(FALSE)
@@ -258,22 +258,31 @@ exportNNetModel <- function()
     if (isWindows()) save.name <- tolower(save.name)
 
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(Rtxt("Export the Neural Net model as C code for WebFocus."),
-              sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
-                      pmml.cmd, model.name, 
-                      attr(save.name, "includePMML"),
-                      attr(save.name, "includeMetaData"),
-                      attr(save.name, "exportClass"),
-                      save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
-                attr(save.name, "includePMML"),
-                ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("nnet_textview"),
-                       "\"Not Included\""),
-                attr(save.name, "exportClass")), file=save.name)
-  }
 
-  setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."), toupper(ext), save.name))
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "nnet_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$NNET)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
+
+    
+    ## appendLog(Rtxt("Export the Neural Net model as C code for WebFocus."),
+    ##           sprintf('cat(pmmltoc(toString(%s), "%s", %s, %s, %s), file="%s")',
+    ##                   pmml.cmd, model.name, 
+    ##                   attr(save.name, "includePMML"),
+    ##                   attr(save.name, "includeMetaData"),
+    ##                   attr(save.name, "exportClass"),
+    ##                   save.name))
+    ## cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
+    ##             attr(save.name, "includePMML"),
+    ##             ifelse(attr(save.name, "includeMetaData"),
+    ##                    getTextviewContent("nnet_textview"),
+    ##                    "\"Not Included\""),
+    ##             attr(save.name, "exportClass")), file=save.name)
+  }
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 }
 
 print.summary.nnet.rattle <- function(x, ...)

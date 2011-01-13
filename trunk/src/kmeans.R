@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 10:31:29 Graham Williams>
+# Time-stamp: <2011-01-12 22:11:40 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -260,23 +260,16 @@ showModelKMeansExists <- function(state=!is.null(crs$kmeans))
 exportKMeansTab <- function(file)
 {
   # Make sure we have a model first!
-  
-  if (is.null(crs$kmeans))
-  {
-    errorDialog(Rtxt("No kmeans cluster model is available. Be sure to build",
-                     "the model before trying to export it! You will need",
-                     "to press the Execute button (F2) in order to build the",
-                     "model."))
-    return()
-  }
+
+  if (noModelAvailable(crs$kmeans, crv$KMEANS)) return(FALSE)
 
   startLog(paste(Rtxt("Export"), commonName(crv$KMEANS)))
   
-  save.name <- getExportSaveName("kmeans")
+  save.name <- getExportSaveName(crv$KMEANS)
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 
-  # Generate appropriate code.
+  # Construct the command to produce PMML.
 
   pmml.cmd <- sprintf("pmml(crs$kmeans%s)",
                       ifelse(length(crs$transforms) > 0,
@@ -294,21 +287,23 @@ exportKMeansTab <- function(file)
   }
   else if (ext == "c")
   {
-    save.name <- tolower(save.name)
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name,
+    # "kmeans")
+
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+
+    if (isWindows()) save.name <- tolower(save.name)
+    
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(sprintf(Rtxt("Export %s as a WebFocus C routine."), commonName(crv$KMEANS)),
-              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
-                      pmml.cmd, model.name,
-                      attr(save.name, "includePMML"),
-                      attr(save.name, "includeMetaData"),
-                      attr(save.name, "exportClass"),
-                      save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
-                attr(save.name, "includePMML"),
-                ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("kmeans_textview"),
-                       "\"Not Included\""),
-                attr(save.name, "exportClass")), file=save.name)
+
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "kmeans_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$KMEANS)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
   }
   
   setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
