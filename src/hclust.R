@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 10:24:05 Graham Williams>
+# Time-stamp: <2011-01-12 22:11:59 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -514,14 +514,7 @@ exportHClustTab <- function(file)
 {
   # Make sure we have a model first!
   
-  if (is.null(crs$hclust))
-  {
-    errorDialog(Rtxt("No hierarchical cluster model is available. Be sure to build",
-                     "the model before trying to export it! You will need",
-                     "to press the Execute button (F2) in order to build the",
-                     "model."))
-    return()
-  }
+  if (noModelAvailable(crs$hclust, crv$HCLUST)) return(FALSE)
 
   # Get some required information
 
@@ -529,13 +522,13 @@ exportHClustTab <- function(file)
   nclust <- theWidget("hclust_clusters_spinbutton")$getValue()
   include <- "crs$numeric" # 20110102 getNumericVariables()
   
-  startLog(Rtxt("Export Hclust"))
+  startLog(paste(Rtxt("Export"), commonName(crv$HCLUST)))
   
-  save.name <- getExportSaveName("hclust")
+  save.name <- getExportSaveName(crv$HCLUST)
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 
-  # Generate appropriate code.
+  # Construct the command to produce PMML.
 
   pmml.cmd <- sprintf(paste("pmml(crs$hclust, centers=centers.hclust(",
                            "na.omit(crs$dataset[%s, %s]), crs$hclust, %d)%s)",
@@ -556,24 +549,21 @@ exportHClustTab <- function(file)
   }
   else if (ext == "c")
   {
-    save.name <- tolower(save.name)
+    if (isWindows()) save.name <- tolower(save.name)
+    
     model.name <- sub("\\.c", "", basename(save.name))
-    appendLog(Rtxt("Export hieracrchical cluster model as C code for WebFocus."),
-              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
-                      pmml.cmd, model.name, 
-                      attr(save.name, "includePMML"),
-                      attr(save.name, "includeMetaData"),
-                      attr(save.name, "exportClass"),
-                      save.name))
-    cat(pmmltoc(toString(eval(parse(text=pmml.cmd))), model.name,
-                attr(save.name, "includePMML"),
-                ifelse(attr(save.name, "includeMetaData"),
-                       getTextviewContent("hclust_textview"),
-                       "\"Not Included\""),
-                attr(save.name, "exportClass")), file=save.name)
+
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "hclust_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$HCLUST)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
+
   }
   
-  setStatusBar(sprintf(Rtxt("The %s file '%s' has been written."), toupper(ext), save.name))
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 
 }
 

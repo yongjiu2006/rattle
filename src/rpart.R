@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-07 19:07:40 Graham Williams>
+# Time-stamp: <2011-01-12 21:18:00 Graham Williams>
 #
 # RPART TAB
 #
@@ -1000,13 +1000,15 @@ exportRpartModel <- function()
   if (is.null(save.name)) return(FALSE)
   ext <- tolower(get.extension(save.name))
 
-  # We can't pass "\" in a filename to the parse command in MS/Windows
-  # so we have to run the save/write command separately, i.e., not
-  # inside the string that is being parsed.
+  # Construct the command to produce PMML.
 
   pmml.cmd <- sprintf("pmml(crs$rpart%s, dataset=crs$dataset)",
                       ifelse(length(crs$transforms),
                              ", transforms=crs$transforms", ""))
+
+  # We can't pass "\" in a filename to the parse command in MS/Windows
+  # so we have to run the save/write command separately, i.e., not
+  # inside the string that is being parsed.
 
   if (ext == "xml")
   {
@@ -1016,7 +1018,8 @@ exportRpartModel <- function()
   }
   else if (ext == "c")
   {
-    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name, "decision tree")
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name,
+    # "decision tree")
 
     # 090223 Why is this tolower being used? Under GNU/Linux it is
     # blatantly wrong. Maybe only needed for MS/Widnows
@@ -1025,43 +1028,13 @@ exportRpartModel <- function()
 
     model.name <- sub("\\.c", "", basename(save.name))
 
-    if (isWindows() && isJapanese())
-    {
-      appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
-                sprintf('cat(pmmltoc(paste(\'<?xml version="1.0" encoding="shift_jis"?>\\n\', toString(%s), name="%s", %s, %s, %s)), file="%s")',
-                        #              sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
-                        pmml.cmd, model.name,
-                        attr(save.name, "includePMML"),
-                        "NULL", # Not really NULL, but convenient just for the log.
-                        attr(save.name, "exportClass"),
-                      save.name))
-      cat(pmmltoc(paste('<?xml version="1.0" encoding="shift_jis"?>\n',
-                        toString(eval(parse(text=pmml.cmd)))),
-                  model.name,
-                  attr(save.name, "includePMML"),
-                  ifelse(attr(save.name, "includeMetaData"),
-                         getTextviewContent("rpart_textview"),
-                       "\"Not Included\""),
-                  attr(save.name, "exportClass")), file=save.name)
-    }
-    else
-    {
-      appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
-                sprintf('cat(pmmltoc(toString(%s), name="%s", %s, %s, %s), file="%s")',
-                        pmml.cmd, model.name,
-                        attr(save.name, "includePMML"),
-                        "NULL", # Not really NULL, but convenient just for the log.
-                        attr(save.name, "exportClass"),
-                      save.name))
-      cat(pmmltoc(toString(eval(parse(text=pmml.cmd))),
-                  model.name,
-                  attr(save.name, "includePMML"),
-                  ifelse(attr(save.name, "includeMetaData"),
-                         getTextviewContent("rpart_textview"),
-                       "\"Not Included\""),
-                  attr(save.name, "exportClass")), file=save.name)
-    }        
-  }
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "rpart_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
 
+    eval(parse(text=export.cmd))
+  }      
   setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 }

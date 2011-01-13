@@ -356,7 +356,7 @@ rattle_$(VERSION).tar.gz: $(SOURCE) translations
 		src/rattle.R
 	perl -pi -e "s|Revision: [0-9]*|Revision: $(SVNREVIS)|" \
 		src/rattle.R
-	perl -pi -e "s|^PACKAGEID <- \"11_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \
+	perl -pi -e "s|^PACKAGEID <- \"13_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \
 		src/rstat.R
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/

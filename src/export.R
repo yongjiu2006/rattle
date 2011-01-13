@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-12-11 09:08:46 Graham Williams>
+# Time-stamp: <2011-01-12 21:21:41 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -395,4 +395,28 @@ getExportSaveName <- function(mtype)
   return(save.name)
 }
 
+generateExportPMMLtoC <- function(model.name, save.name, TV)
+{
+  export.cmd <- paste("cat(pmmltoc(%s%s%s,",
+                      '\n            name="%s",',
+                      '\n            includePMML=%s,',
+                      '\n            includeMetaData=%s,',
+                      '\n            exportClass=%s),',
+                      '\n    file="%s")', sep="")
 
+  export.cmd <- sprintf(export.cmd,
+                        ifelse(isWindows() && isJapanese(),
+                               paste("paste('<?xml version=\"1.0\"",
+                                     "encoding=\"shift_jis\"?>\\n',",
+                                     "\n                  "), ""),
+                        "toString(eval(parse(text=pmml.cmd)))",
+                        ifelse(isWindows() && isJapanese(), ")", ""),
+                        model.name,
+                        ifelse(attr(save.name, "includePMML"), "TRUE", "FALSE"),
+                        ifelse(attr(save.name, "includeMetaData"),
+                               sprintf('getTextviewContent("%s")', TV),
+                               '"\\"Not Included\\""'),
+                        ifelse(attr(save.name, "exportClass"), "TRUE", "FALSE"),
+                        fixWindowsSlash(save.name))
+  return(export.cmd)
+}

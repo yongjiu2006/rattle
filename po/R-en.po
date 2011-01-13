@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-08 20:58+1100\n"
-"PO-Revision-Date: 2011-01-08 20:58+1100\n"
+"POT-Creation-Date: 2011-01-13 20:02+1100\n"
+"PO-Revision-Date: 2011-01-13 20:02+1100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_AU\n"
@@ -399,7 +399,7 @@ msgstr "Explore"
 msgid "Explore Missing"
 msgstr "Explore Missing"
 
-#: rattle.glade.h:96 kmeans.R:273 rpart.R:997
+#: rattle.glade.h:96 hclust.R:525 kmeans.R:266 nnet.R:228 rpart.R:997
 msgid "Export"
 msgstr "Export"
 
@@ -407,7 +407,7 @@ msgstr "Export"
 msgid "Export Comments"
 msgstr "Export Comments"
 
-#: rattle.glade.h:98 associate.R:428 model.R:1285
+#: rattle.glade.h:98 associate.R:428 model.R:1294
 msgid "Export PMML"
 msgstr "Export PMML"
 
@@ -1613,7 +1613,7 @@ msgstr ""
 "A data plot can not be constructed because there is only one numeric "
 "variable available in the data."
 
-#: kmeans.R:546
+#: kmeans.R:541
 msgid ""
 "A data plot of the clusters can not be constructed because there is only one "
 "numeric variable available in the data."
@@ -1733,7 +1733,7 @@ msgstr ""
 "numeric and categoric data. <<>> The rpart package is used to build the "
 "decision tree."
 
-#: kmeans.R:693
+#: kmeans.R:688
 msgid ""
 "A discriminant coordinates plot can not be constructed because there is only "
 "one numeric variable available."
@@ -1749,7 +1749,7 @@ msgstr ""
 "A discriminant coordinates plot can not be constructed because there is only "
 "one numeric variable available in the data."
 
-#: kmeans.R:709
+#: kmeans.R:704
 msgid "A discriminant coordinates plot has been generated."
 msgstr "A discriminant coordinates plot has been generated."
 
@@ -1820,7 +1820,7 @@ msgid "All %d plots have been generated."
 msgstr "All %d plots have been generated."
 
 #: associate.R:442 data.R:247 data.R:264 data.R:281 data.R:1793
-#: evaluate.R:2575 export.R:274 log.R:150 model.R:1299 projects.R:186
+#: evaluate.R:2575 export.R:274 log.R:150 model.R:1308 projects.R:186
 #: projects.R:355 rattle.R:2557
 msgid "All Files"
 msgstr "All Files"
@@ -2467,11 +2467,11 @@ msgstr "build a neural network"
 msgid "Build a neural network model using the nnet package."
 msgstr "Build a neural network model using the nnet package."
 
-#: model.R:1103
+#: model.R:1112
 msgid "build an SVM model using ksvm"
 msgstr "build an SVM model using ksvm"
 
-#: model.R:1113
+#: model.R:1122
 msgid "build an SVM model using svm"
 msgstr "build an SVM model using svm"
 
@@ -2483,7 +2483,7 @@ msgstr "build a random forest model"
 msgid "Build a Regression model."
 msgstr "Build a Regression model."
 
-#: model.R:1214
+#: model.R:1223
 msgid "Build a Support Vector Machine model."
 msgstr "Build a Support Vector Machine model."
 
@@ -2687,7 +2687,7 @@ msgstr "Cluster means:"
 msgid "cluster number"
 msgstr "cluster number"
 
-#: cluster.R:61 hclust.R:77 hclust.R:143 kmeans.R:432 kmeans.R:684
+#: cluster.R:61 hclust.R:77 hclust.R:143 kmeans.R:427 kmeans.R:679
 msgid ""
 "Clusters are currently calculated only for numeric data. No numeric "
 "variables were found in the dataset from amongst those having an input/"
@@ -2777,9 +2777,13 @@ msgstr "Convert values to ranks."
 msgid "Copyright"
 msgstr "Copyright"
 
-#: rstat.R:23 zzz.R:217
+#: zzz.R:217
 msgid "Copyright (c) 2006-2010 %s."
 msgstr "Copyright (c) 2006-2010 %s."
+
+#: rstat.R:23
+msgid "Copyright (c) 2006-2011 %s."
+msgstr "Copyright (c) 2006-2011 %s."
 
 #: rattle.R:2308
 msgid "Copy the plot on device %d to the clipboard."
@@ -3047,7 +3051,7 @@ msgstr "Determining the available datasets...."
 msgid "Determining the available datasets from all packages...."
 msgstr "Determining the available datasets from all packages...."
 
-#: hclust.R:43 hclust.R:93 kmeans.R:484
+#: hclust.R:43 hclust.R:93 kmeans.R:479
 msgid "Determining the cluster statistics...."
 msgstr "Determining the cluster statistics...."
 
@@ -3087,7 +3091,7 @@ msgstr "Display a plot showing the relative importance of the components."
 msgid "Display a plot showing the two most principal components."
 msgstr "Display a plot showing the two most principal components."
 
-#: kmeans.R:530
+#: kmeans.R:525
 msgid "Display a scatterplot matrix for the KMeans clustering."
 msgstr "Display a scatterplot matrix for the KMeans clustering."
 
@@ -3185,7 +3189,7 @@ msgstr "Dot Plot"
 msgid "Do you want to terminate %s?"
 msgstr "Do you want to terminate %s?"
 
-#: model.R:1412
+#: model.R:1421
 msgid "Do you wish to continue?"
 msgstr "Do you wish to continue?"
 
@@ -3347,7 +3351,7 @@ msgstr "Explore Data"
 msgid "explore the data using GGobi"
 msgstr "explore the data using GGobi"
 
-#: model.R:1020
+#: model.R:1029
 msgid "Export a regression model as C code."
 msgstr "Export a regression model as C code."
 
@@ -3367,7 +3371,7 @@ msgstr "Export association rules as PMML."
 msgid "Export a Survival regression model as C code for WebFocus."
 msgstr "Export a Survival regression model as C code for WebFocus."
 
-#: model.R:1325
+#: model.R:1334
 msgid "Export a SVM model as PMML."
 msgstr "Export a SVM model as PMML."
 
@@ -3379,15 +3383,7 @@ msgstr "Export C or PMML"
 msgid "Export Graphics"
 msgstr "Export Graphics"
 
-#: hclust.R:532
-msgid "Export Hclust"
-msgstr "Export Hclust"
-
-#: hclust.R:561
-msgid "Export hieracrchical cluster model as C code for WebFocus."
-msgstr "Export hieracrchical cluster model as C code for WebFocus."
-
-#: hclust.R:553
+#: hclust.R:546
 msgid "Export hierarchical cluster as PMML."
 msgstr "Export hierarchical cluster as PMML."
 
@@ -3403,15 +3399,11 @@ msgstr "Export regression as PMML."
 msgid "Export regression model."
 msgstr "Export regression model."
 
-#: rpart.R:1030 rpart.R:1049
+#: hclust.R:558 kmeans.R:302 model.R:1023 nnet.R:264 rpart.R:1033
 msgid "Export %s as a C routine."
 msgstr "Export %s as a C routine."
 
-#: kmeans.R:299
-msgid "Export %s as a WebFocus C routine."
-msgstr "Export %s as a WebFocus C routine."
-
-#: kmeans.R:291 rpart.R:1013
+#: kmeans.R:284 rpart.R:1015
 msgid "Export %s as PMML."
 msgstr "Export %s as PMML."
 
@@ -3423,15 +3415,11 @@ msgstr "Export survival model."
 msgid "Export survival regression as PMML."
 msgstr "Export survival regression as PMML."
 
-#: model.R:1278
+#: model.R:1287
 msgid "export SVM model"
 msgstr "export SVM model"
 
-#: nnet.R:228
-msgid "Export the Neural Net Model"
-msgstr "Export the Neural Net Model"
-
-#: nnet.R:261
+#: nnet.R:271
 msgid "Export the Neural Net model as C code for WebFocus."
 msgstr "Export the Neural Net model as C code for WebFocus."
 
@@ -3493,7 +3481,7 @@ msgstr ""
 msgid "Frequency"
 msgstr "Frequency"
 
-#: hclust.R:439 kmeans.R:513
+#: hclust.R:439 kmeans.R:508
 msgid "General cluster statistics:"
 msgstr "General cluster statistics:"
 
@@ -3505,7 +3493,7 @@ msgstr "Generate a correlation plot for the variables."
 msgid "Generate a Cost Curve for the %s model on %s."
 msgstr "Generate a Cost Curve for the %s model on %s."
 
-#: hclust.R:100 kmeans.R:644
+#: hclust.R:100 kmeans.R:639
 msgid "Generate a data plot."
 msgstr "Generate a data plot."
 
@@ -3525,7 +3513,7 @@ msgstr "Generate a description of the dataset."
 msgid "Generate a description of the numeric data."
 msgstr "Generate a description of the numeric data."
 
-#: hclust.R:165 kmeans.R:705
+#: hclust.R:165 kmeans.R:700
 msgid "Generate a discriminant coordinates plot."
 msgstr "Generate a discriminant coordinates plot."
 
@@ -3577,7 +3565,7 @@ msgstr "generate associations"
 msgid "Generate a summary of the missing values in the dataset."
 msgstr "Generate a summary of the missing values in the dataset."
 
-#: biclust.R:102 model.R:890 model.R:1238 rpart.R:502
+#: biclust.R:102 model.R:890 model.R:1247 rpart.R:502
 msgid "Generate a textual view of the %s model."
 msgstr "Generate a textual view of the %s model."
 
@@ -3653,7 +3641,7 @@ msgstr "Generate legend entries with subset sizes."
 msgid "Generate Sensitivity/Specificity Plot for %s model on %s."
 msgstr "Generate Sensitivity/Specificity Plot for %s model on %s."
 
-#: kmeans.R:408
+#: kmeans.R:403
 msgid "Generate statistics for the clustering."
 msgstr "Generate statistics for the clustering."
 
@@ -3889,7 +3877,7 @@ msgstr "Include a pseudo R-square on the plot"
 msgid "Indicator Variable"
 msgstr "Indicator Variable"
 
-#: model.R:1407
+#: model.R:1416
 msgid ""
 "In exporting the model the following variables appear to be transformations "
 "that are not currently supported for export. Be aware that the results will "
@@ -4051,7 +4039,7 @@ msgstr ""
 "result in JN_Sex_AgeGroup with levels MaleYoung, MaleMiddle, MaleOld, "
 "FemaleYoung, FemaleMiddle, and FemaleOld."
 
-#: kmeans.R:614
+#: kmeans.R:609
 msgid "Keep just the first %d variables for the plot."
 msgstr "Keep just the first %d variables for the plot."
 
@@ -4059,7 +4047,7 @@ msgstr "Keep just the first %d variables for the plot."
 msgid "Kernel smoothed score distributions"
 msgstr "Kernel smoothed score distributions"
 
-#: kmeans.R:515
+#: kmeans.R:510
 msgid "KMeans cluster statistics have been generated."
 msgstr "KMeans cluster statistics have been generated."
 
@@ -4207,7 +4195,7 @@ msgstr "Load the names of available tables."
 msgid "Load the PMML package to export association rules."
 msgstr "Load the PMML package to export association rules."
 
-#: model.R:1279
+#: model.R:1288
 msgid "Load the PMML package to export a SVM model."
 msgstr "Load the PMML package to export a SVM model."
 
@@ -4353,7 +4341,7 @@ msgstr ""
 "\n"
 "# Bug in ROCR 1.0-3 plot does not obey the add command."
 
-#: nnet.R:282
+#: nnet.R:291
 msgid "Neural Network build options:"
 msgstr "Neural Network build options:"
 
@@ -4467,16 +4455,6 @@ msgstr ""
 msgid "No export functionality is available for the %s tab. Nothing done."
 msgstr "No export functionality is available for the %s tab. Nothing done."
 
-#: hclust.R:522
-msgid ""
-"No hierarchical cluster model is available. Be sure to build the model "
-"before trying to export it! You will need to press the Execute button (F2) "
-"in order to build the model."
-msgstr ""
-"No hierarchical cluster model is available. Be sure to build the model "
-"before trying to export it! You will need to press the Execute button (F2) "
-"in order to build the model."
-
 #: data.R:3471
 msgid ""
 "No input variables have been selected. This doesn't make a lot of sense. "
@@ -4488,16 +4466,6 @@ msgstr ""
 #: data.R:3472
 msgid "no input variables specified"
 msgstr "no input variables specified"
-
-#: kmeans.R:269
-msgid ""
-"No kmeans cluster model is available. Be sure to build the model before "
-"trying to export it! You will need to press the Execute button (F2) in order "
-"to build the model."
-msgstr ""
-"No kmeans cluster model is available. Be sure to build the model before "
-"trying to export it! You will need to press the Execute button (F2) in order "
-"to build the model."
 
 #: evaluate.R:464
 msgid ""
@@ -4581,7 +4549,7 @@ msgstr "No such device."
 msgid "No summary type has been selected. Please click at least one checkbox."
 msgstr "No summary type has been selected. Please click at least one checkbox."
 
-#: model.R:1271
+#: model.R:1280
 msgid ""
 "No SVM model is available. Be sure to build the model before trying to "
 "export it! You will need to press the Execute button (F2) in order to build "
@@ -4903,7 +4871,7 @@ msgstr "plot a bar chart"
 msgid "plot a bar chart for Benford's Law"
 msgstr "plot a bar chart for Benford's Law"
 
-#: kmeans.R:413
+#: kmeans.R:408
 msgid "plot a cluster"
 msgstr "plot a cluster"
 
@@ -5005,11 +4973,11 @@ msgstr "Plot the scaled Schoenfeld residuals of proportional hazards."
 msgid "Plot the survival chart for the most recent survival model."
 msgstr "Plot the survival chart for the most recent survival model."
 
-#: cluster.R:111 model.R:1438
+#: cluster.R:111 model.R:1447
 msgid "PMML export for this model is not yet implemented."
 msgstr "PMML export for this model is not yet implemented."
 
-#: associate.R:437 export.R:269 model.R:1294
+#: associate.R:437 export.R:269 model.R:1303
 msgid "PMML Files"
 msgstr "PMML Files"
 
@@ -5375,7 +5343,7 @@ msgstr "Remove specific variables from the dataset."
 msgid "Rendering the hierarchical cluster dendrogram...."
 msgstr "Rendering the hierarchical cluster dendrogram...."
 
-#: kmeans.R:646
+#: kmeans.R:641
 msgid "Rendering the plot. Please wait...."
 msgstr "Rendering the plot. Please wait...."
 
@@ -5563,7 +5531,7 @@ msgstr ""
 "Desktop Data Mining Survival Guide includes Rattle documentation and is "
 "available from datamining.togaware.com"
 
-#: kmeans.R:479 kmeans.R:606
+#: kmeans.R:474 kmeans.R:601
 msgid "Select a sample from the dataset to calculate the statistics."
 msgstr "Select a sample from the dataset to calculate the statistics."
 
@@ -5676,7 +5644,7 @@ msgstr "Summary of the Neural Net model (built using %s):"
 msgid "Summary of the %s model:"
 msgstr "Summary of the %s model:"
 
-#: model.R:1242
+#: model.R:1251
 msgid "Summary of the %s model (built using ksvm):"
 msgstr "Summary of the %s model (built using ksvm):"
 
@@ -5720,7 +5688,7 @@ msgstr "Sum(WithinSS)"
 msgid "Support for ARFF is only available in R 2.5.0 and beyond."
 msgstr "Support for ARFF is only available in R 2.5.0 and beyond."
 
-#: model.R:1097
+#: model.R:1106
 msgid "Support vector machine."
 msgstr "Support vector machine."
 
@@ -5928,7 +5896,7 @@ msgstr ""
 "Infinite values. A quick solution may be to remove variables with any Inf or "
 "-Inf values."
 
-#: model.R:1224
+#: model.R:1233
 msgid ""
 "The call to svm has failed, running out of memory. The support vector "
 "machine algorithm is rather memory hungry. A quick solution is to down "
@@ -6046,7 +6014,7 @@ msgstr "The data has been loaded: %s."
 msgid "The data is limited to the training dataset."
 msgstr "The data is limited to the training dataset."
 
-#: kmeans.R:649
+#: kmeans.R:644
 msgid "The data plot has been generated."
 msgstr "The data plot has been generated."
 
@@ -6066,7 +6034,7 @@ msgstr ""
 "You may want to select more numeric variables or use the transform tab to "
 "transform your categoric variables into numeric variables."
 
-#: kmeans.R:580
+#: kmeans.R:575
 msgid ""
 "The dataset contains many observations. For more than %d observations the "
 "plot will be quite slow. The application will also wait whilst the plot is "
@@ -6082,7 +6050,7 @@ msgstr ""
 "\n"
 "Would you like to continue with auto sampling?"
 
-#: kmeans.R:465
+#: kmeans.R:460
 msgid ""
 "The dataset contains many observations. The statistics are based on a "
 "pairwise distance matrix which can be enormous (GBs for 10,000 "
@@ -6098,7 +6066,7 @@ msgstr ""
 "\n"
 "Would you like to continue with auto sampling?"
 
-#: kmeans.R:566
+#: kmeans.R:561
 msgid ""
 "The dataset contains many variables and observations. For more than %d "
 "variables and %d observations the plot will be cluttered and quite slow. The "
@@ -6116,7 +6084,7 @@ msgstr ""
 "\n"
 "Would you like to continue with the reduced variables and auto sampling?"
 
-#: kmeans.R:595
+#: kmeans.R:590
 msgid ""
 "The dataset contains many variables. For more than %d variables the plot "
 "will be cluttered. The application will also wait whilst the plot is drawn. "
@@ -6318,7 +6286,7 @@ msgstr ""
 "matrix. The total sum of the matrix is determined and each value is then "
 "divided by the total."
 
-#: kmeans.R:314 rpart.R:1066
+#: hclust.R:566 kmeans.R:309 nnet.R:285 rpart.R:1039
 msgid "The model has been exported to '%s'."
 msgstr "The model has been exported to '%s'."
 
@@ -6404,7 +6372,7 @@ msgstr ""
 "\n"
 "Would you like the package to be installed now?"
 
-#: associate.R:468 model.R:1329
+#: associate.R:468 model.R:1338
 msgid "The PMML file '%s' has been written."
 msgstr "The PMML file '%s' has been written."
 
@@ -6614,7 +6582,7 @@ msgstr ""
 msgid "The setting of the filename box failed."
 msgstr "The setting of the filename box failed."
 
-#: hclust.R:576 model.R:1035 nnet.R:276
+#: model.R:1044
 msgid "The %s file '%s' has been written."
 msgstr "The %s file '%s' has been written."
 
@@ -7504,7 +7472,7 @@ msgstr ""
 "This is unusual since it is both an input variable and used to weight the "
 "outputs. It is suggested that you ignore this variable."
 
-#: kmeans.R:516 random_forest.R:584 rpart.R:130
+#: kmeans.R:511 random_forest.R:584 rpart.R:130
 msgid "You may need to scroll the textview to view them."
 msgstr "You may need to scroll the textview to view them."
 
