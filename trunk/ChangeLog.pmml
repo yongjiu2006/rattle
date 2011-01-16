@@ -5,7 +5,9 @@ rattle (1.2.28) unstable; urgency=low
   * Begin using a ChangeLog (this) file and simply dump previous changes
     below.
   
-  * Begin support for PMML 4.0
+  * Begin support for PMML 4.0.
+  
+  * Small changes to pmml.lm to support UTF-8/Japanese.
   
  -- 
 

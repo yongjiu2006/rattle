@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-12 21:21:41 Graham Williams>
+# Time-stamp: <2011-01-16 17:25:07 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -397,14 +397,25 @@ getExportSaveName <- function(mtype)
 
 generateExportPMMLtoC <- function(model.name, save.name, TV)
 {
-  export.cmd <- paste("cat(pmmltoc(%s%s%s,",
+  # 110116 Introduce an encoding to the file saved. Then under
+  # MS/Windows the file is saved as UTF-8 rather than SHIFT-JIS. On
+  # Linux it is saved as UTF-8 anyhow. However, I note that we seem to
+  # be working pretty hard to make everything UTF-8 on MS/Windows. It
+  # seems that we are fighting against "nature" here - is there
+  # something about encodings and R that we are missing. Maybe that is
+  # the key as to why everything works okay on Linux (UTF-8) but we
+  # battle with MS/Windows.
+  
+  export.cmd <- paste('con <- file("%s", open="w", encoding="UTF8")',
+                      "\ncat(pmmltoc(%s%s%s,",
                       '\n            name="%s",',
                       '\n            includePMML=%s,',
                       '\n            includeMetaData=%s,',
                       '\n            exportClass=%s),',
-                      '\n    file="%s")', sep="")
+                      '\n    file=con)', sep="")
 
   export.cmd <- sprintf(export.cmd,
+                        fixWindowsSlash(save.name),
                         ifelse(isWindows() && isJapanese(),
                                paste("paste('<?xml version=\"1.0\"",
                                      "encoding=\"shift_jis\"?>\\n',",
@@ -414,9 +425,8 @@ generateExportPMMLtoC <- function(model.name, save.name, TV)
                         model.name,
                         ifelse(attr(save.name, "includePMML"), "TRUE", "FALSE"),
                         ifelse(attr(save.name, "includeMetaData"),
-                               sprintf('getTextviewContent("%s")', TV),
+                               sprintf('rattle:::getTextviewContent("%s")', TV),
                                '"\\"Not Included\\""'),
-                        ifelse(attr(save.name, "exportClass"), "TRUE", "FALSE"),
-                        fixWindowsSlash(save.name))
+                        ifelse(attr(save.name, "exportClass"), "TRUE", "FALSE"))
   return(export.cmd)
 }

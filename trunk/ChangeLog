@@ -1,3 +1,13 @@
+rattle (2.6.2) unstable; urgency=low
+
+  * Rename rattle.info() to rattleInfo(), modelled on sessionInfo()
+    naming.
+  
+  * Ensure pmmltoc export from Rattle is UTF-8 by using a connection with
+    the required encoding.
+
+ --
+
 rattle (2.6.1) unstable; urgency=low
 
   * When exporting a regression model, be sure to use proper slash (i.e.,
@@ -19,9 +29,9 @@ rattle (2.6.1) unstable; urgency=low
   * In exporting a model as C code, if we are Japanese on Windows then
     note that the encoding is shift-jis rather than utf-8 for some reason.
   
+  * Improve infrastructure for the generation of C code from PMML.
   
-  
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Thu, 13 Jan 2011 21:50:53 +1100
 
 rattle (2.6.0) unstable; urgency=low
 
