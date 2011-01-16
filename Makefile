@@ -404,7 +404,7 @@ rstat_$(IVERSION).tar.gz: $(ISOURCE)
 
 rstat_$(IVERSION).zip: rstat_$(IVERSION).tar.gz
 	(cd /usr/local/lib/R/site-library; zip -r9 - rstat) \
-	>| rstat_$(VERSION).zip
+	>| rstat_$(IVERSION).zip
 
 R4X:
 	R CMD build support/r4x/pkg/R4X
