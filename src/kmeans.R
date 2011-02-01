@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-12 22:11:40 Graham Williams>
+# Time-stamp: <2011-01-22 22:07:23 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -257,7 +257,7 @@ showModelKMeansExists <- function(state=!is.null(crs$kmeans))
 ########################################################################
 # Export
 
-exportKMeansTab <- function(file)
+exportKMeansTab <- function()
 {
   # Make sure we have a model first!
 
