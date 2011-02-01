@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-02 05:41:22 Graham Williams>
+# Time-stamp: <2011-02-02 05:55:18 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -1939,7 +1939,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
                            "\n\nThis will allow access to use",
                            "the full functionality of %s.",
                            "\n\nWould you like the package to be installed now?"),
-                      pkg, msg, pkg, crv$appname)
+                      pkg, msg, pkg, ifelse(exists("crv"), crv$appname, "Rattle"))
   if (pkg %notin% rownames(installed.packages()))
   {
     if (not.null(msg))
