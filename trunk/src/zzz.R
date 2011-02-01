@@ -219,7 +219,7 @@
   if (! suppressRattleWelcome)
   {
 
-    cat(sprintf(paste(Rtxt("Rattle: Graphical interface for data mining using R."),
+    cat(sprintf(paste(Rtxt("Rattle: A free graphical interface for data mining with R."),
                       "\n", Rtxt("Version"),
                       " %s ", COPYRIGHT, "\n", sep=""), VERSION))
     if ("rattle" %in% getOption("defaultPackages"))

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-15 16:49:43 Graham Williams>
+# Time-stamp: <2011-02-02 05:41:22 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -155,7 +155,10 @@ rattleInfo <- function(all.dependencies=FALSE,
                        include.not.available=FALSE,
                        include.libpath=FALSE)
 {
-  cat(sprintf("Rattle: version %s\n", crv$version))
+  iv <- installed.packages()
+  av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
+  
+  cat(sprintf("Rattle: version %s cran %s\n", crv$version, av["rattle", "Version"]))
   cat(sprintf("%s (Revision %s)\n",
               sub(" version", ": version", version$version.string),
               version$"svn rev"))
@@ -168,9 +171,6 @@ rattleInfo <- function(all.dependencies=FALSE,
 
   cat("\nInstalled Dependencies\n")
 
-  iv <- installed.packages()
-  av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
-  
   if (all.dependencies)
   {
     # This version removes the suggests.only and uses all of Depends,
@@ -310,7 +310,7 @@ rattle <- function(csvname=NULL, useGtkBuilder)
   # variables to crs and crv. Previously they all began with "." as in
   # crv$ADA used to be .ADA. "R CMD check" complained a lot, once for
   # each of these, so putting them all into crv means only one
-  # complaint each time! Then defining crv in .onLoad remoaves the
+  # complaint each time! Then defining crv in .onLoad removes the
   # NOTE altogether.
 
   # 090303 Make sure crv has been defined. This was necessitated
@@ -1854,15 +1854,22 @@ errorDialog <- function(...)
 
 questionDialog <- function(...)
 {
-  dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
-                                "yes-no",
-                                ...)
-  result <- dialog$run()
-  dialog$destroy()
-  if (result == GtkResponseType["yes"])
-    return(TRUE)
+  if ("RGtk2" %in% rownames(installed.packages()))
+  {
+    require(RGtk2)
+    dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
+                                  "yes-no",
+                                  ...)
+    result <- dialog$run()
+    dialog$destroy()
+    answer <- result == GtkResponseType["yes"]
+  }
   else
-    return(FALSE)
+  {
+    cat(paste(strwrap(...), collapse="\n"))
+    answer <- tolower(readline(" (yes/NO) ")) == "yes"
+  }
+  return(answer)
 }
 
 notImplemented <- function(action, window)
@@ -1924,18 +1931,19 @@ variablesHaveChanged <- function(action)
 
 packageIsAvailable <- function(pkg, msg=NULL)
 {
+  localmsg <- sprintf(Rtxt("The package '%s' is required to %s.",
+                           "It does not appear to be installed.",
+                           "A package can be installed",
+                           "with the following R command:",
+                           "\n\ninstall.packages('%s')",
+                           "\n\nThis will allow access to use",
+                           "the full functionality of %s.",
+                           "\n\nWould you like the package to be installed now?"),
+                      pkg, msg, pkg, crv$appname)
   if (pkg %notin% rownames(installed.packages()))
   {
     if (not.null(msg))
-      if (questionDialog(sprintf(Rtxt("The package '%s' is required to %s.",
-                                      "It does not appear to be installed.",
-                                      "A package can be installed",
-                                      "with the following R command:",
-                                      "\n\ninstall.packages('%s')",
-                                      "\n\nThis will allow access to use",
-                                      "the full functionality of %s.",
-                                      "\n\nWould you like the package to be installed now?"),
-                                 pkg, msg, pkg, crv$appname)))
+      if (questionDialog(localmsg))
       {
         install.packages(pkg)
         return(TRUE)

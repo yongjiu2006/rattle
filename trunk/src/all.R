@@ -52,7 +52,7 @@ source("pmml.survreg.R") # 091123
 if (! exists("crv"))
 {
   .onLoad()
-  require(RGtk2)
+#110202 require(RGtk2)
   .onAttach()
 }
 

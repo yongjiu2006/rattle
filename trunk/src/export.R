@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-16 17:25:07 Graham Williams>
+# Time-stamp: <2011-02-02 05:38:13 Graham Williams>
 #
 # Implement functionality associated with the Export button and Menu.
 #
@@ -405,14 +405,29 @@ generateExportPMMLtoC <- function(model.name, save.name, TV)
   # something about encodings and R that we are missing. Maybe that is
   # the key as to why everything works okay on Linux (UTF-8) but we
   # battle with MS/Windows.
+  #
+  # From cran.r-project.org/doc/manuals/R-data.html: "The hard part is
+  # to know what file encoding to use. For use on Windows, it is best
+  # to use what Windows calls `Unicode' that is "UTF-16LE". (Even
+  # then, Windows applications may expect a Byte Order Mark which the
+  # implementation of iconv used by R may or may not add depending on
+  # the platform.), Using UTF-8 is a good way to make portable files
+  # that will not easily be confused with any other encoding, but even
+  # Mac OS X applications (where UTF-8 is the system encoding) may not
+  # recognize them, and Windows applications are most unlikely
+  # to. Apparently Excel:mac 2004/8 expects .csv files in "macroman"
+  # encoding (the encoding used in much earlier versions of Mac OS)."
+
+  #110122 IBI suggest the C code be SJIS for now.
   
-  export.cmd <- paste('con <- file("%s", open="w", encoding="UTF8")',
+  export.cmd <- paste('con <- file("%s", open="w")', # 110122, encoding="UTF8")',
                       "\ncat(pmmltoc(%s%s%s,",
                       '\n            name="%s",',
                       '\n            includePMML=%s,',
                       '\n            includeMetaData=%s,',
                       '\n            exportClass=%s),',
-                      '\n    file=con)', sep="")
+                      '\n    file=con)',
+                      '\nclose(con)', sep="")
 
   export.cmd <- sprintf(export.cmd,
                         fixWindowsSlash(save.name),

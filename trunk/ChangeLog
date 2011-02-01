@@ -1,12 +1,17 @@
 rattle (2.6.2) unstable; urgency=low
 
   * Rename rattle.info() to rattleInfo(), modelled on sessionInfo()
-    naming.
+    naming. Include available CRAN version of rattle in the output.
   
-  * Ensure pmmltoc export from Rattle is UTF-8 by using a connection with
-    the required encoding.
+  * Ensure connection is closed on pmmltoc export from Rattle.
+  
+  * questionDialog needs to not use RGtk2 if RGtk2 is not installed!
+  
+  * Emphasise that Rattle is free in loading the rattle package.
+  
+  * exportKmeansTab does not require the file argument.
 
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 02 Feb 2011 05:46:28 +1100
 
 rattle (2.6.1) unstable; urgency=low
 
