@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 17:44:40 Graham Williams>
+# Time-stamp: <2011-02-13 16:03:43 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -689,6 +689,7 @@ executeExplorePlot <- function(dataset,
                       ifelse(is.null(targets), "",
                              sprintf('xlab="%s",', target)),
                       'ylab="%s",',
+                      'varwidth=TRUE,',
                       'notch=TRUE)')
 
     # Based on an example from Jim Holtman on r-help 070406.
@@ -797,7 +798,7 @@ executeExplorePlot <- function(dataset,
     # ensured the y limits are calcuated in case the density plot is
     # higher than the histogram. The current colours are not yet right
     # though. For binary data the distinction between the blue and
-    # gree is very difficult to see for thin lines.
+    # gree is very difficult to see for thin lines. 
 
     #if (packageIsAvailable("RColorBrewer"))
     #  cols <- 'col=brewer.pal(%s, "Set1")'
@@ -884,16 +885,19 @@ executeExplorePlot <- function(dataset,
                         sep="")
     }
 
-    if (stratify && length(targets))
-    {
-      rug.cmd <- paste(sprintf('rug(ds[ds$grp=="%s", 1], %s[%s])', targets,
-                               sprintf(cols, length(targets)+1),
-                               seq_along(targets)+1), collapse="\n")
-    }
-    else
-    {
+    # 110213 Remove colour from the rug plot as it is misleading when
+    # values are identical and there is a lot of overplotting.
+    
+#    if (stratify && length(targets))
+#    {
+#      rug.cmd <- paste(sprintf('rug(ds[ds$grp=="%s", 1], %s[%s])', targets,
+#                               sprintf(cols, length(targets)+1),
+#                               seq_along(targets)+1), collapse="\n")
+#    }
+#    else
+#    {
       rug.cmd <- 'rug(ds[ds$grp=="All",1])'
-    }
+#    }
 
     # If the data looks more categoric then do a more usual hist
     # plot. TODO 080811 Add in a density plot - just need to get the

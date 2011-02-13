@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-05-28 15:32:20 Graham Williams>
+# Time-stamp: <2011-02-13 05:38:13 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -145,6 +145,7 @@ acquireWeatherData <- function(write.to.file=FALSE)
   
   library(foreign)
   write.arff(weather, "weather.arff")
+  system('perl -pi -e "s|@attribute Date numeric|@attribute Date date|" weather.arff')
   
   # Create a dataset with many missing values.
   
