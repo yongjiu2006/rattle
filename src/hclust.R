@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-12 22:11:59 Graham Williams>
+# Time-stamp: <2011-02-11 08:18:52 Graham Williams>
 #
 # Implement hclust functionality.
 #
@@ -510,7 +510,7 @@ showModelHClustExists <- function(state=!is.null(crs$hclust))
 ########################################################################
 # EXPORT
 
-exportHClustTab <- function(file)
+exportHClustTab <- function()
 {
   # Make sure we have a model first!
   

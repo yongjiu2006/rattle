@@ -1,3 +1,17 @@
+rattle (2.6.3) unstable; urgency=low
+
+  * weather.arff Date field should have 'date' data type.
+  
+  * The rug plot of histograms is no longer coloured. For large datasets,
+    there is much overplotting and so it can in fact be quite misleading.
+  
+  * Box plots now use varwidth=TRUE to indicate the distribution of the
+    target variable.
+
+  * Bug fix: exportHClustTab should not have a file argument.
+  
+ --
+
 rattle (2.6.2) unstable; urgency=low
 
   * Rename rattle.info() to rattleInfo(), modelled on sessionInfo()
