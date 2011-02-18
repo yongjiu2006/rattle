@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-13 16:03:43 Graham Williams>
+# Time-stamp: <2011-02-18 12:09:26 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -1782,13 +1782,16 @@ executeExplorePlot <- function(dataset,
 
       plot.cmd <- sprintf(paste('dotchart(%s, main="%s", sub="%s", ',
                                 'col=rev(%s),%s ',
-                                'xlab="', Rtxt("Frequency"), '", ylab="%s", pch=19)', sep=""),
+                                'xlab="', Rtxt("Frequency"), '", ylab="%s", ',
+                                'pch=c(%s, 19))',
+                                sep=""),
                           # 090525 reverse the row order to get the
                           # order I want in the dot chart - start with
                           # All, and then the rest. It is not clear
                           # wht dotplots does this.
-                         "ds[nrow(ds):1,ord]", titles[1], titles[2], cols,
-                         ifelse(is.null(target), "", ' labels="",'), dotplots[s])
+                          "ds[nrow(ds):1,ord]", titles[1], titles[2], cols,
+                          ifelse(is.null(target), "", ' labels="",'), dotplots[s],
+                          sprintf("1:%s", length(targets)))
       appendLog(Rtxt("Plot the data."), plot.cmd)
       eval(parse(text=plot.cmd))
 
@@ -1796,10 +1799,11 @@ executeExplorePlot <- function(dataset,
       {
         legend.cmd <- sprintf(paste('legend("bottomright", bty="n",',
                                    'c(%s), col=%s,',
-                                   'pch=19)'),
+                                   'pch=c(19, %s))'),
                               paste(sprintf('"%s"', c(Rtxt("All"), targets)),
                                     collapse=","),
-                              cols)
+                              cols,
+                              sprintf("%s:1", length(targets)))
         appendLog(Rtxt("Add a legend."), legend.cmd)
         eval(parse(text=legend.cmd))
       }

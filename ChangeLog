@@ -1,3 +1,13 @@
+rattle (2.6.4) unstable; urgency=low
+
+  * Confusion matrices transposed to conform to what most people exect:
+    Actual is on left and Predicted is on top. Retain the name as Error
+    Matrix in Rattle for now.
+  
+  * Use different pch for a dotchart.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 19 Feb 2011 06:26:09 +1100
+
 rattle (2.6.3) unstable; urgency=low
 
   * weather.arff Date field should have 'date' data type.
@@ -10,7 +20,7 @@ rattle (2.6.3) unstable; urgency=low
 
   * Bug fix: exportHClustTab should not have a file argument.
   
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 13 Feb 2011 21:42:11 +1100
 
 rattle (2.6.2) unstable; urgency=low
 

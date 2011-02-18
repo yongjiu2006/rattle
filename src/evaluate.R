@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 15:26:46 Graham Williams>
+# Time-stamp: <2011-02-18 07:58:27 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -392,7 +392,7 @@ resetEvaluateTab <- function()
   theWidget("score_idents_radiobutton")$setSensitive(FALSE)
   theWidget("score_all_radiobutton")$setSensitive(FALSE)
 
-  # 091215 Set default choice back to Error Matrix
+  # 091215 Set default choice back to Confusion Matrix
 
   theWidget("evaluate_confusion_radiobutton")$setActive(TRUE)
 
@@ -533,9 +533,9 @@ executeEvaluateTab <- function()
   # arguments to getIncludedVariables, where risk=FALSE by default, I
   # forgot to set it to TRUE here. However, it seems to be working so
   # far, at least for glm! 081029 However, we need the target variable
-  # in the list for error matrix and risk chart, for example. 100530
-  # But we don't need the target for scoring, and so we should remove
-  # it if we are scoring.
+  # in the list for confusion matrix and risk chart, for
+  # example. 100530 But we don't need the target for scoring, and so
+  # we should remove it if we are scoring.
 
   #included <- getIncludedVariables(target=FALSE)
   if (theWidget("evaluate_score_radiobutton")$getActive())
@@ -1182,7 +1182,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
   {
 
     setStatusBar(sprintf(Rtxt("Applying the %s model to the dataset",
-                              "to generate an error matrix..."),
+                              "to generate a confusion matrix..."),
                          commonName(mtype)))
 
     # Generate the command to show the confusion matrix.
@@ -1193,16 +1193,17 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
     #ts <- sub(',.*\\]', ', ]', testset[[mtype]])
     ts <- testset[[mtype]]
 
-    confuse.cmd <- paste(sprintf("table(crs$pr, %s$%s,",
+    confuse.cmd <- paste(sprintf("table(%s$%s, crs$pr,",
                                  ts, crs$target),
                          '\n        dnn=c("',
-                         Rtxt("Predicted"), '", "',
-                         Rtxt("Actual"), '"))', sep="")
+                         Rtxt("Actual"), '", "',
+                         Rtxt("Predicted"), '"))', sep="")
 
-    percentage.cmd <- paste("round(100*table(crs$pr, ",
+    percentage.cmd <- paste("round(100*table(",
                             sprintf("%s$%s, ", ts, crs$target),
-                            '\n        dnn=c("', Rtxt("Predicted"),
-                            '", "', Rtxt("Actual"), '"))',
+                            "crs$pr, ",
+                            '\n        dnn=c("', Rtxt("Actual"),
+                            '", "', Rtxt("Predicted"), '"))',
                             "/length(crs$pr))",
                             sep="")
 
@@ -1249,7 +1250,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                                 "variable included (e.g., when your test dataset",
                                 "is meant to be used as a scoring dataset, in which case",
                                 "we can't perform an evaluation).",
-                                "For producing an error matrix we need",
+                                "For producing a confusion matrix we need",
                                 "to include the target variable.",
                                 "Please load a CSV file which has",
                                 "the risk and target variables included.",
@@ -1260,11 +1261,11 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
       next()
     }
 
-    appendLog(Rtxt("Generate the error matrix showing counts."), confuse.cmd)
+    appendLog(Rtxt("Generate the confusion matrix showing counts."), confuse.cmd)
 
     confuse.output <- collectOutput(confuse.cmd, TRUE)
 
-    appendLog(Rtxt("Generate the error matrix showing percentages."), percentage.cmd)
+    appendLog(Rtxt("Generate the confusion matrix showing percentages."), percentage.cmd)
     percentage.output <- collectOutput(percentage.cmd, TRUE)
 
     if (binomialTarget())
@@ -1286,10 +1287,14 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                    "\n\n",
                    percentage.output,
                    if (binomialTarget())
-                   paste("\n\n", sprintf(Rtxt("Overall error: %s"), format(error.output)), sep=""))
+                   {
+                     paste("\n\n", sprintf(Rtxt("Overall error: %s"),
+                                           format(error.output)), sep="")
+                   })
+    
   }
 
-  return(sprintf(Rtxt("Generated error matrix."), mtype, testname))
+  return(sprintf(Rtxt("Generated confusion matrix."), mtype, testname))
 }
 
 #----------------------------------------------------------------------
