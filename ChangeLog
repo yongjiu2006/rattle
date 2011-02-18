@@ -6,6 +6,9 @@ rattle (2.6.4) unstable; urgency=low
   
   * Use different pch for a dotchart.
 
+  * Include the install.packages(rattleInfo()) trick in the output of
+    rattleInfo().
+  
  -- Graham Williams <Graham.Williams@togaware.com>  Sat, 19 Feb 2011 06:26:09 +1100
 
 rattle (2.6.3) unstable; urgency=low
