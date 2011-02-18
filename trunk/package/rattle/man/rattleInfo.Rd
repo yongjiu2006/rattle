@@ -1,5 +1,5 @@
-\name{rattle.info}
-\alias{rattle.info}
+\name{rattleInfo}
+\alias{rattleInfo}
 \title{
 
   Print version information for Rattle, R, associated packages and
@@ -15,10 +15,10 @@
 
 }
 \usage{
-rattle.info(all.dependencies=FALSE,
-            include.not.installed=FALSE,
-            include.not.available=FALSE,
-            include.libpath=FALSE)
+rattleInfo(all.dependencies=FALSE,
+           include.not.installed=FALSE,
+           include.not.available=FALSE,
+           include.libpath=FALSE)
 }
 \arguments{
   
@@ -52,7 +52,7 @@ rattle.info(all.dependencies=FALSE,
   user can simply copy and paste the command to update the relevant
   packages. The function also invisibly returns the list of packages
   that can be updated, so that we can do something like:
-  install.packages(rattle.info()).
+  install.packages(rattleInfo()).
   
 }
 
