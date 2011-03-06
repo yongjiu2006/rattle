@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-19 06:30:19 Graham Williams>
+# Time-stamp: <2011-02-26 07:50:33 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -961,6 +961,37 @@ rattle <- function(csvname=NULL, useGtkBuilder)
   invisible()
 }
 
+rattleReport <- function()
+{
+  result <- paste("Rattle Report: Summary of the Current Model(s)\n\n",
+                  "Date\n",
+                  "\t", Sys.time(), "\n",
+                  "Project Name\n",
+                  "\t", crs$dataname, "\n",
+                  "Data Miner\n",
+                  "\t", Sys.info()["user"], "\n",
+                  "\n",
+                  "Input Variables\n",
+                  paste("\t", crs$input, sep="", collapse="\n"), "\n",
+                  "Target Variable\n",
+                  "\t", crs$target, "\n",
+                  "Risk Variable\n",
+                  "\t", crs$risk, "\n",
+                  "Identifiers\n",
+                  paste("\t", crs$ident, sep="", collapse="\n"), "\n",
+                  "Ignored Variables\n",
+                  paste("\t", crs$ignore, sep="", collapse="\n"), "\n",
+                  "\n",
+                  "Models\n",
+                  if (not.null(crs$rpart))
+                  {
+                     "\tTree\n"
+                     # Add in the function call
+                  },
+                  sep="")
+  return(result)
+}
+
 ########################################################################
 # Configurable functions - these are here because plugins may want to
 # overwrite them.
@@ -999,7 +1030,7 @@ configureGUI <- function()
   # 101202 Remove the By Group button and instead if a rescale has a
   # categoric selected then do by group. TODO.
   
-  theWidget("normalise_bygroup_radiobutton")$hide()
+  # theWidget("normalise_bygroup_radiobutton")$hide()
   
 }
 

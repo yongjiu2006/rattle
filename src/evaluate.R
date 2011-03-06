@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-18 07:58:27 Graham Williams>
+# Time-stamp: <2011-03-06 22:02:04 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -195,7 +195,7 @@ configureEvaluateTab <- function()
       active.models <- c(active.models, m)
   }
 
-  active.models.exist <- length(active.models) > 0 
+  active.models.exist <- length(active.models) > 0
 
   # Automatically work out what needs to be sensistive, based on data
   # type of the target plus whether kmeans or hclust is active and
@@ -254,7 +254,7 @@ configureEvaluateTab <- function()
   # Set the Data options of the Evaluate tab appropraitely. 101116 But
   # only do this if there are active models.
 
-  if (active.models.exist) 
+  if (active.models.exist)
   {
     for (b in c("training", "csv", "rdataset"))
       theWidget(paste("evaluate", b, "radiobutton", sep="_"))$setSensitive(TRUE)
@@ -285,7 +285,7 @@ configureEvaluateTab <- function()
 
     # 101116 This is set to FALSE here since it is only available when
     # the Score option is chosen.
-    
+
     theWidget("evaluate_enterdata_radiobutton")$setSensitive(FALSE)
   }
 
@@ -729,12 +729,12 @@ executeEvaluateTab <- function()
                           cmd)
           eval(parse(text=cmd))
         }
-          
+
         # 090808 Be sure to expose this trick to the log file since
         # the user will otherwise be unable to repeat the scoring for
         # the case where the levels are not the same as the training
         # dataset.
-        
+
         cmd <- sprintf(paste('levels(crs$testset[["%s"]]) <-',
                              '\n  c(levels(crs$testset[["%s"]]),',
                              '\n    setdiff(levels(crs$dataset[["%s"]]),',
@@ -1291,7 +1291,7 @@ executeEvaluateConfusion <- function(respcmd, testset, testname)
                      paste("\n\n", sprintf(Rtxt("Overall error: %s"),
                                            format(error.output)), sep="")
                    })
-    
+
   }
 
   return(sprintf(Rtxt("Generated confusion matrix."), mtype, testname))
@@ -1363,7 +1363,7 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
       # augment this with the risk variable name as we may need to get
       # the same rows removed through NAs, before then extracting the
       # relevant risk variable.
-      
+
       testcols <- sub("]$", "", sub("[^,]*, ", "", testset[[mtype]]))
       if (testcols != "")
       {
@@ -2004,7 +2004,7 @@ executeEvaluateLift <- function(probcmd, testset, testname)
     eval(parse(text=lib.cmd))
 
     # print(mtype); print(testname)
-    
+
     appendLog(sprintf(Rtxt("Obtain %s for the %s model on %s."),
                      Rtxt("predictions"), mtype, testname),
              probcmd[[mtype]], "\n", plot.cmd)
@@ -2470,9 +2470,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
   # Evaluate tab? 081227 Add cluster export in here.
 
   # 100306 Allow data to be entered manually, and score that.
-  
+
   entered <- theWidget("evaluate_enterdata_radiobutton")$getActive()
-  
+
   if (entered & ! dfedit.done)
   {
     if (packageIsAvailable("RGtk2Extras"))
@@ -2494,7 +2494,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
                                               c(crs$ident, crs$input, crs$target)],
                                   size=c(800, 400), dataset.name=dsname,
                                   pretty_print=TRUE)
-      
+
       probcmd <- lapply(probcmd, function(x) sub("crs\\$dataset", dsname, x))
       respcmd <- lapply(respcmd, function(x) sub("crs\\$dataset", dsname, x))
       testset <- lapply(testset, function(x) sub("crs\\$dataset", dsname, x))
@@ -2527,7 +2527,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
       testname <- "manually entered data"
     }
   }
-      
+
   # Obtain information from the interface: what other data is to be
   # included with the scores.
 
@@ -2539,12 +2539,12 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
 
   if (! entered)
   {
-  
+
     # Obtain the filename to write the scores to.  We ask the user for a
     # filename if RATTLE_SCORE and .RATTLE.SCORE.OUT are not provided.
     # TODO should we add getwd() to the RATTLE_SCORE or
     # .RATTLE.SCORE.OUT if a relative path.
-    
+
     fname <- Sys.getenv("RATTLE_SCORE")
     if (fname == "" && not.null(.RATTLE.SCORE.OUT)) fname <- .RATTLE.SCORE.OUT
 
@@ -2553,7 +2553,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
       # The default filename is the testname with spaces replaced by
       # "_", etc., and then "_score" is appended, and then "_all" or
       # "_idents" to indicate what other columns are included.
-      
+
       default <- sprintf("%s_score_%s.csv",
                          gsub(" ", "_",
                               gsub("\\.[[:alnum:]]*", "",
@@ -2561,26 +2561,26 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
                                         gsub("\\*", "", testname)))),
                          sinclude)
       # fname <- paste(getwd(), default, sep="/")
-      
+
       dialog <- gtkFileChooserDialog(Rtxt("Score Files"), NULL, "save",
                                      "gtk-cancel", GtkResponseType["cancel"],
                                      "gtk-save", GtkResponseType["accept"])
       dialog$setDoOverwriteConfirmation(TRUE)
-      
+
       if(not.null(testname)) dialog$setCurrentName(default)
-      
+
       #dialog$setCurrentFolder(crs$dwd) Generates errors.
-      
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("CSV Files"))
       ff$addPattern("*.csv")
       dialog$addFilter(ff)
-      
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
       dialog$addFilter(ff)
-      
+
       if (dialog$run() == GtkResponseType["accept"])
       {
         fname <- dialog$getFilename()
@@ -2593,7 +2593,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
       }
     }
   }
-  
+
   # Score the data with each model, collect the outputs, and then
   # write them all at once to file.
   #
@@ -2639,7 +2639,7 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
     idents <- getSelectedVariables("ident")
   else
     idents <- union(getSelectedVariables("ident"), getSelectedVariables("target"))
-  
+
   for (mtype in the.models)
   {
     setStatusBar(sprintf(Rtxt("Scoring dataset using %s ..."), mtype))
@@ -2654,6 +2654,12 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
       thecmd <- probcmd
     else
       thecmd <- respcmd
+
+    # 110306 For Japanese, when we have a Japanese filename (in UTF-8)
+    # if I don't do the following then the sprintf in the following
+    # appendLog fails. I don't really know why this fixes it?
+
+    if (isJapanese()) testname <- iconv(testname, from="UTF-8")
 
     # Apply the model to the dataset.
 
@@ -2842,6 +2848,9 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
   }
   else
   {
+    # 110306 Fix for Japanese
+    if (isJapanese()) fname <- iconv(fname, from="UTF-8")
+
     appendLog(Rtxt("Output the combined data."),
               "write.csv(cbind(sdata, crs$pr), ",
               sprintf('file="%s", ', fname),
@@ -2849,10 +2858,10 @@ executeEvaluateScore <- function(probcmd, respcmd, testset, testname, dfedit.don
     writeCSV(cbind(sdata, scores), file=fname)
     return.msg <- sprintf(Rtxt("Scores have been saved to the file %s"), fname)
   }
-  
+
   # StatusBar is enough so don't pop up a dialog?
   # infoDialog("The scores have been saved into the file", fname)
-  
+
   return(return.msg)
 }
 
@@ -3119,7 +3128,7 @@ executeEvaluatePvOplot <- function(probcmd, testset, testname)
                         'bty="n")', sep=" ")
     appendLog(Rtxt("Include a pseudo R-square on the plot"), legend.cmd)
     eval(parse(text=legend.cmd))
-    
+
     # TODO Add to LOG
 
     # Add decorations. 100206 Rado suggested not including the
@@ -3170,7 +3179,7 @@ executeEvaluateHand <- function(probcmd, testset, testname)
     # Replace
     #   obs <- eval(parse(text=obsset))
     # with the following two lines
-    
+
     obs <- eval(parse(text=obsset))[[1]]
     if (is.factor(obs)) obs <- as.numeric(obs)-1
 

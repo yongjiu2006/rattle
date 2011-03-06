@@ -1,3 +1,21 @@
+rattle (2.6.5) unstable; urgency=low
+
+  * Add rattleReport() - report on current state of rattle modelling.
+  
+  * Restore the ByGroup option for now until it can be coded for the about
+    transforms.
+  
+  * Deal with UTF-8 encoding of Japanese filenames in data and evaluate,
+    using iconv.
+  
+  * Be sure to include http:// in web links, though on MS/Windows still
+    not working: Could Not Show Link... No application is registered as
+    handling this file
+  
+  * Updated translations.
+
+ --
+
 rattle (2.6.4) unstable; urgency=low
 
   * Confusion matrices transposed to conform to what most people exect:

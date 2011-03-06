@@ -9113,7 +9113,7 @@
 All rights reserved.</property>
     <property name="comments" translatable="yes">The R Analytical Tool To Learn Easily
 (A GNOME Data Miner Built on R)</property>
-    <property name="website">rattle.togaware.com</property>
+    <property name="website">http://rattle.togaware.com/</property>
     <property name="website_label" translatable="yes">Rattle Home</property>
     <property name="license" translatable="yes">This program is copyright free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

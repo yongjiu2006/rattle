@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-20 16:49:08 Graham Williams>
+# Time-stamp: <2011-03-01 07:34:49 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -141,7 +141,7 @@ modalvalue <- function(x, na.rm=FALSE)
 
 executeTransformTab <- function()
 {
-  # We can not do any transforms if there is no dataset.
+  # We cannot do any transforms if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
@@ -183,6 +183,13 @@ executeTransformNormalisePerform <- function(variables=NULL,
   # stay with radio buttons as it is simple, without loss of
   # functionality.
 
+  # 110226 Allow numeric and categoric for recenter, scale01,
+  # medianad, and rank. ByGroup variables will be created, as
+  # suggested by Tony. This will then replace the By Group optoin
+  # altogether.
+
+  bygroup <- FALSE
+  
   if (is.null(action))
   {
     if (theWidget("normalise_recenter_radiobutton")$getActive())
@@ -235,10 +242,19 @@ executeTransformNormalisePerform <- function(variables=NULL,
     if (length(variables)) Encoding(variables) <- "UTF-8"
   }
 
-  # We check here if the action is rescale, and we have any
-  # categoric variables to be normalised. If so put up an info
-  # dialogue and remove the categorics from the list of variables to
-  # be normalised.
+  # 110226 If no variables are selected then there is nothing to do.
+  
+  if (!length(variables))
+  {
+    warnDialog(Rtxt("No variables have been selected for rescaling.",
+                    "Please select some variables and Execute again."))
+    setStatusBar(Rtxt("No variables selected to be rescaling."))
+    return(FALSE)
+  }
+  
+  # Check here if the action is rescale, and we have any categoric
+  # variables to be normalised. If so put up an info dialogue and
+  # remove the categorics from the list of variables to be normalised.
 
   classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
 
@@ -253,30 +269,38 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
   classes <- classes[classes!="ordered"]
   
-  if (action %in% c("recenter", "scale01", "rank", "medianad", "matrix", "log")
-      && "factor" %in% classes)
-  {
-    # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
-    # encoded variable we get garbage, so convert to unknown then back
-    # again. Making the Rtxt UTF-8 does not fix it.
-    Encoding(variables) <- "unknown"
-    infoDialog(sprintf(Rtxt("We can not rescale using '%s'",
-                            "on a categoric variable.",
-                            "Ignoring: %s."),
-                       action, paste(variables[which(classes == "factor")],
-                                     collapse=", ")))
-    Encoding(variables) <- "UTF-8"
-    variables <- variables[-which(classes == "factor")] # Remove the factors.
-    if (length(variables) == 0) return()
-  }
+  if ("factor" %in% classes)
+    if (FALSE && action %in% c("recenter", "scale01", "rank", "medianad"))
+    {
+      # 110220 If a categoric is selected for one of these transforms,
+      # then turn the operation into a ByGroup transform. The prefix
+      # will be BYC for recenter, BY1 for scale01, BYK for rank, and
+      # BYD for medianad. I have started to implement but not yet
+      # finished, so include FALSE in the above
+      
+      rescaler <- action
+      bygroup <- TRUE
+      vprefix <- paste("BG", substr(x=vprefix, start=3, stop=3), sep="")
+    }
+    else if (action %in% c("matrix", "log"))
+    {
+      # 110220 Choosing a categoric for one of these does not make
+      # sense. So remove it.
+      
+      # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
+      # encoded variable we get garbage, so convert to unknown then back
+      # again. Making the Rtxt UTF-8 does not fix it.
 
-  if (!length(variables))
-  {
-    warnDialog(Rtxt("No variables have been selected for rescaling.",
-                    "Please select some variables and Execute again."))
-    setStatusBar(Rtxt("No variables selected to be rescaling."))
-    return(FALSE)
-  }
+      Encoding(variables) <- "unknown"
+      infoDialog(sprintf(Rtxt("We cannot rescale using '%s'",
+                              "on a categoric variable.",
+                              "Ignoring: %s."),
+                         action, paste(variables[which(classes == "factor")],
+                                       collapse=", ")))
+      Encoding(variables) <- "UTF-8"
+      variables <- variables[-which(classes == "factor")] # Remove the factors.
+      if (length(variables) == 0) return()
+    }
   
   # Check if, for a BYGROUP, we have at most one categoric and the
   # others are numeric. Then remove the categoric (if any) from the
@@ -286,7 +310,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
   # across all the cateogircals: MaleMarried MaleDivorced
   # FemaleMarried etc.
 
-  if (action %in% c("bygroup"))
+  if (bygroup || action %in% c("bygroup")) # 110226 Eventually remove action "bygroup"
   {
     numfactors <- sum(classes=="factor")
     numnumerics <- sum(classes=="numeric" | classes=="integer")
@@ -359,7 +383,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
   weight <- getSelectedVariables("weight")
 
   # For MATRIX obtain the matrix total first and then divide each
-  # variable by this.
+  # variable by this. We do this here so that it is done only once,
+  # rather than through each loop below.
 
   if (action == "matrix")
   {
@@ -379,7 +404,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     
     # Create the new name for the variable.
     
-    if (action %in% c("bygroup"))
+    if (bygroup || action %in% c("bygroup"))
       vname <- paste(vprefix, byvname, v, sep="_")
     else
       vname <- paste(vprefix, v, sep="_")
@@ -748,7 +773,7 @@ executeTransformImputePerform <- function()
     # encoded variable we get garbage, so convert to unknown then back
     # again. Making the Rtxt UTF-8 does not fix it.
     Encoding(imputed) <- "unknown"
-    infoDialog(sprintf(Rtxt("We can not impute the %s for a",
+    infoDialog(sprintf(Rtxt("We cannot impute the %s for a",
                             "categoric variable. Ignoring: %s."),
                        action, paste(imputed[which(classes == "factor")],
                                      collapse=", ")))
@@ -1244,7 +1269,7 @@ executeTransformRemapPerform <- function(vars=NULL,
   }
   
   # 090603 Check if it is an indicator transform, and more than a
-  # single variable selected. Can not handle this yet - do them one at
+  # single variable selected. Cannot handle this yet - do them one at
   # a time for now.
 
   if (action %in% c("indicator") && length(vars) > 1)
