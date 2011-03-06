@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-05 19:29:07 Graham Williams>
+# Time-stamp: <2011-03-06 22:02:13 Graham Williams>
 #
 # DATA TAB
 #
@@ -40,7 +40,7 @@ overwriteModel <- function()
   # 080523 If a model exists then warn the user about losing the model
   # on loading a new dataset. Perhaps this could be generalised to any
   # kind of opration that replaces the current model.
-  
+
   if (not.null(listBuiltModels()))
     return(questionDialog(Rtxt("You have chosen to load a new dataset.",
                                "This will clear the current project",
@@ -60,7 +60,7 @@ dataTabShow <- function(...)
   # others, within the data tab. When new widgets are added to the tab
   # through editting the XML file with glade, be sure to add it to the
   # list of known widgets here.
-  
+
   widgets <- c(...)
   known <- c("data_filename_label",
              "data_filechooserbutton",
@@ -92,17 +92,17 @@ showDataViewButtons <- function(action=TRUE)
   # probably when we click New project.
 
   if (! is.logical(action)) warning(Rtxt("action must be a logical"))
-    
+
   theWidget("data_view_button")$setSensitive(action)
   theWidget("data_edit_button")$setSensitive(action)
-}  
+}
 
 urlModTime <- function(filename)
 {
   # Return the modification time of the file. Strip out any "file://"
   # prefix to the filename. We note that this will not work for
   # http:// urls.
-  
+
   return(file.info(gsub("file:///", "/", filename))$mtime)
 }
 
@@ -116,10 +116,10 @@ dataNeedsLoading <- function()
   # any other conditions. The dataset should be loaded.  090315 Never
   # reload unless there is nothing loaded - that won't work when user
   # changes Filename we want to load.
-  
+
   if (is.null(crs$dataname))
     return(TRUE)
-  
+
   # 080712 Check what data source is active, and act
   # appropriately. For those I have yet to work on, simply return TRUE
   # so that at least the data always gets loaded. But this does then
@@ -128,14 +128,14 @@ dataNeedsLoading <- function()
   if (theWidget("data_csv_radiobutton")$getActive()
       || theWidget("data_arff_radiobutton")$getActive())
   {
-  
+
     filename <- theWidget("data_filechooserbutton")$getUri()
 
     # 100409 Do the URLdecode here, then encode as UTF-8. Previously
     # no UTF-8 and the URLdecode was done 5 separate times below. The
     # mtime below did not URLdecode, but do so now, and make sure it
     # still works. Seems okay.
-    
+
     filename <- URLdecode(filename)
     Encoding(filename) <- "UTF-8"
 
@@ -165,7 +165,7 @@ dataNeedsLoading <- function()
     now.mtime <- urlModTime(filename)
     if (not.null(crs$mtime) && not.null(now.mtime) && now.mtime > crs$mtime)
       return(TRUE)
-  
+
   }
   else if (theWidget("data_rdataset_radiobutton")$getActive())
   {
@@ -201,7 +201,7 @@ dataNeedsLoading <- function()
   {
     return(TRUE)
   }
-  
+
   # Return FALSE if we did not detect any changes.
 
   return(FALSE)
@@ -224,7 +224,7 @@ updateFilenameFilters <- function(button, fname)
       ff$setName(Rtxt("CSV Files"))
       ff$addPattern("*.csv")
       button$addFilter(ff)
-    
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("TXT Files"))
       ff$addPattern("*.txt")
@@ -242,7 +242,7 @@ updateFilenameFilters <- function(button, fname)
         ff$addPattern("*.xlsx")
         button$addFilter(ff)
       }
-    
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
@@ -259,7 +259,7 @@ updateFilenameFilters <- function(button, fname)
       ff$setName(Rtxt("ARFF Files"))
       ff$addPattern("*.arff")
       button$addFilter(ff)
-      
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
@@ -276,7 +276,7 @@ updateFilenameFilters <- function(button, fname)
       ff$setName(Rtxt("Rdata Files"))
       ff$addPattern("*.R[Dd]ata")
       button$addFilter(ff)
-    
+
       ff <- gtkFileFilterNew()
       ff$setName(Rtxt("All Files"))
       ff$addPattern("*")
@@ -286,7 +286,7 @@ updateFilenameFilters <- function(button, fname)
 
   # Kick the GTK event loop otherwise you end up waiting until the
   # mouse is moved, for example.
-  
+
   while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 }
 
@@ -307,14 +307,14 @@ validateSampleEntry <- function()
     errorDialog(Rtxt("A training set partition of 0 does not make sense.",
                      "\n\nPlease choose a non-zero, positive proportion, up to 100."))
     result <- FALSE
-  }  
+  }
   else if (any(sampling < 0))
   {
     errorDialog(Rtxt("A proportion of less than 0 for the partition",
                      "does not make sense.",
                      "\n\nPlease choose proportions in the range 0-100."))
     result <- FALSE
-  }  
+  }
   else if (sum(sampling) != 100)
   {
     errorDialog(sprintf(Rtxt("The sum of the partition proportions does not add",
@@ -500,7 +500,7 @@ updateRDatasets <- function(current=NULL, cbox.name="data_name_combobox")
   # Update a combo box with just the available data frames and matrices.
 
   set.cursor("watch", Rtxt("Determining the available datasets...."))
-  
+
   dl <- unlist(sapply(ls(sys.frame(0)),
                       function(x)
                       {
@@ -515,7 +515,7 @@ updateRDatasets <- function(current=NULL, cbox.name="data_name_combobox")
                       }))
 
   cbox <- theWidget(cbox.name)
-  
+
   cbox$getModel()$clear()
   if (not.null(dl))
   {
@@ -533,10 +533,10 @@ on_data_target_survival_radiobutton_toggled <- function(button)
 {
   # 091206 When the Survival radio button is toggled, change the names
   # of the Target/Risk columns to match the paradigm.
-  
+
   target <- theWidget("select_treeview")$getColumn(crv$COLUMN["target"])
   risk <- theWidget("select_treeview")$getColumn(crv$COLUMN["risk"])
-  
+
   if (button$getActive())
   {
     target$setTitle(Rtxt("Time"))
@@ -564,7 +564,7 @@ executeDataTab <- function(csvname=NULL)
   # simply update the variable roles without reloading the data.
 
 #  if (not.null(csvname))
-#  {    
+#  {
 #    if (! executeDataCSV(csvname)) return(FALSE)
 #  }
   if (theWidget("data_type_label")$isSensitive() && dataNeedsLoading())
@@ -603,31 +603,31 @@ executeDataTab <- function(csvname=NULL)
     }
     else
       return()
-    
+
     # Update the select treeview. This is done on a Data execute only
     # when a new dataset has been loaded. If the user has simply
     # changed some of the roles or the sampling then we do not do a
     # reset, just an update.
 
-    createVariablesModel(colnames(crs$dataset)) 
+    createVariablesModel(colnames(crs$dataset))
 
     # Whether we have changed the dataset or not we need to generate the
     # sample and then record the variable roles.
-    
+
     # Turn sampling on, set range bounds and generate the default 70%
     # sample. Do the range bounds first since otherwise the value gets
     # set back to 1. Also, need to set both the percentage and the count
     # since if the old percentage is 70 and the new is 70, then no
     # change in value is noticed, and thus the count is not
     # automatically updated.
-    
+
     # 090315 Sampling should be on by default. I had a test here
     # "!is.null(.RATTLE.SCORE.IN)" which, after cleaning up the
     # handling of global variables, is now FALSE, whereas previously
     # it must have been TRUE. Simply set to TRUE here until we find
     # why that was being done. Might need another crv tuning
     # parameter.
-    
+
     theWidget("data_sample_checkbutton")$setActive(TRUE)
 
     # 090513 Reset the default sample size percentage and ensure it
@@ -659,7 +659,7 @@ executeDataTab <- function(csvname=NULL)
   # the old percentage is 70 and the new is 70, then no change in
   # value is noticed, and thus the count is not automatically updated,
   # even if the number of rows has been changed.
-    
+
   nrows <- nrow(crs$dataset)
   # 090513 Remove the resetting of the sample size to 70 from here,
   # but get the current value. Otherwise, the sample size is always
@@ -674,16 +674,16 @@ executeDataTab <- function(csvname=NULL)
   theWidget("sample_count_spinbutton")$setRange(1,nrows)
   theWidget("sample_count_spinbutton")$setValue(srows)
   theWidget("sample_percentage_spinbutton")$setValue(per)
- 
+
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
-  
+
 #  else
 #  {
 #    resetRattle(new.dataset=FALSE)
 #
 #    if (dataNeedsLoading())
 #    {
-#        
+#
 #      # Just duplicate above for now to get this working.
 #      createVariablesModel(colnames(crs$dataset)) # BUT THIS REVERTS TO DEFAULTS
 #      nrows <- nrow(crs$dataset)
@@ -694,11 +694,11 @@ executeDataTab <- function(csvname=NULL)
 #      theWidget("sample_count_spinbutton")$setValue(srows)
 #      theWidget("sample_percentage_spinbutton")$setValue(per)
 #    }
-#    
+#
 #  }
 
   # TODO 080520 Change the name to updateSample.
-  
+
   ## 080603 NOT NEEDED AS DONE IN executeSelectTab
   ## executeSelectSample()
 
@@ -709,11 +709,11 @@ executeDataTab <- function(csvname=NULL)
 
   if (theWidget("data_sample_checkbutton")$getActive() &&
       ! validateSampleEntry()) return(FALSE)
-  
+
   # TODO 080520 Change the name to updateRoles.
 
   setGuiDefaultsSurvival() # 100505 Moved here from below
-  
+
   executeSelectTab()
 
   resetTestTab()
@@ -722,7 +722,7 @@ executeDataTab <- function(csvname=NULL)
  # setGuiDefaultsSurvival()
 
   # Set the risk label appropriately.
-  
+
   theWidget("evaluate_risk_label")$setText(crs$risk)
 
   # Enable the Data View and Edit buttons.
@@ -745,7 +745,7 @@ executeDataCSV <- function(filename=NULL)
   # the audit dataset).
 
   supplied <- filename
-  
+
   # Begin by collecting the relevant data from the interface. 080511
   # The file chooser button has a getFilename to retrieve the
   # filename. The getUri also retrieves the file name, but as a
@@ -764,7 +764,7 @@ executeDataCSV <- function(filename=NULL)
   # the Rattle supplied sample dataset.
 
   use.sample.dataset <- FALSE
-  
+
   if (not.null(supplied))
   {
     # 090314 Trying to get the scenario of a supplied filename
@@ -788,7 +788,7 @@ executeDataCSV <- function(filename=NULL)
     theWidget("data_filechooserbutton")$setUri(filename)
 
     # 090314 Do this because it was done below.
-    
+
     while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 
   }
@@ -799,11 +799,11 @@ executeDataCSV <- function(filename=NULL)
                                       "\n\nWould you like to use the example",
                                       "%s dataset?"),
                                  Rtxt(crv$sample.dataset))))
-      
+
 
       # If no filename is given and the user decides not to go with
       # the sample dataset then return without doing anything.
-      
+
       return(FALSE)
 
     else
@@ -828,11 +828,11 @@ executeDataCSV <- function(filename=NULL)
         filename <- paste("file://", filename, sep="")
       else
         filename <- paste("file:///", filename, sep="")
-      
+
       # 080713 We still need the events flush with tootiphack set
       # since otherwise we have to lose focus before the screen gets
       # updated.
-      
+
       while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
 
       #gtkmainquit_handler(NULL, NULL)
@@ -844,10 +844,10 @@ executeDataCSV <- function(filename=NULL)
     filename <- URLdecode(filename)
     Encoding(filename) <- "UTF-8" # 100408 Japanese otherwise dirname fails. Try for all.
   }
-  
+
   crs$dwd <- dirname(filename)
   crs$mtime <- urlModTime(filename)
-  
+
   # If there is a model warn about losing it.
 
   if (! overwriteModel()) return(FALSE)
@@ -876,11 +876,11 @@ executeDataCSV <- function(filename=NULL)
     hdr <- ""
   else
     hdr <- ", header=FALSE"
-  
+
   nastring <- ', na.strings=c(".", "NA", "", "?")'
 
   stripwhite <- ', strip.white=TRUE'
-  
+
   # Generate commands to read the data. 091130 Add encoding to use the
   # configured encoding.
 
@@ -890,11 +890,11 @@ executeDataCSV <- function(filename=NULL)
                               '"%s.csv", package="rattle"),',
                               'encoding="%s")'),
                         crv$sample.dataset, crv$csv.encoding)
-                              
+
   else if (isWindows() && tolower(get.extension(filename)) %in% c("xls", "xlsx"))
   {
     if (! packageIsAvailable("RODBC", Rtxt("read .xls or .xlsx files"))) return(FALSE)
-    
+
     # 100114 A quick hack to allow reading MS/Excel files.
     read.cmd <- sprintf(paste("require(RODBC, quietly=TRUE)",
                               'con <- odbcConnectExcel%s("%s")',
@@ -902,7 +902,7 @@ executeDataCSV <- function(filename=NULL)
                               "odbcClose(con)",
                               # Make sure we return the actual dataset
                               # as the result as that is assumed.
-                              "crs$dataset", 
+                              "crs$dataset",
                               sep="\n"),
                         ifelse(tolower(get.extension(filename)) == "xlsx",
                                "2007", ""),
@@ -920,7 +920,7 @@ executeDataCSV <- function(filename=NULL)
     # 10429 Only use file(..., encoding) for Japanese. Otherwise
     # put the encoding as argument to read.csv which always works on
     # Linux?
-    
+
     if (isJapanese())
       read.cmd <- sprintf('crs$dataset <- read.csv(file("%s", encoding="%s")%s%s%s%s%s)',
                           filename, crv$csv.encoding, hdr, sep, dec, nastring,
@@ -929,11 +929,11 @@ executeDataCSV <- function(filename=NULL)
       read.cmd <- sprintf('crs$dataset <- read.csv("%s"%s%s%s%s%s, encoding="%s")',
                           filename, hdr, sep, dec, nastring, stripwhite,
                           crv$csv.encoding)
-  
+
   # Start logging and executing the R code.
 
   startLog()
-  
+
   appendLog(Rtxt("Load the data."), read.cmd)
   resetRattle()
   result <- try(eval(parse(text=read.cmd)), silent=TRUE)
@@ -989,19 +989,21 @@ executeDataCSV <- function(filename=NULL)
                         theWidget("data_decimal_entry")$getText()))
     return(FALSE)
   }
-  
+
   crs$dataname <- basename(filename)
-  Encoding(crs$dataname) <- "UTF-8"
+  # 110306 Encoding(crs$dataname) <- "UTF-8"
+  # 110306 For Japanese hopefully this works better:
+  if (isJapanese()) crs$dataname <- iconv(crs$dataname, from="UTF-8")
   setMainTitle(crs$dataname)
 
   # Update the Data Tab Treeview and Samples.
 
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset))
 
   # Enable the Data View and Edit buttons.
 
 ##  showDataViewButtons()
-  
+
   setStatusBar(sprintf(Rtxt("The CSV file has been loaded: %s."), crs$dataname))
 
   return(TRUE)
@@ -1051,12 +1053,12 @@ updateRDataNames <- function(filename=NULL)
   # Start logging and executing the R code.
 
   startLog()
-  
+
   appendLog(Rtxt("Load an Rdata file containing R objects."), load.cmd)
   set.cursor("watch")
   eval(parse(text=load.cmd), .GlobalEnv) # Env so datasets are globally available.
   set.cursor()
-  
+
   # Add new data frames to the combo box.
 
   combobox <- theWidget("data_name_combobox")
@@ -1065,12 +1067,12 @@ updateRDataNames <- function(filename=NULL)
     combobox$getModel()$clear()
     lapply(crs$rdata.datasets, combobox$appendText)
   }
-  
+
   setStatusBar(Rtxt("The list of available datasets has been updated",
                     "from the supplied data file.",
                     "Choose one dataset from the Data Name box."))
 }
-  
+
 #-----------------------------------------------------------------------
 # DATA LIBRAY
 #
@@ -1091,16 +1093,16 @@ updateDataLibrary <- function(current=NULL)
   # gaining focus.
 
   data.name.combobox <- theWidget("data_name_combobox")
-  
+
   # Record the current selection so that we can keep it as the default.
-  
+
   if (is.null(current)) current <- data.name.combobox$getActiveText()
 
   ## if (not.null(current)) return()
 
   # This could take a little while, so use to watch cursor to indicate
   # we are busy.
-  
+
   set.cursor("watch", Rtxt("Determining the available datasets from all packages...."))
 
   # 090418 Suppress warnings about datasets having moved to 'datasets'
@@ -1108,8 +1110,8 @@ updateDataLibrary <- function(current=NULL)
   opt <- options(warn=-1)
   da <- data(package = .packages(all.available = TRUE))
   options(opt)
-  
-  dl <- sort(paste(da$results[,'Item'], ":", da$results[,'Package'], 
+
+  dl <- sort(paste(da$results[,'Item'], ":", da$results[,'Package'],
                    ":", da$results[,'Title'], sep=""))
   # Add the entries to the combo box.
 
@@ -1117,7 +1119,7 @@ updateDataLibrary <- function(current=NULL)
   if (not.null(dl))
   {
     lapply(dl, data.name.combobox$appendText)
-    
+
     # Set the selection to that which was already selected, if possible.
 
     if (not.null(current) && current %in% dl)
@@ -1145,30 +1147,30 @@ openODBCSetTables <- function()
   # Obtain the name of the DSN.
 
   DSNname <- theWidget("data_odbc_dsn_entry")$getText()
-  
+
   # Generate commands to connect to the database and retrieve the tables.
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
   connect.cmd <- sprintf('crs$odbc <- odbcConnect("%s")', DSNname)
   tables.cmd  <- sprintf('crs$odbc.tables <- sqlTables(crs$odbc)$TABLE_NAME')
-  
+
   # Ensure the RODBC library is available or else we can not support ODBC.
 
   if (! packageIsAvailable("RODBC", Rtxt("connect to an ODBC database"))) return(FALSE)
-      
+
   startLog(Rtxt("Open an ODBC connection."))
 
   appendLog(Rtxt("Require the RODBC library."), lib.cmd)
   set.cursor("watch")
   eval(parse(text=lib.cmd))
   set.cursor()
-       
+
   # Close all currently open channels. This assumes that the user is
   # not openning channels themselves. It could be a bad choice, but
   # assume we are addressing the usual Rattle user.
 
   odbcCloseAll()
-  
+
   appendLog(Rtxt("Open the connection to the ODBC service."), connect.cmd)
   result <- try(eval(parse(text=connect.cmd)))
   if (inherits(result, "try-error"))
@@ -1178,7 +1180,7 @@ openODBCSetTables <- function()
                      "See the R Console for further details."))
     return(FALSE)
   }
-  
+
   appendLog(Rtxt("Load the names of available tables."), tables.cmd)
   set.cursor("watch")
   result <- try(eval(parse(text=tables.cmd)))
@@ -1199,7 +1201,7 @@ openODBCSetTables <- function()
     combobox$getModel()$clear()
     lapply(crs$odbc.tables, combobox$appendText)
   }
-  
+
   setStatusBar(Rtxt("ODBC connection to database established. Now select a table."))
 
   return(TRUE)
@@ -1240,7 +1242,7 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
     theWidget("sample_count_spinbutton")$setValue(srows)
     theWidget("sample_percentage_spinbutton")$setValue(per)
     theWidget("data_sample_entry")$setText(crv$default.sample)
-    
+
     executeSelectSample()
   }
 
@@ -1248,17 +1250,17 @@ resetVariableRoles <- function(variables, nrows, input=NULL, target=NULL,
   # ensure the cached role variables are updated, or else we might see
   # unexpected warnings about changes having been made but not
   # EXECTUEd. [071125]
-  
+
   executeSelectTab(resample)
 
   # Set the risk label appropriately.
-  
+
   theWidget("evaluate_risk_label")$setText(crs$risk)
 }
 
 resetDatasetViews <- function(input, target, risk, ident, ignore, weight=NULL)
 {
-  
+
   # Reset the treeviews.
 
   theWidget("select_treeview")$getModel()$clear()
@@ -1304,15 +1306,15 @@ executeDataARFF <- function()
   }
 
   filename <- URLdecode(filename)
-  
+
   crs$dwd <- dirname(filename)
   crs$mtime <- urlModTime(filename)
 
   # We need the foreign package to read ARFF data.
-  
+
   if (! packageIsAvailable("foreign", Rtxt("read an ARFF dataset"))) return(FALSE)
   lib.cmd <- "require(foreign, quietly=TRUE)"
-  
+
   # If there is a model warn about losing it.
 
   if (! overwriteModel()) return(FALSE)
@@ -1325,13 +1327,13 @@ executeDataARFF <- function()
 
   read.cmd <- sprintf('crs$dataset <- read.arff("%s")', filename)
   str.cmd  <- "str(crs$dataset)"
-  
+
   # Start logging and executing the R code.
 
   startLog()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
-  
+
   appendLog(packageProvides("foreign", "read.arff"), lib.cmd)
   eval(parse(text=lib.cmd))
 
@@ -1344,15 +1346,15 @@ executeDataARFF <- function()
   # appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
   ##appendTextview(TV, sprintf("Structure of %s.\n\n", filename),
   ##                collectOutput(str.cmd))
-  
+
   ## Update the select treeview and samples.
 
-##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
+##  resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset))
 
   # Enable the Data View button.
 
 ##  showDataViewButtons()
-  
+
   setStatusBar(sprintf(Rtxt("The ARFF data has been loaded: %s."), crs$dataname))
 
   return(TRUE)
@@ -1364,14 +1366,14 @@ executeDataODBC <- function()
   # the data_odbc_dsn_entry. Note that there is no standard LIMIT
   # option in SQL, but it is LIMIT in Teradata, so perhaps we go with
   # that for now?
-  
+
   dsn.name <- theWidget("data_odbc_dsn_entry")$getText()
   table <- theWidget("data_odbc_table_combobox")$getActiveText()
   row.limit <- theWidget("data_odbc_limit_spinbutton")$getValue()
   believe.nrows <- theWidget("data_odbc_believeNRows_checkbutton")$getActive()
   # warn.many <- theWidget("data_odbc_warnmany_checkbutton")$getActive()
   sql.query <- "" # theWidget("odbc_sql_entry")$getText()
-  
+
   # If the ODBC channel has not been openned, then tell the user how
   # to do so.
 
@@ -1384,9 +1386,9 @@ executeDataODBC <- function()
                      "or else enter a specific SQL query to retrieve a dataset."))
     return(FALSE)
   }
-  
+
   # Error if no table from the database has been chosen.
-  
+
   if (sql.query == "" && is.null(table))
   {
     errorDialog(Rtxt("No table nor SQL query has been specified.",
@@ -1408,7 +1410,7 @@ executeDataODBC <- function()
     sql <- sprintf("SELECT * FROM %s", table)
     if (row.limit > 0) sql <- paste(sql, "LIMIT", row.limit)
   }
-  
+
   #assign.cmd <- "crs$dataset <- sqlFetch(crs$odbc, table)"
   assign.cmd <- paste("crs$dataset <- sqlQuery(crs$odbc, ", '"', sql, '"',
                       ifelse(believe.nrows, "", ", believeNRows=FALSE"),
@@ -1419,7 +1421,7 @@ executeDataODBC <- function()
   {
     # Double check with the user if we are about to extract a large
     # number of rows.
-    
+
     numRows <- sqlQuery(crs$odbc, sprintf("SELECT count(*) FROM %s", table))
     if (crv$odbc.large != 0 && numRows > crv$odbc.large)
       if (! questionDialog(sprintf(Rtxt("You are about to extract %s",
@@ -1429,7 +1431,7 @@ executeDataODBC <- function()
                                    numRows, table, dsn.name)))
         return()
   }
-  
+
   # Start logging and executing the R code.
 
   startLog()
@@ -1440,7 +1442,7 @@ executeDataODBC <- function()
   setMainTitle(crs$dataname)
 
   appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
-  
+
   setStatusBar(sprintf(Rtxt("The ODBC data has been loaded: %s."), crs$dataname))
 
   return(TRUE)
@@ -1448,7 +1450,7 @@ executeDataODBC <- function()
 
 executeDataRdata <- function()
 {
-  
+
   # Collect relevant data.
 
   filename <- theWidget("data_filechooserbutton")$getFilename()
@@ -1467,7 +1469,7 @@ executeDataRdata <- function()
   crs$mtime <- urlModTime(filename)
 
   # Error if no dataset from the Rdata file has been chosen.
-  
+
   if (is.null(dataset))
   {
     errorDialog(Rtxt("No R dataset name has been specified.",
@@ -1483,14 +1485,14 @@ executeDataRdata <- function()
   if (! overwriteModel()) return(FALSE)
 
   # Generate commands.
-  
+
   assign.cmd <- sprintf('crs$dataset <- %s', dataset)
   str.cmd  <- "str(crs$dataset)"
-  
+
   # Start logging and executing the R code.
 
   startLog()
-  
+
   appendLog(Rtxt("Load an RData file."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
@@ -1504,7 +1506,7 @@ executeDataRdata <- function()
 
 executeDataRdataset <- function()
 {
-  
+
   # Collect relevant data
 
   dataset <- theWidget("data_name_combobox")$getActiveText()
@@ -1513,9 +1515,9 @@ executeDataRdataset <- function()
   # update the combobox when it is clicked - this is what would be
   # best! But at least having it in here means we can update it when
   # it is executed.
-  
+
   updateRDatasets(current=dataset)
-  
+
   if (is.null(dataset))
   {
     errorDialog(Rtxt("No R dataset name has been specified.",
@@ -1539,7 +1541,7 @@ executeDataRdataset <- function()
   startLog()
   #theWidget(TV)$setWrapMode("none") # On for welcome msg
   #resetTextview(TV)
-  
+
   appendLog(Rtxt("Load an R data frame."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
@@ -1549,7 +1551,7 @@ executeDataRdataset <- function()
   # 080328 Fix up any non-supported characters in the variable names,
   # otherwise they cause problems, e.g. "a-b" when used as ds$a-b is
   # interpreted as (ds$a - b)!
-  
+
   names(crs$dataset) <- make.names(names(crs$dataset))
 
   appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
@@ -1562,9 +1564,9 @@ executeDataRdataset <- function()
 executeDataLibrary <- function()
 {
   # 080521 Load a dataset from a particular R package.
-  
+
   # Collect relevant data.
-  
+
   dataset <- theWidget("data_name_combobox")$getActiveText()
 
   if (is.null(dataset))
@@ -1576,13 +1578,13 @@ executeDataLibrary <- function()
   }
 
   # Actual dataset name as known when loaded.
-  
+
   adsname <- gsub('([^ :]*).*$', '\\1', unlist(strsplit(dataset, ":"))[1])
 
   # Some datasets are loaded through loading another name (which
   # appears in parentheses. Extract the actual name of the dataset
   # that has to be named to be loaded.
-  
+
   dsname <- gsub('.* \\((.*)\\)$', '\\1', unlist(strsplit(dataset, ":"))[1])
 
   # Extract the name of the package from which the dataset is loaded.
@@ -1606,11 +1608,11 @@ executeDataLibrary <- function()
                               'gsub("-", ".", names(crs$dataset))',
                               sep=""),
                         dsname, dspkg, adsname)
-  
+
   # Start logging and executing the R code.
 
   startLog()
-  
+
   appendLog(Rtxt("Load an R dataset."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
@@ -1625,11 +1627,11 @@ executeDataLibrary <- function()
                         adsname, dspkg, class(crs$dataset), crv$appname))
     return(FALSE)
   }
-  
+
   crs$dataname <- adsname
   crs$datapkg <- dspkg
   setMainTitle(crs$dataname)
-  
+
   setStatusBar(Rtxt("The R package data is now available."))
 
   return(TRUE)
@@ -1638,7 +1640,7 @@ executeDataLibrary <- function()
 viewData <- function()
 {
   startLog("View the data - note that edits are ignored.")
-  
+
   if (packageIsAvailable("RGtk2Extras", Rtxt("view data in a spreadsheet")))
   {
     require(RGtk2Extras)
@@ -1665,10 +1667,10 @@ viewData <- function()
     setTitle(paste(crv$appname, ": ", Rtxt("Data Viewer"), sep=""))
   }
 }
-    
+
 editData <- function()
 {
-  
+
   # Check if there is a model first and then warn about losing it.
 
   if (! overwriteModel()) return()
@@ -1710,20 +1712,20 @@ editData <- function()
     }
   else
     assign.cmd <- 'crs$dataset <- edit(crs$dataset)'
-  
+
   # Start logging and executing the R code.
 
   startLog()
   ##theWidget(TV)$setWrapMode("none") # On for welcome msg
   ##resetTextview(TV)
-  
+
   appendLog(Rtxt("Edit A Data Set Manually"), assign.cmd)
-  
+
   # These are needed because resetRattle clears everything
 
   ds <- crs$dataset
   # TODO fn <- theWidget("data_filechooserbutton")$getFilename()
-  
+
   resetRattle()
   crs$dataset <- ds
   eval(parse(text=assign.cmd))
@@ -1735,12 +1737,12 @@ editData <- function()
 
   # Update the select treeview and samples.
 
-  ## resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset)) 
-  createVariablesModel(colnames(crs$dataset)) 
+  ## resetVariableRoles(colnames(crs$dataset), nrow(crs$dataset))
+  createVariablesModel(colnames(crs$dataset))
 
   # Ensure we are viewing the treevie tab rather than the Welcome
   # message.
-  
+
   crv$DATA.DISPLAY.NOTEBOOK$setCurrentPage(crv$DATA.DISPLAY.TREEVIEW.TAB)
 
   setStatusBar(Rtxt("The supplied data is now available."))
@@ -1761,12 +1763,12 @@ exportDataTab <- function()
   sampling <- theWidget("data_sample_checkbutton")$getActive()
 
   # Obtain filename to write the dataset as CSV to.
-  
+
   dialog <- gtkFileChooserDialog("Export Dataset", NULL, "save",
                                  "gtk-cancel", GtkResponseType["cancel"],
                                  "gtk-save", GtkResponseType["accept"])
   dialog$setDoOverwriteConfirmation(TRUE)
-  
+
   if(not.null(crs$dataname))
     dialog$setCurrentName(paste(get.stem(crs$dataname), "_",
                                 ifelse(sampling, "sample", "saved"),
@@ -1793,7 +1795,7 @@ exportDataTab <- function()
   ff$setName(Rtxt("All Files"))
   ff$addPattern("*")
   dialog$addFilter(ff)
-  
+
   if (dialog$run() == GtkResponseType["accept"])
   {
     save.name <- dialog$getFilename()
@@ -1821,7 +1823,7 @@ exportDataTab <- function()
     msg <- Rtxt("The dataset has been exported to %s.")
 
   setStatusBar(sprintf(msg, save.name))
-}  
+}
 
 ########################################################################
 # DATA ROLES
@@ -1907,7 +1909,7 @@ item.toggled <- function(cell, path.str, model)
   column <- cell$getData("column")
 
   # Get the current value of the corresponding flag
-  
+
   path <- gtkTreePathNewFromString(path.str) # Current row
   iter <- model$getIter(path)$iter           # Iter for the row
   current <- model$get(iter, column)[[1]]    # Get data from specific column
@@ -1919,7 +1921,7 @@ item.toggled <- function(cell, path.str, model)
     model$set(iter, column, !current)
 
     # Uncheck all other Roles for this row, acting like radio buttons.
-    
+
     columns <- crv$COLUMNstart:crv$COLUMNend
     lapply(setdiff(columns, column), function(x) model$set(iter, x, FALSE))
 
@@ -1961,7 +1963,7 @@ on_variables_toggle_ignore_button_clicked <- function(action, window)
   # but it had no impact. Changing 500 variables takes 5
   # seconds. When connected over terminal services the elapsed time
   # is 16 seconds, still with 5 seconds user time.
-  
+
   # theWidget("rattle_window")$getWindow()$freezeUpdates()
 
   # 071113 Use the data parameter to avoid an RGtk2 bug in 2.12.1,
@@ -2034,15 +2036,15 @@ executeSelectTab <- function(resample=TRUE)
   # 080520 TODO May want to rename this as SELECT is no longer a tab
   # but is now part of the DATA tab. Perhaps we call it
   # resetSelections.
-  
+
   # Check for pre-requisites.
-  
+
   # Can not do any preparation if there is no dataset.
 
   if (noDatasetLoaded()) return()
 
   startLog(Rtxt("Note the user selections."))
-  
+
   if (resample) executeSelectSample()
 
   input   <- getSelectedVariables("input")
@@ -2053,7 +2055,7 @@ executeSelectTab <- function(resample=TRUE)
   weight  <- getSelectedVariables("weight")
   weights <- theWidget("weight_entry")$getText()
   if (weights == "") weights <- NULL
-  
+
   # Fail if there is more than one target.
 
   if (length(target) > 1)
@@ -2064,7 +2066,7 @@ executeSelectTab <- function(resample=TRUE)
                               sep=":", collapse=", ")))
     return()
   }
-  
+
   # Ask if the Target does not look like a target.
 
   if (length(target))
@@ -2098,7 +2100,7 @@ executeSelectTab <- function(resample=TRUE)
   }
 
   # Deal with weights.
-    
+
   # 100829 Fail if there is more than one weight selected. Note that
   # once a weight is selected the Weight Calculator is not sensitive
   # and so any Weight formula there will be ignored.
@@ -2153,21 +2155,21 @@ executeSelectTab <- function(resample=TRUE)
                                 "It is suggested that you ignore this variable."),
                            identifiers[vars][i]))
       }
-      
+
       # For each Weights variable, replace with full reference to
       # crs$dataset, since the variable is ignored.
 
       weights <- gsub(identifiers[vars][i],
                       sprintf("crs$dataset$%s", identifiers[vars][i]),
                       weights)
-    
+
     }
   }
 
   #------------------------------------------------------------------------
-  
+
   # Record appropriate information.
-  
+
   crs$input   <- input
   crs$target  <- target
   crs$risk    <- risk
@@ -2176,7 +2178,7 @@ executeSelectTab <- function(resample=TRUE)
   crs$weights <- weights
   crs$numeric <- colnames(crs$dataset)[getNumericVariables(type="indicies")]
   crs$categoric <- getCategoricVariables(type="names")
-  
+
   # 091206 Add the information to the Log tab
 
   convertOneMany <- function(x)
@@ -2206,7 +2208,7 @@ executeSelectTab <- function(resample=TRUE)
       crs$transforms[[i]]$status <- "inactive"
     else
       crs$transforms[[i]]$status <- "active"
-  
+
   # Update MODEL targets
 
   the.target <- ifelse(length(target), sprintf(Rtxt("Target: %s"), target),
@@ -2217,7 +2219,7 @@ executeSelectTab <- function(resample=TRUE)
   theWidget("explot_target_label")$setText(the.target)
 
   theWidget("test_groupby_target_label")$setText(the.target)
-  
+
   theWidget("rpart_target_label")$setText(the.target)
   theWidget("rf_target_label")$setText(the.target)
   theWidget("svm_target_label")$setText(the.target)
@@ -2229,8 +2231,8 @@ executeSelectTab <- function(resample=TRUE)
   theWidget("model_survival_radiobutton")$setSensitive(TRUE)
   theWidget("model_survival_time_var_label")$setText(sub(Rtxt("Target:"),
                                                          Rtxt("Time:"), the.target))
-  theWidget("model_survival_status_var_label")$setText(the.risk) 
-  
+  theWidget("model_survival_status_var_label")$setText(the.risk)
+
   # Update MODEL weights
 
   if (not.null(weights))
@@ -2246,7 +2248,7 @@ executeSelectTab <- function(resample=TRUE)
   {
     theWidget("model_tree_rpart_weights_label")$
     setText("")
-  }    
+  }
 
   # 080413 Update MODEL types that are available.
 
@@ -2257,7 +2259,7 @@ executeSelectTab <- function(resample=TRUE)
     theWidget("boost_radiobutton")$setSensitive(TRUE)
   else
     theWidget("boost_radiobutton")$setSensitive(FALSE)
-  
+
   # Update various MODEL options
 
   if (survivalTarget())
@@ -2384,21 +2386,21 @@ executeSelectTab <- function(resample=TRUE)
     theWidget("glm_multinomial_radiobutton")$setSensitive(FALSE)
     theWidget("model_survival_radiobutton")$setSensitive(FALSE)
   }
-  
+
   # Update EVALUATE risk variable
-  
+
   theWidget("evaluate_risk_label")$setText(crs$risk)
 
   # Update defaults that rely on the number of variables.
-  
+
   crv$rf.mtry.default <- floor(sqrt(length(crs$input)))
   theWidget("rf_mtry_spinbutton")$setValue(crv$rf.mtry.default)
-  
+
   # 080505 We auto decide whether the target looks like a categoric
   # or numeric, but if it ends up being a categoric (the user
   # overrides with the type radio button) with very many classes,
   # then complain!
-  
+
   if (not.null(target)
       && categoricTarget()
       && target.levels > crv$max.categories)
@@ -2433,7 +2435,7 @@ executeSelectTab <- function(resample=TRUE)
                      "Execute this tab once again."))
     return(FALSE)
   }
-  
+
   # Finished - update the status bar.
 
   roles.msg <- sprintf(Rtxt("Roles noted. %d observations",
@@ -2454,7 +2456,7 @@ executeSelectTab <- function(resample=TRUE)
     model.msg <- sprintf(Rtxt("The target is %s. Numeric.",
                               "Regression models enabled."),
                          crs$target)
-    
+
   setStatusBar(roles.msg, model.msg)
 }
 
@@ -2469,11 +2471,11 @@ executeSelectSample <- function()
   # Perhaps the philosophy should go back to the fact that the user
   # can split the dataset up themselves quite easily, and I do
   # provide a mechanism for them to load their dataset for scoring.
-  
+
   #target <- getSelectedVariables("target")
   #print(target)
   #crs$nontargets <- which(is.na(crs$dataset[[target]]))
-  
+
   # Record that a random sample of the dataset is desired and the
   # random sample itself is loaded into crs$sample. 080425 Whilst we
   # are at it we also set the variable crs$targeted to be those row
@@ -2529,7 +2531,7 @@ executeSelectSample <- function()
     {
       # 100417 Even for RStat make sure we maintain crs$train as it is
       # now starting to be used.
-      
+
       sample.cmd <- paste(sprintf("set.seed(%s)\n", seed),
                           "crs$sample <- crs$train <- sample(nrow(crs$dataset), ", ssize,
                           ")", sep="")
@@ -2555,7 +2557,7 @@ executeSelectSample <- function()
   # TODO For test/train, use sample,split from caTools?
 
   ## Set some defaults that depend on sample size.
-  
+
   #if (is.null(crs$sample))
   #  crv$rf.sampsize.default <- length(crs$dataset)
   #else
@@ -2647,7 +2649,7 @@ getSelectedVariables <- function(role, named=TRUE)
   # Sakakibara). Thus we convert to the locale of the system.
 
   variables <- iconv(variables, "UTF-8", localeToCharset()[1])
-  
+
   return(variables)
 }
 
@@ -2660,17 +2662,17 @@ initialiseVariableViews <- function()
                            "gboolean", "gboolean", "gchararray")
 
   impute <- gtkListStoreNew("gchararray", "gchararray", "gchararray")
-  
+
   continuous <- gtkListStoreNew("gchararray", "gchararray",
                                 "gboolean", "gboolean",
                                 "gboolean", "gboolean", "gchararray")
-  
-  
+
+
   categorical <- gtkListStoreNew("gchararray", "gchararray",
                                  "gboolean", "gboolean", "gboolean",
                                  "gchararray")
-  
-  
+
+
   # View the model through the treeview in the DATA tab
 
   treeview <- theWidget("select_treeview")
@@ -2678,10 +2680,10 @@ initialiseVariableViews <- function()
 
   impview <- theWidget("impute_treeview")
   impview$setModel(impute)
-  
+
   catview <- theWidget("categorical_treeview")
   catview$setModel(categorical)
-  
+
   conview <- theWidget("continuous_treeview")
   conview$setModel(continuous)
 
@@ -2694,7 +2696,7 @@ initialiseVariableViews <- function()
                                         Rtxt("No."),
                                         renderer,
                                         text= crv$COLUMN[["number"]])
-  
+
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
   imp.offset <-
@@ -2702,7 +2704,7 @@ initialiseVariableViews <- function()
                                        Rtxt("No."),
                                        renderer,
                                        text= crv$IMPUTE[["number"]])
-  
+
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
   cat.offset <-
@@ -2710,7 +2712,7 @@ initialiseVariableViews <- function()
                                        Rtxt("No."),
                                        renderer,
                                        text= crv$CATEGORICAL[["number"]])
-  
+
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
   con.offset <-
@@ -2718,15 +2720,15 @@ initialiseVariableViews <- function()
                                        Rtxt("No."),
                                        renderer,
                                        text= crv$CONTINUOUS[["number"]])
-  
+
   ## Add the VARIABLE NAME column to the views.
-  
+
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
   col.offset <-
     treeview$insertColumnWithAttributes(-1,
                                         Rtxt("Variable"),
-                                        renderer, 
+                                        renderer,
                                         text = crv$COLUMN[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
@@ -2734,7 +2736,7 @@ initialiseVariableViews <- function()
   imp.offset <-
     impview$insertColumnWithAttributes(-1,
                                        Rtxt("Variable"),
-                                       renderer, 
+                                       renderer,
                                        text = crv$IMPUTE[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
@@ -2742,7 +2744,7 @@ initialiseVariableViews <- function()
   cat.offset <-
     catview$insertColumnWithAttributes(-1,
                                        Rtxt("Variable"),
-                                       renderer, 
+                                       renderer,
                                        text = crv$CATEGORICAL[["variable"]])
 
   renderer <- gtkCellRendererTextNew()
@@ -2750,7 +2752,7 @@ initialiseVariableViews <- function()
   con.offset <-
     conview$insertColumnWithAttributes(-1,
                                        Rtxt("Variable"),
-                                       renderer, 
+                                       renderer,
                                        text = crv$CONTINUOUS[["variable"]])
 
   ## Add the TYPE column.
@@ -2762,7 +2764,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Data Type"),
                                         renderer,
                                         text = crv$COLUMN[["type"]])
-  
+
   # Add the INPUT column.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2776,7 +2778,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Input"),
                                         renderer,
                                         active = crv$COLUMN[["input"]])
-  
+
   ## Add the TARGET column.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2790,7 +2792,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Target"),
                                         renderer,
                                         active = crv$COLUMN[["target"]])
-  
+
   ## Add the RISK column.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2804,7 +2806,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Risk"),
                                         renderer,
                                         active = crv$COLUMN[["risk"]])
-  
+
   ## Add the IDENT column.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2818,7 +2820,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Ident"),
                                         renderer,
                                         active = crv$COLUMN[["ident"]])
-  
+
   ## Add the IGNORE column (the Ignore check button) to the view.
 
   renderer <- gtkCellRendererToggleNew()
@@ -2831,7 +2833,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         Rtxt("Ignore"),
                                         renderer,
-                                        active = crv$COLUMN[["ignore"]]) 
+                                        active = crv$COLUMN[["ignore"]])
 
   ## Add the WEIGHT column (the Weight check button) to the view.
 
@@ -2845,7 +2847,7 @@ initialiseVariableViews <- function()
     treeview$insertColumnWithAttributes(-1,
                                         Rtxt("Weight"),
                                         renderer,
-                                        active = crv$COLUMN[["weight"]]) 
+                                        active = crv$COLUMN[["weight"]])
 
   ## Add the barplot and dotplot and mosplot.
 
@@ -2859,7 +2861,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Bar Plot"),
                                        renderer,
                                        active = crv$CATEGORICAL[["barplot"]])
-  
+
 
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
@@ -2871,7 +2873,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Dot Plot"),
                                        renderer,
                                        active = crv$CATEGORICAL[["dotplot"]])
-  
+
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
@@ -2882,7 +2884,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Mosaic"),
                                        renderer,
                                        active = crv$CATEGORICAL[["mosplot"]])
-  
+
   ## Add the boxplot, hisplot, cumplot, benplot buttons
 
   renderer <- gtkCellRendererToggleNew()
@@ -2895,7 +2897,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Box Plot"),
                                        renderer,
                                        active = crv$CONTINUOUS[["boxplot"]])
-  
+
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
@@ -2906,7 +2908,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Histogram"),
                                        renderer,
                                        active = crv$CONTINUOUS[["hisplot"]])
-  
+
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
@@ -2917,7 +2919,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Cumulative"),
                                        renderer,
                                        active = crv$CONTINUOUS[["cumplot"]])
-  
+
   renderer <- gtkCellRendererToggleNew()
   renderer$set(xalign = 0.0)
   renderer$set(width = 60)
@@ -2928,7 +2930,7 @@ initialiseVariableViews <- function()
                                        Rtxt("Benford"),
                                        renderer,
                                        active = crv$CONTINUOUS[["benplot"]])
-  
+
   ## Add the COMMENT column.
 
   renderer <- gtkCellRendererTextNew()
@@ -2938,7 +2940,7 @@ initialiseVariableViews <- function()
                                         Rtxt("Comment"),
                                         renderer,
                                         text = crv$COLUMN[["comment"]])
-  
+
   renderer <- gtkCellRendererTextNew()
   renderer$set(xalign = 0.0)
   imp.offset <-
@@ -2964,7 +2966,7 @@ initialiseVariableViews <- function()
                                        text = crv$CONTINUOUS[["comment"]])
 
   ## Allow multiple selections.
-  
+
   treeview$getSelection()$setMode("multiple")
   impview$getSelection()$setMode("multiple")
   catview$getSelection()$setMode("multiple")
@@ -2991,7 +2993,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   # strings).
 
   # Retrieve the models.
-  
+
   model <- theWidget("select_treeview")$getModel()
   impute <- theWidget("impute_treeview")$getModel()
   categorical <- theWidget("categorical_treeview")$getModel()
@@ -3007,20 +3009,20 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   given.target <- c(which(substr(variables, 1, 6) == "TARGET"),
                     which(substr(variables, 1, 4) == "TIME"))
   if (autoroles && length(given.target) > 0) target <- variables[given.target[1]]
-  
+
   if (autoroles && is.null(target))
   {
     # Find the last variable that is not an IMP (imputed). This is
     # just a general heuristic, and works particularly for imputation
     # performed in Rattle. Should also do this for first, and also for
     # IGNORE variables.
-    
+
     last.var <- length(variables)
     while (last.var > 1 && substr(variables[last.var], 1, 4) == "IMP_")
     {
       last.var <- last.var - 1
     }
-    
+
     target <- -1
     if ((is.factor(crs$dataset[,last.var]) &&
          length(levels(crs$dataset[,last.var])) > 1 &&
@@ -3055,10 +3057,10 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
   # Determine the list of input variables so far (i.e., not dealing
   # with ignore and risk yet).
-  
+
   if (is.null(input)) input <- variables
   input <- setdiff(input, target)
-  
+
   # Update the Model tab with the selected default target
 
   the.target <- ifelse(length(target), sprintf(Rtxt("Target: %s"), target),
@@ -3080,7 +3082,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                              union(benplot,
                                    union(barplot,
                                          union(dotplot, mosplot))))))
-  
+
   ## Build the Variables treeview model with each variable's INPUT set
   ## to TRUE and all else FALSE. If the variable has only a single
   ## value then it defaults to IGNORE, and if it is a factor and has
@@ -3090,7 +3092,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   for (i in seq_along(variables))
   {
     #used <- union(target, union(risk, union(ident, ignore)))
-    
+
     iter <- model$append()$iter
 
     cl <- class(crs$dataset[[variables[i]]])
@@ -3099,11 +3101,11 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     # this change. 101004 Reinstate this change to cl since ordered
     # factors in weather AUS were being dropped from the Descriptions
     # option of Explore.
-    
+
     if (length(cl) == 2 && cl[1] == "ordered" && cl[2] == "factor")
       cl <- "factor"
-    
-    # First check for special variable names. 
+
+    # First check for special variable names.
 
     if (autoroles)
     {
@@ -3113,9 +3115,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         # which add the IMP_ at the beginning of the name of any
         # imputed variables. These will be ignored as they will have
         # been replaced by another variable.
-        
+
         ignore <- c(ignore, variables[i])
-        
+
         # Be sure to also remove any other role for the original
         # variable?
       }
@@ -3184,18 +3186,18 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     input <- setdiff(input, target)
     if (length(target) && length(ident) && target %in% ident)
       target <- NULL
-    
+
     # 090110 We used to include the number of levels in the Data Type
     # column, but since we now include Unique in the comment column,
     # no longer include this redundant information.
-    
+
     ## if ("factor" %in% cl)
     ## {
     ##   lv <- length(levels(crs$dataset[[variables[i]]]))
     ##   if (lv > 1)
     ##     cl <- paste(cl, lv)
     ## }
-    
+
     input <- setdiff(setdiff(setdiff(input, ignore), ident), risk)
 
     missing.count <- sum(is.na(crs$dataset[[variables[i]]]))
@@ -3207,9 +3209,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     possible.categoric <- (unique.count <= crv$max.categories ||
                            theWidget("data_target_categoric_radiobutton")$
                            getActive())
-    
+
     # Convert internal class to printable form.
-    
+
     prcl <- cl[1]
     prcl <- gsub("constant", Rtxt("Constant"), prcl)
     prcl <- gsub("ident", Rtxt("Ident"), prcl)
@@ -3217,7 +3219,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
     prcl <- gsub("ordered", Rtxt("Categoric"), prcl)
     prcl <- gsub("integer", Rtxt("Numeric"), prcl)
     prcl <- gsub("numeric", Rtxt("Numeric"), prcl)
-    
+
     # Every variable goes into the VARIABLES treeview.
 
     model$set(iter,
@@ -3242,7 +3244,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                                         ifelse(missing.count > 0,
                                                sprintf(Rtxt("Missing: %d "),
                                                        missing.count), ""),
-                                       
+
                                         ifelse(prcl == "constant",
                                                sprintf(Rtxt("Value: %s "),
                                                        unique.value), ""),
@@ -3271,7 +3273,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
       # Generate correct Rattle terminology for the variable
       # class. 090731 We denote an integer as Numeric, to be
       # consistent throughout Rattle.
-      
+
       dtype <- paste("A ", cl, " variable")
       if (cl == "integer")
         dtype <- sprintf(Rtxt("Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]"),
@@ -3310,7 +3312,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
         mtext <- sprintf(Rtxt(" %d missing values"), missing.count)
       else
         mtext <- ""
-      
+
       imp.options <- gtkListStoreNew("gchararray")
       imp.options.iter <- imp.options$append()$iter
       imp.options$set(imp.options.iter, 0, "xx")
@@ -3322,7 +3324,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
                  #crv$IMPUTE["comment"], sprintf("%s%s%s.", etype, dtype, mtext))
                  crv$IMPUTE["comment"], sprintf("%s%s.", dtype, etype))
     }
-        
+
     if (strsplit(cl, " ")[[1]][1] == "factor")
     {
       ## For the IMP_ and IGNORE_ variables we don't get a chance
@@ -3330,7 +3332,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
       if (cl == "factor")
         cl <- paste(cl, length(levels(crs$dataset[[variables[i]]])))
-      
+
       catiter <- categorical$append()$iter
       categorical$set(catiter,
                       crv$CATEGORICAL["number"], i,
@@ -3368,7 +3370,7 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
   crs$risk   <- risk
 
   # 091206 Set the default target type.
-  
+
   # 091206 If the target is TIME... and risk is STATUS... or
   # EVENT... then enable the Survival radiobutton.
 
@@ -3391,9 +3393,9 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     # Unset them all - not sure we should be here ever? 091223 Resume
     # to this being the default.
-    
+
     theWidget("data_target_auto_radiobutton")$setActive(TRUE)
-    
+
   # Perform other setups associated with a new dataset
 
   crv$rf.mtry.default <- floor(sqrt(ncol(crs$dataset)))
@@ -3413,7 +3415,7 @@ getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE, targe
   # always return the string "c(crs$input, crs$target)" etc, as
   # appropriate, so we use symbolic names rather than lists of
   # variable numbers.
-  
+
   # DESCRIPTION
   # Generate a numeric list of variables not ignored.
   #
@@ -3442,7 +3444,7 @@ getIncludedVariables <- function(numonly=FALSE, listall=FALSE, risk=FALSE, targe
     ri <- getVariableIndicies(crs$risk)
   else
     ri <- NULL
-  
+
   if (numonly)
     fl <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   else
@@ -3471,12 +3473,12 @@ inputVariables <- function(numonly=FALSE)
                      "Please choose some input variables before proceeding."))
     stop(Rtxt("no input variables specified"))
   }
-    
+
   if (numonly)
     fl <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   else
     fl <- 1:ncol(crs$dataset)
-  
+
   if (setequal(fi, fl))
     return(NULL)
   else
@@ -3496,7 +3498,7 @@ used.variables <- function(numonly=FALSE)
     fl <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   else
     fl <- 1:ncol(crs$dataset)
-  
+
   if (setequal(fl, ii))
     return(NULL)
   else
@@ -3508,7 +3510,7 @@ getCategoricVariables <- function(type="string")
   # Return a list of categoric variables from amongst those with an
   # INPUT role. If type is "names" than return the list of variable
   # names.
-  
+
   include <- NULL
   cats <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.factor))]
   if (length(cats) > 0)
@@ -3528,7 +3530,7 @@ getNumericVariables <- function(type="string")
   # Returns a list of numeric variables. 080803 Add support to return
   # a list of indicies rather than the default string that needs to be
   # executed to identfy the indicies.
-  
+
   nums <- seq(1,ncol(crs$dataset))[as.logical(sapply(crs$dataset, is.numeric))]
   if (length(nums) > 0)
   {
