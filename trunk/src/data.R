@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-06 22:02:13 Graham Williams>
+# Time-stamp: <2011-03-12 22:13:15 Graham Williams>
 #
 # DATA TAB
 #
@@ -3097,7 +3097,18 @@ createVariablesModel <- function(variables, input=NULL, target=NULL,
 
     cl <- class(crs$dataset[[variables[i]]])
 
-    # 090320 Change "ordered" to Categoric below, so maybe don;t need
+    # 110312 There is a case where cl might be "character". This was
+    # noticed, for example, when loading a .RData file with a column
+    # which was character. Seems like simply converting this to factor
+    # is appropriate.
+
+    if ("character" %in% cl)
+    {
+      crs$dataset[[variables[i]]] <- as.factor(crs$dataset[[variables[i]]])
+      cl <- class(crs$dataset[[variables[i]]])
+    }
+    
+    # 090320 Change "ordered" to Categoric below, so maybe don't need
     # this change. 101004 Reinstate this change to cl since ordered
     # factors in weather AUS were being dropped from the Descriptions
     # option of Explore.

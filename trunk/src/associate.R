@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 12:28:53 Graham Williams>
+# Time-stamp: <2011-03-12 12:58:44 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -224,7 +224,7 @@ executeAssociateTab <- function()
               cmd.output,
               "\n")
   
-  reportTimeTaken(TV, time.taken, model=commonName(crv$RPART))
+  reportTimeTaken(TV, time.taken, model=commonName("arules"))
 }
 
 plotAssociateFrequencies <- function()

@@ -411,7 +411,7 @@ R4X:
 
 # 090201 Keep the weather data static - keeps changing my book details
 # otherwise! 090326 Modify the R script to keep a static version and
-# then regualrly updated versions.
+# then regularly updated versions.
 
 .PHONY: data
 data: package/rattle/data/audit.RData weather

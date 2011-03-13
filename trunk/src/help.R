@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-11-27 08:17:35 Graham Williams>
+# Time-stamp: <2011-03-09 06:24:37 Graham Williams>
 #
 # Help Menu
 #
@@ -485,7 +485,10 @@ on_help_test_kolmogorov_smirnov_activate <- function(action, window)
                    "Kolmogorov-Smirnov Test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("k2test")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("ks2Test")
+    }
   }
 }
 
@@ -502,7 +505,10 @@ on_help_test_wilcoxon_activate <- function(action, window)
                    "Wilcoxon Test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("wilcox.test")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("wilcox.test")
+    }
   }
 }
 
@@ -519,7 +525,10 @@ on_help_test_t_activate <- function(action, window)
                    "to perform the T-test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("locationTest")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("locationTest")
+    }
   }
 }
 on_help_test_f_activate <- function(action, window)
@@ -531,7 +540,10 @@ on_help_test_f_activate <- function(action, window)
                    "to perform the F-test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("varianceTest")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("varianceTest")
+    }
   }
 }
 
@@ -545,7 +557,10 @@ on_help_test_correlation_activate <- function(action, window)
                    "to perform the correlation test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("correlationTest")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("correlationTest")
+    }
   }
 }
 
@@ -559,7 +574,10 @@ on_help_test_wilcoxon_signed_rank_activate <- function(action, window)
                    "to perform the Wilcoxon signed rank test.")))
   {
     if (packageIsAvailable("fBasics", viewDocMsg("wilcox.test")))
+    {
+      require(fBasics, quietly=TRUE)
       popupTextviewHelpWindow("wilcox.test")
+    }
   }
 }
 
@@ -581,7 +599,10 @@ on_help_normalise_activate <- function(action, window)
                    "The By Group Transform segments and recodes a numeric variable to the 0-100 range.")))
   {
     if (packageIsAvailable("reshape", viewDocMsg("rescaler")))
+    {
+      require(reshape, quietly=TRUE)
       popupTextviewHelpWindow("rescaler")
+    }
   }
 }
 

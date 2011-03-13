@@ -12,9 +12,27 @@ rattle (2.6.5) unstable; urgency=low
     not working: Could Not Show Link... No application is registered as
     handling this file
   
+  * On loading a dataset, convert any character variables to be
+    factors. Rattle does not handle character variables, so the
+    translation seems appropriate.
+  
+  * Association rules status bar was refering to decision
+    trees. Fixed. (Pointed out by Xiaobo Gu)
+  
+  * Fix an introduced bug in handling of categorics in numeric transforms.
+  
+  * Fix a bug where imputation for a categoric with class "ordered" and
+    "factor" was treating it as a numeric (because "ordered" is not
+    "factor").
+  
+  * Some Help menu items under Test were not loading the required package
+    and thus were not displaying the help.
+  
+  * Only do crosstabs when we have categoric variables.
+  
   * Updated translations.
 
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 13 Mar 2011 16:46:20 +1100
 
 rattle (2.6.4) unstable; urgency=low
 

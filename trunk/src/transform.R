@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-01 07:34:49 Graham Williams>
+# Time-stamp: <2011-03-13 16:32:49 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -282,7 +282,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
       bygroup <- TRUE
       vprefix <- paste("BG", substr(x=vprefix, start=3, stop=3), sep="")
     }
-    else if (action %in% c("matrix", "log"))
+    else if (TRUE || action %in% c("matrix", "log"))
     {
       # 110220 Choosing a categoric for one of these does not make
       # sense. So remove it.
@@ -295,10 +295,10 @@ executeTransformNormalisePerform <- function(variables=NULL,
       infoDialog(sprintf(Rtxt("We cannot rescale using '%s'",
                               "on a categoric variable.",
                               "Ignoring: %s."),
-                         action, paste(variables[which(classes == "factor")],
+                         action, paste(variables[which("factor" %in% classes)],
                                        collapse=", ")))
       Encoding(variables) <- "UTF-8"
-      variables <- variables[-which(classes == "factor")] # Remove the factors.
+      variables <- variables[-which("factor" %in% classes)] # Remove the factors.
       if (length(variables) == 0) return()
     }
   
@@ -312,7 +312,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
 
   if (bygroup || action %in% c("bygroup")) # 110226 Eventually remove action "bygroup"
   {
-    numfactors <- sum(classes=="factor")
+    numfactors <- sum("factor" %in% classes)
     numnumerics <- sum(classes=="numeric" | classes=="integer")
 
     # Ensure we have just one categoric variable. [080315 gjw] Allow
@@ -353,8 +353,8 @@ executeTransformNormalisePerform <- function(variables=NULL,
       byvname <- NULL
     else
     {
-      byvname <- variables[which(classes=="factor")]
-      variables <- variables[-which(classes == "factor")]
+      byvname <- variables[which("factor" %in% classes)]
+      variables <- variables[-which("factor" %in% classes)]
     }
   }
   
@@ -775,10 +775,10 @@ executeTransformImputePerform <- function()
     Encoding(imputed) <- "unknown"
     infoDialog(sprintf(Rtxt("We cannot impute the %s for a",
                             "categoric variable. Ignoring: %s."),
-                       action, paste(imputed[which(classes == "factor")],
+                       action, paste(imputed[which("factor" %in% classes)],
                                      collapse=", ")))
     Encoding(imputed) <- "UTF-8"
-    imputed <- imputed[-which(classes == "factor")] # Remove the factors.
+    imputed <- imputed[-which("factor" %in% classes)] # Remove the factors.
   }
   
   # Record the current variable roles so that we can maintain these,
@@ -812,7 +812,12 @@ executeTransformImputePerform <- function()
                             vname, z)
     cl <- class(crs$dataset[[z]])
     
-    if (cl == "factor")
+    # 110313 Note that cl could be "ordered" "factor". We have not
+    # considered whether handling an "ordered" is different to
+    # handling a "factor", in terms of adding "Missing" as another
+    # level.
+    
+    if ("factor" %in% cl)
     {
       # Mean and median are not supported for categorics!
 
@@ -1301,9 +1306,9 @@ executeTransformRemapPerform <- function(vars=NULL,
                               eqwidth=Rtxt("Equal Width"),
                               log=Rtxt("Log"),
                               asfactor=Rtxt("As Categoric")),
-                       paste(vars[which(classes == "factor")], collapse=", ")))
+                       paste(vars[which("factor" %in% classes)], collapse=", ")))
     Encoding(vars) <- "UTF-8"
-    vars <- vars[-which(classes == "factor")] # Remove the factors.
+    vars <- vars[-which("factor" %in% classes)] # Remove the factors.
   }
   if (action %in% c("indicator", "joincat", "asnumeric")
       && ("numeric" %in% classes || "integer" %in% classes))
