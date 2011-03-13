@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-18 12:09:26 Graham Williams>
+# Time-stamp: <2011-03-09 05:47:19 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -333,7 +333,7 @@ executeExploreSummary <- function(dataset)
     }
   }
 
-  if (do.crosstab)
+  if (do.crosstab && length(getCategoricVariables()))
   {
     if (packageIsAvailable("descr", Rtxt("produce a cross tabulation")))
     {

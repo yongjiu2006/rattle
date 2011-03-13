@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-26 07:50:33 Graham Williams>
+# Time-stamp: <2011-03-13 16:36:42 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -31,7 +31,7 @@ MAJOR <- "2"
 MINOR <- "6"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 #REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
-REVISION <- "4" # Released 3=110214 2=110113
+REVISION <- "5"
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
 VERSION.DATE <- "Released 19 Feb 2011"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
