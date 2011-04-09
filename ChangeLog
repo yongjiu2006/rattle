@@ -7,7 +7,7 @@ rattle (2.6.6) unstable; urgency=low
   
   * Implement a ggplot2 pairs plot (scatterplot) as the plot to use when
     ggplot2 is enabled and under Explore/Distriubtions no variables are
-    chosen to be displayed. Uses code from Mike Lawrence.
+    chosen to be displayed. Uses ggcorplot from Deducer.
   
   * Implement use of rpart.plot's prp() when ggplot2 is enabled.
   

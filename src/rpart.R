@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-04-09 22:20:01 Graham Williams>
+# Time-stamp: <2011-04-10 07:49:52 Graham Williams>
 #
 # RPART TAB
 #
@@ -82,16 +82,32 @@ on_rpart_plot_button_clicked <- function(button)
 
   if (theWidget("model_tree_rpart_radiobutton")$getActive())
     if (theWidget("use_ggplot2")$getActive() # Not really ggplot2 but convenient.
-        && packageIsAvailable("rpart.plot"))
-      plot.cmd <- paste('require("rpart.plot", quietly=TRUE)\n',
+        && packageIsAvailable("rpart.plot", "plot nice looking decision trees")
+        && packageIsAvailable("RColorBrewer", "choose colours for tree plot"))
+      # 110410 Note that rpart.plot requires rpart >= 3.1.48 which is
+      # not available on Windows R 2.12.2!
+      plot.cmd <- paste('# Generate a "nice" looking plot here using repart.plot.\n\n',
+                        'require("rpart.plot", quietly=TRUE)\n',
+                        'require("RColorBrewer", quietly=TRUE)\n\n',
+                        '# Identify a range of colours to use.\n',
+                        '# Darker for higher scores.\n\n',
+                        'gr <- brewer.pal(9,"Greens")[3:7]\n',
+                        'bl <- brewer.pal(9,"Blues")[2:6]\n\n',
+                        '# Extract the scores for each of the nodes.\n',
+                        '# This assumes binary and will need generalising.\n\n',
+                        'per <- NULL\n',
+                        'for (i in 1:nrow(crs$rpart$frame$yval2))\n',
+                        '    per <- c(per, crs$rpart$frame$yval2[i, ',
+                        '3+crs$rpart$frame$yval[i]])\n',
+                        '# Calculate an index into the combined colour sequence.\n\n',
+                        'col.index <- round(10*(per-0.4))+5*(crs$rpart$frame$yval-1)\n',
+                        '# Define the contents of the tree nodes.\n\n',
                         "my.node.fun <- function(x, labs, digits, varlen)\n",
-                        "{\n  per <- NULL\n  for (i in 1:nrow(x$frame$yval2))\n",
-                        "    per <- c(per, x$frame$yval2[i,3+x$frame$yval[i]])\n",
-                        '  paste(labs, "\n", round(100*per),\n',
+                        '  paste(labs, "\\n", round(100*per),\n',
                         '        "% of ", x$frame$n, sep="")\n',
-                        '}\n',
+                        '# Gnerate the plot and title.\n\n',
                         "prp(crs$rpart, type=1, extra=0,\n",
-                        '    box.col=c("pink", "palegreen3")[crs$rpart$frame$yval],\n',
+                        '    box.col=c(bl, gr)[col.index],\n',
                         '    nn=TRUE, varlen=0, shadow.col="grey",\n',
                         '    node.fun=my.node.fun)\n',
                         genPlotTitleCmd(commonName(crv$RPART),

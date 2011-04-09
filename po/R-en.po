@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-09 22:21+1000\n"
-"PO-Revision-Date: 2011-04-09 22:21+1000\n"
+"POT-Creation-Date: 2011-04-10 07:40+1000\n"
+"PO-Revision-Date: 2011-04-10 07:40+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_AU\n"
@@ -399,7 +399,7 @@ msgstr "Explore"
 msgid "Explore Missing"
 msgstr "Explore Missing"
 
-#: rattle.glade.h:96 hclust.R:525 kmeans.R:266 nnet.R:228 rpart.R:1014
+#: rattle.glade.h:96 hclust.R:525 kmeans.R:266 nnet.R:228 rpart.R:1028
 msgid "Export"
 msgstr "Export"
 
@@ -1685,7 +1685,7 @@ msgstr "Add the actual frequencies."
 msgid "Add the linear fit to the plot."
 msgstr "Add the linear fit to the plot."
 
-#: rpart.R:186
+#: rpart.R:200
 msgid ""
 "A decision tree is the prototypical data mining tool, used widely for its "
 "ease of interpretation. It consists of a root node split by a single "
@@ -2495,7 +2495,7 @@ msgstr "build a Survival model"
 msgid "build conditional trees"
 msgstr "build conditional trees"
 
-#: rpart.R:387
+#: rpart.R:401
 msgid "build decision trees"
 msgstr "build decision trees"
 
@@ -2533,7 +2533,7 @@ msgstr "Building %s model ... failed."
 msgid "Build the model."
 msgstr "Build the model."
 
-#: ada.R:150 random_forest.R:311 rpart.R:502
+#: ada.R:150 random_forest.R:311 rpart.R:516
 msgid "Build the %s model."
 msgstr "Build the %s model."
 
@@ -2663,7 +2663,7 @@ msgstr "Chosen"
 msgid "class"
 msgstr "class"
 
-#: ctree.R:300 rpart.R:526
+#: ctree.R:300 rpart.R:540
 msgid "Classification"
 msgstr "Classification"
 
@@ -3023,7 +3023,7 @@ msgstr "Define support functions for the plot."
 msgid "deleting the selected ignored variables"
 msgstr "deleting the selected ignored variables"
 
-#: rpart.R:614
+#: rpart.R:628
 msgid ""
 "      * denotes terminal node\n"
 "\n"
@@ -3391,11 +3391,11 @@ msgstr "Export regression as PMML."
 msgid "Export regression model."
 msgstr "Export regression model."
 
-#: hclust.R:558 kmeans.R:302 model.R:1023 nnet.R:264 rpart.R:1050
+#: hclust.R:558 kmeans.R:302 model.R:1023 nnet.R:264 rpart.R:1064
 msgid "Export %s as a C routine."
 msgstr "Export %s as a C routine."
 
-#: kmeans.R:284 rpart.R:1032
+#: kmeans.R:284 rpart.R:1046
 msgid "Export %s as PMML."
 msgstr "Export %s as PMML."
 
@@ -3557,7 +3557,7 @@ msgstr "generate associations"
 msgid "Generate a summary of the missing values in the dataset."
 msgstr "Generate a summary of the missing values in the dataset."
 
-#: biclust.R:102 model.R:890 model.R:1233 rpart.R:519
+#: biclust.R:102 model.R:890 model.R:1233 rpart.R:533
 msgid "Generate a textual view of the %s model."
 msgstr "Generate a textual view of the %s model."
 
@@ -4143,7 +4143,7 @@ msgstr "List rules."
 msgid "List the importance of the variables."
 msgstr "List the importance of the variables."
 
-#: rpart.R:141
+#: rpart.R:155
 msgid "List the rules from the tree using a Rattle support function."
 msgstr "List the rules from the tree using a Rattle support function."
 
@@ -4569,11 +4569,11 @@ msgstr ""
 msgid "Not a legitimate hclust object"
 msgstr "Not a legitimate hclust object"
 
-#: rpart.R:577
+#: rpart.R:591
 msgid "Not a legitimate rpart object."
 msgstr "Not a legitimate rpart object."
 
-#: rpart.R:626
+#: rpart.R:640
 msgid "Not a legitimate rpart tree"
 msgstr "Not a legitimate rpart tree"
 
@@ -4953,7 +4953,7 @@ msgstr "Plot the relative frequencies."
 msgid "Plot the relative importance of the variables."
 msgstr "Plot the relative importance of the variables."
 
-#: rpart.R:113
+#: rpart.R:127
 msgid "Plot the resulting %s using Rattle and maptools support functions."
 msgstr "Plot the resulting %s using Rattle and maptools support functions."
 
@@ -5395,7 +5395,7 @@ msgstr ""
 "package used in a number of cases. <<>> The By Group Transform segments and "
 "recodes a numeric variable to the 0-100 range."
 
-#: biclust.R:69 kmeans.R:122 rpart.R:496
+#: biclust.R:69 kmeans.R:122 rpart.R:510
 msgid "Reset the random number seed to obtain the same results each time."
 msgstr "Reset the random number seed to obtain the same results each time."
 
@@ -5423,7 +5423,7 @@ msgstr "ROC Curve: requires the ROCR package."
 msgid "Roles noted. %d observations and %d input variables."
 msgstr "Roles noted. %d observations and %d input variables."
 
-#: rpart.R:673
+#: rpart.R:687
 msgid " Rule number: %s"
 msgstr " Rule number: %s"
 
@@ -5648,7 +5648,7 @@ msgstr "Summary of the %s model (built using ksvm):"
 msgid "Summary of the %s model (built using '%s'):"
 msgstr "Summary of the %s model (built using '%s'):"
 
-#: rpart.R:524
+#: rpart.R:538
 msgid "Summary of the %s model for %s (built using '%s'):"
 msgstr "Summary of the %s model for %s (built using '%s'):"
 
@@ -5858,7 +5858,7 @@ msgstr ""
 "install.packages('randomForest',\n"
 "     repos='http://rattle.togaware.com')"
 
-#: rpart.R:510
+#: rpart.R:524
 msgid ""
 "The call to 'rpart' has a syntax error in the weights formula. The error "
 "message was:\n"
@@ -5966,7 +5966,7 @@ msgstr ""
 "performed in the Test tab. <<>> The fBasics package provides the "
 "correlationTest function to perform the correlation test."
 
-#: rpart.R:146
+#: rpart.R:160
 msgid "The corresponding rules have been listed."
 msgstr "The corresponding rules have been listed."
 
@@ -6148,7 +6148,7 @@ msgstr ""
 "current variable. A Ctrl-Click will add the current variable to those "
 "selected."
 
-#: rpart.R:123
+#: rpart.R:137
 msgid "The decision tree has been plotted."
 msgstr "The decision tree has been plotted."
 
@@ -6282,7 +6282,7 @@ msgstr ""
 "matrix. The total sum of the matrix is determined and each value is then "
 "divided by the total."
 
-#: hclust.R:566 kmeans.R:309 nnet.R:285 rpart.R:1056
+#: hclust.R:566 kmeans.R:309 nnet.R:285 rpart.R:1070
 msgid "The model has been exported to '%s'."
 msgstr "The model has been exported to '%s'."
 
@@ -6636,7 +6636,7 @@ msgstr "The supplied data is now available."
 msgid "The supplied filename extension '%s' is not supported."
 msgstr "The supplied filename extension '%s' is not supported."
 
-#: rpart.R:350
+#: rpart.R:364
 msgid ""
 "The supplied loss matrix (%s) needs to have %d values. Please enter that "
 "many values, comma separated."
@@ -6644,7 +6644,7 @@ msgstr ""
 "The supplied loss matrix (%s) needs to have %d values. Please enter that "
 "many values, comma separated."
 
-#: rpart.R:252
+#: rpart.R:266
 msgid ""
 "The supplied priors (%s) add up to %0.2f whereas they need to add up 1.00"
 msgstr ""
@@ -6658,7 +6658,7 @@ msgstr ""
 "The supplied priors (%s) add up to %0.2f whereas they need to add up 1.00. "
 "Please provide appropriate priors."
 
-#: ctree.R:66 rpart.R:244
+#: ctree.R:66 rpart.R:258
 msgid ""
 "The supplied priors (%s) need to correspond to the number of classes found "
 "in the target variable '%s'. Please supply exactly %d priors."
@@ -6886,7 +6886,7 @@ msgstr "Transform variables by imputing missing values."
 msgid "Transform variables by rescaling."
 msgstr "Transform variables by rescaling."
 
-#: rpart.R:143
+#: rpart.R:157
 msgid "Tree as rules:"
 msgstr "Tree as rules:"
 
@@ -6914,7 +6914,7 @@ msgstr ""
 "Tried building an rpart model with option not one of build/tune/best. This "
 "should not be possible."
 
-#: rpart.R:392
+#: rpart.R:406
 msgid "tune decision trees"
 msgstr "tune decision trees"
 
@@ -7468,7 +7468,7 @@ msgstr ""
 "This is unusual since it is both an input variable and used to weight the "
 "outputs. It is suggested that you ignore this variable."
 
-#: kmeans.R:511 random_forest.R:584 rpart.R:147
+#: kmeans.R:511 random_forest.R:584 rpart.R:161
 msgid "You may need to scroll the textview to view them."
 msgstr "You may need to scroll the textview to view them."
 
