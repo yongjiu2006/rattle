@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-06 22:02:04 Graham Williams>
+# Time-stamp: <2011-03-20 18:50:21 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1837,6 +1837,9 @@ handleMissingValues <- function(testset, mtype)
                "\n",
                sprintf('no.miss <- na.omit(%s$%s)', testset[[mtype]], crs$target),
                'miss.list <- attr(no.miss, "na.action")',
+               # 110320 Add this in to avoid prediction complaining
+               # about invalid labels.
+               'attributes(no.miss) <- NULL',
                'if (length(miss.list)) {',
                '\tpred <- prediction(crs$pr[-miss.list], no.miss)',
                '} else {',

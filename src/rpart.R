@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-12 21:18:00 Graham Williams>
+# Time-stamp: <2011-04-09 22:20:01 Graham Williams>
 #
 # RPART TAB
 #
@@ -81,10 +81,27 @@ on_rpart_plot_button_clicked <- function(button)
   # Plot: Log the R command and execute.
 
   if (theWidget("model_tree_rpart_radiobutton")$getActive())
-    plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
-                      genPlotTitleCmd(commonName(crv$RPART),
-                                      crs$dataname, "$", crs$target),
-                      sep="")
+    if (theWidget("use_ggplot2")$getActive() # Not really ggplot2 but convenient.
+        && packageIsAvailable("rpart.plot"))
+      plot.cmd <- paste('require("rpart.plot", quietly=TRUE)\n',
+                        "my.node.fun <- function(x, labs, digits, varlen)\n",
+                        "{\n  per <- NULL\n  for (i in 1:nrow(x$frame$yval2))\n",
+                        "    per <- c(per, x$frame$yval2[i,3+x$frame$yval[i]])\n",
+                        '  paste(labs, "\n", round(100*per),\n',
+                        '        "% of ", x$frame$n, sep="")\n',
+                        '}\n',
+                        "prp(crs$rpart, type=1, extra=0,\n",
+                        '    box.col=c("pink", "palegreen3")[crs$rpart$frame$yval],\n',
+                        '    nn=TRUE, varlen=0, shadow.col="grey",\n',
+                        '    node.fun=my.node.fun)\n',
+                        genPlotTitleCmd(commonName(crv$RPART),
+                                        crs$dataname, "$", crs$target),
+                        sep="")
+    else
+      plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
+                        genPlotTitleCmd(commonName(crv$RPART),
+                                        crs$dataname, "$", crs$target),
+                        sep="")
   else # ctree
     plot.cmd <- "plot(crs$rpart)"
 

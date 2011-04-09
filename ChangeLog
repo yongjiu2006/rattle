@@ -1,3 +1,18 @@
+rattle (2.6.6) unstable; urgency=low
+
+  * Settings/Tooltips should be shown as TRUE.
+  
+  * Add Settings/GGPlot2 to enable enhanced graphics (generally using
+    ggplot2) where they have been implemented.
+  
+  * Implement a ggplot2 pairs plot (scatterplot) as the plot to use when
+    ggplot2 is enabled and under Explore/Distriubtions no variables are
+    chosen to be displayed. Uses code from Mike Lawrence.
+  
+  * Implement use of rpart.plot's prp() when ggplot2 is enabled.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 09 Apr 2011 22:16:29 +1000
+
 rattle (2.6.5) unstable; urgency=low
 
   * Add rattleReport() - report on current state of rattle modelling.

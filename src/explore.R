@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-09 05:47:19 Graham Williams>
+# Time-stamp: <2011-04-09 11:51:09 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -635,7 +635,11 @@ executeExplorePlot <- function(dataset,
   # 091005 If no plots are specified then generate a matrix of scatter
   # plots following the example in the pairs function.
   
-  if (total.plots == 0) displayPairsPlot(dataset)
+  if (total.plots == 0)
+    if (theWidget("use_ggplot2")$getActive())
+      displayPairsPlot2(dataset)
+    else
+      displayPairsPlot(dataset)
 
   #---------------------------------------------------------------------
 
@@ -2058,7 +2062,9 @@ executeExplorePlot2 <- function(dataset,
   # 091005 If no plots are specified then generate a matrix of scatter
   # plots following the example in the pairs function.
   
-  if (total.plots == 0) displayPairsPlot(dataset)
+  if (total.plots == 0)
+    displayPairsPlot(dataset)
+    
 
   #---------------------------------------------------------------------
 
@@ -3349,6 +3355,202 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
    appendLog(Rtxt("Display a pairs (scatter) plot. Note random selection of variables",
                   "if there are more than 6."), plot.cmd)
   eval(parse(text=plot.cmd))
+}
+
+#-----------------------------------------------------------------------
+# A displayPairsPlot2 using ggplot with some internal functions from
+# Mike Lawrence at Dalhousie University, from
+# http://www.r-bloggers.com/five-ways-to-visualize-your-pairwise-comparisons/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+RBloggers+(R+bloggers)
+
+displayPairsPlot2 <- function(dataset)
+{
+  # 110409 Given a dataset (a string that evaluates to a data frame)
+  # generate a pairs plot with the lower panel being a scatter plot
+  # matrix, the diagonal being histograms (not yet done for ggplot2),
+  # and the upper panel showing correlations.
+  #
+  # If there are more than 6 input/target/risk variables, then
+  # randomly sample down to 6 since larger than that is harder to
+  # read.
+
+  # From Mike Lawrence
+  
+  ezLev=function(x,new_order)
+  {
+    for(i in rev(new_order))
+    {
+      x=relevel(x,ref=i)
+    }
+    return(x)
+  }
+
+  ggcorplot = function(data,var_text_size,cor_text_limits){
+    # normalize data
+    for(i in 1:length(data)){
+      data[,i]=(data[,i]-mean(data[,i]))/sd(data[,i])
+    }
+    # obtain new data frame
+    z=data.frame()
+    i = 1
+    j = i
+    while(i<=length(data)){
+      if(j>length(data)){
+        i=i+1
+        j=i
+      }else{
+        x = data[,i]
+        y = data[,j]
+        temp=as.data.frame(cbind(x,y))
+        temp=cbind(temp,names(data)[i],names(data)[j])
+        z=rbind(z,temp)
+        j=j+1
+      }
+    }
+    names(z)=c('x','y','x_lab','y_lab')
+    z$x_lab = ezLev(factor(z$x_lab),names(data))
+    z$y_lab = ezLev(factor(z$y_lab),names(data))
+    z=z[z$x_lab!=z$y_lab,]
+    #obtain correlation values
+    z_cor = data.frame()
+    i = 1
+    j = i
+    while(i<=length(data)){
+      if(j>length(data)){
+        i=i+1
+        j=i
+      }else{
+        x = data[,i]
+        y = data[,j]
+        x_mid = min(x)+diff(range(x))/2
+        y_mid = min(y)+diff(range(y))/2
+        this_cor = cor(x,y)
+        this_cor.test = cor.test(x,y)
+        this_col = ifelse(this_cor.test$p.value<.05,'<.05','>.05')
+        this_size = (this_cor)^2
+        cor_text = ifelse(
+          this_cor>0
+          ,substr(format(c(this_cor,.123456789),digits=2)[1],2,4)
+          ,paste('-',substr(format(c(this_cor,.123456789),digits=2)[1],3,5),sep='')
+          )
+        b=as.data.frame(cor_text)
+        b=cbind(b,x_mid,y_mid,this_col,this_size,names(data)[j],names(data)[i])
+        z_cor=rbind(z_cor,b)
+        j=j+1
+      }
+    }
+    names(z_cor)=c('cor','x_mid','y_mid','p','rsq','x_lab','y_lab')
+    z_cor$x_lab = ezLev(factor(z_cor$x_lab),names(data))
+    z_cor$y_lab = ezLev(factor(z_cor$y_lab),names(data))
+    diag = z_cor[z_cor$x_lab==z_cor$y_lab,]
+    z_cor=z_cor[z_cor$x_lab!=z_cor$y_lab,]
+    #start creating layers
+    points_layer = layer(
+      geom = 'point'
+      , data = z
+      , mapping = aes(
+          x = x
+          , y = y
+          )
+      )
+    lm_line_layer = layer(
+      geom = 'line'
+      , geom_params = list(colour = 'red')
+      , stat = 'smooth'
+      , stat_params = list(method = 'lm')
+      , data = z
+      , mapping = aes(
+          x = x
+          , y = y
+          )
+      )
+    lm_ribbon_layer = layer(
+      geom = 'ribbon'
+      , geom_params = list(fill = 'green', alpha = .5)
+      , stat = 'smooth'
+      , stat_params = list(method = 'lm')
+      , data = z
+      , mapping = aes(
+          x = x
+          , y = y
+          )
+      )
+    cor_text = layer(
+      geom = 'text'
+      , data = z_cor
+      , mapping = aes(
+          x=y_mid
+          , y=x_mid
+          , label=cor
+          , size = rsq
+          , colour = p
+          )
+      )
+    var_text = layer(
+      geom = 'text'
+      , geom_params = list(size=var_text_size)
+      , data = diag
+      , mapping = aes(
+          x=y_mid
+          , y=x_mid
+          , label=x_lab
+          )
+      )
+    f = facet_grid(y_lab~x_lab,scales='free')
+    o = opts(
+      panel.grid.minor = theme_blank()
+      ,panel.grid.major = theme_blank()
+      ,axis.ticks = theme_blank()
+      ,axis.text.y = theme_blank()
+      ,axis.text.x = theme_blank()
+      ,axis.title.y = theme_blank()
+      ,axis.title.x = theme_blank()
+      ,legend.position='none'
+      )
+    size_scale = scale_size(limits = c(0,1),to=cor_text_limits)
+    return(
+           ggplot()+
+           points_layer+
+           lm_ribbon_layer+
+           lm_line_layer+
+           var_text+
+           cor_text+
+           f+
+           o+
+           size_scale
+           )
+  }
+
+  newPlot(1)
+  
+  # Determine the variables to display. 110409 We can only display
+  # numeric variables.
+
+  vars <-  intersect(c(getVariableIndicies(crs$input),
+                       getVariableIndicies(crs$target),
+                       getVariableIndicies(crs$risk)),
+                     getVariableIndicies(crs$numeric))
+  if (length(vars) <= 6)
+    vars <- ""
+  else
+  {
+    vars <- simplifyNumberList(sort(sample(vars, 6)))
+  }
+
+  startLog(Rtxt("Scatter Plot"))
+
+  if (! packageIsAvailable("ggplot2", Rtxt("plot using ggplot2"))) return()
+
+  lib.cmd <- "require(ggplot2, quietly=TRUE)"
+  appendLog(packageProvides("ggplot", "ggplot"), lib.cmd)
+  eval(parse(text=lib.cmd))
+  
+  plot.cmd <- sprintf(paste("ggcorplot(data=na.omit(%s[%s]),",
+                            "var_text_size=5, cor_text_limits=c(5,10))"),
+                      dataset, vars)
+
+  appendLog(Rtxt("Display a pairs (scatter) plot. Note random selection of variables",
+                 "if there are more than 6."), plot.cmd)
+  eval(parse(text=sprintf("print(%s)", plot.cmd)))
 }
   
 executeExploreGGobi <- function(dataset, name=NULL)
