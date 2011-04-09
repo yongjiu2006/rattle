@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
@@ -459,6 +459,13 @@
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <signal name="activate" handler="on_tooltips_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="use_ggplot2">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">_GGPlot2</property>
+                        <property name="use_underline">True</property>
                       </object>
                     </child>
                     <child>
@@ -1596,7 +1603,7 @@
                             <property name="width_request">20</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x2022;</property>
+                            <property name="invisible_char">•</property>
                             <property name="width_chars">5</property>
                             <property name="text">.</property>
                           </object>
@@ -1884,7 +1891,7 @@
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x25CF;</property>
+                        <property name="invisible_char">●</property>
                         <property name="width_chars">8</property>
                         <property name="text">70/15/15</property>
                       </object>
@@ -5808,7 +5815,7 @@
                                   <object class="GtkSpinButton" id="rpart_minsplit_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="adjustment">adjustment15</property>
                                     <property name="climb_rate">1</property>
                                   </object>
@@ -5823,7 +5830,7 @@
                                   <object class="GtkSpinButton" id="rpart_minbucket_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="adjustment">adjustment14</property>
                                     <property name="climb_rate">1</property>
                                   </object>
@@ -5868,7 +5875,7 @@
                                   <object class="GtkSpinButton" id="rpart_maxdepth_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="adjustment">adjustment13</property>
                                     <property name="climb_rate">1</property>
                                     <property name="numeric">True</property>
@@ -5884,7 +5891,7 @@
                                   <object class="GtkSpinButton" id="model_tree_cp_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="adjustment">adjustment12</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">4</property>
@@ -5931,7 +5938,7 @@
                                   <object class="GtkEntry" id="model_tree_priors_entry">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="width_chars">10</property>
                                     <signal name="changed" handler="on_priors_entry_changed"/>
                                   </object>
@@ -5946,7 +5953,7 @@
                                   <object class="GtkEntry" id="model_tree_loss_entry">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x2022;</property>
+                                    <property name="invisible_char">•</property>
                                     <property name="width_chars">10</property>
                                   </object>
                                   <packing>
@@ -6911,7 +6918,7 @@
                               <object class="GtkEntry" id="model_svm_options_entry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="invisible_char">&#x2022;</property>
+                                <property name="invisible_char">•</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -8765,7 +8772,7 @@
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x25CF;</property>
+                        <property name="invisible_char">●</property>
                         <property name="width_chars">5</property>
                         <property name="text" translatable="yes">MY</property>
                       </object>
@@ -9107,9 +9114,8 @@
     <property name="window_position">center-on-parent</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
-    <property name="has_separator">False</property>
     <property name="program_name">Rattle</property>
-    <property name="copyright" translatable="yes">Copyright (C) 2006-2010 Togaware
+    <property name="copyright" translatable="yes">Copyright (C) 2006-2011 Togaware
 All rights reserved.</property>
     <property name="comments" translatable="yes">The R Analytical Tool To Learn Easily
 (A GNOME Data Miner Built on R)</property>
@@ -9160,7 +9166,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
     <property name="type_hint">dialog</property>
     <property name="skip_pager_hint">True</property>
     <property name="urgency_hint">True</property>
-    <property name="has_separator">False</property>
     <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">

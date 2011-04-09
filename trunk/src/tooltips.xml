@@ -7,6 +7,9 @@
     plots.</tooltip>
   <tooltip widget="tooltips_menuitem">Enable tooltips under
     GNU/Linux.</tooltip>
+  <tooltip widget="ggplot2_menuitem">Experimental: Enable the use of
+    the ggplot2 graphs where they have been implemented. Support for
+    ggplot2 is on-going and not yet implemented for all plots.</tooltip>
   <tooltip widget="use_cairo_graphics_device">The Cairo graphics
     device is a newer plotting device. Uncheck this to use the default
     R graphics device for your installation.</tooltip>

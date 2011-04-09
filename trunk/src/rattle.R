@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-13 16:36:42 Graham Williams>
+# Time-stamp: <2011-04-09 22:10:22 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -31,9 +31,9 @@ MAJOR <- "2"
 MINOR <- "6"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 #REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
-REVISION <- "5"
+REVISION <- "6"
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 19 Feb 2011"
+VERSION.DATE <- "Released 13 Mar 2011"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -99,7 +99,8 @@ COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
 # BUGS
 #
-#   Tooltips are not working on GNU/Linux. Just fine on MS/Windows.
+#   Tooltips used to have issues on GNU/Linux. Just fine on
+#   MS/Windows.
 #
 #   The RGtk2 author, Michael Lawrence, notes that most of the GUI
 #   functionality in Gnome (i.e., libgnome and libgnomeui) will soon
@@ -854,12 +855,15 @@ rattle <- function(csvname=NULL, useGtkBuilder)
     gladeXMLSignalAutoconnect(rattleGUI)
 
   # Enable the tooltips Settings option on GNU/Linux. Under MS/Windows
-  # tooltips have always worked so this option is not relevant.
+  # tooltips have always worked so this option is not relevant. 110409
+  # Tooltips seem to be on by default, even on GNU/Linux now, so I
+  # changed the FALSE to TRUE here to reflect that. However, it seems
+  # that we can't actually turn tooltips off from the Settings menu.
 
   if (isLinux() && crv$load.tooltips)
   {
     theWidget("tooltips_menuitem")$show()
-    theWidget("tooltips_menuitem")$setActive(FALSE)
+    theWidget("tooltips_menuitem")$setActive(TRUE)
   }
 
   ########################################################################
@@ -1395,7 +1399,7 @@ displayWelcomeTabMessage <- function()
                            "See Help -> About for details."),
                       "\n\n",
                       sprintf(Rtxt("Rattle Version %s.",
-                                   "Copyright 2006-2010 Togaware Pty Ltd"),
+                                   "Copyright 2006-2011 Togaware Pty Ltd"),
                               VERSION),
                       "\n",
                       Rtxt("Rattle is a registered trademark of Togaware Pty Ltd"),
@@ -1878,6 +1882,11 @@ warnDialog <- function(...)
 
 errorDialog <- function(...)
 {
+  # 110320 Note that this is a non-blocking dialog. Thus it could
+  # actually remain active. At times this is useful as the error
+  # dialogue contains instructions on "fixing" the error and you can
+  # keep the dialogue visible whilst fixing the error.
+  
   dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "error", "close",
                                 ...,
                                 sprintf("\n\n%s %s", crv$appname, crv$version))

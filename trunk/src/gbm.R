@@ -1,6 +1,6 @@
 ## Gnome R Data Miner: GNOME interface to R for Data Mining
 ##
-## Time-stamp: <2009-03-16 22:56:13 Graham Williams>
+## Time-stamp: <2011-04-08 06:02:33 Graham Williams>
 ##
 ## GBM TAB
 ##
@@ -20,6 +20,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
+
+# 110408 The target code might be something like the following, but it
+# does not quite work.
+
+## require(gbm, quietly=TRUE)
+
+## # Build the Ada Boost model.
+
+## set.seed(crv$seed)
+## crs$ada <- gbm(as.numeric(RainTomorrow)-1 ~ .,
+##                data=crs$dataset[crs$train,c(crs$input, crs$target)],
+##                distribution="adaboost")
 
 ########################################################################
 ##
