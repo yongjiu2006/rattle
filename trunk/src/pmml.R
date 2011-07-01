@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2011-01-06 06:47:01 Graham Williams>
+# Time-stamp: <2011-05-30 19:26:05 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -343,7 +343,7 @@ pmmlOutput <- function(field, target=NULL, optype=NULL)
 .TRANSFORMS.BIN <- c("BQ", "BK", "BE", "TFC")
 .TRANSFORMS.INDICATOR <- c("TIN")
 
-.TRANSFORMS.OTHER.NUM <- c("RRK")
+.TRANSFORMS.OTHER.NUM <- c("RRK", "RIN", "BGC", "BG1", "BGD", "BGK")
 .TRANSFORMS.OTHER.CAT <- c("TJN", "TNM")
 .TRANSFORMS.OTHER <- c(.TRANSFORMS.OTHER.NUM, .TRANSFORMS.OTHER.CAT)
 

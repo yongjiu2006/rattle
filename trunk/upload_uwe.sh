@@ -22,7 +22,7 @@ open ${DEST}
 user anonymous Graham.Williams@togaware.com
 bin
 lcd repository
-cd ${TARGETDEV}
+cd ${TARGETREL}
 put ${LATEST}
 quit
 _EOF_

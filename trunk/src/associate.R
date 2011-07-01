@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-12 12:58:44 Graham Williams>
+# Time-stamp: <2011-06-19 11:57:17 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -48,6 +48,11 @@ on_associate_rules_button_clicked <-  function(action, window)
   listAssociateRules()
 }
 
+on_associate_plot_button_clicked <-  function(action, window)
+{
+  plotAssociateRules()
+}
+
 ########################################################################
 # SUPPORT
 
@@ -68,11 +73,11 @@ generateAprioriSummary <- function(ap)
 
 executeAssociateTab <- function()
 {
-  # We require a dataset
+  # We require a dataset.
 
   if (noDatasetLoaded()) return()
 
-  # If it looks like the DATA page has not been executed, complain..
+  # If it looks like the DATA page has not been executed, complain.
 
   if (variablesHaveChanged(Rtxt("identifying association rules"))) return()
 
@@ -137,9 +142,10 @@ executeAssociateTab <- function()
                              "multiple categoric variables.",
                              "\n\nOnly one categoric variable was found (%s)",
                              "from amongst those having an input role.",
-                             "\n\nIf you wanted a basket analysis with the Target variable",
-                             "listing the items, and the Ident variable identifying",
-                             "the baskets, then please deselect the Baskets button."),
+                             "\n\nIf you wanted a basket analysis with the Target",
+                             "variable listing the items, and the Ident variable",
+                             "identifying the baskets, then please deselect the",
+                             "Baskets button."),
                         include[1]))
     return()
   }
@@ -147,6 +153,7 @@ executeAssociateTab <- function()
   # Ensure the arules library is available and loaded.
 
   if (! packageIsAvailable("arules", Rtxt("generate associations"))) return()
+
   startLog(commonName("arules"))
   lib.cmd <- "require(arules, quietly=TRUE)"
   appendLog(packageProvides("arules", "arules"), lib.cmd)
@@ -156,7 +163,7 @@ executeAssociateTab <- function()
   
   TV <- "associate_textview"
   
-  # Required information
+  # Required information.
   
   sampling   <- not.null(crs$sample)
   support    <- theWidget("associate_support_spinbutton")$getValue()
@@ -168,18 +175,22 @@ executeAssociateTab <- function()
   
   if (baskets)
     transaction.cmd <- paste("crs$transactions <- as(split(",
-                             sprintf('crs$dataset[%s, %s], crs$dataset[%s, %s]',
+                             sprintf('crs$dataset[%s, %s],\n%*scrs$dataset[%s, %s]',
                                      ifelse(sampling, "crs$sample", ""),
                                      "crs$target",
+                                     29, "",
                                      ifelse(sampling, "crs$sample", ""),
                                      "crs$ident"),
-                             '), "transactions")', sep="") 
+                             '),',
+                             sprintf('\n%*s"transactions")', 23, ""),
+                             sep="") 
   else
     transaction.cmd <- paste("crs$transactions <- as(",
                              sprintf('crs$dataset[%s, %s], "transactions")',
                                      ifelse(sampling, "crs$sample", ""),
                                      include), sep="")
   appendLog(Rtxt("Generate a transactions dataset."), transaction.cmd)
+
   start.time <- Sys.time()
   result <- try(eval(parse(text=transaction.cmd)))
   time.taken <- Sys.time() - start.time
@@ -206,14 +217,20 @@ executeAssociateTab <- function()
   appendLog(Rtxt("Generate the association rules."), apriori.cmd)
   cmd.output <- collectOutput(apriori.cmd)
 
-  # Add a summary of the rules.
+  # Add a summary of the transactions and the rules.
 
+  tr.summary.cmd <- "summary(crs$transactions)"
+  
   mysummary.cmd <- "generateAprioriSummary(crs$apriori)"
   appendLog(Rtxt("Summarise the resulting rule set."), mysummary.cmd)
   summary.cmd <- "summary(crs$apriori@quality)"
 
   resetTextview(TV)
-  setTextview(TV, Rtxt("Summary of the Apriori Association Rules:"), "\n\n",
+  setTextview(TV,
+              Rtxt("Summary of the Transactions:"), "\n\n",
+              paste(capture.output(eval(parse(text=tr.summary.cmd))), collapse="\n"),
+              "\n\n",
+              Rtxt("Summary of the Apriori Association Rules:"), "\n\n",
               collectOutput(mysummary.cmd, use.cat=TRUE),
               "\n",
               Rtxt("Summary of the Measures of Interestingness:"), "\n\n",
@@ -321,6 +338,34 @@ plotAssociateFrequencies <- function()
   setStatusBar(Rtxt("Generated the relative frequency plot."))
 }
 
+plotAssociateRules <- function()
+{
+  # We require a dataset
+
+  if (noDatasetLoaded()) return()
+
+  # Also make sure we have already generated the association rules.
+  
+  if (is.null(crs$apriori))
+  {
+    errorDialog(Rtxt("You first need to generate the association rules.",
+                     "Perhaps you need to click the Execute button."))
+    return()
+  }
+
+  # Ensure the required package is available
+
+  if (! packageIsAvailable("arulesViz", Rtxt("generate a plot of association rules"))) return()
+
+  plot.cmd <- paste("plot(crs$apriori)\n",
+#                    genPlotTitleCmd(Rtxt("Association Rules"), commonName(mtype),
+#                                    testname, risk),
+                    sep="")
+
+  # TODO Send to log
+  eval(parse(text=plot.cmd))
+}
+
 listAssociateRules <- function()
 {
   # We require a dataset
@@ -346,7 +391,7 @@ listAssociateRules <- function()
 
 #  appendTextview(TV, "Top Rules\n\n",
 #                 "For now, run the following command in the console:\n\n",
-#                 paste('inspect(SORT(subset(crs$apriori, lift >',
+#                 paste('inspect(sort(subset(crs$apriori, lift >',
 #                       lift, '), by="confidence"))'))
 
   # I wanted to use the subset function to list just the top rules,
@@ -357,12 +402,12 @@ listAssociateRules <- function()
   # problem...
 
 #  if (lift == 0)
-    summary1.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
+    summary1.cmd <- 'inspect(sort(crs$apriori, by="confidence"))'
 #  else
 #lift<-1
-#      summary1.cmd <- paste('SORT(subset(crs$apriori, lift > ',
+#      summary1.cmd <- paste('sort(subset(crs$apriori, lift > ',
 #                          lift, '),  by="confidence")')
-#    summary1.cmd <- paste('inspect(SORT(subset(crs$apriori, lift > ',
+#    summary1.cmd <- paste('inspect(sort(subset(crs$apriori, lift > ',
 #                          lift, '),  by="confidence"))')
   appendLog(Rtxt("List rules."), summary1.cmd)
   # print(summary1.cmd)
@@ -380,12 +425,12 @@ listAssociateRules <- function()
   appendTextview(TV, Rtxt("Top Rules"), "\n\n", result, "\n")
                  #"\n\nKnown Bug: If nothing appears above, ",
                  #"set the Lift to 0.0\n")
-#                 paste('inspect(SORT(subset(crs$apriori, lift >',
+#                 paste('inspect(sort(subset(crs$apriori, lift >',
 #                       lift, '), by="confidence"))'))
   
   # This works but it lists all rules.
 
-#  summary.cmd <- 'inspect(SORT(crs$apriori, by="confidence"))'
+#  summary.cmd <- 'inspect(sort(crs$apriori, by="confidence"))'
 #  appendLog("List all rules.", summary.cmd)
 #  appendTextview(TV, "All Rules\n\n", collectOutput(summary.cmd))
 

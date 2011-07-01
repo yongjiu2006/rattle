@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-02-13 05:38:13 Graham Williams>
+# Time-stamp: <2011-07-01 19:03:41 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -213,7 +213,7 @@ updateWeatherLocation <- function(name, stnID, write.to.file, backto=14)
                                 Rainfall = x[["Rainfall (mm)"]],
                                 Evaporation = x[["Evaporation (mm)"]],
                                 Sunshine = x[["Sunshine (hours)"]],
-                                WindGustDir = x[["Direction of maximum wind gust"]],
+                                WindGustDir = x[["Direction of maximum wind gust "]],
                                 WindGustSpeed = x[["Speed of maximum wind gust (km/h)"]],
                                 WindDir9am = x[["9am wind direction"]],
                                 WindDir3pm = x[["3pm wind direction"]],

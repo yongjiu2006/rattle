@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-13 16:32:49 Graham Williams>
+# Time-stamp: <2011-05-30 19:31:28 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -44,6 +44,13 @@ on_normalise_radiobutton_toggled <- function(button)
     crv$TRANSFORM$setCurrentPage(crv$TRANSFORM.NORMALISE.TAB)
   }
   setStatusBar()
+}
+
+on_normalise_interval_radiobutton_toggled <- function(button)
+{
+  active <- button$getActive()
+  theWidget("normalise_interval_numgroups_label")$setSensitive(active)
+  theWidget("normalise_interval_numgroups_spinbutton")$setSensitive(active)
 }
 
 on_remap_radiobutton_toggled <- function(button)
@@ -136,6 +143,75 @@ modalvalue <- function(x, na.rm=FALSE)
   u[which.max(frequencies)]
 }
 
+# RESCALE BY GROUP
+#
+# 110529 Take a vector of numbers and rescale it appropriately. The
+# rescaling is either done in the context of the population of
+# observations when by is NULL, or grouped into subpopulations as
+# defined by the by argument. Note that in the transform code there is
+# not much to be gained by calling this function when there is no by
+# argument, and in fact it is probably more educational to show the
+# direct call to the other commands in the log tab.
+#
+# TYPE == irank
+#
+# Rescale the data to integers from 0 to itop-1, with any missing
+# values mapped to the midpoint. Original idea from Tony Nolan.
+#
+# TYPE == recenter
+#
+# The usual z-score rescaling, subtracting the mean and dividing by
+# the standard deviation.
+#
+# We plan to generalise this function to do any kind of
+# rescaling by group, and then get Rattle to simply call this function
+# to do its work.
+#
+# Examples:
+#
+# rescale.by.group(crs$dataset[["Age"]], crs$dataset[["Gender"]])
+
+rescale.by.group <- function(x, by=NULL, type="irank", itop=100)
+{
+  # 110529 TODO Check that by is a factor.
+
+  require("reshape")
+
+  bylevels <- levels(by)
+
+  # Initialise the result.
+
+  y <- rep(0, length(x))
+
+  # Choose the operation
+
+  cmd <- switch(type,
+                irank='round(rescaler(x[elts], "range") * (itop-1))',
+                recenter='scale(x[elts])[,1]',
+                range='rescaler(x[elts], "range")',
+                rank='rescaler(x[elts], "rank")',
+                robust='rescaler(x[elts], "robust")')
+  
+  if (is.null(by))
+    y <- eval(parse(text=sub('\\[elts\\]', '', cmd)))
+  else
+    for (vl in bylevels)
+    {
+      elts <- sapply(by==vl, isTRUE)
+      y[elts] <- eval(parse(text=cmd))
+    }
+
+  # 101007 We used to map to itop-1 but now itop/2. This case is when
+  # there is only a single observation in a group (or when the
+  # original data is missing), and itop/2 makes more sense than either
+  # 0 or itop-1.
+  
+  if (type == "irank") y[is.nan(y)] <- round(itop/2)
+
+  return(y)
+}
+
+
 ########################################################################
 # DISPATCH
 
@@ -189,6 +265,10 @@ executeTransformNormalisePerform <- function(variables=NULL,
   # altogether.
 
   bygroup <- FALSE
+  byvname <- NULL
+
+  # If the action is not passed through by the command line then
+  # determine what action is required from the GUI.
   
   if (is.null(action))
   {
@@ -212,10 +292,10 @@ executeTransformNormalisePerform <- function(variables=NULL,
       action <- "medianad"
       vprefix <- "RMD"
     }
-    else if (theWidget("normalise_bygroup_radiobutton")$getActive())
+    else if (theWidget("normalise_interval_radiobutton")$getActive())
     {
-      action <- "bygroup"
-      vprefix <- "RBG"
+      action <- "interval"
+      vprefix <- "RIN" # 110530 Changed from "RBG" for "bygroup" to "interval"
     }
     else if (theWidget("rescale_matrix_radiobutton")$getActive())
     {
@@ -228,6 +308,17 @@ executeTransformNormalisePerform <- function(variables=NULL,
       vprefix <- "RLG"
       #remap.comment <- "Log transform."
     }
+  }
+
+  # 110530 DEPRECATED The "bygroup" action is now "interval". This has
+  # been renamed globally in Rattle but Sweave documents may still
+  # be using "bygroup", so for now map "bygroup" to "interval" and
+  # issue a warning.
+
+  if (action == "bygroup")
+  {
+    warnDialog("DEPRECATED transform action of 'bygroup'. Use 'interval' instead.")
+    action <- "interval"
   }
   
   # Obtain the list of selected variables from the treeview.
@@ -251,110 +342,94 @@ executeTransformNormalisePerform <- function(variables=NULL,
     setStatusBar(Rtxt("No variables selected to be rescaling."))
     return(FALSE)
   }
-  
-  # Check here if the action is rescale, and we have any categoric
-  # variables to be normalised. If so put up an info dialogue and
-  # remove the categorics from the list of variables to be normalised.
 
+  ## GROUP BY 110530 If a categoric is also selected, and the action
+  ## allows it (i.e., not "matrix" or "log") the set up things for
+  ## groupby to work. We can only handle a single categoric for the
+  ## groupby so put up an error dialogue and return FALSE. We used to
+  ## simply remove the categorics from the list of variables to be
+  ## rescaled and continue with that but now that we allow groupby it
+  ## makes more sense to do nothing if not sure what to do.
+
+  # Identify the class of each variable.  080328 For any ordered
+  # factors class returns two values (since the object inherits first
+  # from ordered and then factor), so we remove the "ordered" from the
+  # list to hopefully get back to the right length for classes (i.e.,
+  # one class for each variable). NOTE objects can inherit from
+  # multiple classes, and the order presented is the order in which
+  # they inherit. TODO Maybe before we unlist we need to turn multiple
+  # results into one, like "ordered_factor".
+
+  # TODO Allow multiple categorics and then group across all the
+  # cateogircs: MaleMarried MaleDivorced FemaleMarried etc.
+  
   classes <- unlist(lapply(variables, function(x) class(crs$dataset[[x]])))
-
-  # 080328 For any ordered factors class returns two values (since the
-  # object inherits first from ordered and then factor), so we remove
-  # the "ordered" from the list to hopefully get back to the right
-  # length for classes (i.e., one class for each variable). We do note
-  # though that objects can inherit from multiple classes, and the
-  # order presented is the order in which they inherit. I should
-  # probably work with the unlist above to turn multiple results into
-  # one, like "ordered_factor".
-
   classes <- classes[classes!="ordered"]
-  
-  if ("factor" %in% classes)
-    if (FALSE && action %in% c("recenter", "scale01", "rank", "medianad"))
-    {
-      # 110220 If a categoric is selected for one of these transforms,
-      # then turn the operation into a ByGroup transform. The prefix
-      # will be BYC for recenter, BY1 for scale01, BYK for rank, and
-      # BYD for medianad. I have started to implement but not yet
-      # finished, so include FALSE in the above
+
+  # If there are multiple factors amongst the variables then for now bail out.
+
+  nfactors <- sum("factor" == classes)
+
+  # Currently, only support grouping by a single categoric. TODO
+  # Support a group by of multiple categorics.
       
-      rescaler <- action
-      bygroup <- TRUE
-      vprefix <- paste("BG", substr(x=vprefix, start=3, stop=3), sep="")
-    }
-    else if (TRUE || action %in% c("matrix", "log"))
+  if (nfactors > 1)
+  {
+    infoDialog(Rtxt("We only support By Group with a single categoric",
+                    "variable for now.\n\nPlease select just one",
+                    "categoric."))
+    return(FALSE)
+  }
+  else if (nfactors == 1)
+  {
+    if (action %in% c("matrix", "log"))
     {
       # 110220 Choosing a categoric for one of these does not make
-      # sense. So remove it.
-      
-      # 100428 BUG When using Rtxt in sprintf, and substituting a UTF-8
-      # encoded variable we get garbage, so convert to unknown then back
-      # again. Making the Rtxt UTF-8 does not fix it.
+      # sense. So remove it. 100428 BUG When using Rtxt in sprintf,
+      # and substituting a UTF-8 encoded variable we get garbage, so
+      # convert to unknown then back again. Making the Rtxt UTF-8 does
+      # not fix it.
 
       Encoding(variables) <- "unknown"
       infoDialog(sprintf(Rtxt("We cannot rescale using '%s'",
                               "on a categoric variable.",
                               "Ignoring: %s."),
-                         action, paste(variables[which("factor" %in% classes)],
+                         action, paste(variables[which("factor" == classes)],
                                        collapse=", ")))
       Encoding(variables) <- "UTF-8"
-      variables <- variables[-which("factor" %in% classes)] # Remove the factors.
-      if (length(variables) == 0) return()
+      variables <- variables[-which("factor" == classes)] # Remove the factors.
+      if (length(variables) == 0) return(FALSE)
     }
-  
-  # Check if, for a BYGROUP, we have at most one categoric and the
-  # others are numeric. Then remove the categoric (if any) from the
-  # list of variables and store its name in byvname. This allows us to
-  # continue to use the loop below, having just the numeric variables
-  # in the list. TODO Allow multiple categorics and then group
-  # across all the cateogircals: MaleMarried MaleDivorced
-  # FemaleMarried etc.
-
-  if (bygroup || action %in% c("bygroup")) # 110226 Eventually remove action "bygroup"
-  {
-    numfactors <- sum("factor" %in% classes)
-    numnumerics <- sum(classes=="numeric" | classes=="integer")
-
-    # Ensure we have just one categoric variable. [080315 gjw] Allow
-    # the case where we have no categorics, and do the normalisation
-    # over the whole population rather than stratifying.
-    
-    #if (numfactors == 0)
-    #{
-    #  infoDialog(paste("We must have a categoric variable to group by for",
-    #                   "the By Group option. Please select one categoric",
-    #                   "variable."))
-    #  return()
-    #}
-
-    # Ensure we have at least one numeric variable.
-    
-    if (numnumerics == 0)
-    {
-      infoDialog(Rtxt("We must have a numeric variable to normalize for the",
-                      "By Group option.\n\nPlease select one numeric variable."))
-      return()
-    }
-
-    # Currently, only support grouping by a single categoric. TODO
-    # Support a group by of multiple categorics.
-    
-    if (numfactors > 1)
-    {
-      infoDialog(Rtxt("We only support By Group with a single categoric",
-                      "variable for now.\n\nPlease select just one",
-                      "categoric."))
-      return()
-    }
-
-    # All looks okay, so let's set things up.
-
-    if (numfactors == 0)
-      byvname <- NULL
     else
     {
-      byvname <- variables[which("factor" %in% classes)]
-      variables <- variables[-which("factor" %in% classes)]
+      # 110220 If a categoric is selected for one of the other
+      # transforms, then turn the operation into a bygroup
+      # transform.
+
+      bygroup <- TRUE
+      numnumerics <- sum(classes=="numeric" | classes=="integer")
+
+      # The prefix for the new variable will be BYC for recenter, BG1
+      # for scale01, BGK for rank, BGD for medianad, and BGN for
+      # interval.
+     
+      vprefix <- paste("BG", substr(x=vprefix, start=3, stop=3), sep="")
+
+      # Remove the categoric (if any) from the list of variables and
+      # store its name in byvname. This allows us to continue to use
+      # the loop below, having just the numeric variables in the list.
+      
+      byvname <- variables[which("factor" == classes)]
+      variables <- variables[-which("factor" == classes)]
+
+      # Ensure we have at least one numeric variable.
+    
+      if (numnumerics == 0)
+      {
+        infoDialog(Rtxt("We must have a numeric variable to normalize for the",
+                        "By Group option.\n\nPlease select one numeric variable."))
+        return(FALSE)
+      }
     }
   }
   
@@ -363,7 +438,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
   # Make sure we have the reshape library from where the rescaler
   # function comes.
   
-  if (action %in% c("scale01", "rank", "medianad", "bygroup"))
+  if (action %in% c("scale01", "rank", "medianad", "interval"))
   {
     if (! packageIsAvailable("reshape", Rtxt("normalize data"))) return()
     lib.cmd <- "require(reshape, quietly=TRUE)"
@@ -396,18 +471,31 @@ executeTransformNormalisePerform <- function(variables=NULL,
     appendLog(Rtxt("Calculate the matrix total."), total.cmd)
     eval(parse(text=total.cmd))
   }
+
+  # Loop through each of the supplied variables.
     
   for (v in variables)
   {
     norm.score.command <- NULL
     norm.score.comment <- NULL
     
-    # Create the new name for the variable.
-    
-    if (bygroup || action %in% c("bygroup"))
-      vname <- paste(vprefix, byvname, v, sep="_")
+    # Create the new variable name.
+
+    if (action %in% c("interval"))
+    {
+      num.groups <- theWidget("normalise_interval_numgroups_spinbutton")$getValue()
+      if (bygroup)
+        vname <- paste(vprefix, byvname, v, num.groups, sep="_")
+      else
+        vname <- paste(vprefix, v, num.groups, sep="_")
+    }
     else
-      vname <- paste(vprefix, v, sep="_")
+    {
+      if (bygroup)
+        vname <- paste(vprefix, byvname, v, sep="_")
+      else
+        vname <- paste(vprefix, v, sep="_")
+    }
     
     # Check variable specific preconditions, and if we fail then
     # proceed to next variable.
@@ -416,7 +504,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
     {
       # 080609 For audit$Deductions this returns all NaN or Inf
       # because the median is 0. We can see this with
-      # rescaler((crs$dataset[["Deductions"]]), "robust") So check for
+      # rescaler(crs$dataset[["Deductions"]], "robust") So check for
       # this and do nothing!
 
       median.cmd <- sprintf('median(crs$dataset[["%s"]], na.rm=TRUE)', v)
@@ -455,8 +543,17 @@ executeTransformNormalisePerform <- function(variables=NULL,
     
     if (action == "recenter")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-',
-                                'scale(crs$dataset[["%s"]])[,1]'), vname, v)
+      if (bygroup)
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n',
+                                  '   rescale.by.group(crs$dataset[["%s"]],',
+                                  'crs$dataset[["%s"]],',
+                                  'type="recenter")'),
+                            vname, v, byvname)
+      else
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n',
+                                  '   scale(crs$dataset[["%s"]])[,1]'),
+                            vname, v)
+      
       norm.comment <- Rtxt("Recenter and rescale the data around 0.")
 
       # Record the transformation for inclusion in PMML.
@@ -479,9 +576,17 @@ executeTransformNormalisePerform <- function(variables=NULL,
     }
     else if (action == "scale01")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
-                                'rescaler((crs$dataset[["%s"]]), "range")'),
-                          vname, v)
+      if (bygroup)
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n',
+                                  '   rescale.by.group(crs$dataset[["%s"]],',
+                                  'crs$dataset[["%s"]],',
+                                  'type="range")'),
+                            vname, v, byvname)
+      else
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
+                                  'rescaler(crs$dataset[["%s"]], "range")'),
+                            vname, v)
+
       norm.comment <- Rtxt("Rescale to [0,1].")
 
       # Record the transformation for inclusion in PMML.
@@ -505,9 +610,17 @@ executeTransformNormalisePerform <- function(variables=NULL,
     }
     else if (action == "rank")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
-                                'rescaler((crs$dataset[["%s"]]), "rank")'),
-                          vname, v)
+      if (bygroup)
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n',
+                                  '   rescale.by.group(crs$dataset[["%s"]],',
+                                  'crs$dataset[["%s"]],',
+                                  'type="rank")'),
+                            vname, v, byvname)
+      else
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
+                                  'rescaler(crs$dataset[["%s"]], "rank")'),
+                            vname, v)
+      
       norm.comment <- Rtxt("Convert values to ranks.")
 
       # How would we rank a new item? Thus, can we actually use a rank
@@ -521,9 +634,17 @@ executeTransformNormalisePerform <- function(variables=NULL,
     }
     else if (action == "medianad")
     {
-      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
-                                'rescaler((crs$dataset[["%s"]]), "robust")'),
-                          vname, v)
+      if (bygroup)
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n',
+                                  '   rescale.by.group(crs$dataset[["%s"]],',
+                                  'crs$dataset[["%s"]],',
+                                  'type="robust")'),
+                            vname, v, byvname)
+      else
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
+                                  'rescaler(crs$dataset[["%s"]], "robust")'),
+                            vname, v)
+      
       norm.comment <- Rtxt("Rescale by subtracting median and dividing",
                            "by median abs deviation.")
 
@@ -545,42 +666,31 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                     median(crs$dataset[[vname]], na.rm=TRUE),
                                     mad(crs$dataset[[vname]], na.rm=TRUE))
     }
-    else if (action == "bygroup")
+    else if (action == "interval")
     {
       # v <- current numeric variable name from variables
       # byvname <- categoric variable name (no longer in variables)
       # vname <-  the new variable name set up as above
 
-      if (is.null(byvname))
-        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- 0\n',
-                                  'crs$dataset[, ',
-                                  '"%s"] <-\n',
-                                  '    round(rescaler(crs$dataset[',
-                                  ', "%s"], "range") * 99)',
-                                  sep=""),
-                            vname, vname, v)
-      else
-        norm.cmd <- sprintf(paste('bylevels <- levels(crs$dataset[["%s"]])\n',
-                                  '  crs$dataset[["%s"]] <- 0\n',
-                                  '  for (vl in bylevels) \n',
-                                  '    crs$dataset[sapply(crs$dataset[["%s"]]==vl, isTRUE), ',
-                                  '"%s"] <-\n',
-                                  '      round(rescaler(crs$dataset[sapply(crs$dataset',
-                                  '[["%s"]]',
-                                  '==vl, isTRUE), "%s"], "range") * 99)\n',
-                                  '  crs$dataset[is.nan(crs$dataset[["%s"]]), ',
-                                  '"%s"] <- 50',
-                                  # 101007 Change 99 to 50. This case
-                                  # is when there is only a single
-                                  # observation in a group, and 50
-                                  # makes more sense than either 0 or
-                                  # 99.
-                                  sep=""),
-                            byvname, vname, byvname, vname, byvname, v,
-                            vname, vname)
+      num.groups <- theWidget("normalise_interval_numgroups_spinbutton")$getValue()
 
+      # 110529 Considerably simplified by making use of the new
+      # rescale.by.group function.
       
-      norm.comment <- Rtxt("Rescale to 0-100 within each group.")
+      if (bygroup)
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n    rescale.by.group(',
+                                  'crs$dataset[["%s"]], crs$dataset[["%s"]],\n',
+                                  '                     type="irank", itop=%s)', sep=""),
+                            vname, v, byvname, num.groups)
+      else
+        norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <-\n    rescale.by.group(',
+                                  'crs$dataset[["%s"]], ',
+                                  'type="irank", itop=%s)',
+                                  sep=""),
+                            vname, v, num.groups)
+      
+      norm.comment <- sprintf(Rtxt("Rescale to 0-%s within each group."),
+                              num.groups-1)
 
       # 090606 Record the transformation for inclusion in PMML.
       

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-04-09 22:10:22 Graham Williams>
+# Time-stamp: <2011-07-01 19:09:16 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -31,9 +31,9 @@ MAJOR <- "2"
 MINOR <- "6"
 GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
 #REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
-REVISION <- "6"
+REVISION <- "7"
 VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 09 Apr 2011"
+VERSION.DATE <- "Released 1 Jul 2011"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -156,7 +156,7 @@ rattleInfo <- function(all.dependencies=FALSE,
                        include.not.available=FALSE,
                        include.libpath=FALSE)
 {
-  iv <- installed.packages()
+  iv <- utils:::installed.packages()
   av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
   
   cat(sprintf("Rattle: version %s cran %s\n", crv$version, av["rattle", "Version"]))
@@ -183,7 +183,7 @@ rattleInfo <- function(all.dependencies=FALSE,
         available.packages(contrib.url(x, type = type))
       })
       if (!keep.builtin) 
-        baseOrRecPkgs <- rownames(installed.packages(priority = "high"))
+        baseOrRecPkgs <- rownames(utils:::installed.packages(priority = "high"))
       allPkgs <- unlist(sapply(pkgMatList, function(x) rownames(x)))
       if (!length(allPkgs)) 
         stop("no packages in specified repositories")
@@ -286,8 +286,10 @@ rattleInfo <- function(all.dependencies=FALSE,
 
 }
 
+########################################################################
+# RATTLE Version 2
 
-rattle <- function(csvname=NULL, useGtkBuilder)
+rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
 {
   # 101113 Add the useGtkBuilder argument so that a user can override
   # the automatic determination of which one to use: libglade versus
@@ -410,7 +412,7 @@ rattle <- function(csvname=NULL, useGtkBuilder)
   # When an error is reported to the R Console, include a time stamp.
 
   options(error=function()
-          cat(sprintf(Rtxt("%s timestamp (for the error above):"), crv$appname),
+          cat(sprintf(Rtxt("%s timestamp (for the message above):"), crv$appname),
               sprintf("%s\n%s\n", Sys.time(), paste(rep("^", 72), collapse=""))))
 
   # Keep the loading of Hmisc quiet.
@@ -529,7 +531,29 @@ rattle <- function(csvname=NULL, useGtkBuilder)
 
   if (file.exists(".Rattle")) source(".Rattle")
 
-  if (missing(csvname))
+  # 110531 Some error checking first.
+
+  if (!missing(csvname) && !missing(dataset))
+  {
+    errorDialog(Rtxt("Both a csvname= and a dataset= were specified in",
+                     "the call to rattle(). At most, only one is allowed.",
+                     "We will continue as if neither were specified."))
+    csvname <- NULL
+    dataset <- NULL
+  }
+
+  if (!missing(dataset) && class(dataset) != "character")
+  {
+    errorDialog(Rtxt("An actual dataset rather than the name of the",
+                     "dataset has been supplied as the argument to",
+                     "dataset=. Please supply the dataset name as a",
+                     "character string.",
+                     "We will continue as if no dataset was specified.",
+                     "You can load it through the Data tab."))
+    dataset <- NULL
+  }
+  
+  if (is.null(csvname) && is.null(dataset))
   {
     # Use the .Rattle settings first, but these might be overriden if
     # the environment variable is defined.
@@ -805,6 +829,7 @@ rattle <- function(csvname=NULL, useGtkBuilder)
 
   crv$CLUSTER             <- theWidget("cluster_notebook")
   crv$CLUSTER.KMEANS.TAB  <- getNotebookPage(crv$CLUSTER, "kmeans")
+  crv$CLUSTER.EWKM.TAB    <- getNotebookPage(crv$CLUSTER, "ewkm")
   crv$CLUSTER.CLARA.TAB   <- getNotebookPage(crv$CLUSTER, "clara")
   crv$CLUSTER.HCLUST.TAB  <- getNotebookPage(crv$CLUSTER, "hclust")
   crv$CLUSTER.BICLUST.TAB <- getNotebookPage(crv$CLUSTER, "biclust")
@@ -947,7 +972,35 @@ rattle <- function(csvname=NULL, useGtkBuilder)
 
   # Now deal with any arguments to rattle.
 
-  if (not.null(csvname))
+  if (not.null(dataset))
+  {
+    theWidget("data_rdataset_radiobutton")$setActive(TRUE)
+    
+    # 110531 TODO Get list of available data frames from the combobox,
+    # choose the right one, and then Execute. How to get the list of
+    # current values in the combobox? Instead, for now do the same
+    # listing of the data frames, and assume we get the same
+    # list. TODO This takes some time and so not really the right
+    # thing to do.
+
+    dl <- unlist(sapply(ls(sys.frame(0)),
+                        function(x)
+                        {
+                          cmd <- sprintf(paste("is.data.frame(%s) ||",
+                                               'inherits(%s,',
+                                               '"sqlite.data.frame")'), x, x)
+                          var <- try(ifelse(eval(parse(text=cmd), sys.frame(0)),
+                                            x, NULL), silent=TRUE)
+                          if (inherits(var, "try-error"))
+                            var <- NULL
+                          return(var)
+                        }))
+    theWidget("data_name_combobox")$setActive(which(dataset == dl)[1]-1)
+    # Make sure GUI updates
+    while (gtkEventsPending()) gtkMainIterationDo(blocking=FALSE)
+    executeDataTab()
+  }      
+  else if (not.null(csvname))
   {
     if (!theWidget("data_filechooserbutton")$setUri(csvname))
       infoDialog(Rtxt("The setting of the filename box failed."), crv$support.msg)
@@ -1034,7 +1087,7 @@ configureGUI <- function()
   # 101202 Remove the By Group button and instead if a rescale has a
   # categoric selected then do by group. TODO.
   
-  # theWidget("normalise_bygroup_radiobutton")$hide()
+  # theWidget("normalise_interval_radiobutton")$hide()
   
 }
 
@@ -1143,6 +1196,11 @@ fixGtkBuilderAdjustments <- function()
   wid$setAdjustment(nad)
   wid$setValue(1)
   
+  wid <- theWidget("normalise_interval_numgroups_spinbutton")
+  nad <- gtkAdjustmentNew(NULL, 0, 100000, 1, 10, 0)
+  wid$setAdjustment(nad)
+  wid$setValue(100)
+
   wid <- theWidget("remap_bins_spinbutton")
   nad <- gtkAdjustmentNew(NULL, 0, 100, 1, 10, 0)
   wid$setAdjustment(nad)
@@ -1751,7 +1809,7 @@ uri2file <- function(u)
 
 listVersions <- function(file="", ...)
 {
-  result <- installed.packages()[,c("Package", "Version")]
+  result <- utils:::installed.packages()[,c("Package", "Version")]
   row.names(result) <- NULL
   write.csv(result, file=file, ...)
   invisible(result)
@@ -1896,7 +1954,7 @@ errorDialog <- function(...)
 
 questionDialog <- function(...)
 {
-  if ("RGtk2" %in% rownames(installed.packages()))
+  if ("RGtk2" %in% rownames(utils:::installed.packages()))
   {
     require(RGtk2)
     dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
@@ -1973,16 +2031,17 @@ variablesHaveChanged <- function(action)
 
 packageIsAvailable <- function(pkg, msg=NULL)
 {
+  appname <- ifelse(exists("crv"), crv$appname, "Rattle")
   localmsg <- sprintf(Rtxt("The package '%s' is required to %s.",
                            "It does not appear to be installed.",
-                           "A package can be installed",
-                           "with the following R command:",
+                           "This package (and its dependencies) can be installed",
+                           "using the following R command:",
                            "\n\ninstall.packages('%s')",
-                           "\n\nThis will allow access to use",
+                           "\n\nThis one-time install will allow access to",
                            "the full functionality of %s.",
-                           "\n\nWould you like the package to be installed now?"),
-                      pkg, msg, pkg, ifelse(exists("crv"), crv$appname, "Rattle"))
-  if (pkg %notin% rownames(installed.packages()))
+                           "\n\nWould you like %s to install the package now?"),
+                      pkg, msg, pkg, appname, appname)
+  if (pkg %notin% rownames(utils:::installed.packages()))
   {
     if (not.null(msg))
       if (questionDialog(localmsg))
@@ -2502,9 +2561,9 @@ newPlot <- function(pcnt=1)
   else if (pcnt==4)
     layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
   else if (pcnt==5)
-    layout(matrix(c(1,1,2,3,4,5), 2, 3, byrow=TRUE))
+    layout(matrix(c(1,1,2,3,4,5), 3, 2, byrow=TRUE))
   else if (pcnt==6)
-    layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow=TRUE))
+    layout(matrix(c(1,2,3,4,5,6), 3, 2, byrow=TRUE))
   else if (pcnt==7)
     layout(matrix(c(1,1,2,3,3,4,5,6,7), 3, 3, byrow=TRUE))
   else if (pcnt==8)
