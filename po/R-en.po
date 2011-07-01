@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-10 07:40+1000\n"
-"PO-Revision-Date: 2011-04-10 07:40+1000\n"
+"POT-Creation-Date: 2011-07-01 19:26+1000\n"
+"PO-Revision-Date: 2011-07-01 19:26+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_AU\n"
@@ -79,11 +79,11 @@ msgstr "All"
 msgid "Annotate"
 msgstr "Annotate"
 
-#: rattle.glade.h:17 transform.R:1308
+#: rattle.glade.h:17 transform.R:1418
 msgid "As Categoric"
 msgstr "As Categoric"
 
-#: rattle.glade.h:18 transform.R:1325
+#: rattle.glade.h:18 transform.R:1435
 msgid "As Numeric"
 msgstr "As Numeric"
 
@@ -99,7 +99,7 @@ msgstr "As _Numeric"
 msgid "Ass_ociate"
 msgstr "Ass_ociate"
 
-#: rattle.glade.h:22 rattle.R:737
+#: rattle.glade.h:22 rattle.R:761
 msgid "Associate"
 msgstr "Associate"
 
@@ -171,7 +171,7 @@ msgstr "Choose a File to Save the Project"
 msgid "Clara"
 msgstr "Clara"
 
-#: rattle.glade.h:40 evaluate.R:352 rattle.R:1542
+#: rattle.glade.h:40 evaluate.R:352 rattle.R:1600
 msgid "Class"
 msgstr "Class"
 
@@ -183,7 +183,7 @@ msgstr "Class Weights:"
 msgid "Cleanup"
 msgstr "Cleanup"
 
-#: rattle.glade.h:43 rattle.R:733
+#: rattle.glade.h:43 rattle.R:757
 msgid "Cluster"
 msgstr "Cluster"
 
@@ -251,7 +251,7 @@ msgstr "Cross Tab"
 msgid "DSN:"
 msgstr "DSN:"
 
-#: rattle.glade.h:60 rattle.R:725 rattle.R:780
+#: rattle.glade.h:60 rattle.R:749 rattle.R:804
 msgid "Data"
 msgstr "Data"
 
@@ -371,7 +371,7 @@ msgstr ""
 "Enter some data for the variables by hand, and score the data using the "
 "selected model(s)."
 
-#: rattle.glade.h:89 transform.R:1306
+#: rattle.glade.h:89 transform.R:1416
 msgid "Equal Width"
 msgstr "Equal Width"
 
@@ -383,7 +383,7 @@ msgstr "Error Matrix"
 msgid "Errors"
 msgstr "Errors"
 
-#: rattle.glade.h:92 rattle.R:750
+#: rattle.glade.h:92 rattle.R:774
 msgid "Evaluate"
 msgstr "Evaluate"
 
@@ -391,7 +391,7 @@ msgstr "Evaluate"
 msgid "Exp_ort"
 msgstr "Exp_ort"
 
-#: rattle.glade.h:94 rattle.R:729
+#: rattle.glade.h:94 rattle.R:753
 msgid "Explore"
 msgstr "Explore"
 
@@ -399,7 +399,7 @@ msgstr "Explore"
 msgid "Explore Missing"
 msgstr "Explore Missing"
 
-#: rattle.glade.h:96 hclust.R:525 kmeans.R:266 nnet.R:228 rpart.R:1028
+#: rattle.glade.h:96 hclust.R:525 kmeans.R:266 nnet.R:228 rpart.R:1030
 msgid "Export"
 msgstr "Export"
 
@@ -407,7 +407,7 @@ msgstr "Export"
 msgid "Export Comments"
 msgstr "Export Comments"
 
-#: rattle.glade.h:98 associate.R:428 model.R:1280
+#: rattle.glade.h:98 associate.R:473 model.R:1280
 msgid "Export PMML"
 msgstr "Export PMML"
 
@@ -515,11 +515,11 @@ msgstr "Interactive"
 msgid "Iterate Clusters"
 msgstr "Iterate Clusters"
 
-#: rattle.glade.h:125 transform.R:1324
+#: rattle.glade.h:125 transform.R:1434
 msgid "Join Categorics"
 msgstr "Join Categorics"
 
-#: rattle.glade.h:126 model.R:243 transform.R:1305
+#: rattle.glade.h:126 model.R:243 transform.R:1415
 msgid "KMeans"
 msgstr "KMeans"
 
@@ -571,7 +571,7 @@ msgstr "List"
 msgid "Location:"
 msgstr "Location:"
 
-#: rattle.glade.h:139 rattle.R:754 transform.R:1307
+#: rattle.glade.h:139 rattle.R:778 transform.R:1417
 msgid "Log"
 msgstr "Log"
 
@@ -643,7 +643,7 @@ msgstr "Min Split:"
 msgid "Mode"
 msgstr "Mode"
 
-#: rattle.glade.h:157 evaluate.R:3144 rattle.R:743 rstat.R:206
+#: rattle.glade.h:157 evaluate.R:3144 rattle.R:767 rstat.R:206
 msgid "Model"
 msgstr "Model"
 
@@ -667,9 +667,9 @@ msgstr "Natural Log"
 msgid "Neural Net"
 msgstr "Neural Net"
 
-#: rattle.glade.h:163 ada_gui.R:158 data.R:2215 data.R:3067 rattle.R:1590
-#: rattle.R:1646 rattle.R:1654 rattle.R:1655 rattle.R:1657 rattle.R:1658
-#: rattle.R:1659
+#: rattle.glade.h:163 ada_gui.R:158 data.R:2215 data.R:3067 rattle.R:1648
+#: rattle.R:1704 rattle.R:1712 rattle.R:1713 rattle.R:1715 rattle.R:1716
+#: rattle.R:1717
 msgid "No Target"
 msgstr "No Target"
 
@@ -779,7 +779,7 @@ msgstr ""
 msgid "Percentage:"
 msgstr "Percentage:"
 
-#: rattle.glade.h:191 rattle.R:2479 rattle.R:2483
+#: rattle.glade.h:191 rattle.R:2538 rattle.R:2542
 msgid "Plot"
 msgstr "Plot"
 
@@ -807,7 +807,7 @@ msgstr "Pr v Ob"
 msgid "Precision"
 msgstr "Precision"
 
-#: rattle.glade.h:198 explore.R:3885
+#: rattle.glade.h:198 explore.R:3884
 msgid "Principal Components"
 msgstr "Principal Components"
 
@@ -820,7 +820,7 @@ msgid "Probabilities"
 msgstr "Probabilities"
 
 #: rattle.glade.h:201 evaluate.R:353 explore.R:453 explore.R:1149
-#: explore.R:1159 explore.R:1207 explore.R:2575 explore.R:2585 rattle.R:1543
+#: explore.R:1159 explore.R:1207 explore.R:2575 explore.R:2585 rattle.R:1601
 msgid "Probability"
 msgstr "Probability"
 
@@ -832,7 +832,7 @@ msgstr "Probit"
 msgid "Proximity Measure"
 msgstr "Proximity Measure"
 
-#: rattle.glade.h:204 transform.R:1304
+#: rattle.glade.h:204 transform.R:1414
 msgid "Quantiles"
 msgstr "Quantiles"
 
@@ -1101,7 +1101,7 @@ msgid "Te_st"
 msgstr "Te_st"
 
 #: rattle.glade.h:273 evaluate.R:2069 evaluate.R:2199 evaluate.R:2314
-#: evaluate.R:2430 rattle.R:727
+#: evaluate.R:2430 rattle.R:751
 msgid "Test"
 msgstr "Test"
 
@@ -1159,7 +1159,7 @@ msgstr "Traditional"
 msgid "Training"
 msgstr "Training"
 
-#: rattle.glade.h:293 rattle.R:731
+#: rattle.glade.h:293 rattle.R:755
 msgid "Transform"
 msgstr "Transform"
 
@@ -1635,11 +1635,11 @@ msgstr "Add a legend."
 msgid "Add a legend to the plot."
 msgstr "Add a legend to the plot."
 
-#: transform.R:846
+#: transform.R:956
 msgid "Add a new category 'Missing' to the variable"
 msgstr "Add a new category 'Missing' to the variable"
 
-#: transform.R:905
+#: transform.R:1015
 msgid "Add a new category '%s' to the variable"
 msgstr "Add a new category '%s' to the variable"
 
@@ -1685,7 +1685,7 @@ msgstr "Add the actual frequencies."
 msgid "Add the linear fit to the plot."
 msgstr "Add the linear fit to the plot."
 
-#: rpart.R:200
+#: rpart.R:202
 msgid ""
 "A decision tree is the prototypical data mining tool, used widely for its "
 "ease of interpretation. It consists of a root node split by a single "
@@ -1791,7 +1791,7 @@ msgstr ""
 "variables, the hclust() function to perform the hierarchical clustering, and "
 "converts the result to a dendrogram, using as.dendrogram(), for plotting."
 
-#: transform.R:1393
+#: transform.R:1503
 msgid ""
 "A join of categoric variables requires two categoric variables. Please "
 "select two categoric variables, then Execute."
@@ -1799,7 +1799,7 @@ msgstr ""
 "A join of categoric variables requires two categoric variables. Please "
 "select two categoric variables, then Execute."
 
-#: transform.R:1387
+#: transform.R:1497
 msgid ""
 "A join of only two categoric variables at a time is allowed. Please select "
 "just two categoric variables, then Execute."
@@ -1819,9 +1819,9 @@ msgstr ""
 msgid "All %d plots have been generated."
 msgstr "All %d plots have been generated."
 
-#: associate.R:442 data.R:247 data.R:264 data.R:281 data.R:1795
+#: associate.R:487 data.R:247 data.R:264 data.R:281 data.R:1795
 #: evaluate.R:2583 export.R:274 log.R:150 model.R:1294 projects.R:186
-#: projects.R:355 rattle.R:2607
+#: projects.R:355 rattle.R:2666
 msgid "All Files"
 msgstr "All Files"
 
@@ -1847,7 +1847,7 @@ msgstr ""
 "(numeric) of most frequent (categoric) value. You could also use imputation "
 "to fill in default or modelled values for the missing values."
 
-#: rattle.R:3071 rstat.R:280
+#: rattle.R:3130 rstat.R:280
 msgid "All rights reserved."
 msgstr "All rights reserved."
 
@@ -1859,7 +1859,19 @@ msgstr ""
 "A mosaic plot can not be displayed without identifying a target variable. "
 "The requested mosaic plots will be ignored."
 
-#: rattle.R:2037
+#: rattle.R:552
+msgid ""
+"An actual dataset rather than the name of the dataset has been supplied as "
+"the argument to dataset=. Please supply the dataset name as a character "
+"string. We will continue as if no dataset was specified. You can load it "
+"through the Data tab."
+msgstr ""
+"An actual dataset rather than the name of the dataset has been supplied as "
+"the argument to dataset=. Please supply the dataset name as a character "
+"string. We will continue as if no dataset was specified. You can load it "
+"through the Data tab."
+
+#: rattle.R:2096
 msgid ""
 "An error occured in the call to '%s'. The error message was:\n"
 "\n"
@@ -1873,7 +1885,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: rattle.R:2046
+#: rattle.R:2105
 msgid ""
 "An error occured in the following command:\n"
 "\n"
@@ -1927,7 +1939,7 @@ msgstr ""
 "be described quite nicely in a relatively straightforward, if not simple, "
 "way. Rattle uses the functionality provided by the nnet package."
 
-#: transform.R:1129
+#: transform.R:1239
 msgid "An object of class data.frame is required."
 msgstr "An object of class data.frame is required."
 
@@ -1991,7 +2003,7 @@ msgstr ""
 "# A pre-defined value is used to reset the random seed so that results are "
 "repeatable."
 
-#: explore.R:3925
+#: explore.R:3924
 msgid "A principal components analysis has been completed."
 msgstr "A principal components analysis has been completed."
 
@@ -2069,15 +2081,15 @@ msgstr ""
 "with 80 percent confidence. These rules are probabilistic in nature, as the "
 "frequencies are computed from the data."
 
-#: model.R:238
+#: associate.R:361 model.R:238
 msgid "Association Rules"
 msgstr "Association Rules"
 
-#: associate.R:284
+#: associate.R:301
 msgid "Association rules are implemented in the 'arules' package."
 msgstr "Association rules are implemented in the 'arules' package."
 
-#: associate.R:124
+#: associate.R:129
 msgid ""
 "Associations are calculated only for categoric data. \n"
 "\n"
@@ -2097,7 +2109,7 @@ msgstr ""
 "and the Ident variable identifying the baskets, then please select the "
 "Baskets option."
 
-#: associate.R:275
+#: associate.R:292
 msgid ""
 "Associations are calculated only for categoric variables. No categorical "
 "variables were found in the dataset from amongst those having an Input "
@@ -2115,7 +2127,7 @@ msgstr ""
 "the items, and the Ident variable identifying the baskets, then please click "
 "the Baskets button."
 
-#: associate.R:142
+#: associate.R:148
 msgid ""
 "Associations, when not using the Baskets option, can only be identified when "
 "there are multiple categoric variables. \n"
@@ -2209,7 +2221,7 @@ msgstr ""
 "for the observed population. Parametric Survival Analysis will estimate the "
 "expected time within which the event will occur."
 
-#: associate.R:109
+#: associate.R:114
 msgid ""
 "A Target variable must be identified in the Data tab. This variable then "
 "identifies the items associated with each basket or transaction in the "
@@ -2401,15 +2413,15 @@ msgstr ""
 "Binning based on using kmeans clustering will divide the population up into "
 "groups based on distances."
 
-#: transform.R:1248
+#: transform.R:1358
 msgid "Bin the variable(s) into %d bins using equal widths."
 msgstr "Bin the variable(s) into %d bins using equal widths."
 
-#: transform.R:1240
+#: transform.R:1350
 msgid "Bin the variable(s) into %d bins using kmeans."
 msgstr "Bin the variable(s) into %d bins using kmeans."
 
-#: transform.R:1232
+#: transform.R:1342
 msgid "Bin the variable(s) into %d bins using quantiles."
 msgstr "Bin the variable(s) into %d bins using quantiles."
 
@@ -2430,6 +2442,14 @@ msgstr ""
 "the next model building step. The resulting model is then the weighted sum "
 "of the ensemble of models built. <<>> The ada package is used to build the "
 "boosted model."
+
+#: rattle.R:540
+msgid ""
+"Both a csvname= and a dataset= were specified in the call to rattle(). At "
+"most, only one is allowed. We will continue as if neither were specified."
+msgstr ""
+"Both a csvname= and a dataset= were specified in the call to rattle(). At "
+"most, only one is allowed. We will continue as if neither were specified."
 
 #: data.R:2897 explore.R:742 explore.R:2151
 msgid "Box Plot"
@@ -2495,7 +2515,7 @@ msgstr "build a Survival model"
 msgid "build conditional trees"
 msgstr "build conditional trees"
 
-#: rpart.R:401
+#: rpart.R:403
 msgid "build decision trees"
 msgstr "build decision trees"
 
@@ -2503,7 +2523,7 @@ msgstr "build decision trees"
 msgid "building a model"
 msgstr "building a model"
 
-#: associate.R:238
+#: associate.R:255
 msgid "building and then plotting association rules"
 msgstr "building and then plotting association rules"
 
@@ -2533,7 +2553,7 @@ msgstr "Building %s model ... failed."
 msgid "Build the model."
 msgstr "Build the model."
 
-#: ada.R:150 random_forest.R:311 rpart.R:516
+#: ada.R:150 random_forest.R:311 rpart.R:518
 msgid "Build the %s model."
 msgstr "Build the %s model."
 
@@ -2561,7 +2581,7 @@ msgstr "Calculate the area under the curve for the plot."
 msgid "Calculate the group means."
 msgstr "Calculate the group means."
 
-#: transform.R:396
+#: transform.R:471
 msgid "Calculate the matrix total."
 msgstr "Calculate the matrix total."
 
@@ -2601,35 +2621,35 @@ msgstr "Categorical [%s levels%s%s]"
 msgid "C Files"
 msgstr "C Files"
 
-#: transform.R:950
+#: transform.R:1060
 msgid "Change all NAs to 0."
 msgstr "Change all NAs to 0."
 
-#: transform.R:857
+#: transform.R:967
 msgid "Change all NAs to 'Missing'"
 msgstr "Change all NAs to 'Missing'"
 
-#: transform.R:1022
+#: transform.R:1132
 msgid "Change all NAs to the constant: %s."
 msgstr "Change all NAs to the constant: %s."
 
-#: transform.R:913
+#: transform.R:1023
 msgid "Change all NAs to the constant value: %s"
 msgstr "Change all NAs to the constant value: %s"
 
-#: transform.R:967
+#: transform.R:1077
 msgid "Change all NAs to the mean value (not advisable)."
 msgstr "Change all NAs to the mean value (not advisable)."
 
-#: transform.R:981
+#: transform.R:1091
 msgid "Change all NAs to the median (not advisable)."
 msgstr "Change all NAs to the median (not advisable)."
 
-#: transform.R:878 transform.R:995
+#: transform.R:988 transform.R:1105
 msgid "Change all NAs to the modal value (not advisable)."
 msgstr "Change all NAs to the modal value (not advisable)."
 
-#: rattle.R:383
+#: rattle.R:385
 msgid "choose appropriate colors for plots"
 msgstr "choose appropriate colors for plots"
 
@@ -2663,7 +2683,7 @@ msgstr "Chosen"
 msgid "class"
 msgstr "class"
 
-#: ctree.R:300 rpart.R:540
+#: ctree.R:300 rpart.R:542
 msgid "Classification"
 msgstr "Classification"
 
@@ -2671,7 +2691,7 @@ msgstr "Classification"
 msgid "Class/Time"
 msgstr "Class/Time"
 
-#: kmeans.R:187 kmeans.R:195
+#: ewkm.R:104 ewkm.R:112 kmeans.R:187 kmeans.R:195
 msgid "Cluster centers:"
 msgstr "Cluster centers:"
 
@@ -2697,7 +2717,7 @@ msgstr ""
 "variables were found in the dataset from amongst those having an input/"
 "target/risk role."
 
-#: kmeans.R:185 kmeans.R:191
+#: ewkm.R:102 ewkm.R:108 kmeans.R:185 kmeans.R:191
 msgid "Cluster sizes:"
 msgstr "Cluster sizes:"
 
@@ -2769,7 +2789,7 @@ msgstr ""
 msgid "# Convert rate of positive predictions to percentage."
 msgstr "# Convert rate of positive predictions to percentage."
 
-#: transform.R:511
+#: transform.R:624
 msgid "Convert values to ranks."
 msgstr "Convert values to ranks."
 
@@ -2781,19 +2801,19 @@ msgstr "Copyright"
 msgid "Copyright (c) 2006-2011 %s."
 msgstr "Copyright (c) 2006-2011 %s."
 
-#: rattle.R:2358
+#: rattle.R:2417
 msgid "Copy the plot on device %d to the clipboard."
 msgstr "Copy the plot on device %d to the clipboard."
 
-#: rattle.R:2357
+#: rattle.R:2416
 msgid "Copy the plot to the clipboard."
 msgstr "Copy the plot to the clipboard."
 
-#: explore.R:3750
+#: explore.R:3749
 msgid "Correlation plot and summary generated."
 msgstr "Correlation plot and summary generated."
 
-#: explore.R:3761
+#: explore.R:3760
 msgid ""
 "Correlations are calculated only for numeric data. \n"
 "\n"
@@ -2811,7 +2831,7 @@ msgstr ""
 "You may want to use the transform tab to transform your categoric data into "
 "numeric data."
 
-#: explore.R:3597
+#: explore.R:3596
 msgid ""
 "Correlations are calculated only for numeric data. No numeric data was found "
 "in the dataset."
@@ -2819,15 +2839,15 @@ msgstr ""
 "Correlations are calculated only for numeric data. No numeric data was found "
 "in the dataset."
 
-#: explore.R:3731
+#: explore.R:3730
 msgid "Correlation summary using the '%s' covariance."
 msgstr "Correlation summary using the '%s' covariance."
 
-#: explore.R:3702
+#: explore.R:3701
 msgid "Correlation %s using %s"
 msgstr "Correlation %s using %s"
 
-#: explore.R:3722
+#: explore.R:3721
 msgid "Correlations work for numeric variables only."
 msgstr "Correlations work for numeric variables only."
 
@@ -2867,7 +2887,7 @@ msgstr "Cost"
 msgid "Cost Curve: requires the ROCR package."
 msgstr "Cost Curve: requires the ROCR package."
 
-#: explore.R:3679
+#: explore.R:3678
 msgid "Count of missing values:"
 msgstr "Count of missing values:"
 
@@ -2955,7 +2975,7 @@ msgstr ""
 "quite a few datasets in this format now. <<>> The corresponding R code uses "
 "the 'read.arff' function from the foreign package."
 
-#: kmeans.R:186 kmeans.R:193
+#: ewkm.R:103 ewkm.R:110 kmeans.R:186 kmeans.R:193
 msgid "Data means:"
 msgstr "Data means:"
 
@@ -3019,11 +3039,11 @@ msgstr "Decision Tree"
 msgid "Define support functions for the plot."
 msgstr "Define support functions for the plot."
 
-#: transform.R:1669
+#: transform.R:1779
 msgid "deleting the selected ignored variables"
 msgstr "deleting the selected ignored variables"
 
-#: rpart.R:628
+#: rpart.R:630
 msgid ""
 "      * denotes terminal node\n"
 "\n"
@@ -3067,11 +3087,11 @@ msgstr "Discriminant coordinates plot has been generated."
 msgid "'dispatchExecuteButton' has been called with an unknown tab."
 msgstr "'dispatchExecuteButton' has been called with an unknown tab."
 
-#: explore.R:3714
+#: explore.R:3713
 msgid "display a correlation plot"
 msgstr "display a correlation plot"
 
-#: explore.R:3356 explore.R:3552
+#: explore.R:3356 explore.R:3551
 msgid ""
 "Display a pairs (scatter) plot. Note random selection of variables if there "
 "are more than 6."
@@ -3079,11 +3099,11 @@ msgstr ""
 "Display a pairs (scatter) plot. Note random selection of variables if there "
 "are more than 6."
 
-#: explore.R:3914
+#: explore.R:3913
 msgid "Display a plot showing the relative importance of the components."
 msgstr "Display a plot showing the relative importance of the components."
 
-#: explore.R:3919
+#: explore.R:3918
 msgid "Display a plot showing the two most principal components."
 msgstr "Display a plot showing the two most principal components."
 
@@ -3105,11 +3125,11 @@ msgstr ""
 "\n"
 "Do you wish to continue?"
 
-#: rattle.R:2431
+#: rattle.R:2490
 msgid "display plots"
 msgstr "display plots"
 
-#: explore.R:3724
+#: explore.R:3723
 msgid "Display the actual correlations."
 msgstr "Display the actual correlations."
 
@@ -3121,7 +3141,7 @@ msgstr "Display the observed (X) versus predicted (Y) points."
 msgid "Display the plot."
 msgstr "Display the plot."
 
-#: rattle.R:347
+#: rattle.R:349
 msgid "display the Rattle GUI"
 msgstr "display the Rattle GUI"
 
@@ -3169,7 +3189,7 @@ msgstr "Distribution of the Second Digit"
 msgid "Distribution of the Third Digit"
 msgstr "Distribution of the Third Digit"
 
-#: transform.R:596
+#: transform.R:706
 msgid "Divide variable values by matrix total."
 msgstr "Divide variable values by matrix total."
 
@@ -3181,7 +3201,7 @@ msgstr " %d missing values"
 msgid "Dot Plot"
 msgstr "Dot Plot"
 
-#: rattle.R:2928 rattle.R:2963
+#: rattle.R:2987 rattle.R:3022
 msgid "Do you want to terminate %s?"
 msgstr "Do you want to terminate %s?"
 
@@ -3189,7 +3209,7 @@ msgstr "Do you want to terminate %s?"
 msgid "Do you wish to continue?"
 msgstr "Do you wish to continue?"
 
-#: rattle.R:2850
+#: rattle.R:2909
 msgid "draw the network plot"
 msgstr "draw the network plot"
 
@@ -3241,7 +3261,7 @@ msgstr ""
 "E136: There is no ADA model and attempting to plot error. The button should "
 "not be active."
 
-#: rattle.R:2153
+#: rattle.R:2212
 msgid ""
 "E141: The dataset is too large for this operation. It is terminating now "
 "without any output. The R Console may contain further information."
@@ -3249,7 +3269,7 @@ msgstr ""
 "E141: The dataset is too large for this operation. It is terminating now "
 "without any output. The R Console may contain further information."
 
-#: rattle.R:2157
+#: rattle.R:2216
 msgid ""
 "E142: A command has failed\n"
 "\n"
@@ -3269,7 +3289,7 @@ msgstr ""
 msgid "Edit A Data Set Manually"
 msgstr "Edit A Data Set Manually"
 
-#: rattle.R:899
+#: rattle.R:924
 msgid "enable the cairo device option"
 msgstr "enable the cairo device option"
 
@@ -3307,7 +3327,7 @@ msgstr "evaluate a %s model"
 msgid "Evaluate model performance."
 msgstr "Evaluate model performance."
 
-#: associate.R:100
+#: associate.R:105
 msgid ""
 "Exactly one variable must be identified as an Ident in the Data tab to be "
 "used as the identifier of the transactions. There are %d Ident variables. "
@@ -3319,7 +3339,7 @@ msgstr ""
 "The observations need to be aggregated by the Ident to create the baskets "
 "for association analysis."
 
-#: associate.R:252
+#: associate.R:269
 msgid ""
 "Exactly one variable must be identified as an Ident in the Data tab to be "
 "used as the identifier of the transactions. There were %s variables found. "
@@ -3339,11 +3359,11 @@ msgstr "Excel 2007 Files"
 msgid "Excel Files"
 msgstr "Excel Files"
 
-#: explore.R:3934
+#: explore.R:3933
 msgid "Explore Data"
 msgstr "Explore Data"
 
-#: explore.R:3578
+#: explore.R:3577
 msgid "explore the data using GGobi"
 msgstr "explore the data using GGobi"
 
@@ -3351,11 +3371,11 @@ msgstr "explore the data using GGobi"
 msgid "export a %s model"
 msgstr "export a %s model"
 
-#: associate.R:421
+#: associate.R:466
 msgid "export association rules"
 msgstr "export association rules"
 
-#: associate.R:464
+#: associate.R:509
 msgid "Export association rules as PMML."
 msgstr "Export association rules as PMML."
 
@@ -3371,7 +3391,7 @@ msgstr "Export a SVM model as PMML."
 msgid "Export C or PMML"
 msgstr "Export C or PMML"
 
-#: rattle.R:2581
+#: rattle.R:2640
 msgid "Export Graphics"
 msgstr "Export Graphics"
 
@@ -3391,11 +3411,11 @@ msgstr "Export regression as PMML."
 msgid "Export regression model."
 msgstr "Export regression model."
 
-#: hclust.R:558 kmeans.R:302 model.R:1023 nnet.R:264 rpart.R:1064
+#: hclust.R:558 kmeans.R:302 model.R:1023 nnet.R:264 rpart.R:1066
 msgid "Export %s as a C routine."
 msgstr "Export %s as a C routine."
 
-#: kmeans.R:284 rpart.R:1046
+#: kmeans.R:284 rpart.R:1048
 msgid "Export %s as PMML."
 msgstr "Export %s as PMML."
 
@@ -3453,7 +3473,7 @@ msgstr "Extract the relevant variables from the dataset."
 msgid "FEX"
 msgstr "FEX"
 
-#: associate.R:393
+#: associate.R:438
 msgid "Finished listing the rules - scroll the text window to view the rules."
 msgstr "Finished listing the rules - scroll the text window to view the rules."
 
@@ -3477,7 +3497,7 @@ msgstr "Frequency"
 msgid "General cluster statistics:"
 msgstr "General cluster statistics:"
 
-#: explore.R:3716
+#: explore.R:3715
 msgid "Generate a correlation plot for the variables."
 msgstr "Generate a correlation plot for the variables."
 
@@ -3509,6 +3529,10 @@ msgstr "Generate a description of the numeric data."
 msgid "Generate a discriminant coordinates plot."
 msgstr "Generate a discriminant coordinates plot."
 
+#: ewkm.R:86
+msgid "Generate a ewkm cluster of size %s."
+msgstr "Generate a ewkm cluster of size %s."
+
 #: hclust.R:269
 msgid "Generate a hierarchical cluster of the data."
 msgstr "Generate a hierarchical cluster of the data."
@@ -3533,6 +3557,10 @@ msgstr "Generate an ROC curve for the %s model on %s."
 msgid "Generate an ROC Curve for the %s model on %s."
 msgstr "Generate an ROC Curve for the %s model on %s."
 
+#: associate.R:358
+msgid "generate a plot of association rules"
+msgstr "generate a plot of association rules"
+
 #: evaluate.R:2261 evaluate.R:2306
 msgid "Generate a Precision/Recall Plot for the %s model on %s."
 msgstr "Generate a Precision/Recall Plot for the %s model on %s."
@@ -3549,7 +3577,7 @@ msgstr "generate a rule set"
 msgid "Generate a simple linear fit between predicted and observed."
 msgstr "Generate a simple linear fit between predicted and observed."
 
-#: associate.R:149 associate.R:281
+#: associate.R:155 associate.R:298
 msgid "generate associations"
 msgstr "generate associations"
 
@@ -3557,11 +3585,11 @@ msgstr "generate associations"
 msgid "Generate a summary of the missing values in the dataset."
 msgstr "Generate a summary of the missing values in the dataset."
 
-#: biclust.R:102 model.R:890 model.R:1233 rpart.R:533
+#: biclust.R:102 model.R:890 model.R:1233 rpart.R:535
 msgid "Generate a textual view of the %s model."
 msgstr "Generate a textual view of the %s model."
 
-#: associate.R:182 associate.R:310
+#: associate.R:192 associate.R:327
 msgid "Generate a transactions dataset."
 msgstr "Generate a transactions dataset."
 
@@ -3573,7 +3601,7 @@ msgstr "Generate cluster statistics using the fpc package."
 msgid "Generate cross tabulations for categoric data."
 msgstr "Generate cross tabulations for categoric data."
 
-#: rattle.R:2740 rattle.R:2752
+#: rattle.R:2799 rattle.R:2811
 msgid "Generated by %s"
 msgstr "Generated by %s"
 
@@ -3609,11 +3637,11 @@ msgstr "Generated ROC Curves on %s."
 msgid "Generated Sensitivity/Specificity Plot on %s."
 msgstr "Generated Sensitivity/Specificity Plot on %s."
 
-#: associate.R:321
+#: associate.R:338
 msgid "Generated the relative frequency plot."
 msgstr "Generated the relative frequency plot."
 
-#: explore.R:3837
+#: explore.R:3836
 msgid "Generate hierarchical cluster of variables."
 msgstr "Generate hierarchical cluster of variables."
 
@@ -3649,7 +3677,7 @@ msgstr "Generate %s using method '%s'."
 msgid "Generate textual output of '%s' model."
 msgstr "Generate textual output of '%s' model."
 
-#: associate.R:206
+#: associate.R:217
 msgid "Generate the association rules."
 msgstr "Generate the association rules."
 
@@ -3661,7 +3689,7 @@ msgstr "Generate the confusion matrix showing counts."
 msgid "Generate the confusion matrix showing percentages."
 msgstr "Generate the confusion matrix showing percentages."
 
-#: explore.R:3834
+#: explore.R:3833
 msgid "Generate the correlations (numerics only)."
 msgstr "Generate the correlations (numerics only)."
 
@@ -3673,7 +3701,7 @@ msgstr "Generate the data for the plot of the variable '%s'."
 msgid "Generate the data specifically for the plot."
 msgstr "Generate the data specifically for the plot."
 
-#: explore.R:3840
+#: explore.R:3839
 msgid "Generate the dendrogram."
 msgstr "Generate the dendrogram."
 
@@ -3715,19 +3743,19 @@ msgstr ""
 "powerful interactive visualizer. The separate GGobi application will need to "
 "have been  installed, as well as the rggobi R package."
 
-#: explore.R:3580
+#: explore.R:3579
 msgid "GGobi Data Exploration"
 msgstr "GGobi Data Exploration"
 
-#: explore.R:3587
+#: explore.R:3586
 msgid "GGobi executed."
 msgstr "GGobi executed."
 
-#: explore.R:3725
+#: explore.R:3724
 msgid "Graphically display the correlations."
 msgstr "Graphically display the correlations."
 
-#: rattle.R:2596 rattle.R:2598
+#: rattle.R:2655 rattle.R:2657
 msgid "Graphics Files"
 msgstr "Graphics Files"
 
@@ -3747,11 +3775,11 @@ msgstr "Hierachical Cluster"
 msgid "Hierarchical Cluster"
 msgstr "Hierarchical Cluster"
 
-#: explore.R:3849
+#: explore.R:3848
 msgid "Hierarchical cluster of correlations plotted."
 msgstr "Hierarchical cluster of correlations plotted."
 
-#: explore.R:3832
+#: explore.R:3831
 msgid "Hierarchical Variable Correlation"
 msgstr "Hierarchical Variable Correlation"
 
@@ -3767,7 +3795,7 @@ msgstr "H measure weight function of c"
 msgid "Ident"
 msgstr "Ident"
 
-#: associate.R:77
+#: associate.R:82
 msgid "identifying association rules"
 msgstr "identifying association rules"
 
@@ -3853,11 +3881,11 @@ msgstr ""
 "kind of imputation is not recommended as it could change the variables "
 "distribution, and hence result in poor models."
 
-#: transform.R:1083
+#: transform.R:1193
 msgid "Imputed variables added to the dataset with '%s_' prefix."
 msgstr "Imputed variables added to the dataset with '%s_' prefix."
 
-#: transform.R:833 transform.R:890 transform.R:939
+#: transform.R:943 transform.R:1000 transform.R:1049
 msgid "Impute %s."
 msgstr "Impute %s."
 
@@ -3865,7 +3893,7 @@ msgstr "Impute %s."
 msgid "Include a pseudo R-square on the plot"
 msgstr "Include a pseudo R-square on the plot"
 
-#: transform.R:1323
+#: transform.R:1433
 msgid "Indicator Variable"
 msgstr "Indicator Variable"
 
@@ -3883,7 +3911,7 @@ msgstr ""
 msgid "Initial Digit"
 msgstr "Initial Digit"
 
-#: explore.R:3931 explore.R:3932
+#: explore.R:3930 explore.R:3931
 msgid "interactively explore data"
 msgstr "interactively explore data"
 
@@ -3891,7 +3919,7 @@ msgstr "interactively explore data"
 msgid "Invalid survival times for this distribution"
 msgstr "Invalid survival times for this distribution"
 
-#: rattle.R:1966
+#: rattle.R:2024
 msgid ""
 "It appears that there have been changes made to the variables in the Data "
 "tab without the tab being Executed. \n"
@@ -4115,7 +4143,7 @@ msgstr ""
 "Positive values indicate an acute peak around the mean. \n"
 "Negative values indicate a smaller peak around  the mean."
 
-#: explore.R:3583
+#: explore.R:3582
 msgid "Launch the GGobi data visualization application."
 msgstr "Launch the GGobi data visualization application."
 
@@ -4135,7 +4163,7 @@ msgstr "Lift Chart: requires the ROCR package."
 msgid "Linear Fit to Points"
 msgstr "Linear Fit to Points"
 
-#: associate.R:367
+#: associate.R:412
 msgid "List rules."
 msgstr "List rules."
 
@@ -4143,7 +4171,7 @@ msgstr "List rules."
 msgid "List the importance of the variables."
 msgstr "List the importance of the variables."
 
-#: rpart.R:155
+#: rpart.R:157
 msgid "List the rules from the tree using a Rattle support function."
 msgstr "List the rules from the tree using a Rattle support function."
 
@@ -4183,7 +4211,7 @@ msgstr "Load the data."
 msgid "Load the names of available tables."
 msgstr "Load the names of available tables."
 
-#: associate.R:422
+#: associate.R:467
 msgid "Load the PMML package to export association rules."
 msgstr "Load the PMML package to export association rules."
 
@@ -4223,7 +4251,7 @@ msgstr "Minimum loss by cost"
 msgid "Min; Median/Mean; Max"
 msgstr "Min; Median/Mean; Max"
 
-#: rattle.R:2101
+#: rattle.R:2160
 msgid "mins"
 msgstr "mins"
 
@@ -4235,7 +4263,7 @@ msgstr "; miss=%d"
 msgid "Missing: %d"
 msgstr "Missing: %d"
 
-#: explore.R:3730
+#: explore.R:3729
 msgid "Missing values correlation summary using the '%s' covariance."
 msgstr "Missing values correlation summary using the '%s' covariance."
 
@@ -4353,7 +4381,7 @@ msgstr ""
 "\n"
 "#In ROCR (1.0-3) plot does not obey the add command.\n"
 
-#: transform.R:1510
+#: transform.R:1620
 msgid ""
 "\n"
 "\n"
@@ -4383,7 +4411,7 @@ msgid ""
 msgstr ""
 "No ARFF Filename has been chosen yet. You must choose one before execution."
 
-#: associate.R:414
+#: associate.R:459
 msgid ""
 "No association rules model is available. Be sure to build the model before "
 "trying to export it! You will need to press the Execute button (F2) in order "
@@ -4427,7 +4455,7 @@ msgstr ""
 "Please identify the name of the dataset you wish to load using the Data Name "
 "chooser."
 
-#: rattle.R:1945
+#: rattle.R:2003
 msgid ""
 "No dataset has been loaded at this time. \n"
 "\n"
@@ -4479,7 +4507,7 @@ msgstr ""
 "\n"
 " Please build a suitable model before evaluation."
 
-#: rattle.R:2159
+#: rattle.R:2218
 msgid "No output generated."
 msgstr "No output generated."
 
@@ -4513,11 +4541,11 @@ msgstr ""
 msgid "No Risk"
 msgstr "No Risk"
 
-#: rattle.R:1661
+#: rattle.R:1719
 msgid "No risk variable selected"
 msgstr "No risk variable selected"
 
-#: transform.R:368
+#: transform.R:443
 msgid "normalize data"
 msgstr "normalize data"
 
@@ -4525,7 +4553,7 @@ msgstr "normalize data"
 msgid "Normalized expected cost"
 msgstr "Normalized expected cost"
 
-#: transform.R:695
+#: transform.R:805
 msgid "Normalized variables added to the dataset with '%s' prefix."
 msgstr "Normalized variables added to the dataset with '%s' prefix."
 
@@ -4533,7 +4561,7 @@ msgstr "Normalized variables added to the dataset with '%s' prefix."
 msgid "No status variable selected"
 msgstr "No status variable selected"
 
-#: rattle.R:2705
+#: rattle.R:2764
 msgid "No such device."
 msgstr "No such device."
 
@@ -4569,11 +4597,11 @@ msgstr ""
 msgid "Not a legitimate hclust object"
 msgstr "Not a legitimate hclust object"
 
-#: rpart.R:591
+#: rpart.R:593
 msgid "Not a legitimate rpart object."
 msgstr "Not a legitimate rpart object."
 
-#: rpart.R:640
+#: rpart.R:642
 msgid "Not a legitimate rpart tree"
 msgstr "Not a legitimate rpart tree"
 
@@ -4589,11 +4617,11 @@ msgstr ""
 msgid "No target thus no predictive modelling nor sampling."
 msgstr "No target thus no predictive modelling nor sampling."
 
-#: explore.R:3735
+#: explore.R:3734
 msgid "Note that only correlations between numeric variables are reported."
 msgstr "Note that only correlations between numeric variables are reported."
 
-#: explore.R:3905
+#: explore.R:3904
 msgid ""
 "Note that principal components on only the numeric\n"
 " variables is calculated, and so we can not use this\n"
@@ -4641,11 +4669,11 @@ msgstr "Note the user selections."
 msgid "No time variable selected"
 msgstr "No time variable selected"
 
-#: cluster.R:77 transform.R:931
+#: cluster.R:82 transform.R:1041
 msgid "Not yet implemented."
 msgstr "Not yet implemented."
 
-#: transform.R:760
+#: transform.R:870
 msgid ""
 "No variables have been selected for imputation. Please select some variables "
 "and Execute again."
@@ -4653,7 +4681,7 @@ msgstr ""
 "No variables have been selected for imputation. Please select some variables "
 "and Execute again."
 
-#: transform.R:250 transform.R:700
+#: transform.R:341 transform.R:810
 msgid ""
 "No variables have been selected for rescaling. Please select some variables "
 "and Execute again."
@@ -4661,15 +4689,15 @@ msgstr ""
 "No variables have been selected for rescaling. Please select some variables "
 "and Execute again."
 
-#: transform.R:1087
+#: transform.R:1197
 msgid "No variables selected to be imputed."
 msgstr "No variables selected to be imputed."
 
-#: transform.R:251 transform.R:701
+#: transform.R:342 transform.R:811
 msgid "No variables selected to be rescaling."
 msgstr "No variables selected to be rescaling."
 
-#: explore.R:3843
+#: explore.R:3842
 msgid "Now draw the dendrogram."
 msgstr "Now draw the dendrogram."
 
@@ -4697,7 +4725,7 @@ msgstr ""
 msgid "Number of Clusters"
 msgstr "Number of Clusters"
 
-#: associate.R:56
+#: associate.R:61
 msgid "Number of Rules: %d"
 msgstr "Number of Rules: %d"
 
@@ -4737,7 +4765,7 @@ msgstr "ODBC connection to database established. Now select a table."
 msgid "One plot has been generated."
 msgstr "One plot has been generated."
 
-#: transform.R:1321
+#: transform.R:1431
 msgid ""
 "Only non numeric data is permissible for the %s  transform.\n"
 "\n"
@@ -4747,7 +4775,7 @@ msgstr ""
 "\n"
 "Ignoring: %s."
 
-#: transform.R:1302
+#: transform.R:1412
 msgid ""
 "Only numeric data is permissible for the %s transform. \n"
 "\n"
@@ -4773,7 +4801,7 @@ msgstr "Open the connection to the ODBC service."
 msgid "Optimal"
 msgstr "Optimal"
 
-#: explore.R:3723
+#: explore.R:3722
 msgid "Order the correlations by their strength."
 msgstr "Order the correlations by their strength."
 
@@ -4807,7 +4835,7 @@ msgstr ""
 "be extracted. This could be useful in testing the sensitivity of modeling "
 "with different training sets."
 
-#: explore.R:3682
+#: explore.R:3681
 msgid "Percent missing values:"
 msgstr "Percent missing values:"
 
@@ -4823,9 +4851,13 @@ msgstr "perform an efficient hierarchical clustering"
 msgid "perform bicluster analysis"
 msgstr "perform bicluster analysis"
 
-#: transform.R:795
+#: transform.R:905
 msgid "Perform missing value imputation."
 msgstr "Perform missing value imputation."
+
+#: ewkm.R:58
+msgid "perform subspace cluster analysis"
+msgstr "perform subspace cluster analysis"
 
 #: test.R:327
 msgid "Perform the test."
@@ -4847,11 +4879,11 @@ msgid ""
 msgstr ""
 "Please first choose a variable from which the second sample will be obtained."
 
-#: transform.R:1687
+#: transform.R:1797
 msgid "Please select some variables to delete first. Then Execute."
 msgstr "Please select some variables to delete first. Then Execute."
 
-#: transform.R:1207
+#: transform.R:1317
 msgid "Please select some variables to remap first. Then Execute."
 msgstr "Please select some variables to remap first. Then Execute."
 
@@ -4899,15 +4931,15 @@ msgstr "plot Benford's law"
 msgid "plot cumulative charts"
 msgstr "plot cumulative charts"
 
-#: rattle.R:2362
+#: rattle.R:2421
 msgid "Plot %d has been copied to the clipboard using the PNG format."
 msgstr "Plot %d has been copied to the clipboard using the PNG format."
 
-#: rattle.R:2634
+#: rattle.R:2693
 msgid "Plot %d has been exported to the file %s."
 msgstr "Plot %d has been exported to the file %s."
 
-#: rattle.R:2379
+#: rattle.R:2438
 msgid "Plot %d has been sent to the printer using the command: %s."
 msgstr "Plot %d has been sent to the printer using the command: %s."
 
@@ -4945,7 +4977,7 @@ msgstr "Plot the error rate as we increase the number of trees."
 msgid "# Plot the lift chart."
 msgstr "# Plot the lift chart."
 
-#: associate.R:318
+#: associate.R:335
 msgid "Plot the relative frequencies."
 msgstr "Plot the relative frequencies."
 
@@ -4953,7 +4985,7 @@ msgstr "Plot the relative frequencies."
 msgid "Plot the relative importance of the variables."
 msgstr "Plot the relative importance of the variables."
 
-#: rpart.R:127
+#: rpart.R:129
 msgid "Plot the resulting %s using Rattle and maptools support functions."
 msgstr "Plot the resulting %s using Rattle and maptools support functions."
 
@@ -4965,15 +4997,15 @@ msgstr "Plot the scaled Schoenfeld residuals of proportional hazards."
 msgid "Plot the survival chart for the most recent survival model."
 msgstr "Plot the survival chart for the most recent survival model."
 
-#: explore.R:3541
+#: explore.R:3540
 msgid "plot using ggplot2"
 msgstr "plot using ggplot2"
 
-#: cluster.R:111 model.R:1433
+#: cluster.R:116 model.R:1433
 msgid "PMML export for this model is not yet implemented."
 msgstr "PMML export for this model is not yet implemented."
 
-#: associate.R:437 export.R:269 model.R:1289
+#: associate.R:482 export.R:269 model.R:1289
 msgid "PMML Files"
 msgstr "PMML Files"
 
@@ -5001,7 +5033,7 @@ msgstr "Predicted vs. Observed"
 msgid "predictions"
 msgstr "predictions"
 
-#: rattle.R:746
+#: rattle.R:770
 msgid "Predictive"
 msgstr "Predictive"
 
@@ -5061,11 +5093,11 @@ msgstr ""
 "importance of the components is plotted. <<>> Note that only numeric data is "
 "included in the analysis."
 
-#: explore.R:3894
+#: explore.R:3893
 msgid "Principal Components Analysis (on numerics only)."
 msgstr "Principal Components Analysis (on numerics only)."
 
-#: explore.R:3861
+#: explore.R:3860
 msgid ""
 "Principal components are only ipmlemented for numeric data. No numeric "
 "variables were found in the dataset from amongst those that are not ignored."
@@ -5073,11 +5105,11 @@ msgstr ""
 "Principal components are only ipmlemented for numeric data. No numeric "
 "variables were found in the dataset from amongst those that are not ignored."
 
-#: explore.R:3878
+#: explore.R:3877
 msgid "Principal Components Importance"
 msgstr "Principal Components Importance"
 
-#: rattle.R:2374
+#: rattle.R:2433
 msgid "Print the plot."
 msgstr "Print the plot."
 
@@ -5149,7 +5181,7 @@ msgstr ""
 msgid "Rattle Dataset"
 msgstr "Rattle Dataset"
 
-#: rattle.R:1387
+#: rattle.R:1445
 msgid ""
 "Rattle is a free graphical user interface for Data Mining, developed using "
 "R. R is a free software environment for statistical computing and graphics. "
@@ -5217,11 +5249,11 @@ msgstr ""
 "or something else you would like Rattle to do, please do email "
 "support@togaware.com. <<>> Enjoy."
 
-#: rattle.R:1405
+#: rattle.R:1463
 msgid "Rattle is a registered trademark of Togaware Pty Ltd"
 msgstr "Rattle is a registered trademark of Togaware Pty Ltd"
 
-#: rattle.R:1399
+#: rattle.R:1457
 msgid ""
 "Rattle is licensed under the GNU General Public License, Version 2. Rattle "
 "comes with ABSOLUTELY NO WARRANTY. See Help -> About for details."
@@ -5233,13 +5265,13 @@ msgstr ""
 msgid "Rattle Report is using local template ../odf"
 msgstr "Rattle Report is using local template ../odf"
 
-#: rattle.R:2096
+#: rattle.R:2155
 msgid ""
 "rattle: reportTimeTaken: one and only one of model/msg must be supplied."
 msgstr ""
 "rattle: reportTimeTaken: one and only one of model/msg must be supplied."
 
-#: rattle.R:1402
+#: rattle.R:1460
 msgid "Rattle Version %s. Copyright 2006-2011 Togaware Pty Ltd"
 msgstr "Rattle Version %s. Copyright 2006-2011 Togaware Pty Ltd"
 
@@ -5251,7 +5283,7 @@ msgstr "Rdata Files"
 msgid "RData Files"
 msgstr "RData Files"
 
-#: rattle.R:2066
+#: rattle.R:2125
 msgid "R Data Miner - [Rattle]"
 msgstr "R Data Miner - [Rattle]"
 
@@ -5267,7 +5299,7 @@ msgstr "read an ARFF dataset"
 msgid "read .xls or .xlsx files"
 msgstr "read .xls or .xlsx files"
 
-#: transform.R:460
+#: transform.R:557
 msgid "Recenter and rescale the data around 0."
 msgstr "Recenter and rescale the data around 0."
 
@@ -5295,7 +5327,7 @@ msgstr "Regression"
 msgid "Regression model"
 msgstr "Regression model"
 
-#: associate.R:282
+#: associate.R:299
 msgid "Relative Frequencies Plot"
 msgstr "Relative Frequencies Plot"
 
@@ -5303,11 +5335,11 @@ msgstr "Relative Frequencies Plot"
 msgid "Reload the project data (variable crs) from file."
 msgstr "Reload the project data (variable crs) from file."
 
-#: transform.R:1648
+#: transform.R:1758
 msgid "Remapped variables added to the dataset with '%s_' prefix."
 msgstr "Remapped variables added to the dataset with '%s_' prefix."
 
-#: transform.R:1449
+#: transform.R:1559
 msgid "Remap variables."
 msgstr "Remap variables."
 
@@ -5327,11 +5359,11 @@ msgstr "Remove any variable that has any missing values."
 msgid "Remove any variable that is marked as Ignore."
 msgstr "Remove any variable that is marked as Ignore."
 
-#: transform.R:1734
+#: transform.R:1844
 msgid "Remove rows with missing values."
 msgstr "Remove rows with missing values."
 
-#: transform.R:1761
+#: transform.R:1871
 msgid "Remove specific variables from the dataset."
 msgstr "Remove specific variables from the dataset."
 
@@ -5343,7 +5375,7 @@ msgstr "Rendering the hierarchical cluster dendrogram...."
 msgid "Rendering the plot. Please wait...."
 msgstr "Rendering the plot. Please wait...."
 
-#: kmeans.R:184
+#: ewkm.R:101 kmeans.R:184
 msgid "Report on the cluster characteristics."
 msgstr "Report on the cluster characteristics."
 
@@ -5359,21 +5391,21 @@ msgstr "Require the %s package."
 msgid "Require the survival package."
 msgstr "Require the survival package."
 
-#: transform.R:528
+#: transform.R:649
 msgid "Rescale by subtracting median and dividing by median abs deviation."
 msgstr "Rescale by subtracting median and dividing by median abs deviation."
 
-#: transform.R:450
+#: transform.R:538
 msgid "Rescale %s."
 msgstr "Rescale %s."
 
-#: transform.R:485
+#: transform.R:590
 msgid "Rescale to [0,1]."
 msgstr "Rescale to [0,1]."
 
-#: transform.R:583
-msgid "Rescale to 0-100 within each group."
-msgstr "Rescale to 0-100 within each group."
+#: transform.R:692
+msgid "Rescale to 0-%s within each group."
+msgstr "Rescale to 0-%s within each group."
 
 #: help.R:599
 msgid ""
@@ -5395,7 +5427,7 @@ msgstr ""
 "package used in a number of cases. <<>> The By Group Transform segments and "
 "recodes a numeric variable to the 0-100 range."
 
-#: biclust.R:69 kmeans.R:122 rpart.R:510
+#: biclust.R:69 ewkm.R:66 kmeans.R:122 rpart.R:512
 msgid "Reset the random number seed to obtain the same results each time."
 msgstr "Reset the random number seed to obtain the same results each time."
 
@@ -5423,7 +5455,7 @@ msgstr "ROC Curve: requires the ROCR package."
 msgid "Roles noted. %d observations and %d input variables."
 msgstr "Roles noted. %d observations and %d input variables."
 
-#: rpart.R:687
+#: rpart.R:689
 msgid " Rule number: %s"
 msgstr " Rule number: %s"
 
@@ -5443,7 +5475,7 @@ msgstr "run kmeans multiple times"
 msgid "Sample"
 msgstr "Sample"
 
-#: rattle.R:2012
+#: rattle.R:2071
 msgid ""
 "Sampling is active but has not been Executed. Either ensure you Execute the "
 "sampling by clicking the Execute button on the Transform tab, or else de-"
@@ -5453,7 +5485,7 @@ msgstr ""
 "sampling by clicking the Execute button on the Transform tab, or else de-"
 "activate Sampling on the Data tab."
 
-#: rattle.R:2661
+#: rattle.R:2720
 msgid "save a plot to SVG format"
 msgstr "save a plot to SVG format"
 
@@ -5461,11 +5493,11 @@ msgstr "save a plot to SVG format"
 msgid "Save Project"
 msgstr "Save Project"
 
-#: rattle.R:2626
+#: rattle.R:2685
 msgid "Save the plot on device %d to a file."
 msgstr "Save the plot on device %d to a file."
 
-#: rattle.R:2625
+#: rattle.R:2684
 msgid "Save the plot to a file."
 msgstr "Save the plot to a file."
 
@@ -5481,7 +5513,7 @@ msgstr ""
 "Scale [0-1] maps the variable into the 0-1 range. The new variable will have "
 "a prefix of R01_."
 
-#: explore.R:3328 explore.R:3539
+#: explore.R:3328 explore.R:3538
 msgid "Scatter Plot"
 msgstr "Scatter Plot"
 
@@ -5513,11 +5545,11 @@ msgstr "Scores have been saved to the file %s"
 msgid "Scoring dataset using %s ..."
 msgstr "Scoring dataset using %s ..."
 
-#: rattle.R:2101
+#: rattle.R:2160
 msgid "secs"
 msgstr "secs"
 
-#: rattle.R:1394
+#: rattle.R:1452
 msgid ""
 "See the Help menu for extensive support in using Rattle. The Togaware "
 "Desktop Data Mining Survival Guide includes Rattle documentation and is "
@@ -5531,7 +5563,7 @@ msgstr ""
 msgid "Select a sample from the dataset to calculate the statistics."
 msgstr "Select a sample from the dataset to calculate the statistics."
 
-#: rattle.R:2375
+#: rattle.R:2434
 msgid "Send the plot on device %d to the printer."
 msgstr "Send the plot on device %d to the printer."
 
@@ -5547,7 +5579,7 @@ msgstr "Sensitivity/Specificity (tpr/tnr)"
 msgid "%s: Generate a Predicted v Observed plot for %s model on %s."
 msgstr "%s: Generate a Predicted v Observed plot for %s model on %s."
 
-#: explore.R:3907
+#: explore.R:3906
 msgid "Show the output of the analysis."
 msgstr "Show the output of the analysis."
 
@@ -5572,7 +5604,7 @@ msgstr ""
 msgid "Sort the entries."
 msgstr "Sort the entries."
 
-#: explore.R:3944
+#: explore.R:3943
 msgid "Start up latticist."
 msgstr "Start up latticist."
 
@@ -5584,9 +5616,9 @@ msgstr "Status"
 msgid "Status: %s"
 msgstr "Status: %s"
 
-#: rattle.R:413
-msgid "%s timestamp (for the error above):"
-msgstr "%s timestamp (for the error above):"
+#: rattle.R:415
+msgid "%s timestamp (for the message above):"
+msgstr "%s timestamp (for the message above):"
 
 #: explore.R:750 explore.R:2159
 msgid ""
@@ -5604,7 +5636,7 @@ msgstr "summarise missing values"
 msgid "Summarise multinomial model using Anova from the car package."
 msgstr "Summarise multinomial model using Anova from the car package."
 
-#: explore.R:3910
+#: explore.R:3909
 msgid "Summarise the importance of the components found."
 msgstr "Summarise the importance of the components found."
 
@@ -5612,7 +5644,7 @@ msgstr "Summarise the importance of the components found."
 msgid "Summarise the kurtosis of the numeric data."
 msgstr "Summarise the kurtosis of the numeric data."
 
-#: associate.R:212
+#: associate.R:225
 msgid "Summarise the resulting rule set."
 msgstr "Summarise the resulting rule set."
 
@@ -5620,15 +5652,15 @@ msgstr "Summarise the resulting rule set."
 msgid "Summarise the skewness of the numeric data."
 msgstr "Summarise the skewness of the numeric data."
 
-#: associate.R:216
+#: associate.R:233
 msgid "Summary of the Apriori Association Rules:"
 msgstr "Summary of the Apriori Association Rules:"
 
-#: associate.R:222
+#: associate.R:239
 msgid "Summary of the Execution of the Apriori Command:"
 msgstr "Summary of the Execution of the Apriori Command:"
 
-#: associate.R:219
+#: associate.R:236
 msgid "Summary of the Measures of Interestingness:"
 msgstr "Summary of the Measures of Interestingness:"
 
@@ -5648,7 +5680,7 @@ msgstr "Summary of the %s model (built using ksvm):"
 msgid "Summary of the %s model (built using '%s'):"
 msgstr "Summary of the %s model (built using '%s'):"
 
-#: rpart.R:538
+#: rpart.R:540
 msgid "Summary of the %s model for %s (built using '%s'):"
 msgstr "Summary of the %s model for %s (built using '%s'):"
 
@@ -5663,6 +5695,10 @@ msgstr "Summary of the %s %s model (built using %s):\n"
 #: survival.R:155
 msgid "Summary of the Survival model (built using %s):"
 msgstr "Summary of the Survival model (built using %s):"
+
+#: associate.R:230
+msgid "Summary of the Transactions:"
+msgstr "Summary of the Transactions:"
 
 #: ada.R:267
 msgid "Summary of the updated AdaBoost model:"
@@ -5716,7 +5752,7 @@ msgstr ""
 "can find vectors separating the classes. Rattle deploys ksvm from the "
 "kernlab package."
 
-#: transform.R:629
+#: transform.R:739
 msgid "Take a log transform of the variable - treat -Inf as NA."
 msgstr "Take a log transform of the variable - treat -Inf as NA."
 
@@ -5786,7 +5822,7 @@ msgstr ""
 "The attempt to query the ODBC connection failed. Please check that the DSN "
 "is correct. See the R Console for further details."
 
-#: associate.R:192
+#: associate.R:203
 msgid ""
 "The baskets appear to have repeated items, which causes an error when "
 "converting to transactions. Please pre-process your data to remove repeated "
@@ -5858,7 +5894,7 @@ msgstr ""
 "install.packages('randomForest',\n"
 "     repos='http://rattle.togaware.com')"
 
-#: rpart.R:524
+#: rpart.R:526
 msgid ""
 "The call to 'rpart' has a syntax error in the weights formula. The error "
 "message was:\n"
@@ -5966,7 +6002,7 @@ msgstr ""
 "performed in the Test tab. <<>> The fBasics package provides the "
 "correlationTest function to perform the correlation test."
 
-#: rpart.R:160
+#: rpart.R:162
 msgid "The corresponding rules have been listed."
 msgstr "The corresponding rules have been listed."
 
@@ -5978,7 +6014,7 @@ msgstr "The CSV file has been loaded: %s."
 msgid "The current project has been saved to '%s'"
 msgstr "The current project has been saved to '%s'"
 
-#: explore.R:3652
+#: explore.R:3651
 msgid ""
 "The data contains no missing values, and so no missing value correlation "
 "plot can be generated."
@@ -5986,7 +6022,7 @@ msgstr ""
 "The data contains no missing values, and so no missing value correlation "
 "plot can be generated."
 
-#: explore.R:3658
+#: explore.R:3657
 msgid ""
 "The data contains only one variable with missing values, and so no missing "
 "value correlation plot can be generated."
@@ -6014,7 +6050,7 @@ msgstr "The data is limited to the training dataset."
 msgid "The data plot has been generated."
 msgstr "The data plot has been generated."
 
-#: explore.R:3786
+#: explore.R:3785
 msgid ""
 "The dataset contains less than two numeric variables. \n"
 "\n"
@@ -6148,11 +6184,11 @@ msgstr ""
 "current variable. A Ctrl-Click will add the current variable to those "
 "selected."
 
-#: rpart.R:137
+#: rpart.R:139
 msgid "The decision tree has been plotted."
 msgstr "The decision tree has been plotted."
 
-#: transform.R:1794
+#: transform.R:1904
 msgid "The deletions from the dataset have been completed."
 msgstr "The deletions from the dataset have been completed."
 
@@ -6182,11 +6218,11 @@ msgstr ""
 "normally distributed samples is the same. <<>> The fBasics package provides "
 "the varianceTest function with the 'varf' method to perform the F-test."
 
-#: rattle.R:1926
+#: rattle.R:1984
 msgid "The function you activated (via %s) %s is not yet implemented."
 msgstr "The function you activated (via %s) %s is not yet implemented."
 
-#: transform.R:1284
+#: transform.R:1394
 msgid ""
 "The Indicator Variable transform can only be performed one variable at a "
 "time. Please select just one variable to transform."
@@ -6282,7 +6318,7 @@ msgstr ""
 "matrix. The total sum of the matrix is determined and each value is then "
 "divided by the total."
 
-#: hclust.R:566 kmeans.R:309 nnet.R:285 rpart.R:1070
+#: hclust.R:566 kmeans.R:309 nnet.R:285 rpart.R:1072
 msgid "The model has been exported to '%s'."
 msgstr "The model has been exported to '%s'."
 
@@ -6340,7 +6376,7 @@ msgstr ""
 msgid "The ODBC data has been loaded: %s."
 msgstr "The ODBC data has been loaded: %s."
 
-#: transform.R:925
+#: transform.R:1035
 msgid ""
 "The option to impute the %s for the categoric variable (%s) is not (yet) "
 "available."
@@ -6348,27 +6384,29 @@ msgstr ""
 "The option to impute the %s for the categoric variable (%s) is not (yet) "
 "available."
 
-#: rattle.R:1983
+#: rattle.R:2042
 msgid ""
-"The package '%s' is required to %s. It does not appear to be installed. A "
-"package can be installed with the following R command: \n"
+"The package '%s' is required to %s. It does not appear to be installed. This "
+"package (and its dependencies) can be installed using the following R "
+"command: \n"
 "\n"
 "install.packages('%s') \n"
 "\n"
-"This will allow access to use the full functionality of %s. \n"
+"This one-time install will allow access to the full functionality of %s. \n"
 "\n"
-"Would you like the package to be installed now?"
+"Would you like %s to install the package now?"
 msgstr ""
-"The package '%s' is required to %s. It does not appear to be installed. A "
-"package can be installed with the following R command: \n"
+"The package '%s' is required to %s. It does not appear to be installed. This "
+"package (and its dependencies) can be installed using the following R "
+"command: \n"
 "\n"
 "install.packages('%s') \n"
 "\n"
-"This will allow access to use the full functionality of %s. \n"
+"This one-time install will allow access to the full functionality of %s. \n"
 "\n"
-"Would you like the package to be installed now?"
+"Would you like %s to install the package now?"
 
-#: associate.R:468 model.R:1324
+#: associate.R:513 model.R:1324
 msgid "The PMML file '%s' has been written."
 msgstr "The PMML file '%s' has been written."
 
@@ -6456,7 +6494,7 @@ msgstr ""
 msgid "The R dataset is now available."
 msgstr "The R dataset is now available."
 
-#: rattle.R:2574
+#: rattle.R:2633
 msgid ""
 "There are currently no active graphics devices. So there is nothing to "
 "export! Please click the Execute button (or press F2) to obtain a plot to "
@@ -6502,7 +6540,7 @@ msgstr ""
 "possible values are referred to as the levels of the factor. <<>> numeric "
 "variable = A variable that has values that are integers or real numbers."
 
-#: transform.R:1130
+#: transform.R:1240
 msgid "There are more bins than observations."
 msgstr "There are more bins than observations."
 
@@ -6518,11 +6556,11 @@ msgstr "There is no dataset loaded, and so there is nothing to export."
 msgid "There is no Hierarchical Cluster yet we are trying to plot it."
 msgstr "There is no Hierarchical Cluster yet we are trying to plot it."
 
-#: rattle.R:396
+#: rattle.R:398
 msgid "The RGtk2 package did not find libglade installed. Please install it."
 msgstr "The RGtk2 package did not find libglade installed. Please install it."
 
-#: rattle.R:351
+#: rattle.R:353
 msgid "The RGtk2 package is not available but is required for the %s GUI."
 msgstr "The RGtk2 package is not available but is required for the %s GUI."
 
@@ -6574,7 +6612,7 @@ msgstr ""
 "curve has the false positive rate instead of Specificity, which is simply "
 "the count of false positives divided by the number of negatives (1-fnr)."
 
-#: rattle.R:953
+#: rattle.R:1006
 msgid "The setting of the filename box failed."
 msgstr "The setting of the filename box failed."
 
@@ -6582,7 +6620,7 @@ msgstr "The setting of the filename box failed."
 msgid "The %s file '%s' has been written."
 msgstr "The %s file '%s' has been written."
 
-#: model.R:935 rattle.R:2109
+#: model.R:935 rattle.R:2168
 msgid "The %s model has been built."
 msgstr "The %s model has been built."
 
@@ -6594,7 +6632,7 @@ msgstr "The %s model has been updated."
 msgid "The '%s' package provides the '%s' function."
 msgstr "The '%s' package provides the '%s' function."
 
-#: rattle.R:1689
+#: rattle.R:1747
 msgid ""
 "The specified SCORE file '%s' (sourced from the .Rattle file through the ."
 "RATTLE.SCORE.IN variable) does not exist. We will continue as if it had not "
@@ -6604,11 +6642,11 @@ msgstr ""
 "RATTLE.SCORE.IN variable) does not exist. We will continue as if it had not "
 "been speficied."
 
-#: explore.R:4138
+#: explore.R:4137
 msgid "The string '%s' was found."
 msgstr "The string '%s' was found."
 
-#: explore.R:4141
+#: explore.R:4140
 msgid "The string '%s' was not found."
 msgstr "The string '%s' was not found."
 
@@ -6624,7 +6662,7 @@ msgstr ""
 "\n"
 "Please rectify."
 
-#: rattle.R:572
+#: rattle.R:596
 msgid "The supplied CSV filename '%s' does not exist."
 msgstr "The supplied CSV filename '%s' does not exist."
 
@@ -6632,11 +6670,11 @@ msgstr "The supplied CSV filename '%s' does not exist."
 msgid "The supplied data is now available."
 msgstr "The supplied data is now available."
 
-#: rattle.R:2673
+#: rattle.R:2732
 msgid "The supplied filename extension '%s' is not supported."
 msgstr "The supplied filename extension '%s' is not supported."
 
-#: rpart.R:364
+#: rpart.R:366
 msgid ""
 "The supplied loss matrix (%s) needs to have %d values. Please enter that "
 "many values, comma separated."
@@ -6644,7 +6682,7 @@ msgstr ""
 "The supplied loss matrix (%s) needs to have %d values. Please enter that "
 "many values, comma separated."
 
-#: rpart.R:266
+#: rpart.R:268
 msgid ""
 "The supplied priors (%s) add up to %0.2f whereas they need to add up 1.00"
 msgstr ""
@@ -6658,7 +6696,7 @@ msgstr ""
 "The supplied priors (%s) add up to %0.2f whereas they need to add up 1.00. "
 "Please provide appropriate priors."
 
-#: ctree.R:66 rpart.R:258
+#: ctree.R:66 rpart.R:260
 msgid ""
 "The supplied priors (%s) need to correspond to the number of classes found "
 "in the target variable '%s'. Please supply exactly %d priors."
@@ -6676,7 +6714,7 @@ msgstr ""
 "correspond to the number of classes found in the target variable '%s'. "
 "Please supply exactly 1 or %d sample sizes."
 
-#: transform.R:1014
+#: transform.R:1124
 msgid ""
 "The supplied value of '%s' for the variable '%s' is not numeric. Please "
 "supply a numeric value."
@@ -6744,7 +6782,7 @@ msgstr ""
 "\n"
 "Please select a numeric variable."
 
-#: transform.R:431
+#: transform.R:519
 msgid ""
 "The variable '%s' has a median of 0. We cannot compute the Median/MAD "
 "Rescaler for this variable."
@@ -6826,11 +6864,11 @@ msgstr ""
 "building \n"
 "# a model, and simply using the transformations, as when scoring a dataset."
 
-#: rattle.R:3009
+#: rattle.R:3068
 msgid "This operation is not yet functional."
 msgstr "This operation is not yet functional."
 
-#: transform.R:1128
+#: transform.R:1238
 msgid "This variable is already a factor."
 msgstr "This variable is already a factor."
 
@@ -6846,11 +6884,11 @@ msgstr "Time"
 msgid "timestamp:"
 msgstr "timestamp:"
 
-#: model.R:620 rattle.R:2098
+#: model.R:620 rattle.R:2157
 msgid "Time taken: %0.2f %s"
 msgstr "Time taken: %0.2f %s"
 
-#: rattle.R:1736
+#: rattle.R:1794
 msgid ""
 "To Begin: Choose the data source, specify the details, then click the "
 "Execute button."
@@ -6858,7 +6896,7 @@ msgstr ""
 "To Begin: Choose the data source, specify the details, then click the "
 "Execute button."
 
-#: associate.R:380
+#: associate.R:425
 msgid "Top Rules"
 msgstr "Top Rules"
 
@@ -6870,23 +6908,23 @@ msgstr "train"
 msgid "Train"
 msgstr "Train"
 
-#: transform.R:1266
+#: transform.R:1376
 msgid "Transform into a factor."
 msgstr "Transform into a factor."
 
-#: transform.R:1272
+#: transform.R:1382
 msgid "Transform into a numeric."
 msgstr "Transform into a numeric."
 
-#: transform.R:802
+#: transform.R:912
 msgid "Transform variables by imputing missing values."
 msgstr "Transform variables by imputing missing values."
 
-#: transform.R:361
+#: transform.R:436
 msgid "Transform variables by rescaling."
 msgstr "Transform variables by rescaling."
 
-#: rpart.R:157
+#: rpart.R:159
 msgid "Tree as rules:"
 msgstr "Tree as rules:"
 
@@ -6914,7 +6952,7 @@ msgstr ""
 "Tried building an rpart model with option not one of build/tune/best. This "
 "should not be possible."
 
-#: rpart.R:406
+#: rpart.R:408
 msgid "tune decision trees"
 msgstr "tune decision trees"
 
@@ -6926,11 +6964,11 @@ msgstr "Tuning %s model ..."
 msgid "Tuning %s model ... failed"
 msgstr "Tuning %s model ... failed"
 
-#: transform.R:1254
+#: transform.R:1364
 msgid "Turn a factor into indicator variables."
 msgstr "Turn a factor into indicator variables."
 
-#: transform.R:1260
+#: transform.R:1370
 msgid "Turn two factors into one factor."
 msgstr "Turn two factors into one factor."
 
@@ -7016,7 +7054,7 @@ msgstr "update the AdaBoost model"
 msgid "Update the adaboost model."
 msgstr "Update the adaboost model."
 
-#: rattle.R:555
+#: rattle.R:579
 msgid ""
 "URLs for the CSV filename are not currently supported. \n"
 "\n"
@@ -7032,7 +7070,7 @@ msgstr ""
 "We will continue but you will need to choose a data file to load using the "
 "Filename button."
 
-#: rattle.R:2473
+#: rattle.R:2532
 msgid "Use a Japanese font for the plots."
 msgstr "Use a Japanese font for the plots."
 
@@ -7044,7 +7082,7 @@ msgstr "use Anova to evaluate a mulitnomial model"
 msgid "Use the fBasics package for statistical tests."
 msgstr "Use the fBasics package for statistical tests."
 
-#: explore.R:3816
+#: explore.R:3815
 msgid "using"
 msgstr "using"
 
@@ -7060,7 +7098,7 @@ msgstr "Value: %s"
 msgid "Variable"
 msgstr "Variable"
 
-#: explore.R:3814
+#: explore.R:3813
 msgid "Variable Correlation Clusters"
 msgstr "Variable Correlation Clusters"
 
@@ -7072,7 +7110,7 @@ msgstr "Variable Importance"
 msgid "Variable Importance has been plotted."
 msgstr "Variable Importance has been plotted."
 
-#: rattle.R:1011 zzz.R:223
+#: rattle.R:1064 zzz.R:223
 msgid "Version"
 msgstr "Version"
 
@@ -7084,11 +7122,11 @@ msgstr "view data in a spreadsheet"
 msgid "view documentation for '%s'"
 msgstr "view documentation for '%s'"
 
-#: transform.R:1150 transform.R:1169
+#: transform.R:1260 transform.R:1279
 msgid "Warning: the variable is not considered.\n"
 msgstr "Warning: the variable is not considered.\n"
 
-#: transform.R:1728
+#: transform.R:1838
 msgid ""
 "We are about to delete %d entities from the in-memory dataset. These have "
 "missing values for some of the non-Ignore variables.\n"
@@ -7100,7 +7138,7 @@ msgstr ""
 "\n"
 "Are you sure you want to delete these entities?"
 
-#: transform.R:1754
+#: transform.R:1864
 msgid ""
 "We are about to delete the following variables from the in-memory dataset. "
 "This will permanently remove them from the memory copy of the data, but will "
@@ -7132,11 +7170,11 @@ msgstr ""
 "\n"
 "Would you like to proceed?"
 
-#: transform.R:777
+#: transform.R:887
 msgid "We cannot impute the %s for a categoric variable. Ignoring: %s."
 msgstr "We cannot impute the %s for a categoric variable. Ignoring: %s."
 
-#: transform.R:297
+#: transform.R:396
 msgid "We cannot rescale using '%s' on a categoric variable. Ignoring: %s."
 msgstr "We cannot rescale using '%s' on a categoric variable. Ignoring: %s."
 
@@ -7186,11 +7224,11 @@ msgstr "Weights in use."
 msgid "Weights: %s"
 msgstr "Weights: %s"
 
-#: rattle.R:1379
+#: rattle.R:1437
 msgid "Welcome to Rattle (rattle.togaware.com)."
 msgstr "Welcome to Rattle (rattle.togaware.com)."
 
-#: transform.R:335
+#: transform.R:430
 msgid ""
 "We must have a numeric variable to normalize for the By Group option.\n"
 "\n"
@@ -7200,7 +7238,7 @@ msgstr ""
 "\n"
 "Please select one numeric variable."
 
-#: transform.R:346
+#: transform.R:380
 msgid ""
 "We only support By Group with a single categoric variable for now.\n"
 "\n"
@@ -7220,15 +7258,15 @@ msgstr ""
 "idents. We found: %s\n"
 "\n"
 
-#: transform.R:647
+#: transform.R:757
 msgid "When scoring transform using the training data parameters."
 msgstr "When scoring transform using the training data parameters."
 
-#: transform.R:1034
+#: transform.R:1144
 msgid "When scoring, transform using the training data parameters:"
 msgstr "When scoring, transform using the training data parameters:"
 
-#: transform.R:1497
+#: transform.R:1607
 msgid "When scoring, use the training data parameters to bin new data."
 msgstr "When scoring, use the training data parameters to bin new data."
 
@@ -7296,7 +7334,7 @@ msgstr ""
 "accept the alternative hypothesis, that the distributions differ, at the \n"
 "95% level of confidence."
 
-#: kmeans.R:188 kmeans.R:197
+#: ewkm.R:105 ewkm.R:114 kmeans.R:188 kmeans.R:197
 msgid "Within cluster sum of squares:"
 msgstr "Within cluster sum of squares:"
 
@@ -7346,7 +7384,7 @@ msgstr ""
 "test dataset, or else load a separate test dataset from a CSV File or a pre-"
 "existing R Dataset here."
 
-#: associate.R:335
+#: associate.R:352 associate.R:380
 msgid ""
 "You first need to generate the association rules. Perhaps you need to click "
 "the Execute button."
@@ -7400,7 +7438,7 @@ msgstr ""
 "\n"
 " Do you wish to continue, and overwrite the current project?"
 
-#: explore.R:3634
+#: explore.R:3633
 msgid ""
 "You have requested a Correlation plot. \n"
 "\n"
@@ -7468,11 +7506,11 @@ msgstr ""
 "This is unusual since it is both an input variable and used to weight the "
 "outputs. It is suggested that you ignore this variable."
 
-#: kmeans.R:511 random_forest.R:584 rpart.R:161
+#: kmeans.R:511 random_forest.R:584 rpart.R:163
 msgid "You may need to scroll the textview to view them."
 msgstr "You may need to scroll the textview to view them."
 
-#: associate.R:261
+#: associate.R:278
 msgid ""
 "You need to specify a Target variable in the Data tab. This vairable then "
 "identifies the items associated with each basket or transaction in the "
@@ -7943,6 +7981,10 @@ msgstr "Iterate over the number of clusters, up to the number specified above."
 msgid "List the decision trees in the textview."
 msgstr "List the decision trees in the textview."
 
+#: tooltips.xml:associate_rules_button
+msgid "List the rules textually in the text view."
+msgstr "List the rules textually in the text view."
+
 #: tooltips.xml:data_corpus_radiobutton
 msgid "Load a collection of documents for text mining."
 msgstr "Load a collection of documents for text mining."
@@ -8046,6 +8088,10 @@ msgstr "Plot distribution of only the negative values."
 #: tooltips.xml:benford_pos_radiobutton
 msgid "Plot distribution of only the positive values."
 msgstr "Plot distribution of only the positive values."
+
+#: tooltips.xml:associate_plot_button
+msgid "Plot each rule showing the support, confidence and the lift."
+msgstr "Plot each rule showing the support, confidence and the lift."
 
 #: tooltips.xml:rf_errors_button
 msgid ""
@@ -8185,6 +8231,12 @@ msgstr ""
 msgid "Rescale so that the mean is 0 and the standard deviation is 1."
 msgstr "Rescale so that the mean is 0 and the standard deviation is 1."
 
+#: tooltips.xml:normalise_interval_radiobutton
+msgid ""
+"Rescale to an integer in the range 0 to 99 (using the default of 100 groups)."
+msgstr ""
+"Rescale to an integer in the range 0 to 99 (using the default of 100 groups)."
+
 #: tooltips.xml:normalise_scale01_radiobutton
 msgid "Rescale to the range 0-1."
 msgstr "Rescale to the range 0-1."
@@ -8304,14 +8356,6 @@ msgstr ""
 "'/' will create a training and testing dataset. Three numbers separated by "
 "'/' will create a training, validation, and testing dataset, in that order. "
 "The numbers are percentages, and must add up to 100."
-
-#: tooltips.xml:normalise_bygroup_radiobutton
-msgid ""
-"Specify two variables (numeric + categoric) and group by the categoric to "
-"normalise the numeric between 0 and 100."
-msgstr ""
-"Specify two variables (numeric + categoric) and group by the categoric to "
-"normalise the numeric between 0 and 100."
 
 #: tooltips.xml:new_button
 msgid "Start a new project."

@@ -33,6 +33,7 @@ source("help.R")
 source("survival.R")
 source("biclust.R")
 source("clara.R")
+source("ewkm.R")
 
 source("pmml.R")
 source("pmml.arules.R")

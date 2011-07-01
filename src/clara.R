@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-21 21:59:21 Graham Williams>
+# Time-stamp: <2011-06-23 21:17:19 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -36,7 +36,7 @@
 on_clara_radiobutton_toggled <- function(button)
 {
   if (button$getActive())
-    crv$CLUSTER$setCurrentPage(crv$CLUSTER.BICLUST.TAB)
+    crv$CLUSTER$setCurrentPage(crv$CLUSTER.CLARA.TAB)
   setStatusBar()
 }
 

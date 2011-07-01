@@ -37,6 +37,10 @@
     tool.</tooltip>
   <tooltip widget="data_rdataset_radiobutton">Associate a pre-existing
     R dataset for use.</tooltip>
+  <tooltip widget="associate_rules_button">List the rules textually
+    in the text view.</tooltip>
+  <tooltip widget="associate_plot_button">Plot each rule showing the
+    support, confidence and the lift.</tooltip>
   <tooltip widget="data_library_radiobutton">Choose one of the
     datasets supplied by any of the installed R packages.</tooltip>
   <tooltip widget="data_rdata_radiobutton">Load data from a R
@@ -216,9 +220,8 @@
     1.</tooltip>
   <tooltip widget="normalise_scale01_radiobutton">Rescale to the range
     0-1.</tooltip>
-  <tooltip widget="normalise_bygroup_radiobutton">Specify two
-    variables (numeric + categoric) and group by the categoric
-    to normalise the numeric between 0 and 100.</tooltip>
+  <tooltip widget="normalise_interval_radiobutton">Rescale to an integer
+    in the range 0 to 99 (using the default of 100 groups).</tooltip>
   <tooltip widget="normalise_rank_radiobutton">Change the values into
     a rank order.</tooltip>
   <tooltip widget="normalise_recenter_radiobutton">Rescale so that the

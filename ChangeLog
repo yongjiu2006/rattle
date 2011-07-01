@@ -1,3 +1,21 @@
+rattle (2.6.7) unstable; urgency=low
+
+  * Add support for the entropy weighted k-means subspace clustering
+    algorithm from the ewkm package.
+  
+  * Ensure rattle can load with only the base package installed (so
+    install.packages is prefixed with utils:::).
+  
+  * Add an experimental dataset option to the command line call to rattle.
+  
+  * Allow a bygroup to be used for any numeric transform.
+  
+  * Add a plot for association rules.
+  
+  * Display a ggplot2 scatterplot if advanced plots is enabled.
+
+ --
+
 rattle (2.6.6) unstable; urgency=low
 
   * Settings/Tooltips should be shown as TRUE.

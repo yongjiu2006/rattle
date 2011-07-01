@@ -78,6 +78,7 @@ R_SOURCE = \
 	src/execute.R \
 	src/explore.R \
 	src/export.R \
+	src/ewkm.R \
 	src/hclust.R \
 	src/help.R \
 	src/kmeans.R \
