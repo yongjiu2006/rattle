@@ -7,15 +7,15 @@ Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
 Depends: R (>= 2.8.0)
 Suggests: RGtk2, pmml (>= 1.2.13), bitops, colorspace, 
-  ada, amap, arules, biclust, cairoDevice,
-  cba, descr, doBy, e1071, ellipse, ewkm, fEcofin, 
+  ada, amap, arules, arulesViz, biclust, cairoDevice,
+  cba, descr, doBy, e1071, ellipse, fEcofin, 
   fBasics, foreign, fpc, gdata, gtools, gplots, 
   gWidgetsRGtk2, Hmisc, kernlab, latticist, Matrix, mice, network, 
-  nnet, odfWeave, party, partyViz, playwith, psych, 
+  nnet, odfWeave, party, playwith, psych, 
   randomForest, RBGL, RColorBrewer, 
   reshape, rggobi,
   RGtk2Extras, ROCR, RODBC, rpart, rpart.plot, RSvgDevice, 
-  survival, timeDate, XML,
+  siatclust, survival, timeDate, XML,
   grid, pkgDepTools, Rgraphviz
 Description: Rattle (the R Analytic Tool To Learn Easily) provides a 
   Gnome (RGtk2) based interface to R functionality for data mining. 

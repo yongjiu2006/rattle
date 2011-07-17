@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-06-24 06:11:13 Graham Williams>
+# Time-stamp: <2011-07-17 19:34:37 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -97,20 +97,35 @@ executeClusterEwkm <- function(include)
   means.cmd <- sprintf("mean(%s)", ds)
   centres.cmd <- "crs$kmeans$centers"
   withinss.cmd <- "crs$kmeans$withinss"
+  weights.cmd <- "round(crs$kmeans$weights, 2)"
     
   startLog(Rtxt("Report on the cluster characteristics."))
   appendLog(Rtxt("Cluster sizes:"), size.cmd)
   appendLog(Rtxt("Data means:"), means.cmd)
   appendLog(Rtxt("Cluster centers:"), centres.cmd)
+  appendLog(Rtxt("Cluster weights:"), weights.cmd)
   appendLog(Rtxt("Within cluster sum of squares:"), withinss.cmd)
 
   resetTextview(TV)
-  setTextview(TV, Rtxt("Cluster sizes:"), "\n\n",
+  setTextview(TV,
+              sprintf(Rtxt("EWKM: %d clusters, %d iterations,",
+                           "%d restarts, %d total iterations."),
+                      length(crs$kmeans$size),
+                      crs$kmeans$iterations,
+                      crs$kmeans$restarts,
+                      crs$kmeans$total.iterations),
+              "\n\n",
+              ifelse(crs$kmeans$restarts > 2,
+                     Rtxt("With that many restarts you may want to",
+                          "reduce the number of clusters.\n\n"), ""),
+              Rtxt("Cluster sizes:"), "\n\n",
               collectOutput(size.cmd, TRUE),
               "\n\n", Rtxt("Data means:"), "\n\n",
               collectOutput(means.cmd),
               "\n\n", Rtxt("Cluster centers:"), "\n\n",
               collectOutput(centres.cmd, TRUE),
+              "\n\n", Rtxt("Cluster weights:"), "\n\n",
+              collectOutput(weights.cmd, TRUE),
               "\n\n", Rtxt("Within cluster sum of squares:"), "\n\n",
               collectOutput(withinss.cmd, TRUE),
               "\n")

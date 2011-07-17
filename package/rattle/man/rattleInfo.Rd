@@ -2,16 +2,16 @@
 \alias{rattleInfo}
 \title{
 
-  Print version information for Rattle, R, associated packages and
-  system, and invisibly return list of packages that have updates
-  available.
+  Extract Rattle and related package information.
 
 }
 \description{
 
   Display system information, including versions of Rattle and R,
-  operating system, and other packages used by Rattle. Useful for
-  reporting bugs.
+  operating system, and versions of other packages used by
+  Rattle. Useful for reporting bugs but also invisibly returns a list of
+  packages that have updates available and can be passed to
+  install.packages().
 
 }
 \usage{

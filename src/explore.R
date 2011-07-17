@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-05-29 16:21:32 Graham Williams>
+# Time-stamp: <2011-07-10 07:05:36 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -480,7 +480,7 @@ executeExplorePlot <- function(dataset,
                                dotplots = getSelectedVariables("dotplot"),
                                mosplots = getSelectedVariables("mosplot"),
                                stratify=TRUE, sampling=NULL,
-                               target=crs$target)
+                               target=crs$target, newplot=TRUE)
 {
   # Plot the data. The DATASET is a character string that defines the
   # dataset to use. Information about what variables to plot and the
@@ -752,7 +752,7 @@ executeExplorePlot <- function(dataset,
                 paste("ds <-", cmd))
       ds <- eval(parse(text=cmd))
 
-      if (pcnt %% pmax == 0) newPlot(pmax)
+      if (newplot && pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
 
       this.plot.cmd <- sprintf(plot.cmd, boxplots[s])
@@ -952,7 +952,7 @@ executeExplorePlot <- function(dataset,
           maxy <- max(c(maxy, dens$y*rs))
         }
 
-      if (pcnt %% pmax == 0) newPlot(pmax)
+      if (newplot && pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
       # Determine whether to plot a histogram of the numeric data or
@@ -1035,7 +1035,7 @@ executeExplorePlot <- function(dataset,
       
       plot.cmd <- paste('Ecdf(ds[ds$grp=="All",1],',
                         sprintf('col="%s",', col[1]),
-                        'xlab="%s",',
+                        'xlab="%s", lwd=2,',
                         sprintf('ylab=expression(%s <= x),', Rtxt("Proportion")),
                         'subtitles=FALSE)\n')
       if (not.null(targets))
@@ -1044,7 +1044,7 @@ executeExplorePlot <- function(dataset,
           plot.cmd <- paste(plot.cmd,
                             sprintf('Ecdf(ds[ds$grp=="%s",1], ', targets[t]),
                             sprintf('col="%s", lty=%d, ', col[t+1], t+1),
-                            'xlab="", subtitles=FALSE, add=TRUE)\n',
+                            'xlab="", lwd=2, subtitles=FALSE, add=TRUE)\n',
                             sep="")
         }
 
@@ -1055,7 +1055,7 @@ executeExplorePlot <- function(dataset,
 
       if (not.null(targets))
         legend.cmd <- sprintf(paste('legend("bottomright", c(%s), bty="n", ',
-                                   cols, ", lty=1:%d,",
+                                   cols, ", lwd=2, lty=1:%d,",
                                    'inset=c(0.05,0.05))'),
                              paste(sprintf('"%s"', c("All", targets)),
                                    collapse=","),
@@ -1073,7 +1073,7 @@ executeExplorePlot <- function(dataset,
                 paste("ds <-", cmd))
        ds <- eval(parse(text=cmd))
 
-      if (pcnt %% pmax == 0) newPlot(pmax)
+      if (newplot && pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
 
       if (! packageIsAvailable("Hmisc", Rtxt("plot cumulative charts"))) break()
@@ -1245,7 +1245,7 @@ executeExplorePlot <- function(dataset,
                   paste("ds <-", data.cmd))
         ds <- eval(parse(text=data.cmd))
 
-        if (pcnt %% pmax == 0) newPlot(pmax)
+        if (newplot && pcnt %% pmax == 0) newPlot(pmax)
         pcnt <- pcnt + 1
 
         par(xpd=TRUE)
@@ -1349,7 +1349,7 @@ executeExplorePlot <- function(dataset,
           appendLog(Rtxt("Ensure rows with no digits are treated as zeros."), nan.cmd)
           ds[is.nan(ds)] <- 0
           
-          if (pcnt %% pmax == 0) newPlot(pmax)
+          if (newplot && pcnt %% pmax == 0) newPlot(pmax)
           pcnt <- pcnt + 1
 
           par(xpd=TRUE)
@@ -1472,7 +1472,7 @@ executeExplorePlot <- function(dataset,
         ## can extend to it. We save the output from barplot2 in order
         ## to add numbers to the plot.
     
-        if (pcnt %% pmax == 0) newPlot(pmax)
+        if (newplot && pcnt %% pmax == 0) newPlot(pmax)
         pcnt <- pcnt + 1
 
         #if (is.null(target))
@@ -1772,7 +1772,7 @@ executeExplorePlot <- function(dataset,
         
       # Construct and evaluate the command to plot the distribution.
     
-      if (pcnt %% pmax == 0) newPlot(pmax)
+      if (newplot && pcnt %% pmax == 0) newPlot(pmax)
       pcnt <- pcnt + 1
       
       titles <- genPlotTitleCmd(generateTitleText(dotplots[s], target,
@@ -1850,7 +1850,7 @@ executeExplorePlot <- function(dataset,
     # Construct and evaluate the command to plot the
     # distribution.
     
-    if (pcnt %% pmax == 0) newPlot(pmax)
+    if (newplot && pcnt %% pmax == 0) newPlot(pmax)
     pcnt <- pcnt + 1
 
     if (sampling)
@@ -3586,7 +3586,7 @@ executeExploreGGobi <- function(dataset, name=NULL)
   setStatusBar(Rtxt("GGobi executed."))
 }
 
-executeExploreCorrelation <- function(dataset)
+executeExploreCorrelation <- function(dataset, newplot=TRUE)
 {
   TV <- "correlation_textview"
 
@@ -3738,7 +3738,7 @@ executeExploreCorrelation <- function(dataset)
                                      print.cmd,
                                      sep="\n")))
 
-  newPlot()
+  if (newplot) newPlot()
   eval(parse(text=paste(crscor.cmd,
                if (ordered) crsord.cmd,
                plot.cmd,
