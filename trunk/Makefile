@@ -1,5 +1,10 @@
 # See INSTRUCTIONS
 
+help:
+	@echo "\n\
+	build\trattle_x.x.x.{tar.gz,zip} and install in local R\n\
+	"
+
 #-----------------------------------------------------------------------
 # General Locations
 
@@ -46,15 +51,11 @@ RVER=$(shell R --version | head -1 | cut -d" " -f3 | sed 's|\..$||')
 REPOSITORY=repository
 
 # Canonical version information from rattle.R
-MAJOR=$(shell egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
-MINOR=$(shell egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
 SVNREVIS=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2)
-#REVISION=$(shell svn info | egrep 'Revision:' |  cut -d" " -f 2\
-#            | awk '{print $$1-480}')
-REVISION=$(shell egrep '^REVISION' src/rattle.R | cut -d\" -f 2)
-VERSION=$(MAJOR).$(MINOR).$(REVISION)
+VERSION=$(shell head -1 ChangeLog | cut -d' ' -f 2 | tr -d '\(\)')
 VDATE=$(shell svn info |grep 'Last Changed Date'| cut -d"(" -f2 | sed 's|)||'\
 	   | sed 's|^.*, ||')
+TODAY=$(shell date +%Y-%m-%d)
 IDATE=$(shell date +%m%d%y)
 
 IVERSION=$(shell egrep 'VERSION <- "' src/rstat.R | cut -d \" -f 2)
@@ -353,8 +354,8 @@ rattle_src.zip:
 
 rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	rm -f package/rattle/R/*
-	perl -pi -e "s|^VERSION.DATE <- .*$$|VERSION.DATE <- \"Released $(VDATE)\"|" \
-		src/rattle.R
+	perl -pi -e  's|VERSION <- .*$$|VERSION <- "$(VERSION)"|' src/rattle.R
+	perl -pi -e  's|DATE <- .*$$|DATE <- "$(TODAY)"|' src/rattle.R
 	perl -pi -e "s|Revision: [0-9]*|Revision: $(SVNREVIS)|" \
 		src/rattle.R
 	perl -pi -e "s|^PACKAGEID <- \"13_.*$$|PACKAGEID <- \"11_$(IDATE)\"|" \

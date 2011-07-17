@@ -267,6 +267,8 @@
     ways.</tooltip>
   <tooltip widget="kmeans_radiobutton">Generate clusters using a
     kmeans algorithm.</tooltip>
+  <tooltip widget="ewkm_radiobutton">Generate clusters using a
+    kmeans algorithm with subspaces using entropy weighting.</tooltip>
   <tooltip widget="hclust_radiobutton">Build an agglomerative
     hierarchical cluster.</tooltip>
   <tooltip widget="biclust_radiobutton">Cluster by identifying

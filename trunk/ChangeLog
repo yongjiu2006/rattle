@@ -6,6 +6,9 @@ rattle (2.6.7) unstable; urgency=low
   * Ensure rattle can load with only the base package installed (so
     install.packages is prefixed with utils:::).
   
+  * Migrate from using installed.pacakges() since it can be very slow on
+    MS/Windows.
+  
   * Add an experimental dataset option to the command line call to rattle.
   
   * Allow a bygroup to be used for any numeric transform.
@@ -14,6 +17,13 @@ rattle (2.6.7) unstable; urgency=low
   
   * Display a ggplot2 scatterplot if advanced plots is enabled.
 
+  * rattle:::executeExplorePlot made more friendly for calling from
+    outside of Rattle.
+  
+  * Tidy up the rattleInfo manual page.
+  
+  * Master Makefile should respond with help if no target specified.
+    
  --
 
 rattle (2.6.6) unstable; urgency=low

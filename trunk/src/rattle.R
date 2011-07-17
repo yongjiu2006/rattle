@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-01 19:09:16 Graham Williams>
+# Time-stamp: <2011-07-18 06:01:23 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,13 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-MAJOR <- "2"
-MINOR <- "6"
-GENERATION <- unlist(strsplit("$Revision$", split=" "))[2]
-#REVISION <- as.integer(GENERATION)-480 # 101120 Wiki page changes update revision!
-REVISION <- "7"
-VERSION <- paste(MAJOR, MINOR, REVISION, sep=".")
-VERSION.DATE <- "Released 1 Jul 2011"
+VERSION <- "2.6.7"
+DATE <- "2011-07-18"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -156,6 +151,9 @@ rattleInfo <- function(all.dependencies=FALSE,
                        include.not.available=FALSE,
                        include.libpath=FALSE)
 {
+  # Alternatives include:
+  # http://mirror.aarnet.edu.au/pub/CRAN/
+
   iv <- utils:::installed.packages()
   av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
   
@@ -174,6 +172,7 @@ rattleInfo <- function(all.dependencies=FALSE,
 
   if (all.dependencies)
   {
+    cat("  please wait a few seconds whilst all dependencies are searched for...")
     # This version removes the suggests.only and uses all of Depends,
     # Import, and Suggests.
     makeDepGraph <- function (repList, type = getOption("pkgType"), 
@@ -245,6 +244,7 @@ rattleInfo <- function(all.dependencies=FALSE,
       cran.deps <- makeDepGraph(cran.repos, type="source", dosize=TRUE)
 
     deps <- c("rattle", names(acc(cran.deps, "rattle")[[1]]))
+    cat("\n")
   }    
   else
     deps <- strsplit(gsub("\\n", " ",
@@ -266,7 +266,7 @@ rattleInfo <- function(all.dependencies=FALSE,
     }
     else
       cat(sprintf("%s: version %s%s%s%s", p, iv[p,"Version"],
-                  ifelse(iv[p,"Version"] != av[p,"Version"],
+                  ifelse(compareVersion(av[p,"Version"], iv[p,"Version"]) == 1,
                          {
                            up <- c(up, p);
                            sprintf(" upgrade available %s", av[p,"Version"])
@@ -276,11 +276,28 @@ rattleInfo <- function(all.dependencies=FALSE,
                   "\n"))
   }
 
+  cat("\nThat was", length(deps), "packages.\n")
+  
   if (! is.null(up))
-    cat(sprintf(paste('\nUpgrade the packages with either:\n\n ',
+    cat(sprintf(paste('\nUpgrade the packages with either',
+                      'of the following commands:\n\n ',
                       '> install.packages(c("%s"))\n\n ',
-                      '> install.packages(rattleInfo())\n\n'),
-                paste(up, collapse='", "')))
+                      '> install.packages(rattleInfo(%s%s%s%s%s%s%s))\n\n'),
+                paste(strwrap(paste(up, collapse='", "'),
+                              width=60, exdent=23), collapse="\n"),
+                ifelse(all.dependencies, "all.dependencies=TRUE", ""),
+                ifelse(all.dependencies &&
+                       (include.not.installed ||
+                        include.not.available ||
+                        include.libpath), ", ", ""),
+                ifelse(include.not.installed, "include.not.installed=TRUE", ""),
+                ifelse(include.not.installed &&
+                       (include.not.available ||
+                        include.libpath), ", ", ""),
+                ifelse(include.not.available, "include.not.available=TRUE", ""),
+                ifelse(include.not.available &&
+                       include.libpath, ", ", ""),
+                ifelse(include.libpath, "include.libpath=TRUE", "")))
 
   invisible(up)
 
@@ -1954,7 +1971,7 @@ errorDialog <- function(...)
 
 questionDialog <- function(...)
 {
-  if ("RGtk2" %in% rownames(utils:::installed.packages()))
+  if (package.installed("RGtk2"))
   {
     require(RGtk2)
     dialog <- gtkMessageDialogNew(NULL, "destroy-with-parent", "question",
@@ -2029,6 +2046,16 @@ variablesHaveChanged <- function(action)
     return(FALSE)
 }
 
+# 110703: I used to test if the package name was in the result from
+# installed.packages(), but as Brian Ripley points out and from the
+# man page for the function, installed.packages() is very slow on
+# MS/Windows and on networked file systems as it touches a couple
+# files for each package, and with over a thousand packages installed
+# that will be a lot of files. So simply check for the package using
+# system.file().
+
+package.installed <- function(package) nchar(system.file(package=package)) > 0
+  
 packageIsAvailable <- function(pkg, msg=NULL)
 {
   appname <- ifelse(exists("crv"), crv$appname, "Rattle")
@@ -2041,7 +2068,7 @@ packageIsAvailable <- function(pkg, msg=NULL)
                            "the full functionality of %s.",
                            "\n\nWould you like %s to install the package now?"),
                       pkg, msg, pkg, appname, appname)
-  if (pkg %notin% rownames(utils:::installed.packages()))
+  if (! package.installed(pkg))
   {
     if (not.null(msg))
       if (questionDialog(localmsg))
@@ -3126,7 +3153,7 @@ on_about_menu_activate <-  function(action, window)
 configureAbout <- function(ab)
 {
   ab["program-name"] <- "Rattle"
-  ab$setCopyright(paste(VERSION.DATE, "\n\n", COPYRIGHT, "\n" ,
+  ab$setCopyright(paste(DATE, "\n\n", COPYRIGHT, "\n" ,
                         Rtxt("All rights reserved.")))
 }
 

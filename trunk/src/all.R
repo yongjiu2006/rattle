@@ -1,5 +1,5 @@
 #options(error=recover) # Any errors will invoke recover() for debugging
-#options(error=browser) # Any errors will invoke recover() for debugging
+#options(error=browser) # Any errors will invoke browser() for debugging
 #options(error=NULL) # Turn it off
 #options(warn=2) # For development treat any warnings as errors
 
