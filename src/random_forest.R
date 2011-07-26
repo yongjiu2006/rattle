@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 17:51:59 Graham Williams>
+# Time-stamp: <2011-07-26 21:12:49 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -489,10 +489,15 @@ plotRandomForestImportance <- function()
                 crv$support.msg)
     return()
   }
+
+  if (class(crs$rf) %in% "RandomForest")
+    if (!packageIsAvailable("ggplot2", Rtxt("display the conditional forest var importance")))
+      return()
   
   newPlot()
   if (class(crs$rf) %in% "RandomForest")
     plot.cmd <- paste('set.seed(crv$seed)',
+                      '\nrequire(ggplot2)',
                       '\nv <- varimp(crs$rf)',
                       '\nvimp <- data.frame(Variable=as.character(names(v)),',
                       '\n                   Importance=v,',

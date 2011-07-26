@@ -278,13 +278,13 @@ install: # build pbuild ibuild zip rattle_src.zip # check pcheck
 # 100123 Updated the build process
 
 check: #build
-	R CMD check $(PACKAGE)
+	R CMD check --check-subdirs=yes $(PACKAGE)
 
 pcheck: #pbuild
-	R CMD check $(PPACKAGE)
+	R CMD check --check-subdirs=yes $(PPACKAGE)
 
 icheck: #ibuild
-	R CMD check $(IPACKAGE)
+	R CMD check --check-subdirs=yes $(IPACKAGE)
 
 ucheck: #build
 	sh ./upload_uwe.sh

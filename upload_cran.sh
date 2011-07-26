@@ -1,12 +1,8 @@
 #
 # Auto upload to MS/Windows R Check
 
-MAJOR=$(egrep '^MAJOR' src/rattle.R | cut -d\" -f 2)
-MINOR=$(egrep '^MINOR' src/rattle.R | cut -d\" -f 2)
-#SVNREVIS=$(svn info | egrep 'Revision:' |  cut -d" " -f 2)
-#REVISION=$(svn info | egrep 'Revision:' |  cut -d" " -f 2 | awk '{print $1-480}')
-REVISION=$(egrep '^REVISION' src/rattle.R | cut -d\" -f 2)
-LATEST=rattle_${MAJOR}.${MINOR}.${REVISION}.tar.gz
+VERSION=$(head -1 ChangeLog | cut -d' ' -f 2 | tr -d '\(\)')
+LATEST=rattle_${VERSION}.tar.gz
 
 echo "Upload 'repository/${LATEST}' to CRAN."
 
