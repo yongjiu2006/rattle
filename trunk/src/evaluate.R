@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-20 18:50:21 Graham Williams>
+# Time-stamp: <2011-07-26 21:52:39 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -874,7 +874,9 @@ executeEvaluateTab <- function()
       else
         probcmd[[crv$RPART]] <- sprintf("%s", predcmd[[crv$RPART]])
     else # ctree
-      probcmd[[crv$RPART]] <- sprintf("%s", predcmd[[crv$RPART]])
+      probcmd[[crv$RPART]] <- sub(')$', '), function(x) x[2])',
+                                  sub("predict", "sapply(treeresponse",
+                                      predcmd[[crv$RPART]]))
 
     if (multinomialTarget())
     {
@@ -917,8 +919,13 @@ executeEvaluateTab <- function()
     if (numericTarget())
       probcmd[[crv$RF]] <- predcmd[[crv$RF]]
     else
-      probcmd[[crv$RF]] <- sprintf("%s[,2]",
-                                   gsub(")$", ', type="prob")', predcmd[[crv$RF]]))
+      if ("RandomForest" %in% class(crs$rf))
+        probcmd[[crv$RF]] <- sub(')$', '), function(x) x[2])',
+                                 sub("predict", "sapply(treeresponse",
+                                     predcmd[[crv$RF]]))
+      else
+        probcmd[[crv$RF]] <- sprintf("%s[,2]",
+                                     gsub(")$", ', type="prob")', predcmd[[crv$RF]]))
 
   }
 

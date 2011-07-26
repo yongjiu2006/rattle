@@ -1,4 +1,7 @@
 \name{rattle_gui}
+\alias{on_associate_plot_button_clicked}
+\alias{on_ewkm_radiobutton_toggled}
+\alias{on_normalise_interval_radiobutton_toggled}
 \alias{on_help_project_menuitem_activate}
 \alias{on_help_associate_menuitem_activate}
 \alias{on_svm_kernel_combobox_changed}

@@ -1,3 +1,11 @@
+rattle (2.6.8) unstable; urgency=low
+
+  * Ensure ggplot2 loaded before plot ctree.
+  
+  * Handle probability predictions for ctree and cforest in evaluation.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Tue, 26 Jul 2011 22:03:47 +1000
+
 rattle (2.6.7) unstable; urgency=low
 
   * Add support for the entropy weighted k-means subspace clustering
@@ -24,7 +32,7 @@ rattle (2.6.7) unstable; urgency=low
   
   * Master Makefile should respond with help if no target specified.
     
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 18 Jul 2011 06:53:47 +1000
 
 rattle (2.6.6) unstable; urgency=low
 
