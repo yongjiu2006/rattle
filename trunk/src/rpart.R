@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-04-10 07:49:52 Graham Williams>
+# Time-stamp: <2011-09-02 17:18:47 Graham Williams>
 #
 # RPART TAB
 #
@@ -86,6 +86,7 @@ on_rpart_plot_button_clicked <- function(button)
         && packageIsAvailable("RColorBrewer", "choose colours for tree plot"))
       # 110410 Note that rpart.plot requires rpart >= 3.1.48 which is
       # not available on Windows R 2.12.2!
+      # 110902 TODO Convert to using fancyRpartPlot.
       plot.cmd <- paste('# Generate a "nice" looking plot here using repart.plot.\n\n',
                         'require("rpart.plot", quietly=TRUE)\n',
                         'require("RColorBrewer", quietly=TRUE)\n\n',
@@ -630,6 +631,50 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
     cat(Rtxt("      * denotes terminal node\n\n"))
     cat(z, sep = "\n")
     return(invisible(x))
+}
+
+#-----------------------------------------------------------------------
+# Fancy plot
+
+fancyRpartPlot <- function(model, main)
+{
+  require("rpart.plot")
+  require("RColorBrewer")
+
+  gr <- brewer.pal(9,"Greens")[3:7]
+  bl <- brewer.pal(9,"Blues")[2:6]
+
+  # Extract the scores for each of the nodes. 
+  # This assumes binary classification.
+
+  per <- NULL
+  for (i in 1:nrow(model$frame$yval2))
+    per <- c(per, model$frame$yval2[i, 3+model$frame$yval[i]])
+  
+  # The conversion of a tree in CORElearn to an rpart tree results in these
+  # being character, so ensure wwe have numerics.
+  
+  per <- as.numeric(per)
+  
+  # Calculate an index into the combined colour sequence.
+ 
+  col.index <- round(10*(per-0.4))+5*(model$frame$yval-1)
+
+  # Define the contents of the tree nodes.
+ 
+  my.node.fun <- function(x, labs, digits, varlen)
+    paste(labs, "\n", round(100*per), "% of ", x$frame$n, sep="")
+
+  # Generate the plot and title.
+ 
+  prp(model, type=1, extra=0,
+    box.col=c(bl, gr)[col.index],
+    nn=TRUE, varlen=0, shadow.col="grey",
+    node.fun=my.node.fun)
+  
+  title(main=main,
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), 
+              Sys.info()["user"]))
 }
 
 #----------------------------------------------------------------------

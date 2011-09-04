@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-03-12 22:13:15 Graham Williams>
+# Time-stamp: <2011-09-02 17:35:38 Graham Williams>
 #
 # DATA TAB
 #
@@ -327,8 +327,6 @@ validateSampleEntry <- function()
   return(result)
 }
 
-
-
 parseSampleEntry <- function()
 {
   sampling <- theWidget("data_sample_entry")$getText()
@@ -341,6 +339,45 @@ getTrainingPercent <- function()
 {
   return(parseSampleEntry()[1])
 }
+
+#-----------------------------------------------------------------------
+# These are for handling protos (or envs for now).
+
+whichNumerics <- function(data)
+{
+  names(data)[sapply(data, is.numeric)]
+}
+
+setupDataset <- function(env, seed=NULL)
+{
+  # We assume the following dataset specific variables exist in env
+  #   data            This is the actual data frame containing the dataset
+  #   target          The single target variable for prediction
+  #   risk            The single risk variable
+  #   inputs          The other variables used as inputs to predictive model
+  # Then we add the following variables to env
+  #   vars             Variables used for modelling
+  #   numerics         The numeric vars within inputs
+  #   nobs             The number of observations
+  #   form             Formula for building models
+  #   train            A 70% training dataset
+
+  if (! is.null(seed)) set.seed(seed)
+  
+  evalq({
+    vars <- c(inputs, target)
+    nobs <- nrow(data)
+    numerics <- whichNumerics(data[inputs])
+    form <- as.formula(paste(target, "~ ."))
+    train <- sample(nobs, 0.7*nobs)
+    test <- setdiff(1:nobs, train)
+    na.obs <- attr(na.omit(data[vars]), "na.action")
+    train.na.omit <- setdiff(train, na.obs)
+    test.na.omit <- setdiff(test, na.obs)
+  }, env)
+}
+
+
 
 ########################################################################
 # CALLBACKS

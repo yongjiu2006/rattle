@@ -1,10 +1,10 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-05-30 19:31:28 Graham Williams>
+# Time-stamp: <2011-07-31 13:24:49 Graham Williams>
 #
 # TRANSFORM TAB
 #
-# Copyright (c) 2009 Togaware Pty Ltd
+# Copyright (c) 2009-2011 Togaware Pty Ltd
 #
 # This files is part of Rattle.
 #
