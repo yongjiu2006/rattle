@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-26 21:52:39 Graham Williams>
+# Time-stamp: <2011-09-02 17:44:22 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1852,6 +1852,21 @@ handleMissingValues <- function(testset, mtype)
                '} else {',
                '\tpred <- prediction(crs$pr, no.miss)\n}',
                sep="\n"))
+}
+
+doRiskChart <- function(pr, data, test, target, risk, main)
+{
+  eval <- evaluateRisk(pr, data[test, target], data[test, risk])
+
+  plotRisk(eval$Caseload, eval$Precision, eval$Recall, eval$Risk,
+           risk.name=risk,
+           recall.name=target,
+           show.lift=TRUE,
+           show.precision=TRUE)
+  
+  title(main=main,
+        sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"),
+          Sys.info()["user"]))
 }
 
 #----------------------------------------------------------------------

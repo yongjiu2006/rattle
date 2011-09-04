@@ -7,9 +7,11 @@ export(
        centers.hclust,
        copyPlotToClipboard,
        cranSearch,
+       doRiskChart,
        drawTreesAda,
        drawTreeNodes,
        evaluateRisk,
+       fancyRpartPlot,
        generateAprioriSummary,
        genPlotTitleCmd,
        listTreesAda,
@@ -32,8 +34,10 @@ export(
        rattle.print.summary.multinom,
        overwritePackageFunction,
        savePlotToFile,
+       setupDataset,
        toga,
        treeset.randomForest,
+       whichNumerics,
        ada.formula
        )
 

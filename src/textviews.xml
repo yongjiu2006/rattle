@@ -196,7 +196,7 @@ count of observations and the second will be the proportions.
 
 For a binary classification model the cells of the error matrix are
 referred to, from the top left going clockwise, as the True Negatives,
-False Negatives, True Positives, and False Positives.
+False Positives, True Positives, and False Negatives.
 
 An error matrix is also known as a confusion matrix.</textview>
   <textview widget="risk_textview">Risk Chart

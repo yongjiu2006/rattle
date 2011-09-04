@@ -1,3 +1,21 @@
+rattle (2.6.9) unstable; urgency=low
+
+  * AdaBoost now also reports which variables are used in the collection
+    of trees built, and the number of trees in which a variable
+    appears.
+  
+  * Add setupDataset and whichNumeric to support encapsulation of data
+    mining objects.
+  
+  * Add a fancyRpartPlot so my fancy rpart tree is available outside of
+    the rattle GUI.
+  
+  * Correct the textview information relating to confusion matrices.
+  
+  * Add doRiskChart to simplify using the risk charts.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 04 Sep 2011 21:03:32 +1000
+
 rattle (2.6.8) unstable; urgency=low
 
   * Ensure ggplot2 loaded before plot ctree.
