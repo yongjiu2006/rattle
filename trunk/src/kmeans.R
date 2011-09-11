@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-22 22:07:23 Graham Williams>
+# Time-stamp: <2011-09-11 14:10:56 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -252,6 +252,13 @@ showModelKMeansExists <- function(state=!is.null(crs$kmeans))
   theWidget("kmeans_data_plot_button")$setSensitive(state)
   theWidget("kmeans_discriminant_plot_button")$setSensitive(state)
 
+  # 110911 TODO Might want to move this into a showModelEwkmExists and
+  # perhaps even save the textview and swap between kmeans and ewkm in
+  # the textview.
+  
+  theWidget("kmeans_weights_plot_button")$setSensitive(state &&
+                                                       theWidget("ewkm_radiobutton")$getActive())
+  
 }
 
 ########################################################################

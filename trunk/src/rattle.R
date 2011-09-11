@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-18 06:01:23 Graham Williams>
+# Time-stamp: <2011-09-11 13:07:29 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,8 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.9"
-DATE <- "2011-09-04"
+VERSION <- "2.6.10"
+DATE <- "2011-09-10"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -688,6 +688,7 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
   # also be migrating into being treated as first class models.
 
   crv$KMEANS 	<- "kmeans"
+  crv$EWKM 	<- "ewkm"
   crv$CLARA 	<- "clara"
   crv$HCLUST 	<- "hclust"
   crv$BICLUST 	<- "biclust"
@@ -944,6 +945,14 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
     theWidget("use_cairo_graphics_device")$hide()
   }
 
+  # 110810 On MS/Windows the CairoDevice seems to drop some graphics
+  # elements whe ndrawing multiple plots, so by default, on Windows,
+  # turn it off for now. See further comments in newPlot(). The
+  # problem is exhibited in Figs 2.8 and 15.5 of the Rattle book.
+
+  if (isWindows())
+    theWidget("use_cairo_graphics_device")$setActive(FALSE)
+
   # Tell MS/Windows to use 2GB (TODO - What's needed under Win64?)
   #
   # Brian D. Ripley 15 Jul 2007 07:57:49 +0100 requested the memory mod
@@ -1105,7 +1114,24 @@ configureGUI <- function()
   # categoric selected then do by group. TODO.
   
   # theWidget("normalise_interval_radiobutton")$hide()
+
+
+  # 110911 Although this function is deprecated, it works to ensure
+  # that a Maximize, Un-Maximize returns to the original
+  # size. Otherwise it miscalculates that the minimum width is
+  # actaully quite wide, and so we end up with a very wide window -
+  # Ugly and also difficult to shrink it. We suppress warnings to
+  # avoid seeing:
+  #
+  # Warning message:
+  # 'method' is deprecated.
+  # Use 'gtkWindowSetResizable' instead.
+  # See help("Deprecated") and help("RGtk2-deprecated"). 
+  #
+  # setResizable(TRUE) is the default but we stillget this problem.
   
+   suppressWarnings(rattleGUI$getObject("rattle_window")$setPolicy(TRUE, TRUE, TRUE))
+
 }
 
 setDefaultsGUI <- function()
@@ -2511,7 +2537,11 @@ newPlot <- function(pcnt=1)
 
   # Trial the use of the Cairo device. This was the only place I
   # needed to change to switch over to the Cairo device. As backup,
-  # revert to the x11() or windows() device.
+  # revert to the x11() or windows() device. TODO Under Windows
+  # (R2.13.1/Rattle2.6.9/Gtk2.20.17) the plot in Figure 2.8 of the
+  # Rattle book does not show the box plot in the top right plot -
+  # only the stars. Seems to be an issue with CairoDevice? For
+  # Windows, for now, do not use Cairo by default.
 
   if (theWidget("use_cairo_graphics_device")$getActive() &&
       packageIsAvailable("cairoDevice", Rtxt("display plots")))

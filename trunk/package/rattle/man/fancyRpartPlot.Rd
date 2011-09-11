@@ -9,7 +9,7 @@
   
 }
 \usage{
-fancyRpartPlot(model, main)
+fancyRpartPlot(model, main="")
 
 }
 \arguments{

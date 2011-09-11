@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-02 17:18:47 Graham Williams>
+# Time-stamp: <2011-09-07 20:23:41 Graham Williams>
 #
 # RPART TAB
 #
@@ -636,7 +636,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
 #-----------------------------------------------------------------------
 # Fancy plot
 
-fancyRpartPlot <- function(model, main)
+fancyRpartPlot <- function(model, main="")
 {
   require("rpart.plot")
   require("RColorBrewer")

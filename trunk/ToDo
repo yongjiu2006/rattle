@@ -19,6 +19,17 @@ Settings Menu
     knowing. Alternatively, we add it to the File Open dialog.
     ------------------------------------------------------------------------
 
+  Use Cairo Device Graphics
+
+    ------------------------------------------------------------------------
+    2011-09-11 09:48:07 Graham Williams
+
+    Under Windows, using Cairo Device, plots, using multiple plots on
+    the one page through layout() lose some elements from the
+    plot. For now we default to not using Cairo Device on Windows.
+
+    ------------------------------------------------------------------------
+
 Help Menu
 
   ------------------------------------------------------------------------

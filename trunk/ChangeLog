@@ -1,3 +1,21 @@
+rattle (2.6.10) unstable; urgency=low
+
+  * Add listAdaUsedVars support function.
+  
+  * Workaround CairoDevice issue on Windows by defaulting to not using it,
+    as in the Settings menu.
+  
+  * Add common name and crv constant for ewkm.
+  
+  * fancyRpartPlot has optional main title as empty string.
+  
+  * biclust now reports a biclust built rather than reporting a kmeans
+    built.
+  
+  * Add weights plots for ewkm from siatclust.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 11 Sep 2011 17:08:18 +1000
+
 rattle (2.6.9) unstable; urgency=low
 
   * AdaBoost now also reports which variables are used in the collection

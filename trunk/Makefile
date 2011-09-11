@@ -227,9 +227,7 @@ status:
 	svn status -q
 
 meld:
-	@for i in $(shell svn status -q | awk '{print $$2}'); do\
-	  meld $$i;\
-	done
+	svn diff --diff-cmd meld -x "--label Subversion"
 
 diff:
 	svn diff
