@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-17 19:34:37 Graham Williams>
+# Time-stamp: <2011-09-11 14:33:31 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -33,6 +33,12 @@ on_ewkm_radiobutton_toggled <- function(button)
   setStatusBar()
 }
 
+on_kmeans_weights_plot_button_clicked <- function(button)
+{
+  weightsPlotEwkm()
+}
+
+
 ########################################################################
 # Execution
 
@@ -50,7 +56,7 @@ executeClusterEwkm <- function(include)
   usehclust <- theWidget("kmeans_hclust_centers_checkbutton")$getActive()
   useIterate <- theWidget("kmeans_iterate_checkbutton")$getActive()
   
-  startLog(commonName(crv$KMEANS))
+  startLog(commonName(crv$EWKM))
 
   # Load the required package.
   
@@ -137,5 +143,43 @@ executeClusterEwkm <- function(include)
   reportTimeTaken(TV, time.taken, model=commonName(crv$KMEANS))
 
   return(TRUE)
+}
+
+########################################################################
+# Report on the model.
+
+weightsPlotEwkm <- function()
+{
+  # Make sure there is a cluster first.
+
+  if (is.null(crs$kmeans) || ! "ewkm" %in% class(crs$kmeans))
+  {
+    errorDialog("E126: No ewkm cluster to plot.",
+                "The button should not have been sensitive.",
+                crv$support.msg)
+    return()
+  }
+
+  startLog(sprintf("Plot variable weights from the %s algorithm.", commonName(crv$EWKM)))
+
+  # The siatclust package provides the plot and levelplot methods.
+  
+  if (!packageIsAvailable("siatclust", "plot variable weights")) return()
+  lib.cmd <- "require(siatclust, quietly=TRUE)"
+  appendLog(packageProvides("siatclust", "plot"), lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  advancedPlot <- theWidget("use_ggplot2")$getActive() # Not really ggplot2 but convenient.
+
+  if (advancedPlot)
+    plot.cmd <- "plot(levelplot(crs$kmeans))"
+  else
+    plot.cmd <- "plot(crs$kmeans)"
+  
+  appendLog(Rtxt("Plot the variable weights."), plot.cmd)
+  newPlot()
+  eval(parse(text=plot.cmd))
+
+  setStatusBar(Rtxt("The variable weights have been plotted."))
 }
 

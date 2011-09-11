@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2011-09-04 20:51:10 Graham Williams>
+# Time-stamp: <2011-09-07 20:28:48 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -403,3 +403,9 @@ displayHelpAda <- function()
       popupTextviewHelpWindow("ada")
     }
 }
+
+listAdaVarsUsed <- function(model) 
+  sort(table(unlist(sapply(model$model$trees, 
+                           function(x) setdiff(unique(x$frame$var), 
+                                               "<leaf>")))), 
+       decreasing=TRUE)

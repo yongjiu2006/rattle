@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-12 22:18:27 Graham Williams>
+# Time-stamp: <2011-09-11 10:13:52 Graham Williams>
 #
 # MODEL TAB
 #
@@ -239,6 +239,7 @@ commonName <- function(mtype)
                          biclust=Rtxt("BiCluster"),
                          cforest=Rtxt("Random Forest"),
                          ctree=Rtxt("Conditional Tree"),
+                         ewkm=Rtxt("Entropy Weighted KMeans"),
                          hclust=Rtxt("Hierarchical"),
                          kmeans=Rtxt("KMeans"),
                          rf=Rtxt("Random Forest"),

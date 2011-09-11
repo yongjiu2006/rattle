@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-01-02 10:33:17 Graham Williams>
+# Time-stamp: <2011-09-11 10:11:01 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -110,7 +110,7 @@ executeClusterBiclust <- function(include)
               "\n",
               collectOutput(print.cmd))
 
-  reportTimeTaken(TV, time.taken, model=commonName(crv$KMEANS))
+  reportTimeTaken(TV, time.taken, model=commonName(crv$BICLUST))
 
   return(TRUE)
 }

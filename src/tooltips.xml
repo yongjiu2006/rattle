@@ -124,7 +124,8 @@
   <tooltip widget="data_target_survival_radiobutton">Set target type to be
     suitable for Survival Analysis, requiring both Time and Status
     variables to be identified.</tooltip>
-  <tooltip widget="label1">Load a dataset.</tooltip>
+  <tooltip widget="kmeans_plots_label">Once a clustering has been built
+  we can display various plots.</tooltip>
   <tooltip widget="summary_radiobutton">Summarise the dataset.</tooltip>
   <tooltip widget="explore_distr_radiobutton">Generate various plots
   to explore the distribution of the data.</tooltip>
@@ -268,7 +269,7 @@
   <tooltip widget="kmeans_radiobutton">Generate clusters using a
     kmeans algorithm.</tooltip>
   <tooltip widget="ewkm_radiobutton">Generate clusters using a
-    kmeans algorithm with subspaces using entropy weighting.</tooltip>
+    kmeans algorithm with subspaces selected by entropy weighting.</tooltip>
   <tooltip widget="hclust_radiobutton">Build an agglomerative
     hierarchical cluster.</tooltip>
   <tooltip widget="biclust_radiobutton">Cluster by identifying
@@ -286,8 +287,21 @@
     centers for your kmeans cluster.</tooltip>
   <tooltip widget="kmeans_iterate_checkbutton">Iterate over the number
     of clusters, up to the number specified above.</tooltip>
+  <tooltip widget="kmeans_stats_button">After a clustering has been
+  built generate a list of various measures of the goodness of the
+  clustering.</tooltip>
+  <tooltip widget="kmeans_data_plot_button">After a clustering has
+  been built display a plot of the data and the cluster to which each
+  data point belongs.</tooltip>
+  <tooltip widget="kmeans_discriminant_plot_button">After a clustering
+  has been built display a discriminant plot.</tooltip>
+  <tooltip widget="kmeans_weights_plot_button">After an ewkm
+  clustering has been built display a plot of the relative weights
+  associated with each variable for each cluster, as well as a
+  dendrogram showing the correlation between variables and onee
+  between clusters.</tooltip>
   <tooltip widget="label30">These options apply when building the
-    hierarchy.</tooltip>
+  hierarchy.</tooltip>
   <tooltip widget="label32">These options apply to the constructed
     hierarchy.</tooltip>
   <tooltip widget="hclust_dendrogram_button">Display a dendrogram plot

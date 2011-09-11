@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-02 17:35:38 Graham Williams>
+# Time-stamp: <2011-09-07 20:26:56 Graham Williams>
 #
 # DATA TAB
 #
@@ -2155,7 +2155,9 @@ executeSelectTab <- function(resample=TRUE)
   {
     weights <- sprintf("crs$dataset$%s", weight)
   }
-  else if (theWidget("weight_entry")$isSensitive() && not.null(weights) && nchar(weights) > 0)
+  else if (theWidget("weight_entry")$isSensitive() &&
+           not.null(weights) &&
+           nchar(weights) > 0)
   {
     identifiers <- unlist(strsplit(weights, "[^a-zA-Z._]"))
     identifiers <- identifiers[nchar(identifiers) > 0]
