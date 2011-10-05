@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2011-09-07 20:28:48 Graham Williams>
+# Time-stamp: <2011-09-12 19:42:51 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -177,12 +177,9 @@ buildModelAda <- function(formula,
     print.cmd <- paste("print(crs$ada)",
                        "round(crs$ada$model$errs[crs$ada$iter,], 2)",
                        "cat('Variables actually used in tree construction:\\n')",
-                       paste('print(sort(unique(unlist(sapply(crs$ada$model$trees,\n',
-                             '           function(x) setdiff(unique(x$frame$var), "<leaf>"))))))'),
+                       "print(sort(names(listAdaVarsUsed(crs$ada))))",
                        "cat('\\nFrequency of variables actually used:\\n')",
-                       paste('sort(table(unlist(sapply(crs$ada$model$trees,\n',
-                             '     function(x) setdiff(unique(x$frame$var), "<leaf>")))),\n',
-                             '     decreasing=TRUE)'),
+                       "print(listAdaVarsUsed(crs$ada))",
                        sep="\n")
     appendLog(Rtxt("Print the results of the modelling."), print.cmd)
     resetTextview(tv, tvsep=FALSE,
