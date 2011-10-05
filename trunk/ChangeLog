@@ -1,3 +1,14 @@
+rattle (2.6.11) unstable; urgency=low
+
+  * Use listAdaVarsUsed in Rattle.
+  
+  * Use fancyRpartPlot in Rattle.
+  
+  * Note rattle.ui requires gtk > 2.16, not > 2.20. Otherwise fails to
+    start on Mac OS/X.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 05 Oct 2011 19:12:28 +1100
+
 rattle (2.6.10) unstable; urgency=low
 
   * Add listAdaUsedVars support function.

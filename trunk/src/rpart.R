@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-07 20:23:41 Graham Williams>
+# Time-stamp: <2011-09-12 06:59:42 Graham Williams>
 #
 # RPART TAB
 #
@@ -78,58 +78,43 @@ on_rpart_plot_button_clicked <- function(button)
     return()
   }
 
-  # Plot: Log the R command and execute.
-
   if (theWidget("model_tree_rpart_radiobutton")$getActive())
     if (theWidget("use_ggplot2")$getActive() # Not really ggplot2 but convenient.
         && packageIsAvailable("rpart.plot", "plot nice looking decision trees")
         && packageIsAvailable("RColorBrewer", "choose colours for tree plot"))
-      # 110410 Note that rpart.plot requires rpart >= 3.1.48 which is
-      # not available on Windows R 2.12.2!
-      # 110902 TODO Convert to using fancyRpartPlot.
-      plot.cmd <- paste('# Generate a "nice" looking plot here using repart.plot.\n\n',
-                        'require("rpart.plot", quietly=TRUE)\n',
-                        'require("RColorBrewer", quietly=TRUE)\n\n',
-                        '# Identify a range of colours to use.\n',
-                        '# Darker for higher scores.\n\n',
-                        'gr <- brewer.pal(9,"Greens")[3:7]\n',
-                        'bl <- brewer.pal(9,"Blues")[2:6]\n\n',
-                        '# Extract the scores for each of the nodes.\n',
-                        '# This assumes binary and will need generalising.\n\n',
-                        'per <- NULL\n',
-                        'for (i in 1:nrow(crs$rpart$frame$yval2))\n',
-                        '    per <- c(per, crs$rpart$frame$yval2[i, ',
-                        '3+crs$rpart$frame$yval[i]])\n',
-                        '# Calculate an index into the combined colour sequence.\n\n',
-                        'col.index <- round(10*(per-0.4))+5*(crs$rpart$frame$yval-1)\n',
-                        '# Define the contents of the tree nodes.\n\n',
-                        "my.node.fun <- function(x, labs, digits, varlen)\n",
-                        '  paste(labs, "\\n", round(100*per),\n',
-                        '        "% of ", x$frame$n, sep="")\n',
-                        '# Gnerate the plot and title.\n\n',
-                        "prp(crs$rpart, type=1, extra=0,\n",
-                        '    box.col=c(bl, gr)[col.index],\n',
-                        '    nn=TRUE, varlen=0, shadow.col="grey",\n',
-                        '    node.fun=my.node.fun)\n',
-                        genPlotTitleCmd(commonName(crv$RPART),
-                                        crs$dataname, "$", crs$target),
-                        sep="")
+    {
+        
+      plot.cmd <- sprintf('fancyRpartPlot(crs$rpart, main="%s")',
+                            genPlotTitleCmd(commonName(crv$RPART), crs$dataname,
+                                            "$", crs$target, vector=TRUE)[1])
+      
+      log.txt <- "rpart.plot package"
+    }
     else
+    {
       plot.cmd <- paste("drawTreeNodes(crs$rpart)\n",
                         genPlotTitleCmd(commonName(crv$RPART),
                                         crs$dataname, "$", crs$target),
                         sep="")
-  else # ctree
-    plot.cmd <- "plot(crs$rpart)"
 
+      log.txt <- "maptools support functions"
+    }
+  else # ctree
+  {
+    plot.cmd <- "plot(crs$rpart)"
+    log.txt <- "party package"
+  }
+
+  # Log the R command and execute.
+
+  startLog(sprintf(Rtxt("Plot the resulting %s."), commonName(crv$RPART)))
+           
   ##   plotcp.cmd <- paste("\n\n## Plot the cross validation results.\n\n",
   ##                           "plotcp(crs$rpart)\n",
   ##                           genPlotTitleCmd("Cross Validated Error",
   ##                                              crs$dataname, "$", crs$target))
-  appendLog(sprintf(Rtxt("Plot the resulting %s using Rattle",
-                         "and maptools support functions."),
-                    commonName(crv$RPART)),
-            plot.cmd)
+
+  appendLog(sprintf(Rtxt("We use the %s."), log.txt), plot.cmd)
   newPlot()
   eval(parse(text=plot.cmd))
 
@@ -638,6 +623,9 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
 
 fancyRpartPlot <- function(model, main="")
 {
+  # 110410 Note that rpart.plot requires rpart >= 3.1.48 which is
+  # not available on Windows R 2.12.2!
+
   require("rpart.plot")
   require("RColorBrewer")
 
