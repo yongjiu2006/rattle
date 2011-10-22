@@ -1,3 +1,16 @@
+rattle (2.6.12) unstable; urgency=low
+
+  * Ensure the data partitions that are specified are appropriate. Also
+    allow some flexiblity in specifying: 70 or 70/30 or 70/15/15. For the
+    first two the training is 70% and testing is 30%. For the third,
+    validation is 15% and testing is 15%.
+  
+  * Update text mining support for lates version of tm.
+  
+  * rattleInfo() was incorrectly counting the unmber of packages listed.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 23 Oct 2011 06:00:16 +1100
+
 rattle (2.6.11) unstable; urgency=low
 
   * Use listAdaVarsUsed in Rattle.

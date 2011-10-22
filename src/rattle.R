@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-11 13:07:29 Graham Williams>
+# Time-stamp: <2011-10-23 05:35:50 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -28,7 +28,7 @@ Rtxt <- function(...)
 RtxtNT <- Rtxt
 
 VERSION <- "2.6.11"
-DATE <- "2011-09-12"
+DATE <- "2011-10-05"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -276,7 +276,9 @@ rattleInfo <- function(all.dependencies=FALSE,
                   "\n"))
   }
 
-  cat("\nThat was", length(deps), "packages.\n")
+  cat("\nThat was",
+      sum(sapply(deps, function(p) p %in% rownames(iv))),
+      "packages.\n")
   
   if (! is.null(up))
     cat(sprintf(paste('\nUpgrade the packages with either',
@@ -1915,10 +1917,10 @@ cranSearch <- local(
     paste(substring(z, 0, m - n), x, sep="")
   }
   
-  function(lookFor = "",
-           ignoreCase = TRUE,
-           abbreviate = 50,
-           CRANPackageTable = "http://http://cran.r-project.org/web/packages")
+  function(lookFor="",
+           ignoreCase=TRUE,
+           abbreviate=50,
+           CRANPackageTable="http://http://cran.r-project.org/web/packages")
   {
 
     ##############################################
@@ -1928,7 +1930,7 @@ cranSearch <- local(
 
     if(!exists("readHTMLTable"))
     {
-      if(!require(XML, quietly = TRUE))
+      if(!require(XML, quietly=TRUE))
         stop("You need to install the XML package first!")
       on.exit(detach("package:XML"))
     }

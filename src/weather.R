@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-01 19:03:41 Graham Williams>
+# Time-stamp: <2011-10-08 16:52:52 Graham Williams>
 #
 # WEATHER DATASET
 #
@@ -534,4 +534,12 @@ checkDataOkay <- function(locations)
       #                locations[i], v, class(ds[[v]]), expect[v]))
   }
   print("Data integrity checked.")
+}
+
+readJsonBom <- function(path)
+{
+  require(RJSONIO)
+  path <- "http://www.bom.gov.au/fwo/IDN60801/IDN60801.95753.json"
+  path <- "http://www.bom.gov.au/fwo/IDN60801/IDN60801.95753.axf"
+  obs <- fromJSON()
 }
