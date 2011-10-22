@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-01-10 08:16:39 Graham Williams>
+# Time-stamp: <2011-10-20 21:04:07 Graham Williams>
 #
 # 080921 TEXT MINING DATA
 #
@@ -111,7 +111,8 @@ executeDataCorpus <- function()
   
   # Load the document corpus.
 
-  corpus.cmd <- sprintf('my.corpus <- Corpus(DirSource("%s"))', location)
+  corpus.cmd <- sprintf('my.corpus <- Corpus(DirSource("%s"))',
+                        gsub("\\\\", "/", location))
   appendLog("Load the document corpus.", corpus.cmd)
   eval(parse(text=corpus.cmd))
 
@@ -120,21 +121,66 @@ executeDataCorpus <- function()
   map.cmd <- ""
   
   if (strip)
-    map.cmd <- sprintf("%s\nmy.corpus <- tmMap(my.corpus, stripWhitespace)", map.cmd)
+    map.cmd <- sprintf("%s\nmy.corpus <- tm_map(my.corpus, stripWhitespace)", map.cmd)
   if (lcase) 
-    map.cmd <- sprintf("%s\nmy.corpus <- tmMap(my.corpus, tmTolower)", map.cmd)
+    map.cmd <- sprintf("%s\nmy.corpus <- tm_map(my.corpus, tolower)", map.cmd)
   if (stopw) 
-    map.cmd <- sprintf(paste("%s\nmy.corpus <- tmMap(my.corpus,",
+    map.cmd <- sprintf(paste("%s\nmy.corpus <- tm_map(my.corpus,",
                              'removeWords, stopwords("english"))'), map.cmd)
   if (stemw)
-    map.cmd <- sprintf("%s\nmy.corpus <- tmMap(my.corpus, stemDoc)", map.cmd)
+    map.cmd <- sprintf("%s\nmy.corpus <- tm_map(my.corpus, stemDoc)", map.cmd)
 
+  # 111020 For now, always remove punctuation and numbers.
+  
+  map.cmd <- sprintf("%s\nmy.corpus <- tm_map(my.corpus, removePunctuation)", map.cmd)
+  map.cmd <- sprintf("%s\nmy.corpus <- tm_map(my.corpus, removeNumbers)", map.cmd)
+
+  # 111020 TODO Update and include some more information.
+
+##   Dictionary(TermDocumentMatrix(my.corpus))
+
+## tdm <- TermDocumentMatrix(my.corpus, 
+##                           control = list(removePunctuation = TRUE, 
+##                                          removeNumbers = TRUE, 
+##                                          stopwords = TRUE))
+
+## plot(tdm, corThreshold = 0.8, weighting = TRUE, 
+##      attrs = list(graph = list(rankdir = "BT"), 
+##                   node = list(shape = "circle"))) 
+ 
+
+## dissimilarity(my.corpus[[1]], my.corpus[[2]], method = "eJaccard") 
+## dissimilarity(tdm, method = "cosine")
+
+## rownames(tdm) 
+## colnames(tdm) 
+## dimnames(tdm) 
+## Docs(tdm) 
+## nTerms(tdm) 
+## Terms(tdm)
+
+## inspect(my.corpus[1:3]) 
+## tdm <- TermDocumentMatrix(my.corpus)[1:10, 1:10] 
+## inspect(tdm)
+
+## summary(my.corpus)
+
+## findFreqTerms(tdm, 2, 3 )
+
+## removeSparseTerms(tdm,0.4)
+
+## searchFullText(my.corpus[[3]], "accounts")
+
+## termFreq(my.corpus[[1]])
+
+
+  
   appendLog("Transform the documents.", sub("^\n", "", map.cmd))
   eval(parse(text=map.cmd))
 
   # Convert into a keyword count dataset.
 
-  ds.cmd <- "crs$dataset <- as.data.frame(as.matrix(TermDocMatrix(my.corpus)@Data))"
+  ds.cmd <- "crs$dataset <- as.data.frame(t(as.matrix(TermDocumentMatrix(my.corpus))))"
   appendLog("Convert into a dataset.", ds.cmd)
   eval(parse(text=ds.cmd))
 
@@ -143,8 +189,8 @@ executeDataCorpus <- function()
   target.fname <- paste(location, ".target.csv", sep="/")
   if (file.exists(target.fname))
   {
-    read.cmd <- sprintf('target <- read.csv(target.fname, encoding="%s")',
-                        crv$csv.encoding)
+    read.cmd <- sprintf('target <- read.csv("%s", encoding="%s")',
+                        target.fname, crv$csv.encoding)
     appendLog("Read in the targets.", read.cmd)
     eval(parse(text=read.cmd))
 

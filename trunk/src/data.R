@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-07 20:26:56 Graham Williams>
+# Time-stamp: <2011-10-10 11:40:50 Graham Williams>
 #
 # DATA TAB
 #
@@ -297,22 +297,21 @@ newSampling <- function()
 
 validateSampleEntry <- function()
 {
-  sampling <- theWidget("data_sample_entry")$getText()
-  sampling <- as.integer(strsplit(sampling, "/")[[1]])
+  sampling <- parseSampleEntry()
 
   result <- TRUE
 
   if (sampling[1] == 0)
   {
     errorDialog(Rtxt("A training set partition of 0 does not make sense.",
-                     "\n\nPlease choose a non-zero, positive proportion, up to 100."))
+                     "\n\nPlease choose a non-zero, positive percentage, up to 100."))
     result <- FALSE
   }
   else if (any(sampling < 0))
   {
-    errorDialog(Rtxt("A proportion of less than 0 for the partition",
+    errorDialog(Rtxt("A percentage of less than 0 for the partition",
                      "does not make sense.",
-                     "\n\nPlease choose proportions in the range 0-100."))
+                     "\n\nPlease choose percentages in the range 0-100."))
     result <- FALSE
   }
   else if (sum(sampling) != 100)
@@ -329,10 +328,21 @@ validateSampleEntry <- function()
 
 parseSampleEntry <- function()
 {
-  sampling <- theWidget("data_sample_entry")$getText()
-  sampling <- as.integer(strsplit(sampling, "/")[[1]])
+  ptext <- theWidget("data_sample_entry")$getText()
 
-  return(sampling)
+  splitter <- function(x) as.integer(strsplit(x, "/")[[1]])
+  
+  if (! nchar(ptext))
+    partition <- splitter(crv$default.sample)
+  else
+    partition <- splitter(ptext)
+
+  if (length(partition) == 1)
+    partition <- c(partition, 0, 100-partition)
+  else if (length(partition) == 2)
+    partition <- c(partition[1], 100-sum(partition), partition[2])
+
+  return(partition)
 }
 
 getTrainingPercent <- function()

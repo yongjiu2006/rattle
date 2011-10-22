@@ -2,7 +2,19 @@
 
 help:
 	@echo "\n\
-	build\trattle_x.x.x.{tar.gz,zip} and install in local R\n\
+	New Release:\n\
+	\tweather\tUpdate the weather datasets.\n\
+	\tmeld\tCompare to previous commit - update ChangeLog and finalise it.\n\
+	\tsvn commit -m '...'\n\
+	\tupdate\n\
+	\tbuild\n\
+	\tcheck\n\
+	\tucheck\tWait for a response from Uwe.\n\
+	\tcran\tAlso email cran@r-project.org\n\
+	\tinstall\tAnnounce on rattle-users once receive email from Uwe\n\n\
+	Misc:\n\
+	\ttranslations\tUpdate all translations.\n\
+	\tbuild\t\trattle_x.x.x.{tar.gz,zip} and install in local R\n\
 	"
 
 #-----------------------------------------------------------------------
@@ -231,6 +243,9 @@ meld:
 
 diff:
 	svn diff
+
+svn:
+	svn commit -m '$(shell Rscript extractChanges.R)'
 
 .PHONY: install
 install: # build pbuild ibuild zip rattle_src.zip # check pcheck
