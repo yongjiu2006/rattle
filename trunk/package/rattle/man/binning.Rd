@@ -9,7 +9,7 @@
   
 }
 \usage{
-binning(x, bins=4, method=c("quantile", "kmeans"),
+binning(x, bins=4, method=c("quantile", "wtd.quantile", "kmeans"),
                      labels=NULL, ordered=TRUE)
 }
 \arguments{
@@ -18,7 +18,8 @@ binning(x, bins=4, method=c("quantile", "kmeans"),
 
   \item{bins}{the number of bins to use.}
 
-  \item{method}{whether to use "quantile" or "kmeans" binning.}
+  \item{method}{whether to use "quantile", weighted quantile
+  "wtd.quantile" or "kmeans" binning.}
 
   \item{labels}{the labels or names to use for each of the bins.}
 

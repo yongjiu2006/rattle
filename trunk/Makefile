@@ -3,9 +3,8 @@
 help:
 	@echo "\n\
 	New Release:\n\
-	\tweather\tUpdate the weather datasets.\n\
 	\tmeld\tCompare to previous commit - update ChangeLog and finalise it.\n\
-	\tsvn commit -m '...'\n\
+	\tsvn\tSubmits changes to google code\n\
 	\tupdate\n\
 	\tbuild\n\
 	\tcheck\n\
@@ -13,8 +12,10 @@ help:
 	\tcran\tAlso email cran@r-project.org\n\
 	\tinstall\tAnnounce on rattle-users once receive email from Uwe\n\n\
 	Misc:\n\
-	\ttranslations\tUpdate all translations.\n\
 	\tbuild\t\trattle_x.x.x.{tar.gz,zip} and install in local R\n\
+	\ttranslations\tUpdate all translations.\n\
+	\tweather\tUpdate the weather datasets.\n\
+	\twww\tUpdate the web pages with current version information.\n\
 	"
 
 #-----------------------------------------------------------------------
@@ -247,8 +248,8 @@ diff:
 svn:
 	svn commit -m '$(shell Rscript extractChanges.R)'
 
-.PHONY: install
-install: # build pbuild ibuild zip rattle_src.zip # check pcheck
+.PHONY: www
+www: # build pbuild ibuild zip rattle_src.zip # check pcheck
 	perl -pi -e "s|version is [0-9\.]*\.|version is $(VERSION).|"\
 			changes.html.in
 	cp changes.html.in /home/gjw/Projects/Togaware/www/
@@ -282,6 +283,8 @@ install: # build pbuild ibuild zip rattle_src.zip # check pcheck
 			dmsurvivor.Rnw;\
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			dmsurvivor.Rnw)
+
+install:
 	#mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
 	#mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R
@@ -381,7 +384,7 @@ rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) \
 	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)
 	chmod -R go+rX $(PACKAGE)
-	R CMD build $(PACKAGE)
+	R CMD build --resave-data $(PACKAGE)
 	R CMD INSTALL --library=$(RSITELIB) rattle_$(VERSION).tar.gz
 	mv $@ $(REPOSITORY)
 
@@ -396,7 +399,7 @@ pmml_$(PVERSION).tar.gz: $(PSOURCE)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(PDESCRIPTION)
 	cp ChangeLog.pmml package/pmml/inst/ChangeLog
 	chmod -R go+rX $(PPACKAGE)
-	R CMD build $(PPACKAGE)
+	R CMD build --resave-data $(PPACKAGE)
 	R CMD INSTALL --library=$(RSITELIBRARY) $@
 	mv $@ $(REPOSITORY)
 
@@ -411,9 +414,9 @@ rstat_$(IVERSION).tar.gz: $(ISOURCE)
 	cp $(ISOURCE) package/rstat/R/
 	perl -pi -e "s|^Version: .*$$|Version: $(IVERSION)|" $(IDESCRIPTION)
 	perl -pi -e "s|^Date: .*$$|Date: $(DATE)|" $(IDESCRIPTION)
-	R CMD build $(IPACKAGE)
+	R CMD build --resave-data $(IPACKAGE)
 	chmod -R go+rX $(IPACKAGE)
-	R CMD build $(IPACKAGE)
+	R CMD build --resave-data $(IPACKAGE)
 	R CMD INSTALL --library=/usr/local/lib/R/site-library rstat_$(IVERSION).tar.gz
 	# mv rstat_$(IVERSION).tar.gz $(REPOSITORY)
 

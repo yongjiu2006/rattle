@@ -244,7 +244,9 @@
   <tooltip widget="label14">Partition a numeric variable into a number
     of bins.</tooltip>
   <tooltip widget="remap_quantiles_radiobutton">Each bin will have
-    approximately the same number of observations.</tooltip>
+  approximately the same number of observations. If the Data tab
+  includes a Weight variable then the observations are weighted when
+  performing the binning.</tooltip>
   <tooltip widget="remap_kmeans_radiobutton">A kmeans clustering will
     be used to bin the variable.</tooltip>
   <tooltip widget="remap_eqwidth_radiobutton">The min to max range
