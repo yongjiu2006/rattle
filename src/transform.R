@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-31 13:24:49 Graham Williams>
+# Time-stamp: <2011-10-25 21:15:15 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -210,7 +210,6 @@ rescale.by.group <- function(x, by=NULL, type="irank", itop=100)
 
   return(y)
 }
-
 
 ########################################################################
 # DISPATCH
@@ -1201,10 +1200,13 @@ executeTransformImputePerform <- function()
 ########################################################################
 # BINNING
 
-binning <- function (x, bins=4, method=c("quantile", "kmeans"),
-                     labels=NULL, ordered=TRUE)
+binning <- function (x, bins=4,
+                     method=c("quantile", "wtd.quantile", "kmeans"),
+                     labels=NULL, ordered=TRUE,
+                     weights=NULL)
 {
-  # From Daniele Medri 31 Jan 2007.
+  # 070131 From Daniele Medri.
+  # 111025 Support wtd.quantiles suggested by Brenton R. Stone.
 
   # Set ordered to FALSE in Rattle since randomForests don't work when
   # the factor is ordered, for some reason (080406).
@@ -1238,6 +1240,9 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
   if(is.factor(x)) stop(Rtxt("This variable is already a factor."))
   if (is.data.frame(x)) stop(Rtxt("An object of class data.frame is required."))
   if (length(x) < bins) stop(Rtxt("There are more bins than observations."))
+  if (method == "wtd.quantile" &&
+      ! packageIsAvailable("Hmisc", Rtxt("weighted quantile binning")))
+    stop(Rtxt("wtd.quantile requires the Hmisc package."))
   
   # Binning
 
@@ -1261,7 +1266,29 @@ binning <- function (x, bins=4, method=c("quantile", "kmeans"),
       return(NULL)
     }
   }
-  else if(method == "kmeans")
+  else if (method == "wtd.quantile")
+  {
+    require("Hmisc")
+    breaks <- c(wtd.quantile(x, weights=weights, probs=seq(0, 1, 1/bins),
+                             na.rm=TRUE, type="quantile"))
+    breaks <- unique(breaks)
+    breaks[1] <- min(x, na.rm=TRUE)
+    breaks[length(breaks)] <- max(x, na.rm=TRUE)
+    # quantiles from quantile() can be non-unique, which cut() doesn't
+    # like. This is handled above through unique(). The function
+    # cut2() in Hmisc handles this situation gracefully and it could
+    # be used, but it is not necessary.
+    if(length(breaks) >= 2)
+    {
+      cut(x, breaks, include.lowest = TRUE, labels = labels)
+    }
+    else
+    {
+      cat(Rtxt("Warning: the variable is not considered.\n"))
+      return(NULL)
+    }
+  }
+  else if (method == "kmeans")
   {
     xx <- na.omit(x)
     maxbins <-nlevels(as.factor(xx))
@@ -1452,12 +1479,27 @@ executeTransformRemapPerform <- function(vars=NULL,
   
   if (action == "quantiles")
   {
-    remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- binning(crs$',
-                                     'dataset[["%s"]], %d, method="quantile", ',
-                                     'ordered=FALSE)',
-                                     sep=""),
-                               remap.prefix, vars, vars, num.bins),
-                       collapse="\n")
+    # 111025 For now, if a weight is selected in the data tab, then
+    # silently do weighted binning.
+    
+    if(length(weight <- getSelectedVariables("weight")))
+    {
+      remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- binning(crs$',
+                                       'dataset[["%s"]], %d, method="wtd.quantile", ',
+                                       'ordered=FALSE, weights=crs$dataset[["%s"]])',
+                                       sep=""),
+                                 remap.prefix, vars, vars, num.bins, weight),
+                         collapse="\n")
+    }
+    else
+    {
+      remap.cmd <- paste(sprintf(paste('  crs$dataset[["%s_%s"]] <- binning(crs$',
+                                       'dataset[["%s"]], %d, method="quantile", ',
+                                       'ordered=FALSE)',
+                                       sep=""),
+                                 remap.prefix, vars, vars, num.bins),
+                         collapse="\n")
+    }
   }
   else if (action == "kmeans")
   {
