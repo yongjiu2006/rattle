@@ -447,7 +447,10 @@
     important roles.</tooltip>
   <tooltip widget="rf_errors_button">Plot error rate prgressively for
     the number of trees built. Useful for deciding the optimal number
-    of trees to build. </tooltip>
+    of trees to build.</tooltip>
+  <tooltip widget="rf_oob_roc_button">Plot the ROC curve based on the
+  out-of-bag (OOB) predictions for each observation in the training
+  dataset.</tooltip>
   <tooltip widget="rf_print_tree_button">Display a specific
     tree.</tooltip>
   <tooltip widget="rf_print_tree_spinbutton">Which tree to

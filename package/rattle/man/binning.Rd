@@ -10,7 +10,7 @@
 }
 \usage{
 binning(x, bins=4, method=c("quantile", "wtd.quantile", "kmeans"),
-                     labels=NULL, ordered=TRUE)
+                     labels=NULL, ordered=TRUE, weights=NULL)
 }
 \arguments{
   
@@ -24,6 +24,9 @@ binning(x, bins=4, method=c("quantile", "wtd.quantile", "kmeans"),
   \item{labels}{the labels or names to use for each of the bins.}
 
   \item{ordered}{whether to build an ordered factor or not.}
+
+  \item{weights}{vector of numeric weights for each observation for
+  weighted quantile binning.}
   
 }
 \details{
