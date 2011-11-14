@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-25 20:55:19 Graham Williams>
+# Time-stamp: <2011-11-11 17:55:54 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,8 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.12"
-DATE <- "2011-10-23"
+VERSION <- "2.6.13"
+DATE <- "2011-10-25"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -940,6 +940,8 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
 
   # 100706 The asCairo is failing:
   # Error in asCairoDevice(da) : Graphics API version mismatch
+  # 111111 This usually can be solved with a reinstall of the package:
+  # > install.packages("cairoDevice")
   
   if (! packageIsAvailable("cairoDevice", Rtxt("enable the cairo device option")))
   {

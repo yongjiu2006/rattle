@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-25 20:55:11 Graham Williams>
+# Time-stamp: <2011-11-15 06:19:46 Graham Williams>
 #
 # DATA TAB
 #
@@ -1051,7 +1051,9 @@ executeDataCSV <- function(filename=NULL)
 
 ##  showDataViewButtons()
 
-  setStatusBar(sprintf(Rtxt("The CSV file has been loaded: %s."), crs$dataname))
+  setStatusBar(sprintf(Rtxt("The CSV file has been loaded: %s.",
+                            "Please wait whilst we extract its structure..."),
+                       crs$dataname))
 
   return(TRUE)
 }
@@ -1546,7 +1548,9 @@ executeDataRdata <- function()
   crs$dataname <- dataset
   setMainTitle(crs$dataname)
 
-  setStatusBar(sprintf(Rtxt("The data has been loaded: %s."), crs$dataname))
+  setStatusBar(sprintf(Rtxt("The data has been loaded: %s.",
+                            "Please wait whilst we extract its structure..."),
+                       crs$dataname))
 
   return(TRUE)
 }
@@ -1556,16 +1560,16 @@ executeDataRdataset <- function()
 
   # Collect relevant data
 
-  dataset <- theWidget("data_name_combobox")$getActiveText()
+  .dataset <- theWidget("data_name_combobox")$getActiveText()
 
   # 080907 Can we do this here each time? I haven't work out a way to
   # update the combobox when it is clicked - this is what would be
   # best! But at least having it in here means we can update it when
   # it is executed.
 
-  updateRDatasets(current=dataset)
+  updateRDatasets(current=.dataset)
 
-  if (is.null(dataset))
+  if (is.null(.dataset))
   {
     errorDialog(Rtxt("No R dataset name has been specified.",
                      "Please identify the name of the R dataset.",
@@ -1580,7 +1584,7 @@ executeDataRdataset <- function()
 
   # Generate commands.
 
-  assign.cmd <- sprintf('crs$dataset <- %s', dataset)
+  assign.cmd <- sprintf('crs$dataset <- %s', .dataset)
   str.cmd <- "str(crs$dataset)"
 
   # Start logging and executing the R code.
@@ -1592,7 +1596,7 @@ executeDataRdataset <- function()
   appendLog(Rtxt("Load an R data frame."), assign.cmd)
   resetRattle()
   eval(parse(text=assign.cmd))
-  crs$dataname <- dataset
+  crs$dataname <- .dataset
   setMainTitle(crs$dataname)
 
   # 080328 Fix up any non-supported characters in the variable names,
@@ -1603,7 +1607,8 @@ executeDataRdataset <- function()
 
   appendLog(Rtxt("Display a simple summary (structure) of the dataset."), str.cmd)
 
-  setStatusBar(Rtxt("The R dataset is now available."))
+  setStatusBar(Rtxt("The R dataset has been loaded.",
+                    "Please wait whilst we extract its structure..."))
 
   return(TRUE)
 }

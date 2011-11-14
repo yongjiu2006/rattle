@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-18 21:21:47 Graham Williams>
+# Time-stamp: <2011-10-31 22:46:08 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -41,6 +41,11 @@ on_rf_importance_button_clicked <- function(button)
 on_rf_errors_button_clicked <- function(button)
 {
   plotRandomForestError()
+}
+
+on_rf_oob_roc_button_clicked <- function(button)
+{
+  plotRandomForestOOBROC()
 }
 
 on_rf_print_tree_button_clicked <- function(button)
@@ -463,6 +468,8 @@ showModelRFExists <- function(traditional=TRUE, conditional=!traditional)
     theWidget("rf_importance_button")$setSensitive(TRUE)
     theWidget("rf_errors_button")$show()
     theWidget("rf_errors_button")$setSensitive(TRUE)
+    theWidget("rf_oob_roc_button")$show()
+    theWidget("rf_oob_roc_button")$setSensitive(TRUE)
     theWidget("rf_print_tree_button")$show()
     theWidget("rf_print_tree_button")$setSensitive(TRUE)
     theWidget("rf_print_tree_spinbutton")$show()
@@ -472,6 +479,7 @@ showModelRFExists <- function(traditional=TRUE, conditional=!traditional)
   {
     theWidget("rf_importance_button")$hide()
     theWidget("rf_errors_button")$hide()
+    theWidget("rf_oob_roc_button")$hide()
     theWidget("rf_print_tree_button")$hide()
     theWidget("rf_print_tree_spinbutton")$hide()
   }
@@ -549,6 +557,39 @@ plotRandomForestError <- function()
   eval(parse(text=plot.cmd))
   
   setStatusBar(Rtxt("The error rates plot has been generated."))
+}
+
+plotRandomForestOOBROC <- function()
+{
+  # Make sure there is an rf object first.
+
+  if (is.null(crs$rf))
+  {
+    errorDialog(Rtxt("There is no RF and attempting to plot OOB ROC."),
+                crv$support.msg)
+    return()
+  }
+
+  if (! packageIsAvailable("ROCR", Rtxt("plot ROC curve")))
+    return()
+
+  newPlot()
+  plot.cmd <- paste('require(ROCR)',
+                    '\ncrs$pr <- predict(crs$rf, type="prob")[,2]',
+                    '\npred <- prediction(crs$pr, crs$dataset[crs$sample, crs$target])',
+                    '\nperf <- performance(pred, "tpr", "fpr")',
+                    '\nplot(perf, col=4)',
+                    '\nlegend("bottomright", bty="n",',
+                    '\n       sprintf("Area Under the Curve (AUC) = %s",',
+                    '\n               round(performance(pred, "auc")@y.values[[1]],2)))',
+                    genPlotTitleCmd(Rtxt("OOB ROC Curve"),
+                                    commonName(crv$RF), crs$dataname),
+                    sep="\n")
+
+  appendLog(Rtxt("Plot the OOB ROC curve."), plot.cmd)
+  eval(parse(text=plot.cmd))
+  
+  setStatusBar(Rtxt("The OOB ROC curve has been generated."))
 }
 
 displayRandomForestTree <- function()

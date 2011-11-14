@@ -1,3 +1,13 @@
+rattle (2.6.14) unstable; urgency=low
+
+  * Add OOB ROC button to Forest option of Model tab as suggested by Akbar
+    Waljee.
+  
+  * Bug fix for loading R Dataset data frame named dataset. Bug reported
+    by George Dontas.
+
+ --
+
 rattle (2.6.13) unstable; urgency=low
 
   * Add wtd.quantile type to binning. Suggested by Brenton R. Stone.
