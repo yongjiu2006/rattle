@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-31 22:46:08 Graham Williams>
+# Time-stamp: <2011-11-16 05:57:42 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -570,21 +570,30 @@ plotRandomForestOOBROC <- function()
     return()
   }
 
-  if (! packageIsAvailable("ROCR", Rtxt("plot ROC curve")))
+  
+  if (! packageIsAvailable("verification", Rtxt("plot ROC curve")))
     return()
 
   newPlot()
-  plot.cmd <- paste('require(ROCR)',
-                    '\ncrs$pr <- predict(crs$rf, type="prob")[,2]',
-                    '\npred <- prediction(crs$pr, crs$dataset[crs$sample, crs$target])',
-                    '\nperf <- performance(pred, "tpr", "fpr")',
-                    '\nplot(perf, col=4)',
+
+  # 111115 Akbar Waljee suggested using roc.plot from
+  # verification. Would also like a confidence interval but not sure
+  # how to.
+
+  plot.cmd <- paste('require(verification)',
+                    '\naucc <- roc.area(as.integer(crs$dataset[',
+                    if (not.null(crs$sample)) 'crs$sample',
+                    ', crs$target])-1,',
+                    '\n                 crs$rf$votes[,2])$A',
+                    '\nroc.plot(as.integer(crs$dataset[',
+                    if (not.null(crs$sample)) 'crs$sample',
+                    ', crs$target])-1,',
+                    '\n         crs$rf$votes[,2], main="")',
                     '\nlegend("bottomright", bty="n",',
-                    '\n       sprintf("Area Under the Curve (AUC) = %s",',
-                    '\n               round(performance(pred, "auc")@y.values[[1]],2)))',
+                    '\n       sprintf("Area Under the Curve (AUC) = %1.3f", aucc))\n',
                     genPlotTitleCmd(Rtxt("OOB ROC Curve"),
                                     commonName(crv$RF), crs$dataname),
-                    sep="\n")
+                    sep="")
 
   appendLog(Rtxt("Plot the OOB ROC curve."), plot.cmd)
   eval(parse(text=plot.cmd))
