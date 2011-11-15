@@ -4,7 +4,7 @@ help:
 	@echo "\n\
 	New Release:\n\
 	\tmeld\tCompare to previous commit - update ChangeLog and finalise it.\n\
-	\tsvn\tSubmits changes to google code\n\
+	\tsvn\tSubmits changes to google code with message from ChangeLog.\n\
 	\tupdate\n\
 	\tbuild\n\
 	\tcheck\n\

@@ -218,13 +218,16 @@
 
   if (! suppressRattleWelcome)
   {
-
-    cat(sprintf(paste(Rtxt("Rattle: A free graphical interface for data mining with R."),
-                      "\n", Rtxt("Version"),
-                      " %s ", COPYRIGHT, "\n", sep=""), VERSION))
+    msg <- paste(Rtxt("Rattle: A free graphical interface",
+                      "for data mining with R."), "\n",
+                 Rtxt("Version"), " ", VERSION, " ", COPYRIGHT, "\n",
+                 Rtxt("Type 'rattle()' to shake, rattle, and roll your data."),
+                 "\n",
+                 sep="")
+    
     if ("rattle" %in% getOption("defaultPackages"))
       rattle()
     else
-      cat(Rtxt("Type 'rattle()' to shake, rattle, and roll your data."), "\n")
+      packageStartupMessage(msg, appendLF=FALSE)
   }
 }

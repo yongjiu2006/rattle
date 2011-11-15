@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-11-16 05:57:42 Graham Williams>
+# Time-stamp: <2011-11-16 06:48:18 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -581,13 +581,16 @@ plotRandomForestOOBROC <- function()
   # how to.
 
   plot.cmd <- paste('require(verification)',
-                    '\naucc <- roc.area(as.integer(crs$dataset[',
+                    # 111116 the as.integer as.factor to ensure
+                    # 0/1. Need to fix to ensure button is only
+                    # avilable for binary classification.
+                    '\naucc <- roc.area(as.integer(as.factor(crs$dataset[',
                     if (not.null(crs$sample)) 'crs$sample',
-                    ', crs$target])-1,',
+                    ', crs$target]))-1,',
                     '\n                 crs$rf$votes[,2])$A',
-                    '\nroc.plot(as.integer(crs$dataset[',
+                    '\nroc.plot(as.integer(as.factor(crs$dataset[',
                     if (not.null(crs$sample)) 'crs$sample',
-                    ', crs$target])-1,',
+                    ', crs$target]))-1,',
                     '\n         crs$rf$votes[,2], main="")',
                     '\nlegend("bottomright", bty="n",',
                     '\n       sprintf("Area Under the Curve (AUC) = %1.3f", aucc))\n',
