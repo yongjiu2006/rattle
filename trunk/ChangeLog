@@ -5,6 +5,8 @@ rattle (2.6.14) unstable; urgency=low
   
   * Bug fix for loading R Dataset data frame named dataset. Bug reported
     by George Dontas.
+  
+  * Use roc.plot() from evaluation. Suggested by Akbar Waljee.
 
  --
 
