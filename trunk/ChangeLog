@@ -8,7 +8,7 @@ rattle (2.6.14) unstable; urgency=low
   
   * Use roc.plot() from evaluation. Suggested by Akbar Waljee.
 
- --
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 16 Nov 2011 06:01:17 +1100
 
 rattle (2.6.13) unstable; urgency=low
 

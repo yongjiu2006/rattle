@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-15 06:27+1100\n"
-"PO-Revision-Date: 2011-11-15 06:27+1100\n"
+"POT-Creation-Date: 2011-11-16 06:02+1100\n"
+"PO-Revision-Date: 2011-11-16 06:02+1100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_AU\n"
@@ -3119,7 +3119,7 @@ msgstr "Display a scatterplot matrix for the KMeans clustering."
 msgid "Display a simple summary (structure) of the dataset."
 msgstr "Display a simple summary (structure) of the dataset."
 
-#: random_forest.R:609
+#: random_forest.R:618
 msgid ""
 "Displaying all rules can take quite a while. \n"
 "\n"
@@ -3153,7 +3153,7 @@ msgstr "Display the plot."
 msgid "display the Rattle GUI"
 msgstr "display the Rattle GUI"
 
-#: ada_gui.R:118 ada_gui.R:151 random_forest.R:621
+#: ada_gui.R:118 ada_gui.R:151 random_forest.R:630
 msgid "Display tree number %d."
 msgstr "Display tree number %d."
 
@@ -3585,7 +3585,7 @@ msgstr "Generate a Precision/Recall Plot for the %s model on %s."
 msgid "Generate a risk chart."
 msgstr "Generate a risk chart."
 
-#: random_forest.R:750
+#: random_forest.R:759
 msgid "generate a rule set"
 msgstr "generate a rule set"
 
@@ -3733,7 +3733,7 @@ msgstr "Generate the frequency of the initial digits."
 msgid "Generate the required data."
 msgstr "Generate the required data."
 
-#: random_forest.R:836 random_forest.R:938 random_forest.R:963
+#: random_forest.R:845 random_forest.R:947 random_forest.R:972
 msgid "generate the rule sets"
 msgstr "generate the rule sets"
 
@@ -4801,7 +4801,7 @@ msgstr ""
 "\n"
 "Ignoring: %s."
 
-#: random_forest.R:585
+#: random_forest.R:594
 msgid "OOB ROC Curve"
 msgstr "OOB ROC Curve"
 
@@ -4963,7 +4963,7 @@ msgstr "Plot %d has been exported to the file %s."
 msgid "Plot %d has been sent to the printer using the command: %s."
 msgstr "Plot %d has been sent to the printer using the command: %s."
 
-#: random_forest.R:573
+#: random_forest.R:574
 msgid "plot ROC curve"
 msgstr "plot ROC curve"
 
@@ -5001,7 +5001,7 @@ msgstr "Plot the error rate as we increase the number of trees."
 msgid "# Plot the lift chart."
 msgstr "# Plot the lift chart."
 
-#: random_forest.R:589
+#: random_forest.R:598
 msgid "Plot the OOB ROC curve."
 msgstr "Plot the OOB ROC curve."
 
@@ -5149,7 +5149,7 @@ msgstr "Print the plot."
 msgid "Print the results of the modelling."
 msgstr "Print the results of the modelling."
 
-#: random_forest.R:639
+#: random_forest.R:648
 msgid "print the rule sets"
 msgstr "print the rule sets"
 
@@ -5491,11 +5491,11 @@ msgstr "Roles noted. %d observations and %d input variables."
 msgid " Rule number: %s"
 msgstr " Rule number: %s"
 
-#: random_forest.R:627
+#: random_forest.R:636
 msgid "Rules from all trees have been added to the textview."
 msgstr "Rules from all trees have been added to the textview."
 
-#: random_forest.R:628
+#: random_forest.R:637
 msgid "Rules from tree %d have been added to the textview."
 msgstr "Rules from tree %d have been added to the textview."
 
@@ -6268,7 +6268,7 @@ msgstr ""
 "The Indicator Variable transform can only be performed one variable at a "
 "time. Please select just one variable to transform."
 
-#: random_forest.R:1146
+#: random_forest.R:1155
 msgid "the input must be positive"
 msgstr "the input must be positive"
 
@@ -6360,7 +6360,7 @@ msgstr ""
 msgid "The model has been exported to '%s'."
 msgstr "The model has been exported to '%s'."
 
-#: random_forest.R:756 random_forest.R:842
+#: random_forest.R:765 random_forest.R:851
 msgid "the model is not of the 'randomForest' class"
 msgstr "the model is not of the 'randomForest' class"
 
@@ -6414,7 +6414,7 @@ msgstr ""
 msgid "The ODBC data has been loaded: %s."
 msgstr "The ODBC data has been loaded: %s."
 
-#: random_forest.R:592
+#: random_forest.R:601
 msgid "The OOB ROC curve has been generated."
 msgstr "The OOB ROC curve has been generated."
 
@@ -6504,7 +6504,7 @@ msgstr ""
 "'balanced' classifier. <<>> The R package for building Random Forests is "
 "called randomForest."
 
-#: random_forest.R:751
+#: random_forest.R:760
 msgid "the 'randomForest' package is required to generate rule sets"
 msgstr "the 'randomForest' package is required to generate rule sets"
 
@@ -6616,7 +6616,7 @@ msgstr "The RGtk2 package is not available but is required for the %s GUI."
 msgid "The R package data is now available."
 msgstr "The R package data is now available."
 
-#: random_forest.R:623
+#: random_forest.R:632
 msgid "The rules are being generated ..."
 msgstr "The rules are being generated ..."
 
@@ -7578,7 +7578,7 @@ msgstr ""
 "This is unusual since it is both an input variable and used to weight the "
 "outputs. It is suggested that you ignore this variable."
 
-#: kmeans.R:518 random_forest.R:630 rpart.R:149
+#: kmeans.R:518 random_forest.R:639 rpart.R:149
 msgid "You may need to scroll the textview to view them."
 msgstr "You may need to scroll the textview to view them."
 
