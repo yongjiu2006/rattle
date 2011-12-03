@@ -1,3 +1,10 @@
+rattle (2.6.15) unstable; urgency=low
+
+  * Bug fix for Mac OS/X on 2.14.0 with a call to set.cursor failing
+    because the textviews do not yet exist.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 03 Dec 2011 22:49:18 +1100
+
 rattle (2.6.14) unstable; urgency=low
 
   * Add OOB ROC button to Forest option of Model tab as suggested by Akbar
