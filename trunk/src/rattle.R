@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-11-11 17:55:54 Graham Williams>
+# Time-stamp: <2011-12-03 22:47:09 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -2883,10 +2883,10 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
 
   # 091106 For now, set cursor specifically on the textview
   # windows. Under Ubuntu it is not needed, but is on Vista. Is this a
-  # GTK+ issue?emove this once MS/Windows no longer has this problem.
+  # GTK+ issue? Remove this once MS/Windows no longer has this problem.
 
   # 091106 The first approach, lapply, did not work! Whlist all the
-  # textview widgets do exist, the getWind0w returned NULL unless the
+  # textview widgets do exist, the getWindow returned NULL unless the
   # textview had been visited. So, instead, loop through the
   # textviews.
 
@@ -2894,11 +2894,18 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
   #            getWindow("GTK_TEXT_WINDOW_TEXT")$
   #            setCursor(gdkCursorNew(cursor)))
 
-  for (tv in allTextviews())
-  {
-    win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
-    if (! is.null(win)) win$setCursor(gdkCursorNew(cursor))
-  }
+  # 111203 On Mac this started causing attmpt to apply non-funciton
+  # errors, since the textviews are not yet defined on starting pu
+  # Rattle. Not sure why this started happening with R 2.14.0 on Mac.
+  # Get rid of this for now and test if it works okay on
+  # Linux/Windows/Mac for textviews. Otherwise, if theWdiget(tv) is
+  # NULL then don't proceed.
+  
+#  for (tv in allTextviews())
+#  {
+#    win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
+#    if (! is.null(win)) win$setCursor(gdkCursorNew(cursor))
+#  }
 }
 
 simplifyNumberList <- function(nums)
