@@ -1,7 +1,11 @@
 rattle (2.6.15) unstable; urgency=low
 
   * Bug fix for Mac OS/X on 2.14.0 with a call to set.cursor failing
-    because the textviews do not yet exist.
+    because the textviews do not yet exist. Problem is that the
+    addFromFile for the GUI is generating a Warning that seems to now stop
+    the file being loaded. Removing the particular XML elemnts causing the
+    warning (one ubuntu_local and 4 GtkTreeSelections) "fixes" the
+    problem.
 
  -- Graham Williams <Graham.Williams@togaware.com>  Sat, 03 Dec 2011 22:49:18 +1100
 

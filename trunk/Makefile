@@ -116,7 +116,11 @@ ISOURCE = \
 	src/pmmltocibi.R \
 	src/pmml.transforms.R
 
-GLADE_SOURCE = src/rattle.glade src/rattle.ui src/tooltips.xml src/textviews.xml
+GLADE_SOURCE = src/rattle.glade \
+	src/rattle.ui \
+	src/rattle_macosx.ui \
+	src/tooltips.xml \
+	src/textviews.xml
 
 SOURCE = $(R_SOURCE) $(GLADE_SOURCE) $(NAMESPACE)
 

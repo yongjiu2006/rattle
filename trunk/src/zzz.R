@@ -85,6 +85,14 @@
 
   crv$appname <- "Rattle"
   crv$projext <- ".rattle"
+
+  # 111204 Fix issue of Mac OS/X not ignoring warnings in the .ui
+  # file, so use an alternative one for now until work out permanent
+  # fix.
+  
+  crv$rattleUI <- "rattle.ui"
+  if (Sys.info()["sysname"] == "Darwin") crv$rattleUI <- "rattle_macosx.ui"
+
   crv$log.intro <- paste("#", sprintf(Rtxt("%s is Copyright (c) 2006-2011 %s."),
                                       "Rattle", "Togaware Pty Ltd"))
   crv$support.msg <- sprintf(Rtxt("Contact %s."), "support@togaware.com")

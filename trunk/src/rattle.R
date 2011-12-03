@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-12-03 22:47:09 Graham Williams>
+# Time-stamp: <2011-12-04 09:27:19 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,8 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.14"
-DATE <- "2011-11-16"
+VERSION <- "2.6.15"
+DATE <- "2011-12-04"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -421,6 +421,7 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
   # that here.
 
   # 101127 No longer needed if (crv$useGtkBuilder || Sys.info()["sysname"] == "Darwin")
+  # 111203 Is this still needed????? Try removing it.
   if (Sys.info()["sysname"] == "Darwin")
     fixMacAndGtkBuilderTypes()
  
@@ -451,13 +452,13 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
                 silent=TRUE)
   if (inherits(result, "try-error"))
     if (crv$useGtkBuilder)
-      rattleGUI$addFromFile("rattle.ui")
+      rattleGUI$addFromFile(crv$rattleUI)
     else
       rattleGUI <<- gladeXMLNew("rattle.glade",
                                 root="rattle_window", domain="R-rattle")
   else
     if (crv$useGtkBuilder)
-      rattleGUI$addFromFile(file.path(etc, "rattle.ui"))
+      rattleGUI$addFromFile(file.path(etc, crv$rattleUI))
     else
       rattleGUI <<- gladeXMLNew(file.path(etc,"rattle.glade"),
                                 root="rattle_window", domain="R-rattle")
@@ -2561,12 +2562,12 @@ newPlot <- function(pcnt=1)
                   silent=TRUE)
     if (inherits(result, "try-error"))
       if (crv$useGtkBuilder)
-        plotGUI$addFromFile("rattle.ui")
+        plotGUI$addFromFile(crv$rattleUI)
       else
         plotGUI <- gladeXMLNew("rattle.glade", root="plot_window", domain="R-rattle")
     else
       if (crv$useGtkBuilder)
-        plotGUI$addFromFile(file.path(etc, "rattle.ui"))
+        plotGUI$addFromFile(file.path(etc, crv$rattleUI))
       else
         plotGUI <- gladeXMLNew(file.path(etc,"rattle.glade"),
                                root="plot_window", domain="R-rattle")
@@ -2895,17 +2896,18 @@ set.cursor <- function(cursor="left-ptr", message=NULL)
   #            setCursor(gdkCursorNew(cursor)))
 
   # 111203 On Mac this started causing attmpt to apply non-funciton
-  # errors, since the textviews are not yet defined on starting pu
-  # Rattle. Not sure why this started happening with R 2.14.0 on Mac.
-  # Get rid of this for now and test if it works okay on
-  # Linux/Windows/Mac for textviews. Otherwise, if theWdiget(tv) is
-  # NULL then don't proceed.
+  # errors, since the textviews are not yet defined on starting up
+  # Rattle.  This started happening with R 2.14.0 on Mac after failing
+  # to properly load rattle.ui.  I could get rid of thes for now and
+  # test if it works okay on Linux/Windows/Mac for textviews, but on
+  # Mac at least, some textviews were not changing cursor. I should test
+  # if theWdiget(tv) is NULL then don't proceed.
   
-#  for (tv in allTextviews())
-#  {
-#    win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
-#    if (! is.null(win)) win$setCursor(gdkCursorNew(cursor))
-#  }
+  for (tv in allTextviews())
+  {
+    win <- theWidget(tv)$getWindow("GTK_TEXT_WINDOW_TEXT")
+    if (! is.null(win)) win$setCursor(gdkCursorNew(cursor))
+  }
 }
 
 simplifyNumberList <- function(nums)
@@ -3163,12 +3165,12 @@ on_about_menu_activate <-  function(action, window)
   
   if (inherits(result, "try-error"))
     if (crv$useGtkBuilder)
-      about$addFromFile("rattle.ui")
+      about$addFromFile(crv$rattleUI)
     else
     about <- gladeXMLNew("rattle.glade", root="aboutdialog", domain="R-rattle")
   else
     if (crv$useGtkBuilder)
-      about$addFromFile(file.path(etc, "rattle.ui"))
+      about$addFromFile(file.path(etc, crv$rattleUI))
     else
       about <- gladeXMLNew(file.path(etc, "rattle.glade"),
                            root="aboutdialog", domain="R-rattle")
