@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-12-04 09:27:19 Graham Williams>
+# Time-stamp: <2011-12-24 14:56:04 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -28,7 +28,7 @@ Rtxt <- function(...)
 RtxtNT <- Rtxt
 
 VERSION <- "2.6.15"
-DATE <- "2011-12-04"
+DATE <- "2011-12-24"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -156,8 +156,14 @@ rattleInfo <- function(all.dependencies=FALSE,
 
   iv <- utils:::installed.packages()
   av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
-  
+
   cat(sprintf("Rattle: version %s cran %s\n", crv$version, av["rattle", "Version"]))
+
+  up <- NULL # List of packages that can be upgraded.
+
+  if (compareVersion(av["rattle", "Version"], crv$version) == 1)
+    up <- "rattle"
+  
   cat(sprintf("%s (Revision %s)\n",
               sub(" version", ": version", version$version.string),
               version$"svn rev"))
@@ -253,7 +259,6 @@ rattleInfo <- function(all.dependencies=FALSE,
                                 gsub(' \\([^\\)]+\\)', '', iv["rattle", "Suggests"]),
                                 sep="")), ", ")[[1]]
 
-  up <- NULL
   for (p in deps)
   {
     if (! p %in% rownames(av))

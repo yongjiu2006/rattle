@@ -1,3 +1,16 @@
+rattle (2.6.16) unstable; urgency=low
+
+  * rattleInfo() now also notes if rattle itself needs upgrading.
+  
+  * Bug fix in show association rules. It now works again.
+  
+  * Forgot to include rescale.by.group() in NAMESAPCE.
+  
+  * CITATION to the book rather than the article. That is a more
+    definitive resource, though not freely avaliable.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sat, 24 Dec 2011 15:35:21 +1100
+
 rattle (2.6.15) unstable; urgency=low
 
   * Bug fix for Mac OS/X on 2.14.0 with a call to set.cursor failing

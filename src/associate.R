@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-06-19 11:57:17 Graham Williams>
+# Time-stamp: <2011-12-24 14:46:07 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -413,7 +413,28 @@ listAssociateRules <- function()
   # print(summary1.cmd)
   ## This returns "" 080429 when "lift > 1.3" is included in the
   ## subset command.
-  result <- collectOutput(summary1.cmd)
+
+  ## 111224 collectOutput was failing with:
+  ##
+  ## Warning message:
+  ## In is.na(x) : is.na() applied to non-(list or vector) of type 'S4'
+  ##
+  ## Error in inspect(sort(crs$apriori, by = "confidence")) : 
+  ## error in evaluating the argument 'x' in selecting a method for
+  ## function 'inspect': Error in
+  ## x[order(x, na.last = na.last, decreasing = decreasing)] : 
+  ## error in evaluating the argument 'i' in selecting a method for
+  ## function '[': Error in slot(x, s)[i] : subscript out of bounds
+  ##
+  ## So try capture.output.
+  ##
+  ## result <- collectOutput(summary1.cmd)
+  ##
+
+  result <- paste(capture.output(eval(parse(text=summary1.cmd))), collapse="\n")
+
+  ## It did not dump an error, but produces no output until I added the paste.
+  
   ## This 
 ##   zz <- textConnection("commandsink", "w", TRUE)
 ##   sink(zz)

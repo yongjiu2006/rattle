@@ -33,6 +33,7 @@ export(
        rattleInfo,
        rattle.print.rpart,
        rattle.print.summary.multinom,
+       rescale.by.group,
        overwritePackageFunction,
        savePlotToFile,
        setupDataset,
