@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-07-10 07:05:36 Graham Williams>
+# Time-stamp: <2012-02-09 07:09:08 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -20,27 +20,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Rattle. If not, see <http://www.gnu.org/licenses/>.
-
-########################################################################
-
-# 091214 Not sure if we need to change this for the grid layout of
-# the grid package so we can get multiple plots. But perhaps we go
-# back to just a single plot in each figure. Something like:
-
-# newPlot()
-# layout <- grid.layout(nrow = 2, ncol = 2)
-# gf = grid.frame(name="gf", layout=layout)
-# ds <- rbind(data.frame(Rainfall=crs$dataset[crs$sample,][,"Rainfall"],
-#                        RainTomorrow="All"),
-#             data.frame(Rainfall=crs$dataset[crs$sample,][crs$dataset[crs$sample,]$
-#                        RainTomorrow=="No","Rainfall"], RainTomorrow="No"),
-#            data.frame(Rainfall=crs$dataset[crs$sample,][crs$dataset[crs$sample,]$
-#                       RainTomorrow=="Yes","Rainfall"], RainTomorrow="Yes"))
-# p1 <- ggplotGrob(ggplot(ds, aes(RainTomorrow, Rainfall)) +
-#                  geom_boxplot(fill=rainbow_hcl(3),) +
-#                  opts(title="Distribution of Rainfall (sample)") +
-#                  labs(x="Rainfall\n\nRattle 2009-Dec-14 14:08:14 gjw"))
-# grid.place("gf", p1, row=1, col=1) 
 
 ########################################################################
 # EXECUTION
@@ -457,12 +436,12 @@ generateTitleText <- function(var, target, sampling, doby)
 {
   if (sampling)
     if (doby)
-      title.txt <- sprintf(Rtxt("Distribution of %s (sample)\nby %s"), var, target)
+      title.txt <- sprintf(Rtxt("Distribution of %s (sample)\\nby %s"), var, target)
     else
       title.txt <- sprintf(Rtxt("Distribution of %s (sample)"), var)
   else
     if (doby)
-      title.txt <- sprintf(Rtxt("Distribution of %s\nby %s"), var, target)
+      title.txt <- sprintf(Rtxt("Distribution of %s\\nby %s"), var, target)
     else
       title.txt <- sprintf(Rtxt("Distribution of %s"), var)
   return(title.txt)
@@ -492,6 +471,10 @@ executeExplorePlot <- function(dataset,
   # variables from the command line, as in using Sweave. The function
   # remains an internal Rattle function though - only for those who
   # know!
+
+  # Has the advanced graphics (ggplot2) option be enabled?
+
+  advanced.graphics <- theWidget("use_ggplot2")$getActive()
 
   # Obtain the selection of variables.
 
@@ -618,6 +601,12 @@ executeExplorePlot <- function(dataset,
     genericDataSet <- cbind(genericDataSet, tmpDataSet)
   }
 
+  # 120205 Even newer way of dealing with datasets: use "with" to
+  # avoid using "crs$" over and over again. Results in much cleaner
+  # looking code.
+
+  new.dataset <- gsub("crs\\$", "", dataset)
+  
   # Generate a plot for each variable. If there are too many
   # variables, ask the user if we want to continue.
 
@@ -636,7 +625,7 @@ executeExplorePlot <- function(dataset,
   # plots following the example in the pairs function.
   
   if (total.plots == 0)
-    if (theWidget("use_ggplot2")$getActive())
+    if (advanced.graphics)
       displayPairsPlot2(dataset)
     else
       displayPairsPlot(dataset)
@@ -655,29 +644,14 @@ executeExplorePlot <- function(dataset,
     # nocthes do not overlap, then the distribution medians are
     # significantly different.")
 
-    # 081122 TODO ggplot2 will simplify this substantially:
-    #
-    # p <- ggplot(crs$dataset, aes(factor(TARGET_Adjusted), Age))
-    # p + geom_boxplot(aes(fill=factor(TARGET_Adjusted)))
-    #
-    # Thus, no deriving the ds dataset, and no playing with colours.
-
-#    if (crv$appname == "Rattle")
-#    {
-#      lib.cmd <- "require(ggplot2, quietly=TRUE)"
-#      for (s in 1:nboxplots)
-#      {
-#        plot.cmd <- sprintf(paste("p <- ggplot(crs$dataset,",
-#                                  "aes(factor(TARGET_Adjusted), %s))\n",
-#                                  "p + geom_boxplot(aes(fill=",
-#                                  "factor(TARGET_Adjusted)))"),
-#                            boxplots[s])
-#        eval(parse(text=lib.cmd))
-#        print(eval(parse(text=plot.cmd))) # Very slow and not in Cairo device!!!!
-#      }
-#    }
-#    else
-#    {
+    if (advanced.graphics &&
+        packageIsAvailable("ggplot2", Rtxt("plot using ggplot2")))
+    {
+      executeBoxPlot2(new.dataset, boxplots, target, targets, stratify, sampling, pmax)
+    }
+    else
+    {
+        
     
     # 080918 Use the colorspace package to get a better colour map. See
     # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87 and
@@ -788,7 +762,8 @@ executeExplorePlot <- function(dataset,
       eval(parse(text=title.cmd))
     }
   }
-#  }
+  }
+  
   
 
   ##--------------------------------------------------------------------
@@ -1891,6 +1866,104 @@ executeExplorePlot <- function(dataset,
   else
     setStatusBar(Rtxt("A pairs plot has been generated."))
 }
+
+executeBoxPlot2 <- function(dataset, vars, target, targets, stratify, sampling, pmax)
+{
+  # 120209 Use ggplot2 for the box plot.
+  
+  # Note that for each type of plot (box plot or bar chart etc) we
+  # always start a new plot. So we do not need to know how many plots
+  # have already been displayed (the old pcnt). We work out from the
+  # length of vars and the value of pmax the number of new plots, and
+  # the grid layout.
+  
+  # 080918 Use the colorspace package to get a better colour map. See
+  # http://epub.wu-wien.ac.at/dyn/virlib/wp/eng/showentry?ID=epub-wu-01_c87 and
+  # http://statmath.wu.ac.at/~zeileis/papers/Zeileis+Hornik+Murrell-2009.pdf
+  #
+  # 120209 Use the default colours for ggplot2 instead. They should be
+  # just fine.
+    
+#  if (packageIsAvailable("colorspace"))
+#    cols <- "fill=rainbow_hcl(%d)" # 090524, start = 270, end = 150),"
+#  else
+#    cols <- "fill=rainbow(%d)"
+
+  startLog(Rtxt("Box Plot"))
+
+  lib.cmd <- "require(ggplot2, quietly=TRUE)"
+  appendLog(packageProvides("ggplot2", "ggplot"), lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  # TODO 120205 Grid layout. Note that if no target is selected but
+  # multiple variables are selected, the scales will be different and
+  # so can not be placed on the one plot.  If multiple vars and
+  # selected target, do multiple plots in grid. 120206 Use grid.layout
+  # to arrange multiple plots.
+  
+  nplots <- length(vars)
+    
+  # mylayout <- grid.layout(nrow=2, ncol=2)
+    # grid.show.layout(mylayout)
+    #
+    # vplayout <- function(...)
+    # {
+    #  grid.newpage()
+    #  pushViewport(viewport(layout=mylayout))
+    # }
+    #
+    # subplot <- function(x, y)
+    #  viewport(layout.pos.row = x, layout.pos.col = y)
+    #
+    # vplayout()
+    # print(pp, vp=subplot(1, 1:2))
+    # print(pp, vp=subplot(2, 1))
+    # print(pp, vp=subplot(2, 2))
+    
+  for (s in seq_along(vars))
+  {
+    newPlot()
+
+    ggplot.cmd  <- sprintf("ggplot(%s)", dataset)
+
+    # TODO 120206 How to fill and not show the legend?
+    
+    # boxplot.cmd <- sprintf("geom_boxplot(aes(fill=%s))", target) # Colour + Legend
+
+    # TODO 120209 How to specify width of each plot.
+
+    # TODO 120205 Add notches - this is coming:
+    # http://groups.google.com/group/ggplot2-dev/browse_thread/thread/3e9f3eaa64779922
+
+    boxplot.all.cmd <- sprintf('geom_boxplot(aes("All", %s))', vars[s])
+
+    boxplot.var.cmd <- sprintf("geom_boxplot(aes(%s, %s))", target, vars[s])
+
+    title.txt <- genPlotTitleCmd(generateTitleText(vars[s],
+                                                   target,
+                                                   sampling,
+                                                   stratify && length(targets)),
+                                 vector=TRUE)
+
+    title.cmd <- sprintf('opts(title="%s")', title.txt[1])
+  
+    xlab.cmd <- sprintf('xlab("%s\\n\\n%s")', target, title.txt[2])
+
+    plot.cmd <- paste(ggplot.cmd, boxplot.all.cmd, boxplot.var.cmd, xlab.cmd, title.cmd,
+                      sep=" +\n           ")
+    plot.cmd <- sprintf("pp <- with(crs,\n           %s\n          )\nprint(pp)",
+                        plot.cmd)
+  
+    appendLog(paste(Rtxt("Box Plot for"), vars[s]), plot.cmd)
+    eval(parse(text=plot.cmd))
+
+  }
+}
+
+
+# 120205 The following is migrating into the original
+# executeExplorePlot, and splitting out the different plots into
+# separate functions.
 
 executeExplorePlot2 <- function(dataset,
                                boxplots = getSelectedVariables("boxplot"),
@@ -3540,7 +3613,7 @@ displayPairsPlot2 <- function(dataset)
   if (! packageIsAvailable("ggplot2", Rtxt("plot using ggplot2"))) return()
 
   lib.cmd <- "require(ggplot2, quietly=TRUE)"
-  appendLog(packageProvides("ggplot", "ggplot"), lib.cmd)
+  appendLog(packageProvides("ggplot2", "ggplot"), lib.cmd)
   eval(parse(text=lib.cmd))
   
   plot.cmd <- sprintf(paste("ggcorplot(data=na.omit(%s[%s]),",
