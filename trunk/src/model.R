@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-11 10:13:52 Graham Williams>
+# Time-stamp: <2012-02-19 12:14:46 Graham Williams>
 #
 # MODEL TAB
 #
@@ -1412,6 +1412,10 @@ exportModelTab <- function()
   if (theWidget("rpart_radiobutton")$getActive())
   {
     exportRpartModel()
+  }
+  else if (theWidget("rf_radiobutton")$getActive())
+  {
+    exportRandomForestModel()
   }
   else if (theWidget("model_linear_radiobutton")$getActive())
   {

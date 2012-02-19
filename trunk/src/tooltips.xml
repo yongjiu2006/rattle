@@ -216,6 +216,8 @@
     divide each cell by the matrix total.</tooltip>
   <tooltip widget="rescale_log_radiobutton">Rescale variables using a
     natural log transform.</tooltip>
+  <tooltip widget="rescale_log10_radiobutton">Rescale variables using a
+    log10 transform.</tooltip>
   <tooltip widget="normalise_medianad_radiobutton">Rescale (robustly)
     so that the median is 0 and the median absolute deviation is
     1.</tooltip>

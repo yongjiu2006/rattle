@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-11 14:10:56 Graham Williams>
+# Time-stamp: <2012-02-19 12:39:24 Graham Williams>
 #
 # Implement kmeans functionality.
 #
@@ -177,7 +177,7 @@ executeClusterKMeans <- function(include)
     # Show the resulting model.
 
     size.cmd <- "paste(crs$kmeans$size, collapse=' ')"
-    means.cmd <- sprintf("mean(%s)", ds)
+    means.cmd <- sprintf("colMeans(%s)", ds)
     centres.cmd <- "crs$kmeans$centers"
     withinss.cmd <- "crs$kmeans$withinss"
     

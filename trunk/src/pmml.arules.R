@@ -2,9 +2,9 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2011-01-06 06:38:43 Graham Williams>
+# Time-stamp: <2012-01-16 06:42:19 Graham Williams>
 #
-# Copyright (c) 2011 Togaware Pty Ltd
+# Copyright (c) 2011-2012 Togaware Pty Ltd
 #
 # This files is part of the Rattle suite for Data Mining in R.
 #
@@ -76,8 +76,8 @@ pmml.rules <- function(model,
       attrs=c(functionName="associationRules",
           numberOfTransactions=info(model)$ntransactions, 
           numberOfItems=length(itemLabels(model)),
-          minimumSupport=min(quality$support),     
-          minimumConfidence=min(quality$confidence),
+          minimumSupport=info(model)$support,     
+          minimumConfidence=info(model)$confidence,
           numberOfItemsets=length(is.unique),     
           numberOfRules=length(model)))
 
@@ -144,11 +144,10 @@ pmml.itemsets <- function(model,
                        copyright=NULL, ...)
 {
   
-    #if (! inherits(model, "itemsets")) stop("Not a legitimate arules itemsets rules object")
+  if (! inherits(model, "itemsets")) stop("Not a legitimate arules itemsets rules object")
 
-  #require(XML, quietly=TRUE)
-  #require(arules, quietly=TRUE)
-
+  require(XML, quietly=TRUE)
+  require(arules, quietly=TRUE)
   
   ## PMML
   pmml <- pmmlRootNode("4.0")
@@ -194,7 +193,7 @@ pmml.itemsets <- function(model,
 
   ## items
   items <- list()
-  il <- markupSpecials(itemLabels(model))
+  il <- markup(itemLabels(model)) # markup or markupSpecials?
   for (i in 1:length(il)) 
   items[[i]] <- xmlNode("Item", attrs = list(id = i, value = il[i]))
 

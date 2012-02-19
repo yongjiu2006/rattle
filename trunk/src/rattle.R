@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-12-24 14:56:04 Graham Williams>
+# Time-stamp: <2012-02-02 06:41:19 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,8 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.15"
-DATE <- "2011-12-24"
+VERSION <- "2.6.17"
+DATE <- "2012-02-19"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -127,22 +127,28 @@ COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 #
 # INITIALISATIONS
 
-overwritePackageFunction <- function(fname, fun, pkg)
-{
-  # 090207 This allows a plugin to easily overwrite any Rattle funtion
-  # with their own functionality. Simply define your own FUN that is
-  # to overwrite the Rattle defined function FNAME. 090517 We do it
-  # this way rather than having to export the function to be
-  # overridden. Note that the override only happens within the
-  # namespace of the package. Thus it does not make sense to use this
-  # overwrite function to overwrite an exported function, since the
-  # overwrite will not be seen externally to the package.
+## overwritePackageFunction <- function(fname, fun, pkg)
+## {
+##   # 090207 This allows a plugin to easily overwrite any Rattle funtion
+##   # with their own functionality. Simply define your own FUN that is
+##   # to overwrite the Rattle defined function FNAME. 090517 We do it
+##   # this way rather than having to export the function to be
+##   # overridden. Note that the override only happens within the
+##   # namespace of the package. Thus it does not make sense to use this
+##   # overwrite function to overwrite an exported function, since the
+##   # overwrite will not be seen externally to the package. 120117
+##   # Remove this for now since it could be harmful. Kurt has suggested
+##   # only allowing overwriting when 're' is asNamespace('rattle') to
+##   # reduce risk of malicious use by other packages.
 
-  re <- eval(parse(text=sprintf("environment(%s)", pkg)))
-  unlockBinding(fname, re)
-  assign(fname, fun, re)
-  lockBinding(fname, re)
-}
+##   re <- eval(parse(text=sprintf("environment(%s)", pkg)))
+##   if (re == asNamespace('rattle')) # NOT RIGHT
+##   {
+##     unlockBinding(fname, re)
+##     assign(fname, fun, re)
+##     lockBinding(fname, re)
+##   }
+## }
 
 toga <- function() browseURL("http://rattle.togaware.com")
 
@@ -286,7 +292,8 @@ rattleInfo <- function(all.dependencies=FALSE,
       "packages.\n")
   
   if (! is.null(up))
-    cat(sprintf(paste('\nUpgrade the packages with either',
+  {
+    cat(sprintf(paste('\nUpdate the packages with either',
                       'of the following commands:\n\n ',
                       '> install.packages(c("%s"))\n\n ',
                       '> install.packages(rattleInfo(%s%s%s%s%s%s%s))\n\n'),
@@ -305,6 +312,13 @@ rattleInfo <- function(all.dependencies=FALSE,
                 ifelse(include.not.available &&
                        include.libpath, ", ", ""),
                 ifelse(include.libpath, "include.libpath=TRUE", "")))
+    if (isWindows() && "rattle" %in% up)
+      cat("Detach rattle (and other attached packages) before updating:\n\n ",
+          '> detach("rattle")\n\n')
+    cat("Alternatively update all installed packages:\n\n ",
+        '> update.packages()\n\n')
+
+  }
 
   invisible(up)
 
@@ -434,11 +448,13 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
 
   on_aboutdialog_response <<- gtkWidgetDestroy
 
-  # When an error is reported to the R Console, include a time stamp.
+  # When an error is reported to the R Console, include a time
+  # stamp. 120122 Remove the error timestamp for now. The message
+  # remains after Rattle and users then attribute errors to Rattle.
 
-  options(error=function()
-          cat(sprintf(Rtxt("%s timestamp (for the message above):"), crv$appname),
-              sprintf("%s\n%s\n", Sys.time(), paste(rep("^", 72), collapse=""))))
+#  options(error=function()
+#          cat(sprintf(Rtxt("%s timestamp (for the message above):"), crv$appname),
+#              sprintf("%s\n%s\n", Sys.time(), paste(rep("^", 72), collapse=""))))
 
   # Keep the loading of Hmisc quiet.
 
@@ -514,9 +530,10 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
 
   if (crv$load.tooltips) loadTooltips()
 
-  if (not.null(crv$show.timestamp) && crv$show.timestamp)
-    cat(crv$appname, "timestamp:",
-        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+  # 120121 Don't show timestamps any more.
+#  if (not.null(crv$show.timestamp) && crv$show.timestamp)
+#    cat(crv$appname, "timestamp:",
+#        format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 
   # 090708 Set the icon for the current window, and then make it the
   # default for all other windows. We do it here rather than earlier

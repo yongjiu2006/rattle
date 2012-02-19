@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-02-09 07:09:08 Graham Williams>
+# Time-stamp: <2012-02-19 21:40:17 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -192,10 +192,10 @@ executeExploreSummary <- function(dataset)
                    "\n",
                    collectOutput(contents.cmd),
                    "\n\n",
-                   Rtxt("For the simple distribution tables below the 1st and 3rd Qu.\n",
-                        "refer to the first and third quartiles, indicating that 25%\n",
-                        "of the observations have values of that variable which are\n",
-                        "less than or greater than (respectively) the value listed."),
+                   Rtxt("For the simple distribution tables below the 1st and 3rd Qu.",
+                        "\nrefer to the first and third quartiles, indicating that 25%",
+                        "\nof the observations have values of that variable which are",
+                        "\nless than or greater than (respectively) the value listed."),
                    "\n\n",
                    collectOutput(summary.cmd))
   }
@@ -255,7 +255,7 @@ executeExploreSummary <- function(dataset)
                        Rtxt("Kurtosis for each numeric variable of the dataset.",
                             "\nLarger values mean sharper peaks and flatter tails.",
                             "\nPositive values indicate an acute peak around the mean.",
-                            "\nNegative values indicate a smaller peak around ",
+                            "\nNegative values indicate a smaller peak around",
                             "the mean."),
                        "\n\n",
                        collectOutput(kurtosis.cmd, TRUE))
@@ -436,7 +436,7 @@ generateTitleText <- function(var, target, sampling, doby)
 {
   if (sampling)
     if (doby)
-      title.txt <- sprintf(Rtxt("Distribution of %s (sample)\\nby %s"), var, target)
+      title.txt <- sprintf(Rtxt("Distribution of %s (sample)\nby %s"), var, target)
     else
       title.txt <- sprintf(Rtxt("Distribution of %s (sample)"), var)
   else
@@ -3444,7 +3444,7 @@ ezLev <- function(x,new_order)
   return(x)
 }
 
-ggcorplot <- function(data,var_text_size,cor_text_limits)
+ggcorplot <- function(data, var_text_size, cor_text_limits)
 {
   # normalize data
   for(i in 1:length(data)){
@@ -3602,11 +3602,9 @@ displayPairsPlot2 <- function(dataset)
                        getVariableIndicies(crs$risk)),
                      getVariableIndicies(crs$numeric))
   if (length(vars) <= 6)
-    vars <- ""
+    vars <- simplifyNumberList(vars)
   else
-  {
     vars <- simplifyNumberList(sort(sample(vars, 6)))
-  }
 
   startLog(Rtxt("Scatter Plot"))
 
