@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-12-24 14:46:07 Graham Williams>
+# Time-stamp: <2011-12-24 15:59:09 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -433,7 +433,9 @@ listAssociateRules <- function()
 
   result <- paste(capture.output(eval(parse(text=summary1.cmd))), collapse="\n")
 
-  ## It did not dump an error, but produces no output until I added the paste.
+  ## It did not dump an error, but produces no output until I added
+  ## the paste. But then I'm back to this working when I source, but
+  ## failing when I run it from the package.
   
   ## This 
 ##   zz <- textConnection("commandsink", "w", TRUE)

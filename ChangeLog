@@ -1,3 +1,24 @@
+rattle (2.6.17) unstable; urgency=low
+
+  * Add a log10 transform to the GUI, R10 prefix, add tooltip, handle it
+    in pmml, create new rattle_macosx.ui. Suggested by Christophe Klopp.
+  
+  * Bug fix usage of believeNRows - it was being ignored from the GUI, but
+    is now acted upon. Reported by Andrew Elliott.
+  
+  * Add ggplot2 box plots to Advanced Graphics option.
+  
+  * Remove the timestamp messages.
+  
+  * Update pmml to handle randomForest and rattle to export to pmml.
+  
+  * Bug fix in naming the dataset when it is editted.
+  
+  * Bug fix for ggcorplot when less than 6 vars - need to map var names
+    into a c() call.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 19 Feb 2012 21:49:45 +1100
+
 rattle (2.6.16) unstable; urgency=low
 
   * rattleInfo() now also notes if rattle itself needs upgrading.
@@ -7,7 +28,7 @@ rattle (2.6.16) unstable; urgency=low
   * Forgot to include rescale.by.group() in NAMESAPCE.
   
   * CITATION to the book rather than the article. That is a more
-    definitive resource, though not freely avaliable.
+    definitive resource, though not freely available.
 
  -- Graham Williams <Graham.Williams@togaware.com>  Sat, 24 Dec 2011 15:35:21 +1100
 

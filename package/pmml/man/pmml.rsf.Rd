@@ -88,14 +88,15 @@
   \code{\link{pmml}}.
 }
 \examples{
-library(randomSurvivalForest)
-data(veteran, package = "randomSurvivalForest")
-veteran.out <- rsf(Survrsf(time, status)~.,
-        data = veteran,
-        ntree = 5,
-        forest = TRUE)
-veteran.forest <- veteran.out$forest
-pmml(veteran.forest)
+# Until the rsf package is updated, do not run this.
+# library(randomSurvivalForest)
+# data(veteran, package = "randomSurvivalForest")
+# veteran.out <- rsf(Survrsf(time, status)~.,
+#         data = veteran,
+#         ntree = 5,
+#         forest = TRUE)
+# veteran.forest <- veteran.out$forest
+# pmml(veteran.forest)
 }
 \keyword{interface}
 \keyword{survival}

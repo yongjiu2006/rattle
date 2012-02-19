@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-11-16 06:48:18 Graham Williams>
+# Time-stamp: <2012-02-19 12:23:13 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -1171,3 +1171,54 @@ sdecimal2binary.smallEndian <- function(x)
   return(bin)
 }
 	
+exportRandomForestModel <- function()
+{
+  # Make sure we have a model first!
+
+  if (noModelAvailable(crs$rf, crv$RF)) return(FALSE)
+
+  startLog(paste(Rtxt("Export"), commonName(crv$RF)))
+
+  save.name <- getExportSaveName(crv$RF)
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+
+  # Construct the command to produce PMML. Currently
+  # dataset=/transforms= are not needed/supported. TODO.
+
+  pmml.cmd <- sprintf("pmml(crs$rf%s, dataset=crs$dataset)",
+                      ifelse(length(crs$transforms),
+                             ", transforms=crs$transforms", ""))
+
+  # We can't pass "\" in a filename to the parse command in MS/Windows
+  # so we have to run the save/write command separately, i.e., not
+  # inside the string that is being parsed.
+
+  if (ext == "xml")
+  {
+    appendLog(sprintf(Rtxt("Export %s as PMML."), commonName(crv$RF)),
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name,
+    # "random forest")
+
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+
+    if (isWindows()) save.name <- tolower(save.name)
+
+    model.name <- sub("\\.c", "", basename(save.name))
+
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "rf_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$RPART)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
+  }      
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
+}

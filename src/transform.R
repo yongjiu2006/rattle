@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-25 21:15:15 Graham Williams>
+# Time-stamp: <2012-01-19 21:52:17 Graham Williams>
 #
 # TRANSFORM TAB
 #
@@ -307,6 +307,11 @@ executeTransformNormalisePerform <- function(variables=NULL,
       vprefix <- "RLG"
       #remap.comment <- "Log transform."
     }
+    else if (theWidget("rescale_log10_radiobutton")$getActive())
+    {
+      action <- "log10"
+      vprefix <- "R10"
+    }
   }
 
   # 110530 DEPRECATED The "bygroup" action is now "interval". This has
@@ -381,7 +386,7 @@ executeTransformNormalisePerform <- function(variables=NULL,
   }
   else if (nfactors == 1)
   {
-    if (action %in% c("matrix", "log"))
+    if (action %in% c("matrix", "log", "log10"))
     {
       # 110220 Choosing a categoric for one of these does not make
       # sense. So remove it. 100428 BUG When using Rtxt in sprintf,
@@ -736,6 +741,24 @@ executeTransformNormalisePerform <- function(variables=NULL,
                                 '! is.na(crs$dataset[["%s"]]), "%s"] <- NA'),
                           vname, v, vname, vname, vname)
       norm.comment <- Rtxt("Take a log transform of the variable - treat -Inf as NA.")
+
+      # Record the transformation for inclusion in PMML.
+
+      lst <- list(orig=v, type=vprefix, status="active")
+      crs$transforms <- union.transform(crs$transforms, vname, lst)
+
+      # For the log, record the command to use when scoring the data.
+      
+      norm.score.command <- norm.cmd
+    }
+    else if (action == "log10")
+    {
+      norm.cmd <- sprintf(paste('crs$dataset[["%s"]] <- ',
+                                'log10(crs$dataset[["%s"]])',
+                                '\n  crs$dataset[crs$dataset[["%s"]] == -Inf &',
+                                '! is.na(crs$dataset[["%s"]]), "%s"] <- NA'),
+                          vname, v, vname, vname, vname)
+      norm.comment <- Rtxt("Take a log10 transform of the variable - treat -Inf as NA.")
 
       # Record the transformation for inclusion in PMML.
 

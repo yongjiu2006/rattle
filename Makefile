@@ -2,7 +2,7 @@
 
 help:
 	@echo "\n\
-	New Release:\n\
+	New Rattle Release:\n\
 	\tmeld\tCompare to previous commit - update ChangeLog and finalise it.\n\
 	\tsvn\tSubmits changes to google code with message from ChangeLog.\n\
 	\tupdate\n\
@@ -11,6 +11,9 @@ help:
 	\tucheck\tWait for a response from Uwe.\n\
 	\tcran\tAlso email cran@r-project.org\n\
 	\tinstall\tAnnounce on rattle-users once receive email from Uwe\n\n\
+	New PMML Release:\n\
+	\tupdate version number in src/pmml.R\n\
+	\tpbuild; pcheck; pucheck; pcran\n\n\
 	Misc:\n\
 	\tbuild\t\trattle_x.x.x.{tar.gz,zip} and install in local R\n\
 	\ttranslations\tUpdate all translations.\n\
@@ -334,7 +337,7 @@ devbuild:
 # 100123 Updated the build process
 
 .PHONY: build
-build: weather translations \
+build: weather translations www \
 	rattle_$(VERSION).tar.gz \
 	rattle_$(VERSION).zip
 	chmod go+r $(REPOSITORY)/*
@@ -383,7 +386,7 @@ rattle_$(VERSION).tar.gz: $(SOURCE) translations
 	cp $(R_SOURCE) package/rattle/R/
 	cp $(GLADE_SOURCE) package/rattle/inst/etc/
 	cp ChangeLog INSTALL package/rattle/inst/
-	cp rattle.Rnw package/rattle/inst/doc/
+	cp rattle.Rnw package/rattle/vignettes
 	cp odf/data_summary.odt package/rattle/inst/odt/
 	perl -p -e "s|^Version: .*$$|Version: $(VERSION)|" < $(DESCRIPTIN) \
 	| perl -p -e "s|^Date: .*$$|Date: $(DATE)|" > $(DESCRIPTION)

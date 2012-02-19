@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-11-15 06:19:46 Graham Williams>
+# Time-stamp: <2012-01-22 21:48:54 Graham Williams>
 #
 # DATA TAB
 #
@@ -1197,10 +1197,16 @@ openODBCSetTables <- function()
 
   DSNname <- theWidget("data_odbc_dsn_entry")$getText()
 
+  # Check if we should believe the number of rows.
+
+  bnumrows <- sprintf(", believeNRows=%s",
+                      ifelse(theWidget("data_odbc_believeNRows_checkbutton")$getActive(),
+                             "TRUE", "FALSE"))
+  
   # Generate commands to connect to the database and retrieve the tables.
 
   lib.cmd <- sprintf("require(RODBC, quietly=TRUE)")
-  connect.cmd <- sprintf('crs$odbc <- odbcConnect("%s")', DSNname)
+  connect.cmd <- sprintf('crs$odbc <- odbcConnect("%s"%s)', DSNname, bnumrows)
   tables.cmd  <- sprintf('crs$odbc.tables <- sqlTables(crs$odbc)$TABLE_NAME')
 
   # Ensure the RODBC library is available or else we can not support ODBC.
@@ -1746,20 +1752,21 @@ editData <- function()
       assign.cmd <- paste('rattle.edit.obj <<-',
                           'dfedit(crs$dataset,',
                           'dataset.name="Note: When finished and closed,',
-                          'load the R Dataset \'rattle.edited.dataset\'',
+                          'load the R Dataset \'rattle.edit.obj\'',
                           'to access changes.",',
-                          'size=c(800, 400), pretty_print=TRUE)\n',
-                          'gSignalConnect(rattle.edit.obj, "unrealize",',
-                          'data=rattle.edit.obj,\n',
-                          '  function(obj, data)\n',
-                          '  {\n',
-                          '    assign("rattle.edited.dataset", data$getDataFrame(),',
-                          '    envir=.GlobalEnv)\n',
-                          '  })')
-      infoDialog(Rtxt ("RGtk2Extras will be used to edit",
-                      "a data frame called 'rattle.edited.dataset'. Once you have",
-                      "finished editting and closed the",
-                      "window you can load this data frame",
+                          'size=c(800, 400), pretty_print=TRUE)')
+      #\n',
+      #                    'gSignalConnect(rattle.edit.obj, "unrealize",',
+      #                    'data=rattle.edit.obj,\n',
+      #                    '  function(obj, data)\n',
+      #                    '  {\n',
+      #                    '    assign("rattle.edit.orig", data$getDataFrame(),',
+      #                    '    envir=.GlobalEnv)\n',
+      #                    '  })')
+      infoDialog(Rtxt("RGtk2Extras is used to edit",
+                      "a data frame called 'rattle.edit.obj'. Once",
+                      "editing is complete and the wondow closed",
+                      "you can load this data frame into Rattle",
                       "using the R Dataset option of the Data tab."))
     }
   else

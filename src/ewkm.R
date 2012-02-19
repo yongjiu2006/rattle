@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-11 14:33:31 Graham Williams>
+# Time-stamp: <2012-02-19 13:04:24 Graham Williams>
 #
 # Implement biclust functionality.
 #
@@ -100,7 +100,7 @@ executeClusterEwkm <- function(include)
   # Show the resulting model.
 
   size.cmd <- "paste(crs$kmeans$size, collapse=' ')"
-  means.cmd <- sprintf("mean(%s)", ds)
+  means.cmd <- sprintf("colMeans(%s)", ds)
   centres.cmd <- "crs$kmeans$centers"
   withinss.cmd <- "crs$kmeans$withinss"
   weights.cmd <- "round(crs$kmeans$weights, 2)"
@@ -181,5 +181,63 @@ weightsPlotEwkm <- function()
   eval(parse(text=plot.cmd))
 
   setStatusBar(Rtxt("The variable weights have been plotted."))
+}
+
+########################################################################
+# Export
+
+exportEwkmTab <- function()
+{
+  # Make sure we have a model first!
+
+  if (noModelAvailable(crs$kmeans, crv$EWKM)) return(FALSE)
+
+  startLog(paste(Rtxt("Export"), commonName(crv$EWKM)))
+  
+  save.name <- getExportSaveName(crv$EWKM)
+  if (is.null(save.name)) return(FALSE)
+  ext <- tolower(get.extension(save.name))
+
+  # Construct the command to produce PMML.
+
+  pmml.cmd <- sprintf(paste("pmml(crs$kmeans%s, description='%s',",
+                            "algorithm.name='EWKM: Liping, Ng, and Huang')"),
+                      ifelse(length(crs$transforms) > 0,
+                             ", transforms=crs$transforms", ""),
+                      commonName(crv$EWKM))
+
+  # We can't pass "\" in a filename to the parse command in
+  # MS/Windows so we have to run the save/write command separately,
+  # i.e., not inside the string that is being parsed.
+
+  if (ext == "xml")
+  {
+    appendLog(sprintf(Rtxt("Export %s as PMML."), commonName(crv$EWKM)),
+              sprintf('saveXML(%s, "%s")', pmml.cmd, save.name))
+    saveXML(eval(parse(text=pmml.cmd)), save.name)
+  }
+  else if (ext == "c")
+  {
+    # 090103 gjw Move to a function: saveC(pmml.cmd, save.name,
+    # "ewkm")
+
+    # 090223 Why is this tolower being used? Under GNU/Linux it is
+    # blatantly wrong. Maybe only needed for MS/Widnows
+
+    if (isWindows()) save.name <- tolower(save.name)
+    
+    model.name <- sub("\\.c", "", basename(save.name))
+
+    export.cmd <- generateExportPMMLtoC(model.name, save.name, "kmeans_textview")
+    
+    appendLog(sprintf(Rtxt("Export %s as a C routine."), commonName(crv$EWKM)),
+              sprintf('pmml.cmd <- "%s"\n\n', pmml.cmd),
+              export.cmd)
+
+    eval(parse(text=export.cmd))
+  }
+  
+  setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
+
 }
 
