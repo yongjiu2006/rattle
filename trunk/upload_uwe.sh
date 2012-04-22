@@ -20,10 +20,10 @@ bin
 lcd repository
 cd ${TARGETREL}
 put ${LATEST}
+cd ../${TARGETDEV}
+put ${LATEST}
 quit
 _EOF_
 
-#cd ../${TARGETDEV}
-#put ${LATEST}
 #cd ../${TARGETD64}
 #put ${LATEST}

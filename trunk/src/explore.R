@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-02-19 21:40:17 Graham Williams>
+# Time-stamp: <2012-03-25 17:53:21 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -93,8 +93,10 @@ executeExploreTab <- function()
   else if (theWidget("explore_interactive_radiobutton")$getActive())
     if (theWidget("explore_interactive_latticist_radiobutton")$getActive())
       executeExplorePlaywith(dataset)
-    else
+    else if (theWidget("explore_interactive_ggobi_radiobutton")$getActive())
       executeExploreGGobi(dataset, crs$dataname)
+    else if (theWidget("explore_interactive_plotbuilder_radiobutton")$getActive())
+      executeExplorePlotBuilder()
   else if (theWidget("explore_correlation_radiobutton")$getActive())
     if (theWidget("explore_correlation_hier_checkbutton")$getActive())
         executeExploreHiercor(ndataset)
@@ -1935,9 +1937,9 @@ executeBoxPlot2 <- function(dataset, vars, target, targets, stratify, sampling, 
     # TODO 120205 Add notches - this is coming:
     # http://groups.google.com/group/ggplot2-dev/browse_thread/thread/3e9f3eaa64779922
 
-    boxplot.all.cmd <- sprintf('geom_boxplot(aes("All", %s))', vars[s])
+    boxplot.all.cmd <- sprintf('geom_boxplot(aes("All", %s), notch=TRUE)', vars[s])
 
-    boxplot.var.cmd <- sprintf("geom_boxplot(aes(%s, %s))", target, vars[s])
+    boxplot.var.cmd <- sprintf("geom_boxplot(aes(%s, %s), notch=TRUE)", target, vars[s])
 
     title.txt <- genPlotTitleCmd(generateTitleText(vars[s],
                                                    target,
@@ -1946,11 +1948,13 @@ executeBoxPlot2 <- function(dataset, vars, target, targets, stratify, sampling, 
                                  vector=TRUE)
 
     title.cmd <- sprintf('opts(title="%s")', title.txt[1])
+
+    legend.cmd <- 'opts(legend.position="none")'
   
     xlab.cmd <- sprintf('xlab("%s\\n\\n%s")', target, title.txt[2])
 
-    plot.cmd <- paste(ggplot.cmd, boxplot.all.cmd, boxplot.var.cmd, xlab.cmd, title.cmd,
-                      sep=" +\n           ")
+    plot.cmd <- paste(ggplot.cmd, boxplot.all.cmd, boxplot.var.cmd, xlab.cmd,
+                      title.cmd, legend.cmd, sep=" +\n           ")
     plot.cmd <- sprintf("pp <- with(crs,\n           %s\n          )\nprint(pp)",
                         plot.cmd)
   
@@ -4013,6 +4017,32 @@ executeExplorePlaywith <- function(dataset)
   plot.cmd <- sprintf("latticist(%s%s)", dataset, latopts)
   appendLog(Rtxt("Start up latticist."), plot.cmd)
   eval(parse(text=plot.cmd))
+}
+
+executeExplorePlotBuilder <- function()
+{
+  # 8 Mar 2012 Currently don;t know how to tell Plot builder the
+  # default dataset to use. Nor how to extract from plot builder the
+  # actual ggplot2 command that is generated - would like to capture
+  # that and place it in the Log.
+  
+  if (! packageIsAvailable("Deducer", Rtxt("interactively develop a ggplot2 plot using Plot builder"))) return()
+
+  startLog(Rtxt("Use the Plot Builder dialog from the Deducer package."))
+
+  lib.cmd <- "require(Deducer, quietly=TRUE)"
+  appendLog(packageProvides("Deducer", "deducer"), lib.cmd)
+  eval(parse(text=lib.cmd))
+
+  # This use of ds is a hack - not sure how else to do this as Plot
+  # builder does not notice crs$dataset, presumably only checking for
+  # data frames in .GlobalEnv
+
+  assign("ds", crs$dataset, envir=.GlobalEnv)
+  plot.cmd <- 'deducer(cmd="Plot builder")'
+  appendLog(Rtxt("Start up Plot builder dialog."), plot.cmd)
+  eval(parse(text=plot.cmd))
+  rm(ds, envir=.GlobalEnv)
 }
 
 ########################################################################

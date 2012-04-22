@@ -48,6 +48,7 @@ PSOURCE = \
 	src/pmml.kmeans.R \
 	src/pmml.hclust.R \
 	src/pmml.ksvm.R \
+	src/pmml.glm.R \
 	src/pmml.lm.R \
 	src/pmml.multinom.R \
 	src/pmml.nnet.R \
@@ -264,6 +265,8 @@ www: # build pbuild ibuild zip rattle_src.zip # check pcheck
 	(cd /home/gjw/Projects/Togaware/www/;\
 	 perl -pi -e "s|Latest version [0-9\.]* |Latest version $(VERSION) |" \
 			rattle.html.in;\
+	 perl -pi -e "s|pmml version [0-9\.]*\.|pmml version $(PVERSION).|" \
+			rattle.html.in;\
 	 perl -pi -e "s|released [^\.]*\.|released $(VDATE).|" \
 			rattle.html.in;\
 	 perl -pi -e "s|\(revision [0-9]*\)|(revision $(SVNREVIS))|" \
@@ -298,16 +301,17 @@ install:
 	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
 
-# 100123 Updated the build process
+# 100123 Updated the build process. Note that check should be done
+# after the build to avoid .svn folders being complained about.
 
 check: #build
-	R CMD check --check-subdirs=yes $(PACKAGE)
+	R CMD check --as-cran --check-subdirs=yes repository/rattle_$(VERSION).tar.gz
 
 pcheck: #pbuild
-	R CMD check --check-subdirs=yes $(PPACKAGE)
+	R CMD check --as-cran --check-subdirs=yes repository/pmml_$(PVERSION).tar.gz
 
 icheck: #ibuild
-	R CMD check --check-subdirs=yes $(IPACKAGE)
+	R CMD check --as-cran --check-subdirs=yes $(IPACKAGE)
 
 ucheck: #build
 	sh ./upload_uwe.sh

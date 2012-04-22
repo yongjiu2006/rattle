@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2010-03-07 15:37:58 Graham Williams>
+# Time-stamp: <2012-03-09 09:36:50 Graham Williams>
 #
 # Reporting support
 #
@@ -106,16 +106,18 @@ reportDataTab <- function()
 
   ofile <- paste(getwd(), "data_summary_rattle.odt", sep="/")
 
-  cmd <- sprintf('odfWeave(summary, "%s", control=odfWeaveControl(verbose=FALSE))',
-                 ofile)
+  odf.cmd <- sprintf(paste('odfWeave("%s",',
+                           '\n         "%s",',
+                           '\n         control = odfWeaveControl(verbose = FALSE))'),
+                     summary, ofile)
 
-  appendLog(Rtxt("Generate a data report."), cmd)
+  appendLog(Rtxt("Generate a data report."), odf.cmd)
 
-  eval(parse(text=cmd))
+  eval(parse(text=odf.cmd))
 
   setStatusBar(sprintf("Report written to %s.", ofile))
 
-  system(paste("oowriter", ofile))
+  system(paste("oowriter", ofile), wait = FALSE)
 }
 
   

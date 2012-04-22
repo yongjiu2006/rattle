@@ -131,9 +131,18 @@
   to explore the distribution of the data.</tooltip>
   <tooltip widget="explore_interactive_radiobutton">Interactively
     explore the data.</tooltip>
+  <tooltip widget="explore_interactive_latticist_radiobutton">Run the
+  interactive plot builder called PlayWith, which is based on lattice
+  graphics. The user interface is built using GTK2, in common with
+  Rattle.</tooltip>
   <tooltip widget="explore_interactive_ggobi_radiobutton">Run the
-    external GGobi data visualisation application, if
-    available.</tooltip>
+  external GGobi data visualisation application, if available. The
+  GGobi application is independent of R/Rattle and the rggobi package
+  provides a connection to it.</tooltip>
+  <tooltip widget="explore_interactive_plotbuilder_radiobutton">Run
+  the interactive plot builder to generate ggplot2 based plots. The
+  Plot Builder uses a Java-based user interface and it has been
+  observed to cause R to crash at times.</tooltip>
   <tooltip widget="explore_correlation_radiobutton">Show the pairwise
     correlations between each numeric variable.</tooltip>
   <tooltip widget="prcomp_radiobutton">Perform a principal components
@@ -453,8 +462,9 @@
   <tooltip widget="rf_oob_roc_button">Plot the ROC curve based on the
   out-of-bag (OOB) predictions for each observation in the training
   dataset.</tooltip>
-  <tooltip widget="rf_print_tree_button">Display a specific
-    tree.</tooltip>
+  <tooltip widget="rf_print_tree_button">Display a collection of rules
+  obtained from a specific tree from the random forest of
+  trees.</tooltip>
   <tooltip widget="rf_print_tree_spinbutton">Which tree to
     display.</tooltip>
   <tooltip widget="kernlab_radiobutton">Use ksvm from the kernlab

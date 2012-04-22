@@ -1,3 +1,34 @@
+rattle (2.6.18) unstable; urgency=low
+
+  * Ensure require uses quietly rather than quiet.
+  
+  * Clean up randomForest textview output.
+  
+  * Update pmml to 4.0. Fix various format issues and other updates from
+    Tridi of Zementis.
+  
+  * Update setupDataset but also note that it is moving into a separate
+    package, container.
+  
+  * Get odfweave stuff working again.
+  
+  * Update fancyRPartPlot - being used in SIAT software. Can now handle
+    any number of classes.
+  
+  * Updates to the pmml rsf code.
+  
+  * Bug fix for evaluation of conditional trees and random forests.
+  
+  * Further pmml export of randomForest updates.
+  
+  * Add PlotBuilder as interative explore option.
+  
+  * Export pmml for glm models.
+  
+  * Enhance ggplot2 plotting of boxplot.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Sun, 22 Apr 2012 21:47:00 +1000
+
 rattle (2.6.17) unstable; urgency=low
 
   * Add a log10 transform to the GUI, R10 prefix, add tooltip, handle it

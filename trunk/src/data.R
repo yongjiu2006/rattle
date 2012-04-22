@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-01-22 21:48:54 Graham Williams>
+# Time-stamp: <2012-04-22 17:24:19 Graham Williams>
 #
 # DATA TAB
 #
@@ -351,7 +351,8 @@ getTrainingPercent <- function()
 }
 
 #-----------------------------------------------------------------------
-# These are for handling protos (or envs for now).
+# These are for handling protos (or envs for now). Moved into package
+# container.
 
 whichNumerics <- function(data)
 {
@@ -363,19 +364,28 @@ setupDataset <- function(env, seed=NULL)
   # We assume the following dataset specific variables exist in env
   #   data            This is the actual data frame containing the dataset
   #   target          The single target variable for prediction
-  #   risk            The single risk variable
-  #   inputs          The other variables used as inputs to predictive model
+  #   [risk]          The single risk variable
+  #   [inputs]        The other variables used as inputs to predictive model
+  #   [ignore]        This overrides inputs if it is given.
   # Then we add the following variables to env
   #   vars             Variables used for modelling
   #   numerics         The numeric vars within inputs
   #   nobs             The number of observations
+  #   ninputs          The number of input variables
   #   form             Formula for building models
   #   train            A 70% training dataset
 
   if (! is.null(seed)) set.seed(seed)
-  
+
   evalq({
+    if (! exists("risk", inherits=FALSE))
+      risk <- NULL
+    if (exists("ignore", inherits=FALSE) && ! exists("inputs", inherits=FALSE))
+      inputs <- setdiff(names(data), c(target, risk, ignore))
+    if (! exists("inputs", inherits=FALSE))
+      inputs <- setdiff(names(data), c(target, risk))
     vars <- c(inputs, target)
+    ninputs <- length(inputs)
     nobs <- nrow(data)
     numerics <- whichNumerics(data[inputs])
     form <- as.formula(paste(target, "~ ."))
@@ -384,6 +394,9 @@ setupDataset <- function(env, seed=NULL)
     na.obs <- attr(na.omit(data[vars]), "na.action")
     train.na.omit <- setdiff(train, na.obs)
     test.na.omit <- setdiff(test, na.obs)
+
+    time.stamp <- date()
+    
   }, env)
 }
 
