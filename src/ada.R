@@ -2,7 +2,7 @@
 #
 # This is a model or template "module" for rattle.
 #
-# Time-stamp: <2011-09-12 19:42:51 Graham Williams>
+# Time-stamp: <2012-02-20 22:47:33 Graham Williams>
 #
 # Copyright (c) 2009 Togaware Pty Ltd
 #
@@ -65,7 +65,7 @@ function(formula, data,...,subset,na.action=na.rpart){
   ##m$...=NULL
   ##m =eval(m,parent.frame())
 
-  m <- match.call(expand = FALSE)
+  m <- match.call(expand.dots=FALSE)
   m$model <- m$method <- m$control <- NULL
   m$x <- m$y <- m$parms <- m$... <- NULL
   m$cost <- NULL
@@ -238,7 +238,7 @@ continueModelAda <- function(niter)
   ## formula interface. 
 
   vname <- strsplit(deparse(parse(text=crs$ada$call)[2][[1]]), " ")[[1]][1]
-  dname <- deparse(parse(text=crs$ada$call)[3][[1]], width=500)
+  dname <- deparse(parse(text=crs$ada$call)[3][[1]], width.cutoff=500)
   update.cmd <- sprintf(paste("update(crs$ada,",
                               'remove.vars(%s, c("%s"), info=FALSE),',
                               '%s$%s, n.iter=%s)'),

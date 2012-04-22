@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-02-02 06:41:19 Graham Williams>
+# Time-stamp: <2012-02-21 06:51:37 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -27,8 +27,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.17"
-DATE <- "2012-02-19"
+VERSION <- "2.6.18"
+DATE <- "2012-04-21"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
 
@@ -160,6 +160,19 @@ rattleInfo <- function(all.dependencies=FALSE,
   # Alternatives include:
   # http://mirror.aarnet.edu.au/pub/CRAN/
 
+  # 120221 Brian Ripley seems to be checking for packages using
+  # installed.packages() and warning about it being a "very slow way
+  # to find information on one or a small number of packages," as
+  # stated on the man page, and as I am very aware. He goes on to say:
+  # "In addition, many of you are using it to find out if a package is
+  # installed, when actually you want to know if it is usable (it
+  # might for example be installed for a different architecture or
+  # require a later version of R), for which you need to use
+  # require()." I have already fixed my usage of installed.packages()
+  # within packageIsAvailable(), where there was a better way of
+  # checking for an installed package. But here I think it might be
+  # appropriate to use it.
+  
   iv <- utils:::installed.packages()
   av <- available.packages(contriburl=contrib.url("http://cran.r-project.org"))
 
@@ -225,29 +238,29 @@ rattleInfo <- function(all.dependencies=FALSE,
       depG
     }
 
-    require(pmml, quiet=TRUE)
-    require(methods, quiet=TRUE)
-    require(colorspace, quiet=TRUE)
-    require(cairoDevice, quiet=TRUE)
-    require(RGtk2, quiet=TRUE)
-    require(utils, quiet=TRUE)
-    require(XML, quiet=TRUE)
-    require(graph, quiet=TRUE, warn.conflicts=FALSE)
+    require(pmml, quietly=TRUE)
+    require(methods, quietly=TRUE)
+    require(colorspace, quietly=TRUE)
+    require(cairoDevice, quietly=TRUE)
+    require(RGtk2, quietly=TRUE)
+    require(utils, quietly=TRUE)
+    require(XML, quietly=TRUE)
+    require(graph, quietly=TRUE, warn.conflicts=FALSE)
 
-    require(RBGL, quiet=TRUE)
-    require(bitops, quiet=TRUE)
-    require(grid, quiet=TRUE)
-    if (! require(pkgDepTools, quiet=TRUE))
+    require(RBGL, quietly=TRUE)
+    require(bitops, quietly=TRUE)
+    require(grid, quietly=TRUE)
+    if (! require(pkgDepTools, quietly=TRUE))
     {
       source("http://bioconductor.org/biocLite.R")
       biocLite("pkgDepTools")
-      require(pkgDepTools, quiet=TRUE)
+      require(pkgDepTools, quietly=TRUE)
     }
-    if (! require(Rgraphviz, quiet=TRUE))
+    if (! require(Rgraphviz, quietly=TRUE))
     {
       source("http://bioconductor.org/biocLite.R")
       biocLite("Rgraphviz")
-      require(Rgraphviz, quiet=TRUE)
+      require(Rgraphviz, quietly=TRUE)
     }
     cran.repos <- "http://cran.r-project.org"
     if (isWindows())
@@ -2102,7 +2115,7 @@ variablesHaveChanged <- function(action)
 # 110703: I used to test if the package name was in the result from
 # installed.packages(), but as Brian Ripley points out and from the
 # man page for the function, installed.packages() is very slow on
-# MS/Windows and on networked file systems as it touches a couple
+# MS/Windows and on networked file systems as it touches a couple of
 # files for each package, and with over a thousand packages installed
 # that will be a lot of files. So simply check for the package using
 # system.file().

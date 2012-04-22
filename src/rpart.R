@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-12 06:59:42 Graham Williams>
+# Time-stamp: <2012-03-15 15:15:57 Graham Williams>
 #
 # RPART TAB
 #
@@ -623,40 +623,57 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
 
 fancyRpartPlot <- function(model, main="")
 {
-  # 110410 Note that rpart.plot requires rpart >= 3.1.48 which is
-  # not available on Windows R 2.12.2!
+  # Note that rpart.plot requires rpart >= 3.1.48 which is not
+  # available on Windows R 2.12.2!
 
   require("rpart.plot")
   require("RColorBrewer")
 
-  gr <- brewer.pal(9,"Greens")[3:7]
-  bl <- brewer.pal(9,"Blues")[2:6]
+  num.classes <- length(attr(model, "ylevels"))
 
-  # Extract the scores for each of the nodes. 
-  # This assumes binary classification.
+  # Generate a colour pallete, with a range of 5 (palsize) colours for
+  # each of the 6 (numpals) palettes. The pallete is collapsed into
+  # one list. We index it according to the class.
 
-  per <- NULL
-  for (i in 1:nrow(model$frame$yval2))
-    per <- c(per, model$frame$yval2[i, 3+model$frame$yval[i]])
+  numpals <- 6
+  palsize <- 5
+  pals <- c(brewer.pal(9, "Greens")[3:7],
+            brewer.pal(9, "Blues")[2:6],
+            brewer.pal(9, "Oranges")[2:6],
+            brewer.pal(9, "Purples")[2:6],
+            brewer.pal(9, "Reds")[2:6],
+            brewer.pal(9, "Greys")[2:6])
+  
+  # Extract the scores/percentages for each of the nodes for the
+  # majority decision.  The decisions are in column 1 of yval2 and the
+  # percentages are in the final num.classes columns.
+
+  yval2per <- -(1:num.classes)-1
+  per <- apply(model$frame$yval2[,yval2per], 1, function(x) x[1+x[1]])
   
   # The conversion of a tree in CORElearn to an rpart tree results in these
   # being character, so ensure wwe have numerics.
   
   per <- as.numeric(per)
   
-  # Calculate an index into the combined colour sequence.
+  # Calculate an index into the combined colour sequence. Once we go
+  # above numpals * palsize (30) start over.
  
-  col.index <- round(10*(per-0.4))+5*(model$frame$yval-1)
+  col.index <- ((palsize*(model$frame$yval-1) +
+                trunc(pmin(1 + (per * palsize), palsize))) %%
+                (numpals * palsize))
 
   # Define the contents of the tree nodes.
  
   my.node.fun <- function(x, labs, digits, varlen)
-    paste(labs, "\n", round(100*per), "% of ", x$frame$n, sep="")
+    paste(labs, "\n", round(100*per), "% of ",
+          format(x$frame$n, big.mark=","),
+          sep="")
 
   # Generate the plot and title.
  
   prp(model, type=1, extra=0,
-    box.col=c(bl, gr)[col.index],
+    box.col=pals[col.index],
     nn=TRUE, varlen=0, shadow.col="grey",
     node.fun=my.node.fun)
   
@@ -742,7 +759,7 @@ list.rule.nodes.rpart <- function(model)
   nodes <- frm$yval2[,5]
   # Get the probability ordered index of leaf nodes
   ordered <- sort(frm$yval2[,5][frm[,1] == "<leaf>"],
-                  decr=TRUE, index=TRUE)
+                  decreasing=TRUE, index=TRUE)
   # Return the list of node numbers
   return(row.names(frm)[which(frm[,1] == "<leaf>")][ordered$ix])
 }
@@ -1104,3 +1121,4 @@ exportRpartModel <- function()
   }      
   setStatusBar(sprintf(Rtxt("The model has been exported to '%s'."), save.name))
 }
+

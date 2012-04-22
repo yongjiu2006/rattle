@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-09-02 17:44:22 Graham Williams>
+# Time-stamp: <2012-04-21 11:57:24 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -855,6 +855,9 @@ executeEvaluateTab <- function()
 
   if (crv$RPART %in%  mtypes)
   {
+    cond.tree <- attr(class(crs$rpart), "package") %in% "party"
+    if (! length(cond.tree)) cond.tree <- FALSE
+    
     testset[[crv$RPART]] <- testset0
     predcmd[[crv$RPART]] <- sprintf("crs$pr <- predict(crs$rpart, %s)",
                                 testset[[crv$RPART]])
@@ -862,21 +865,25 @@ executeEvaluateTab <- function()
     # For crv$RPART, the default is to generate class probabilities for
     # each output class, so ensure we instead generate the response.
 
-    respcmd[[crv$RPART]] <- gsub(")$", ', type="class")', predcmd[[crv$RPART]])
+    respcmd[[crv$RPART]] <- gsub(")$",
+                                 ifelse(cond.tree,
+                                        ', type="response")',
+                                        ', type="class")'),
+                                 predcmd[[crv$RPART]])
 
     # For RPART the default predict command generates the probabilities
     # for each class and we assume we are interested in the final class
     # (i.e., for binary classification we are interested in the 1's).
 
-    if (theWidget("model_tree_rpart_radiobutton")$getActive())
+    if (cond.tree)
+      probcmd[[crv$RPART]] <- sub(')$', '), function(x) x[2])',
+                                  sub("predict", "sapply(treeresponse",
+                                      predcmd[[crv$RPART]]))
+    else
       if (binomialTarget())
         probcmd[[crv$RPART]] <- sprintf("%s[,2]", predcmd[[crv$RPART]])
       else
         probcmd[[crv$RPART]] <- sprintf("%s", predcmd[[crv$RPART]])
-    else # ctree
-      probcmd[[crv$RPART]] <- sub(')$', '), function(x) x[2])',
-                                  sub("predict", "sapply(treeresponse",
-                                      predcmd[[crv$RPART]]))
 
     if (multinomialTarget())
     {
@@ -902,6 +909,8 @@ executeEvaluateTab <- function()
     # internally. So it won't help, and will keep in line with other
     # algorithms that actually need the na.omit to be done here.
 
+    cond.rf <- "RandomForest" %in% class(crs$rf) # party conditional rf
+
     # 090301 testset[[crv$RF]] <- testset0
     testset[[crv$RF]] <- sprintf("na.omit(%s)", testset0)
 
@@ -913,13 +922,18 @@ executeEvaluateTab <- function()
 
     respcmd[[crv$RF]] <- predcmd[[crv$RF]]
 
+    # 120319 For some reason without OOB  we get a party error.
+    
+    if (cond.rf)
+      respcmd[[crv$RF]] <- sub(')$', ', OOB=TRUE)',  respcmd[[crv$RF]])
+    
     # For RF we request a probability with the type argument, and as
     # with RPART we extract the column of interest (the last column).
 
     if (numericTarget())
       probcmd[[crv$RF]] <- predcmd[[crv$RF]]
     else
-      if ("RandomForest" %in% class(crs$rf))
+      if (cond.rf) 
         probcmd[[crv$RF]] <- sub(')$', '), function(x) x[2])',
                                  sub("predict", "sapply(treeresponse",
                                      predcmd[[crv$RF]]))
@@ -1779,7 +1793,7 @@ plotRisk <- function (cl, pr, re, ri=NULL,
     chosen.index <- which(abs(cl-chosen) == min(abs(cl-chosen)))
     if (length(chosen.index) > 1) chosen.index <- chosen.index[1]
     plotOptimalLine(chosen, ri[chosen.index], re[chosen.index],
-                      label=chosen.label, col="grey")
+                      label=chosen.label, colour="grey")
   }
 
   legend <- c()

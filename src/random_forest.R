@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-02-19 12:23:13 Graham Williams>
+# Time-stamp: <2012-03-06 14:18:15 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -377,14 +377,40 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
   appendLog(sprintf(Rtxt("Generate textual output of '%s' model."), commonName(crv$RF)),
             summary.cmd)
 
-  addTextview(TV, sprintf(Rtxt("Summary of the %s model:"), commonName(crv$RF)),
+  addTextview(TV, sprintf(Rtxt("Summary of the %s Model"), commonName(crv$RF)),
+              "\n==================================",
               "\n\n",
               "Number of observations used to build the model: ",
               ifelse(traditional, length(crs$rf$y), crs$rf@responses@nobs),
               "\n",
               ifelse(naimpute, "Missing value imputation is active.\n", ""),
-              collectOutput(summary.cmd, TRUE))
+              sub(") \\n", ")\n\n",
+                  sub(", ntree", ",\n              ntree",
+                      sub(", data", ",\n              data",
+                          gsub(", *", ", ", collectOutput(summary.cmd, TRUE))))))
 
+  # 6 Mar 2012 Add some AUC information as suggested by Akbar Waljee.
+
+  if (traditional && packageIsAvailable("pROC", Rtxt("calculate AUC confidence interval")))
+  {
+    lib.cmd <- "require(pROC, quietly=TRUE)"
+    roc.cmd <- "roc(crs$rf$y, crs$rf$votes)"
+    ci.cmd <- "ci.auc(crs$rf$y, crs$rf$votes)"
+
+    appendLog(Rtxt("The `pROC' package implements various AUC functions."), lib.cmd)
+    eval(parse(text=lib.cmd))
+
+    appendLog("Calculate the Area Under the Curve (AUC).", roc.cmd)
+    appendLog("Calculate the AUC Confidence Interval.", ci.cmd)
+    
+    addTextview(TV,
+                "\n\nAnalysis of the Area Under the Curve (AUC)",
+                "  \n==========================================\n",
+                collectOutput(roc.cmd),
+                "\n\n",
+                collectOutput(ci.cmd))
+  }
+  
   # Display the variable importance.
 
   # 100107 There is a very good importance measure from cforest that
@@ -423,7 +449,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
     return(FALSE)
   }
   
-  addTextview(TV, sprintf("\n\n%s\n\n", Rtxt("Variable Importance")), result, "\n")
+  addTextview(TV, sprintf("\n\n%s", Rtxt("Variable Importance")),
+              "\n===================\n\n", result, "\n")
 
   # 100522 Don't provide this information in the textview - the user
   # can look into the log to find this out.
@@ -1001,7 +1028,12 @@ getRFRuleSet <- function(model, n)
 
     for (j in seq_along(tr.path))
     {
+#print(j)
+#print(tr.vars)
+#print(var.index)
       var.class <- tr.vars[var.index[j]]
+#print(var.class)
+      # 6 Mar 2012 This is currently failing. Needs debugging.
       if (var.class == "character" | var.class == "factor")
       {
         node.op <- "="
