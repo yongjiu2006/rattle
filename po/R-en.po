@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rattle VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-21 11:57+1000\n"
-"PO-Revision-Date: 2012-04-21 11:57+1000\n"
+"POT-Creation-Date: 2012-04-22 21:48+1000\n"
+"PO-Revision-Date: 2012-04-22 21:48+1000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_AU\n"
@@ -159,7 +159,7 @@ msgstr "By Group"
 msgid "CSV File"
 msgstr "CSV File"
 
-#: rattle.glade.h:37 data.R:3302 data.R:3303
+#: rattle.glade.h:37 data.R:3303 data.R:3304
 msgid "Categoric"
 msgstr "Categoric"
 
@@ -480,7 +480,7 @@ msgstr "Hierarchical"
 msgid "Identifiers"
 msgstr "Identifiers"
 
-#: rattle.glade.h:116 data.R:2907
+#: rattle.glade.h:116 data.R:2908
 msgid "Ignore"
 msgstr "Ignore"
 
@@ -504,7 +504,7 @@ msgstr "Include:"
 msgid "Indicator Variables"
 msgstr "Indicator Variables"
 
-#: rattle.glade.h:122 data.R:2851
+#: rattle.glade.h:122 data.R:2852
 msgid "Input"
 msgstr "Input"
 
@@ -668,7 +668,7 @@ msgstr "Natural Log"
 msgid "Neural Net"
 msgstr "Neural Net"
 
-#: rattle.glade.h:163 ada_gui.R:158 data.R:2288 data.R:3140 rattle.R:1731
+#: rattle.glade.h:163 ada_gui.R:158 data.R:2289 data.R:3141 rattle.R:1731
 #: rattle.R:1787 rattle.R:1795 rattle.R:1796 rattle.R:1798 rattle.R:1799
 #: rattle.R:1800
 msgid "No Target"
@@ -726,7 +726,7 @@ msgstr "Number of clusters:"
 msgid "Number:"
 msgstr "Number:"
 
-#: rattle.glade.h:177 data.R:3304 data.R:3305
+#: rattle.glade.h:177 data.R:3305 data.R:3306
 msgid "Numeric"
 msgstr "Numeric"
 
@@ -933,7 +933,7 @@ msgstr "Rescale"
 msgid "Residuals"
 msgstr "Residuals"
 
-#: rattle.glade.h:232 data.R:607 data.R:2879 evaluate.R:342 export.R:312
+#: rattle.glade.h:232 data.R:608 data.R:2880 evaluate.R:342 export.R:312
 msgid "Risk"
 msgstr "Risk"
 
@@ -1566,7 +1566,7 @@ msgstr "treeview"
 msgid "welcome"
 msgstr "welcome"
 
-#: data.R:1453
+#: data.R:1454
 msgid ""
 "A connection to an ODBC data source name (DSN) has not been established. "
 "Please enter the DSN and press the Enter key. This will also populate the "
@@ -1820,7 +1820,7 @@ msgstr ""
 msgid "All %d plots have been generated."
 msgstr "All %d plots have been generated."
 
-#: associate.R:510 data.R:247 data.R:264 data.R:281 data.R:1866
+#: associate.R:510 data.R:247 data.R:264 data.R:281 data.R:1867
 #: evaluate.R:2619 export.R:274 log.R:150 model.R:1295 projects.R:186
 #: projects.R:355 rattle.R:2763
 msgid "All Files"
@@ -2270,7 +2270,7 @@ msgstr "AUC measure weight function of c"
 msgid "AUC measure weight function of T"
 msgstr "AUC measure weight function of T"
 
-#: data.R:2934 explore.R:1433 explore.R:2916
+#: data.R:2935 explore.R:1433 explore.R:2916
 msgid "Bar Plot"
 msgstr "Bar Plot"
 
@@ -2286,7 +2286,7 @@ msgstr "Below is a description of the dataset."
 msgid "Below we summarise the dataset."
 msgstr "Below we summarise the dataset."
 
-#: data.R:3003 explore.R:1286 explore.R:1298 explore.R:1302 explore.R:2807
+#: data.R:3004 explore.R:1286 explore.R:1298 explore.R:1302 explore.R:2807
 msgid "Benford"
 msgstr "Benford"
 
@@ -2452,7 +2452,7 @@ msgstr ""
 "Both a csvname= and a dataset= were specified in the call to rattle(). At "
 "most, only one is allowed. We will continue as if neither were specified."
 
-#: data.R:2970 explore.R:718 explore.R:1894 explore.R:2228
+#: data.R:2971 explore.R:718 explore.R:1894 explore.R:2228
 msgid "Box Plot"
 msgstr "Box Plot"
 
@@ -2566,7 +2566,7 @@ msgstr "Build the %s model."
 msgid "Build the Survival model."
 msgstr "Build the Survival model."
 
-#: data.R:2613
+#: data.R:2614
 msgid "Build the training/validate/test datasets."
 msgstr "Build the training/validate/test datasets."
 
@@ -2622,7 +2622,7 @@ msgstr "Calucate the overall error percentage."
 msgid "Caseload (%)"
 msgstr "Caseload (%)"
 
-#: data.R:3387
+#: data.R:3388
 msgid "Categorical [%s levels%s%s]"
 msgstr "Categorical [%s levels%s%s]"
 
@@ -2742,7 +2742,7 @@ msgstr "Cluster weights:"
 msgid "Combine the observed values with the predicted."
 msgstr "Combine the observed values with the predicted."
 
-#: data.R:3013
+#: data.R:3014
 msgid "Comment"
 msgstr "Comment"
 
@@ -2754,11 +2754,11 @@ msgstr "Conditional inference tree."
 msgid "Conditional Tree"
 msgstr "Conditional Tree"
 
-#: data.R:1226
+#: data.R:1227
 msgid "connect to an ODBC database"
 msgstr "connect to an ODBC database"
 
-#: data.R:3300
+#: data.R:3301
 msgid "Constant"
 msgstr "Constant"
 
@@ -2912,7 +2912,7 @@ msgstr "CrossTab of %s by target variable %s"
 msgid "Cross tabulations:"
 msgstr "Cross tabulations:"
 
-#: data.R:219 data.R:224 data.R:1861 evaluate.R:2614
+#: data.R:219 data.R:224 data.R:1862 evaluate.R:2614
 msgid "CSV Files"
 msgstr "CSV Files"
 
@@ -2940,7 +2940,7 @@ msgstr ""
 "Cummulative %s (sample)\n"
 "by %s"
 
-#: data.R:2992
+#: data.R:2993
 msgid "Cumulative"
 msgstr "Cumulative"
 
@@ -2992,7 +2992,7 @@ msgstr ""
 msgid "Data means:"
 msgstr "Data means:"
 
-#: data.R:588
+#: data.R:589
 msgid "Data Names updated."
 msgstr "Data Names updated."
 
@@ -3024,15 +3024,15 @@ msgstr ""
 msgid "Data summary generated."
 msgstr "Data summary generated."
 
-#: data.R:2837
+#: data.R:2838
 msgid "Data Type"
 msgstr "Data Type"
 
-#: data.R:3021
+#: data.R:3022
 msgid "Data Type and Number Missing"
 msgstr "Data Type and Number Missing"
 
-#: data.R:1737
+#: data.R:1738
 msgid "Data Viewer"
 msgstr "Data Viewer"
 
@@ -3072,11 +3072,11 @@ msgstr "describe the contents of a data frame"
 msgid "describe the data"
 msgstr "describe the data"
 
-#: data.R:561
+#: data.R:562
 msgid "Determining the available datasets...."
 msgstr "Determining the available datasets...."
 
-#: data.R:1167
+#: data.R:1168
 msgid "Determining the available datasets from all packages...."
 msgstr "Determining the available datasets from all packages...."
 
@@ -3124,7 +3124,7 @@ msgstr "Display a plot showing the two most principal components."
 msgid "Display a scatterplot matrix for the KMeans clustering."
 msgstr "Display a scatterplot matrix for the KMeans clustering."
 
-#: data.R:1413 data.R:1511 data.R:1626
+#: data.R:1414 data.R:1512 data.R:1627
 msgid "Display a simple summary (structure) of the dataset."
 msgstr "Display a simple summary (structure) of the dataset."
 
@@ -3210,11 +3210,11 @@ msgstr "Distribution of the Third Digit"
 msgid "Divide variable values by matrix total."
 msgstr "Divide variable values by matrix total."
 
-#: data.R:3396
+#: data.R:3397
 msgid " %d missing values"
 msgstr " %d missing values"
 
-#: data.R:2946 explore.R:1726 explore.R:3211
+#: data.R:2947 explore.R:1726 explore.R:3211
 msgid "Dot Plot"
 msgstr "Dot Plot"
 
@@ -3302,7 +3302,7 @@ msgstr ""
 " The action you requested has not been completed. Refer to the R Console for "
 "details."
 
-#: data.R:1793
+#: data.R:1794
 msgid "Edit A Data Set Manually"
 msgstr "Edit A Data Set Manually"
 
@@ -3809,7 +3809,7 @@ msgstr "Hierarchical cluster of correlations plotted."
 msgid "Hierarchical Variable Correlation"
 msgstr "Hierarchical Variable Correlation"
 
-#: data.R:2981
+#: data.R:2982
 msgid "Histogram"
 msgstr "Histogram"
 
@@ -3817,7 +3817,7 @@ msgstr "Histogram"
 msgid "H measure weight function of c"
 msgstr "H measure weight function of c"
 
-#: data.R:2893 data.R:3301
+#: data.R:2894 data.R:3302
 msgid "Ident"
 msgstr "Ident"
 
@@ -3825,7 +3825,7 @@ msgstr "Ident"
 msgid "identifying association rules"
 msgstr "identifying association rules"
 
-#: data.R:3375 data.R:3385 data.R:3391
+#: data.R:3376 data.R:3386 data.R:3392
 msgid "; ignored"
 msgstr "; ignored"
 
@@ -4177,7 +4177,7 @@ msgstr ""
 msgid "Launch the GGobi data visualization application."
 msgstr "Launch the GGobi data visualization application."
 
-#: data.R:3029
+#: data.R:3030
 msgid "Levels"
 msgstr "Levels"
 
@@ -4209,35 +4209,35 @@ msgstr "List the rules from the tree using a Rattle support function."
 msgid "List the suggested cluster centers for each cluster"
 msgstr "List the suggested cluster centers for each cluster"
 
-#: data.R:1407
+#: data.R:1408
 msgid "Load an ARFF file."
 msgstr "Load an ARFF file."
 
-#: data.R:1563
+#: data.R:1564
 msgid "Load an RData file."
 msgstr "Load an RData file."
 
-#: data.R:1118
+#: data.R:1119
 msgid "Load an Rdata file containing R objects."
 msgstr "Load an Rdata file containing R objects."
 
-#: data.R:1614
+#: data.R:1615
 msgid "Load an R data frame."
 msgstr "Load an R data frame."
 
-#: data.R:1686
+#: data.R:1687
 msgid "Load an R dataset."
 msgstr "Load an R dataset."
 
-#: data.R:1505
+#: data.R:1506
 msgid "Load dataset from ODBC database table."
 msgstr "Load dataset from ODBC database table."
 
-#: data.R:996
+#: data.R:997
 msgid "Load the data."
 msgstr "Load the data."
 
-#: data.R:1251
+#: data.R:1252
 msgid "Load the names of available tables."
 msgstr "Load the names of available tables."
 
@@ -4277,7 +4277,7 @@ msgstr "Minimum achievable loss"
 msgid "Minimum loss by cost"
 msgstr "Minimum loss by cost"
 
-#: data.R:3037
+#: data.R:3038
 msgid "Min; Median/Mean; Max"
 msgstr "Min; Median/Mean; Max"
 
@@ -4285,11 +4285,11 @@ msgstr "Min; Median/Mean; Max"
 msgid "mins"
 msgstr "mins"
 
-#: data.R:3372 data.R:3384 data.R:3390
+#: data.R:3373 data.R:3385 data.R:3391
 msgid "; miss=%d"
 msgstr "; miss=%d"
 
-#: data.R:3329
+#: data.R:3330
 msgid "Missing: %d"
 msgstr "Missing: %d"
 
@@ -4305,7 +4305,7 @@ msgstr "Missing Value Summary"
 msgid "Models"
 msgstr "Models"
 
-#: data.R:2155
+#: data.R:2156
 msgid ""
 "More than a single %s variable has been identified (%s). Only a single "
 "variable is allowed.\n"
@@ -4317,7 +4317,7 @@ msgstr ""
 " \n"
 "Please change the role of one of the variables."
 
-#: data.R:2957
+#: data.R:2958
 msgid "Mosaic"
 msgstr "Mosaic"
 
@@ -4353,13 +4353,13 @@ msgstr "Mosaic Plot"
 msgid "multinom"
 msgstr "multinom"
 
-#: data.R:2135
+#: data.R:2136
 msgid ""
 "Multiple Targets have been identified (%s). Only a single Target is allowed."
 msgstr ""
 "Multiple Targets have been identified (%s). Only a single Target is allowed."
 
-#: data.R:2183
+#: data.R:2184
 msgid ""
 "Multiple Weights have been identified (%s). Only a single Weight is "
 "allowed.\n"
@@ -4427,7 +4427,7 @@ msgstr ""
 msgid "nnet"
 msgstr "nnet"
 
-#: data.R:2769 data.R:2777 data.R:2785 data.R:2793
+#: data.R:2770 data.R:2778 data.R:2786 data.R:2794
 msgid "No."
 msgstr "No."
 
@@ -4435,7 +4435,7 @@ msgstr "No."
 msgid "No appropriate evaluator found."
 msgstr "No appropriate evaluator found."
 
-#: data.R:1371
+#: data.R:1372
 msgid ""
 "No ARFF Filename has been chosen yet. You must choose one before execution."
 msgstr ""
@@ -4455,11 +4455,11 @@ msgstr ""
 msgid "No cluster to plot. The button should not have been sensitive."
 msgstr "No cluster to plot. The button should not have been sensitive."
 
-#: data.R:3352
+#: data.R:3353
 msgid ". No code export"
 msgstr ". No code export"
 
-#: data.R:859
+#: data.R:860
 msgid ""
 "No CSV filename has been provided. \n"
 "\n"
@@ -4473,7 +4473,7 @@ msgstr ""
 "\n"
 "Would you like to use the example %s dataset?"
 
-#: data.R:1646
+#: data.R:1647
 msgid ""
 "No dataset from the R libraries has been specified. \n"
 "\n"
@@ -4505,7 +4505,7 @@ msgstr ""
 msgid "No export functionality is available for the %s tab. Nothing done."
 msgstr "No export functionality is available for the %s tab. Nothing done."
 
-#: data.R:3557
+#: data.R:3558
 msgid ""
 "No input variables have been selected. This doesn't make a lot of sense. "
 "Please choose some input variables before proceeding."
@@ -4513,7 +4513,7 @@ msgstr ""
 "No input variables have been selected. This doesn't make a lot of sense. "
 "Please choose some input variables before proceeding."
 
-#: data.R:3558
+#: data.R:3559
 msgid "no input variables specified"
 msgstr "no input variables specified"
 
@@ -4541,13 +4541,13 @@ msgstr ""
 msgid "No output generated."
 msgstr "No output generated."
 
-#: data.R:1531
+#: data.R:1532
 msgid ""
 "No Rdata filename has been chosen yet. You must choose one before execution."
 msgstr ""
 "No Rdata filename has been chosen yet. You must choose one before execution."
 
-#: data.R:1595
+#: data.R:1596
 msgid ""
 "No R dataset name has been specified. Please identify the name of the R "
 "dataset. Any data frames that exist in the R Console are available from the "
@@ -4557,7 +4557,7 @@ msgstr ""
 "dataset. Any data frames that exist in the R Console are available from the "
 "Data Name combo box."
 
-#: data.R:1546
+#: data.R:1547
 msgid ""
 "No R dataset name has been specified. Please identify the name of the R "
 "dataset. Any data frames that were found in the loaded Rdata file are "
@@ -4567,7 +4567,7 @@ msgstr ""
 "dataset. Any data frames that were found in the loaded Rdata file are "
 "available to choose from in the Data Name combo box."
 
-#: data.R:2290
+#: data.R:2291
 msgid "No Risk"
 msgstr "No Risk"
 
@@ -4609,7 +4609,7 @@ msgstr ""
 "export it! You will need to press the Execute button (F2) in order to build "
 "the model."
 
-#: data.R:1465
+#: data.R:1466
 msgid ""
 "No table nor SQL query has been specified. Please identify the name of the "
 "table you wish to load. All tables in the connected database are listed once "
@@ -4643,7 +4643,7 @@ msgstr ""
 "No target has been specified. Please identify the target using the Data tab. "
 "Be sure to Execute the tab once the target has been identified."
 
-#: data.R:2519
+#: data.R:2520
 msgid "No target thus no predictive modelling nor sampling."
 msgstr "No target thus no predictive modelling nor sampling."
 
@@ -4691,7 +4691,7 @@ msgstr ""
 "ROCR package (Lift, ROC, Precision, and Sensitivity charts) and the Risk "
 "Chart only handle binary classification."
 
-#: data.R:2117
+#: data.R:2118
 msgid "Note the user selections."
 msgstr "Note the user selections."
 
@@ -4759,11 +4759,11 @@ msgstr "Number of Clusters"
 msgid "Number of Rules: %d"
 msgstr "Number of Rules: %d"
 
-#: data.R:3377
+#: data.R:3378
 msgid "Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s%s]"
 msgstr "Numeric [%.2f to %.2f; unique=%d; mean=%.2f; median=%.2f%s%s]"
 
-#: data.R:3363
+#: data.R:3364
 msgid "Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]"
 msgstr "Numeric [%d to %d; unique=%d; mean=%d; median=%d%s%s]"
 
@@ -4787,7 +4787,7 @@ msgstr "Obtain the pseudo R2 - a correlation."
 msgid "Obtain the response from the %s model."
 msgstr "Obtain the response from the %s model."
 
-#: data.R:1272
+#: data.R:1273
 msgid "ODBC connection to database established. Now select a table."
 msgstr "ODBC connection to database established. Now select a table."
 
@@ -4819,7 +4819,7 @@ msgstr ""
 msgid "OOB ROC Curve"
 msgstr "OOB ROC Curve"
 
-#: data.R:1228
+#: data.R:1229
 msgid "Open an ODBC connection."
 msgstr "Open an ODBC connection."
 
@@ -4827,7 +4827,7 @@ msgstr "Open an ODBC connection."
 msgid "Open Project"
 msgstr "Open Project"
 
-#: data.R:1241
+#: data.R:1242
 msgid "Open the connection to the ODBC service."
 msgstr "Open the connection to the ODBC service."
 
@@ -5223,7 +5223,7 @@ msgstr ""
 "Rattle can establish a connection to a database through the RODBC package. "
 "Tables avilable in the database will then be listed for selection."
 
-#: data.R:1717
+#: data.R:1718
 msgid "Rattle Dataset"
 msgstr "Rattle Dataset"
 
@@ -5337,11 +5337,11 @@ msgstr "R Data Miner - [Rattle]"
 msgid "Read a dataset from file for testing the model."
 msgstr "Read a dataset from file for testing the model."
 
-#: data.R:1382
+#: data.R:1383
 msgid "read an ARFF dataset"
 msgstr "read an ARFF dataset"
 
-#: data.R:955
+#: data.R:956
 msgid "read .xls or .xlsx files"
 msgstr "read .xls or .xlsx files"
 
@@ -5425,7 +5425,7 @@ msgstr "Rendering the plot. Please wait...."
 msgid "Report on the cluster characteristics."
 msgstr "Report on the cluster characteristics."
 
-#: data.R:1230
+#: data.R:1231
 msgid "Require the RODBC library."
 msgstr "Require the RODBC library."
 
@@ -5481,7 +5481,7 @@ msgstr "Reset the random number seed to obtain the same results each time."
 msgid "R Files"
 msgstr "R Files"
 
-#: data.R:1782
+#: data.R:1783
 msgid ""
 "RGtk2Extras is used to edit a data frame called 'rattle.edit.obj'. Once "
 "editing is complete and the wondow closed you can load this data frame into "
@@ -5507,7 +5507,7 @@ msgstr "ROC curve and convex hull"
 msgid "ROC Curve: requires the ROCR package."
 msgstr "ROC Curve: requires the ROCR package."
 
-#: data.R:2515
+#: data.R:2516
 msgid "Roles noted. %d observations and %d input variables."
 msgstr "Roles noted. %d observations and %d input variables."
 
@@ -5668,11 +5668,11 @@ msgstr "Start up latticist."
 msgid "Start up Plot builder dialog."
 msgstr "Start up Plot builder dialog."
 
-#: data.R:602
+#: data.R:603
 msgid "Status"
 msgstr "Status"
 
-#: data.R:2289
+#: data.R:2290
 msgid "Status: %s"
 msgstr "Status: %s"
 
@@ -5780,7 +5780,7 @@ msgstr "Sum of WithinSS Over Number of Clusters"
 msgid "Sum(WithinSS)"
 msgstr "Sum(WithinSS)"
 
-#: data.R:1358
+#: data.R:1359
 msgid "Support for ARFF is only available in R 2.5.0 and beyond."
 msgstr "Support for ARFF is only available in R 2.5.0 and beyond."
 
@@ -5824,15 +5824,15 @@ msgstr "Take a log10 transform of the variable - treat -Inf as NA."
 msgid "Take a log transform of the variable - treat -Inf as NA."
 msgstr "Take a log transform of the variable - treat -Inf as NA."
 
-#: data.R:2305
+#: data.R:2306
 msgid "Target:"
 msgstr "Target:"
 
-#: data.R:606 data.R:2865
+#: data.R:607 data.R:2866
 msgid "Target"
 msgstr "Target"
 
-#: data.R:2287 data.R:3139
+#: data.R:2288 data.R:3140
 msgid "Target: %s"
 msgstr "Target: %s"
 
@@ -5844,7 +5844,7 @@ msgstr "test"
 msgid "Test completed."
 msgstr "Test completed."
 
-#: data.R:3349
+#: data.R:3350
 msgid "test if export to pmml is supported"
 msgstr "test if export to pmml is supported"
 
@@ -5870,11 +5870,11 @@ msgstr ""
 "amap version is over 10 times faster. You may ant to install the 'amap' "
 "package."
 
-#: data.R:1425
+#: data.R:1426
 msgid "The ARFF data has been loaded: %s."
 msgstr "The ARFF data has been loaded: %s."
 
-#: data.R:1247
+#: data.R:1248
 msgid ""
 "The attempt to open the ODBC connection failed. Please check that the DSN is "
 "correct. See the R Console for further details."
@@ -5882,7 +5882,7 @@ msgstr ""
 "The attempt to open the ODBC connection failed. Please check that the DSN is "
 "correct. See the R Console for further details."
 
-#: data.R:1259
+#: data.R:1260
 msgid ""
 "The attempt to query the ODBC connection failed. Please check that the DSN "
 "is correct. See the R Console for further details."
@@ -6016,7 +6016,7 @@ msgstr ""
 "# The colorspace package is used to generate the colours used in plots, if "
 "available."
 
-#: data.R:2491
+#: data.R:2492
 msgid ""
 "The column selected as a Target (%s) will be treated as a categoric variable "
 "since Target Type is set to Categoric. \n"
@@ -6074,7 +6074,7 @@ msgstr ""
 msgid "The corresponding rules have been listed."
 msgstr "The corresponding rules have been listed."
 
-#: data.R:1067
+#: data.R:1068
 msgid ""
 "The CSV file has been loaded: %s. Please wait whilst we extract its "
 "structure..."
@@ -6110,7 +6110,7 @@ msgstr ""
 "The data does not support the number of clusters requested. Reduce the "
 "number of clusters and try again."
 
-#: data.R:1570
+#: data.R:1571
 msgid ""
 "The data has been loaded: %s. Please wait whilst we extract its structure..."
 msgstr ""
@@ -6204,7 +6204,7 @@ msgstr ""
 "\n"
 "Would you like to continue with the reduced variables?"
 
-#: data.R:1894
+#: data.R:1895
 msgid "The dataset has been exported to %s."
 msgstr "The dataset has been exported to %s."
 
@@ -6278,7 +6278,7 @@ msgstr ""
 "The FEX option of the Data tab provides a direct linkage to Web Focus as the "
 "source of our dataset for analysis."
 
-#: data.R:2260
+#: data.R:2261
 msgid "The following variable selections have been noted."
 msgstr "The following variable selections have been noted."
 
@@ -6340,7 +6340,7 @@ msgstr ""
 "of the packages are scanned for the datasets they provide. You can then "
 "choose a dataset from the drop down menu."
 
-#: data.R:1134
+#: data.R:1135
 msgid ""
 "The list of available datasets has been updated from the supplied data file. "
 "Choose one dataset from the Data Name box."
@@ -6447,7 +6447,7 @@ msgstr ""
 "Risk charts and the ROCR package (which implements the Lift, ROC, Precision, "
 "and Specificity charts) apply only to binary classification."
 
-#: data.R:1513
+#: data.R:1514
 msgid "The ODBC data has been loaded: %s."
 msgstr "The ODBC data has been loaded: %s."
 
@@ -6563,7 +6563,7 @@ msgstr ""
 msgid "# The Rattle package provides 'evaluateRisk' and 'plotRisk'."
 msgstr "# The Rattle package provides 'evaluateRisk' and 'plotRisk'."
 
-#: data.R:1629
+#: data.R:1630
 msgid ""
 "The R dataset has been loaded. Please wait whilst we extract its structure..."
 msgstr ""
@@ -6633,7 +6633,7 @@ msgstr "There are more bins than observations."
 msgid "The regression model appears to have failed. The error message was:"
 msgstr "The regression model appears to have failed. The error message was:"
 
-#: data.R:1830
+#: data.R:1831
 msgid "There is no dataset loaded, and so there is nothing to export."
 msgstr "There is no dataset loaded, and so there is nothing to export."
 
@@ -6653,7 +6653,7 @@ msgstr "The RGtk2 package did not find libglade installed. Please install it."
 msgid "The RGtk2 package is not available but is required for the %s GUI."
 msgstr "The RGtk2 package is not available but is required for the %s GUI."
 
-#: data.R:1705
+#: data.R:1706
 msgid "The R package data is now available."
 msgstr "The R package data is now available."
 
@@ -6669,11 +6669,11 @@ msgstr ""
 "The Score option will apply the selected models to a dataset, saving the "
 "results to file."
 
-#: data.R:1349
+#: data.R:1350
 msgid "The script option is not yet implemented."
 msgstr "The script option is not yet implemented."
 
-#: data.R:1696
+#: data.R:1697
 msgid ""
 "The selected dataset, '%s', from the '%s' package is not of class data frame "
 "(the data type). Its data class is '%s.' This is not currently supported by "
@@ -6755,7 +6755,7 @@ msgstr ""
 msgid "The supplied CSV filename '%s' does not exist."
 msgstr "The supplied CSV filename '%s' does not exist."
 
-#: data.R:1819
+#: data.R:1820
 msgid "The supplied data is now available."
 msgstr "The supplied data is now available."
 
@@ -6811,19 +6811,19 @@ msgstr ""
 "The supplied value of '%s' for the variable '%s' is not numeric. Please "
 "supply a numeric value."
 
-#: data.R:2526
+#: data.R:2527
 msgid "The target is %s. Categoric %d. Classification models enabled."
 msgstr "The target is %s. Categoric %d. Classification models enabled."
 
-#: data.R:2530
+#: data.R:2531
 msgid "The target is %s. Numeric. Regression models enabled."
 msgstr "The target is %s. Numeric. Regression models enabled."
 
-#: data.R:2522
+#: data.R:2523
 msgid "The target is %s with %s. Survival models enabled."
 msgstr "The target is %s with %s. Survival models enabled."
 
-#: data.R:1892
+#: data.R:1893
 msgid "The training dataset has been exported to %s."
 msgstr "The training dataset has been exported to %s."
 
@@ -6861,7 +6861,7 @@ msgstr ""
 "The two samples being compared come from the '%s' variable, grouped by\n"
 " '%s', with values '%s' and '%s'"
 
-#: data.R:2168
+#: data.R:2169
 msgid ""
 "The variable selected for your %s (%s) is not numeric. \n"
 "\n"
@@ -6883,7 +6883,7 @@ msgstr ""
 msgid "The variable weights have been plotted."
 msgstr "The variable weights have been plotted."
 
-#: data.R:2214
+#: data.R:2215
 msgid ""
 "The Weight Calculator contains the variable %s which is not known in the "
 "dataset."
@@ -6965,11 +6965,11 @@ msgstr "This operation is not yet functional."
 msgid "This variable is already a factor."
 msgstr "This variable is already a factor."
 
-#: data.R:2306
+#: data.R:2307
 msgid "Time:"
 msgstr "Time:"
 
-#: data.R:601 evaluate.R:341 export.R:308
+#: data.R:602 evaluate.R:341 export.R:308
 msgid "Time"
 msgstr "Time"
 
@@ -7135,7 +7135,7 @@ msgstr "TXT Files"
 msgid "Type 'rattle()' to shake, rattle, and roll your data."
 msgstr "Type 'rattle()' to shake, rattle, and roll your data."
 
-#: data.R:3326
+#: data.R:3327
 msgid "Unique: %d"
 msgstr "Unique: %d"
 
@@ -7187,11 +7187,11 @@ msgstr "using"
 msgid "validate"
 msgstr "validate"
 
-#: data.R:3333
+#: data.R:3334
 msgid "Value: %s"
 msgstr "Value: %s"
 
-#: data.R:2803 data.R:2811 data.R:2819 data.R:2827
+#: data.R:2804 data.R:2812 data.R:2820 data.R:2828
 msgid "Variable"
 msgstr "Variable"
 
@@ -7211,7 +7211,7 @@ msgstr "Variable Importance has been plotted."
 msgid "Version"
 msgstr "Version"
 
-#: data.R:1714
+#: data.R:1715
 msgid "view data in a spreadsheet"
 msgstr "view data in a spreadsheet"
 
@@ -7289,7 +7289,7 @@ msgstr ""
 " and the change in this value from the previous clustering.\n"
 " Plotting starts from 3 clusters.\n"
 
-#: data.R:2921
+#: data.R:2922
 msgid "Weight"
 msgstr "Weight"
 
@@ -7317,11 +7317,11 @@ msgstr ""
 "Rev, divides it by the maximum value of Rev in the dataset, times 10, adding "
 "1 to it to give numbers from 1 up."
 
-#: data.R:2318
+#: data.R:2319
 msgid "Weights in use."
 msgstr "Weights in use."
 
-#: data.R:2314
+#: data.R:2315
 msgid "Weights: %s"
 msgstr "Weights: %s"
 
@@ -7473,7 +7473,7 @@ msgstr ""
 "Data tab without executing the tab. The previous formula was '%s' and it is "
 "now '%s'. Please be sure to execute the Data tab before continuing."
 
-#: data.R:1497
+#: data.R:1498
 msgid ""
 "You are about to extract %s rows from the table %s of the %s ODBC "
 "connection. \n"
@@ -7509,7 +7509,7 @@ msgstr ""
 "You first need to generate the association rules. Perhaps you need to click "
 "the Execute button."
 
-#: data.R:2508
+#: data.R:2509
 msgid ""
 "You have chosen Survial models as the target type, but no Status variable "
 "has been identified. Survival models require both a Time and a Status "
@@ -7613,7 +7613,7 @@ msgstr ""
 "You have requested tree number %d, but there are only %d trees in the model. "
 "Choose a tree number between 1 and %d."
 
-#: data.R:2228
+#: data.R:2229
 msgid ""
 "You have used the variable %s in the weights formula but it is an input. "
 "This is unusual since it is both an input variable and used to weight the "
