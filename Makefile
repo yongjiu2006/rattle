@@ -294,6 +294,7 @@ www: # build pbuild ibuild zip rattle_src.zip # check pcheck
 	 perl -pi -e "s|rattle_.*tar.gz|rattle_$(VERSION).tar.gz|g" \
 			dmsurvivor.Rnw)
 
+.PHONY: install
 install:
 	#mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
 	#mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)

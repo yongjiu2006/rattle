@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-03-25 17:53:21 Graham Williams>
+# Time-stamp: <2012-07-04 22:01:29 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -86,20 +86,25 @@ executeExploreTab <- function()
   if (theWidget("summary_radiobutton")$getActive())
     executeExploreSummary(dataset)
   else if (theWidget("explore_distr_radiobutton")$getActive())
+  {
     if (crv$appname == "RattleXX")
       executeExplorePlot2(avdataset)
     else
       executeExplorePlot(avdataset)
+  }
   else if (theWidget("explore_interactive_radiobutton")$getActive())
+  {
     if (theWidget("explore_interactive_latticist_radiobutton")$getActive())
       executeExplorePlaywith(dataset)
     else if (theWidget("explore_interactive_ggobi_radiobutton")$getActive())
       executeExploreGGobi(dataset, crs$dataname)
     else if (theWidget("explore_interactive_plotbuilder_radiobutton")$getActive())
       executeExplorePlotBuilder()
+  }
   else if (theWidget("explore_correlation_radiobutton")$getActive())
+  {
     if (theWidget("explore_correlation_hier_checkbutton")$getActive())
-        executeExploreHiercor(ndataset)
+      executeExploreHiercor(ndataset)
     else
     {
       if (theWidget("explore_correlation_na_checkbutton")$getActive())
@@ -107,6 +112,7 @@ executeExploreTab <- function()
       else
         executeExploreCorrelation(ndataset)
     }
+  }
   else if (theWidget("prcomp_radiobutton")$getActive())
     executeExplorePrcomp(nidataset)
 }
@@ -3571,7 +3577,14 @@ ggcorplot <- function(data, var_text_size, cor_text_limits)
     ,axis.title.x = theme_blank()
     ,legend.position='none'
     )
-  size_scale = scale_size(limits = c(0,1),to=cor_text_limits)
+  
+  # 120704 The following scale_size used to have to=cor_text_limits
+  # but that caused error:
+  #
+  # Error in continuous_scale("size", "size_c", rescale_pal(range), ...) : 
+  # unused argument(s) (to = c(5, 10))
+
+  size_scale = scale_size(limits=c(0,1))
   return(
          ggplot()+
          points_layer+

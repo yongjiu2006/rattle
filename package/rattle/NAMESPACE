@@ -34,6 +34,7 @@ export(
        rattle.print.rpart,
        rattle.print.summary.multinom,
        rescale.by.group,
+       riskchart,
        # 120117 Remove for now - could be harmful.
        # overwritePackageFunction,
        savePlotToFile,

@@ -93,7 +93,7 @@
   crv$rattleUI <- "rattle.ui"
   if (Sys.info()["sysname"] == "Darwin") crv$rattleUI <- "rattle_macosx.ui"
 
-  crv$log.intro <- paste("#", sprintf(Rtxt("%s is Copyright (c) 2006-2011 %s."),
+  crv$log.intro <- paste("#", sprintf(Rtxt("%s is Copyright (c) 2006-2012 %s."),
                                       "Rattle", "Togaware Pty Ltd"))
   crv$support.msg <- sprintf(Rtxt("Contact %s."), "support@togaware.com")
   crv$library.command <- "library(rattle)"
@@ -222,7 +222,7 @@
   # 091221 The Rtxt does not seem to work from the rattle.R file, so
   # do it here again.
   
-  COPYRIGHT <- sprintf(Rtxt("Copyright (c) 2006-2011 %s."), "Togaware Pty Ltd")
+  COPYRIGHT <- sprintf(Rtxt("Copyright (c) 2006-2012 %s."), "Togaware Pty Ltd")
 
   if (! suppressRattleWelcome)
   {
