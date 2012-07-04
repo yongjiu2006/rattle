@@ -1,3 +1,30 @@
+rattle (2.6.19) unstable; urgency=low
+
+  * Depend on weightedKmeans rather than siatclust.
+  
+  * Bug fix: correlation plots stopped working.
+  
+  * Bug fix: ggcorplot use of size_scale started failing. Perhaps because
+    of new version ofggplot2.
+  
+  * Bug fix: notice when a restored project does not have a filename set.
+  
+  * Fix some logic errors in rf.
+  
+  * Add 0,0 point to evaluateRisk.
+  
+  * Make risk, recall, precision as default names in risk chart.
+  
+  * Add new riskchart funciton using ggplot2.
+  
+  * Allow additional arguments to fancyRpartPlot passed through to prp.
+  
+  * Update copyrigt to 2012.
+  
+  * Allow y for yes in installing initial RGtk2.
+  
+ --
+
 rattle (2.6.18) unstable; urgency=low
 
   * Ensure require uses quietly rather than quiet.
@@ -856,3 +883,4 @@ rattle (2.5.19) unstable; urgency=low
   * Rtxt does no translations when running on MS/Windows (for now).
 
  -- Graham Williams <Graham.Williams@togaware.com>  Sat, 30 Jan 2010 09:28:18 +1100
+Graham Williams <Graham.Williams@togaware.com>  Sat, 30 Jan 2010 09:28:18 +1100

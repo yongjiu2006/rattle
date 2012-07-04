@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-04-21 11:57:24 Graham Williams>
+# Time-stamp: <2012-05-10 21:28:44 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1656,28 +1656,22 @@ evaluateRisk <- function(predicted, actual, risks=NULL)
   if (not.null(risks))
     ds.evaluation$Measure <- abs(ds.evaluation$Recall - ds.evaluation$Caseload) +
       abs(ds.evaluation$Risk - ds.evaluation$Caseload)
+
+  # 120502 Be sure we include the 0, 0 point - no caseload means no
+  # recall, no risk, no measure and let's say 100% strike rate.
+
+  if (! 1 %in% row.names(ds.evaluation))
+  {
+    if (is.null(risks))
+      ds.evaluation <- rbind(ds.evaluation, c(0.00, 0.00, 1.00))
+    else
+      ds.evaluation <- rbind(ds.evaluation, c(0.00, 0.00, 0.00, 1.00, 0.00))
+  
+    row.names(ds.evaluation)[nrow(ds.evaluation)] <- 1.00
+  }
+  
   return(ds.evaluation)
 }
-
-## REPLACED BY calculateAUC
-##
-## calculateRiskAUC <- function(ev)
-## {
-##   len <- nrow(ev)
-##   ria <- ev$Caseload[len] * ev$Risk[len] / 2
-##   rea <- ev$Caseload[len] * ev$Recall[len] / 2
-
-##   for (i in (len-1):1)
-##   {
-##     ria <- ria +
-##       (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Risk[i+1] +
-##       (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Risk[i] - ev$Risk[i+1]) / 2
-##     rea <- rea +
-##       (ev$Caseload[i] - ev$Caseload[i+1]) * ev$Recall[i+1] +
-##       (ev$Caseload[i] - ev$Caseload[i+1]) * (ev$Recall[i] - ev$Recall[i+1]) / 2
-##   }
-##   return(c(ria, rea))
-## }
 
 calculateAUC <- function(x, y)
 {
@@ -1723,9 +1717,9 @@ plotRisk <- function (cl, pr, re, ri=NULL,
                       show.knots=NULL,
                       show.lift=TRUE,
                       show.precision=TRUE,
-                      risk.name="Revenue", #"Risk",
-                      recall.name="Adjustments", #"Recall",
-                      precision.name="Strike Rate") #"Precision")
+                      risk.name="Risk",
+                      recall.name="Recall",
+                      precision.name="Precision")
 {
   openMyDevice(dev, filename)
 
@@ -1844,6 +1838,50 @@ plotRisk <- function (cl, pr, re, ri=NULL,
   }
   if (dev != "") dev.off()
   par(opar)
+}
+
+riskchart <- function(data,
+                     title=NULL,
+                     show.legend=TRUE,
+                     optimal=NULL, optimal.label="",
+                     chosen=NULL, chosen.label="",
+                     include.baseline=TRUE,
+                     dev="", filename="",
+                     show.knots=NULL,
+                     show.lift=TRUE,
+                     show.precision=TRUE,
+                     risk.name="Risk",
+                     recall.name="Recall",
+                     precision.name="Precision")
+{
+  # ggplot2 version of the risk chart.
+
+  require(ggplot2)
+  
+  stopifnot(c("Caseload", "Recall", "Precision") %in% colnames(data)) 
+
+#  openMyDevice(dev, filename)
+
+  score <- rev(as.numeric(row.names(data)))
+  locateScores <- function(s) 
+  { 
+    # Convert score to caseload (percentile) for plotting 
+    with(data, 1 - findInterval(s, rev(score))/length(score)) 
+  } 
+  scores <- data.frame(ticks=seq(0.1, 0.9, by = 0.1))
+  scores$pos <- locateScores(scores$ticks)
+
+  # How to get recall.name etc in the following - by default it is not
+  # defined?
+  
+  ggplot(data, aes(x=Caseload)) +
+    geom_line(aes(y=Recall, colour="Recall", linetype="Recall")) + 
+    geom_line(aes(y=Risk, colour="Risk", linetype="Risk")) + 
+    geom_line(aes(y=Precision, colour="Precision", linetype="Precision")) + 
+    geom_text(data=scores, aes(x=pos, y=1.015, label=ticks,
+                color="Score", linetype="Score"), size=3) +
+    geom_line(aes(y=Caseload)) + 
+    opts(legend.title=theme_blank(), title=title)
 }
 
 handleMissingValues <- function(testset, mtype)

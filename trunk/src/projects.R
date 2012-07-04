@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-10-25 20:35:08 Graham Williams>
+# Time-stamp: <2012-05-17 20:58:57 Graham Williams>
 #
 # Project functionality.
 #
@@ -412,14 +412,19 @@ loadProject <- function()
   # to work in that we can make changes to the roles and they get
   # effected without trying to load the default dataset. 090317 Is
   # that still true? Also, I don't recall why I go for the basename if
-  # it does not exist. Seems to make some sense.
-
-  if (file.exists(uri2file(crs$filename)))
-    theWidget("data_filechooserbutton")$setUri(crs$filename)
-  else
-    crs$filename <- basename(crs$filename)
-
-  if (! file.exists(uri2file(crs$dwd)))
+  # it does not exist. Seems to make some sense. 120520 Take account
+  # of the case where there is no filename stored as when an R Dataset
+  # was loaded.
+  
+  if (! is.null(crs$filename))
+  {
+    if (file.exists(uri2file(crs$filename)))
+      theWidget("data_filechooserbutton")$setUri(crs$filename)
+    else
+      crs$filename <- basename(crs$filename)
+  }
+  
+  if (! is.null(crs$dwd) && ! file.exists(uri2file(crs$dwd)))
     crs$dwd <- ""
 
   # 100609 Restore partition sizes before we resetVariableRoles since

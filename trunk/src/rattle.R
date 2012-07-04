@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-02-21 06:51:37 Graham Williams>
+# Time-stamp: <2012-06-10 07:38:04 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -28,9 +28,9 @@ Rtxt <- function(...)
 RtxtNT <- Rtxt
 
 VERSION <- "2.6.18"
-DATE <- "2012-04-22"
+DATE <- "2012-07-04"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
-COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2011 Togaware Pty Ltd.")
+COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2012 Togaware Pty Ltd.")
 
 # Acknowledgements: Frank Lu has provided much feedback and has
 # extensively tested early versions of Rattle. Many colleagues at the
@@ -1540,7 +1540,7 @@ displayWelcomeTabMessage <- function()
                            "See Help -> About for details."),
                       "\n\n",
                       sprintf(Rtxt("Rattle Version %s.",
-                                   "Copyright 2006-2011 Togaware Pty Ltd"),
+                                   "Copyright 2006-2012 Togaware Pty Ltd"),
                               VERSION),
                       "\n",
                       Rtxt("Rattle is a registered trademark of Togaware Pty Ltd"),
@@ -2050,7 +2050,7 @@ questionDialog <- function(...)
   else
   {
     cat(paste(strwrap(...), collapse="\n"))
-    answer <- tolower(readline(" (yes/NO) ")) == "yes"
+    answer <- tolower(readline(" (yes/NO) ")) %in% c("yes", "y")
   }
   return(answer)
 }

@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-03-15 15:15:57 Graham Williams>
+# Time-stamp: <2012-05-13 14:19:30 Graham Williams>
 #
 # RPART TAB
 #
@@ -621,7 +621,7 @@ rattle.print.rpart <- function (x, minlength = 0, spaces = 2, cp,
 #-----------------------------------------------------------------------
 # Fancy plot
 
-fancyRpartPlot <- function(model, main="")
+fancyRpartPlot <- function(model, main="", ...)
 {
   # Note that rpart.plot requires rpart >= 3.1.48 which is not
   # available on Windows R 2.12.2!
@@ -675,7 +675,7 @@ fancyRpartPlot <- function(model, main="")
   prp(model, type=1, extra=0,
     box.col=pals[col.index],
     nn=TRUE, varlen=0, shadow.col="grey",
-    node.fun=my.node.fun)
+    node.fun=my.node.fun, ...)
   
   title(main=main,
     sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), 

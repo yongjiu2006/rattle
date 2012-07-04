@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-03-06 14:18:15 Graham Williams>
+# Time-stamp: <2012-05-16 06:51:35 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -728,7 +728,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
   {
     var.class <- tr.vars[tree[root, 'split var']]
     node.var <- var.names[tree[root,'split var']]
-    if(var.class == "character" | var.class == "factor")
+    if("character" %in% var.class | "factor" %in% var.class | "ordered" %in% var.class)
     {
       ## Convert the binary split point to a 0/1 list for the levels.
       
@@ -740,7 +740,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
       condition <- sprintf("%s %s %s%s", node.var, cin,
                            ifelse(format=="R", "c", ""), node.value)
     }
-    else if (var.class == "integer" | var.class == "numeric")
+    else if ("integer" %in% var.class | "numeric" %in% var.class)
     {
       ## Assume spliting to the left means "<=", and right ">",
       ## which is not what the man page for getTree claims!
@@ -751,7 +751,7 @@ treeset.randomForest <- function(model, n=1, root=1, format="R")
     }
     else
     {
-      stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+      stop(sprintf("Rattle E222: getRFRuleSet: class %s not supported.",
                    var.class))
     }
     
@@ -827,7 +827,7 @@ ruleset.randomForest <- function(model, n=1, include.class=NULL)
     for (j in 1:(length(tr.path)-1))
     {
       var.class <- tr.vars[var.index[j]]
-      if (var.class == "character" | var.class == "factor")
+      if (var.class == "character" | var.class == "factor" | var.class == "ordered")
       {
         node.op <- "IN"
 
@@ -853,7 +853,7 @@ ruleset.randomForest <- function(model, n=1, include.class=NULL)
         node.value <- var.values[j]
       }
       else
-        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+        stop(sprintf("Rattle E223: getRFRuleSet: class %s not supported.",
                      var.class))
 
       rule <- c(rule, sprintf("%s %s %s\n", var.names[j], node.op, node.value))
@@ -931,7 +931,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
     for (j in 1:(length(tr.path)-1))
     {
       var.class <- tr.vars[var.index[j]]
-      if (var.class == "character" | var.class == "factor")
+      if (var.class == "character" | var.class == "factor" | var.class == "ordered")
       {
         node.op <- "IN"
 
@@ -957,7 +957,7 @@ printRandomForest <- function(model, n=1, include.class=NULL,
         node.value <- var.values[j]
       }
       else
-        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+        stop(sprintf("Rattle E234: getRFRuleSet: class %s not supported.",
                      var.class))
 
       if (format=="VB")
@@ -1034,7 +1034,7 @@ getRFRuleSet <- function(model, n)
       var.class <- tr.vars[var.index[j]]
 #print(var.class)
       # 6 Mar 2012 This is currently failing. Needs debugging.
-      if (var.class == "character" | var.class == "factor")
+      if (var.class == "character" | var.class == "factor" | var.class == "ordered")
       {
         node.op <- "="
 
@@ -1060,7 +1060,7 @@ getRFRuleSet <- function(model, n)
         node.value <- var.values[j]
       }
       else
-        stop(sprintf("Rattle: getRFRuleSet: class %s not supported.",
+        stop(sprintf("Rattle E235: getRFRuleSet: class %s not supported.",
                      var.class))
 
       tr.rule <- c(tr.rule, paste(var.names[j], node.op, node.value))

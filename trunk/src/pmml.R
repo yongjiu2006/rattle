@@ -2,7 +2,7 @@
 #
 # Part of the Rattle package for Data Mining
 #
-# Time-stamp: <2012-03-29 20:06:09 Graham Williams>
+# Time-stamp: <2012-05-20 14:56:48 Graham Williams>
 #
 # Copyright (c) 2009-2012 Togaware Pty Ltd
 #
@@ -724,15 +724,7 @@ unifyTransforms <- function(field, transforms, keep.first=TRUE)
 
 pmmlCanExport <- function(vname)
 {
-  # 090517 In general this support function will return TRUE if the
-  # variable name supplied is either not a transform (hence it is
-  # exportable in general, since it is a supplied variable) or if it
-  # is a transform, it is a supported transformation, if there is such
-  # a list available. This is intended for the implementation of
-  # transforms into PMML. An extermal package will provide a
-  # pmml.transforms function and will override the simple default here
-  # to test whether the transform is one that it can handle.
-  return(! isTransformVar(vname))
+  return(FALSE)
 }
 
 isTransformVar <- function(vname)
