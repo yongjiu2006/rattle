@@ -17,8 +17,8 @@ plotRisk(cl, pr, re, ri = NULL, title = NULL,
     optimal = NULL, optimal.label = "", chosen = NULL, chosen.label = "",
     include.baseline = TRUE, dev = "", filename = "", show.knots = NULL,
     show.lift=TRUE, show.precision=TRUE,
-    risk.name = "Revenue", recall.name = "Adjustments",
-    precision.name = "Strike Rate")
+    risk.name = "Risk", recall.name = "Recall",
+    precision.name = "Precision")
 }
 \arguments{
   
