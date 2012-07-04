@@ -9,7 +9,7 @@
   
 }
 \usage{
-fancyRpartPlot(model, main="")
+fancyRpartPlot(model, main="", ...)
 
 }
 \arguments{
@@ -17,7 +17,9 @@ fancyRpartPlot(model, main="")
   \item{model}{an rpart object.}
 
   \item{main}{title for the plot.}
-  
+
+  \item{...}{additional arguments passed on to prp.}
+
 }
 \references{Package home page: \url{http://rattle.togaware.com}}
 \author{\email{Graham.Williams@togaware.com}}

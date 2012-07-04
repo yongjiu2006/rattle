@@ -23,7 +23,9 @@ rattle (2.6.19) unstable; urgency=low
   
   * Allow y for yes in installing initial RGtk2.
   
- --
+  * List global variables to avoid check messages.
+  
+ -- Graham Williams <Graham.Williams@togaware.com>  Wed, 04 Jul 2012 22:15:27 +1000
 
 rattle (2.6.18) unstable; urgency=low
 
@@ -883,4 +885,3 @@ rattle (2.5.19) unstable; urgency=low
   * Rtxt does no translations when running on MS/Windows (for now).
 
  -- Graham Williams <Graham.Williams@togaware.com>  Sat, 30 Jan 2010 09:28:18 +1100
-Graham Williams <Graham.Williams@togaware.com>  Sat, 30 Jan 2010 09:28:18 +1100

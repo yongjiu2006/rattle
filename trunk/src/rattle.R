@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-06-10 07:38:04 Graham Williams>
+# Time-stamp: <2012-07-04 22:30:29 Graham Williams>
 #
 # Copyright (c) 2009-2011 Togaware Pty Ltd
 #
@@ -10,6 +10,34 @@
 # data.R	Handle Data management tasks.
 # execute.R	The Execute functionality.
 #
+
+# 120704 Avoid "no visible binding for global variable" warnings on a
+# check:
+
+utils::globalVariables(c("rattle.entered.dataset",
+                         "ds",
+                         "gladeXMLNew",
+                         "rsq",
+                         "p",
+                         "x_lab",
+                         "gladeXMLNew",
+                         "gladeXMLSignalAutoconnect",
+                         "gladeXMLNew",
+                         "gladeXMLSignalAutoconnect",
+                         "gladeXMLNew",
+                         "gladeXMLSignalAutoconnect",
+                         "biocLite",
+                         "Caseload",
+                         "Risk",
+                         "Precision",
+                         "pos",
+                         "ticks",
+                         "devSVG",
+                         "target",
+                         "ignore",
+                         "gladeXMLNew",
+                         "gladeXMLSignalAutoconnect"
+                         ))
 
 Rtxt <- function(...)
 {
@@ -27,7 +55,7 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.18"
+VERSION <- "2.6.19"
 DATE <- "2012-07-04"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2012 Togaware Pty Ltd.")
