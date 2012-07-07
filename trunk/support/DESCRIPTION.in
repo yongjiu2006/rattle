@@ -5,7 +5,7 @@ Version: VERSION
 Date: DATE
 Author: Graham Williams <Graham.Williams@togaware.com>
 Maintainer: Graham Williams <Graham.Williams@togaware.com>
-Depends: R (>= 2.8.0)
+Depends: R (>= 2.15.1)
 Suggests: RGtk2, pmml (>= 1.2.13), bitops, colorspace, 
   ada, amap, arules, arulesViz, biclust, cairoDevice,
   cba, descr, doBy, e1071, ellipse, fEcofin, 
