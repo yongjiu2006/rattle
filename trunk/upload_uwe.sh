@@ -6,7 +6,6 @@ DEST=win-builder.r-project.org
 
 TARGETREL=/R-release
 TARGETDEV=/R-devel
-TARGETD64=/R64-release
 
 VERSION=$(head -1 ChangeLog | cut -d' ' -f 2 | tr -d '\(\)')
 LATEST=rattle_${VERSION}.tar.gz
@@ -25,5 +24,3 @@ put ${LATEST}
 quit
 _EOF_
 
-#cd ../${TARGETD64}
-#put ${LATEST}

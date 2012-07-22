@@ -10,7 +10,8 @@ help:
 	\tcheck\n\
 	\tucheck\tWait for a response from Uwe.\n\
 	\tcran\tAlso email cran@r-project.org\n\
-	\tinstall\tAnnounce on rattle-users once receive email from Uwe\n\n\
+	\tinstall\tUpdates PACKAGES in repo and uploads to togaware\n\
+	Then announce on rattle-users once receive email from Uwe\n\n\
 	New PMML Release:\n\
 	\tupdate version number in src/pmml.R\n\
 	\tpbuild; pcheck; pucheck; pcran\n\n\
@@ -296,8 +297,6 @@ www: # build pbuild ibuild zip rattle_src.zip # check pcheck
 
 .PHONY: install
 install:
-	#mv rattle_$(VERSION).tar.gz pmml_$(PVERSION).tar.gz $(REPOSITORY)
-	#mv rattle_$(VERSION).zip pmml_$(PVERSION).zip $(REPOSITORY)
 	-R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
 	lftp -f .lftp
