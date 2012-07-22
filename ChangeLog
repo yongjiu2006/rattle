@@ -1,3 +1,14 @@
+rattle (2.6.20) unstable; urgency=low
+
+  * Because of use of globalVariables Rattle now depends on R >=
+    2.15.1. However, check this conditionally to retain backward
+    compatibility for now. Reported by Uwe Ligges.
+  
+  * For show arules, eval in global environment else it does not show the
+    rules. Reported by Tania Churchill.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 23 Jul 2012 02:27:18 +1000
+
 rattle (2.6.19) unstable; urgency=low
 
   * Depend on weightedKmeans rather than siatclust.

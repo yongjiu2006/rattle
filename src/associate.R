@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2011-12-24 15:59:09 Graham Williams>
+# Time-stamp: <2012-07-11 19:51:29 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -431,7 +431,7 @@ listAssociateRules <- function()
   ## result <- collectOutput(summary1.cmd)
   ##
 
-  result <- paste(capture.output(eval(parse(text=summary1.cmd))), collapse="\n")
+  result <- paste(capture.output(eval(parse(text=summary1.cmd), envir=globalenv())), collapse="\n")
 
   ## It did not dump an error, but produces no output until I added
   ## the paste. But then I'm back to this working when I source, but
