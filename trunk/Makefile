@@ -296,9 +296,15 @@ www: # build pbuild ibuild zip rattle_src.zip # check pcheck
 			dmsurvivor.Rnw)
 
 .PHONY: install
-install:
+install: local.repo remote.repo
+
+.PHONY: local.repo
+local.repo: 
 	-R --no-save < support/repository.R
 	chmod go+r $(REPOSITORY)/*
+
+.PHONY: remote.repo
+remote.repo:
 	lftp -f .lftp
 
 # 100123 Updated the build process. Note that check should be done
@@ -341,10 +347,11 @@ devbuild:
 # 100123 Updated the build process
 
 .PHONY: build
-build: weather translations www \
-	rattle_$(VERSION).tar.gz \
-	rattle_$(VERSION).zip
-	chmod go+r $(REPOSITORY)/*
+build: weather \
+		translations www \
+		rattle_$(VERSION).tar.gz \
+		rattle_$(VERSION).zip \
+		local.repo
 
 .PHONY: translations
 translations:

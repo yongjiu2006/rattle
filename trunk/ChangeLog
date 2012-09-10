@@ -1,3 +1,21 @@
+rattle (2.6.21) unstable; urgency=low
+
+  * Retain depend on R > 2.12.1.
+  
+  * Ensure rattle.togaware.com repo is maintained.
+  
+  * Better detect arules error message for duplicate items in a basket.
+  
+  * Update ggplot2 calls to conform to 0.92. Also turn advanced graphics
+    on by default. Implement risk charts using ggplot2.
+  
+  * Start introducing suppressPackageStartupMessages to avoid excessive
+    messages in the console.
+  
+  * Do AUC only for binomial targets.
+
+ -- Graham Williams <Graham.Williams@togaware.com>  Mon, 10 Sep 2012 19:27:42 +1000
+
 rattle (2.6.20) unstable; urgency=low
 
   * Because of use of globalVariables Rattle now depends on R >=

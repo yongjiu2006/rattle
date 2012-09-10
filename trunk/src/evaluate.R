@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-05-10 21:28:44 Graham Williams>
+# Time-stamp: <2012-09-10 19:19:11 Graham Williams>
 #
 # Implement evaluate functionality.
 #
@@ -1330,6 +1330,8 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
   TV <- "risk_textview"
   resetTextview(TV)
 
+  advanced.graphics <- theWidget("use_ggplot2")$getActive()
+
   # Ensure a risk variable has been specified. 081002 The plotRisk
   # function still works if no risk variable has been specified, so
   # let's go with it.
@@ -1396,14 +1398,25 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
                             sprintf("\n    %s$%s,", testset[[mtype]], crs$target),
                             sprintf("\n    %s$%s)", testsetr, risk))
 
-      plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
-                        "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
-                        '\n    risk.name="', risk,
-                        '", recall.name="', crs$target, '"',
-                        ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
-                        ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
-                        ")\n",
-                        genPlotTitleCmd(Rtxt("Risk Chart"), commonName(mtype),
+
+      if (advanced.graphics)
+        plot.cmd <- paste("print(riskchart(crs$eval, ",
+                          'title="',
+                          paste("Risk Chart", commonName(mtype), testname, risk, '", '),
+                          'risk.name="', risk, '", recall.name="', crs$target, '"',
+                          ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          '))\n',
+                          sep="")
+      else
+        plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
+                          "crs$eval$Precision, crs$eval$Recall, crs$eval$Risk,",
+                          '\n    risk.name="', risk,
+                          '", recall.name="', crs$target, '"',
+                          ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ")\n",
+                          genPlotTitleCmd(Rtxt("Risk Chart"), commonName(mtype),
                                         testname, risk),
                         sep="")
     }
@@ -1412,14 +1425,23 @@ executeEvaluateRisk <- function(probcmd, testset, testname)
       evaluate.cmd <- paste("crs$eval <- evaluateRisk(crs$pr,",
                             sprintf("%s$%s)", testset[[mtype]], crs$target))
 
-      plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
-                        "crs$eval$Precision, crs$eval$Recall",
-                        ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
-                        ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
-                        ")\n",
-                        genPlotTitleCmd("Performance Chart", commonName(mtype),
-                                        testname),
-                        sep="")
+      if (advanced.graphics)
+        plot.cmd <- paste("print(riskchart(crs$eval, ",
+                          'title="',
+                          paste("Performance Chart", commonName(mtype), testname, '"'),
+                          ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          '))\n',
+                          sep="")
+      else
+        plot.cmd <- paste("plotRisk(crs$eval$Caseload, ",
+                          "crs$eval$Precision, crs$eval$Recall",
+                          ', show.lift=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ', show.precision=', ifelse(numericTarget(), "FALSE", "TRUE"),
+                          ")\n",
+                          genPlotTitleCmd("Performance Chart", commonName(mtype),
+                                          testname),
+                          sep="")
     }
 
     appendLog(Rtxt("Generate a risk chart."),
@@ -1874,14 +1896,18 @@ riskchart <- function(data,
   # How to get recall.name etc in the following - by default it is not
   # defined?
   
-  ggplot(data, aes(x=Caseload)) +
-    geom_line(aes(y=Recall, colour="Recall", linetype="Recall")) + 
-    geom_line(aes(y=Risk, colour="Risk", linetype="Risk")) + 
-    geom_line(aes(y=Precision, colour="Precision", linetype="Precision")) + 
-    geom_text(data=scores, aes(x=pos, y=1.015, label=ticks,
-                color="Score", linetype="Score"), size=3) +
-    geom_line(aes(y=Caseload)) + 
-    opts(legend.title=theme_blank(), title=title)
+  pl <- ggplot(data, aes(x=Caseload)) +
+        geom_line(aes(y=Recall, colour="Recall", linetype="Recall")) + 
+        geom_line(aes(y=Precision, colour="Precision", linetype="Precision")) + 
+        geom_text(data=scores, aes(x=pos, y=1.015, label=ticks,
+                  color="Score", linetype="Score"), size=3) +
+        geom_line(aes(y=Caseload)) +
+        ggtitle(title) +
+        theme(legend.title=element_blank())
+  if ('Risk' %in% colnames(data))
+    pl <- pl + geom_line(aes(y=Risk, colour="Risk", linetype="Risk"))
+
+  return(pl)
 }
 
 handleMissingValues <- function(testset, mtype)

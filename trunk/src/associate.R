@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-07-11 19:51:29 Graham Williams>
+# Time-stamp: <2012-08-31 06:48:36 Graham Williams>
 #
 # Implement associations functionality.
 #
@@ -196,11 +196,12 @@ executeAssociateTab <- function()
   time.taken <- Sys.time() - start.time
   if (inherits(result, "try-error"))
   {
-    if (any(grep("slot i is not \\*strictly\\* increasing inside a column", result)))
-      errorDialog(sprintf(Rtxt("The baskets appear to have repeated items, which",
-                               "causes an error when converting to transactions.",
+    if (any(grep("slot i is not \\*strictly\\* increasing inside a column", result)) ||
+        any(grep("transactions with duplicated items", result)))
+      errorDialog(sprintf(Rtxt("One or more baskets appear to have repeated items.",
+                               "This is not handled by the internal conversion to transactions.",
                                "Please pre-process your data to remove repeated items",
-                               "from the baskets. The actual error message was:\n\n%s"),
+                               "from any baskets. The actual error message was:\n\n%s"),
                           result))
     else
       errorDialog(errorMessageFun("as", result))

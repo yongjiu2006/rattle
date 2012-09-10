@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-05-16 06:51:35 Graham Williams>
+# Time-stamp: <2012-08-30 06:48:26 Graham Williams>
 #
 # RANDOM FOREST TAB
 #
@@ -391,7 +391,8 @@ executeModelRF <- function(traditional=TRUE, conditional=!traditional)
 
   # 6 Mar 2012 Add some AUC information as suggested by Akbar Waljee.
 
-  if (traditional && packageIsAvailable("pROC", Rtxt("calculate AUC confidence interval")))
+  if (traditional && binomialTarget() &&
+      packageIsAvailable("pROC", Rtxt("calculate AUC confidence interval")))
   {
     lib.cmd <- "require(pROC, quietly=TRUE)"
     roc.cmd <- "roc(crs$rf$y, crs$rf$votes)"
