@@ -1,6 +1,6 @@
 # Gnome R Data Miner: GNOME interface to R for Data Mining
 #
-# Time-stamp: <2012-07-04 22:01:29 Graham Williams>
+# Time-stamp: <2012-09-10 06:51:47 Graham Williams>
 #
 # Implement EXPLORE functionality.
 #
@@ -1953,9 +1953,9 @@ executeBoxPlot2 <- function(dataset, vars, target, targets, stratify, sampling, 
                                                    stratify && length(targets)),
                                  vector=TRUE)
 
-    title.cmd <- sprintf('opts(title="%s")', title.txt[1])
+    title.cmd <- sprintf('ggtitle("%s")', title.txt[1])
 
-    legend.cmd <- 'opts(legend.position="none")'
+    legend.cmd <- 'theme(legend.position="none")'
   
     xlab.cmd <- sprintf('xlab("%s\\n\\n%s")', target, title.txt[2])
 
@@ -2181,7 +2181,7 @@ executeExplorePlot2 <- function(dataset,
 
     title.txt <- generateTitleText("%%s", target, sampling, stratify && length(targets))
     
-    title.cmd <- sprintf(paste('opts(title="%s"', title.txt))
+    title.cmd <- sprintf(paste('ggtitle("%s")', title.txt))
 
     sub.cmd <- sprintf('labs(x="%s\\n\\n%%s")', target)
 
@@ -3567,14 +3567,14 @@ ggcorplot <- function(data, var_text_size, cor_text_limits)
         )
     )
   f = facet_grid(y_lab~x_lab,scales='free')
-  o = opts(
-    panel.grid.minor = theme_blank()
-    ,panel.grid.major = theme_blank()
-    ,axis.ticks = theme_blank()
-    ,axis.text.y = theme_blank()
-    ,axis.text.x = theme_blank()
-    ,axis.title.y = theme_blank()
-    ,axis.title.x = theme_blank()
+  o = theme(
+    panel.grid.minor = element_blank()
+    ,panel.grid.major = element_blank()
+    ,axis.ticks = element_blank()
+    ,axis.text.y = element_blank()
+    ,axis.text.x = element_blank()
+    ,axis.title.y = element_blank()
+    ,axis.title.x = element_blank()
     ,legend.position='none'
     )
   

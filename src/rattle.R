@@ -58,8 +58,8 @@ Rtxt <- function(...)
 
 RtxtNT <- Rtxt
 
-VERSION <- "2.6.20"
-DATE <- "2012-07-11"
+VERSION <- "2.6.21"
+DATE <- "2012-09-10"
 # 091223 Rtxt does not work until the rattle GUI has started, perhaps?
 COPYRIGHT <- paste(Rtxt("Copyright"), "(C) 2006-2012 Togaware Pty Ltd.")
 
@@ -269,30 +269,34 @@ rattleInfo <- function(all.dependencies=FALSE,
       depG
     }
 
-    require(pmml, quietly=TRUE)
-    require(methods, quietly=TRUE)
-    require(colorspace, quietly=TRUE)
-    require(cairoDevice, quietly=TRUE)
-    require(RGtk2, quietly=TRUE)
-    require(utils, quietly=TRUE)
-    require(XML, quietly=TRUE)
-    require(graph, quietly=TRUE, warn.conflicts=FALSE)
+    suppressPackageStartupMessages({
+      require(pmml, quietly=TRUE)
+      require(methods, quietly=TRUE)
+      require(colorspace, quietly=TRUE)
+      require(cairoDevice, quietly=TRUE)
+      require(RGtk2, quietly=TRUE)
+      require(utils, quietly=TRUE)
+      require(XML, quietly=TRUE)
+      require(graph, quietly=TRUE, warn.conflicts=FALSE)
 
-    require(RBGL, quietly=TRUE)
-    require(bitops, quietly=TRUE)
-    require(grid, quietly=TRUE)
-    if (! require(pkgDepTools, quietly=TRUE))
-    {
-      source("http://bioconductor.org/biocLite.R")
-      biocLite("pkgDepTools")
-      require(pkgDepTools, quietly=TRUE)
-    }
-    if (! require(Rgraphviz, quietly=TRUE))
-    {
-      source("http://bioconductor.org/biocLite.R")
-      biocLite("Rgraphviz")
-      require(Rgraphviz, quietly=TRUE)
-    }
+      require(RBGL, quietly=TRUE)
+      require(bitops, quietly=TRUE)
+      require(grid, quietly=TRUE)
+
+      if (! require(pkgDepTools, quietly=TRUE))
+      {
+        source("http://bioconductor.org/biocLite.R")
+        biocLite("pkgDepTools")
+        require(pkgDepTools, quietly=TRUE)
+      }
+      if (! require(Rgraphviz, quietly=TRUE))
+      {
+        source("http://bioconductor.org/biocLite.R")
+        biocLite("Rgraphviz")
+        require(Rgraphviz, quietly=TRUE)
+      }
+    })
+      
     cran.repos <- "http://cran.r-project.org"
     if (isWindows())
       cran.deps <- makeDepGraph(cran.repos, type="win.binary", dosize=TRUE)
@@ -429,7 +433,7 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
   # Load gloablly required packages if they are available.
 
   if (packageIsAvailable("RGtk2", Rtxt("display the Rattle GUI")))
-    require("RGtk2", quietly=TRUE)
+    suppressPackageStartupMessages(require("RGtk2", quietly=TRUE))
   else
     stop(sprintf(Rtxt("The RGtk2 package is not available but is required",
                       "for the %s GUI."), crv$appname))
@@ -467,10 +471,10 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
   if (packageIsAvailable("colorspace", Rtxt("choose appropriate colors for plots")))
   {
     # 080921 Load here to keep the loading quiet!
-    require("colorspace", quietly=TRUE)
+    suppressPackageStartupMessages(require("colorspace", quietly=TRUE))
   }
 
-  require(RGtk2, quietly=TRUE) # From http://www.ggobi.org/rgtk2/
+  suppressPackageStartupMessages(require(RGtk2, quietly=TRUE)) # From http://www.ggobi.org/rgtk2/
 
   # Check to make sure libglade is available.
 
@@ -613,7 +617,7 @@ rattle <- function(csvname=NULL, dataset=NULL, useGtkBuilder=NULL)
   # this stage. The symptom is that median is not defined. So make
   # sure it is always available.
 
-  require(stats, quietly=TRUE)
+  suppressPackageStartupMessages(require(stats, quietly=TRUE))
 
   if (file.exists(".Rattle")) source(".Rattle")
 

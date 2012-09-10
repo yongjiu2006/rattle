@@ -1109,6 +1109,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</prope
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Advanced _Graphics</property>
                         <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                     </child>
                     <child>
